@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.deliveriesToMaterialFlow.states;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
@@ -53,6 +44,16 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.model.api.validators.ErrorMessage;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class DeliveryStateServiceMF {
@@ -108,7 +109,9 @@ public class DeliveryStateServiceMF {
                 String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
                 BigDecimal givenQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.ADDITIONAL_QUANTITY);
                 BigDecimal conversion = deliveredProduct.getDecimalField(DeliveredProductFields.CONVERSION);
-
+                if(StringUtils.isEmpty(additionalUnit)) {
+                    additionalUnit = product.getStringField(ProductFields.UNIT);
+                }
                 documentBuilder.addPosition(product, positionQuantity, numberService.setScaleWithDefaultMathContext(givenQuantity), additionalUnit,
                         conversion, price(deliveredProduct, currency), batch(deliveredProduct), productionDate(deliveredProduct),
                         expirationDate(deliveredProduct), null, storageLocation(deliveredProduct),

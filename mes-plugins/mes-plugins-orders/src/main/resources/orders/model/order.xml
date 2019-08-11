@@ -166,14 +166,22 @@
                  cascade="delete" copyable="false"/>
 
         <manyToMany name="schedules" joinField="orders"
-                          model="schedule"/>
+                    model="schedule"/>
 
         <hasMany name="schedulePositions" joinField="order" model="schedulePosition"
                  cascade="delete"/>
 
         <belongsTo name="division" model="division" plugin="basic"/>
 
-        <hasMany name="operationalTasks" model="operationalTask" joinField="order" cascade="delete" />
+        <hasMany name="operationalTasks" model="operationalTask" joinField="order" cascade="delete"/>
+
+        <hasMany name="technologyOperationComponentsMergeProductIn" plugin="technologies"
+                       model="technologyOperationComponentMergeProductIn"
+                       joinField="order" cascade="delete"/>
+
+        <hasMany name="technologyOperationComponentsMergeProductOut" plugin="technologies"
+                       model="technologyOperationComponentMergeProductOut"
+                       joinField="order" cascade="delete"/>
 
     </fields>
 

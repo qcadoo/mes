@@ -9,10 +9,12 @@ import com.qcadoo.mes.lineChangeoverNorms.ChangeoverNormsService;
 import com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields;
 import com.qcadoo.mes.lineChangeoverNormsForOrders.LineChangeoverNormsForOrdersService;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderPositionDtoFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
 import com.qcadoo.mes.masterOrders.constants.ParameterFieldsMO;
+import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -25,15 +27,18 @@ import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.exception.EntityRuntimeException;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -79,6 +84,9 @@ public class OrdersFromMOProductsGenerationService {
     private NumberGeneratorService numberGeneratorService;
 
     @Autowired
+    private NumberService numberService;
+
+    @Autowired
     private OrderService orderService;
 
     @Autowired
@@ -92,6 +100,9 @@ public class OrdersFromMOProductsGenerationService {
 
     @Autowired
     private ShiftsService shiftsService;
+
+    @Autowired
+    private MaterialFlowResourcesService materialFlowResourcesService;
 
     public GenerationOrderResult generateOrders(List<Entity> masterOrderProducts, boolean generatePPS) {
         GenerationOrderResult result = new GenerationOrderResult(translationService);
@@ -107,79 +118,121 @@ public class OrdersFromMOProductsGenerationService {
         });
 
         return result;
-
     }
 
     private void generateOrder(boolean generatePPS, boolean automaticPps, GenerationOrderResult result, Entity masterOrderProduct) {
-        Entity order = createOrder(masterOrderProduct);
-        order = getOrderDD().save(order);
-        if (!order.isValid()) {
-            MasterOrderProductErrorContainer productErrorContainer = new MasterOrderProductErrorContainer();
-            productErrorContainer.setProduct(masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT)
-                    .getStringField(ProductFields.NUMBER));
-            productErrorContainer.setMasterOrder(masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER)
-                    .getStringField(MasterOrderFields.NUMBER));
-            productErrorContainer.setQuantity(order.getDecimalField(OrderFields.PLANNED_QUANTITY));
-            productErrorContainer.setErrorMessages(order.getGlobalErrors());
-            result.addNotGeneratedProductError(productErrorContainer);
-        } else {
-            result.addGeneratedOrderNumber(order.getStringField(OrderFields.NUMBER));
+
+        if (PluginUtils.isEnabled("integrationBaseLinker")) {
+            createDocuments();
         }
+
         Entity parameter = parameterService.getParameter();
 
-        generateSubOrders(result, order);
+        boolean realizationFromStock = parameter.getBooleanField(ParameterFieldsO.REALIZATION_FROM_STOCK);
+        boolean alwaysOrderItemsWithPersonalization = parameter
+                .getBooleanField(ParameterFieldsO.ALWAYS_ORDER_ITEMS_WITH_PERSONALIZATION)
+                && StringUtils.isNoneEmpty(masterOrderProduct.getStringField(MasterOrderProductFields.CPMMENTS));
+        if (alwaysOrderItemsWithPersonalization) {
+            realizationFromStock = false;
+        }
 
-        if (order.isValid() && generatePPS && automaticPps && !parameter.getBooleanField(ORDERS_GENERATION_NOT_COMPLETE_DATES)) {
-            List<Entity> orders = getOrderAndSubOrders(order.getId());
-            Collections.reverse(orders);
-            Integer lastLevel = null;
-            Date lastDate = null;
-            for (Entity ord : orders) {
+        BigDecimal stockQuantity = BigDecimal.ZERO;
+        BigDecimal quantityRemainingToOrder = dataDefinitionService
+                .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO)
+                .get(masterOrderProduct.getId())
+                .getDecimalField(MasterOrderPositionDtoFields.QUANTITY_REMAINING_TO_ORDER_WITHOUT_STOCK);
+        if (realizationFromStock) {
+            List<Entity> locations = parameter.getHasManyField(ParameterFieldsO.REALIZATION_LOCATIONS);
+            Entity product = masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT);
+            for (Entity location : locations) {
+                Map<Long, BigDecimal> productQuantity = materialFlowResourcesService.getQuantitiesForProductsAndLocation(
+                        Lists.newArrayList(product), location);
+                if(productQuantity.containsKey(product.getId())) {
+                    stockQuantity = stockQuantity.add(productQuantity.get(product.getId()), numberService.getMathContext());
+                }
+            }
 
-                Date calculatedOrderStartDate = null;
-                if (Objects.isNull(ord.getDateField(OrderFields.DATE_FROM))) {
-                    Optional<Entity> maybeOrder = findLastOrder(ord);
-                    if (maybeOrder.isPresent()) {
-                        calculatedOrderStartDate = ord.getDateField(OrderFields.FINISH_DATE);
+        }
+
+        if (realizationFromStock && stockQuantity.compareTo(quantityRemainingToOrder) >= 0
+                && quantityRemainingToOrder.compareTo(BigDecimal.ZERO) > 0) {
+            masterOrderProduct.setField(MasterOrderProductFields.QUANTITY_TAKEN_FROM_WAREHOUSE, quantityRemainingToOrder);
+            masterOrderProduct.getDataDefinition().save(masterOrderProduct);
+            result.addRealizationFromStock(masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT).getStringField(
+                    ProductFields.NUMBER));
+        } else {
+            Entity order = createOrder(masterOrderProduct, realizationFromStock, quantityRemainingToOrder, stockQuantity);
+            order = getOrderDD().save(order);
+            if (!order.isValid()) {
+                MasterOrderProductErrorContainer productErrorContainer = new MasterOrderProductErrorContainer();
+                productErrorContainer.setProduct(masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT)
+                        .getStringField(ProductFields.NUMBER));
+                productErrorContainer.setMasterOrder(masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER)
+                        .getStringField(MasterOrderFields.NUMBER));
+                productErrorContainer.setQuantity(order.getDecimalField(OrderFields.PLANNED_QUANTITY));
+                productErrorContainer.setErrorMessages(order.getGlobalErrors());
+                result.addNotGeneratedProductError(productErrorContainer);
+            } else {
+                result.addGeneratedOrderNumber(order.getStringField(OrderFields.NUMBER));
+            }
+
+            generateSubOrders(result, order);
+
+            if (order.isValid() && generatePPS && automaticPps
+                    && !parameter.getBooleanField(ORDERS_GENERATION_NOT_COMPLETE_DATES)) {
+                List<Entity> orders = getOrderAndSubOrders(order.getId());
+                Collections.reverse(orders);
+                Integer lastLevel = null;
+                Date lastDate = null;
+                for (Entity ord : orders) {
+
+                    Date calculatedOrderStartDate = null;
+                    if (Objects.isNull(ord.getDateField(OrderFields.DATE_FROM))) {
+                        Optional<Entity> maybeOrder = findLastOrder(ord);
+                        if (maybeOrder.isPresent()) {
+                            calculatedOrderStartDate = ord.getDateField(OrderFields.FINISH_DATE);
+                        } else {
+                            calculatedOrderStartDate = new DateTime().toDate();
+                        }
                     } else {
+                        Optional<Entity> maybeOrder = findPreviousOrder(ord);
+                        if (maybeOrder.isPresent()) {
+                            calculatedOrderStartDate = maybeOrder.get().getDateField(OrderFields.FINISH_DATE);
+
+                        } else {
+                            calculatedOrderStartDate = ord.getDateField(OrderFields.FINISH_DATE);
+                        }
+                    }
+
+                    if (Objects.isNull(calculatedOrderStartDate)) {
                         calculatedOrderStartDate = new DateTime().toDate();
                     }
-                } else {
-                    Optional<Entity> maybeOrder = findPreviousOrder(ord);
-                    if (maybeOrder.isPresent()) {
-                        calculatedOrderStartDate = maybeOrder.get().getDateField(OrderFields.FINISH_DATE);
 
-                    } else {
-                        calculatedOrderStartDate = ord.getDateField(OrderFields.FINISH_DATE);
+                    if (Objects.nonNull(lastLevel) && !Objects.equals(lastLevel, ord.getIntegerField("level"))) {
+                        if (Objects.nonNull(lastDate) && calculatedOrderStartDate.before(lastDate)) {
+                            calculatedOrderStartDate = lastDate;
+                        }
                     }
-                }
 
-                if (Objects.isNull(calculatedOrderStartDate)) {
-                    calculatedOrderStartDate = new DateTime().toDate();
-                }
-
-                if (Objects.nonNull(lastLevel) && !Objects.equals(lastLevel, ord.getIntegerField("level"))) {
-                    if (Objects.nonNull(lastDate) && calculatedOrderStartDate.before(lastDate)) {
-                        calculatedOrderStartDate = lastDate;
+                    try {
+                        Date finishDate = tryGeneratePPS(ord, calculatedOrderStartDate);
+                        if (Objects.nonNull(lastDate) && finishDate.after(lastDate)) {
+                            lastDate = finishDate;
+                        } else if (Objects.isNull(lastDate)) {
+                            lastDate = finishDate;
+                        }
+                    } catch (Exception ex) {
+                        result.addOrderWithoutPps(ord.getStringField(OrderFields.NUMBER));
+                        break;
                     }
-                }
+                    lastLevel = ord.getIntegerField("level");
 
-                try {
-                    Date finishDate = tryGeneratePPS(ord, calculatedOrderStartDate);
-                    if (Objects.nonNull(lastDate) && finishDate.after(lastDate)) {
-                        lastDate = finishDate;
-                    } else if (Objects.isNull(lastDate)) {
-                        lastDate = finishDate;
-                    }
-                } catch (Exception ex) {
-                    result.addOrderWithoutPps(ord.getStringField(OrderFields.NUMBER));
-                    break;
                 }
-                lastLevel = ord.getIntegerField("level");
 
             }
 
         }
+
     }
 
     public Optional<Entity> findLastOrder(final Entity order) {
@@ -210,6 +263,13 @@ public class OrdersFromMOProductsGenerationService {
      * override by aspect
      */
     public void generateSubOrders(GenerationOrderResult result, Entity order) {
+
+    }
+
+    /*
+     * override by aspect
+     */
+    public void createDocuments() {
 
     }
 
@@ -321,7 +381,8 @@ public class OrdersFromMOProductsGenerationService {
         return 0;
     }
 
-    public Entity createOrder(final Entity masterOrderProduct) {
+    private Entity createOrder(final Entity masterOrderProduct, final boolean realizationFromStock,
+            BigDecimal quantityRemainingToOrder, final BigDecimal stockQuantity) {
         Entity parameter = parameterService.getParameter();
         Entity masterOrder = masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
         Entity product = masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT);
@@ -349,7 +410,20 @@ public class OrdersFromMOProductsGenerationService {
         order.setField(OrderFields.STATE, OrderStateStringValues.PENDING);
         order.setField(OrderFieldsMO.MASTER_ORDER, masterOrder);
         order.setField(OrderFields.ORDER_TYPE, OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue());
-        order.setField(OrderFields.PLANNED_QUANTITY, getPlannedQuantityForOrder(masterOrderProduct));
+        if (realizationFromStock) {
+            if (stockQuantity.compareTo(BigDecimal.ZERO) > 0 && stockQuantity.compareTo(quantityRemainingToOrder) < 0) {
+                masterOrderProduct.setField(MasterOrderProductFields.QUANTITY_TAKEN_FROM_WAREHOUSE, stockQuantity);
+                masterOrderProduct.getDataDefinition().save(masterOrderProduct);
+                order.setField(OrderFields.PLANNED_QUANTITY,
+                        getPlannedQuantityForOrder(masterOrderProduct).subtract(stockQuantity, numberService.getMathContext()));
+            } else {
+                masterOrderProduct.setField(MasterOrderProductFields.QUANTITY_TAKEN_FROM_WAREHOUSE, BigDecimal.ZERO);
+                masterOrderProduct.getDataDefinition().save(masterOrderProduct);
+                order.setField(OrderFields.PLANNED_QUANTITY, getPlannedQuantityForOrder(masterOrderProduct));
+            }
+        } else {
+            order.setField(OrderFields.PLANNED_QUANTITY, getPlannedQuantityForOrder(masterOrderProduct));
+        }
 
         order.setField(IGNORE_MISSING_COMPONENTS, parameter.getBooleanField(IGNORE_MISSING_COMPONENTS));
 

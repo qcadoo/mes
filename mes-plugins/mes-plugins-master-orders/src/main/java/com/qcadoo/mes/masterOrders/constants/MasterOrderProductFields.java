@@ -48,4 +48,8 @@ public final class MasterOrderProductFields {
     public static final String CPMMENTS = "comments";
 
     public static final String MASTER_ORDER_POSITION_STATUS = "masterOrderPositionStatus";
+
+    public static final String QUANTITY_REMAINING_TO_ORDER = "quantityRemainingToOrder";
+
+    public static final String QUANTITY_TAKEN_FROM_WAREHOUSE = "quantityTakenFromWarehouse";
 }

@@ -66,6 +66,17 @@
             <validatesScale max="5"/>
         </decimal>
 
+        <decimal name="quantityTakenFromWarehouse">
+            <validatesRange from="0"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <decimal name="quantityRemainingToOrder">
+            <validatesRange from="0"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
 
         <string name="defaultTechnology" persistent="false"/>
 

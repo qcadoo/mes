@@ -55,8 +55,8 @@
 
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="ordersParameters" reference="form">
-                <component type="gridLayout" name="mainTabGridLayout"
-                           columns="3" rows="5">
+                <component type="flowGridLayout" name="mainTabGridLayout"
+                           columns="3" rows="8">
                     <layoutElement column="1" row="1">
                         <component type="lookup" name="defaultProductionLine"
                                    field="#{form}.defaultProductionLine" reference="defaultProductionLine">
@@ -89,7 +89,7 @@
                             </layoutElement>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="4">
+                    <layoutElement column="1" row="4" height="2">
                         <component type="borderLayout" name="orderValuesLockBorderLayout">
                             <component type="gridLayout" name="orderValuesLockGridLayout" columns="1" rows="2">
                                 <layoutElement column="1" row="1">
@@ -110,6 +110,26 @@
                             <option type="label" value="orderValuesLockLabel"/>
                         </component>
                     </layoutElement>
+                    <layoutElement column="1" row="6">
+                        <component type="checkbox" name="flagPercentageOfExecutionWithColor"
+                                   field="#{form}.flagPercentageOfExecutionWithColor"
+                                   reference="flagPercentageOfExecutionWithColor" hasDescription="true">
+                            <option type="labelWidth" value="40"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="7">
+                        <component type="checkbox" name="copyDescription" field="#{form}.copyDescription"
+                                   reference="copyDescription" hasDescription="true">
+                            <option type="labelWidth" value="40"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="8">
+                        <component type="checkbox" name="copyNotesFromMasterOrderPosition"
+                                   field="#{form}.copyNotesFromMasterOrderPosition"
+                                   reference="copyNotesFromMasterOrderPosition" hasDescription="true">
+                            <option type="labelWidth" value="40"/>
+                        </component>
+                    </layoutElement>
 
                     <layoutElement column="2" row="1">
                         <component type="checkbox" name="setEffectiveDateFromOnInProgress"
@@ -126,28 +146,64 @@
                             <option type="labelWidth" value="40"/>
                         </component>
                     </layoutElement>
-
                     <layoutElement column="2" row="3">
-                        <component type="checkbox" name="flagPercentageOfExecutionWithColor"
-                                   field="#{form}.flagPercentageOfExecutionWithColor"
-                                   reference="flagPercentageOfExecutionWithColor" hasDescription="true">
+                        <component type="checkbox" name="realizationFromStock"
+                                   field="#{form}.realizationFromStock"
+                                   reference="realizationFromStock" hasDescription="true">
                             <option type="labelWidth" value="40"/>
+                            <listener event="onChange"
+                                      class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
+                                      method="onRealizationFromStock"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="4">
-                        <component type="checkbox" name="copyDescription" field="#{form}.copyDescription"
-                                   reference="copyDescription" hasDescription="true">
+                        <component type="checkbox" name="alwaysOrderItemsWithPersonalization"
+                                   field="#{form}.alwaysOrderItemsWithPersonalization"
+                                   reference="alwaysOrderItemsWithPersonalization" hasDescription="true">
+                            <listener event="onChange"
+                                      class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
+                                      method="onAlwaysOrderItemsWithPersonalization"/>
                             <option type="labelWidth" value="40"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="5">
-                        <component type="checkbox" name="copyNotesFromMasterOrderPosition"
-                                   field="#{form}.copyNotesFromMasterOrderPosition"
-                                   reference="copyNotesFromMasterOrderPosition" hasDescription="true">
-                            <option type="labelWidth" value="40"/>
+                        <component type="lookup" name="locationsLookup" reference="locationsLookup"
+                                   field="#{form}.realizationLocations" defaultVisible="false" persistent="false"
+                                   hasLabel="false">
+                            <option type="column" name="name" fields="name" link="true"/>
+
+                            <option type="searchable" value="number,name"/>
+                            <option type="orderable" value="number,name"/>
+
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <option type="multiselect" value="true"/>
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.LocationCriteriaModifiersMFR"
+                                    method="showWarehousesOnly"/>
+                        </component>
+                        <component type="grid" name="realizationLocations" reference="realizationLocations"
+                                   source="#{form}.realizationLocations">
+                            <option type="column" name="number" fields="number" width="50"/>
+                            <option type="column" name="name" fields="name" width="100"/>
+
+                            <option type="searchable" value="number,name"/>
+                            <option type="orderable" value="number,name"/>
+
+                            <option type="order" column="number" direction="asc"/>
+
+                            <option type="fullscreen" value="true"/>
+                            <option type="multiselect" value="true"/>
+                            <option type="creatable" value="true"/>
+                            <option type="deletable" value="true"/>
+
+                            <option type="weakRelation" value="true"/>
+                            <option type="correspondingLookup" value="locationsLookup"/>
+
                         </component>
                     </layoutElement>
-
 
                 </component>
 
@@ -330,8 +386,7 @@
     </component>
 
     <hooks>
-        <beforeRender class="com.qcadoo.mes.orders.hooks.ParametersHooksO" method="showTimeFields"/>
-        <beforeRender class="com.qcadoo.mes.orders.hooks.ParametersHooksO" method="hideTabs"/>
+        <beforeRender class="com.qcadoo.mes.orders.hooks.ParametersHooksO" method="onBeforeRender"/>
     </hooks>
 
 </view>

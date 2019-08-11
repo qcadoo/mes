@@ -23,21 +23,23 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.listeners;
 
-import com.google.common.collect.Maps;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.productFlowThruDivision.OrderMaterialAvailability;
-import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FormComponent;
+import java.util.Map;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.productFlowThruDivision.OrderMaterialAvailability;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class OrderDetailsListenersPFTD {
@@ -90,7 +92,8 @@ public class OrderDetailsListenersPFTD {
         return builder.append("[").append(value).append("]").toString();
     }
 
-    public void showMaterialAvailabilityForProductionTracking(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void showMaterialAvailabilityForProductionTracking(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
         FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         Entity productionRecord = productionRecordForm.getEntity();
@@ -100,8 +103,8 @@ public class OrderDetailsListenersPFTD {
         showMaterialAvailability(view, orderId);
     }
 
-    public void showMaterialAvailabilityForOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-
+    public void showMaterialAvailabilityForOrder(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
         Long orderId = (Long) state.getFieldValue();
         showMaterialAvailability(view, orderId);
     }
@@ -114,11 +117,15 @@ public class OrderDetailsListenersPFTD {
         } catch (JSONException e) {
             throw new IllegalStateException(e);
         }
-        orderMaterialAvailability.generateAndSaveMaterialAvailabilityForOrder(
-                dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId));
+
+        orderMaterialAvailability.generateAndSaveMaterialAvailabilityForOrder(getOrderDD().get(orderId));
 
         String url = "../page/productFlowThruDivision/orderWithMaterialAvailabilityList.html?context=" + json.toString();
         view.redirectTo(url, false, true);
+    }
+
+    private DataDefinition getOrderDD() {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
     }
 
 }

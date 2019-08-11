@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
-import java.math.BigDecimal;
-import java.util.Arrays;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderPositionDtoFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
@@ -42,6 +36,12 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class MasterOrderProductDetailsHooks {
@@ -67,7 +67,7 @@ public class MasterOrderProductDetailsHooks {
 
         }
         for (String reference : Arrays.asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit",
-                "producedOrderQuantityUnit", "leftToReleaseUnit")) {
+                "producedOrderQuantityUnit", "leftToReleaseUnit", "quantityRemainingToOrderUnit", "quantityTakenFromWarehouseUnit")) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setFieldValue(unit);
             field.requestComponentUpdateState();
@@ -97,6 +97,12 @@ public class MasterOrderProductDetailsHooks {
             producedOrderQuantity.setFieldValue(numberService.format(masterOrderProductDto
                     .getDecimalField(MasterOrderPositionDtoFields.PRODUCED_ORDER_QUANTITY)));
             producedOrderQuantity.requestComponentUpdateState();
+
+            FieldComponent quantityRemainingToOrder = (FieldComponent) view
+                    .getComponentByReference(MasterOrderProductFields.QUANTITY_REMAINING_TO_ORDER);
+            quantityRemainingToOrder.setFieldValue(numberService.format(masterOrderProductDto
+                    .getDecimalField(MasterOrderPositionDtoFields.QUANTITY_REMAINING_TO_ORDER)));
+            quantityRemainingToOrder.requestComponentUpdateState();
         }
     }
 

@@ -23,6 +23,18 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.orders.OrderService;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
+import com.qcadoo.view.api.components.GridComponent;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DELAYED_EFFECTIVE_DATE_FROM_TIME;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DELAYED_EFFECTIVE_DATE_TO_TIME;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.EARLIER_EFFECTIVE_DATE_FROM_TIME;
@@ -32,18 +44,14 @@ import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHE
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.orders.OrderService;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-
 @Service
 public class ParametersListenersO {
+
+    private static final String L_REALIZATION_FROM_STOCK = "realizationFromStock";
+
+    private static final String L_ALWAYS_ORDER_ITEMS_WITH_PERSONALIZATION = "alwaysOrderItemsWithPersonalization";
+
+    private static final String L_REALIZATION_LOCATIONS = "realizationLocations";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -82,6 +90,31 @@ public class ParametersListenersO {
         }
     }
 
+    public void onRealizationFromStock(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
+        CheckBoxComponent realizationFromStockComponent = (CheckBoxComponent) view.getComponentByReference(
+                L_REALIZATION_FROM_STOCK);
+        CheckBoxComponent alwaysOrderItemsWithPersonalizationComponent = (CheckBoxComponent) view.getComponentByReference(
+                L_ALWAYS_ORDER_ITEMS_WITH_PERSONALIZATION);
+        GridComponent realizationLocationsGrid = (GridComponent) view.getComponentByReference(L_REALIZATION_LOCATIONS);
+        if(realizationFromStockComponent.isChecked()) {
+            alwaysOrderItemsWithPersonalizationComponent.setEnabled(true);
+            realizationLocationsGrid.setEditable(true);
+        } else {
+            alwaysOrderItemsWithPersonalizationComponent.setChecked(false);
+            alwaysOrderItemsWithPersonalizationComponent.setEnabled(false);
+            realizationLocationsGrid.setEntities(Lists.newArrayList());
+            realizationLocationsGrid.setEditable(false);
+        }
+        alwaysOrderItemsWithPersonalizationComponent.requestComponentUpdateState();
+    }
+
+    public void onAlwaysOrderItemsWithPersonalization(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
+
+
+    }
+
     public void showTimeField(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         String componentStateName = componentState.getName();
         if (REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM.equals(componentStateName)) {
@@ -96,7 +129,7 @@ public class ParametersListenersO {
     }
 
     public void redirectToOperationalTasksParameters(final ViewDefinitionState view, final ComponentState componentState,
-                                                     final String[] args) {
+            final String[] args) {
         Long parameterId = (Long) componentState.getFieldValue();
 
         if (parameterId != null) {
