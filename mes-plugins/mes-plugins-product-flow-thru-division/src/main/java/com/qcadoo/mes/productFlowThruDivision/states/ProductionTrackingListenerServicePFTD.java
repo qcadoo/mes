@@ -89,7 +89,7 @@ public final class ProductionTrackingListenerServicePFTD {
 
     private static final String L_ERROR_NOT_ENOUGH_RESOURCES = "materialFlow.error.position.quantity.notEnoughResources";
 
-    public static final String L_USER = "user";
+    private static final String L_USER = "user";
 
     @Autowired
     private CostNormsForMaterialsService costNormsForMaterialsService;

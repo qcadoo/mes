@@ -76,23 +76,27 @@ public class WarehouseIssueDocumentsService {
 
     public CreationDocumentResponse createWarehouseDocument(final Entity locationFrom, final Entity locationTo,
             final Collection positions, final String additionalInfo) {
-
         List<Entity> _issues = Lists.newArrayList(positions);
+
         for (Entity issue : _issues) {
             reservationsServiceForProductsToIssue.onIssue(issue);
         }
 
         DrawnDocuments drawnDocument = warehouseIssueParameterService.getDrawnDocument();
         DocumentsStatus documentsStatus = warehouseIssueParameterService.getDocuemtStatusCreatedDocuemnt();
+
         CreationDocumentResponse response = null;
+
         switch (drawnDocument) {
             case RECEIPT_RELEASE:
                 response = buildReceiptReleasePairDocuments(locationFrom, locationTo, positions, documentsStatus, additionalInfo);
                 break;
+
             case TRANSFER:
                 response = buildTransferDocument(locationFrom, locationTo, positions, documentsStatus, additionalInfo);
                 break;
         }
+
         if (response == null) {
             response = new CreationDocumentResponse(false);
         }
@@ -102,20 +106,22 @@ public class WarehouseIssueDocumentsService {
                 reservationsServiceForProductsToIssue.onIssueCompensation(issue);
             }
         }
+
         return response;
     }
 
-    private CreationDocumentResponse buildReceiptReleasePairDocuments(Entity locationFrom, Entity locationTo,
-            Collection positions, DocumentsStatus documentsStatus, String additionalInfo) {
-        CreationDocumentResponse validReleaseDocument = buildReleaseDocument(locationFrom, locationTo, positions,
-                documentsStatus, additionalInfo);
+    private CreationDocumentResponse buildReceiptReleasePairDocuments(final Entity locationFrom, final Entity locationTo,
+            final Collection positions, final DocumentsStatus documentsStatus, final String additionalInfo) {
+        CreationDocumentResponse validReleaseDocument = buildReleaseDocument(locationFrom, locationTo, positions, documentsStatus,
+                additionalInfo);
 
         return validReleaseDocument;
     }
 
-    private CreationDocumentResponse buildReleaseDocument(Entity locationFrom, Entity locationTo, Collection positions,
-            DocumentsStatus documentsStatus, String additionalInfo) {
+    private CreationDocumentResponse buildReleaseDocument(final Entity locationFrom, final Entity locationTo, final Collection positions,
+            final DocumentsStatus documentsStatus, final String additionalInfo) {
         DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder();
+
         documentBuilder.setField(DocumentFields.TYPE, DocumentType.RELEASE.getStringValue());
         documentBuilder.setField(DocumentFields.LOCATION_FROM, locationFrom);
         documentBuilder.setField(DocumentFields.DESCRIPTION,
@@ -123,32 +129,39 @@ public class WarehouseIssueDocumentsService {
         documentBuilder.setField(DocumentFields.CREATE_LINKED_PZ_DOCUMENT, true);
         documentBuilder.setField(DocumentFields.LINKED_PZ_DOCUMENT_LOCATION, locationTo);
         buildDocumentPositions(positions, documentBuilder);
+
         return build(documentsStatus, documentBuilder);
     }
 
-    private String buildDescriptionForReleaseDocument(Entity locationTo, Collection positions, String additionalInfo) {
+    private String buildDescriptionForReleaseDocument(final Entity locationTo, final Collection positions, final String additionalInfo) {
         String description = buildDescription(positions);
+
         description = Strings.isNullOrEmpty(description) ? "" : description + "\n";
         description += translationService.translate(
-                "productFlowThruDivision.issue.documentGeneration.descriptionForReleaseDocument",
-                LocaleContextHolder.getLocale(), locationTo.getStringField(LocationFields.NAME));
+                "productFlowThruDivision.issue.documentGeneration.descriptionForReleaseDocument", LocaleContextHolder.getLocale(),
+                locationTo.getStringField(LocationFields.NAME));
+
         if (additionalInfo != null) {
             description += "\n" + additionalInfo;
         }
+
         return description;
     }
 
-    private String buildDescriptionForTransferDocument(Collection positions, String additionalInfo) {
+    private String buildDescriptionForTransferDocument(final Collection positions, final String additionalInfo) {
         String description = buildDescription(positions);
+
         if (additionalInfo != null) {
             description += "\n" + additionalInfo;
         }
+
         return description;
     }
 
-    private CreationDocumentResponse buildTransferDocument(Entity locationFrom, Entity locationTo, Collection positions,
-            DocumentsStatus documentsStatus, String additionalInfo) {
+    private CreationDocumentResponse buildTransferDocument(final Entity locationFrom, final Entity locationTo, final Collection positions,
+            final DocumentsStatus documentsStatus, final String additionalInfo) {
         DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder();
+
         documentBuilder.setField(DocumentFields.TYPE, DocumentType.TRANSFER.getStringValue());
         documentBuilder.setField(DocumentFields.LOCATION_FROM, locationFrom);
         documentBuilder.setField(DocumentFields.LOCATION_TO, locationTo);
@@ -159,19 +172,24 @@ public class WarehouseIssueDocumentsService {
         return build(documentsStatus, documentBuilder);
     }
 
-    private CreationDocumentResponse build(DocumentsStatus documentsStatus, DocumentBuilder documentBuilder) {
+    private CreationDocumentResponse build(final DocumentsStatus documentsStatus, final DocumentBuilder documentBuilder) {
         Entity document;
+
         try {
             if (DocumentsStatus.ACCEPTED.getStrValue().equals(documentsStatus.getStrValue())) {
                 document = documentBuilder.setAccepted().buildWithEntityRuntimeException();
             } else {
                 document = documentBuilder.buildWithEntityRuntimeException();
             }
+
             if (!document.isValid()) {
                 List<ErrorMessage> errors = Lists.newArrayList();
+
                 errors.addAll(document.getGlobalErrors());
+
                 return new CreationDocumentResponse(false, errors);
             }
+
             CreationDocumentResponse creationDocumentResponse = new CreationDocumentResponse(true);
             creationDocumentResponse.setDocument(document);
 
@@ -179,19 +197,20 @@ public class WarehouseIssueDocumentsService {
         } catch (DocumentBuildException e) {
             return new CreationDocumentResponse(false, e.getGlobalErrors());
         }
-
     }
 
-    private void buildDocumentPositions(Collection positions, DocumentBuilder documentBuilder) {
+    private void buildDocumentPositions(final Collection positions, final DocumentBuilder documentBuilder) {
         for (Object obj : positions) {
             Entity issue = (Entity) obj;
             Entity product = issue.getBelongsToField(IssueFields.PRODUCT);
-            BigDecimal quantity = issue.getDecimalField("issueQuantity");
+            BigDecimal quantity = issue.getDecimalField(IssueFields.ISSUE_QUANTITY);
             BigDecimal conversion = BigDecimal.ONE;
-            Entity position = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                    MaterialFlowResourcesConstants.MODEL_POSITION).create();
+            Entity position = dataDefinitionService
+                    .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_POSITION)
+                    .create();
             String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
             String unit = product.getStringField(ProductFields.UNIT);
+
             if (issue.getDecimalField(IssueFields.CONVERSION) != null) {
                 conversion = issue.getDecimalField(IssueFields.CONVERSION);
                 position.setField(PositionFields.CONVERSION, conversion);
@@ -201,16 +220,18 @@ public class WarehouseIssueDocumentsService {
                     position.setField(PositionFields.GIVEN_QUANTITY, quantity);
                 } else {
                     position.setField(PositionFields.GIVEN_UNIT, additionalUnit);
+
                     BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(quantity,
                             conversion, additionalUnit);
+
                     position.setField(PositionFields.GIVEN_QUANTITY, newAdditionalQuantity);
                 }
             } else if (!StringUtils.isEmpty(additionalUnit)) {
                 PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-                        searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
-                                UnitConversionItemFieldsB.PRODUCT, product)));
-                if (unitConversions.isDefinedFor(additionalUnit)) {
+                        searchCriteriaBuilder -> searchCriteriaBuilder
+                                .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
 
+                if (unitConversions.isDefinedFor(additionalUnit)) {
                     BigDecimal convertedQuantity = unitConversions.convertTo(quantity, additionalUnit);
 
                     position.setField(PositionFields.GIVEN_QUANTITY, convertedQuantity);
@@ -227,20 +248,23 @@ public class WarehouseIssueDocumentsService {
             position.setField(PositionFields.QUANTITY, quantity);
             position.setField(PositionFields.PRODUCT, product);
             position.setField(PositionFields.ADDITIONAL_CODE, issue.getBelongsToField(IssueFields.ADDITIONAL_CODE));
+
             if (documentBuilder.getDocumentType().getStringValue().equals(DocumentType.INTERNAL_INBOUND.getStringValue())
                     || documentBuilder.getDocumentType().getStringValue().equals(DocumentType.RECEIPT.getStringValue())) {
                 position.setField(PositionFields.STORAGE_LOCATION, issue.getBelongsToField(IssueFields.STORAGE_LOCATION));
-
             }
+
             position.setField(PositionFields.DOCUMENT, documentBuilder.getDocument());
+
             documentBuilder.addPosition(position);
         }
     }
 
-    private BigDecimal getConversion(Entity product, String unit, String additionalUnit) {
+    private BigDecimal getConversion(final Entity product, final String unit, final String additionalUnit) {
         PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-                searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
-                        UnitConversionItemFieldsB.PRODUCT, product)));
+                searchCriteriaBuilder -> searchCriteriaBuilder
+                        .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+
         if (unitConversions.isDefinedFor(additionalUnit)) {
             return unitConversions.asUnitToConversionMap().get(additionalUnit);
         } else {
@@ -248,19 +272,26 @@ public class WarehouseIssueDocumentsService {
         }
     }
 
-    private String buildDescription(Collection positions) {
+    private String buildDescription(final Collection positions) {
         if (warehouseIssueParameterService.issueForOrder()) {
             Set<String> ordersName = Sets.newHashSet();
+
             for (Object obj : positions) {
                 Entity issue = (Entity) obj;
+
                 ordersName.add(issue.getBelongsToField(IssueFields.WAREHOUSE_ISSUE).getBelongsToField(WarehouseIssueFields.ORDER)
                         .getStringField(OrderFields.NUMBER));
             }
+
             StringJoiner joiner = new StringJoiner(",");
+
             ordersName.forEach(number -> joiner.add(number));
+
             return translationService.translate("productFlowThruDivision.issue.documentGeneration.forOrder",
                     LocaleContextHolder.getLocale(), joiner.toString());
         }
+
         return "";
     }
+
 }
