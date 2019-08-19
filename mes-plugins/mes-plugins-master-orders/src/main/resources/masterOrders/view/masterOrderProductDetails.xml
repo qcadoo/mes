@@ -124,7 +124,7 @@
                                 </layoutElement>
 
                                 <layoutElement column="1" row="3" width="3">
-                                    <component type="input" name="quantityTakenFromWarehouse"
+                                    <component type="input" name="quantityTakenFromWarehouse" defaultEnabled="never"
                                                field="quantityTakenFromWarehouse" reference="quantityTakenFromWarehouse">
                                         <option type="alignment" value="right"/>
                                     </component>
