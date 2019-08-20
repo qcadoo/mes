@@ -1,12 +1,12 @@
 package com.qcadoo.mes.materialFlowResources;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Objects;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.qcadoo.mes.basic.SearchAttribute;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Objects;
 
 public class DocumentPositionDTO {
 
@@ -56,6 +56,9 @@ public class DocumentPositionDTO {
 
     @JsonDeserialize(using = BigDecimalDeserializer.class)
     private BigDecimal price;
+
+    @JsonDeserialize(using = BigDecimalDeserializer.class)
+    private BigDecimal sellingPrice;
 
     private String batch;
 
@@ -227,6 +230,14 @@ public class DocumentPositionDTO {
         this.waste = waste;
     }
 
+    public BigDecimal getSellingPrice() {
+        return sellingPrice;
+    }
+
+    public void setSellingPrice(BigDecimal sellingPrice) {
+        this.sellingPrice = sellingPrice;
+    }
+
     @Override
     public int hashCode() {
         int hash = 3;
@@ -249,6 +260,7 @@ public class DocumentPositionDTO {
         hash = 67 * hash + Objects.hashCode(this.resource);
         hash = 67 * hash + Objects.hashCode(this.waste);
         hash = 67 * hash + Objects.hashCode(this.resourceNumber);
+        hash = 67 * hash + Objects.hashCode(this.sellingPrice);
         return hash;
     }
 
@@ -313,6 +325,9 @@ public class DocumentPositionDTO {
             return false;
         }
         if (!Objects.equals(this.resourceNumber, other.resourceNumber)) {
+            return false;
+        }
+        if (!Objects.equals(this.sellingPrice, other.sellingPrice)) {
             return false;
         }
         return true;
