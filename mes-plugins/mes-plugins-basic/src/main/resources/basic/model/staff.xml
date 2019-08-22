@@ -49,6 +49,7 @@
         <belongsTo name="shift" model="shift"/>
         <belongsTo name="division" model="division"/>
         <belongsTo name="crew" model="crew"/>
+        <belongsTo name="workstation" model="workstation"/>
 
         <hasMany name="crews" plugin="basic" model="crew" joinField="leader" copyable="false" cascade="nullify"/>
         <hasMany name="staffSkills" plugin="basic" model="staffSkill" joinField="staff" cascade="delete" copyable="false"/>
