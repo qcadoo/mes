@@ -46,15 +46,19 @@
 				expression="#division['number']" link="true" width="120" />
 			<option type="column" name="division_name" fields="division"
 				expression="#division['name']" link="true" width="120" />
+			<option type="column" name="workstation_number" fields="workstation"
+					expression="#workstation['number']" link="true" width="120" />
+			<option type="column" name="workstation_name" fields="workstation"
+					expression="#workstation['name']" link="true" width="120" />
 			<option type="column" name="workFor" fields="workFor"
 				expression="#workFor['name']" width="250"/>
 				
 			<option type="order" column="number" direction="desc" />
 			
 			<option type="searchable"
-				value="name,number,surname,post,shift,division_name,division_number" />
+				value="name,number,surname,post,shift,division_name,division_number.workstation_name,workstation_name,workstation_number" />
 			<option type="orderable"
-				value="name,number,surname,post,shift,division_name,division_number" />
+				value="name,number,surname,post,shift,division_name,division_number,workstation_name,workstation_number" />
 				
 			<option type="correspondingView" value="basic/staffDetails" />
 			<option type="correspondingComponent" value="form" />

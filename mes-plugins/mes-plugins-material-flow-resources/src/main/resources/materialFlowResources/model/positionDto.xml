@@ -42,6 +42,7 @@
         <decimal name="conversion"/>
         <string name="productUnit"/>
         <decimal name="price"/>
+        <decimal name="sellingPrice"/>
         <decimal name="value"/>
         <datetime name="documentDate"/>
         <datetime name="expirationDate"/>

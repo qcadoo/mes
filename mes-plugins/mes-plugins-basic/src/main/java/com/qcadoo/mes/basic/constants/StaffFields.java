@@ -53,4 +53,6 @@ public final class StaffFields {
 
     public static final String STAFF_SKILLS = "staffSkills";
 
+    public static final String WORKSTATION = "workstation";
+
 }

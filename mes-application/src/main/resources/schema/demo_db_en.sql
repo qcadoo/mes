@@ -5597,7 +5597,8 @@ CREATE TABLE basic_staff (
     parameter_id bigint,
     "position" character varying(255),
     entityversion bigint DEFAULT 0,
-    crew_id bigint
+    crew_id bigint,
+    workstation_id bigint
 );
 
 
@@ -15652,7 +15653,8 @@ CREATE TABLE materialflowresources_position (
     lastresource boolean DEFAULT false,
     resourcenumber character varying(255),
     externaldocumentnumber character varying(255),
-    orderid integer
+    orderid integer,
+    sellingprice numeric(12,5) DEFAULT '0'::numeric
 );
 
 
@@ -15757,7 +15759,8 @@ CREATE VIEW materialflowresources_positiondto AS
         END AS orderid,
     ("position".price * "position".quantity) AS value,
     "position".resourcenumber,
-    additionalcode.code AS additionalcode
+    additionalcode.code AS additionalcode,
+    "position".sellingprice
    FROM ((((((((((((((materialflowresources_position "position"
      LEFT JOIN materialflowresources_document document ON ((document.id = "position".document_id)))
      LEFT JOIN materialflow_location locationfrom ON ((locationfrom.id = document.locationfrom_id)))
@@ -30368,7 +30371,7 @@ SELECT pg_catalog.setval('basic_skill_id_seq', 1, false);
 -- Data for Name: basic_staff; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_staff (id, number, name, surname, email, phone, workfor_id, post, shift_id, division_id, individuallaborcost, determinedindividual, laborhourlycost, wagegroup_id, active, parameter_id, "position", entityversion, crew_id) FROM stdin;
+COPY basic_staff (id, number, name, surname, email, phone, workfor_id, post, shift_id, division_id, individuallaborcost, determinedindividual, laborhourlycost, wagegroup_id, active, parameter_id, "position", entityversion, crew_id, workstation_id) FROM stdin;
 \.
 
 
@@ -32826,6 +32829,7 @@ COPY materialflowresources_documentpositionparametersitem (id, checked, editable
 18	t	t	1	typeOfPallet	18
 19	t	t	1	waste	19
 21	t	t	1	resourceNumber	21
+22	f	t	1	sellingPrice	22
 \.
 
 
@@ -32899,7 +32903,7 @@ SELECT pg_catalog.setval('materialflowresources_palletstoragestatedto_id_seq', 1
 -- Data for Name: materialflowresources_position; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY materialflowresources_position (id, document_id, product_id, quantity, price, batch, productiondate, expirationdate, number, resource_id, givenunit, givenquantity, entityversion, storagelocation_id, additionalcode_id, conversion, palletnumber_id, typeofpallet, waste, resourcereceiptdocument, lastresource, resourcenumber, externaldocumentnumber, orderid) FROM stdin;
+COPY materialflowresources_position (id, document_id, product_id, quantity, price, batch, productiondate, expirationdate, number, resource_id, givenunit, givenquantity, entityversion, storagelocation_id, additionalcode_id, conversion, palletnumber_id, typeofpallet, waste, resourcereceiptdocument, lastresource, resourcenumber, externaldocumentnumber, orderid, sellingprice) FROM stdin;
 \.
 
 
@@ -43859,6 +43863,14 @@ ALTER TABLE ONLY arch_goodfood_extrusionsouse
 
 ALTER TABLE ONLY basic_staff
     ADD CONSTRAINT basic_staff_shift_fkey FOREIGN KEY (shift_id) REFERENCES basic_shift(id) DEFERRABLE;
+
+
+--
+-- Name: basic_staff_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_staff
+    ADD CONSTRAINT basic_staff_workstation_fkey FOREIGN KEY (workstation_id) REFERENCES basic_workstation(id) DEFERRABLE;
 
 
 --

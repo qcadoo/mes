@@ -1116,6 +1116,32 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             return $input;
         }
 
+        function sellingPrice_createElement(value, options) {
+            var $input = $('<input type="customNumber" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
+            $input.val(value);
+            $input.attr('readonly', getColModelByIndex('sellingPrice').editoptions.readonly === 'readonly');
+
+            var priceValue = value;
+            var priceValueNew;
+            $($input).bind('change keydown paste input', function () {
+                var t = $(this);
+
+                window.clearTimeout(t.data("timeout"));
+                priceValueNew = t.val();
+                if (priceValue !== priceValueNew) {
+                    priceValue = priceValueNew;
+
+                    $(this).data("timeout", setTimeout(function () {
+                        gridRunner(function () {
+                            parseAndValidateInputNumber(t);
+                        });
+                    }, 500));
+                }
+            });
+
+            return $input;
+        }
+
         function givenquantity_createElement(value, options) {
             var $input = $('<input type="customNumber" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
             $input.val(value);
@@ -1536,6 +1562,23 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     },
                 },
                 {
+                    name: 'sellingPrice',
+                    index: 'sellingPrice',
+                    editable: true,
+                    required: true,
+                    edittype: 'custom',
+                    formatter: numberFormatter,
+                    unformat: numberUnformat,
+                    editoptions: {
+                        custom_element: sellingPrice_createElement,
+                        custom_value: input_value
+                    },
+                    formoptions: {
+                        rowpos: 2,
+                        colpos: 2
+                    },
+                },
+                {
                     name: 'expirationDate',
                     index: 'expirationDate',
                     width: 150,
@@ -1760,7 +1803,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
             var readOnlyInType = function (outDocument, inBufferDocument, columnIndex) {
                 if (outDocument && (columnIndex === 'expirationDate' || columnIndex === 'productionDate' ||
-                        columnIndex === 'batch' || columnIndex === 'price' || columnIndex === 'waste' ||
+                        columnIndex === 'batch' || columnIndex === 'price' ||  columnIndex === 'waste' ||
                         columnIndex === 'palletNumber' || columnIndex === 'typeOfPallet' || columnIndex === 'storageLocation')) {
                     return true;
                 }
@@ -1770,6 +1813,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 if (columnIndex === 'lastResource') {
                     return true;
                 }
+                if (!outDocument && columnIndex === 'sellingPrice') {
+                   return true;
+                }
+
                 return false;
             };
 

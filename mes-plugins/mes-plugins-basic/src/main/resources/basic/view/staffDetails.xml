@@ -75,7 +75,7 @@
                                    reference="borderLayoutInCompany">
                             <option type="label" value="inCompany"/>
                             <component type="gridLayout" name="gridLayout" columns="1"
-                                       rows="3">
+                                       rows="4">
                                 <layoutElement column="1" row="1">
                                     <component type="lookup" name="shift" field="shift"
                                                reference="shift" hasDescription="true">
@@ -96,10 +96,32 @@
 
                                         <option type="expression" value="#number + ' - ' + #name"/>
                                         <option type="fieldCode" value="number"/>
+                                        <listener event="onSelectedEntityChange"
+                                                  class="com.qcadoo.mes.basic.listeners.StaffDetailsListeners"
+                                                  method="onOnDivisionChange" />
+
                                     </component>
                                 </layoutElement>
 
                                 <layoutElement column="1" row="3">
+                                    <component type="lookup" name="workstation" field="workstation"
+                                               reference="workstation" hasDescription="true">
+                                        <option type="column" name="name" fields="name"/>
+
+                                        <option type="searchable" value="name,number"/>
+                                        <option type="orderable" value="name,number"/>
+
+                                        <option type="expression" value="#number + ' - ' + #name"/>
+                                        <option type="fieldCode" value="number"/>
+
+                                        <criteriaModifier
+                                                class="com.qcadoo.mes.basic.criteriaModifiers.StaffCriteriaModifiers"
+                                                method="filterByDivision"/>
+
+                                    </component>
+                                </layoutElement>
+
+                                <layoutElement column="1" row="4">
                                     <component type="lookup" name="crew" field="crew"
                                                reference="crew">
                                         <option type="column" name="leader" fields="leader"
@@ -157,8 +179,6 @@
 
     <hooks>
         <beforeRender class="com.qcadoo.mes.basic.StaffService"
-                      method="generateStaffNumber"/>
-        <beforeRender class="com.qcadoo.mes.basic.StaffService"
-                      method="setOwnerCompany"/>
+                      method="onBeforeRender"/>
     </hooks>
 </view>

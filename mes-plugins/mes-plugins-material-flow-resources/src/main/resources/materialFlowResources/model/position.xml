@@ -44,6 +44,9 @@
         <decimal name="price" default="0">
             <validatesRange from="0"/>
         </decimal>
+        <decimal name="sellingPrice" default="0">
+            <validatesRange from="0"/>
+        </decimal>
         <string name="batch"/>
         <string name="unit" persistent="false"/>
         <dictionary name="givenUnit" dictionary="units"/>

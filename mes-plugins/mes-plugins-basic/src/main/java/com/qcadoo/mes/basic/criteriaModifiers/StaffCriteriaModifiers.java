@@ -23,16 +23,46 @@
  */
 package com.qcadoo.mes.basic.criteriaModifiers;
 
-import org.springframework.stereotype.Service;
-
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.DivisionFields;
 import com.qcadoo.mes.basic.constants.StaffFields;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class StaffCriteriaModifiers {
 
+    private static final String DIVISION_ID = "division_id";
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     public void showStaffWithoutCrew(final SearchCriteriaBuilder scb) {
         scb.add(SearchRestrictions.isNull(StaffFields.CREW));
+    }
+
+    public void filterByDivision(final SearchCriteriaBuilder scb, final FilterValueHolder filterValueHolder) {
+
+        if (filterValueHolder.has(DIVISION_ID)) {
+
+            Entity division = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_DIVISION).get(
+                    filterValueHolder.getLong(DIVISION_ID));
+            List<Long> ids = division.getHasManyField(DivisionFields.WORKSTATIONS).stream().map(w -> w.getId())
+                    .collect(Collectors.toList());
+            if (!ids.isEmpty()) {
+                scb.add(SearchRestrictions.in("id", ids));
+            } else {
+                scb.add(SearchRestrictions.idEq(-1l));
+            }
+        }
     }
 }

@@ -27,6 +27,7 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderPositionDtoFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -39,6 +40,7 @@ import com.qcadoo.view.api.components.LookupComponent;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -67,7 +69,8 @@ public class MasterOrderProductDetailsHooks {
 
         }
         for (String reference : Arrays.asList("cumulatedOrderQuantityUnit", "masterOrderQuantityUnit",
-                "producedOrderQuantityUnit", "leftToReleaseUnit", "quantityRemainingToOrderUnit", "quantityTakenFromWarehouseUnit")) {
+                "producedOrderQuantityUnit", "leftToReleaseUnit", "quantityRemainingToOrderUnit",
+                "quantityTakenFromWarehouseUnit")) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
             field.setFieldValue(unit);
             field.requestComponentUpdateState();
@@ -116,22 +119,23 @@ public class MasterOrderProductDetailsHooks {
     }
 
     public void showErrorWhenCumulatedQuantity(final ViewDefinitionState view) {
-        FormComponent masterOrderProductForm = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity masterOrderProduct = masterOrderProductForm.getPersistedEntityWithIncludedFormValues();
+        if (view.isViewAfterRedirect()) {
+            FormComponent masterOrderProductForm = (FormComponent) view.getComponentByReference(L_FORM);
+            Entity masterOrderProduct = masterOrderProductForm.getPersistedEntityWithIncludedFormValues();
 
-        if ((masterOrderProduct == null) || !masterOrderProduct.isValid()) {
-            return;
-        }
+            if ((masterOrderProduct == null) || !masterOrderProduct.isValid()) {
+                return;
+            }
 
-        Entity masterOrder = masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
-
-        BigDecimal cumulatedQuantity = masterOrderProduct.getDecimalField(MasterOrderProductFields.CUMULATED_ORDER_QUANTITY);
-        BigDecimal masterOrderQuantity = masterOrderProduct.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY);
-
-        if ((cumulatedQuantity != null) && (masterOrderQuantity != null)
-                && (cumulatedQuantity.compareTo(masterOrderQuantity) == -1)) {
-            masterOrderProductForm.addMessage("masterOrders.masterOrder.masterOrderCumulatedQuantityField.wrongQuantity",
-                    MessageType.INFO, false);
+            if (Objects.nonNull(masterOrderProduct.getId())) {
+                Entity masterOrderProductDto = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
+                        MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO).get(masterOrderProduct.getId());
+                if (BigDecimal.ZERO.compareTo(BigDecimalUtils.convertNullToZero(masterOrderProductDto
+                        .getDecimalField(MasterOrderPositionDtoFields.QUANTITY_REMAINING_TO_ORDER))) < 0) {
+                    masterOrderProductForm.addMessage("masterOrders.masterOrder.masterOrderCumulatedQuantityField.wrongQuantity",
+                            MessageType.INFO, false);
+                }
+            }
         }
     }
 
