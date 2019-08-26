@@ -23,9 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
@@ -33,6 +30,9 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ParametersHooksPC {
@@ -73,29 +73,6 @@ public class ParametersHooksPC {
 
     public void checkIfRegisterProductionTimeIsSet(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         checkIfRegisterProductionTimeIsSet(view);
-    }
-
-    public void toggleAllowChangesToUsedQuantityOnTerminalState(final ViewDefinitionState view) {
-        CheckBoxComponent consumptionOfRawMaterialsBasedOnStandards = (CheckBoxComponent) view
-                .getComponentByReference("consumptionOfRawMaterialsBasedOnStandards");
-
-        CheckBoxComponent allowChangesToUsedQuantityOnTerminal = (CheckBoxComponent) view
-                .getComponentByReference("allowChangesToUsedQuantityOnTerminal");
-
-        allowChangesToUsedQuantityOnTerminal.setEnabled(consumptionOfRawMaterialsBasedOnStandards.isChecked());
-    }
-
-    public void toggleAllowChangesToUsedQuantityOnTerminalValue(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
-        CheckBoxComponent consumptionOfRawMaterialsBasedOnStandards = (CheckBoxComponent) view
-                .getComponentByReference("consumptionOfRawMaterialsBasedOnStandards");
-
-        CheckBoxComponent allowChangesToUsedQuantityOnTerminal = (CheckBoxComponent) view
-                .getComponentByReference("allowChangesToUsedQuantityOnTerminal");
-
-        if (!consumptionOfRawMaterialsBasedOnStandards.isChecked()) {
-            allowChangesToUsedQuantityOnTerminal.setChecked(false);
-        }
     }
 
 }

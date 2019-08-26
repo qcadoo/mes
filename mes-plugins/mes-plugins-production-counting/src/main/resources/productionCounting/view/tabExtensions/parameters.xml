@@ -117,25 +117,11 @@
                 <component type="checkbox" name="consumptionOfRawMaterialsBasedOnStandards"
                            reference="consumptionOfRawMaterialsBasedOnStandards"
                            field="#{form}.consumptionOfRawMaterialsBasedOnStandards">
-                    <listener event="onChange" method="toggleAllowChangesToUsedQuantityOnTerminalValue"
-                              class="com.qcadoo.mes.productionCounting.hooks.ParametersHooksPC"/>
+
                     <option type="labelWidth" value="80"/>
                 </component>
             </layoutElement>
-            <layoutElement column="3" row="4">
-                <component type="checkbox" name="allowChangesToUsedQuantityOnTerminal"
-                           reference="allowChangesToUsedQuantityOnTerminal"
-                           field="#{form}.allowChangesToUsedQuantityOnTerminal" hasDescription="true">
-                    <option type="labelWidth" value="80"/>
-                </component>
-            </layoutElement>
-            <layoutElement column="3" row="5">
-                <component type="checkbox" name="acceptRecordsFromTerminal"
-                           reference="acceptRecordsFromTerminal"
-                           field="#{form}.acceptRecordsFromTerminal" hasDescription="true">
-                    <option type="labelWidth" value="80"/>
-                </component>
-            </layoutElement>
+
         </component>
     </windowTab>
     <windowTab name="productionBalance" reference="productionBalance">
