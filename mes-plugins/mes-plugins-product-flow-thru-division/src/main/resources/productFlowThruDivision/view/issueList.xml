@@ -63,13 +63,17 @@
             <option type="orderable"
                     value="warehouseIssueNumber,warehouseIssueState,productNumber,productName,additionalCodeCode,demandQuantity,demandQuantity,additionalDemandQuantity,conversion,locationsQuantity,issueQuantity,productUnit,locationNumber,documentNumber,documentState,dateOfIssued,storageLocationNumber,issued"/>
 
+            <option type="footerRow" value="true"/>
+            <option type="columnsToSummary" value="demandQuantity,additionalDemandQuantity,locationsQuantity,issueQuantity"/>
+
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
 
-            <criteriaModifier class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.criteriaModifiers.IssueCriteriaModifiers"
-                              method="restrictToUserLocations"/>
+            <criteriaModifier
+                    class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.criteriaModifiers.IssueCriteriaModifiers"
+                    method="restrictToUserLocations"/>
 
-                </component>
+        </component>
 
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
