@@ -109,6 +109,12 @@
 			plugin="basic" class="com.qcadoo.mes.wageGroups.hooks.StaffDetailsHooks"
 			method="setCurrency" />
 
+		<view:view-grid-column view="staffsList" component="grid" plugin="basic">
+			<view:column name="wageGroup" fields="wageGroup"
+						 orderable="true" searchable="true" width="80"
+						 expression="#wageGroup['number']"/>
+		</view:view-grid-column>
+
 	</modules>
 	
 	<features>
