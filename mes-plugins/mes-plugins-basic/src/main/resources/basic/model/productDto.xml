@@ -41,6 +41,8 @@
         <string name="size"/>
         <string name="additionalCodes"/>
         <boolean name="hasAttachments"/>
+        <string name="unit"/>
+        <string name="additionalUnit"/>
     </fields>
     <identifier expression="#number + ' - ' + #name"/>
     <masterModel plugin="basic" model="product"/>
