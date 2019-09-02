@@ -96,7 +96,12 @@
         <model:model model="changeTechnologyParameters"
                      resource="model/changeTechnologyParameters.xml"/>
 
-		<model:model model="operationSkill" resource="model/operationSkill.xml"/>
+        <model:model model="modifyTechnologyHelper"
+                     resource="model/modifyTechnologyHelper.xml"/>
+        <model:model model="modifyTechnologyAddProductHelper"
+                     resource="model/modifyTechnologyAddProductHelper.xml"/>
+
+        <model:model model="operationSkill" resource="model/operationSkill.xml"/>
 
         <model:model-field plugin="states" model="message">
             <model:belongsTo name="technologyStateChange" plugin="technologies" model="technologyStateChange"/>
@@ -114,6 +119,13 @@
                            plugin="technologies" model="operationProductInComponent" joinField="product"
                            cascade="nullify"/>
         </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="operationProductInComponentsDto"
+                           plugin="technologies" model="operationProductInComponentDto" joinField="product"
+                           cascade="nullify"/>
+        </model:model-field>
+
 
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="operationProductOutComponents"
@@ -169,10 +181,10 @@
                            model="technologyOperationComponent" joinField="division" cascade="nullify"/>
         </model:model-field>
 
-		<model:model-field plugin="basic" model="skill">
-			<model:hasMany name="operationSkills" plugin="technologies"
-						   model="operationSkill" joinField="skill" cascade="delete" copyable="false"/>
-		</model:model-field>
+        <model:model-field plugin="basic" model="skill">
+            <model:hasMany name="operationSkills" plugin="technologies"
+                           model="operationSkill" joinField="skill" cascade="delete" copyable="false"/>
+        </model:model-field>
 
         <model:model-field plugin="productionLines" model="productionLine">
             <model:hasMany name="operations" plugin="technologies"
@@ -217,9 +229,10 @@
         <view:view resource="view/multiUpload.xml"/>
 
         <view:view resource="view/changeTechnologyParameters.xml"/>
+        <view:view resource="view/modifyTechnology.xml"/>
 
-		<view:view resource="view/operationSkillDetails.xml"/>
-		<view:view resource="view/skillOperationDetails.xml"/>
+        <view:view resource="view/operationSkillDetails.xml"/>
+        <view:view resource="view/skillOperationDetails.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
 

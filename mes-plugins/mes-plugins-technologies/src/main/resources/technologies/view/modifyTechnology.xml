@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_TECHNOLOGIES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="modifyTechnology"
+      modelName="modifyTechnologyHelper"
+      windowHeight="495">
+
+    <component type="window" name="window" reference="window">
+        <ribbon>
+            <group name="navigation">
+                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBackWithoutConfirm"/>
+            </group>
+            <group name="actions">
+                <bigButton name="modifyTechnology" icon="newIcon24.png">
+                    <script>
+                        <![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+						    #{form}.performEvent({
+                                name : 'createTechnologies'
+							});
+						}
+					});
+
+
+					#{form}.addOnChangeListener({
+					    onSetValue: function(value) {
+								var generated = #{generated}.getValue().content.value;
+
+                                if (generated && generated == true) {
+									    #{window}.performBackWithoutConfirm();
+								}
+						}
+					});
+				]]>
+                    </script>
+                </bigButton>
+            </group>
+        </ribbon>
+        <windowTab name="mainTab">
+            <component type="form" name="form" reference="form">
+
+                <component type="gridLayout" name="gridLayout" columns="1"
+                           rows="6">
+                    <layoutElement column="1" row="1">
+                        <component type="label" name="modifyTechnologyLabel">
+                            <option type="labelStyle" value="text"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="checkbox" name="generated" defaultVisible="false"
+                                   reference="generated" defaultEnabled="false"/>
+                        <component type="input" name="selectedEntities" reference="selectedEntities"
+                                   field="selectedEntities" defaultVisible="false" defaultEnabled="false"/>
+                        <component type="checkbox" name="remove"
+                                   reference="remove"
+                                   field="#{form}.remove">
+                            <option type="labelWidth" value="35"/>
+
+                            <listener event="onChange"
+                                      class="com.qcadoo.mes.technologies.listeners.ModifyTechnologyListeners"
+                                      method="onRemoveProduct"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
+                        <component type="checkbox" name="addNew"
+                                   reference="addNew"
+                                   field="#{form}.addNew">
+                            <option type="labelWidth" value="35"/>
+
+                            <listener event="onChange"
+                                      class="com.qcadoo.mes.technologies.listeners.ModifyTechnologyListeners"
+                                      method="onAddNewProduct"/>
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement column="1" row="4">
+                        <component type="borderLayout" name="mtBorderLayout">
+                            <option type="label" value="mtBorderLabel"/>
+
+                            <component type="gridLayout" name="mtGidLayout" reference="mtGidLayout"
+                                       columns="1" rows="1">
+                                <layoutElement column="1" row="1">
+                                    <component type="awesomeDynamicList" name="modifyTechnologyAddProducts"
+                                               source="#{form}.modifyTechnologyAddProducts"
+                                               reference="modifyTechnologyAddProducts"
+                                               defaultEnabled="false">
+                                        <option type="hasBorder" value="false"/>
+                                        <option type="hasButtons" value="true"/>
+
+                                        <components>
+                                            <component type="gridLayout"
+                                                       name="mtpGridLayout" columns="12"
+                                                       rows="1">
+                                                <layoutElement column="1" row="1" width="5">
+                                                    <component type="lookup" name="product" field="product"
+                                                               reference="product">
+                                                        <option type="column" name="name" fields="name" link="true"
+                                                                width="200"/>
+                                                        <option type="column" name="ean" fields="ean"/>
+                                                        <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial"/>
+                                                        <option type="searchable" value="name,ean,globalTypeOfMaterial"/>
+                                                        <option type="orderable" value="name,ean,globalTypeOfMaterial"/>
+                                                        <option type="expression"
+                                                                value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                                                        <option type="fieldCode" value="number"/>
+                                                        <listener event="onSelectedEntityChange"
+                                                                  class="com.qcadoo.mes.technologies.listeners.ModifyTechnologyListeners" method="fillProductUnit"/>
+                                                    </component>
+                                                </layoutElement>
+                                                <layoutElement column="6" row="1" width="5">
+                                                    <component type="input" name="quantity"
+                                                               reference="quantity" field="quantity">
+                                                        <option type="alignment" value="right"/>
+                                                    </component>
+                                                </layoutElement>
+                                                <layoutElement column="11" row="1" width="2">
+                                                    <component type="input" name="unit" reference="unit" field="unit"
+                                                               defaultEnabled="never" hasLabel="false"/>
+                                                </layoutElement>
+                                            </component>
+                                        </components>
+                                    </component>
+                                </layoutElement>
+                            </component>
+                            <option type="header" value="false"/>
+                            <option type="expression" value=""/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="5">
+                        <component type="checkbox" name="replace"
+                                   reference="replace"
+                                   field="#{form}.replace ">
+                            <option type="labelWidth" value="35"/>
+
+                            <listener event="onChange"
+                                      class="com.qcadoo.mes.technologies.listeners.ModifyTechnologyListeners"
+                                      method="onReplaceProduct"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="6">
+                        <component type="gridLayout"
+                                   name="mtpcGridLayout" columns="12"
+                                   rows="1">
+                            <layoutElement column="1" row="1" width="5">
+                                <component type="lookup" name="replaceProduct" field="replaceProduct"
+                                           reference="replaceProduct" defaultEnabled="false">
+                                    <option type="column" name="name" fields="name" link="true"
+                                            width="200"/>
+                                    <option type="column" name="ean" fields="ean"/>
+                                    <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial"/>
+                                    <option type="searchable" value="name,ean,globalTypeOfMaterial"/>
+                                    <option type="orderable" value="name,ean,globalTypeOfMaterial"/>
+                                    <option type="expression"
+                                            value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                                    <option type="fieldCode" value="number"/>
+                                    <listener event="onSelectedEntityChange"
+                                              class="com.qcadoo.mes.technologies.listeners.ModifyTechnologyListeners" method="fillReplaceProductUnit"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="6" row="1" width="5">
+                                <component type="input" name="replaceProductQuantity" defaultEnabled="false"
+                                           reference="replaceProductQuantity" field="replaceProductQuantity">
+                                    <option type="alignment" value="right"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="11" row="1" width="2">
+                                <component type="input" name="replaceProductUnit" reference="replaceProductUnit"
+                                           defaultEnabled="never" hasLabel="false"/>
+                            </layoutElement>
+                        </component>
+                    </layoutElement>
+                </component>
+                <option type="header" value="true"/>
+                <option type="expression" value="#product['number']"/>
+
+                <listener event="createTechnologies" method="createTechnologies"
+                          class="com.qcadoo.mes.technologies.listeners.ModifyTechnologyListeners"/>
+            </component>
+        </windowTab>
+
+    </component>
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.technologies.hooks.ModifyTechnologyDetailsHooks"
+                      method="onBeforeRender"/>
+
+    </hooks>
+</view>

@@ -36,6 +36,8 @@ public final class TechnologiesConstants {
 
     public static final String MODEL_OPERATION_PRODUCT_IN_COMPONENT = "operationProductInComponent";
 
+    public static final String MODEL_OPERATION_PRODUCT_IN_COMPONENT_DTO = "operationProductInComponentDto";
+
     public static final String MODEL_OPERATION_PRODUCT_OUT_COMPONENT = "operationProductOutComponent";
 
     public static final String MODEL_TECHNOLOGY = "technology";
@@ -61,6 +63,8 @@ public final class TechnologiesConstants {
     public static final String OPERATION_COMPONENTS = "operationComponents";
 
     public static final String OPERATION_SKILL = "operationSkill";
+
+    public static final String MODIFY_TECHNOLOGY_HELPER = "modifyTechnologyHelper";
 
     // VIEW
 

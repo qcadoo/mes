@@ -31,32 +31,83 @@
       modelName="product" modelPlugin="basic"
       menuAccessible="true">
 
-    <component type="window" name="window">
+    <component type="window" name="window" reference="window">
 
         <ribbon>
             <template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete"/>
+            <group name="action">
+                <bigButton name="modifyTechnology" icon="generateIcon24.png" state="disabled"
+                           action="#{form}.fireEvent(modifyTechnology);"/>
+            </group>
         </ribbon>
 
         <component type="form" name="form" reference="form">
-            <component type="grid" name="operations" reference="grid" source="operationProductInComponents">
-                <option type="column" name="techNumber" fields="operationComponent"
-                        expression="#operationComponent.get('technology').get('number')"/>
-                <option type="column" name="techName" fields="operationComponent"
-                        expression="#operationComponent.get('technology').get('name')"/>
-                <option type="column" name="operationLevel" fields="operationComponent"
-                        expression="#operationComponent.get('nodeNumber')"/>
-                <option type="column" name="operationName" fields="operationComponent"
-                        expression="#operationComponent.get('operation').get('name')"/>
-                <option type="column" name="quantity" fields="quantity"/>
+            <component type="grid" name="operations" reference="grid" source="operationProductInComponentsDto">
+                <script>
+                    <![CDATA[
+					this.addOnChangeListener({
+						onChange: function(selectedEntitiesArray) {
+							var modifyTechnology = getRibbonItem("action.modifyTechnology");
+						    var allMaster = isAllMaster(selectedEntitiesArray);
+						    var allAccepted = isAllAccepted(selectedEntitiesArray);
 
-                <option type="order" column="techNumber" direction="asc"/>
-                <option type="orderable" value="techNumber,techName,operationLevel,operationName,quantity"/>
-                <option type="searchable" value="techNumber,techName,operationLevel,operationName,quantity"/>
+							if (selectedEntitiesArray && selectedEntitiesArray.length > 0 && allMaster && allAccepted) {
+							    modifyTechnology.enable("#{translate(technologies.modifyTechnology.window.ribbon.modifyTechnology.desc)}");
+							} else {
+							   modifyTechnology.disable("#{translate(technologies.modifyTechnology.window.ribbon.modifyTechnology.desc)}");
+							}
+						}
+					});
+
+                    function getRibbonItem(ribbonPath) {
+						return #{window}.getRibbonItem(ribbonPath);
+					}
+
+					function isAllMaster(selectedEntitiesArray) {
+						for (var i = 0; i < selectedEntitiesArray.length; i++) {
+							if (selectedEntitiesArray[i].fields.masterTechnology == '0') {
+								return false;
+							}
+						}
+						return true;
+					}
+
+					function isAllAccepted(selectedEntitiesArray) {
+						for (var i = 0; i < selectedEntitiesArray.length; i++) {
+							if (selectedEntitiesArray[i].fields.technologyState != '02accepted') {
+								return false;
+							}
+						}
+						return true;
+					}
+
+				]]>
+                </script>
+
+               <option type="column" name="technologyName" fields="technologyName"/>
+               <option type="column" name="technologyNumber" fields="technologyNumber"/>
+                <option type="column" name="nodeNumber" fields="nodeNumber"/>
+
+                <option type="column" name="operationName" fields="operationName"/>
+
+                <option type="column" name="quantity" fields="quantity"/>
+                <option type="column" name="technologyState" fields="technologyState"/>
+                <option type="column" name="masterTechnology" fields="masterTechnology"/>
+
+                <option type="order" column="technologyNumber" direction="asc"/>
+                <option type="orderable" value="technologyName,technologyNumber,nodeNumber,operationName,quantity,technologyState,masterTechnology"/>
+                <option type="searchable" value="technologyName,technologyNumber,nodeNumber,operationName,quantity,technologyState,masterTechnology"/>
 
                 <option type="fullscreen" value="true"/>
-                <criteriaModifier class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
-                                  method="showPatternTechnologyFromOperationProductInComponent"/>
+                <option type="multiselect" value="true"/>
+
+               <criteriaModifier class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
+                                  method="showPatternTechnologyFromOperationProductInComponentDto"/>
             </component>
+
+            <listener event="modifyTechnology"
+                      class="com.qcadoo.mes.technologies.listeners.TechnologiesWithUsingProductListListeners"
+                      method="goToModifyTechnology"/>
 
             <option type="header" value="true"/>
             <option type="expression" value="#name"/>
