@@ -83,6 +83,7 @@
 
         <model:model model="schedule" resource="model/schedule.xml"/>
         <model:model model="schedulePosition" resource="model/schedulePosition.xml"/>
+        <model:model model="schedulePositionDto" resource="model/schedulePositionDto.xml"/>
         <model:model model="scheduleStateChange" resource="model/scheduleStateChange.xml"/>
 
         <model:model model="ordersGenerationHelper" resource="model/ordersGenerationHelper.xml"/>

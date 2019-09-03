@@ -47,30 +47,26 @@
             </group>
         </ribbon>
 
-        <component type="grid" name="positions" source="#{form}.positions"
-                   reference="positions">
+        <component type="grid" name="positions" source="#{form}.positionsDto" model="schedulePositionDto"
+                   reference="positions" useDto="true">
 
-            <option type="column" name="staffName" fields="staff"
-                    expression="#staff != null ? #staff.get('name') + ' ' + #staff.get('surname') : ''" link="true"/>
-            <option type="column" name="workstationNumber" fields="workstation"
-                    expression="#workstation?.get('number')" link="true" width="140"/>
-            <option type="column" name="nodeNumber" fields="technologyOperationComponent"
-                    expression="#technologyOperationComponent['nodeNumber']" link="true" width="60"/>
-            <option type="column" name="operationNumber" fields="technologyOperationComponent"
-                    expression="#technologyOperationComponent.get('operation').get('number')" link="true"/>
-            <option type="column" name="operationName" fields="technologyOperationComponent"
-                    expression="#technologyOperationComponent['operation'].get('name')" link="true"/>
-            <option type="column" name="orderNumber" fields="order"
-                    expression="#order.get('number')" width="60"/>
-            <option type="column" name="productNumber" fields="product"
-                    expression="#product.get('number')"/>
-            <option type="column" name="productName" fields="product"
-                    expression="#product.get('name')"/>
+            <option type="column" name="staffName" fields="staffName" link="true"/>
+            <option type="column" name="workstationNumber" fields="workstationNumber"
+                    link="true" width="120"/>
+            <option type="column" name="nodeNumber" fields="nodeNumber"
+                    link="true" width="60"/>
+            <option type="column" name="operationNumber" fields="operationNumber" link="true"/>
+            <option type="column" name="operationName" fields="operationName" link="true"/>
+            <option type="column" name="productNumber" fields="productNumber"/>
+            <option type="column" name="productName" fields="productName"/>
+            <option type="column" name="orderNumber" fields="orderNumber" width="60"/>
+            <option type="column" name="orderProductNumber" fields="orderProductNumber" width="60"/>
+            <option type="column" name="orderProductPlanedQuantity" fields="orderProductPlanedQuantity" width="40"/>
+
             <option type="column" name="quantity" fields="quantity" width="40"/>
-            <option type="column" name="productUnit" fields="product"
-                    expression="#product.get('unit')" width="40"/>
-            <option type="column" name="startTime" fields="startTime" width="120"/>
-            <option type="column" name="endTime" fields="endTime" width="120"/>
+            <option type="column" name="productUnit" fields="productUnit" width="40"/>
+            <option type="column" name="startTime" fields="startTime" width="100"/>
+            <option type="column" name="endTime" fields="endTime" width="100"/>
             <option type="column" name="laborWorkTime" fields="laborWorkTime"
                     expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborWorkTime)"
                     width="60"/>
@@ -88,9 +84,9 @@
             <option type="order" column="nodeNumber" direction="desc"/>
 
             <option type="searchable"
-                    value="staffName,workstationNumber,nodeNumber,operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity,startTime,endTime"/>
+                    value="orderProductPlanedQuantity,orderProductNumber,staffName,workstationNumber,nodeNumber,operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity,startTime,endTime"/>
             <option type="orderable"
-                    value="staffName,workstationNumber,nodeNumber,operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity,startTime,endTime"/>
+                    value="orderProductPlanedQuantity,orderProductNumber,staffName,workstationNumber,nodeNumber,operationNumber,operationName,orderNumber,productNumber,productName,productUnit,quantity,startTime,endTime"/>
 
             <option type="fixedHeight" value="true"/>
 
