@@ -195,7 +195,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         if (!resource.isValid()) {
             throw new InvalidResourceException(resource);
         }
-
+        position.setField(PositionFields.RESOURCE_NUMBER, resource.getStringField(ResourceFields.NUMBER));
         position.setField("resourceReceiptDocument", resource.getId().toString());
     }
 
