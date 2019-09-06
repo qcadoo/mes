@@ -1,7 +1,10 @@
 package com.qcadoo.mes.productionCounting.listeners;
 
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
+import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.OrderMaterialsCostDataGenerator;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -13,6 +16,7 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 
+import java.util.List;
 import java.util.Objects;
 
 import org.json.JSONException;
@@ -35,6 +39,9 @@ public class UseReplacementListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private OrderMaterialsCostDataGenerator orderMaterialsCostDataGenerator;
 
     public void addReplacement(final ViewDefinitionState view, final ComponentState state, final String[] args)
             throws JSONException {
@@ -65,7 +72,7 @@ public class UseReplacementListeners {
                 .add(SearchRestrictions.belongsTo(TrackingOperationProductInComponentFields.PRODUCT,
                         entity.getBelongsToField(PRODUCT))).setMaxResults(1).uniqueResult();
         if (Objects.isNull(productIn)) {
-            Entity in = createInProductTracking(entity, productionTrackingId, basicProductId);
+            Entity in = createInProductTracking(entity, productionTracking, basicProductId);
             if (!in.isValid()) {
                 view.addMessage("productionCounting.useReplacement.error", ComponentState.MessageType.FAILURE);
             } else {
@@ -76,10 +83,10 @@ public class UseReplacementListeners {
         }
     }
 
-    private Entity createInProductTracking(final Entity entity, final Long productionTrackingId, final Long basicProductId) {
+    private Entity createInProductTracking(final Entity entity, final Entity productionTracking, final Long basicProductId) {
         Entity in = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT).create();
-        in.setField(TrackingOperationProductInComponentFields.PRODUCTION_TRACKING, productionTrackingId);
+        in.setField(TrackingOperationProductInComponentFields.PRODUCTION_TRACKING, productionTracking.getId());
         in.setField(TrackingOperationProductInComponentFields.PRODUCT, entity.getBelongsToField(PRODUCT).getId());
         in.setField(TrackingOperationProductInComponentFields.USED_QUANTITY, entity.getDecimalField(QUANTITY));
         in.setField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY, entity.getDecimalField(QUANTITY));
@@ -87,7 +94,14 @@ public class UseReplacementListeners {
                 entity.getBelongsToField(PRODUCT).getStringField(ProductFields.UNIT));
         in.setField(TrackingOperationProductInComponentFields.REPLACEMENT_TO, basicProductId);
         in = in.getDataDefinition().save(in);
+        updateMaterialCosts(productionTracking.getBelongsToField(ProductionTrackingFields.ORDER));
         return in;
+    }
+
+    public Entity updateMaterialCosts(Entity order) {
+        List<Entity> orderMaterialsCosts = orderMaterialsCostDataGenerator.generateUpdatedMaterialsListFor(order);
+        order.setField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS, orderMaterialsCosts);
+        return order.getDataDefinition().save(order);
     }
 
     public void fillUnitField(final ViewDefinitionState view, final ComponentState state, final String[] args) {

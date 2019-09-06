@@ -23,16 +23,18 @@
  */
 package com.qcadoo.mes.basicProductionCounting.listeners;
 
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
 public class ProductionCountingQuantityAdvancedDetailsListeners {
@@ -43,8 +45,24 @@ public class ProductionCountingQuantityAdvancedDetailsListeners {
 
     private static final String L_PRODUCED_QUANTITY_UNIT = "producedQuantityUnit";
 
+    private static final String L_SAVE = "save";
+
+    private static final String L_FORM = "form";
+
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
+
+    public void saveProductionCountingQuantity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        state.performEvent(view, L_SAVE, args);
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity productionCountingQuantity = form.getEntity();
+        afterSave(productionCountingQuantity);
+    }
+
+    //override by aspect !!!
+    public void afterSave(Entity productionCountingQuantity) {
+
+    }
 
     public void fillUnitFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         List<String> referenceNames = Lists.newArrayList(L_PLANNED_QUANTITY_UNIT, L_USED_QUANTITY_UNIT, L_PRODUCED_QUANTITY_UNIT);
