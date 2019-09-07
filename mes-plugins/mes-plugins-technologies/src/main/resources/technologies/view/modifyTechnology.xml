@@ -65,15 +65,36 @@
         </ribbon>
         <windowTab name="mainTab">
             <component type="form" name="form" reference="form">
+                <script>
+                    <![CDATA[
+					var modifyTechnology = #{window}.getRibbonItemOrNull("actions.modifyTechnology");
 
-                <component type="gridLayout" name="gridLayout" columns="1"
+					this.addOnChangeListener({
+						onSetValue: function(value) {
+							modifyTechnology.disable();
+							var remove = #{remove}.getValue().content.value;
+							var addNew = #{addNew}.getValue().content.value;
+							var replace = #{replace}.getValue().content.value;
+                            console.log(remove);
+                            console.log(addNew);
+                            console.log(replace);
+							if(remove  == '1' || addNew  == '1' || replace == '1') {
+							    modifyTechnology.enable();
+							} else {
+								modifyTechnology.disable();
+                            }
+						}
+					});
+					]]>
+                </script>
+                <component type="gridLayout" name="gridLayout" columns="16"
                            rows="6">
-                    <layoutElement column="1" row="1">
+                    <layoutElement column="1" row="1" width="16">
                         <component type="label" name="modifyTechnologyLabel">
                             <option type="labelStyle" value="text"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="2">
+                    <layoutElement column="1" row="2" width="16">
                         <component type="checkbox" name="generated" defaultVisible="false"
                                    reference="generated" defaultEnabled="false"/>
                         <component type="input" name="selectedEntities" reference="selectedEntities"
@@ -88,7 +109,7 @@
                                       method="onRemoveProduct"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="3">
+                    <layoutElement column="1" row="3" width="16">
                         <component type="checkbox" name="addNew"
                                    reference="addNew"
                                    field="#{form}.addNew">
@@ -100,7 +121,7 @@
                         </component>
                     </layoutElement>
 
-                    <layoutElement column="1" row="4">
+                    <layoutElement column="2" row="4" width="15">
                         <component type="borderLayout" name="mtBorderLayout">
                             <option type="label" value="mtBorderLabel"/>
 
@@ -124,14 +145,16 @@
                                                         <option type="column" name="name" fields="name" link="true"
                                                                 width="200"/>
                                                         <option type="column" name="ean" fields="ean"/>
-                                                        <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial"/>
+                                                        <option type="column" name="globalTypeOfMaterial"
+                                                                fields="globalTypeOfMaterial"/>
                                                         <option type="searchable" value="name,ean,globalTypeOfMaterial"/>
                                                         <option type="orderable" value="name,ean,globalTypeOfMaterial"/>
                                                         <option type="expression"
                                                                 value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                                                         <option type="fieldCode" value="number"/>
                                                         <listener event="onSelectedEntityChange"
-                                                                  class="com.qcadoo.mes.technologies.listeners.ModifyTechnologyListeners" method="fillProductUnit"/>
+                                                                  class="com.qcadoo.mes.technologies.listeners.ModifyTechnologyListeners"
+                                                                  method="fillProductUnit"/>
                                                     </component>
                                                 </layoutElement>
                                                 <layoutElement column="6" row="1" width="5">
@@ -153,7 +176,7 @@
                             <option type="expression" value=""/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="5">
+                    <layoutElement column="1" row="5" width="16">
                         <component type="checkbox" name="replace"
                                    reference="replace"
                                    field="#{form}.replace ">
@@ -164,7 +187,7 @@
                                       method="onReplaceProduct"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="6">
+                    <layoutElement column="2" row="6" width="15">
                         <component type="gridLayout"
                                    name="mtpcGridLayout" columns="12"
                                    rows="1">
@@ -181,7 +204,8 @@
                                             value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                                     <option type="fieldCode" value="number"/>
                                     <listener event="onSelectedEntityChange"
-                                              class="com.qcadoo.mes.technologies.listeners.ModifyTechnologyListeners" method="fillReplaceProductUnit"/>
+                                              class="com.qcadoo.mes.technologies.listeners.ModifyTechnologyListeners"
+                                              method="fillReplaceProductUnit"/>
                                 </component>
                             </layoutElement>
                             <layoutElement column="6" row="1" width="5">

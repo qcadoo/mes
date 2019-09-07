@@ -96,7 +96,7 @@ public class ModifyTechnologyListeners {
         }
         if (!modifyTechnologyResult.getNotCreatedTechnologies().isEmpty()) {
             view.addMessage("technologies.modifyTechnology.notCreatedTechnologies", ComponentState.MessageType.FAILURE,
-                    String.join(",", modifyTechnologyResult.getCreatedTechnologies()));
+                    String.join(",", modifyTechnologyResult.getNotCreatedTechnologies()));
         }
         generated.setChecked(true);
     }
