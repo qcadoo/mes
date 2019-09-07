@@ -31,12 +31,23 @@
     <component type="window" name="window">
 
         <ribbon>
-            <template name="standardFormTemplate"
-                      excludeItems="actions.copy,actions.delete,actions.cancel,actions.refresh,actions.saveNew"/>
+            <group name="navigation">
+                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack" />
+            </group>
+
+            <group name="actions">
+                <bigButton name="save" icon="saveIcon24.png" state="enabled"
+                           action="#{form}.fireEvent(saveProductionCountingQuantity);"/>
+                <smallButton name="saveBack" icon="saveBackIcon16.png" state="enabled" action="#{form}.fireEvent(saveProductionCountingQuantity); #{window}.performBack;" />
+            </group>
+
         </ribbon>
 
         <component type="form" name="productionCountingQuantityDetails"
                    reference="form">
+
+
+
             <component type="gridLayout" name="gridLayout" columns="1"
                        rows="5" hasBorders="false">
                 <layoutElement column="1" row="1">
@@ -143,6 +154,9 @@
                 </layoutElement>
             </component>
 
+            <listener event="saveProductionCountingQuantity"
+                      class="com.qcadoo.mes.basicProductionCounting.listeners.ProductionCountingQuantityAdvancedDetailsListeners"
+                      method="saveProductionCountingQuantity"/>
             <option type="header" value="true"/>
             <option type="expression" value="#product['name']"/>
         </component>

@@ -23,22 +23,6 @@
  */
 package com.qcadoo.mes.costNormsForMaterials;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.qcadoo.model.api.search.SearchRestrictions.in;
-
-import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
@@ -63,6 +47,21 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.model.api.search.SearchRestrictions.in;
 
 @Service
 public class CostNormsForMaterialsService {
@@ -277,18 +276,15 @@ public class CostNormsForMaterialsService {
     }
 
     public void updateCosts(final ViewDefinitionState viewDefinitionState, final ComponentState component, final String[] args) {
-
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_ORDER);
-
         if ((form == null) || (form.getEntityId() == null)) {
             return;
         }
-
+        LOG.warn("--------> START");
         Long orderId = form.getEntityId();
-
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
-
         form.setEntity(updateCostsInOrder(order));
+        LOG.warn("--------> KONIEC");
     }
 
     private Entity updateCostsInOrder(Entity order) {

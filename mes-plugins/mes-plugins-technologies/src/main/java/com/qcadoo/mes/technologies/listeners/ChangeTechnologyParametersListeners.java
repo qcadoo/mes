@@ -57,8 +57,7 @@ public class ChangeTechnologyParametersListeners {
 
         LookupComponent lookupComponent = (LookupComponent) view.getComponentByReference(L_TECHNOLOGY_GROUP);
         String code = lookupComponent.getCurrentCode();
-        if(StringUtils.isNoneEmpty(code)
-            && Objects.isNull(lookupComponent.getFieldValue())) {
+        if (StringUtils.isNoneEmpty(code) && Objects.isNull(lookupComponent.getFieldValue())) {
             form.findFieldComponentByName(L_TECHNOLOGY_GROUP).addMessage("qcadooView.lookup.noMatchError",
                     ComponentState.MessageType.FAILURE);
             generated.setChecked(false);
@@ -67,7 +66,7 @@ public class ChangeTechnologyParametersListeners {
         Entity group = null;
         Entity entity = form.getPersistedEntityWithIncludedFormValues();
 
-        if(entity.getBooleanField(L_CHANGE_GROUP) && Objects.nonNull(entity.getLongField(L_TECHNOLOGY_GROUP))) {
+        if (entity.getBooleanField(L_CHANGE_GROUP) && Objects.nonNull(entity.getLongField(L_TECHNOLOGY_GROUP))) {
             group = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY_GROUP).get(entity.getLongField(L_TECHNOLOGY_GROUP));
             entity.setField(L_TECHNOLOGY_GROUP, group);
@@ -75,13 +74,13 @@ public class ChangeTechnologyParametersListeners {
 
         try {
             entity = entity.getDataDefinition().validate(entity);
-            if(!entity.isValid()) {
+            if (!entity.isValid()) {
                 form.setEntity(entity);
                 return;
             }
         } catch (IllegalArgumentException e) {
-            form.findFieldComponentByName(L_STANDARD_PERFORMANCE_TECHNOLOGY).addMessage("qcadooView.validate.field.error.invalidNumericFormat",
-                    ComponentState.MessageType.FAILURE);
+            form.findFieldComponentByName(L_STANDARD_PERFORMANCE_TECHNOLOGY).addMessage(
+                    "qcadooView.validate.field.error.invalidNumericFormat", ComponentState.MessageType.FAILURE);
             generated.setChecked(false);
             return;
         }
@@ -91,15 +90,15 @@ public class ChangeTechnologyParametersListeners {
                         .split(",")).map(Long::valueOf).collect(Collectors.toSet());
 
         BigDecimal standardPerformanceTechnology = null;
-        if(entity.getBooleanField(L_CHANGE_PERFORMANCE_NORM)) {
+        if (entity.getBooleanField(L_CHANGE_PERFORMANCE_NORM)) {
             standardPerformanceTechnology = entity.getDecimalField(L_STANDARD_PERFORMANCE_TECHNOLOGY);
         }
-
 
         try {
             createCustomizedTechnologies(view, state, ids, entity, group, standardPerformanceTechnology);
         } catch (Exception exc) {
-            view.addMessage("technologies.changeTechnologyParameters.error.technologiesNotCreated", ComponentState.MessageType.FAILURE);
+            view.addMessage("technologies.changeTechnologyParameters.error.technologiesNotCreated",
+                    ComponentState.MessageType.FAILURE);
         }
         generated.setChecked(true);
     }
@@ -107,26 +106,24 @@ public class ChangeTechnologyParametersListeners {
     @Transactional
     private void createCustomizedTechnologies(ViewDefinitionState view, ComponentState state, Set<Long> ids, Entity entity,
             Entity finalGroup, BigDecimal finalStandardPerformanceTechnology) {
-        ids.forEach( techId -> {
-            Entity technology = dataDefinitionService
-                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY)
-                .get(techId);
+        ids.forEach(techId -> {
+            Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_TECHNOLOGY).get(techId);
 
             technology.setField(TechnologyFields.MASTER, Boolean.FALSE);
             technology = technology.getDataDefinition().save(technology);
-            if(technology.isValid()) {
+            if (technology.isValid()) {
                 Entity copyTechnology = technology.getDataDefinition().copy(technology.getId()).get(0);
                 Entity product = technology.getBelongsToField(TechnologyFields.PRODUCT);
                 copyTechnology.setField(TechnologyFields.NUMBER, technologyNameAndNumberGenerator.generateNumber(product));
                 copyTechnology.setField(TechnologyFields.NAME, technologyNameAndNumberGenerator.generateName(product));
 
-                if(entity.getBooleanField(L_CHANGE_GROUP)){
+                if (entity.getBooleanField(L_CHANGE_GROUP)) {
                     copyTechnology.setField(TechnologyFields.TECHNOLOGY_GROUP, finalGroup);
                 }
 
-                if(entity.getBooleanField(L_CHANGE_PERFORMANCE_NORM)) {
-                    copyTechnology.setField(TechnologyFields.STANDARD_PERFORMANCE_TECHNOLOGY,
-                            finalStandardPerformanceTechnology);
+                if (entity.getBooleanField(L_CHANGE_PERFORMANCE_NORM)) {
+                    copyTechnology.setField(TechnologyFields.STANDARD_PERFORMANCE_TECHNOLOGY, finalStandardPerformanceTechnology);
                 }
 
                 Entity savedTech = copyTechnology.getDataDefinition().save(copyTechnology);

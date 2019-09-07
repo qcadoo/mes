@@ -54,6 +54,9 @@
 
         <hasMany name="positions" joinField="schedule" model="schedulePosition"
                  cascade="delete"/>
+
+        <hasMany name="positionsDto" joinField="schedule" model="schedulePositionDto"
+                 cascade="nullify" copyable="false" persistent="false"/>
     </fields>
 
     <hooks>

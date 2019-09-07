@@ -496,9 +496,6 @@
         <view:view-hook plugin="basic" view="parameters" type="beforeRender"
                         class="com.qcadoo.mes.productionCounting.hooks.ParametersHooksPC"
                         method="checkIfRegisterProductionTimeIsSet"/>
-        <view:view-hook plugin="basic" view="parameters" type="beforeRender"
-                        class="com.qcadoo.mes.productionCounting.hooks.ParametersHooksPC"
-                        method="toggleAllowChangesToUsedQuantityOnTerminalState"/>
 
         <view:view-hook plugin="basic" view="productDetails"
                         type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.ProductDetailsHooksPC"

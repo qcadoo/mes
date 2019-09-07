@@ -82,6 +82,7 @@ public class DocumentPositionValidator {
             errors.addAll(validateConversion(position));
             errors.addAll(validateAdditionalCode(position));
             errors.addAll(validatePrice(position));
+            errors.addAll(validateSellingPrice(position));
             errors.addAll(validateQuantity(position));
             errors.addAll(validateGivenQuantity(position));
             errors.addAll(validateDates(position));
@@ -389,6 +390,18 @@ public class DocumentPositionValidator {
 
         if (position.getPrice() != null) {
             return validateBigDecimal(position.getPrice(), "price", 5, 7);
+        }
+
+        return Lists.newArrayList();
+    }
+
+    private Collection<? extends String> validateSellingPrice(final DocumentPositionDTO position) {
+        if (position.getSellingPrice() != null && BigDecimal.ZERO.compareTo(position.getSellingPrice()) > 0) {
+            return Lists.newArrayList("documentGrid.error.position.sellingPrice.invalid");
+        }
+
+        if (position.getSellingPrice() != null) {
+            return validateBigDecimal(position.getSellingPrice(), "sellingPrice", 5, 7);
         }
 
         return Lists.newArrayList();
