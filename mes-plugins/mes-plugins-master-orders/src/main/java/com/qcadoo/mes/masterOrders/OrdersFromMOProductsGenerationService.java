@@ -429,6 +429,7 @@ public class OrdersFromMOProductsGenerationService {
 
         String orderDescription = buildDescription(parameter, masterOrder, masterOrderProduct, technology);
         order.setField(OrderFields.DESCRIPTION, orderDescription);
+        fillPCParametersForOrder(order, technology);
         return order;
     }
 
@@ -493,9 +494,7 @@ public class OrdersFromMOProductsGenerationService {
         return technology;
     }
 
-    private void fillPCParametersForOrder(final Entity orderEntity) {
-        Entity technology = orderEntity.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-
+    private void fillPCParametersForOrder(final Entity orderEntity, final Entity technology) {
         for (String field : L_TECHNOLOGY_FIELD_NAMES) {
             orderEntity.setField(field, getDefaultValueForProductionCounting(technology, field));
         }
