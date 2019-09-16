@@ -1,18 +1,5 @@
 package com.qcadoo.mes.materialFlowResources;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.GridResponse;
-import com.qcadoo.mes.basic.LookupUtils;
-import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
-
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
@@ -28,6 +15,19 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.GridResponse;
+import com.qcadoo.mes.basic.LookupUtils;
+import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
 
 @Repository
 public class DocumentPositionService {
@@ -343,11 +343,9 @@ public class DocumentPositionService {
     private Object isOutDocument(final Long documentId) {
         String query = "SELECT type FROM materialflowresources_document WHERE id = :id";
 
-        String stateString = jdbcTemplate.queryForObject(query, Collections.singletonMap("id", documentId), String.class);
+        String type = jdbcTemplate.queryForObject(query, Collections.singletonMap("id", documentId), String.class);
 
-        DocumentType type = DocumentType.parseString(stateString);
-
-        return type == DocumentType.INTERNAL_OUTBOUND || type == DocumentType.RELEASE || type == DocumentType.TRANSFER;
+        return DocumentType.isOutbound(type);
     }
 
     private boolean isInBufferDocument(final Long documentId) {

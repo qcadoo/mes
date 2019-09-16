@@ -40,10 +40,10 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.exceptions.DocumentBuildException;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.mes.materialFlowResources.exceptions.DocumentBuildException;
 import com.qcadoo.security.api.UserService;
 
 public class DocumentBuilder {
@@ -378,8 +378,6 @@ public class DocumentBuilder {
         }
     }
 
-
-
     public Entity createDocument(UserService userService) {
         Entity newDocument = createDocument();
         newDocument.setField(DocumentFields.USER, userService.getCurrentUserEntity().getId());
@@ -404,7 +402,5 @@ public class DocumentBuilder {
 
         return newDocument;
     }
-
-
 
 }

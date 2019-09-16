@@ -136,15 +136,16 @@ public final class ProductionTrackingListenerServicePFTD {
 
         List<Entity> recordOutProducts = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
-        Multimap<Long, Entity> groupedRecordOutProducts = productionTrackingDocumentsHelper.groupRecordOutProductsByLocation(
-                recordOutProducts, technology);
+        Multimap<Long, Entity> groupedRecordOutProducts = productionTrackingDocumentsHelper
+                .groupRecordOutProductsByLocation(recordOutProducts, technology);
 
         productionTrackingDocumentsHelper.fillFromBPCProductOut(groupedRecordOutProducts, recordOutProducts, order);
         productionTrackingDocumentsHelper.fillProductsOutFromSet(groupedRecordOutProducts);
 
         List<Entity> recordInProducts = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
-        Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper.groupRecordInProductsByWarehouse(recordInProducts, technology);
+        Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper
+                .groupRecordInProductsByWarehouse(recordInProducts, technology);
 
         productionTrackingDocumentsHelper.fillFromBPCProductIn(groupedRecordInProducts, recordInProducts, order);
         productionTrackingDocumentsHelper.fillProductsInFromSet(groupedRecordInProducts);
@@ -163,8 +164,8 @@ public final class ProductionTrackingListenerServicePFTD {
                     productionTracking.addGlobalError(error.getMessage(), error.getVars());
                 }
 
-                productionTracking
-                        .addGlobalError("productFlowThruDivision.productionTracking.productionTrackingError.createInternalInboundDocument");
+                productionTracking.addGlobalError(
+                        "productFlowThruDivision.productionTracking.productionTrackingError.createInternalInboundDocument");
 
                 return;
             }
@@ -190,8 +191,8 @@ public final class ProductionTrackingListenerServicePFTD {
                 }
 
                 if (!errorsDisplayed) {
-                    productionTracking
-                            .addGlobalError("productFlowThruDivision.productionTracking.productionTrackingError.createInternalOutboundDocument");
+                    productionTracking.addGlobalError(
+                            "productFlowThruDivision.productionTracking.productionTrackingError.createInternalOutboundDocument");
 
                     errorsDisplayed = true;
                 }
@@ -231,11 +232,12 @@ public final class ProductionTrackingListenerServicePFTD {
 
                 if (usedQuantity != null && givenQuantity != null) {
                     PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-                            searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
-                                    UnitConversionItemFieldsB.PRODUCT, inProduct)));
+                            searchCriteriaBuilder -> searchCriteriaBuilder
+                                    .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, inProduct)));
 
                     if (unitConversions.isDefinedFor(givenUnit)) {
-                        conversion = numberService.setScaleWithDefaultMathContext(unitConversions.asUnitToConversionMap().get(givenUnit));
+                        conversion = numberService
+                                .setScaleWithDefaultMathContext(unitConversions.asUnitToConversionMap().get(givenUnit));
                     }
                 }
 
@@ -263,8 +265,9 @@ public final class ProductionTrackingListenerServicePFTD {
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
 
         String priceBasedOn = parameterService.getParameter().getStringField(ParameterFieldsPC.PRICE_BASED_ON);
-        boolean isNominalProductCost = priceBasedOn != null ? priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST
-                .getStringValue()) : false;
+        boolean isNominalProductCost = priceBasedOn != null
+                ? priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue())
+                : false;
         List<Entity> finalProductRecord = null;
         Collection<Entity> intermediateRecords = Lists.newArrayList();
 
@@ -329,13 +332,13 @@ public final class ProductionTrackingListenerServicePFTD {
 
         for (Entity outProductRecord : outProductsRecords) {
             Entity outProduct = outProductRecord.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
-            Optional<BigDecimal> usedQuantity = Optional.fromNullable(outProductRecord
-                    .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY));
+            Optional<BigDecimal> usedQuantity = Optional
+                    .fromNullable(outProductRecord.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY));
 
-            Optional<BigDecimal> givenQuantity = Optional.fromNullable(outProductRecord
-                    .getDecimalField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY));
-            Optional<String> givenUnit = Optional.fromNullable(outProductRecord
-                    .getStringField(TrackingOperationProductInComponentFields.GIVEN_UNIT));
+            Optional<BigDecimal> givenQuantity = Optional
+                    .fromNullable(outProductRecord.getDecimalField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY));
+            Optional<String> givenUnit = Optional
+                    .fromNullable(outProductRecord.getStringField(TrackingOperationProductInComponentFields.GIVEN_UNIT));
 
             Entity existingPosition;
 
@@ -347,8 +350,8 @@ public final class ProductionTrackingListenerServicePFTD {
 
             if (existingPosition != null) {
                 Optional<BigDecimal> quantity = Optional.fromNullable(existingPosition.getDecimalField(PositionFields.QUANTITY));
-                Optional<BigDecimal> givenQuantityFromPositiion = Optional.fromNullable(existingPosition
-                        .getDecimalField(PositionFields.GIVEN_QUANTITY));
+                Optional<BigDecimal> givenQuantityFromPositiion = Optional
+                        .fromNullable(existingPosition.getDecimalField(PositionFields.GIVEN_QUANTITY));
 
                 existingPosition.setField(PositionFields.QUANTITY,
                         quantity.or(BigDecimal.ZERO).add(usedQuantity.or(BigDecimal.ZERO)));
@@ -369,11 +372,12 @@ public final class ProductionTrackingListenerServicePFTD {
 
                 if (givenQuantity.isPresent()) {
                     PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-                            searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
-                                    UnitConversionItemFieldsB.PRODUCT, outProduct)));
+                            searchCriteriaBuilder -> searchCriteriaBuilder
+                                    .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, outProduct)));
 
                     if (unitConversions.isDefinedFor(givenUnit.get())) {
-                        conversion = numberService.setScaleWithDefaultMathContext(unitConversions.asUnitToConversionMap().get(givenUnit.get()));
+                        conversion = numberService
+                                .setScaleWithDefaultMathContext(unitConversions.asUnitToConversionMap().get(givenUnit.get()));
                     }
 
                     position.setField(PositionFields.GIVEN_QUANTITY, givenQuantity.get());
@@ -449,11 +453,12 @@ public final class ProductionTrackingListenerServicePFTD {
             if (usedQuantity != null && givenQuantity != null) {
 
                 PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-                        searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
-                                UnitConversionItemFieldsB.PRODUCT, outProduct)));
+                        searchCriteriaBuilder -> searchCriteriaBuilder
+                                .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, outProduct)));
 
                 if (unitConversions.isDefinedFor(givenUnit)) {
-                    conversion = numberService.setScaleWithDefaultMathContext(unitConversions.asUnitToConversionMap().get(givenUnit));
+                    conversion = numberService
+                            .setScaleWithDefaultMathContext(unitConversions.asUnitToConversionMap().get(givenUnit));
                 }
             }
 
@@ -466,8 +471,9 @@ public final class ProductionTrackingListenerServicePFTD {
                     outProductRecord.getStringField(TrackingOperationProductOutComponentFields.GIVEN_UNIT));
 
             if (isBasedOnNominalCost) {
-                BigDecimal nominalCost = outProduct.getDecimalField("nominalCost") != null ? outProduct
-                        .getDecimalField("nominalCost") : BigDecimal.ZERO;
+                BigDecimal nominalCost = outProduct.getDecimalField("nominalCost") != null
+                        ? outProduct.getDecimalField("nominalCost")
+                        : BigDecimal.ZERO;
                 position.setField(PositionFields.PRICE, nominalCost);
 
             }
@@ -497,11 +503,11 @@ public final class ProductionTrackingListenerServicePFTD {
         SearchQueryBuilder searchQueryBuilder = positionDD
                 .find("SELECT pr.id AS product, SUM(p.quantity) AS quantity, SUM(p.quantity * p.price) AS price "
                         + "FROM #materialFlowResources_position p JOIN p.document AS d join p.product AS pr "
-                        + "WHERE d.order = :order_id AND d.type = :type "
-                        + "GROUP BY d.order, d.type, pr.id");
+                        + "WHERE d.order = :order_id AND d.type = :type " + "GROUP BY d.order, d.type, pr.id");
 
         searchQueryBuilder.setLong("order_id", order.getId());
         searchQueryBuilder.setString("type", DocumentType.INTERNAL_OUTBOUND.getStringValue());
+
         SearchResult result = searchQueryBuilder.list();
 
         List<ProductWithQuantityAndCost> productsWithQuantitiesAndCosts = Lists.newArrayList();
@@ -525,20 +531,19 @@ public final class ProductionTrackingListenerServicePFTD {
             Entity opic = getOperationComponentForProductAndToc(product, toc,
                     TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
 
-            if (opic != null
-                    && opic.getStringField(OperationProductInComponentFieldsPFTD.PRODUCTION_FLOW).equals(
-                            ProductionFlowComponent.WITHIN_THE_PROCESS.getStringValue())) {
+            if (opic != null && opic.getStringField(OperationProductInComponentFieldsPFTD.PRODUCTION_FLOW)
+                    .equals(ProductionFlowComponent.WITHIN_THE_PROCESS.getStringValue())) {
                 return false;
             } else if (opic == null && flowWithinTheProcess(operationProductComponentHolder)) {
                 return false;
             }
-        } else if (operationProductComponentHolder.isEntityTypeSame(TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT)) {
+        } else if (operationProductComponentHolder
+                .isEntityTypeSame(TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT)) {
             Entity opoc = getOperationComponentForProductAndToc(product, toc,
                     TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
 
-            if (opoc != null
-                    && opoc.getStringField(OperationProductInComponentFieldsPFTD.PRODUCTION_FLOW).equals(
-                            ProductionFlowComponent.WITHIN_THE_PROCESS.getStringValue())) {
+            if (opoc != null && opoc.getStringField(OperationProductInComponentFieldsPFTD.PRODUCTION_FLOW)
+                    .equals(ProductionFlowComponent.WITHIN_THE_PROCESS.getStringValue())) {
                 return false;
             }
         }
@@ -548,12 +553,13 @@ public final class ProductionTrackingListenerServicePFTD {
 
     private boolean flowWithinTheProcess(OperationProductComponentHolder operationProductComponentHolder) {
         if (operationProductComponentHolder.getProductionCountingQuantityId() != null) {
-            Entity entity = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                    BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY).get(
-                    operationProductComponentHolder.getProductionCountingQuantityId());
+            Entity entity = dataDefinitionService
+                    .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                            BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY)
+                    .get(operationProductComponentHolder.getProductionCountingQuantityId());
 
-            if (entity.getStringField(ProductionCountingQuantityFieldsPFTD.PRODUCTION_FLOW).equals(
-                    ProductionFlowComponent.WITHIN_THE_PROCESS.getStringValue())) {
+            if (entity.getStringField(ProductionCountingQuantityFieldsPFTD.PRODUCTION_FLOW)
+                    .equals(ProductionFlowComponent.WITHIN_THE_PROCESS.getStringValue())) {
                 return true;
             }
         }

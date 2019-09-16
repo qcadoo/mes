@@ -58,7 +58,12 @@ public enum DocumentType {
         throw new IllegalArgumentException("Couldn't parse DocumentType from string '" + type + "'");
     }
 
-    public static boolean isOutbound(String type) {
+    public static boolean isInbound(final String type) {
+        return (DocumentType.RECEIPT.getStringValue().equals(type) || DocumentType.INTERNAL_INBOUND.getStringValue().equals(type)
+                || DocumentType.TRANSFER.getStringValue().equals(type));
+    }
+
+    public static boolean isOutbound(final String type) {
         return (DocumentType.INTERNAL_OUTBOUND.getStringValue().equals(type) || DocumentType.RELEASE.getStringValue().equals(type)
                 || DocumentType.TRANSFER.getStringValue().equals(type));
     }
