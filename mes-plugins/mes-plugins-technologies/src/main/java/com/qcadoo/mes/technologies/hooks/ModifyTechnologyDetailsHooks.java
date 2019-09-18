@@ -2,6 +2,7 @@ package com.qcadoo.mes.technologies.hooks;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.technologies.constants.ModifyTechnologyHelperFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -27,14 +28,6 @@ public class ModifyTechnologyDetailsHooks {
 
     private static final String L_MODIFY_TECHNOLOGY_ADD_PRODUCTS = "modifyTechnologyAddProducts";
 
-    private static final String LADD_NEW = "addNew";
-
-    private static final String L_REPLACE = "replace";
-
-    private static final String L_REPLACE_PRODUCT = "replaceProduct";
-
-    private static final String L_REPLACE_PRODUCT_QUANTITY = "replaceProductQuantity";
-
     private static final String PRODUCT = "product";
 
     private static final String L_REPLACE_PRODUCT_UNIT = "replaceProductUnit";
@@ -43,7 +36,11 @@ public class ModifyTechnologyDetailsHooks {
 
     private static final String L_MAIN_PRODUCT = "product";
 
-    private static final String SELECTED_ENTITIES = "selectedEntities";
+    private static final String L_QUANTITY = "quantity";
+
+    private static final String L_UNIT = "unit";
+
+    private static final String L_ID = "id";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -53,19 +50,19 @@ public class ModifyTechnologyDetailsHooks {
         if (view.isViewAfterRedirect()) {
             Entity mt = form.getEntity().getDataDefinition().get(form.getEntityId());
 
-            LookupComponent replaceProductLookup = (LookupComponent) view.getComponentByReference(L_REPLACE_PRODUCT);
+            LookupComponent replaceProductLookup = (LookupComponent) view.getComponentByReference(ModifyTechnologyHelperFields.REPLACE_PRODUCT);
             replaceProductLookup.setFieldValue(mt.getBelongsToField(L_MAIN_PRODUCT).getId());
             replaceProductLookup.requestComponentUpdateState();
 
-            String selectedEntities = mt.getStringField(SELECTED_ENTITIES);
+            String selectedEntities = mt.getStringField(ModifyTechnologyHelperFields.SELECTED_ENTITIES);
             List<Long> ids = Lists.newArrayList(selectedEntities.split(",")).stream().map(Long::valueOf)
                     .collect(Collectors.toList());
             List<Entity> opicDtos = dataDefinitionService
                     .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT_DTO)
-                    .find().add(SearchRestrictions.in("id", ids)).list().getEntities();
-            Set<BigDecimal> quantities = opicDtos.stream().map(op -> op.getDecimalField("quantity")).collect(Collectors.toSet());
+                    .find().add(SearchRestrictions.in(L_ID, ids)).list().getEntities();
+            Set<BigDecimal> quantities = opicDtos.stream().map(op -> op.getDecimalField(L_QUANTITY)).collect(Collectors.toSet());
             if(quantities.size() == 1) {
-                FieldComponent qnt = (FieldComponent) view.getComponentByReference("replaceProductQuantity");
+                FieldComponent qnt = (FieldComponent) view.getComponentByReference(ModifyTechnologyHelperFields.REPLACE_PRODUCT_QUANTITY);
                 qnt.setFieldValue(quantities.stream().findFirst().get());
                 qnt.requestComponentUpdateState();
             }
@@ -82,15 +79,15 @@ public class ModifyTechnologyDetailsHooks {
     }
 
     private void configureReplacePart(ViewDefinitionState view) {
-        CheckBoxComponent replaceCheckBox = (CheckBoxComponent) view.getComponentByReference(L_REPLACE);
-        LookupComponent replaceProductLookup = (LookupComponent) view.getComponentByReference(L_REPLACE_PRODUCT);
+        CheckBoxComponent replaceCheckBox = (CheckBoxComponent) view.getComponentByReference(ModifyTechnologyHelperFields.REPLACE);
+        LookupComponent replaceProductLookup = (LookupComponent) view.getComponentByReference(ModifyTechnologyHelperFields.REPLACE_PRODUCT);
         FieldComponent replaceProductQuantityComponent = (FieldComponent) view
-                .getComponentByReference(L_REPLACE_PRODUCT_QUANTITY);
+                .getComponentByReference(ModifyTechnologyHelperFields.REPLACE_PRODUCT_QUANTITY);
         if (replaceCheckBox.isChecked()) {
             replaceProductLookup.setEnabled(true);
             replaceProductQuantityComponent.setEnabled(true);
             FieldComponent replaceProductUnit = (FieldComponent) view.getComponentByReference(L_REPLACE_PRODUCT_UNIT);
-            if (!replaceProductLookup.isEmpty()) {
+            if (Objects.nonNull(replaceProductLookup.getFieldValue())) {
                 replaceProductUnit.setFieldValue(replaceProductLookup.getEntity().getStringField(ProductFields.UNIT));
             }
         } else {
@@ -100,7 +97,7 @@ public class ModifyTechnologyDetailsHooks {
     }
 
     private void configureAddPart(ViewDefinitionState view) {
-        CheckBoxComponent addNewCheckBox = (CheckBoxComponent) view.getComponentByReference(LADD_NEW);
+        CheckBoxComponent addNewCheckBox = (CheckBoxComponent) view.getComponentByReference(ModifyTechnologyHelperFields.ADD_NEW);
         AwesomeDynamicListComponent addProductAdl = (AwesomeDynamicListComponent) view
                 .getComponentByReference(L_MODIFY_TECHNOLOGY_ADD_PRODUCTS);
         if (addNewCheckBox.isChecked()) {
@@ -110,7 +107,7 @@ public class ModifyTechnologyDetailsHooks {
                 Entity addEntity = fc.getPersistedEntityWithIncludedFormValues();
                 Entity product = addEntity.getBelongsToField(PRODUCT);
                 if (Objects.nonNull(product)) {
-                    addEntity.setField("unit", product.getStringField(ProductFields.UNIT));
+                    addEntity.setField(L_UNIT, product.getStringField(ProductFields.UNIT));
                 }
                 fc.setEntity(addEntity);
 
