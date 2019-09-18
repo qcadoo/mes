@@ -155,52 +155,9 @@ public class ModifyTechnologyListeners {
             copyTechnology = copyTechnology.getDataDefinition().save(copyTechnology);
 
             for (Entity opicDto : opics) {
-                Entity toc = dataDefinitionService
-                        .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
-                        .find()
-                        .add(SearchRestrictions.belongsTo(TechnologyOperationComponentFields.TECHNOLOGY, copyTechnology))
-                        .add(SearchRestrictions.eq(TechnologyOperationComponentFields.NODE_NUMBER,
-                                opicDto.getStringField(NODE_NUMBER))).setMaxResults(1).uniqueResult();
-
-                Entity opic = toc
-                        .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS)
-                        .stream()
-                        .filter(opc -> opc.getBelongsToField(OperationProductInComponentFields.PRODUCT).getId()
-                                .equals(opicDto.getIntegerField(L_PRODUCT_ID).longValue())).findFirst()
-                        .orElseThrow(() -> new IllegalStateException("Product not found"));
-
-                if (mt.getBooleanField(ModifyTechnologyHelperFields.ADD_NEW)) {
-                    mt.getHasManyField(ModifyTechnologyHelperFields.MODIFY_TECHNOLOGY_ADD_PRODUCTS).forEach(
-                            pr -> {
-                                Entity newOpic = createOpic(toc, opic,
-                                        pr.getBelongsToField(ModifyTechnologyAddProductHelperFields.PRODUCT),
-                                        pr.getDecimalField(ModifyTechnologyAddProductHelperFields.QUANTITY));
-                                if (!newOpic.isValid()) {
-                                    throw new IllegalStateException("Error while saving opic");
-                                }
-
-                            });
-                }
-
-                if (mt.getBooleanField(ModifyTechnologyHelperFields.REPLACE)) {
-                    EntityOpResult entityOpResult = opic.getDataDefinition().delete(opic.getId());
-                    if (!entityOpResult.isSuccessfull()) {
-                        throw new IllegalStateException("Error while deleting opic");
-                    }
-
-                    Entity newOpic = createOpic(toc, opic, mt.getBelongsToField(ModifyTechnologyHelperFields.REPLACE_PRODUCT),
-                            mt.getDecimalField(ModifyTechnologyHelperFields.REPLACE_PRODUCT_QUANTITY));
-                    if (!newOpic.isValid()) {
-                        throw new IllegalStateException("Error while saving opic");
-                    }
-
-                } else if (mt.getBooleanField(ModifyTechnologyHelperFields.REMOVE)) {
-                    EntityOpResult entityOpResult = opic.getDataDefinition().delete(opic.getId());
-                    if (!entityOpResult.isSuccessfull()) {
-                        throw new IllegalStateException("Error while deleting opic");
-                    }
-                }
+                modifyOperation(mt, copyTechnology, opicDto);
             }
+            
             copyTechnology = copyTechnology.getDataDefinition().get(copyTechnology.getId());
 
             technologyStateChangeViewClient.changeState(new ViewContextHolder(view, state), TechnologyStateStringValues.ACCEPTED,
@@ -214,6 +171,62 @@ public class ModifyTechnologyListeners {
             throw new IllegalStateException("There was a problem creating the technology");
         }
 
+    }
+
+    private void modifyOperation(Entity mt, Entity copyTechnology, Entity opicDto) {
+        Entity toc = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
+                .find()
+                .add(SearchRestrictions.belongsTo(TechnologyOperationComponentFields.TECHNOLOGY, copyTechnology))
+                .add(SearchRestrictions.eq(TechnologyOperationComponentFields.NODE_NUMBER,
+                        opicDto.getStringField(NODE_NUMBER))).setMaxResults(1).uniqueResult();
+
+        Entity opic = toc
+                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS)
+                .stream()
+                .filter(opc -> opc.getBelongsToField(OperationProductInComponentFields.PRODUCT).getId()
+                        .equals(opicDto.getIntegerField(L_PRODUCT_ID).longValue())).findFirst()
+                .orElseThrow(() -> new IllegalStateException("Product not found"));
+
+        if (mt.getBooleanField(ModifyTechnologyHelperFields.ADD_NEW)) {
+            addNewProducts(mt, toc, opic);
+        }
+
+        if (mt.getBooleanField(ModifyTechnologyHelperFields.REPLACE)) {
+            replaceProduct(mt, toc, opic);
+        } else if (mt.getBooleanField(ModifyTechnologyHelperFields.REMOVE)) {
+            removeProduct(opic);
+        }
+    }
+
+    private void removeProduct(Entity opic) {
+        EntityOpResult entityOpResult = opic.getDataDefinition().delete(opic.getId());
+        if (!entityOpResult.isSuccessfull()) {
+            throw new IllegalStateException("Error while deleting opic");
+        }
+    }
+
+    private void replaceProduct(Entity mt, Entity toc, Entity opic) {
+        removeProduct(opic);
+
+        Entity newOpic = createOpic(toc, opic, mt.getBelongsToField(ModifyTechnologyHelperFields.REPLACE_PRODUCT),
+                mt.getDecimalField(ModifyTechnologyHelperFields.REPLACE_PRODUCT_QUANTITY));
+        if (!newOpic.isValid()) {
+            throw new IllegalStateException("Error while saving opic");
+        }
+    }
+
+    private void addNewProducts(Entity mt, Entity toc, Entity opic) {
+        mt.getHasManyField(ModifyTechnologyHelperFields.MODIFY_TECHNOLOGY_ADD_PRODUCTS).forEach(
+                pr -> {
+                    Entity newOpic = createOpic(toc, opic,
+                            pr.getBelongsToField(ModifyTechnologyAddProductHelperFields.PRODUCT),
+                            pr.getDecimalField(ModifyTechnologyAddProductHelperFields.QUANTITY));
+                    if (!newOpic.isValid()) {
+                        throw new IllegalStateException("Error while saving opic");
+                    }
+
+                });
     }
 
     private Entity createOpic(Entity toc, Entity opic, Entity product, BigDecimal quantity) {
