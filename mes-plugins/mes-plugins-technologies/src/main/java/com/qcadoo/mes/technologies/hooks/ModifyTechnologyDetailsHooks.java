@@ -114,9 +114,7 @@ public class ModifyTechnologyDetailsHooks {
             });
         } else {
             addProductAdl.setEnabled(false);
-            addProductAdl.getFormComponents().forEach(fc -> {
-                fc.setFormEnabled(false);
-            });
+            addProductAdl.getFormComponents().forEach(fc -> fc.setFormEnabled(false));
         }
     }
 }
