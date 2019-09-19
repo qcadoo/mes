@@ -353,9 +353,8 @@ public final class ProductionTrackingListenerService {
         List<Entity> worTimesWithNotSetTimes = productionTracking
                 .getHasManyField(ProductionTrackingFields.STAFF_WORK_TIMES)
                 .stream()
-                .filter(entity -> entity.getIntegerField(StaffWorkTimeFields.LABOR_TIME) == 0
-                        || (Objects.nonNull(entity.getDateField(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_START)) && Objects
-                                .isNull(entity.getDateField(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_END))))
+                .filter(entity -> Objects.nonNull(entity.getDateField(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_START)) && Objects
+                                .isNull(entity.getDateField(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_END)))
                 .collect(Collectors.toList());
 
         if (!worTimesWithNotSetTimes.isEmpty()) {

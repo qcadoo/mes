@@ -157,7 +157,7 @@ public class ModifyTechnologyListeners {
             for (Entity opicDto : opics) {
                 modifyOperation(mt, copyTechnology, opicDto);
             }
-            
+
             copyTechnology = copyTechnology.getDataDefinition().get(copyTechnology.getId());
 
             technologyStateChangeViewClient.changeState(new ViewContextHolder(view, state), TechnologyStateStringValues.ACCEPTED,
