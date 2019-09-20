@@ -192,11 +192,9 @@ public class OrderStatesListenerServicePFTD {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
         return documentsForNotUsedMaterials;
-
     }
 
     private Either<String, Void> createDocumentsForNotUsedMaterials(final Entity order) {
-
         List<Entity> productionCountingQuantities = getUniqueProductionCountingQuantitiesForOrder(order);
         MultiMap groupedProductionCountingQuantities = groupProductionCountingQuantitiesByField(productionCountingQuantities,
                 ProductionCountingQuantityFieldsPFTD.COMPONENTS_LOCATION);
@@ -238,7 +236,6 @@ public class OrderStatesListenerServicePFTD {
 
     private Either<String, Void> createTransferDocumentsForUnusedMaterials(final Entity locationFrom, final Entity locationTo,
             final Map<Entity, BigDecimal> products, final Entity order) {
-
         DocumentBuilder document = documentManagementService.getDocumentBuilder().transfer(locationFrom, locationTo);
 
         if (products.isEmpty()) {
@@ -252,9 +249,9 @@ public class OrderStatesListenerServicePFTD {
                 String givenUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
                 BigDecimal conversion = BigDecimal.ONE;
                 if (!StringUtils.isEmpty(givenUnit)) {
-                    PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(product
-                            .getStringField(ProductFields.UNIT), searchCriteriaBuilder -> searchCriteriaBuilder
-                            .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+                    PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(
+                            product.getStringField(ProductFields.UNIT), searchCriteriaBuilder -> searchCriteriaBuilder
+                                    .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
                     if (unitConversions.isDefinedFor(givenUnit)) {
                         givenQuantity = unitConversions.convertTo(quantity, givenUnit);
                         conversion = unitConversions.asUnitToConversionMap().get(givenUnit);
@@ -291,7 +288,8 @@ public class OrderStatesListenerServicePFTD {
         return savedDocument;
     }
 
-    private MultiMap groupProductionCountingQuantitiesByField(final List<Entity> productionCountingQuantities, final String field) {
+    private MultiMap groupProductionCountingQuantitiesByField(final List<Entity> productionCountingQuantities,
+            final String field) {
         MultiMap map = new MultiHashMap();
         for (Entity pcq : productionCountingQuantities) {
             Entity entity = pcq.getBelongsToField(field);
@@ -306,8 +304,9 @@ public class OrderStatesListenerServicePFTD {
                 BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY).find();
         scb.add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))
                 .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
-                        ProductionCountingQuantityRole.USED.getStringValue())).add(SearchRestrictions
-                .eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL, ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()));
+                        ProductionCountingQuantityRole.USED.getStringValue()))
+                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL,
+                        ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()));
 
         for (Entity pcq : scb.list().getEntities()) {
             quantities.put(pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT), pcq);
@@ -329,7 +328,6 @@ public class OrderStatesListenerServicePFTD {
         searchQueryBuilder.setBoolean("issued", true);
         Entity result = searchQueryBuilder.setMaxResults(1).uniqueResult();
         return result != null ? result.getDecimalField("totalQuantity") : BigDecimal.ZERO;
-
     }
 
     private BigDecimal getProductQuantityUsedInOrder(final Long productId, final Long orderId) {
@@ -367,8 +365,8 @@ public class OrderStatesListenerServicePFTD {
 
     private void updatePriceInResource(final Entity position, final BigDecimal price) {
         if (StringUtils.isNotEmpty(position.getStringField(PositionFields.RESOURCE_RECEIPT_DOCUMENT))) {
-            Entity resource = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                    MaterialFlowResourcesConstants.MODEL_RESOURCE)
+            Entity resource = dataDefinitionService
+                    .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE)
                     .get(Long.valueOf(position.getStringField(PositionFields.RESOURCE_RECEIPT_DOCUMENT)));
             if (resource != null) {
                 resource.setField(ResourceFields.PRICE, price);
@@ -402,21 +400,22 @@ public class OrderStatesListenerServicePFTD {
                 && (!order.getBooleanField(OrderFieldsPFTD.IGNORE_MISSING_COMPONENTS)) && technology != null) {
 
             List<Entity> entries = orderMaterialAvailability.generateMaterialAvailabilityForOrder(order);
-            List<Entity> notAvailableProducts = entries.stream().filter(en -> !AvailabilityOfMaterialAvailability.FULL.getStrValue().equals(
-                    en.getStringField(MaterialAvailabilityFields.AVAILABILITY))).map(entity -> entity.getBelongsToField(MaterialAvailabilityFields.PRODUCT)).collect(
-                    Collectors.toList());
-
+            List<Entity> notAvailableProducts = entries.stream()
+                    .filter(en -> !AvailabilityOfMaterialAvailability.FULL.getStrValue()
+                            .equals(en.getStringField(MaterialAvailabilityFields.AVAILABILITY)))
+                    .map(entity -> entity.getBelongsToField(MaterialAvailabilityFields.PRODUCT)).collect(Collectors.toList());
 
             if (!notAvailableProducts.isEmpty()) {
 
-                String missingProductNames = StringUtils.join(Lists.transform(notAvailableProducts, new Function<Entity, String>() {
+                String missingProductNames = StringUtils
+                        .join(Lists.transform(notAvailableProducts, new Function<Entity, String>() {
 
-                    @Override
-                    public String apply(Entity product) {
-                        return product.getStringField(ProductFields.NAME);
-                    }
+                            @Override
+                            public String apply(Entity product) {
+                                return product.getStringField(ProductFields.NAME);
+                            }
 
-                }), ", ");
+                        }), ", ");
 
                 if (missingProductNames.length() < 255) {
                     stateChangeContext.addMessage("productFlowThruDivision.order.state.accept.error.missingComponents",
@@ -427,6 +426,6 @@ public class OrderStatesListenerServicePFTD {
                 }
             }
         }
-
     }
+
 }

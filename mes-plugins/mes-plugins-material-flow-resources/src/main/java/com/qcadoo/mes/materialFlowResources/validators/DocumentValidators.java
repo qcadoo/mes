@@ -60,7 +60,8 @@ public class DocumentValidators {
         if (documentId != null) {
             Entity documentFromDB = documentDD.get(documentId);
 
-            if (!checkIfItIsReportGeneration(document, documentFromDB) && DocumentState.ACCEPTED.getStringValue().equals(documentFromDB.getStringField(DocumentFields.STATE))) {
+            if (!checkIfItIsReportGeneration(document, documentFromDB)
+                    && DocumentState.ACCEPTED.getStringValue().equals(documentFromDB.getStringField(DocumentFields.STATE))) {
                 document.addGlobalError("materialFlow.error.document.alreadyAccepted");
 
                 return false;

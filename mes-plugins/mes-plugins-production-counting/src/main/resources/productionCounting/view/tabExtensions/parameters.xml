@@ -121,6 +121,14 @@
                     <option type="labelWidth" value="80"/>
                 </component>
             </layoutElement>
+            <layoutElement column="3" row="4">
+                <component type="checkbox" name="calculateAmountTimeEmployeesOnAcceptanceRecord"
+                           reference="calculateAmountTimeEmployeesOnAcceptanceRecord"
+                           field="#{form}.calculateAmountTimeEmployeesOnAcceptanceRecord">
+
+                    <option type="labelWidth" value="80"/>
+                </component>
+            </layoutElement>
 
         </component>
     </windowTab>

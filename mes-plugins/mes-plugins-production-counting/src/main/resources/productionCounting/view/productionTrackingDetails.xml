@@ -645,6 +645,8 @@
                                 expression="#worker['name']" link="true"/>
                         <option type="column" name="workerSurname" fields="worker"
                                 expression="#worker['surname']" link="true"/>
+                        <option type="column" name="effectiveExecutionTimeStart" fields="effectiveExecutionTimeStart"/>
+                        <option type="column" name="effectiveExecutionTimeEnd" fields="effectiveExecutionTimeEnd"/>
                         <option type="column" name="laborTime" fields="laborTime"
                                 expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#laborTime)"/>
 

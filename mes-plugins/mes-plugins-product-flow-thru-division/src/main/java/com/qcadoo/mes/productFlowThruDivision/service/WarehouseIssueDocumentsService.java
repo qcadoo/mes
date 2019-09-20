@@ -118,8 +118,8 @@ public class WarehouseIssueDocumentsService {
         return validReleaseDocument;
     }
 
-    private CreationDocumentResponse buildReleaseDocument(final Entity locationFrom, final Entity locationTo, final Collection positions,
-            final DocumentsStatus documentsStatus, final String additionalInfo) {
+    private CreationDocumentResponse buildReleaseDocument(final Entity locationFrom, final Entity locationTo,
+            final Collection positions, final DocumentsStatus documentsStatus, final String additionalInfo) {
         DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder();
 
         documentBuilder.setField(DocumentFields.TYPE, DocumentType.RELEASE.getStringValue());
@@ -133,7 +133,8 @@ public class WarehouseIssueDocumentsService {
         return build(documentsStatus, documentBuilder);
     }
 
-    private String buildDescriptionForReleaseDocument(final Entity locationTo, final Collection positions, final String additionalInfo) {
+    private String buildDescriptionForReleaseDocument(final Entity locationTo, final Collection positions,
+            final String additionalInfo) {
         String description = buildDescription(positions);
 
         description = Strings.isNullOrEmpty(description) ? "" : description + "\n";
@@ -158,8 +159,8 @@ public class WarehouseIssueDocumentsService {
         return description;
     }
 
-    private CreationDocumentResponse buildTransferDocument(final Entity locationFrom, final Entity locationTo, final Collection positions,
-            final DocumentsStatus documentsStatus, final String additionalInfo) {
+    private CreationDocumentResponse buildTransferDocument(final Entity locationFrom, final Entity locationTo,
+            final Collection positions, final DocumentsStatus documentsStatus, final String additionalInfo) {
         DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder();
 
         documentBuilder.setField(DocumentFields.TYPE, DocumentType.TRANSFER.getStringValue());

@@ -190,6 +190,10 @@
         </model:model-field>
 
         <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="calculateAmountTimeEmployeesOnAcceptanceRecord" default="false"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
             <model:enum name="sourceOfMaterialCostsPB"
                         values="01currentGlobalDefinitionsInProduct,02fromOrdersMaterialCosts"
                         required="true" default="01currentGlobalDefinitionsInProduct"/>

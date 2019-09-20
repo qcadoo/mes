@@ -23,20 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.states.listener;
 
-import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
-import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
-import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
-import static com.qcadoo.mes.states.messages.util.MessagesUtil.getArgs;
-import static com.qcadoo.mes.states.messages.util.MessagesUtil.getKey;
-import static com.qcadoo.model.api.search.SearchOrders.asc;
-
-import java.math.BigDecimal;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
@@ -50,6 +36,7 @@ import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.constants.StaffWorkTimeFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
@@ -63,6 +50,21 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
+import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
+import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
+import static com.qcadoo.mes.states.messages.util.MessagesUtil.getArgs;
+import static com.qcadoo.mes.states.messages.util.MessagesUtil.getKey;
+import static com.qcadoo.model.api.search.SearchOrders.asc;
 
 @Service
 public final class ProductionTrackingListenerService {
@@ -109,6 +111,12 @@ public final class ProductionTrackingListenerService {
     public void onLeavingDraft(final Entity productionTracking) {
         productionTracking.setField(ProductionTrackingFields.LAST_STATE_CHANGE_FAILS, false);
         productionTracking.setField(ProductionTrackingFields.LAST_STATE_CHANGE_FAIL_CAUSE, null);
+        if (parameterService.getParameter().getBooleanField(
+                ParameterFieldsPC.CALCULATE_AMOUNT_TIME_EMPLOYEES_ON_ACCEPTANCE_RECORD)) {
+            Integer laborTime = productionTracking.getHasManyField(ProductionTrackingFields.STAFF_WORK_TIMES).stream()
+                    .mapToInt(en -> en.getIntegerField(StaffWorkTimeFields.LABOR_TIME)).sum();
+            productionTracking.setField(ProductionTrackingFields.LABOR_TIME, laborTime);
+        }
     }
 
     public void onAccept(final Entity productionTracking) {
@@ -340,6 +348,17 @@ public final class ProductionTrackingListenerService {
                 productionTracking.addError(productionTracking.getDataDefinition().getField(ProductionTrackingFields.LABOR_TIME),
                         "qcadooView.validate.field.error.missing");
             }
+        }
+
+        List<Entity> worTimesWithNotSetTimes = productionTracking
+                .getHasManyField(ProductionTrackingFields.STAFF_WORK_TIMES)
+                .stream()
+                .filter(entity -> Objects.nonNull(entity.getDateField(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_START)) && Objects
+                                .isNull(entity.getDateField(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_END)))
+                .collect(Collectors.toList());
+
+        if (!worTimesWithNotSetTimes.isEmpty()) {
+            productionTracking.addGlobalError("productionCounting.productionTracking.messages.error.worTimesWithNotSetTime");
         }
     }
 

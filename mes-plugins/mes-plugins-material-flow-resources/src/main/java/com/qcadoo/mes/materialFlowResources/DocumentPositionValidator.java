@@ -1,16 +1,5 @@
 package com.qcadoo.mes.materialFlowResources;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.BasicException;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,6 +19,17 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.BasicException;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 
 @Service
 public class DocumentPositionValidator {
@@ -589,7 +589,7 @@ public class DocumentPositionValidator {
     private Collection<? extends String> validatePallet(final DocumentPositionDTO position, final DocumentDTO document) {
         List<String> errors = Lists.newArrayList();
 
-        if (isInDocument(document)) {
+        if (DocumentType.isInbound(document.getType())) {
             if (existsNotMatchingResourceForPalletNumber(position, document)) {
                 errors.add(
                         translationService.translate("documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation",
@@ -606,12 +606,6 @@ public class DocumentPositionValidator {
         }
 
         return errors;
-    }
-
-    private boolean isInDocument(final DocumentDTO document) {
-        DocumentType type = DocumentType.parseString(document.getType());
-
-        return type == DocumentType.RECEIPT || type == DocumentType.INTERNAL_INBOUND || type == DocumentType.TRANSFER;
     }
 
     private boolean existsNotMatchingResourceForPalletNumber(final DocumentPositionDTO position, final DocumentDTO document) {
