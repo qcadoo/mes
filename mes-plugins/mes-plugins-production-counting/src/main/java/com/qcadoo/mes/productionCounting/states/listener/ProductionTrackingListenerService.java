@@ -103,7 +103,6 @@ public final class ProductionTrackingListenerService {
     }
 
     public void validationOnAccept(final Entity productionTracking) {
-        checkIfRecordOperationProductComponentsWereFilled(productionTracking);
         checkIfExistsFinalRecord(productionTracking);
         checkIfTimesIsSet(productionTracking);
     }
@@ -128,16 +127,6 @@ public final class ProductionTrackingListenerService {
     public void onChangeFromAcceptedToDeclined(final Entity productionTracking) {
         updateBasicProductionCounting(productionTracking, new Substraction());
         setOrderDoneAndWastesQuantity(productionTracking, new Substraction());
-    }
-
-    private void checkIfRecordOperationProductComponentsWereFilled(final Entity productionTracking) {
-        boolean usedNotFilled = checkIfUsedQuantitiesWereNotFilled(productionTracking);
-        boolean producedNotFilled = checkIfUsedOrWastesQuantitiesWereNotFilled(productionTracking);
-
-        if (usedNotFilled && producedNotFilled) {
-            productionTracking
-                    .addGlobalError("productionCounting.productionTracking.messages.error.recordOperationProductComponentsNotFilled");
-        }
     }
 
     public boolean checkIfUsedQuantitiesWereNotFilled(final Entity productionTracking) {
