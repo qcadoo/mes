@@ -112,6 +112,10 @@
                 <bigButton name="changeDates" icon="calendarIcon24.png" state="disabled"
                            action="#{grid}.fireEvent(changeDates)"/>
             </group>
+            <group name="categories">
+                <bigButton name="setCategory" icon="genealogyIcon24.png" state="disabled"
+                           action="#{grid}.fireEvent(setCategory)"/>
+            </group>
         </ribbon>
         <component type="grid" name="orders" reference="grid">
             <script>
@@ -122,7 +126,8 @@
 					var declineOrder = #{window}.getRibbonItem("status.declineOrder");
 					var interruptOrder = #{window}.getRibbonItem("status.interruptOrder");
 					var changeDates = #{window}.getRibbonItem("dates.changeDates");
-					
+					var setCategory = #{window}.getRibbonItemOrNull("categories.setCategory");
+
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
 							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
@@ -132,7 +137,10 @@
 								if (deleteButton) deleteButton.disable();
 								if (copyButton) copyButton.disable();
 								changeDates.disable();
+								setCategory.disable("#{translate(orders.orders.ribbon.message.setCategory)}");
 							} else {
+								setCategory.enable("#{translate(orders.orders.ribbon.message.setCategory)}");
+
 								var noDifferentStates = true;
  								if(selectedEntitiesArray.length > 1)
 								{
@@ -251,7 +259,8 @@
                     classesCondition="rowObject['flagPercentageOfExecutionWithColor']>0"
                     classesNames="rowObject['percentageOfExecutionCellColor']"/>
             <option type="column" name="percentageOfExecutionCellColor" fields="percentageOfExecutionCellColor" hidden="true"/>
-            <option type="column" name="flagPercentageOfExecutionWithColor" fields="flagPercentageOfExecutionWithColor" hidden="true"/>
+            <option type="column" name="flagPercentageOfExecutionWithColor" fields="flagPercentageOfExecutionWithColor"
+                    hidden="true"/>
 
             <option type="column" name="plannedQuantityForAdditionalUnit" fields="plannedQuantityForAdditionalUnit" width="35"/>
             <option type="column" name="unitForAdditionalUnit" fields="unitForAdditionalUnit" width="15"/>
@@ -271,9 +280,12 @@
 
             <option type="order" column="dateFrom" direction="desc"/>
 
-            <option type="searchable" value="doneInPercentage,name,number,description,state,productNumber,dateFrom,dateTo,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company"/>
-            <option type="multiSearch" value="doneInPercentage,name,number,description,state,productNumber,dateFrom,dateTo,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company"/>
-            <option type="orderable" value="doneInPercentage,name,number,description,state,productNumber,dateFrom,dateTo,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company"/>
+            <option type="searchable"
+                    value="doneInPercentage,name,number,description,state,productNumber,dateFrom,dateTo,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company"/>
+            <option type="multiSearch"
+                    value="doneInPercentage,name,number,description,state,productNumber,dateFrom,dateTo,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company"/>
+            <option type="orderable"
+                    value="doneInPercentage,name,number,description,state,productNumber,dateFrom,dateTo,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company"/>
 
             <option type="footerRow" value="true"/>
             <option type="columnsToSummary"
@@ -317,13 +329,15 @@
                 </predefinedFilter>
             </predefinedFilters>
 
-            <option type="suppressSelectEvent" value="true" />
+            <option type="suppressSelectEvent" value="true"/>
 
             <listener event="changeState"
                       class="com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient" method="changeState"/>
 
             <listener event="changeDates"
                       class="com.qcadoo.mes.orders.listeners.OrdersPlanningListListeners" method="changeDates"/>
+            <listener event="setCategory"
+                      class="com.qcadoo.mes.orders.listeners.OrdersPlanningListListeners" method="setCategory"/>
 
         </component>
         <option type="fixedHeight" value="true"/>
