@@ -92,6 +92,7 @@
 
         <string name="mergedProductNumberAndAdditionalCode"/>
         <boolean name="hasAttachments"/>
+        <string name="batch"/>
 
     </fields>
     <masterModel plugin="deliveries" model="orderedProduct"/>

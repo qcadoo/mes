@@ -23,26 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.field;
-
-import java.io.File;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.CalculationQuantityService;
@@ -88,6 +68,25 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.field;
 
 @Component
 public class DeliveryDetailsListeners {
@@ -324,6 +323,8 @@ public class DeliveryDetailsListeners {
         deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY, additionalQuantity);
         deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_CODE,
                 orderedProduct.getField(OrderedProductFields.ADDITIONAL_CODE));
+        deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.BATCH,
+                orderedProduct.getField(OrderedProductFields.BATCH));
         deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.CONVERSION, conversion);
         if (PluginUtils.isEnabled("supplyNegotiations")) {
             deliveredProductMuliPosition.setField(OFFER, orderedProduct.getBelongsToField(OFFER));
@@ -374,6 +375,8 @@ public class DeliveryDetailsListeners {
         deliveredProduct.setField(DeliveredProductFields.PRODUCT, product);
         deliveredProduct.setField(DeliveredProductFields.ADDITIONAL_CODE,
                 orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE));
+        deliveredProduct.setField(DeliveredProductFields.BATCH,
+                orderedProduct.getStringField(OrderedProductFields.BATCH));
         BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
         deliveredProduct.setField(DeliveredProductFields.CONVERSION, conversion);
         deliveredProduct.setField(DeliveredProductFields.IS_WASTE, false);

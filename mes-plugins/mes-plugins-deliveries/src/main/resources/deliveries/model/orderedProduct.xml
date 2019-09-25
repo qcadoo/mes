@@ -63,6 +63,8 @@
 
         <priority name="succession" scope="delivery" />
 
+        <string name="batch"/>
+
     </fields>
     <hooks>
         <onSave class="com.qcadoo.mes.deliveries.hooks.OrderedProductHooks" method="onSave"/>
