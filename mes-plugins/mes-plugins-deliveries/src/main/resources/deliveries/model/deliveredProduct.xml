@@ -66,6 +66,7 @@
 
         <string name="deliveredProductIds" persistent="false"/>
         <boolean name="validatePallet" default="true" persistent="false"/>
+        <boolean name="damaged" default="false"/>
 
     </fields>
 

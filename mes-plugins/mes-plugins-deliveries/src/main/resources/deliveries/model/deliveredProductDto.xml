@@ -75,6 +75,8 @@
 
         <boolean name="isWaste"/>
 
+        <boolean name="damaged"/>
+
     </fields>
 
     <masterModel plugin="deliveries" model="deliveredProduct"/>
