@@ -64,9 +64,6 @@ import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfDocumentWithWriterService;
 import com.qcadoo.report.api.pdf.PdfHelper;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -76,6 +73,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class DispositionOrderPdfService extends PdfDocumentWithWriterService {
@@ -173,7 +174,7 @@ public class DispositionOrderPdfService extends PdfDocumentWithWriterService {
             positionsTable.addCell(createCell(position.getStorageLocation(), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(position.getPalletNumber(), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(position.getTypeOfPallet(), Element.ALIGN_LEFT));
-            positionsTable.addCell(createCell(position.getAdditionalCode(), Element.ALIGN_LEFT));
+            positionsTable.addCell(createCell(position.getAdditionalCodeAndBatch(), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(position.getProductName(), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(PositionDataProvider.quantity(position.getQuantity()), Element.ALIGN_LEFT));
             positionsTable.addCell(createCell(position.getUnit(), Element.ALIGN_LEFT));
@@ -197,7 +198,8 @@ public class DispositionOrderPdfService extends PdfDocumentWithWriterService {
                     .setTypeOfPallet(PositionDataProvider.typeOfPallet(position))
                     .setAdditionalCode(PositionDataProvider.additionalCode(position)).setProductName(getDataForProduct(position))
                     .setQuantity(position.getDecimalField(PositionFields.QUANTITY)).setUnit(PositionDataProvider.unit(position))
-                    .setProduct(position.getBelongsToField(PositionFields.PRODUCT).getId());
+                    .setProduct(position.getBelongsToField(PositionFields.PRODUCT).getId())
+                    .setBatch(position.getStringField(PositionFields.BATCH));
             if (acceptanceOfDocumentBeforePrinting) {
                 builder.setTargetPallet(getDataForTargetPallet(position));
             }
