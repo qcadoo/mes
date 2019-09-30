@@ -14,19 +14,14 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlowResources.constants.StocktakingFields;
-import com.qcadoo.mes.materialFlowResources.print.helper.ResourceDataProvider;
 import com.qcadoo.mes.materialFlowResources.print.helper.Resource;
+import com.qcadoo.mes.materialFlowResources.print.helper.ResourceDataProvider;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -35,6 +30,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class StocktakingPdfReportService extends PdfDocumentService {
@@ -97,11 +98,12 @@ public class StocktakingPdfReportService extends PdfDocumentService {
             dataTable.addCell(new Phrase(extractPalletNumber(resource), FontUtils.getDejavuRegular10Dark()));
             dataTable.addCell(new Phrase(extractProductNumberAndCode(resource), FontUtils.getDejavuRegular10Dark()));
             dataTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-            dataTable.addCell(new Phrase(extractProductName(resource), FontUtils.getDejavuRegular10Dark()));
+            dataTable.addCell(new Phrase(extractProductName(resource), FontUtils.getDejavuRegular7Dark()));
             dataTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             dataTable.addCell(new Phrase(extractConversion(resource), FontUtils.getDejavuRegular10Dark()));
             dataTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-            dataTable.addCell(new Phrase(extractExpirationDate(resource), FontUtils.getDejavuRegular10Dark()));
+            dataTable.addCell(new Phrase(extractExpirationDate(resource), FontUtils.getDejavuRegular7Dark()));
+            dataTable.addCell(new Phrase(extractBatch(resource), FontUtils.getDejavuRegular7Dark()));
             dataTable.getDefaultCell().enableBorderSide(Rectangle.LEFT);
             dataTable.getDefaultCell().enableBorderSide(Rectangle.RIGHT);
             dataTable.addCell(new Phrase("", FontUtils.getDejavuRegular10Dark()));
@@ -110,6 +112,11 @@ public class StocktakingPdfReportService extends PdfDocumentService {
             counter++;
         }
         document.add(dataTable);
+
+    }
+
+    private String extractBatch(Resource resource) {
+        return StringUtils.isNoneBlank(resource.getBatch()) ? resource.getBatch() : "";
 
     }
 
@@ -171,13 +178,17 @@ public class StocktakingPdfReportService extends PdfDocumentService {
         alignments.put(translationService.translate("materialFlowResources.stocktaking.report.data.expirationDate", locale),
                 HeaderAlignment.LEFT);
 
+        header.add(translationService.translate("materialFlowResources.stocktaking.report.data.batch", locale));
+        alignments.put(translationService.translate("materialFlowResources.stocktaking.report.data.batch", locale),
+                HeaderAlignment.LEFT);
+
         header.add(translationService.translate("materialFlowResources.stocktaking.report.data.quantity", locale));
         alignments.put(translationService.translate("materialFlowResources.stocktaking.report.data.quantity", locale),
                 HeaderAlignment.LEFT);
 
-        int[] columnWidths = { 90, 70, 95, 160, 65, 100, 80 };
+        int[] columnWidths = { 90, 70, 95, 105, 65, 75, 80, 80 };
 
-        return pdfHelper.createTableWithHeader(7, header, false, columnWidths, alignments);
+        return pdfHelper.createTableWithHeader(8, header, false, columnWidths, alignments);
     }
 
     private void appendDocumentContextTable(final Document document, final Entity entity, final Locale locale)

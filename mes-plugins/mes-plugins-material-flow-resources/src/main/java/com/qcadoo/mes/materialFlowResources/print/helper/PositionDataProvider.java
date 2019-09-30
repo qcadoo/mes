@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources.print.helper;
 
-import static com.qcadoo.model.api.BigDecimalUtils.convertNullToZero;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.google.common.base.Strings;
 import com.qcadoo.mes.basic.constants.AdditionalCodeFields;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
@@ -41,6 +31,15 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.model.api.Entity;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import static com.qcadoo.model.api.BigDecimalUtils.convertNullToZero;
 
 public class PositionDataProvider {
 
@@ -74,6 +73,10 @@ public class PositionDataProvider {
         return batch != null ? (storageLocation != null ? batch + "\n"
                 + storageLocation.getStringField(StorageLocationFields.NUMBER) : batch)
                 : (storageLocation != null ? storageLocation.getStringField(StorageLocationFields.NUMBER) : StringUtils.EMPTY);
+    }
+
+    public static String onlyBatch(final Entity position) {
+        return Strings.nullToEmpty(position.getStringField(PositionFields.BATCH));
     }
 
     public static String palletNumber(final Entity position) {

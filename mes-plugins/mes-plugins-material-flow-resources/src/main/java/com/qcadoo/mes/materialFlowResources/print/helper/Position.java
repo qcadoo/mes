@@ -92,6 +92,10 @@ public class Position {
         return unit;
     }
 
+    public String getBatch() {
+        return batch;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -100,11 +104,12 @@ public class Position {
             return false;
         Position that = (Position) o;
         return Objects.equal(product, that.product) && Objects.equal(storageLocation, that.storageLocation)
-                && Objects.equal(typeOfPallet, that.typeOfPallet) && Objects.equal(palletNumber, that.palletNumber);
+                && Objects.equal(typeOfPallet, that.typeOfPallet) && Objects.equal(palletNumber, that.palletNumber)
+                && Objects.equal(batch, that.batch);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(product, storageLocation, typeOfPallet, palletNumber);
+        return Objects.hashCode(product, storageLocation, typeOfPallet, palletNumber, batch);
     }
 }
