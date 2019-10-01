@@ -28,11 +28,12 @@ import com.qcadoo.mes.productionCounting.constants.StaffWorkTimeFields;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+
+import java.util.Date;
+
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
 import org.springframework.stereotype.Service;
-
-import java.util.Date;
 
 @Service
 public class StaffWorkTimeDetailsListeners {
@@ -53,6 +54,9 @@ public class StaffWorkTimeDetailsListeners {
                 Seconds seconds = Seconds.secondsBetween(new DateTime(start), new DateTime(end));
                 laborTimeFieldComponent.setFieldValue(Integer.valueOf(seconds.getSeconds()));
             }
+            laborTimeFieldComponent.requestComponentUpdateState();
+        } else {
+            laborTimeFieldComponent.setFieldValue(null);
             laborTimeFieldComponent.requestComponentUpdateState();
         }
     }
