@@ -132,7 +132,7 @@ public class DispositionOrderPdfService extends PdfDocumentWithWriterService {
     }
 
     private void addPositionsTable(Document document, Entity documentEntity, Locale locale) throws DocumentException {
-        List<Integer> headerWidthsList = new ArrayList<>(Arrays.asList(30, 50, 50, 50, 50, 100, 40, 35));
+        List<Integer> headerWidthsList = new ArrayList<>(Arrays.asList(25, 50, 50, 50, 65, 90, 40, 35));
         int numOfColumns = 8;
         if (acceptanceOfDocumentBeforePrinting) {
             headerWidthsList.add(45);
@@ -152,7 +152,6 @@ public class DispositionOrderPdfService extends PdfDocumentWithWriterService {
         List<Position> _positions = positionsHolder.getPositions();
         if (acceptanceOfDocumentBeforePrinting) {
             Collections.sort(_positions, new Comparator<Position>() {
-
                 @Override
                 public int compare(Position p1, Position p2) {
                     return ComparisonChain.start().compare(p1.getTargetPallet(), p2.getTargetPallet())
@@ -265,7 +264,7 @@ public class DispositionOrderPdfService extends PdfDocumentWithWriterService {
         headerLabels.put(translationService.translate(L_POSITION_HEADER_PREFIX + "batch", locale), HeaderAlignment.LEFT);
         headerLabels.put(translationService.translate(L_POSITION_HEADER_PREFIX + "pallet", locale), HeaderAlignment.LEFT);
         headerLabels.put(translationService.translate(L_POSITION_HEADER_PREFIX + "typeOfPallet", locale), HeaderAlignment.LEFT);
-        headerLabels.put(translationService.translate(L_POSITION_HEADER_PREFIX + "additionalCode", locale), HeaderAlignment.LEFT);
+        headerLabels.put(translationService.translate(L_POSITION_HEADER_PREFIX + "additionalCodeBatch", locale), HeaderAlignment.LEFT);
         headerLabels.put(translationService.translate(L_POSITION_HEADER_PREFIX + "product", locale), HeaderAlignment.LEFT);
         headerLabels.put(translationService.translate(L_POSITION_HEADER_PREFIX + "quantity", locale), HeaderAlignment.LEFT);
         headerLabels.put(translationService.translate(L_POSITION_HEADER_PREFIX + "unit", locale), HeaderAlignment.LEFT);
