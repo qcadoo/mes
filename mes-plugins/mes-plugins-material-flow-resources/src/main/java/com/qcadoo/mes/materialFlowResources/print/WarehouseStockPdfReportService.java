@@ -213,7 +213,7 @@ public class WarehouseStockPdfReportService extends PdfDocumentService {
                 .put(translationService.translate("materialFlowResources.warehouseStockReport.report.data.additionalQuantity",
                         locale), HeaderAlignment.RIGHT);
 
-        int[] columnWidths = { 85, 70, 95, 95, 65, 72, 92, 73, 73 };
+        int[] columnWidths = { 81, 70, 95, 98, 65, 72, 92, 73, 73 };
 
         return pdfHelper.createTableWithHeader(9, header, false, columnWidths, alignments);
     }
