@@ -2,16 +2,17 @@ package com.qcadoo.mes.materialFlowResources.print.helper;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.model.api.NumberService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ResourceDataProvider {
@@ -86,7 +87,8 @@ public class ResourceDataProvider {
         query.append("product.number AS productnumber, ");
         query.append("product.name AS productname, ");
         query.append("palletnumber.id AS palletnumberid, ");
-        query.append("palletnumber.number AS palletnumbernumber ");
+        query.append("palletnumber.number AS palletnumbernumber, ");
+        query.append("resource.batch AS batch ");
         query.append("FROM materialflowresources_resource resource ");
         query.append("LEFT JOIN materialflowresources_storagelocation storagelocation ON storagelocation.id = resource.storagelocation_id ");
         query.append("LEFT JOIN basic_additionalcode additionalcode ON additionalcode.id = resource.additionalcode_id ");

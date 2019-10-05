@@ -26,6 +26,7 @@ public class ResourceDto {
     private String productName;
     private Long palletNumberId;
     private String palletNumberNumber;
+    private String batch;
 
     public String getAdditionalCodeCode() {
         return additionalCodeCode;
@@ -187,6 +188,14 @@ public class ResourceDto {
         this.storageLocationNumber = storageLocationNumber;
     }
 
+    public String getBatch() {
+        return batch;
+    }
+
+    public void setBatch(String batch) {
+        this.batch = batch;
+    }
+
     @Override public boolean equals(Object o) {
         if (this == o)
             return true;
@@ -202,11 +211,12 @@ public class ResourceDto {
                 Objects.equals(productId, that.productId) &&
                 Objects.equals(productNumber, that.productNumber) &&
                 Objects.equals(palletNumberId, that.palletNumberId) &&
+                Objects.equals(batch, that.batch) &&
                 Objects.equals(palletNumberNumber, that.palletNumberNumber);
     }
 
     @Override public int hashCode() {
         return Objects.hash(id, number, storageLocationId, storageLocationNumber, additionalCodeId, additionalCodeCode, productId,
-                productNumber, palletNumberId, palletNumberNumber);
+                productNumber, palletNumberId, batch, palletNumberNumber);
     }
 }

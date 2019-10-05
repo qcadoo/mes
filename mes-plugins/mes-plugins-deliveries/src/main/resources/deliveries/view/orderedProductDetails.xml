@@ -222,7 +222,15 @@
                 </layoutElement>
             </component>
         </windowTab>
-
+        <windowTab name="bachTab">
+            <component type="gridLayout" name="gridsLayout" columns="1" rows="1" hasBorders="false">
+                <layoutElement column="1" row="1">
+                    <component type="input" name="batch" field="#{form}.batch"
+                               reference="batch">
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
     </component>
 
     <hooks>

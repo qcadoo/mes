@@ -24,30 +24,14 @@
     ***************************************************************************
 
 -->
-<model name="productionTrackingForProductGroupedDto" activable="true" auditable="false" deletable="false"
-       insertable="false" updatable="false"
+<model name="setCategory" auditable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <integer name="order_id"/>
-        <string name="orderNumber"/>
-
-        <integer name="technologyOperationComponent_id"/>
-        <string name="technologyOperationComponentNumber"/>
-
-        <integer name="operation_id"/>
-
-        <integer name="product_id"/>
-        <string name="productNumber"/>
-        <string name="productName"/>
-        <string name="productUnit"/>
-
-        <decimal name="usedQuantity"/>
-        <decimal name="plannedQuantity"/>
-
-        <enum name="typeOfRecord" values="01in,02out"/>
-
+        <dictionary name="orderCategory" dictionary="orderCategory"/>
+        <string name="selectedEntities" persistent="false"/>
     </fields>
 
+    <hooks/>
 </model>

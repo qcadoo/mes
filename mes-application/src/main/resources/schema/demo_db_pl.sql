@@ -11305,7 +11305,8 @@ CREATE TABLE deliveries_deliveredproduct (
     additionalquantity numeric(12,5),
     conversion numeric(12,5),
     iswaste boolean,
-    additionalunit character varying(255)
+    additionalunit character varying(255),
+    damaged boolean DEFAULT false
 );
 
 
@@ -11397,7 +11398,8 @@ CREATE VIEW deliveries_deliveredproductdto AS
            FROM productcatalognumbers_productcatalognumbers
           WHERE ((productcatalognumbers_productcatalognumbers.product_id = product.id) AND (productcatalognumbers_productcatalognumbers.company_id = delivery.supplier_id))) AS productcatalognumber,
     deliveredproduct.pallettype,
-    deliveredproduct.additionalunit
+    deliveredproduct.additionalunit,
+    deliveredproduct.damaged
    FROM (((((((deliveries_deliveredproduct deliveredproduct
      LEFT JOIN deliveries_delivery delivery ON ((deliveredproduct.delivery_id = delivery.id)))
      LEFT JOIN basic_product product ON ((deliveredproduct.product_id = product.id)))
@@ -11668,7 +11670,8 @@ CREATE TABLE deliveries_orderedproduct (
     conversion numeric(12,5),
     additionalcode_id bigint,
     deliveredquantity numeric,
-    additionaldeliveredquantity numeric
+    additionaldeliveredquantity numeric,
+    batch character varying(255)
 );
 
 
@@ -11761,7 +11764,8 @@ CREATE VIEW deliveries_orderedproductdto AS
     orderedproduct.additionaldeliveredquantity,
     (orderedproduct.orderedquantity - orderedproduct.deliveredquantity) AS lefttoreceivequantity,
     (orderedproduct.additionalquantity - orderedproduct.additionaldeliveredquantity) AS additionallefttoreceivequantity,
-    attachments.hasattachments
+    attachments.hasattachments,
+    orderedproduct.batch
    FROM (((((((((deliveries_orderedproduct orderedproduct
      LEFT JOIN deliveries_delivery delivery ON ((orderedproduct.delivery_id = delivery.id)))
      LEFT JOIN basic_currency currency ON ((delivery.currency_id = currency.id)))
@@ -17911,6 +17915,35 @@ ALTER SEQUENCE orders_schedulestatechange_id_seq OWNED BY orders_schedulestatech
 
 
 --
+-- Name: orders_setcategory; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE orders_setcategory (
+    id bigint NOT NULL,
+    ordercategory character varying(255)
+);
+
+
+--
+-- Name: orders_setcategory_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE orders_setcategory_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: orders_setcategory_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE orders_setcategory_id_seq OWNED BY orders_setcategory.id;
+
+
+--
 -- Name: orders_typeofcorrectioncauses; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -20669,55 +20702,41 @@ CREATE SEQUENCE productioncounting_productiontrackingdto_id_seq
 
 
 --
--- Name: productioncounting_trackingoperationproductincomponenthelper; Type: VIEW; Schema: public; Owner: -
+-- Name: productioncounting_trackingoperationproductincomponenthelper; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE VIEW productioncounting_trackingoperationproductincomponenthelper AS
- SELECT trackingoperationproductincomponent.id,
-    (productiontracking.id)::integer AS productiontracking_id,
-    (product.id)::integer AS product_id,
-    product.number AS productnumber,
-    product.unit AS productunit,
-        CASE
-            WHEN (productiontracking.technologyoperationcomponent_id IS NULL) THEN ( SELECT sum(productioncountingquantity_1.plannedquantity) AS sum)
-            ELSE ( SELECT sum(productioncountingquantity_2.plannedquantity) AS sum)
-        END AS plannedquantity,
-    trackingoperationproductincomponent.usedquantity,
-    batch.number AS batchnumber
-   FROM (((((productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent
-     LEFT JOIN productioncounting_productiontracking productiontracking ON ((productiontracking.id = trackingoperationproductincomponent.productiontracking_id)))
-     LEFT JOIN basic_product product ON ((product.id = trackingoperationproductincomponent.product_id)))
-     LEFT JOIN advancedgenealogy_batch batch ON ((batch.id = trackingoperationproductincomponent.batch_id)))
-     LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_1 ON (((productioncountingquantity_1.order_id = productiontracking.order_id) AND (productioncountingquantity_1.product_id = trackingoperationproductincomponent.product_id) AND ((productioncountingquantity_1.role)::text = '01used'::text))))
-     LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_2 ON (((productioncountingquantity_2.order_id = productiontracking.order_id) AND (productioncountingquantity_2.technologyoperationcomponent_id = productiontracking.technologyoperationcomponent_id) AND (productioncountingquantity_2.product_id = trackingoperationproductincomponent.product_id) AND ((productioncountingquantity_2.role)::text = '01used'::text))))
-  WHERE ((productiontracking.state)::text <> ALL (ARRAY[(('03declined'::text)::character varying)::text, (('04corrected'::text)::character varying)::text]))
-  GROUP BY trackingoperationproductincomponent.id, productiontracking.id, product.id, product.number, product.unit, trackingoperationproductincomponent.usedquantity, productiontracking.technologyoperationcomponent_id, batch.number;
+CREATE TABLE productioncounting_trackingoperationproductincomponenthelper (
+    id bigint,
+    productiontracking_id integer,
+    product_id integer,
+    productnumber character varying(255),
+    productname character varying(1024),
+    productunit character varying(255),
+    plannedquantity numeric,
+    usedquantity numeric(14,5),
+    batchnumber character varying(255)
+);
+
+ALTER TABLE ONLY productioncounting_trackingoperationproductincomponenthelper REPLICA IDENTITY NOTHING;
 
 
 --
--- Name: productioncounting_trackingoperationproductoutcomponenthelper; Type: VIEW; Schema: public; Owner: -
+-- Name: productioncounting_trackingoperationproductoutcomponenthelper; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE VIEW productioncounting_trackingoperationproductoutcomponenthelper AS
- SELECT trackingoperationproductoutcomponent.id,
-    (productiontracking.id)::integer AS productiontracking_id,
-    (product.id)::integer AS product_id,
-    product.number AS productnumber,
-    product.unit AS productunit,
-        CASE
-            WHEN (productiontracking.technologyoperationcomponent_id IS NULL) THEN ( SELECT sum(productioncountingquantity_1.plannedquantity) AS sum)
-            ELSE ( SELECT sum(productioncountingquantity_2.plannedquantity) AS sum)
-        END AS plannedquantity,
-    trackingoperationproductoutcomponent.usedquantity,
-    batch.number AS batchnumber
-   FROM (((((productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent
-     LEFT JOIN productioncounting_productiontracking productiontracking ON ((productiontracking.id = trackingoperationproductoutcomponent.productiontracking_id)))
-     LEFT JOIN basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
-     LEFT JOIN advancedgenealogy_batch batch ON ((batch.id = trackingoperationproductoutcomponent.batch_id)))
-     LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_1 ON (((productioncountingquantity_1.order_id = productiontracking.order_id) AND (productioncountingquantity_1.product_id = trackingoperationproductoutcomponent.product_id) AND ((productioncountingquantity_1.role)::text = '02produced'::text))))
-     LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_2 ON (((productioncountingquantity_2.order_id = productiontracking.order_id) AND (productioncountingquantity_2.technologyoperationcomponent_id = productiontracking.technologyoperationcomponent_id) AND (productioncountingquantity_2.product_id = trackingoperationproductoutcomponent.product_id) AND ((productioncountingquantity_2.role)::text = '02produced'::text))))
-  WHERE ((productiontracking.state)::text <> ALL (ARRAY[(('03declined'::text)::character varying)::text, (('04corrected'::text)::character varying)::text]))
-  GROUP BY trackingoperationproductoutcomponent.id, productiontracking.id, product.id, product.number, product.unit, trackingoperationproductoutcomponent.usedquantity, productiontracking.technologyoperationcomponent_id, batch.number;
+CREATE TABLE productioncounting_trackingoperationproductoutcomponenthelper (
+    id bigint,
+    productiontracking_id integer,
+    product_id integer,
+    productnumber character varying(255),
+    productname character varying(1024),
+    productunit character varying(255),
+    plannedquantity numeric,
+    usedquantity numeric(14,5),
+    batchnumber character varying(255)
+);
+
+ALTER TABLE ONLY productioncounting_trackingoperationproductoutcomponenthelper REPLICA IDENTITY NOTHING;
 
 
 --
@@ -20729,6 +20748,7 @@ CREATE VIEW productioncounting_trackingoperationproductcomponentdto AS
     trackingoperationproductcomponentdto.productiontracking_id,
     trackingoperationproductcomponentdto.product_id,
     trackingoperationproductcomponentdto.productnumber,
+    trackingoperationproductcomponentdto.productname,
     trackingoperationproductcomponentdto.productunit,
     trackingoperationproductcomponentdto.plannedquantity,
     trackingoperationproductcomponentdto.usedquantity,
@@ -20737,6 +20757,7 @@ CREATE VIEW productioncounting_trackingoperationproductcomponentdto AS
    FROM ( SELECT trackingoperationproductincomponentdto.productiontracking_id,
             trackingoperationproductincomponentdto.product_id,
             trackingoperationproductincomponentdto.productnumber,
+            trackingoperationproductincomponentdto.productname,
             trackingoperationproductincomponentdto.productunit,
             trackingoperationproductincomponentdto.plannedquantity,
             trackingoperationproductincomponentdto.usedquantity,
@@ -20747,6 +20768,7 @@ CREATE VIEW productioncounting_trackingoperationproductcomponentdto AS
          SELECT trackingoperationproductoutcomponentdto.productiontracking_id,
             trackingoperationproductoutcomponentdto.product_id,
             trackingoperationproductoutcomponentdto.productnumber,
+            trackingoperationproductoutcomponentdto.productname,
             trackingoperationproductoutcomponentdto.productunit,
             trackingoperationproductoutcomponentdto.plannedquantity,
             trackingoperationproductoutcomponentdto.usedquantity,
@@ -20784,6 +20806,7 @@ CREATE VIEW productioncounting_productiontrackingforproductdto AS
     productiontrackingdto.subcontractorname,
     trackingoperationproductcomponentdto.product_id,
     trackingoperationproductcomponentdto.productnumber,
+    trackingoperationproductcomponentdto.productname,
     trackingoperationproductcomponentdto.productunit,
     trackingoperationproductcomponentdto.plannedquantity,
     trackingoperationproductcomponentdto.usedquantity,
@@ -20820,12 +20843,13 @@ CREATE VIEW productioncounting_productiontrackingforproductgroupeddto AS
     productiontrackingforproductdto.operation_id,
     productiontrackingforproductdto.product_id,
     productiontrackingforproductdto.productnumber,
+    productiontrackingforproductdto.productname,
     productiontrackingforproductdto.productunit,
     productiontrackingforproductdto.plannedquantity,
     sum(productiontrackingforproductdto.usedquantity) AS usedquantity,
     productiontrackingforproductdto.typeofrecord
    FROM productioncounting_productiontrackingforproductdto productiontrackingforproductdto
-  GROUP BY productiontrackingforproductdto.active, productiontrackingforproductdto.order_id, productiontrackingforproductdto.ordernumber, productiontrackingforproductdto.technologyoperationcomponent_id, productiontrackingforproductdto.technologyoperationcomponentnumber, productiontrackingforproductdto.operation_id, productiontrackingforproductdto.product_id, productiontrackingforproductdto.productnumber, productiontrackingforproductdto.productunit, productiontrackingforproductdto.plannedquantity, productiontrackingforproductdto.typeofrecord;
+  GROUP BY productiontrackingforproductdto.active, productiontrackingforproductdto.order_id, productiontrackingforproductdto.ordernumber, productiontrackingforproductdto.technologyoperationcomponent_id, productiontrackingforproductdto.technologyoperationcomponentnumber, productiontrackingforproductdto.operation_id, productiontrackingforproductdto.product_id, productiontrackingforproductdto.productnumber, productiontrackingforproductdto.productname, productiontrackingforproductdto.productunit, productiontrackingforproductdto.plannedquantity, productiontrackingforproductdto.typeofrecord;
 
 
 --
@@ -26825,6 +26849,13 @@ ALTER TABLE ONLY orders_schedulestatechange ALTER COLUMN id SET DEFAULT nextval(
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY orders_setcategory ALTER COLUMN id SET DEFAULT nextval('orders_setcategory_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY orders_typeofcorrectioncauses ALTER COLUMN id SET DEFAULT nextval('orders_typeofcorrectioncauses_id_seq'::regclass);
 
 
@@ -31321,7 +31352,7 @@ SELECT pg_catalog.setval('deliveries_companyproductsfamily_id_seq', 1, false);
 -- Data for Name: deliveries_deliveredproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY deliveries_deliveredproduct (id, delivery_id, product_id, deliveredquantity, damagedquantity, priceperunit, totalprice, succession, operation_id, offer_id, batch, productiondate, expirationdate, entityversion, palletnumber_id, pallettype, storagelocation_id, additionalcode_id, additionalquantity, conversion, iswaste, additionalunit) FROM stdin;
+COPY deliveries_deliveredproduct (id, delivery_id, product_id, deliveredquantity, damagedquantity, priceperunit, totalprice, succession, operation_id, offer_id, batch, productiondate, expirationdate, entityversion, palletnumber_id, pallettype, storagelocation_id, additionalcode_id, additionalquantity, conversion, iswaste, additionalunit, damaged) FROM stdin;
 \.
 
 
@@ -31448,7 +31479,7 @@ SELECT pg_catalog.setval('deliveries_deliverystatechange_id_seq', 1, false);
 -- Data for Name: deliveries_orderedproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY deliveries_orderedproduct (id, delivery_id, product_id, orderedquantity, priceperunit, totalprice, description, succession, operation_id, offer_id, actualversion, entityversion, additionalquantity, conversion, additionalcode_id, deliveredquantity, additionaldeliveredquantity) FROM stdin;
+COPY deliveries_orderedproduct (id, delivery_id, product_id, orderedquantity, priceperunit, totalprice, description, succession, operation_id, offer_id, actualversion, entityversion, additionalquantity, conversion, additionalcode_id, deliveredquantity, additionaldeliveredquantity, batch) FROM stdin;
 \.
 
 
@@ -33809,6 +33840,21 @@ COPY orders_schedulestatechange (id, dateandtime, sourcestate, targetstate, stat
 --
 
 SELECT pg_catalog.setval('orders_schedulestatechange_id_seq', 1, false);
+
+
+--
+-- Data for Name: orders_setcategory; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY orders_setcategory (id, ordercategory) FROM stdin;
+\.
+
+
+--
+-- Name: orders_setcategory_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('orders_setcategory_id_seq', 1, false);
 
 
 --
@@ -39952,6 +39998,14 @@ ALTER TABLE ONLY orders_schedulestatechange
 
 
 --
+-- Name: orders_setcategory_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY orders_setcategory
+    ADD CONSTRAINT orders_setcategory_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: orders_typeofcorrectioncauses_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -43252,6 +43306,60 @@ CREATE RULE "_RETURN" AS
      LEFT JOIN technologies_technology at ON (((at.product_id = opic.product_id) AND (at.technologytype IS NULL) AND (at.active = true) AND ((at.state)::text = '02accepted'::text))))
      LEFT JOIN technologies_technology ct ON (((ct.product_id = opic.product_id) AND (ct.technologytype IS NULL) AND (ct.active = true) AND ((ct.state)::text = '05checked'::text))))
   GROUP BY opic.id, toc.id, product.id, product.number, product.name, product.unit, opic.quantity, opic.priority, opic.itemnumberintheexplodedview, tech.name, tech.number, tech.state, tech.master, op.name, tech.active, tech.technologytype, tech.id;
+
+
+--
+-- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE RULE "_RETURN" AS
+    ON SELECT TO productioncounting_trackingoperationproductoutcomponenthelper DO INSTEAD  SELECT trackingoperationproductoutcomponent.id,
+    (productiontracking.id)::integer AS productiontracking_id,
+    (product.id)::integer AS product_id,
+    product.number AS productnumber,
+    product.name AS productname,
+    product.unit AS productunit,
+        CASE
+            WHEN (productiontracking.technologyoperationcomponent_id IS NULL) THEN ( SELECT sum(productioncountingquantity_1.plannedquantity) AS sum)
+            ELSE ( SELECT sum(productioncountingquantity_2.plannedquantity) AS sum)
+        END AS plannedquantity,
+    trackingoperationproductoutcomponent.usedquantity,
+    batch.number AS batchnumber
+   FROM (((((productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent
+     LEFT JOIN productioncounting_productiontracking productiontracking ON ((productiontracking.id = trackingoperationproductoutcomponent.productiontracking_id)))
+     LEFT JOIN basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
+     LEFT JOIN advancedgenealogy_batch batch ON ((batch.id = trackingoperationproductoutcomponent.batch_id)))
+     LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_1 ON (((productioncountingquantity_1.order_id = productiontracking.order_id) AND (productioncountingquantity_1.product_id = trackingoperationproductoutcomponent.product_id) AND ((productioncountingquantity_1.role)::text = '02produced'::text))))
+     LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_2 ON (((productioncountingquantity_2.order_id = productiontracking.order_id) AND (productioncountingquantity_2.technologyoperationcomponent_id = productiontracking.technologyoperationcomponent_id) AND (productioncountingquantity_2.product_id = trackingoperationproductoutcomponent.product_id) AND ((productioncountingquantity_2.role)::text = '02produced'::text))))
+  WHERE ((productiontracking.state)::text <> ALL (ARRAY[(('03declined'::text)::character varying)::text, (('04corrected'::text)::character varying)::text]))
+  GROUP BY trackingoperationproductoutcomponent.id, productiontracking.id, product.id, product.number, product.unit, trackingoperationproductoutcomponent.usedquantity, productiontracking.technologyoperationcomponent_id, batch.number;
+
+
+--
+-- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE RULE "_RETURN" AS
+    ON SELECT TO productioncounting_trackingoperationproductincomponenthelper DO INSTEAD  SELECT trackingoperationproductincomponent.id,
+    (productiontracking.id)::integer AS productiontracking_id,
+    (product.id)::integer AS product_id,
+    product.number AS productnumber,
+    product.name AS productname,
+    product.unit AS productunit,
+        CASE
+            WHEN (productiontracking.technologyoperationcomponent_id IS NULL) THEN ( SELECT sum(productioncountingquantity_1.plannedquantity) AS sum)
+            ELSE ( SELECT sum(productioncountingquantity_2.plannedquantity) AS sum)
+        END AS plannedquantity,
+    trackingoperationproductincomponent.usedquantity,
+    batch.number AS batchnumber
+   FROM (((((productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent
+     LEFT JOIN productioncounting_productiontracking productiontracking ON ((productiontracking.id = trackingoperationproductincomponent.productiontracking_id)))
+     LEFT JOIN basic_product product ON ((product.id = trackingoperationproductincomponent.product_id)))
+     LEFT JOIN advancedgenealogy_batch batch ON ((batch.id = trackingoperationproductincomponent.batch_id)))
+     LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_1 ON (((productioncountingquantity_1.order_id = productiontracking.order_id) AND (productioncountingquantity_1.product_id = trackingoperationproductincomponent.product_id) AND ((productioncountingquantity_1.role)::text = '01used'::text))))
+     LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_2 ON (((productioncountingquantity_2.order_id = productiontracking.order_id) AND (productioncountingquantity_2.technologyoperationcomponent_id = productiontracking.technologyoperationcomponent_id) AND (productioncountingquantity_2.product_id = trackingoperationproductincomponent.product_id) AND ((productioncountingquantity_2.role)::text = '01used'::text))))
+  WHERE ((productiontracking.state)::text <> ALL (ARRAY[(('03declined'::text)::character varying)::text, (('04corrected'::text)::character varying)::text]))
+  GROUP BY trackingoperationproductincomponent.id, productiontracking.id, product.id, product.number, product.unit, trackingoperationproductincomponent.usedquantity, productiontracking.technologyoperationcomponent_id, batch.number;
 
 
 --

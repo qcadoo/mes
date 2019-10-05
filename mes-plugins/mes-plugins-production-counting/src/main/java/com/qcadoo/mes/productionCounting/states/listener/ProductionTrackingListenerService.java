@@ -339,15 +339,24 @@ public final class ProductionTrackingListenerService {
             }
         }
 
-        List<Entity> worTimesWithNotSetTimes = productionTracking
+        List<Entity> worTimesWithNotSetEnd = productionTracking
                 .getHasManyField(ProductionTrackingFields.STAFF_WORK_TIMES)
                 .stream()
                 .filter(entity -> Objects.nonNull(entity.getDateField(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_START)) && Objects
                                 .isNull(entity.getDateField(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_END)))
                 .collect(Collectors.toList());
-
-        if (!worTimesWithNotSetTimes.isEmpty()) {
+        if (!worTimesWithNotSetEnd.isEmpty()) {
             productionTracking.addGlobalError("productionCounting.productionTracking.messages.error.worTimesWithNotSetTime");
+        }
+        List<Entity> worTimesWithNotSetStart = productionTracking
+                .getHasManyField(ProductionTrackingFields.STAFF_WORK_TIMES)
+                .stream()
+                .filter(entity -> Objects.nonNull(entity.getDateField(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_END)) && Objects
+                        .isNull(entity.getDateField(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_START)))
+                .collect(Collectors.toList());
+
+        if (!worTimesWithNotSetStart.isEmpty()) {
+            productionTracking.addGlobalError("productionCounting.productionTracking.messages.error.worTimesWithNotSetTimeEnd");
         }
     }
 

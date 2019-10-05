@@ -54,5 +54,6 @@ public final class OrderedProductFields {
     public static final String ADDITIONAL_CODE = "additionalCode";
 
     public static final String RESERVATIONS = "reservations";
+    public static final String BATCH = "batch";
 
 }

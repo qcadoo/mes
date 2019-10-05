@@ -189,6 +189,12 @@
                                         <option type="labelWidth" value="45"/>
                                     </component>
                                 </layoutElement>
+                                <layoutElement column="9" row="3" width="3">
+                                    <component type="checkbox" name="damaged"
+                                               reference="damaged" field="damaged" hasDescription="true">
+                                        <option type="labelWidth" value="45"/>
+                                    </component>
+                                </layoutElement>
                             </component>
                         </component>
                     </layoutElement>

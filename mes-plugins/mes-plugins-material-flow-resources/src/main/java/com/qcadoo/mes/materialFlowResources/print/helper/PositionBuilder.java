@@ -24,6 +24,8 @@ public class PositionBuilder {
 
     private String targetPallet;
 
+    private String batch;
+
     public PositionBuilder setIndex(String index) {
         this.index = index;
         return this;
@@ -74,8 +76,13 @@ public class PositionBuilder {
         return this;
     }
 
+    public PositionBuilder setBatch(String batch) {
+        this.batch = batch;
+        return this;
+    }
+
     public Position createPosition() {
         return new Position(index, product, storageLocation, typeOfPallet, palletNumber, quantity, additionalCode, productName,
-                unit, targetPallet);
+                unit, targetPallet, batch);
     }
 }
