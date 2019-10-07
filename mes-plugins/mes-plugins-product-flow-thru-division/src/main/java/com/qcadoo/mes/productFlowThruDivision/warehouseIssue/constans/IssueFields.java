@@ -23,40 +23,48 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans;
 
-public class IssueFields {
+public final class IssueFields {
 
-    public static final String WAREHOUSE_ISSUE = "warehouseIssue";
+	private IssueFields() {
 
-    public static final String LOCATION = "location";
+	}
 
-    public static final String PRODUCT = "product";
+	public static final String ADDITIONAL_CODE = "additionalCode";
 
-    public static final String DEMAND_QUANTITY = "demandQuantity";
+	public static final String ADDITIONAL_DEMAND_QUANTITY = "additionalDemandQuantity";
 
-    public static final String CONVERSION = "conversion";
+	public static final String CONVERSION = "conversion";
 
-    public static final String ADDITIONAL_DEMAND_QUANTITY = "additionalDemandQuantity";
+	public static final String DATE_OF_ISSUED = "dateOfIssued";
 
-    public static final String QUANTITY_PER_UNIT = "quantityPerUnit";
+	public static final String DEMAND_QUANTITY = "demandQuantity";
 
-    public static final String ISSUE_QUANTITY = "issueQuantity";
+	public static final String DOCUMENT = "document";
 
-    public static final String LOCATIONS_QUANTITY = "locationsQuantity";
+	public static final String HELPERS = "helpers";
 
-    public static final String LOCATION_TO_QUANTITY = "locationToQuantity";
+	public static final String ISSUE_QUANTITY = "issueQuantity";
 
-    public static final String ISSUED = "issued";
+	public static final String ISSUE_QUANTITY_ADDITIONAL_UNIT = "issueQuantityAdditionalUnit";
 
-    public static final String STORAGE_LOCATION = "storageLocation";
+	public static final String ISSUED = "issued";
 
-    public static final String ADDITIONAL_CODE = "additionalCode";
+	public static final String LOCATION = "location";
 
-    public static final String ISSUE_QUANTITY_ADDITIONAL_UNIT = "issueQuantityAdditionalUnit";
+	public static final String LOCATION_TO_QUANTITY = "locationToQuantity";
 
-    public static final String PRODUCTS_TO_ISSUE_ID = "productsToIssueId";
+	public static final String LOCATIONS_QUANTITY = "locationsQuantity";
 
-    public static final String DOCUMENT = "document";
+	public static final String PRODUCT = "product";
 
-    public static final String DATE_OF_ISSUED = "dateOfIssued";
+	public static final String PRODUCT_IN_COMPONENT = "productInComponent";
+
+	public static final String PRODUCTS_TO_ISSUE_ID = "productsToIssueId";
+
+	public static final String QUANTITY_PER_UNIT = "quantityPerUnit";
+
+	public static final String STORAGE_LOCATION = "storageLocation";
+
+	public static final String WAREHOUSE_ISSUE = "warehouseIssue";
 
 }
