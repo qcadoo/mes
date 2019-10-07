@@ -26,6 +26,7 @@ package com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans;
 public class WarehouseIssueFields {
 
     private WarehouseIssueFields() {
+
     }
 
     public static final String NUMBER = "number";
