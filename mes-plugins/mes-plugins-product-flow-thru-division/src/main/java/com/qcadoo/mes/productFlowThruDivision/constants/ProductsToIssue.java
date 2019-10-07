@@ -22,7 +22,8 @@ public enum ProductsToIssue {
                 return productsToIssue;
             }
         }
-        throw new IllegalArgumentException(String.format("Can't parse productsToIssue enum instance from '%s'",
-                stringValue));
+
+        throw new IllegalArgumentException(String.format("Can't parse productsToIssue enum instance from '%s'", stringValue));
     }
+
 }

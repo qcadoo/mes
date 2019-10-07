@@ -95,31 +95,39 @@ public class WarehouseIssueDetailsListeners {
 
     public void fillProductsToIssue(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent issueForm = (FormComponent) view.getComponentByReference(L_FORM);
-        Long warehouseIssueId = issueForm.getEntityId();
         FieldComponent collectionProductsField = (FieldComponent) view
                 .getComponentByReference(WarehouseIssueFields.COLLECTION_PRODUCTS);
         LookupComponent operation = (LookupComponent) view
                 .getComponentByReference(WarehouseIssueFields.TECHNOLOGY_OPERATION_COMPONENT);
-        Entity toc = operation.getEntity();
         LookupComponent division = (LookupComponent) view.getComponentByReference(WarehouseIssueFields.DIVISION);
+
+        Long warehouseIssueId = issueForm.getEntityId();
+
+        Entity toc = operation.getEntity();
         Entity divisionEntity = division.getEntity();
+
         List<Entity> createdProducts = warehouseIssueService.fillProductsToIssue(warehouseIssueId,
                 CollectionProducts.fromStringValue(collectionProductsField.getFieldValue().toString()), toc, divisionEntity);
+
         if (createdProducts != null) {
             List<Entity> invalidProducts = createdProducts.stream().filter(productToIssue -> !productToIssue.isValid())
                     .collect(Collectors.toList());
+
             if (invalidProducts.isEmpty()) {
                 view.addMessage("productFlowThruDivision.issue.downloadedProducts", ComponentState.MessageType.SUCCESS);
             } else {
                 Multimap<String, String> errors = ArrayListMultimap.create();
+
                 for (Entity productToIssue : invalidProducts) {
-                    String number = productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT).getStringField(
-                            ProductFields.NUMBER);
+                    String number = productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT)
+                            .getStringField(ProductFields.NUMBER);
                     Map<String, ErrorMessage> errorMessages = productToIssue.getErrors();
                     errorMessages.entrySet().stream().forEach(entry -> errors.put(entry.getValue().getMessage(), number));
                     productToIssue.getGlobalErrors().stream().forEach(error -> errors.put(error.getMessage(), number));
                 }
+
                 view.addMessage("productFlowThruDivision.issue.downloadedProductsError", ComponentState.MessageType.INFO, false);
+
                 for (String message : errors.keySet()) {
                     String translatedMessage = translationService.translate(message, LocaleContextHolder.getLocale());
                     String products = errors.get(message).stream().collect(Collectors.joining(", "));
@@ -131,7 +139,6 @@ public class WarehouseIssueDetailsListeners {
             }
         } else {
             view.addMessage("productFlowThruDivision.issue.noProductsToDownload", ComponentState.MessageType.INFO);
-
         }
     }
 
@@ -142,101 +149,102 @@ public class WarehouseIssueDetailsListeners {
         if (warehouseIssueId == null) {
             return;
         }
+
         Entity warehouseIssue = warehouseIssueHooks.getwarehouseIssueDD().get(warehouseIssueId);
+
         warehouseIssue.getDataDefinition().save(warehouseIssue);
-        GridComponent grid = (GridComponent) view.getComponentByReference("productsToIssues");
+        GridComponent grid = (GridComponent) view.getComponentByReference(WarehouseIssueFields.PRODUCTS_TO_ISSUES);
+
         if (grid.getSelectedEntities().isEmpty()) {
             return;
         }
 
         for (Entity productToIssue : grid.getSelectedEntities()) {
-            createIssue(warehouseIssue, productToIssue, view);
+            createIssue(view, warehouseIssue, productToIssue);
         }
+
         view.performEvent(view, "reset");
         view.addMessage("productFlowThruDivision.issue.copiedProducts", ComponentState.MessageType.SUCCESS);
     }
 
-    private void createIssue(final Entity warehouseIssue, final Entity productToIssue, final ViewDefinitionState view) {
+    private void createIssue(final ViewDefinitionState view, final Entity warehouseIssue, final Entity productToIssue) {
         Entity issue = getIssueDD().create();
-        issue.setField("warehouseIssue", productToIssue.getBelongsToField("warehouseIssue"));
-        issue.setField("product", productToIssue.getBelongsToField("product"));
-        issue.setField("demandQuantity", productToIssue.getDecimalField("demandQuantity"));
+
+        issue.setField(IssueFields.WAREHOUSE_ISSUE, productToIssue.getBelongsToField(ProductsToIssueFields.WAREHOUSE_ISSUE));
+        issue.setField(IssueFields.PRODUCT, productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT));
+        issue.setField(IssueFields.DEMAND_QUANTITY, productToIssue.getDecimalField(ProductsToIssueFields.DEMAND_QUANTITY));
         issue.setField(IssueFields.ADDITIONAL_DEMAND_QUANTITY,
                 productToIssue.getDecimalField(ProductsToIssueFields.ADDITIONAL_DEMAND_QUANTITY));
         issue.setField(IssueFields.CONVERSION, productToIssue.getDecimalField(ProductsToIssueFields.CONVERSION));
-
-        issue.setField("locationsQuantity", productToIssue.getDecimalField("locationsQuantity"));
-        issue.setField("location", productToIssue.getBelongsToField("location"));
-        issue.setField("productInComponent", productToIssue.getBelongsToField("productInComponent"));
+        issue.setField(IssueFields.LOCATIONS_QUANTITY, productToIssue.getDecimalField(ProductsToIssueFields.LOCATIONS_QUANTITY));
+        issue.setField(IssueFields.LOCATION, productToIssue.getBelongsToField(ProductsToIssueFields.LOCATION));
+        issue.setField(IssueFields.PRODUCT_IN_COMPONENT,
+                productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT_IN_COMPONENT));
         issue.setField(IssueFields.ISSUED, false);
         issue.setField(IssueFields.ADDITIONAL_CODE, productToIssue.getBelongsToField(ProductsToIssueFields.ADDITIONAL_CODE));
         issue.setField(IssueFields.STORAGE_LOCATION, productToIssue.getBelongsToField(ProductsToIssueFields.STORAGE_LOCATION));
 
-        BigDecimal demandQuantity = productToIssue.getDecimalField("demandQuantity");
-        BigDecimal issueQuantity = productToIssue.getDecimalField("issueQuantity");
+        BigDecimal demandQuantity = productToIssue.getDecimalField(ProductsToIssueFields.DEMAND_QUANTITY);
+        BigDecimal issueQuantity = productToIssue.getDecimalField(ProductsToIssueFields.ISSUE_QUANTITY);
         BigDecimal correctionQuantity = Optional.ofNullable(productToIssue.getDecimalField(ProductsToIssueFields.CORRECTION))
                 .orElse(BigDecimal.ZERO);
 
         if (issueQuantity == null) {
             issueQuantity = BigDecimal.ZERO;
         }
-        BigDecimal toIssueQuantity = demandQuantity.subtract(issueQuantity, numberService.getMathContext()).subtract(
-                correctionQuantity);
+
+        BigDecimal toIssueQuantity = demandQuantity.subtract(issueQuantity, numberService.getMathContext())
+                .subtract(correctionQuantity);
 
         if (toIssueQuantity.compareTo(BigDecimal.ZERO) == 1) {
             issue.setField(IssueFields.ISSUE_QUANTITY, toIssueQuantity);
         } else {
             issue.setField(IssueFields.ISSUE_QUANTITY, BigDecimal.ZERO);
         }
+
         if (warehouseIssueParameterService.issueForOrder()) {
             Entity order = getOrderDD().get(warehouseIssue.getBelongsToField(WarehouseIssueFields.ORDER).getId());
+
             if (order != null) {
-                BigDecimal quantityPerUnit = productToIssue.getDecimalField("demandQuantity").divide(
-                        order.getDecimalField(OrderFields.PLANNED_QUANTITY), numberService.getMathContext());
+                BigDecimal quantityPerUnit = productToIssue.getDecimalField(ProductsToIssueFields.DEMAND_QUANTITY)
+                        .divide(order.getDecimalField(OrderFields.PLANNED_QUANTITY), numberService.getMathContext());
+
                 issue.setField(IssueFields.QUANTITY_PER_UNIT, quantityPerUnit);
             }
         }
+
         issue.getDataDefinition().save(issue);
-
-    }
-
-    private DataDefinition getIssueDD() {
-        return dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER, "issue");
     }
 
     public void onCollectionProductsChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         warehouseIssueDetailHooks.setViewState(view);
+
         FieldComponent collectionProductsField = (FieldComponent) view
                 .getComponentByReference(WarehouseIssueFields.COLLECTION_PRODUCTS);
-
         LookupComponent operation = (LookupComponent) view
                 .getComponentByReference(WarehouseIssueFields.TECHNOLOGY_OPERATION_COMPONENT);
         LookupComponent division = (LookupComponent) view.getComponentByReference(WarehouseIssueFields.DIVISION);
 
         if (collectionProductsField.getFieldValue().equals(CollectionProducts.ON_ORDER.getStringValue())) {
-
             division.setFieldValue(null);
             division.requestComponentUpdateState();
             operation.setFieldValue(null);
             operation.requestComponentUpdateState();
         } else if (collectionProductsField.getFieldValue().equals(CollectionProducts.ON_DIVISION.getStringValue())) {
-
             operation.setFieldValue(null);
             operation.requestComponentUpdateState();
         } else if (collectionProductsField.getFieldValue().equals(CollectionProducts.ON_OPERATION.getStringValue())) {
-
             division.setFieldValue(null);
             division.requestComponentUpdateState();
         }
-
     }
 
     public void onOrderChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Entity order = null;
 
         if (state.getFieldValue() != null) {
-            order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                    (Long) state.getFieldValue());
+            order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
+                    .get((Long) state.getFieldValue());
         }
 
         // warehouseIssue.setField(WarehouseIssueFields.ORDER, order);
@@ -246,13 +254,18 @@ public class WarehouseIssueDetailsListeners {
 
         technologyOperationComponentLookup.setFieldValue(null);
         technologyOperationComponentLookup.requestComponentUpdateState();
-        GridComponent grid = (GridComponent) view.getComponentByReference("productsToIssues");
+
+        GridComponent grid = (GridComponent) view.getComponentByReference(WarehouseIssueFields.PRODUCTS_TO_ISSUES);
         grid.setFieldValue(null);
         grid.setEntities(new ArrayList<Entity>());
 
-        FieldComponent orderStartDateComponent = (FieldComponent) view.getComponentByReference("orderStartDate");
-        FieldComponent orderProductionLineComponent = (FieldComponent) view.getComponentByReference("orderProductionLineNumber");
+        FieldComponent orderStartDateComponent = (FieldComponent) view
+                .getComponentByReference(WarehouseIssueFields.ORDER_START_DATE);
+        FieldComponent orderProductionLineComponent = (FieldComponent) view
+                .getComponentByReference(WarehouseIssueFields.ORDER_PRODUCTION_LINE_NUMBER);
+
         // LookupComponent orderLookup = (LookupComponent) view.getComponentByReference("order");
+
         if (order != null) {
             // orderLookup.setFieldValue(order.getId());
             // orderLookup.requestComponentUpdateState();
@@ -281,7 +294,13 @@ public class WarehouseIssueDetailsListeners {
         issueDetailsHooks.onBeforeRender(view);
     }
 
+    private DataDefinition getIssueDD() {
+        return dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
+                ProductFlowThruDivisionConstants.MODEL_ISSUE);
+    }
+
     private DataDefinition getOrderDD() {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
     }
+
 }
