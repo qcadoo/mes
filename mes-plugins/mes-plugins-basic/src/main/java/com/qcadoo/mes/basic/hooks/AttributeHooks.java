@@ -40,7 +40,7 @@ public class AttributeHooks {
 
     public void onSave(final DataDefinition attributeDD, final Entity attribute) {
         if (AttributeDataType.CONTINUOUS.getStringValue().equals(attribute.getStringField(AttributeFields.DATA_TYPE))) {
-            attribute.setField(AttributeFields.ATTRIBIUTE_VALUES, Lists.newArrayList());
+            attribute.setField(AttributeFields.ATTRIBUTE_VALUES, Lists.newArrayList());
         }
 
         if (AttributeValueType.TEXT.getStringValue().equals(attribute.getStringField(AttributeFields.VALUE_TYPE))) {

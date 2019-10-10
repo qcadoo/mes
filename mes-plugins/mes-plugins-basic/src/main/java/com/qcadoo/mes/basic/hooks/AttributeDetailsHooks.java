@@ -31,20 +31,25 @@ public class AttributeDetailsHooks {
         FieldComponent dataType = (FieldComponent) view.getComponentByReference(AttributeFields.DATA_TYPE);
         FieldComponent valueType = (FieldComponent) view.getComponentByReference(AttributeFields.VALUE_TYPE);
         FieldComponent precision = (FieldComponent) view.getComponentByReference(AttributeFields.PRECISION);
+        FieldComponent unit = (FieldComponent) view.getComponentByReference(AttributeFields.UNIT);
         if (Objects.nonNull(valueType.getFieldValue())
                 && AttributeValueType.NUMERIC.getStringValue().equals(valueType.getFieldValue())) {
             precision.setEnabled(true);
+            unit.setEnabled(true);
             if (Objects.isNull(precision.getFieldValue()) || StringUtils.isEmpty((String) precision.getFieldValue())) {
                 precision.setFieldValue("0");
                 precision.requestComponentUpdateState();
             }
         } else {
+            unit.setEnabled(false);
+            unit.setFieldValue(null);
             precision.setEnabled(false);
             precision.setFieldValue(null);
             precision.requestComponentUpdateState();
         }
+        unit.requestComponentUpdateState();
 
-        GridComponent attributeValues = (GridComponent) view.getComponentByReference(AttributeFields.ATTRIBIUTE_VALUES);
+        GridComponent attributeValues = (GridComponent) view.getComponentByReference(AttributeFields.ATTRIBUTE_VALUES);
         if (Objects.nonNull(dataType.getFieldValue())
                 && AttributeDataType.CONTINUOUS.getStringValue().equals(dataType.getFieldValue())) {
             attributeValues.setEditable(false);

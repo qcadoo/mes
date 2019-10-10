@@ -6,7 +6,7 @@ public class AttributeValueFields {
 
     }
 
-    public static final String ATTRIBIUTE = "attribute";
+    public static final String ATTRIBUTE = "attribute";
     public static final String VALUE = "value";
     public static final String DESCRIPTION = "description";
 

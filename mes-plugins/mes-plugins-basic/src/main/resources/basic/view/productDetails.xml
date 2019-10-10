@@ -342,6 +342,46 @@
                 </layoutElement>
             </component>
         </windowTab>
+        <windowTab name="attributes">
+            <component type="flowGridLayout" name="gridsLayout" columns="1"
+                       rows="5" hasBorders="false">
+                <layoutElement column="1" row="1"  minHeight="5">
+                    <component type="grid" name="productAttributeValues" reference="productAttributeValues"
+                               source="#{form}.productAttributeValues">
+
+                        <option type="column" name="number" fields="attribute"
+                                expression="#attribute['number']" link="true" width="100"/>
+
+                        <option type="column" name="name" fields="attribute"
+                                expression="#attribute['name']" link="true" width="200"/>
+
+                        <option type="column" name="value" fields="value"
+                               link="true" width="100"/>
+
+                        <option type="column" name="description" fields="attributeValue"
+                                expression="#attributeValue['description']" width="200"/>
+
+                        <option type="column" name="unit" fields="attribute"
+                                expression="#attribute['unit']" link="false" width="50"/>
+
+                        <option type="order" column="number" direction="desc"/>
+
+
+                        <option type="correspondingView" value="basic/productAttributeValueDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="true"/>
+                        <option type="orderable" value="number,name,value,description,unit"/>
+                        <option type="searchable" value="number,name,value,description,unit"/>
+
+                        <option type="paginable" value="false"/>
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
         <windowTab name="additionalCodes">
             <component type="gridLayout" name="additionalCodesGridLayout"
                        columns="3" rows="1">

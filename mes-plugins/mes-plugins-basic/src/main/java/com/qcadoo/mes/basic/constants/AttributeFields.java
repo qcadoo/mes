@@ -14,6 +14,7 @@ public class AttributeFields {
     public static final String UNIT = "unit";
     public static final String FOR_PRODUCT = "forProduct";
     public static final String FOR_RESOURCE = "forResource";
-    public static final String ATTRIBIUTE_VALUES = "attributeValues";
+    public static final String ATTRIBUTE_VALUES = "attributeValues";
+    public static final String PRODUCT_ATTRIBUTE_VALUES = "productAttributeValues";
 
 }

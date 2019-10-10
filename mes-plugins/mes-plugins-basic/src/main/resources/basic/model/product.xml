@@ -76,6 +76,8 @@
 
         <hasMany name="productAttachments" joinField="product" model="productAttachment" cascade="delete"/>
 
+        <hasMany name="productAttributeValues" joinField="product" model="productAttributeValue" cascade="delete"/>
+
     </fields>
 
     <hooks>

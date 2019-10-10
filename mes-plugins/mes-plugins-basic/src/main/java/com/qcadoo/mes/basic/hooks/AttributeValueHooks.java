@@ -25,7 +25,7 @@ public class AttributeValueHooks {
     private NumberService numberService;
 
     public boolean validate(final DataDefinition attributeValueDD, final Entity attributeValue) {
-        Entity attribute = attributeValue.getBelongsToField(AttributeValueFields.ATTRIBIUTE);
+        Entity attribute = attributeValue.getBelongsToField(AttributeValueFields.ATTRIBUTE);
         String value = attributeValue.getStringField(AttributeValueFields.VALUE);
 
         if (checkIfValueExists(attributeValueDD, attributeValue, attribute, value)) {
@@ -59,7 +59,7 @@ public class AttributeValueHooks {
     }
 
     private boolean checkIfValueExists(DataDefinition attributeValueDD, Entity attributeValue, Entity attribute, String value) {
-        List<Entity> values = attribute.getHasManyField(AttributeFields.ATTRIBIUTE_VALUES);
+        List<Entity> values = attribute.getHasManyField(AttributeFields.ATTRIBUTE_VALUES);
         List sameValue = values.stream().filter(val -> val.getStringField(AttributeValueFields.VALUE).equals(value))
                 .filter(val -> !val.getId().equals(attributeValue.getId())).collect(Collectors.toList());
         if (!sameValue.isEmpty()) {
@@ -71,7 +71,7 @@ public class AttributeValueHooks {
     }
 
     public void onSave(final DataDefinition attributeValueDD, final Entity attributeValue) {
-        Entity attribute = attributeValue.getBelongsToField(AttributeValueFields.ATTRIBIUTE);
+        Entity attribute = attributeValue.getBelongsToField(AttributeValueFields.ATTRIBUTE);
         if (AttributeValueType.NUMERIC.getStringValue().equals(attribute.getStringField(AttributeFields.VALUE_TYPE))) {
             Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParse(
                     attributeValue.getStringField(AttributeValueFields.VALUE), LocaleContextHolder.getLocale());

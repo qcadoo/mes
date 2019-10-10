@@ -41,6 +41,7 @@
         <boolean name="forProduct" default="false"/>
         <boolean name="forResource" default="false"/>
         <hasMany name="attributeValues" joinField="attribute" model="attributeValue" cascade="delete"/>
+        <hasMany name="productAttributeValues" joinField="attribute" model="productAttributeValue"/>
 
     </fields>
 

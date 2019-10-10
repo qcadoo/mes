@@ -276,6 +276,7 @@
 
 		<model:model model="attribute" resource="model/attribute.xml"/>
 		<model:model model="attributeValue" resource="model/attributeValue.xml"/>
+		<model:model model="productAttributeValue" resource="model/productAttributeValue.xml"/>
 
         <model:dictionary name="categories"/>
         <model:dictionary name="posts"/>
@@ -431,6 +432,7 @@
         <view:view resource="view/attributeDetails.xml"/>
         <view:view resource="view/attributesList.xml"/>
         <view:view resource="view/attributeValueDetails.xml"/>
+        <view:view resource="view/productAttributeValueDetails.xml"/>
 
         <model:model-field plugin="qcadooSecurity" model="user">
             <model:belongsTo model="staff" plugin="basic" name="staff"/>
