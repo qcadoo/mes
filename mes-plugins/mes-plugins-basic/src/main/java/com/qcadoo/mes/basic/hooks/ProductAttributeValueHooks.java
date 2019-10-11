@@ -31,7 +31,8 @@ public class ProductAttributeValueHooks {
     public boolean validate(final DataDefinition productAttributeValueDD, final Entity productAttributeValue) {
         Entity attribute = productAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE);
 
-        if(AttributeDataType.CALCULATED.getStringValue().equals(attribute.getStringField(AttributeFields.DATA_TYPE))) {
+        if (AttributeDataType.CALCULATED.getStringValue().equals(attribute.getStringField(AttributeFields.DATA_TYPE))
+                && Objects.isNull(productAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE))) {
             productAttributeValue.addError(productAttributeValueDD.getField(ProductAttributeValueFields.ATTRIBUTE_VALUE),
                     "qcadooView.validate.field.error.missing");
             return false;
@@ -70,22 +71,26 @@ public class ProductAttributeValueHooks {
         List<Entity> values = product.getHasManyField(ProductFields.PRODUCT_ATTRIBUTE_VALUES);
 
         List sameValue = Lists.newArrayList();
-        if(Objects.nonNull(attributeValue)) {
-            sameValue = values.stream()
+        if (Objects.nonNull(attributeValue)) {
+            sameValue = values
+                    .stream()
                     .filter(val -> val.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).getId().equals(attribute.getId())
                             && Objects.nonNull(val.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE))
-                            && val.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE).getId().equals(attribute.getId()))
-                    .filter(val -> !val.getId().equals(productAttributeValue.getId())).collect(Collectors.toList());
+                            && val.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE).getId()
+                                    .equals(attributeValue.getId())).filter(val -> !val.getId().equals(productAttributeValue.getId()))
+                    .collect(Collectors.toList());
             if (!sameValue.isEmpty()) {
                 productAttributeValue.addError(productAttributeValueDD.getField(ProductAttributeValueFields.ATTRIBUTE_VALUE),
                         "basic.attributeValue.error.valueExists");
                 return true;
             }
         } else {
-            sameValue = values.stream()
+            sameValue = values
+                    .stream()
                     .filter(val -> val.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).getId().equals(attribute.getId())
                             && Objects.isNull(val.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE))
-                            && val.getStringField(ProductAttributeValueFields.VALUE).equals(productAttributeValue.getStringField(ProductAttributeValueFields.VALUE)))
+                            && val.getStringField(ProductAttributeValueFields.VALUE).equals(
+                                    productAttributeValue.getStringField(ProductAttributeValueFields.VALUE)))
                     .filter(val -> !val.getId().equals(productAttributeValue.getId())).collect(Collectors.toList());
             if (!sameValue.isEmpty()) {
                 productAttributeValue.addError(productAttributeValueDD.getField(ProductAttributeValueFields.VALUE),
@@ -93,8 +98,6 @@ public class ProductAttributeValueHooks {
                 return true;
             }
         }
-
-
 
         return false;
     }
