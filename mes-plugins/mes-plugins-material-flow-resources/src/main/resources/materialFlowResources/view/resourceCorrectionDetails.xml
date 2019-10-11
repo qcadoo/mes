@@ -35,230 +35,291 @@
             <group template="navigation"/>
         </ribbon>
 
-        <component type="form" name="resourceCorrectionForm"
-                   reference="form">
-            <component type="gridLayout" name="correctionGridLayout"
-                       columns="3" rows="8">
-                <layoutElement column="1" row="1">
-                    <component type="input" name="number" field="number"
-                               reference="number" defaultEnabled="false"/>
-                </layoutElement>
-                <layoutElement column="1" row="2">
-                    <component type="calendar" name="createDate" field="createDate"
-                               reference="createDate" defaultEnabled="false"/>
-                </layoutElement>
-                <layoutElement column="1" row="3">
-                    <component type="input" name="createUser" field="createUser"
-                               reference="createUser" defaultEnabled="false"/>
-                </layoutElement>
+        <windowTab name="mainTab" reference="mainTab">
+            <component type="form" name="resourceCorrectionForm"
+                       reference="form">
+                <component type="gridLayout" name="correctionGridLayout"
+                           columns="3" rows="8">
+                    <layoutElement column="1" row="1">
+                        <component type="input" name="number" field="number"
+                                   reference="number" defaultEnabled="false"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="calendar" name="createDate" field="createDate"
+                                   reference="createDate" defaultEnabled="false"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
+                        <component type="input" name="createUser" field="createUser"
+                                   reference="createUser" defaultEnabled="false"/>
+                    </layoutElement>
 
-                <layoutElement column="1" row="4">
-                    <component type="lookup" name="resource" field="resource"
-                               reference="resource" defaultEnabled="false">
-                        <option type="expression" value="#number"/>
-                        <option type="fieldCode" value="number"/>
-                    </component>
-                </layoutElement>
+                    <layoutElement column="1" row="4">
+                        <component type="lookup" name="resource" field="resource"
+                                   reference="resource" defaultEnabled="false">
+                            <option type="expression" value="#number"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                    </layoutElement>
 
-                <layoutElement column="1" row="5">
-                    <component type="lookup" name="product" field="product"
-                               reference="product" defaultEnabled="false">
-                        <option type="column" fields="name" name="name" link="true"/>
+                    <layoutElement column="1" row="5">
+                        <component type="lookup" name="product" field="product"
+                                   reference="product" defaultEnabled="false">
+                            <option type="column" fields="name" name="name" link="true"/>
 
-                        <option type="searchable" value="number,name"/>
-                        <option type="orderable" value="number,name"/>
+                            <option type="searchable" value="number,name"/>
+                            <option type="orderable" value="number,name"/>
 
-                        <option type="expression" value="#number + ' - ' + #name"/>
-                        <option type="fieldCode" value="number"/>
-                    </component>
-                </layoutElement>
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                    </layoutElement>
 
-                <layoutElement column="1" row="6">
-                    <component type="lookup" name="location" field="location"
-                               reference="location" defaultEnabled="false">
-                        <option type="searchable" value="name"/>
-                        <option type="orderable" value=" name"/>
+                    <layoutElement column="1" row="6">
+                        <component type="lookup" name="location" field="location"
+                                   reference="location" defaultEnabled="false">
+                            <option type="searchable" value="name"/>
+                            <option type="orderable" value=" name"/>
 
-                        <option type="expression" value="#number + ' - ' + #name"/>
-                        <option type="fieldCode" value="number"/>
-                    </component>
-                </layoutElement>
+                            <option type="expression" value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                    </layoutElement>
 
-                <layoutElement column="1" row="7">
-                    <component type="calendar" name="time" field="time"
-                               reference="time" defaultEnabled="false">
-                        <option type="withTimePicker" value="true"/>
-                    </component>
-                </layoutElement>
+                    <layoutElement column="1" row="7">
+                        <component type="calendar" name="time" field="time"
+                                   reference="time" defaultEnabled="false">
+                            <option type="withTimePicker" value="true"/>
+                        </component>
+                    </layoutElement>
 
-                <layoutElement column="1" row="8">
-                    <component type="calendar" name="productionDate" field="productionDate"
-                               reference="productionDate" defaultEnabled="false">
-                        <option type="withTimePicker" value="false"/>
-                    </component>
-                </layoutElement>
+                    <layoutElement column="1" row="8">
+                        <component type="calendar" name="productionDate" field="productionDate"
+                                   reference="productionDate" defaultEnabled="false">
+                            <option type="withTimePicker" value="false"/>
+                        </component>
+                    </layoutElement>
 
-                <layoutElement column="2" row="1" height="8" width="2">
-                    <component type="gridLayout" name="correctedResourceLayout" columns="10" rows="9" hasBorders="false">
+                    <layoutElement column="2" row="1" height="8" width="2">
+                        <component type="gridLayout" name="correctedResourceLayout" columns="10" rows="9" hasBorders="false">
 
-                        <layoutElement column="3" row="1" width="2">
-                            <component type="label" name="beforeCorrection">
-                                <option type="labelStyle" value="normal"/>
-                            </component>
-                        </layoutElement>
-                        <layoutElement column="7" row="1" width="2">
-                            <component type="label" name="afterCorrection">
-                                <option type="labelStyle" value="normal"/>
-                            </component>
-                        </layoutElement>
+                            <layoutElement column="3" row="1" width="2">
+                                <component type="label" name="beforeCorrection">
+                                    <option type="labelStyle" value="normal"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="7" row="1" width="2">
+                                <component type="label" name="afterCorrection">
+                                    <option type="labelStyle" value="normal"/>
+                                </component>
+                            </layoutElement>
 
-                        <layoutElement column="1" row="2" width="5">
-                            <component type="input" name="oldQuantity" field="oldQuantity"
-                                       reference="oldQuantity" defaultEnabled="false">
-                                <option type="alignment" value="right"/>
-                            </component>
-                        </layoutElement>
+                            <layoutElement column="1" row="2" width="5">
+                                <component type="input" name="oldQuantity" field="oldQuantity"
+                                           reference="oldQuantity" defaultEnabled="false">
+                                    <option type="alignment" value="right"/>
+                                </component>
+                            </layoutElement>
 
-                        <layoutElement column="6" row="2" width="4">
-                            <component type="input" name="newQuantity" field="newQuantity"
-                                       reference="newQuantity" defaultEnabled="false" hasLabel="false">
-                                <option type="alignment" value="right"/>
-                            </component>
-                        </layoutElement>
+                            <layoutElement column="6" row="2" width="4">
+                                <component type="input" name="newQuantity" field="newQuantity"
+                                           reference="newQuantity" defaultEnabled="false" hasLabel="false">
+                                    <option type="alignment" value="right"/>
+                                </component>
+                            </layoutElement>
 
-                        <layoutElement column="10" row="2" width="1">
-                            <component type="input" name="quantityUNIT" reference="quantityUNIT"
-                                       defaultEnabled="false" hasLabel="false">
-                                <option type="textRepresentationOnDisabled" value="true"/>
-                            </component>
-                        </layoutElement>
+                            <layoutElement column="10" row="2" width="1">
+                                <component type="input" name="quantityUNIT" reference="quantityUNIT"
+                                           defaultEnabled="false" hasLabel="false">
+                                    <option type="textRepresentationOnDisabled" value="true"/>
+                                </component>
+                            </layoutElement>
 
-                        <layoutElement column="1" row="3" width="5">
-                            <component type="input" name="oldConversion" field="oldConversion"
-                                       reference="oldConversion" defaultEnabled="false">
-                                <option type="alignment" value="right"/>
-                            </component>
-                        </layoutElement>
+                            <layoutElement column="1" row="3" width="5">
+                                <component type="input" name="oldConversion" field="oldConversion"
+                                           reference="oldConversion" defaultEnabled="false">
+                                    <option type="alignment" value="right"/>
+                                </component>
+                            </layoutElement>
 
-                        <layoutElement column="6" row="3" width="4">
-                            <component type="input" name="newConversion" field="newConversion"
-                                       reference="newConversion" defaultEnabled="false" hasLabel="false">
-                                <option type="alignment" value="right"/>
-                            </component>
-                        </layoutElement>
+                            <layoutElement column="6" row="3" width="4">
+                                <component type="input" name="newConversion" field="newConversion"
+                                           reference="newConversion" defaultEnabled="false" hasLabel="false">
+                                    <option type="alignment" value="right"/>
+                                </component>
+                            </layoutElement>
 
-                        <layoutElement column="1" row="4" width="5">
-                            <component type="input" name="oldPrice" field="oldPrice"
-                                       reference="oldPrice" defaultEnabled="false">
-                                <option type="alignment" value="right"/>
-                            </component>
-                        </layoutElement>
-                        <layoutElement column="6" row="4" width="4">
-                            <component type="input" name="newPrice" field="newPrice"
-                                       reference="newPrice" defaultEnabled="false" hasLabel="false">
-                                <option type="alignment" value="right"/>
-                            </component>
-                        </layoutElement>
+                            <layoutElement column="1" row="4" width="5">
+                                <component type="input" name="oldPrice" field="oldPrice"
+                                           reference="oldPrice" defaultEnabled="false">
+                                    <option type="alignment" value="right"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="6" row="4" width="4">
+                                <component type="input" name="newPrice" field="newPrice"
+                                           reference="newPrice" defaultEnabled="false" hasLabel="false">
+                                    <option type="alignment" value="right"/>
+                                </component>
+                            </layoutElement>
 
-                        <layoutElement column="1" row="5" width="5">
-                            <component type="input" name="oldBatch" field="oldBatch"
-                                       reference="oldBatch" defaultEnabled="false">
-                            </component>
-                        </layoutElement>
+                            <layoutElement column="1" row="5" width="5">
+                                <component type="input" name="oldBatch" field="oldBatch"
+                                           reference="oldBatch" defaultEnabled="false">
+                                </component>
+                            </layoutElement>
 
-                        <layoutElement column="6" row="5" width="4">
-                            <component type="input" name="newBatch" field="newBatch"
-                                       reference="newBatch" defaultEnabled="false" hasLabel="false">
-                            </component>
-                        </layoutElement>
+                            <layoutElement column="6" row="5" width="4">
+                                <component type="input" name="newBatch" field="newBatch"
+                                           reference="newBatch" defaultEnabled="false" hasLabel="false">
+                                </component>
+                            </layoutElement>
 
-                        <layoutElement column="1" row="6" width="5">
-                            <component type="calendar" name="oldExpirationDate" field="oldExpirationDate"
-                                       reference="oldExpirationDate" defaultEnabled="false">
-                                <option type="withTimePicker" value="false"/>
-                            </component>
-                        </layoutElement>
+                            <layoutElement column="1" row="6" width="5">
+                                <component type="calendar" name="oldExpirationDate" field="oldExpirationDate"
+                                           reference="oldExpirationDate" defaultEnabled="false">
+                                    <option type="withTimePicker" value="false"/>
+                                </component>
+                            </layoutElement>
 
-                        <layoutElement column="6" row="6" width="4">
-                            <component type="calendar" name="newExpirationDate" field="newExpirationDate"
-                                       reference="newExpirationDate" defaultEnabled="false" hasLabel="false">
-                                <option type="withTimePicker" value="false"/>
-                            </component>
-                        </layoutElement>
+                            <layoutElement column="6" row="6" width="4">
+                                <component type="calendar" name="newExpirationDate" field="newExpirationDate"
+                                           reference="newExpirationDate" defaultEnabled="false" hasLabel="false">
+                                    <option type="withTimePicker" value="false"/>
+                                </component>
+                            </layoutElement>
 
-                        <layoutElement column="1" row="7" width="5">
-                            <component type="lookup" name="oldStorageLocation" field="oldStorageLocation"
-                                       reference="oldStorageLocation" defaultEnabled="false">
-                                <option type="column" fields="location" name="location" link="true"
-                                        expression="#location['number']"/>
+                            <layoutElement column="1" row="7" width="5">
+                                <component type="lookup" name="oldStorageLocation" field="oldStorageLocation"
+                                           reference="oldStorageLocation" defaultEnabled="false">
+                                    <option type="column" fields="location" name="location" link="true"
+                                            expression="#location['number']"/>
 
-                                <option type="searchable" value="number,location"/>
-                                <option type="orderable" value="number,location"/>
+                                    <option type="searchable" value="number,location"/>
+                                    <option type="orderable" value="number,location"/>
 
-                                <option type="expression" value="#number"/>
-                                <option type="fieldCode" value="number"/>
-                            </component>
-                        </layoutElement>
+                                    <option type="expression" value="#number"/>
+                                    <option type="fieldCode" value="number"/>
+                                </component>
+                            </layoutElement>
 
-                        <layoutElement column="6" row="7" width="4">
-                            <component type="lookup" name="newStorageLocation" field="newStorageLocation"
-                                       reference="newStorageLocation" defaultEnabled="false" hasLabel="false">
-                                <option type="column" fields="location" name="location" link="true"
-                                        expression="#location['number']"/>
+                            <layoutElement column="6" row="7" width="4">
+                                <component type="lookup" name="newStorageLocation" field="newStorageLocation"
+                                           reference="newStorageLocation" defaultEnabled="false" hasLabel="false">
+                                    <option type="column" fields="location" name="location" link="true"
+                                            expression="#location['number']"/>
 
-                                <option type="searchable" value="number,location"/>
-                                <option type="orderable" value="number,location"/>
+                                    <option type="searchable" value="number,location"/>
+                                    <option type="orderable" value="number,location"/>
 
-                                <option type="expression" value="#number"/>
-                                <option type="fieldCode" value="number"/>
-                            </component>
-                        </layoutElement>
+                                    <option type="expression" value="#number"/>
+                                    <option type="fieldCode" value="number"/>
+                                </component>
+                            </layoutElement>
 
-                        <layoutElement column="1" row="8" width="5">
-                            <component type="lookup" name="oldPalletNumber" field="oldPalletNumber"
-                                       reference="oldPalletNumber" defaultEnabled="false">
+                            <layoutElement column="1" row="8" width="5">
+                                <component type="lookup" name="oldPalletNumber" field="oldPalletNumber"
+                                           reference="oldPalletNumber" defaultEnabled="false">
 
-                                <option type="searchable" value="number"/>
-                                <option type="orderable" value="number"/>
+                                    <option type="searchable" value="number"/>
+                                    <option type="orderable" value="number"/>
 
-                                <option type="expression" value="#number"/>
-                                <option type="fieldCode" value="number"/>
-                            </component>
-                        </layoutElement>
+                                    <option type="expression" value="#number"/>
+                                    <option type="fieldCode" value="number"/>
+                                </component>
+                            </layoutElement>
 
-                        <layoutElement column="6" row="8" width="4">
-                            <component type="lookup" name="newPalletNumber" field="newPalletNumber"
-                                       reference="newPalletNumber" defaultEnabled="false" hasLabel="false">
+                            <layoutElement column="6" row="8" width="4">
+                                <component type="lookup" name="newPalletNumber" field="newPalletNumber"
+                                           reference="newPalletNumber" defaultEnabled="false" hasLabel="false">
 
-                                <option type="searchable" value="number"/>
-                                <option type="orderable" value="number"/>
+                                    <option type="searchable" value="number"/>
+                                    <option type="orderable" value="number"/>
 
-                                <option type="expression" value="#number"/>
-                                <option type="fieldCode" value="number"/>
-                            </component>
-                        </layoutElement>
+                                    <option type="expression" value="#number"/>
+                                    <option type="fieldCode" value="number"/>
+                                </component>
+                            </layoutElement>
 
-                        <layoutElement column="1" row="9" width="5">
-                            <component type="input" name="oldTypeOfPallet" field="oldTypeOfPallet"
-                                       reference="oldTypeOfPallet" defaultEnabled="false">
-                            </component>
-                        </layoutElement>
+                            <layoutElement column="1" row="9" width="5">
+                                <component type="input" name="oldTypeOfPallet" field="oldTypeOfPallet"
+                                           reference="oldTypeOfPallet" defaultEnabled="false">
+                                </component>
+                            </layoutElement>
 
-                        <layoutElement column="6" row="9" width="4">
-                            <component type="input" name="newTypeOfPallet" field="newTypeOfPallet"
-                                       reference="newTypeOfPallet" defaultEnabled="false" hasLabel="false">
-                            </component>
-                        </layoutElement>
+                            <layoutElement column="6" row="9" width="4">
+                                <component type="input" name="newTypeOfPallet" field="newTypeOfPallet"
+                                           reference="newTypeOfPallet" defaultEnabled="false" hasLabel="false">
+                                </component>
+                            </layoutElement>
 
-                    </component>
-                </layoutElement>
+                        </component>
+                    </layoutElement>
 
+                </component>
+                <option type="header" value="true"/>
+                <option type="expression" value="#number"/>
             </component>
-            <option type="header" value="true"/>
-            <option type="expression" value="#number"/>
-        </component>
-    </component>
+        </windowTab>
+        <windowTab name="attributes" reference="attributes">
+            <component type="flowGridLayout" name="attributesGridsLayout" columns="2"
+                       rows="5" hasBorders="false">
 
+                <layoutElement column="1" row="1">
+                    <component type="grid" name="resourceAttributeValueBeforeCorrections"
+                               reference="resourceAttributeValueBeforeCorrections"
+                               source="#{form}.resourceAttributeValueBeforeCorrections">
+                        <option type="column" name="number" fields="attribute"
+                                expression="#attribute['number']" width="100"/>
+
+                        <option type="column" name="name" fields="attribute"
+                                expression="#attribute['name']" width="200"/>
+
+                        <option type="column" name="value" fields="value"
+                                width="100"/>
+
+
+                        <option type="order" column="number" direction="desc"/>
+
+                        <option type="orderable" value="number,name,value"/>
+                        <option type="searchable" value="number,name,value"/>
+
+                        <option type="paginable" value="true"/>
+                        <option type="creatable" value="false"/>
+                        <option type="deletable" value="false"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="1">
+                    <component type="grid" name="resourceAttributeValueAfterCorrections"
+                               reference="resourceAttributeValueAfterCorrections"
+                               source="#{form}.resourceAttributeValueAfterCorrections">
+                        <option type="column" name="number" fields="attribute"
+                                expression="#attribute['number']" width="100"/>
+
+                        <option type="column" name="name" fields="attribute"
+                                expression="#attribute['name']" width="200"/>
+
+                        <option type="column" name="value" fields="value"
+                               width="100"/>
+
+
+                        <option type="order" column="number" direction="desc"/>
+
+                        <option type="orderable" value="number,name,value"/>
+                        <option type="searchable" value="number,name,value"/>
+
+                        <option type="paginable" value="true"/>
+                        <option type="creatable" value="false"/>
+                        <option type="deletable" value="false"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                    </component>
+                </layoutElement>
+            </component>
+
+
+        </windowTab>
+    </component>
     <hooks>
         <beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService"
                       method="fillUnitFieldValues"/>

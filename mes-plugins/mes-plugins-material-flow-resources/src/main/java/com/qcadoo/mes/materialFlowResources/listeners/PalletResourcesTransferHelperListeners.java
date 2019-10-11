@@ -1,18 +1,5 @@
 package com.qcadoo.mes.materialFlowResources.listeners;
 
-import static com.qcadoo.model.api.search.SearchRestrictions.eq;
-import static com.qcadoo.view.api.ComponentState.MessageType.FAILURE;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
@@ -36,6 +23,18 @@ import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import static com.qcadoo.model.api.search.SearchRestrictions.eq;
+import static com.qcadoo.view.api.ComponentState.MessageType.FAILURE;
 
 @Service
 public class PalletResourcesTransferHelperListeners {
@@ -118,7 +117,7 @@ public class PalletResourcesTransferHelperListeners {
                     resource.setField(ResourceFields.TYPE_OF_PALLET,
                             selectedPallet.getStringField(PalletStorageStateDtoFields.TYPE_OF_PALLET));
                     resource.setField(ResourceFields.VALIDATE_PALLET, false);
-                    boolean corrected = resourceCorrectionService.createCorrectionForResource(resource);
+                    boolean corrected = resourceCorrectionService.createCorrectionForResource(resource, false).isPresent();
                     if (!corrected) {
                         resource.getGlobalErrors().forEach(view::addMessage);
                         view.addMessage("materialFlowResources.palletResourcesTransfer.resource.failure",

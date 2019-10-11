@@ -105,7 +105,7 @@ public class ResourceDetailsListeners {
                     BigDecimal resourceReservedQuantity = resource.getDecimalField(ResourceFields.RESERVED_QUANTITY);
                     if (correctQuantity.compareTo(BigDecimal.ZERO) > 0) {
                         if (correctQuantity.compareTo(resourceReservedQuantity) >= 0) {
-                            boolean corrected = resourceCorrectionService.createCorrectionForResource(resource);
+                            boolean corrected = resourceCorrectionService.createCorrectionForResource(resource, false).isPresent();
                             if (!resource.isValid()) {
                                 copyErrors(resource, resourceForm);
 

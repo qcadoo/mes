@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources.service;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.base.Strings;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
@@ -41,6 +34,14 @@ import com.qcadoo.model.api.DictionaryService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ResourceCorrectionServiceImpl implements ResourceCorrectionService {
@@ -86,7 +87,7 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
 
     @Override
     @Transactional
-    public boolean createCorrectionForResource(final Entity resource) {
+    public Optional<Entity> createCorrectionForResource(final Entity resource, boolean fromAttribute) {
         Entity oldResource = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_RESOURCE).get(resource.getId());
         BigDecimal newQuantity = resource.getDecimalField(ResourceFields.QUANTITY);
@@ -99,7 +100,7 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
         Entity newPalletNumber = resource.getBelongsToField(ResourceFields.PALLET_NUMBER);
 
         if (isCorrectionNeeded(oldResource, newQuantity, newStorageLocation, newPrice, newBatch, newTypeOfPallet,
-                newPalletNumber, newExpirationDate, newConversion)) {
+                newPalletNumber, newExpirationDate, newConversion) || fromAttribute) {
             boolean palletNumberChanged = isPalletNumberChanged(oldPalletNumber(oldResource), newPalletNumber);
             if ((storageLocationChanged(oldResource, newStorageLocation) || palletNumberChanged) && newStorageLocation != null) {
                 BigDecimal palletsInStorageLocation;
@@ -114,7 +115,7 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
                 if (palletsLimit != null && palletsInStorageLocation.compareTo(palletsLimit) > 0) {
                     resource.addGlobalError("materialFlow.error.correction.invalidStorageLocation");
                     resource.setNotValid();
-                    return false;
+                    return Optional.empty();
                 }
 
             }
@@ -163,12 +164,12 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
                 if (!savedCorrection.isValid()) {
                     throw new IllegalStateException("Could not save correction");
                 }
-                return true;
+                return Optional.of(savedCorrection);
             } else {
-                return false;
+                return Optional.empty();
             }
         }
-        return false;
+        return Optional.empty();
     }
 
     private boolean isCorrectionNeeded(final Entity resource, final BigDecimal newQuantity, final Entity newStorageLocation,

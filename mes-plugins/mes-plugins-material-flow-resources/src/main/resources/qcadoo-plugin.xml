@@ -103,6 +103,37 @@
         <model:model model="importStorageLocation" resource="model/importStorageLocation.xml"/>
         <model:model model="positionAddMultiHelper" resource="model/positionAddMultiHelper.xml"/>
 
+        <model:model model="resourceAttributeValue" resource="model/resourceAttributeValue.xml"/>
+        <model:model model="resourceAttributeValueAfterCorrection" resource="model/resourceAttributeValueAfterCorrection.xml"/>
+        <model:model model="resourceAttributeValueBeforeCorrection" resource="model/resourceAttributeValueBeforeCorrection.xml"/>
+
+        <model:model-field plugin="basic" model="attribute">
+            <hasMany name="resourceAttributeValues" plugin="materialFlowResources" joinField="attribute"
+                     model="resourceAttributeValue"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialFlowResources" model="resource">
+            <hasMany name="resourceAttributeValues" plugin="materialFlowResources" joinField="resource"
+                     model="resourceAttributeValue"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialFlowResources" model="resourceCorrection">
+            <hasMany name="resourceAttributeValueAfterCorrections" plugin="materialFlowResources" joinField="resourceCorrection"
+                     model="resourceAttributeValueAfterCorrection" cascade="delete"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialFlowResources" model="resourceCorrection">
+            <hasMany name="resourceAttributeValueBeforeCorrections" plugin="materialFlowResources" joinField="resourceCorrection"
+                     model="resourceAttributeValueBeforeCorrection" cascade="delete"/>
+        </model:model-field>
+
+
+        <model:model-field plugin="basic" model="attributeValue">
+            <hasMany name="resourceAttributeValues" plugin="materialFlowResources" joinField="attributeValue"
+                     model="resourceAttributeValue"/>
+        </model:model-field>
+
+
         <model:model-field plugin="basic" model="company">
             <model:hasMany name="documents" model="document"
                            plugin="materialFlowResources" joinField="company" cascade="nullify"/>
@@ -346,6 +377,7 @@
         <view:view resource="view/warehouseStockReportsList.xml"/>
         <view:view resource="view/importStorageLocationList.xml"/>
         <view:view resource="view/positionAddMulti.xml"/>
+        <view:view resource="view/resourceAttributeValueDetails.xml"/>
 
         <view:view-tab resource="view/tabExtensions/locationDetails.xml"/>
 
