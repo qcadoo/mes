@@ -193,44 +193,40 @@
             </component>
         </windowTab>
         <windowTab name="attributes">
-            <component type="grid" name="gridsLayout" columns="1"
-                       hasBorders="false">
-                <layoutElement column="1" row="1" >
-                    <component type="grid" name="resourceAttributeValues" reference="resourceAttributeValues"
-                               source="#{form}.resourceAttributeValues">
+            <component type="grid" name="resourceAttributeValues" reference="resourceAttributeValues"
+                       source="#{form}.resourceAttributeValues">
 
-                        <option type="column" name="number" fields="attribute"
-                                expression="#attribute['number']" link="true" width="100"/>
+                <option type="column" name="number" fields="attribute"
+                        expression="#attribute['number']" link="true" width="100"/>
 
-                        <option type="column" name="name" fields="attribute"
-                                expression="#attribute['name']" link="true" width="200"/>
+                <option type="column" name="name" fields="attribute"
+                        expression="#attribute['name']" link="true" width="200"/>
 
-                        <option type="column" name="value" fields="value"
-                                link="true" width="100"/>
+                <option type="column" name="value" fields="value"
+                        link="true" width="100"/>
 
-                        <option type="column" name="description" fields="attributeValue"
-                                expression="#attributeValue['description']" width="200"/>
+                <option type="column" name="description" fields="attributeValue"
+                        expression="#attributeValue['description']" width="200"/>
 
-                        <option type="column" name="unit" fields="attribute"
-                                expression="#attribute['unit']" link="false" width="50"/>
+                <option type="column" name="unit" fields="attribute"
+                        expression="#attribute['unit']" link="false" width="50"/>
 
-                        <option type="order" column="number" direction="desc"/>
+                <option type="order" column="number" direction="desc"/>
 
 
-                        <option type="correspondingView" value="materialFlowResources/resourceAttributeValueDetails"/>
-                        <option type="correspondingComponent" value="form"/>
-                        <option type="correspondingViewInModal" value="true"/>
-                        <option type="orderable" value="number,name,value,description,unit"/>
-                        <option type="searchable" value="number,name,value,description,unit"/>
+                <option type="correspondingView" value="materialFlowResources/resourceAttributeValueDetails"/>
+                <option type="correspondingComponent" value="form"/>
+                <option type="correspondingViewInModal" value="true"/>
+                <option type="orderable" value="number,name,value,description,unit"/>
+                <option type="searchable" value="number,name,value,description,unit"/>
 
-                        <option type="paginable" value="true"/>
-                        <option type="creatable" value="true"/>
-                        <option type="deletable" value="true"/>
-                        <option type="fullscreen" value="true"/>
-                        <option type="multiselect" value="true"/>
-                    </component>
-                </layoutElement>
+                <option type="paginable" value="true"/>
+                <option type="creatable" value="true"/>
+                <option type="deletable" value="true"/>
+                <option type="fullscreen" value="true"/>
+                <option type="multiselect" value="true"/>
             </component>
+
         </windowTab>
         <windowTab name="correctionsTab" reference="correctionsTab">
             <component type="grid" name="resourceCorrectionsGrid"
