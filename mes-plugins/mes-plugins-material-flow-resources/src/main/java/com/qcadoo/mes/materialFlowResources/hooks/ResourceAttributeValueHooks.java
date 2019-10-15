@@ -119,49 +119,97 @@ public class ResourceAttributeValueHooks {
 
     public void onSave(final DataDefinition resourceAttributeValueDD, final Entity resourceAttributeValue) {
         if (resourceAttributeValue.getBooleanField(ResourceAttributeValueFields.FROM_DEFINITION)) {
-            Entity resource = resourceAttributeValue.getBelongsToField(ResourceAttributeValueFields.RESOURCE);
-            java.util.Optional<Entity> maybeCorrection = resourceCorrectionService.createCorrectionForResource(resource, true);
-            if (maybeCorrection.isPresent()) {
-                Entity correction = maybeCorrection.get();
+            if (isChanged(resourceAttributeValue)) {
+                Entity resource = resourceAttributeValue.getBelongsToField(ResourceAttributeValueFields.RESOURCE);
+
+                java.util.Optional<Entity> maybeCorrection = resourceCorrectionService
+                        .createCorrectionForResource(resource, true);
+                if (maybeCorrection.isPresent()) {
+                    Entity correction = maybeCorrection.get();
+                    List<Entity> values = resource.getHasManyField(ResourceFields.RESOURCE_ATTRIBIUTE_VALUES);
+                    createAttributeBeforeCorrection(values, correction);
+                    createAttributeAfterCorrection(values, resourceAttributeValue, correction, false);
+                }
+            }
+        }
+    }
+
+    private boolean isChanged(Entity resourceAttributeValue) {
+        if (Objects.isNull(resourceAttributeValue.getId())) {
+            return true;
+        }
+        Entity resourceAttributeValueDb = resourceAttributeValue.getDataDefinition().get(resourceAttributeValue.getId());
+        if (!resourceAttributeValue.getBelongsToField(ResourceAttributeValueFields.ATTRIBUTE).getId()
+                .equals(resourceAttributeValueDb.getBelongsToField(ResourceAttributeValueFields.ATTRIBUTE).getId())) {
+            return true;
+        } else if (!resourceAttributeValue.getStringField(ResourceAttributeValueFields.VALUE).equals(
+                resourceAttributeValueDb.getStringField(ResourceAttributeValueFields.VALUE))) {
+            return true;
+        }
+        return false;
+    }
+
+    private void createAttributeAfterCorrection(List<Entity> values, Entity resourceAttributeValue, Entity correction,
+            boolean delete) {
+        if (!delete && Objects.isNull(resourceAttributeValue.getId())) {
+            Entity attributeAfterCorrection = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                    MaterialFlowResourcesConstants.MODEL_RESOURCE_ATTRIBUTE_VALUE_AFTER_CORRECTION).create();
+            attributeAfterCorrection.setField(ResourceAttributeValueCorrectionAfterFields.ATTRIBUTE, resourceAttributeValue
+                    .getBelongsToField(ResourceAttributeValueFields.ATTRIBUTE).getId());
+            attributeAfterCorrection.setField(ResourceAttributeValueCorrectionAfterFields.VALUE,
+                    resourceAttributeValue.getStringField(ResourceAttributeValueFields.VALUE));
+            attributeAfterCorrection.setField(L_RESOURCE_CORRECTION, correction.getId());
+            attributeAfterCorrection.getDataDefinition().save(attributeAfterCorrection);
+        }
+        values.forEach(attributeValue -> {
+            if (!delete && Objects.nonNull(resourceAttributeValue.getId())
+                    && resourceAttributeValue.getId().equals(attributeValue.getId())) {
                 Entity attributeAfterCorrection = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                         MaterialFlowResourcesConstants.MODEL_RESOURCE_ATTRIBUTE_VALUE_AFTER_CORRECTION).create();
-                Entity attributeBeforeCorrection = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                        MaterialFlowResourcesConstants.MODEL_RESOURCE_ATTRIBUTE_VALUE_BEFORE_CORRECTION).create();
-
-                if (Objects.nonNull(resourceAttributeValue.getId())) {
-                    Entity resourceAttributeValueDb = resourceAttributeValueDD.get(resourceAttributeValue.getId());
-                    attributeBeforeCorrection.setField(ResourceAttributeValueCorrectionBeforeFields.ATTRIBUTE,
-                            resourceAttributeValueDb.getBelongsToField(ResourceAttributeValueFields.ATTRIBUTE).getId());
-                    attributeBeforeCorrection.setField(ResourceAttributeValueCorrectionBeforeFields.VALUE,
-                            resourceAttributeValueDb.getStringField(ResourceAttributeValueFields.VALUE));
-                    attributeBeforeCorrection.setField(L_RESOURCE_CORRECTION, correction.getId());
-                    attributeBeforeCorrection.getDataDefinition().save(attributeBeforeCorrection);
-
-                }
                 attributeAfterCorrection.setField(ResourceAttributeValueCorrectionAfterFields.ATTRIBUTE, resourceAttributeValue
                         .getBelongsToField(ResourceAttributeValueFields.ATTRIBUTE).getId());
                 attributeAfterCorrection.setField(ResourceAttributeValueCorrectionAfterFields.VALUE,
                         resourceAttributeValue.getStringField(ResourceAttributeValueFields.VALUE));
                 attributeAfterCorrection.setField(L_RESOURCE_CORRECTION, correction.getId());
                 attributeAfterCorrection.getDataDefinition().save(attributeAfterCorrection);
-
+            } else if (Objects.nonNull(resourceAttributeValue.getId())
+                    && !resourceAttributeValue.getId().equals(attributeValue.getId())) {
+                Entity attributeAfterCorrection = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                        MaterialFlowResourcesConstants.MODEL_RESOURCE_ATTRIBUTE_VALUE_AFTER_CORRECTION).create();
+                attributeAfterCorrection.setField(ResourceAttributeValueCorrectionAfterFields.ATTRIBUTE, attributeValue
+                        .getBelongsToField(ResourceAttributeValueFields.ATTRIBUTE).getId());
+                attributeAfterCorrection.setField(ResourceAttributeValueCorrectionAfterFields.VALUE,
+                        attributeValue.getStringField(ResourceAttributeValueFields.VALUE));
+                attributeAfterCorrection.setField(L_RESOURCE_CORRECTION, correction.getId());
+                attributeAfterCorrection.getDataDefinition().save(attributeAfterCorrection);
             }
-        }
+
+        });
+    }
+
+    private void createAttributeBeforeCorrection(List<Entity> values, Entity correction) {
+        values.forEach(attributeValue -> {
+            Entity attributeBeforeCorrection = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                    MaterialFlowResourcesConstants.MODEL_RESOURCE_ATTRIBUTE_VALUE_BEFORE_CORRECTION).create();
+            attributeBeforeCorrection.setField(ResourceAttributeValueCorrectionBeforeFields.ATTRIBUTE, attributeValue
+                    .getBelongsToField(ResourceAttributeValueFields.ATTRIBUTE).getId());
+            attributeBeforeCorrection.setField(ResourceAttributeValueCorrectionBeforeFields.VALUE,
+                    attributeValue.getStringField(ResourceAttributeValueFields.VALUE));
+            attributeBeforeCorrection.setField(L_RESOURCE_CORRECTION, correction.getId());
+            attributeBeforeCorrection.getDataDefinition().save(attributeBeforeCorrection);
+
+        });
     }
 
     public boolean onDelete(final DataDefinition resourceAttributeValueDD, final Entity resourceAttributeValue) {
         Entity resource = resourceAttributeValue.getBelongsToField(ResourceAttributeValueFields.RESOURCE);
+
         java.util.Optional<Entity> maybeCorrection = resourceCorrectionService.createCorrectionForResource(resource, true);
         if (maybeCorrection.isPresent()) {
             Entity correction = maybeCorrection.get();
-            Entity attributeBeforeCorrection = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                    MaterialFlowResourcesConstants.MODEL_RESOURCE_ATTRIBUTE_VALUE_BEFORE_CORRECTION).create();
-            attributeBeforeCorrection.setField(ResourceAttributeValueCorrectionAfterFields.ATTRIBUTE, resourceAttributeValue
-                    .getBelongsToField(ResourceAttributeValueFields.ATTRIBUTE).getId());
-            attributeBeforeCorrection.setField(ResourceAttributeValueCorrectionAfterFields.VALUE,
-                    resourceAttributeValue.getStringField(ResourceAttributeValueFields.VALUE));
-            attributeBeforeCorrection.setField(L_RESOURCE_CORRECTION, correction.getId());
-            attributeBeforeCorrection.getDataDefinition().save(attributeBeforeCorrection);
+            List<Entity> values = resource.getHasManyField(ResourceFields.RESOURCE_ATTRIBIUTE_VALUES);
+            createAttributeBeforeCorrection(values, correction);
+            createAttributeAfterCorrection(values, resourceAttributeValue, correction, true);
 
         }
 
