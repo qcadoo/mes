@@ -193,9 +193,9 @@
             </component>
         </windowTab>
         <windowTab name="attributes">
-            <component type="flowGridLayout" name="gridsLayout" columns="1"
-                       rows="5" hasBorders="false">
-                <layoutElement column="1" row="1"  minHeight="5">
+            <component type="grid" name="gridsLayout" columns="1"
+                       hasBorders="false">
+                <layoutElement column="1" row="1" >
                     <component type="grid" name="resourceAttributeValues" reference="resourceAttributeValues"
                                source="#{form}.resourceAttributeValues">
 
@@ -223,7 +223,7 @@
                         <option type="orderable" value="number,name,value,description,unit"/>
                         <option type="searchable" value="number,name,value,description,unit"/>
 
-                        <option type="paginable" value="false"/>
+                        <option type="paginable" value="true"/>
                         <option type="creatable" value="true"/>
                         <option type="deletable" value="true"/>
                         <option type="fullscreen" value="true"/>
