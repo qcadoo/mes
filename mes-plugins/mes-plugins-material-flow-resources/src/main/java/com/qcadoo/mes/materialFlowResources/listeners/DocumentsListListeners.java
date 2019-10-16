@@ -167,8 +167,8 @@ public class DocumentsListListeners {
                 document.getGlobalErrors().forEach(gridComponent::addMessage);
                 document.getErrors().values().forEach(gridComponent::addMessage);
             } else {
-                if (receiptDocumentForReleaseHelper.buildConnectedPZDocument(document)) {
-                    receiptDocumentForReleaseHelper.tryBuildPZ(document, view);
+                if (receiptDocumentForReleaseHelper.buildConnectedDocument(document)) {
+                    receiptDocumentForReleaseHelper.tryBuildConnectedDocument(document, view);
                 }
             }
         }

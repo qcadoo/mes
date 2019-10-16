@@ -45,8 +45,8 @@
             <validatesLength max="2048"/>
         </string>
         <hasMany name="positions" model="position" joinField="document" cascade="delete" copyable="true"/>
-        <boolean name="createLinkedPZDocument" default="false"/>
-        <belongsTo name="linkedPZDocumentLocation"
+        <boolean name="createLinkedDocument" default="false"/>
+        <belongsTo name="linkedDocumentLocation"
                    model="location" plugin="materialFlow"/>
         <boolean name="inBuffer" default="false"/>
         <datetime name="generationDate" copyable="false"/>

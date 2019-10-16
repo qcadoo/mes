@@ -155,7 +155,7 @@
 
         <model:model-field model="location" plugin="materialFlow">
             <model:hasMany name="linkedPZDocuments" plugin="materialFlowResources" model="document"
-                           joinField="linkedPZDocumentLocation"
+                           joinField="linkedDocumentLocation"
                            cascade="nullify"/>
         </model:model-field>
 
