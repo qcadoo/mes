@@ -29,9 +29,19 @@ public final class CoverageProductFields {
 
     }
 
+    public static final String FROM_SELECTED_ORDER = "fromSelectedOrder";
+
+    public static final String PRODUCT_NUMBER = "productNumber";
+
+    public static final String PRODUCT_NAME = "productName";
+
+    public static final String PRODUCT_UNIT = "productUnit";
+
     public static final String MATERIAL_REQUIREMENT_COVERAGE = "materialRequirementCoverage";
 
     public static final String PRODUCT = "product";
+
+    public static final String COMPANY = "company";
 
     public static final String LACK_FROM_DATE = "lackFromDate";
 
@@ -51,7 +61,8 @@ public final class CoverageProductFields {
 
     public static final String COVERAGE_PRODUCT_LOGGINGS = "coverageProductLoggings";
 
-    public static final String FROM_SELECTED_ORDER = "fromSelectedOrder";
+    public static final String PRODUCT_TYPE = "productType";
 
-    public static final String COMPANY = "company";
+    public static final String ALL_PRODUCTS_TYPE = "allProductsType";
+
 }
