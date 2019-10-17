@@ -132,7 +132,52 @@
                 <option type="expression" value="#product['name']"/>
             </component>
         </windowTab>
+        <windowTab name="attributes">
 
+            <component type="lookup" name="product" reference="product"
+                       field="#{form}.product" defaultVisible="false">
+                <option type="column" name="name" fields="name" link="true"
+                        width="200"/>
+                <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial"
+                        link="true"/>
+
+
+                <option type="searchable" value="name,globalTypeOfMaterial"/>
+                <option type="orderable" value="name,globalTypeOfMaterial"/>
+
+                <option type="expression"
+                        value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                <option type="fieldCode" value="number"/>
+            </component>
+            <component type="grid" name="productAttributeValues" reference="productAttributeValues"
+                       source="#{product}.productAttributeValues">
+
+                <option type="column" name="number" fields="attribute"
+                        expression="#attribute['number']" width="100"/>
+
+                <option type="column" name="name" fields="attribute"
+                        expression="#attribute['name']" width="200"/>
+
+                <option type="column" name="value" fields="value"
+                        width="100"/>
+
+                <option type="column" name="description" fields="attributeValue"
+                        expression="#attributeValue['description']" width="200"/>
+
+                <option type="column" name="unit" fields="attribute"
+                        expression="#attribute['unit']" link="false" width="50"/>
+
+                <option type="order" column="number" direction="desc"/>
+
+                <option type="orderable" value="number,name,value,description,unit"/>
+                <option type="searchable" value="number,name,value,description,unit"/>
+
+                <option type="paginable" value="true"/>
+                <option type="fullscreen" value="true"/>
+                <option type="multiselect" value="true"/>
+            </component>
+
+        </windowTab>
     </component>
 
     <hooks>

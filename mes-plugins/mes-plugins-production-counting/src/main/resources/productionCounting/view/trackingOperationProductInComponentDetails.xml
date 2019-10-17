@@ -33,111 +33,157 @@
 
         <ribbon>
             <group template="navigation"/>
-			<group name="actions">
-				<bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;" />
-				<bigButton name="saveBack" icon="saveBackIcon24.png" action="#{form}.performSave; #{window}.performBack;" />
-			</group>
+            <group name="actions">
+                <bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;"/>
+                <bigButton name="saveBack" icon="saveBackIcon24.png" action="#{form}.performSave; #{window}.performBack;"/>
+            </group>
         </ribbon>
 
-		<windowTab name="mainTab">
-			<component type="form" name="form" reference="form">
-				<component type="gridLayout" name="grid" reference="grid"
-						   columns="6" rows="10" hasBorders="false">
-					<layoutElement column="1" row="1" width="5">
-						<component type="input" name="number" reference="number"
-								   defaultEnabled="false">
-							<option type="alignment" value="right"/>
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="2" width="5">
-						<component type="input" name="name" reference="name"
-								   defaultEnabled="false"/>
-					</layoutElement>
-					<layoutElement column="1" row="3" width="5">
-						<component type="input" name="plannedQuantity" field="plannedQuantity"
-								   reference="plannedQuantity" defaultEnabled="false">
-							<option type="alignment" value="right"/>
-						</component>
-					</layoutElement>
-					<layoutElement column="6" row="3">
-						<component type="input" name="plannedQuantityUNIT"
-								   reference="plannedQuantityUNIT" defaultEnabled="false" hasLabel="false"/>
-					</layoutElement>
-					<layoutElement column="1" row="4" width="5">
-						<component type="input" name="usedQuantity" reference="usedQuantity" field="usedQuantity"
-                               defaultEnabled="true">
-							<option type="alignment" value="right"/>
+        <windowTab name="mainTab">
+            <component type="form" name="form" reference="form">
+                <component type="gridLayout" name="grid" reference="grid"
+                           columns="6" rows="10" hasBorders="false">
+                    <layoutElement column="1" row="1" width="5">
+                        <component type="input" name="number" reference="number"
+                                   defaultEnabled="false">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2" width="5">
+                        <component type="input" name="name" reference="name"
+                                   defaultEnabled="false"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="3" width="5">
+                        <component type="input" name="plannedQuantity" field="plannedQuantity"
+                                   reference="plannedQuantity" defaultEnabled="false">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="6" row="3">
+                        <component type="input" name="plannedQuantityUNIT"
+                                   reference="plannedQuantityUNIT" defaultEnabled="false" hasLabel="false"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="4" width="5">
+                        <component type="input" name="usedQuantity" reference="usedQuantity" field="usedQuantity"
+                                   defaultEnabled="true">
+                            <option type="alignment" value="right"/>
 
-                        <listener event="onInputChange" method="calculateQuantityToGiven"
-                                  class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners"/>
-						</component>
-					</layoutElement>
-					<layoutElement column="6" row="4">
-						<component type="input" name="usedQuantityUNIT"
-								   reference="usedQuantityUNIT" defaultEnabled="false" hasLabel="false"/>
-					</layoutElement>
-	
-					<layoutElement column="1" row="5" width="5">
-						<component type="input" name="givenQuantity" field="givenQuantity" reference="givenQuantity">
-							<option type="alignment" value="right"/>
-							<listener event="onInputChange" method="givenQuantityChangedIn"
-									  class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners"/>
-						</component>
-					</layoutElement>
-					<layoutElement column="6" row="5">
-						<component type="select" name="givenUnit" reference="givenUnit"
-								   hasLabel="false" field="givenUnit">
-							<listener event="onSelectedEntityChange" method="calculateQuantity"
-									  class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners"/>
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="6" width="5">
-						<component type="checkbox" name="wasteUsed" field="wasteUsed" reference="wasteUsed"
-								   hasDescription="true">
-							<listener event="onChange"
-									  class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductInComponentDetailsListeners"
-									  method="onWasteUsedChange"/>
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="7" width="5">
-						<component type="checkbox" name="wasteUsedOnly" field="wasteUsedOnly" reference="wasteUsedOnly"
-								   hasDescription="true">
-							<listener event="onChange"
-									  class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductInComponentDetailsListeners"
-									  method="onWasteUsedOnlyChange"/>
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="8" width="5">
-						<component type="input" name="wasteUsedQuantity" field="wasteUsedQuantity"
-								   reference="wasteUsedQuantity" hasDescription="true">
-							<option type="alignment" value="right"/>
-							<listener event="onInputChange" method="recalculateUsedQuantity"
-									  class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductInComponentDetailsListeners"/>
-						</component>
-					</layoutElement>
-					<layoutElement column="6" row="8">
-						<component type="select" name="wasteUnit" reference="wasteUnit" field="wasteUnit"
-								   hasLabel="false">
-							<listener event="onSelectedEntityChange" method="recalculateUsedQuantity"
-									  class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductInComponentDetailsListeners"/>
-						</component>
-					</layoutElement>
-					<layoutElement column="1" row="9" width="5" height="2">
-						<component type="textarea" name="additionalInformation" field="additionalInformation"
-								   hasDescription="true"/>
-					</layoutElement>
-				</component>
-	
-				<option type="header" value="true"/>
-				<option type="expression" value="#product['name']"/>
-			</component>
-		</windowTab>
+                            <listener event="onInputChange" method="calculateQuantityToGiven"
+                                      class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="6" row="4">
+                        <component type="input" name="usedQuantityUNIT"
+                                   reference="usedQuantityUNIT" defaultEnabled="false" hasLabel="false"/>
+                    </layoutElement>
+
+                    <layoutElement column="1" row="5" width="5">
+                        <component type="input" name="givenQuantity" field="givenQuantity" reference="givenQuantity">
+                            <option type="alignment" value="right"/>
+                            <listener event="onInputChange" method="givenQuantityChangedIn"
+                                      class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="6" row="5">
+                        <component type="select" name="givenUnit" reference="givenUnit"
+                                   hasLabel="false" field="givenUnit">
+                            <listener event="onSelectedEntityChange" method="calculateQuantity"
+                                      class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="6" width="5">
+                        <component type="checkbox" name="wasteUsed" field="wasteUsed" reference="wasteUsed"
+                                   hasDescription="true">
+                            <listener event="onChange"
+                                      class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductInComponentDetailsListeners"
+                                      method="onWasteUsedChange"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="7" width="5">
+                        <component type="checkbox" name="wasteUsedOnly" field="wasteUsedOnly" reference="wasteUsedOnly"
+                                   hasDescription="true">
+                            <listener event="onChange"
+                                      class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductInComponentDetailsListeners"
+                                      method="onWasteUsedOnlyChange"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="8" width="5">
+                        <component type="input" name="wasteUsedQuantity" field="wasteUsedQuantity"
+                                   reference="wasteUsedQuantity" hasDescription="true">
+                            <option type="alignment" value="right"/>
+                            <listener event="onInputChange" method="recalculateUsedQuantity"
+                                      class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductInComponentDetailsListeners"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="6" row="8">
+                        <component type="select" name="wasteUnit" reference="wasteUnit" field="wasteUnit"
+                                   hasLabel="false">
+                            <listener event="onSelectedEntityChange" method="recalculateUsedQuantity"
+                                      class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductInComponentDetailsListeners"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="9" width="5" height="2">
+                        <component type="textarea" name="additionalInformation" field="additionalInformation"
+                                   hasDescription="true"/>
+                    </layoutElement>
+                </component>
+
+                <option type="header" value="true"/>
+                <option type="expression" value="#product['name']"/>
+            </component>
+        </windowTab>
+        <windowTab name="attributes">
+
+            <component type="lookup" name="product" reference="product"
+                       field="#{form}.product" defaultVisible="false">
+                <option type="column" name="name" fields="name" link="true"
+                        width="200"/>
+                <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial"
+                        link="true"/>
+
+
+                <option type="searchable" value="name,globalTypeOfMaterial"/>
+                <option type="orderable" value="name,globalTypeOfMaterial"/>
+
+                <option type="expression"
+                        value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                <option type="fieldCode" value="number"/>
+            </component>
+            <component type="grid" name="productAttributeValues" reference="productAttributeValues"
+                       source="#{product}.productAttributeValues">
+
+                <option type="column" name="number" fields="attribute"
+                        expression="#attribute['number']" width="100"/>
+
+                <option type="column" name="name" fields="attribute"
+                        expression="#attribute['name']" width="200"/>
+
+                <option type="column" name="value" fields="value"
+                        width="100"/>
+
+                <option type="column" name="description" fields="attributeValue"
+                        expression="#attributeValue['description']" width="200"/>
+
+                <option type="column" name="unit" fields="attribute"
+                        expression="#attribute['unit']" link="false" width="50"/>
+
+                <option type="order" column="number" direction="desc"/>
+
+                <option type="orderable" value="number,name,value,description,unit"/>
+                <option type="searchable" value="number,name,value,description,unit"/>
+
+                <option type="paginable" value="true"/>
+                <option type="fullscreen" value="true"/>
+                <option type="multiselect" value="true"/>
+            </component>
+
+        </windowTab>
 
     </component>
 
     <hooks>
         <beforeRender
-				class="com.qcadoo.mes.productionCounting.hooks.TrackingOperationProductInComponentDetailsHooks"
+                class="com.qcadoo.mes.productionCounting.hooks.TrackingOperationProductInComponentDetailsHooks"
                 method="onBeforeRender"/>
     </hooks>
 
