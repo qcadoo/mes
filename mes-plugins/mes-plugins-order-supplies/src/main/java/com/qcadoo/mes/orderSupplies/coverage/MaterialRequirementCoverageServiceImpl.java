@@ -713,7 +713,7 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
 
             String sql = "SELECT resource.product.id AS product, SUM(resource.quantity) AS quantity "
                     + "FROM #materialFlowResources_resource AS resource "
-                    + "WHERE resource.location.id =: locationId GROUP BY resource.product.id";
+                    + "WHERE resource.location.id = :locationId GROUP BY resource.product.id";
 
             List<Entity> resources = getResourceDD().find(sql).setParameter("locationId", location.getId()).list().getEntities();
 
