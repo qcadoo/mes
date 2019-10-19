@@ -92,6 +92,10 @@ public final class BasicConstants {
 
     public static final String MODEL_STAFF_SKILL = "staffSkill";
 
+    public static final String ATTRIBUTE = "attribute";
+
+    public static final String ATTRIBUTE_VALUE = "attributeValue";
+
     // VIEW
 
     public static final String VIEW_MACHINE_DETAILS = "machineDetails";

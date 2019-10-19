@@ -8332,6 +8332,73 @@ CREATE SEQUENCE basic_attachmentdto_id_seq
 
 
 --
+-- Name: basic_attribute; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_attribute (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(1024),
+    datatype character varying(255),
+    valuetype character varying(255),
+    "precision" integer,
+    unit character varying(255),
+    forproduct boolean DEFAULT false,
+    forresource boolean DEFAULT false
+);
+
+
+--
+-- Name: basic_attribute_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE basic_attribute_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_attribute_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE basic_attribute_id_seq OWNED BY basic_attribute.id;
+
+
+--
+-- Name: basic_attributevalue; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_attributevalue (
+    id bigint NOT NULL,
+    attribute_id bigint,
+    value character varying(255),
+    description character varying(1024)
+);
+
+
+--
+-- Name: basic_attributevalue_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE basic_attributevalue_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_attributevalue_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE basic_attributevalue_id_seq OWNED BY basic_attributevalue.id;
+
+
+--
 -- Name: basic_company_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -8861,6 +8928,38 @@ CREATE SEQUENCE basic_productattachment_id_seq
 --
 
 ALTER SEQUENCE basic_productattachment_id_seq OWNED BY basic_productattachment.id;
+
+
+--
+-- Name: basic_productattributevalue; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_productattributevalue (
+    id bigint NOT NULL,
+    product_id bigint,
+    attribute_id bigint,
+    attributevalue_id bigint,
+    value character varying(255)
+);
+
+
+--
+-- Name: basic_productattributevalue_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE basic_productattributevalue_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_productattributevalue_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE basic_productattributevalue_id_seq OWNED BY basic_productattributevalue.id;
 
 
 --
@@ -15205,8 +15304,8 @@ CREATE TABLE materialflowresources_document (
     entityversion bigint DEFAULT 0,
     plannedevent_id bigint,
     name character varying(255) NOT NULL,
-    createlinkedpzdocument boolean,
-    linkedpzdocumentlocation_id bigint,
+    createlinkeddocument boolean,
+    linkeddocumentlocation_id bigint,
     address_id bigint,
     inbuffer boolean DEFAULT false,
     dispositionshift_id bigint,
@@ -15944,6 +16043,101 @@ CREATE SEQUENCE materialflowresources_resource_number_2017
 
 
 --
+-- Name: materialflowresources_resourceattributevalue; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE materialflowresources_resourceattributevalue (
+    id bigint NOT NULL,
+    resource_id bigint,
+    attribute_id bigint,
+    attributevalue_id bigint,
+    value character varying(255),
+    fromdefinition boolean DEFAULT false
+);
+
+
+--
+-- Name: materialflowresources_resourceattributevalue_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE materialflowresources_resourceattributevalue_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: materialflowresources_resourceattributevalue_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE materialflowresources_resourceattributevalue_id_seq OWNED BY materialflowresources_resourceattributevalue.id;
+
+
+--
+-- Name: materialflowresources_resourceattributevalueaftercorrection; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE materialflowresources_resourceattributevalueaftercorrection (
+    id bigint NOT NULL,
+    resourcecorrection_id bigint,
+    attribute_id bigint,
+    value character varying(255)
+);
+
+
+--
+-- Name: materialflowresources_resourceattributevalueaftercorrection_id_; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE materialflowresources_resourceattributevalueaftercorrection_id_
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: materialflowresources_resourceattributevalueaftercorrection_id_; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE materialflowresources_resourceattributevalueaftercorrection_id_ OWNED BY materialflowresources_resourceattributevalueaftercorrection.id;
+
+
+--
+-- Name: materialflowresources_resourceattributevaluebeforecorrection; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE materialflowresources_resourceattributevaluebeforecorrection (
+    id bigint NOT NULL,
+    resourcecorrection_id bigint,
+    attribute_id bigint,
+    value character varying(255)
+);
+
+
+--
+-- Name: materialflowresources_resourceattributevaluebeforecorrection_id; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE materialflowresources_resourceattributevaluebeforecorrection_id
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: materialflowresources_resourceattributevaluebeforecorrection_id; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE materialflowresources_resourceattributevaluebeforecorrection_id OWNED BY materialflowresources_resourceattributevaluebeforecorrection.id;
+
+
+--
 -- Name: materialflowresources_resourcecorrection; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -16084,7 +16278,13 @@ CREATE VIEW materialflowresources_resourcedto AS
             ELSE (' - '::text || (additionalcode.code)::text)
         END) AS mergedproductnumberandadditionalcode,
     (r.location_id)::integer AS location_id,
-    NULL::bigint AS positionaddmultihelper_id
+    NULL::bigint AS positionaddmultihelper_id,
+        CASE
+            WHEN (( SELECT count(*) AS count
+               FROM materialflowresources_resourceattributevalue resourceattributevalue
+              WHERE (resourceattributevalue.resource_id = r.id)) > 0) THEN true
+            ELSE false
+        END AS attributecorrection
    FROM (((((materialflowresources_resource r
      JOIN materialflow_location location ON ((location.id = r.location_id)))
      JOIN basic_product product ON ((product.id = r.product_id)))
@@ -25610,6 +25810,20 @@ ALTER TABLE ONLY basic_assortmentelement ALTER COLUMN id SET DEFAULT nextval('ba
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY basic_attribute ALTER COLUMN id SET DEFAULT nextval('basic_attribute_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_attributevalue ALTER COLUMN id SET DEFAULT nextval('basic_attributevalue_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY basic_company ALTER COLUMN id SET DEFAULT nextval('basic_company_id_seq'::regclass);
 
 
@@ -25695,6 +25909,13 @@ ALTER TABLE ONLY basic_product ALTER COLUMN id SET DEFAULT nextval('basic_produc
 --
 
 ALTER TABLE ONLY basic_productattachment ALTER COLUMN id SET DEFAULT nextval('basic_productattachment_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_productattributevalue ALTER COLUMN id SET DEFAULT nextval('basic_productattributevalue_id_seq'::regclass);
 
 
 --
@@ -26591,6 +26812,27 @@ ALTER TABLE ONLY materialflowresources_reservation ALTER COLUMN id SET DEFAULT n
 --
 
 ALTER TABLE ONLY materialflowresources_resource ALTER COLUMN id SET DEFAULT nextval('materialflowresources_resource_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY materialflowresources_resourceattributevalue ALTER COLUMN id SET DEFAULT nextval('materialflowresources_resourceattributevalue_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY materialflowresources_resourceattributevalueaftercorrection ALTER COLUMN id SET DEFAULT nextval('materialflowresources_resourceattributevalueaftercorrection_id_'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY materialflowresources_resourceattributevaluebeforecorrection ALTER COLUMN id SET DEFAULT nextval('materialflowresources_resourceattributevaluebeforecorrection_id'::regclass);
 
 
 --
@@ -29848,6 +30090,36 @@ SELECT pg_catalog.setval('basic_attachmentdto_id_seq', 1, false);
 
 
 --
+-- Data for Name: basic_attribute; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY basic_attribute (id, number, name, datatype, valuetype, "precision", unit, forproduct, forresource) FROM stdin;
+\.
+
+
+--
+-- Name: basic_attribute_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('basic_attribute_id_seq', 1, false);
+
+
+--
+-- Data for Name: basic_attributevalue; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY basic_attributevalue (id, attribute_id, value, description) FROM stdin;
+\.
+
+
+--
+-- Name: basic_attributevalue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('basic_attributevalue_id_seq', 1, false);
+
+
+--
 -- Data for Name: basic_company; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -30474,6 +30746,21 @@ COPY basic_productattachment (id, product_id, attachment, name, size, ext) FROM 
 --
 
 SELECT pg_catalog.setval('basic_productattachment_id_seq', 1, false);
+
+
+--
+-- Data for Name: basic_productattributevalue; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY basic_productattributevalue (id, product_id, attribute_id, attributevalue_id, value) FROM stdin;
+\.
+
+
+--
+-- Name: basic_productattributevalue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('basic_productattributevalue_id_seq', 1, false);
 
 
 --
@@ -32920,7 +33207,7 @@ SELECT pg_catalog.setval('materialflowresources_costnormslocation_id_seq', 1, fa
 -- Data for Name: materialflowresources_document; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkedpzdocument, linkedpzdocumentlocation_id, address_id, inbuffer, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress, externalnumber, issend) FROM stdin;
+COPY materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, inbuffer, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress, externalnumber, issend) FROM stdin;
 \.
 
 
@@ -33192,6 +33479,51 @@ SELECT pg_catalog.setval('materialflowresources_resource_number_2016', 1, false)
 --
 
 SELECT pg_catalog.setval('materialflowresources_resource_number_2017', 1, false);
+
+
+--
+-- Data for Name: materialflowresources_resourceattributevalue; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY materialflowresources_resourceattributevalue (id, resource_id, attribute_id, attributevalue_id, value, fromdefinition) FROM stdin;
+\.
+
+
+--
+-- Name: materialflowresources_resourceattributevalue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('materialflowresources_resourceattributevalue_id_seq', 1, false);
+
+
+--
+-- Data for Name: materialflowresources_resourceattributevalueaftercorrection; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY materialflowresources_resourceattributevalueaftercorrection (id, resourcecorrection_id, attribute_id, value) FROM stdin;
+\.
+
+
+--
+-- Name: materialflowresources_resourceattributevalueaftercorrection_id_; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('materialflowresources_resourceattributevalueaftercorrection_id_', 1, false);
+
+
+--
+-- Data for Name: materialflowresources_resourceattributevaluebeforecorrection; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY materialflowresources_resourceattributevaluebeforecorrection (id, resourcecorrection_id, attribute_id, value) FROM stdin;
+\.
+
+
+--
+-- Name: materialflowresources_resourceattributevaluebeforecorrection_id; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('materialflowresources_resourceattributevaluebeforecorrection_id', 1, false);
 
 
 --
@@ -35667,6 +35999,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 148	basic	skillsList	t	4	147	23	ROLE_SKILLS	0
 149	orders	schedulesList	t	7	148	18	ROLE_PLANNING	0
 46	orders	operationalTasks	t	7	46	1	ROLE_PLANNING	0
+150	basic	attributesList	t	4	149	24	ROLE_PRODUCTS	0
 \.
 
 
@@ -35674,7 +36007,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 149, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 150, true);
 
 
 --
@@ -35825,6 +36158,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 147	basic	skillsList	skillsList	\N	0
 148	orders	schedulesList	schedulesList	\N	0
 46	orders	operationalTasksList	operationalTasksList	\N	0
+149	basic	attributesList	attributesList	\N	0
 \.
 
 
@@ -35832,7 +36166,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 148, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 149, true);
 
 
 --
@@ -38190,6 +38524,22 @@ ALTER TABLE ONLY basic_assortmentelement
 
 
 --
+-- Name: basic_attribute_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_attribute
+    ADD CONSTRAINT basic_attribute_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: basic_attributevalue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_attributevalue
+    ADD CONSTRAINT basic_attributevalue_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: basic_company_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -38291,6 +38641,14 @@ ALTER TABLE ONLY basic_product
 
 ALTER TABLE ONLY basic_productattachment
     ADD CONSTRAINT basic_productattachment_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: basic_productattributevalue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_productattributevalue
+    ADD CONSTRAINT basic_productattributevalue_pkey PRIMARY KEY (id);
 
 
 --
@@ -39707,6 +40065,30 @@ ALTER TABLE ONLY materialflowresources_reservation
 
 ALTER TABLE ONLY materialflowresources_resource
     ADD CONSTRAINT materialflowresources_resource_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: materialflowresources_resourceattributevalue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY materialflowresources_resourceattributevalue
+    ADD CONSTRAINT materialflowresources_resourceattributevalue_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: materialflowresources_resourceattributevalueaftercorrectio_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY materialflowresources_resourceattributevalueaftercorrection
+    ADD CONSTRAINT materialflowresources_resourceattributevalueaftercorrectio_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: materialflowresources_resourceattributevaluebeforecorrecti_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY materialflowresources_resourceattributevaluebeforecorrection
+    ADD CONSTRAINT materialflowresources_resourceattributevaluebeforecorrecti_pkey PRIMARY KEY (id);
 
 
 --
@@ -43852,6 +44234,14 @@ ALTER TABLE ONLY cmmsscheduler_recurringeventattachment
 
 
 --
+-- Name: attributevalue_attribute_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_attributevalue
+    ADD CONSTRAINT attributevalue_attribute_fkey FOREIGN KEY (attribute_id) REFERENCES basic_attribute(id) DEFERRABLE;
+
+
+--
 -- Name: avglaborcostcalcfororder_avglaborcostcalcfororder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -45684,11 +46074,11 @@ ALTER TABLE ONLY arch_materialflowresources_document
 
 
 --
--- Name: document_linkedpzdocumentlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: document_linkeddocumentlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflowresources_document
-    ADD CONSTRAINT document_linkedpzdocumentlocation_fkey FOREIGN KEY (linkedpzdocumentlocation_id) REFERENCES materialflow_location(id) DEFERRABLE;
+    ADD CONSTRAINT document_linkeddocumentlocation_fkey FOREIGN KEY (linkeddocumentlocation_id) REFERENCES materialflow_location(id) DEFERRABLE;
 
 
 --
@@ -49812,6 +50202,30 @@ ALTER TABLE ONLY basic_productattachment
 
 
 --
+-- Name: productattributevalue_attribute_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_productattributevalue
+    ADD CONSTRAINT productattributevalue_attribute_fkey FOREIGN KEY (attribute_id) REFERENCES basic_attribute(id) DEFERRABLE;
+
+
+--
+-- Name: productattributevalue_attributevalue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_productattributevalue
+    ADD CONSTRAINT productattributevalue_attributevalue_fkey FOREIGN KEY (attributevalue_id) REFERENCES basic_attributevalue(id) DEFERRABLE;
+
+
+--
+-- Name: productattributevalue_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_productattributevalue
+    ADD CONSTRAINT productattributevalue_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
 -- Name: productcatalognumbers_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -51585,6 +51999,62 @@ ALTER TABLE ONLY materialflowresources_resource
 
 ALTER TABLE ONLY materialflowresources_resource
     ADD CONSTRAINT resource_storagelocation_fkey FOREIGN KEY (storagelocation_id) REFERENCES materialflowresources_storagelocation(id) DEFERRABLE;
+
+
+--
+-- Name: resourceattributevalue_attribute_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY materialflowresources_resourceattributevalue
+    ADD CONSTRAINT resourceattributevalue_attribute_fkey FOREIGN KEY (attribute_id) REFERENCES basic_attribute(id) DEFERRABLE;
+
+
+--
+-- Name: resourceattributevalue_attributevalue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY materialflowresources_resourceattributevalue
+    ADD CONSTRAINT resourceattributevalue_attributevalue_fkey FOREIGN KEY (attributevalue_id) REFERENCES basic_attributevalue(id) DEFERRABLE;
+
+
+--
+-- Name: resourceattributevalue_resource_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY materialflowresources_resourceattributevalue
+    ADD CONSTRAINT resourceattributevalue_resource_fkey FOREIGN KEY (resource_id) REFERENCES materialflowresources_resource(id) DEFERRABLE;
+
+
+--
+-- Name: resourceattributevalueaftercorrection_attribute_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY materialflowresources_resourceattributevalueaftercorrection
+    ADD CONSTRAINT resourceattributevalueaftercorrection_attribute_fkey FOREIGN KEY (attribute_id) REFERENCES basic_attribute(id) DEFERRABLE;
+
+
+--
+-- Name: resourceattributevalueaftercorrection_resourcecorrection_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY materialflowresources_resourceattributevalueaftercorrection
+    ADD CONSTRAINT resourceattributevalueaftercorrection_resourcecorrection_fkey FOREIGN KEY (resourcecorrection_id) REFERENCES materialflowresources_resourcecorrection(id) DEFERRABLE;
+
+
+--
+-- Name: resourceattributevaluebeforecorrection_attribute_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY materialflowresources_resourceattributevaluebeforecorrection
+    ADD CONSTRAINT resourceattributevaluebeforecorrection_attribute_fkey FOREIGN KEY (attribute_id) REFERENCES basic_attribute(id) DEFERRABLE;
+
+
+--
+-- Name: resourceattributevaluebeforecorrection_resourcecorrection_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY materialflowresources_resourceattributevaluebeforecorrection
+    ADD CONSTRAINT resourceattributevaluebeforecorrection_resourcecorrection_fkey FOREIGN KEY (resourcecorrection_id) REFERENCES materialflowresources_resourcecorrection(id) DEFERRABLE;
 
 
 --

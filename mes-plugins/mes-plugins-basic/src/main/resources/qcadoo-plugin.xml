@@ -274,6 +274,10 @@
 		<model:model model="skill" resource="model/skill.xml"/>
 		<model:model model="staffSkill" resource="model/staffSkill.xml"/>
 
+		<model:model model="attribute" resource="model/attribute.xml"/>
+		<model:model model="attributeValue" resource="model/attributeValue.xml"/>
+		<model:model model="productAttributeValue" resource="model/productAttributeValue.xml"/>
+
         <model:dictionary name="categories"/>
         <model:dictionary name="posts"/>
         <model:dictionary name="reasonTypeOfChangingOrderState"/>
@@ -303,6 +307,7 @@
         <menu:menu-item name="crews" category="basic" view="crewsList" defaultAuthorizationRole="ROLE_CREW"/>
         <menu:menu-item name="shifts" category="basic" view="shiftsList" defaultAuthorizationRole="ROLE_SHIFTS"/>
         <menu:menu-item name="products" category="basic" view="productsList" defaultAuthorizationRole="ROLE_PRODUCTS"/>
+        <menu:menu-item name="attributesList" category="basic" view="attributesList" defaultAuthorizationRole="ROLE_PRODUCTS"/>
         <menu:menu-item name="productsFamilies" category="basic"
                         view="productsFamilies" defaultAuthorizationRole="ROLE_PRODUCT_FAMILIES"/>
 
@@ -423,6 +428,11 @@
 
         <view:view-tab resource="view/tabExtensions/userDetailsStaffTab.xml"/>
         <view:view-tab resource="view/tabExtensions/userProfile.xml"/>
+
+        <view:view resource="view/attributeDetails.xml"/>
+        <view:view resource="view/attributesList.xml"/>
+        <view:view resource="view/attributeValueDetails.xml"/>
+        <view:view resource="view/productAttributeValueDetails.xml"/>
 
         <model:model-field plugin="qcadooSecurity" model="user">
             <model:belongsTo model="staff" plugin="basic" name="staff"/>

@@ -1,15 +1,5 @@
 package com.qcadoo.mes.materialFlowResources.listeners;
 
-import static com.qcadoo.model.api.search.SearchRestrictions.eq;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PalletStorageStateDtoFields;
@@ -28,6 +18,15 @@ import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import static com.qcadoo.model.api.search.SearchRestrictions.eq;
 
 @Service
 public class PalletMoveToStorageLocationHelperListeners {
@@ -98,7 +97,7 @@ public class PalletMoveToStorageLocationHelperListeners {
                     }
                     resource.setField(ResourceFields.STORAGE_LOCATION, newStorageLocation);
                     resource.setField(ResourceFields.VALIDATE_PALLET, false);
-                    resourceCorrectionService.createCorrectionForResource(resource);
+                    resourceCorrectionService.createCorrectionForResource(resource, false);
                 }
             }
             if (!resourcesOnDifferentLocations.isEmpty()) {

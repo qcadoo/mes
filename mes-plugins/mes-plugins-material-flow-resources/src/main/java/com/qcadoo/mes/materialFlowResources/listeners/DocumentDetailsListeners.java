@@ -299,8 +299,8 @@ public class DocumentDetailsListeners {
         } else {
             documentForm.addMessage("materialFlowResources.success.documentAccepted", MessageType.SUCCESS);
 
-            if (receiptDocumentForReleaseHelper.buildConnectedPZDocument(document)) {
-                receiptDocumentForReleaseHelper.tryBuildPZ(document, view);
+            if (receiptDocumentForReleaseHelper.buildConnectedDocument(document)) {
+                receiptDocumentForReleaseHelper.tryBuildConnectedDocument(document, view);
             }
 
             String successMessage = String.format("DOCUMENT ACCEPT SUCCESS: id = %d number = %s", document.getId(),

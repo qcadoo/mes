@@ -126,8 +126,8 @@ public class WarehouseIssueDocumentsService {
         documentBuilder.setField(DocumentFields.LOCATION_FROM, locationFrom);
         documentBuilder.setField(DocumentFields.DESCRIPTION,
                 buildDescriptionForReleaseDocument(locationTo, positions, additionalInfo));
-        documentBuilder.setField(DocumentFields.CREATE_LINKED_PZ_DOCUMENT, true);
-        documentBuilder.setField(DocumentFields.LINKED_PZ_DOCUMENT_LOCATION, locationTo);
+        documentBuilder.setField(DocumentFields.CREATE_LINKED_DOCUMENT, true);
+        documentBuilder.setField(DocumentFields.LINKED_DOCUMENT_LOCATION, locationTo);
         buildDocumentPositions(positions, documentBuilder);
 
         return build(documentsStatus, documentBuilder);

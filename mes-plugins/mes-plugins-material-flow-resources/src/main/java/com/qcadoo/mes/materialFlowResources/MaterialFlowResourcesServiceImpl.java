@@ -23,18 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.NAME;
-import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
-import static com.qcadoo.mes.materialFlow.constants.LocationType.WAREHOUSE;
-import static com.qcadoo.mes.materialFlow.constants.StockCorrectionFields.LOCATION;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
-import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.BATCH;
-import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.PRODUCT;
-import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.QUANTITY;
-import static com.qcadoo.mes.materialFlowResources.constants.TransferFieldsMFR.PRICE;
-
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.Date;
@@ -49,11 +37,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.materialFlow.constants.LocationFields;
+import com.qcadoo.mes.materialFlow.constants.LocationType;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
+import com.qcadoo.mes.materialFlow.constants.TransferFields;
 import com.qcadoo.mes.materialFlowResources.constants.ChangeDateWhenTransferToWarehouseType;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+import com.qcadoo.mes.materialFlowResources.constants.TransferFieldsMFR;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -83,7 +76,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Override
     public boolean areResourcesSufficient(final Entity location, final Entity product, final BigDecimal quantity) {
-        String type = location.getStringField(TYPE);
+        String type = location.getStringField(LocationFields.TYPE);
 
         if (isTypeWarehouse(type)) {
             BigDecimal resourcesQuantity = getResourcesQuantityForLocationAndProduct(location, product);
@@ -96,7 +89,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Override
     public BigDecimal getResourcesQuantityForLocationAndProduct(final Entity location, final Entity product) {
-        String type = location.getStringField(TYPE);
+        String type = location.getStringField(LocationFields.TYPE);
 
         if (isTypeWarehouse(type)) {
             List<Entity> resources = getResourcesForLocationAndProduct(location, product);
@@ -107,7 +100,8 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
                 BigDecimal resourcesQuantity = BigDecimal.ZERO;
 
                 for (Entity resource : resources) {
-                    resourcesQuantity = resourcesQuantity.add(resource.getDecimalField(QUANTITY), numberService.getMathContext());
+                    resourcesQuantity = resourcesQuantity.add(resource.getDecimalField(ResourceFields.QUANTITY),
+                            numberService.getMathContext());
                 }
 
                 return resourcesQuantity;
@@ -124,25 +118,25 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             return;
         }
 
-        Entity locationFrom = transfer.getBelongsToField(LOCATION_FROM);
-        Entity locationTo = transfer.getBelongsToField(LOCATION_TO);
-        Entity product = transfer.getBelongsToField(PRODUCT);
-        BigDecimal quantity = transfer.getDecimalField(QUANTITY);
-        Date time = (Date) transfer.getField(TIME);
-        BigDecimal price = transfer.getDecimalField(PRICE);
+        Entity locationFrom = transfer.getBelongsToField(TransferFields.LOCATION_FROM);
+        Entity locationTo = transfer.getBelongsToField(TransferFields.LOCATION_TO);
+        Entity product = transfer.getBelongsToField(TransferFields.PRODUCT);
+        BigDecimal quantity = transfer.getDecimalField(TransferFields.QUANTITY);
+        Date time = (Date) transfer.getField(TransferFields.TIME);
+        BigDecimal price = transfer.getDecimalField(TransferFieldsMFR.PRICE);
 
-        if ((locationFrom != null) && isTypeWarehouse(locationFrom.getStringField(TYPE)) && (locationTo != null)
-                && isTypeWarehouse(locationTo.getStringField(TYPE))) {
+        if ((locationFrom != null) && isTypeWarehouse(locationFrom.getStringField(LocationFields.TYPE)) && (locationTo != null)
+                && isTypeWarehouse(locationTo.getStringField(LocationFields.TYPE))) {
             moveResource(locationFrom, locationTo, product, quantity, time, price);
-        } else if ((locationFrom != null) && isTypeWarehouse(locationFrom.getStringField(TYPE))) {
+        } else if ((locationFrom != null) && isTypeWarehouse(locationFrom.getStringField(LocationFields.TYPE))) {
             updateResource(locationFrom, product, quantity);
-        } else if ((locationTo != null) && isTypeWarehouse(locationTo.getStringField(TYPE))) {
+        } else if ((locationTo != null) && isTypeWarehouse(locationTo.getStringField(LocationFields.TYPE))) {
             addResource(locationTo, product, quantity, time, price);
         }
     }
 
     private boolean isTypeWarehouse(final String type) {
-        return ((type != null) && WAREHOUSE.getStringValue().equals(type));
+        return ((type != null) && LocationType.WAREHOUSE.getStringValue().equals(type));
     }
 
     @Override
@@ -154,15 +148,14 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     @Override
     public void addResource(final Entity locationTo, final Entity product, final BigDecimal quantity, final Date time,
             final BigDecimal price, final String batch) {
-        Entity resource = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_RESOURCE).create();
+        Entity resource = getResourceDD().create();
 
-        resource.setField(LOCATION, locationTo);
-        resource.setField(PRODUCT, product);
-        resource.setField(QUANTITY, numberService.setScaleWithDefaultMathContext(quantity));
-        resource.setField(TIME, time);
-        resource.setField(BATCH, batch);
-        resource.setField(PRICE, (price == null) ? null : numberService.setScaleWithDefaultMathContext(price));
+        resource.setField(ResourceFields.LOCATION, locationTo);
+        resource.setField(ResourceFields.PRODUCT, product);
+        resource.setField(ResourceFields.QUANTITY, numberService.setScaleWithDefaultMathContext(quantity));
+        resource.setField(ResourceFields.TIME, time);
+        resource.setField(ResourceFields.BATCH, batch);
+        resource.setField(ResourceFields.PRICE, (price == null) ? null : numberService.setScaleWithDefaultMathContext(price));
 
         resource.getDataDefinition().save(resource);
     }
@@ -173,7 +166,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
         if (resources != null) {
             for (Entity resource : resources) {
-                BigDecimal resourceQuantity = resource.getDecimalField(QUANTITY);
+                BigDecimal resourceQuantity = resource.getDecimalField(ResourceFields.QUANTITY);
 
                 if (quantity.compareTo(resourceQuantity) >= 0) {
                     quantity = quantity.subtract(resourceQuantity, numberService.getMathContext());
@@ -186,7 +179,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
                 } else {
                     resourceQuantity = resourceQuantity.subtract(quantity, numberService.getMathContext());
 
-                    resource.setField(QUANTITY, numberService.setScaleWithDefaultMathContext(resourceQuantity));
+                    resource.setField(ResourceFields.QUANTITY, numberService.setScaleWithDefaultMathContext(resourceQuantity));
 
                     resource.getDataDefinition().save(resource);
 
@@ -203,9 +196,9 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
         if (resources != null) {
             for (Entity resource : resources) {
-                BigDecimal resourceQuantity = resource.getDecimalField(QUANTITY);
-                BigDecimal resourcePrice = (price == null) ? resource.getDecimalField(PRICE) : price;
-                String resourceBatch = (price == null) ? resource.getStringField(BATCH) : null;
+                BigDecimal resourceQuantity = resource.getDecimalField(ResourceFields.QUANTITY);
+                BigDecimal resourcePrice = (price == null) ? resource.getDecimalField(ResourceFields.PRICE) : price;
+                String resourceBatch = (price == null) ? resource.getStringField(ResourceFields.BATCH) : null;
 
                 if (quantity.compareTo(resourceQuantity) >= 0) {
                     quantity = quantity.subtract(resourceQuantity, numberService.getMathContext());
@@ -220,7 +213,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
                 } else {
                     resourceQuantity = resourceQuantity.subtract(quantity, numberService.getMathContext());
 
-                    resource.setField(QUANTITY, numberService.setScaleWithDefaultMathContext(resourceQuantity));
+                    resource.setField(ResourceFields.QUANTITY, numberService.setScaleWithDefaultMathContext(resourceQuantity));
 
                     resource.getDataDefinition().save(resource);
 
@@ -234,16 +227,15 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Override
     public List<Entity> getWarehouseLocationsFromDB() {
-        return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_LOCATION).find()
-                .add(SearchRestrictions.eq(TYPE, WAREHOUSE.getStringValue())).list().getEntities();
+        return getLocationDD().find().add(SearchRestrictions.eq(LocationFields.TYPE, LocationType.WAREHOUSE.getStringValue()))
+                .list().getEntities();
     }
 
     @Override
     public List<Entity> getResourcesForLocationAndProduct(final Entity location, final Entity product) {
-        List<Entity> resources = dataDefinitionService
-                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE).find()
-                .add(SearchRestrictions.belongsTo(LOCATION, location)).add(SearchRestrictions.belongsTo(PRODUCT, product))
-                .addOrder(SearchOrders.asc(TIME)).list().getEntities();
+        List<Entity> resources = getResourceDD().find().add(SearchRestrictions.belongsTo(ResourceFields.LOCATION, location))
+                .add(SearchRestrictions.belongsTo(ResourceFields.PRODUCT, product))
+                .addOrder(SearchOrders.asc(ResourceFields.TIME)).list().getEntities();
 
         return resources;
     }
@@ -251,27 +243,29 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     @Override
     public Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location) {
         Map<Long, BigDecimal> quantities = Maps.newHashMap();
-        if (products.size() > 0) {
-            DataDefinition resourceDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                    MaterialFlowResourcesConstants.MODEL_RESOURCE);
-            StringBuilder sb = new StringBuilder();
-            sb.append("select p.id as product, sum(r.quantity) as quantity ");
-            sb.append("from #materialFlowResources_resource as r ");
-            sb.append("join r.product as p ");
-            sb.append("join r.location as l ");
-            sb.append("group by p.id, l.id ");
-            sb.append("having p.id in (:productIds) ");
-            sb.append("and l.id = :locationId ");
 
-            SearchQueryBuilder sqb = resourceDD.find(sb.toString());
+        if (products.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+
+            sb.append("SELECT p.id AS product, SUM(r.quantity) AS quantity ");
+            sb.append("FROM #materialFlowResources_resource AS r ");
+            sb.append("JOIN r.product AS p ");
+            sb.append("JOIN r.location AS l ");
+            sb.append("GROUP BY p.id, l.id ");
+            sb.append("HAVING p.id IN (:productIds) ");
+            sb.append("AND l.id = :locationId ");
+
+            SearchQueryBuilder sqb = getResourceDD().find(sb.toString());
+
             sqb.setParameter("locationId", location.getId());
             sqb.setParameterList("productIds", products.stream().map(product -> product.getId()).collect(Collectors.toList()));
+
             List<Entity> productsAndQuantities = sqb.list().getEntities();
 
-            productsAndQuantities.stream().forEach(
-                    productAndQuantity -> quantities.put((Long) productAndQuantity.getField("product"),
-                            productAndQuantity.getDecimalField("quantity")));
+            productsAndQuantities.stream().forEach(productAndQuantity -> quantities
+                    .put((Long) productAndQuantity.getField("product"), productAndQuantity.getDecimalField("quantity")));
         }
+
         return quantities;
     }
 
@@ -283,8 +277,8 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
         if (resources != null) {
             for (Entity resource : resources) {
-                Entity product = resource.getBelongsToField(PRODUCT);
-                BigDecimal quantity = resource.getDecimalField(QUANTITY);
+                Entity product = resource.getBelongsToField(ResourceFields.PRODUCT);
+                BigDecimal quantity = resource.getDecimalField(ResourceFields.QUANTITY);
 
                 if (productsAndQuantities.containsKey(product)) {
                     productsAndQuantities.put(product,
@@ -299,10 +293,9 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     }
 
     private List<Entity> getResourcesForLocation(final Entity location) {
-        List<Entity> resources = dataDefinitionService
-                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE).find()
-                .createAlias(PRODUCT, PRODUCT).add(SearchRestrictions.belongsTo(LOCATION, location))
-                .addOrder(SearchOrders.asc(PRODUCT + "." + NAME)).list().getEntities();
+        List<Entity> resources = getResourceDD().find().createAlias(ResourceFields.PRODUCT, ResourceFields.PRODUCT)
+                .add(SearchRestrictions.belongsTo(ResourceFields.LOCATION, location))
+                .addOrder(SearchOrders.asc(ResourceFields.PRODUCT + "." + ProductFields.NAME)).list().getEntities();
 
         return resources;
     }
@@ -340,30 +333,28 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Override
     public boolean canChangeDateWhenTransferToWarehouse() {
-        Entity documentPositionParameters = parameterService.getParameter().getBelongsToField(
-                ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS);
-        String changeDateWhenTransferToWarehouseType = documentPositionParameters.getStringField(
-                ParameterFieldsMFR.CHANGE_DATE_WHEN_TRANSFER_TO_WAREHOUSE_TYPE);
+        Entity documentPositionParameters = parameterService.getParameter()
+                .getBelongsToField(ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS);
+        String changeDateWhenTransferToWarehouseType = documentPositionParameters
+                .getStringField(ParameterFieldsMFR.CHANGE_DATE_WHEN_TRANSFER_TO_WAREHOUSE_TYPE);
 
         return !ChangeDateWhenTransferToWarehouseType.NEVER.getStringValue().equals(changeDateWhenTransferToWarehouseType);
     }
 
     @Override
     public boolean shouldValidateDateWhenTransferToWarehouse() {
-        Entity documentPositionParameters = parameterService.getParameter().getBelongsToField(
-                ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS);
-        String changeDateWhenTransferToWarehouseType = documentPositionParameters.getStringField(
-                ParameterFieldsMFR.CHANGE_DATE_WHEN_TRANSFER_TO_WAREHOUSE_TYPE);
+        Entity documentPositionParameters = parameterService.getParameter()
+                .getBelongsToField(ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS);
+        String changeDateWhenTransferToWarehouseType = documentPositionParameters
+                .getStringField(ParameterFieldsMFR.CHANGE_DATE_WHEN_TRANSFER_TO_WAREHOUSE_TYPE);
 
-        return ChangeDateWhenTransferToWarehouseType.VALIDATE_WITH_RESOURCES.getStringValue().equals(
-                changeDateWhenTransferToWarehouseType);
+        return ChangeDateWhenTransferToWarehouseType.VALIDATE_WITH_RESOURCES.getStringValue()
+                .equals(changeDateWhenTransferToWarehouseType);
     }
 
     @Override
     public boolean isDateGraterThanResourcesDate(final Date time) {
-        SearchResult searchResult = dataDefinitionService
-                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE).find()
-                .add(SearchRestrictions.gt(TIME, time)).list();
+        SearchResult searchResult = getResourceDD().find().add(SearchRestrictions.gt(ResourceFields.TIME, time)).list();
 
         return searchResult.getEntities().isEmpty();
     }
@@ -372,10 +363,10 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     public void disableDateField(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
 
-        FieldComponent dateField = (FieldComponent) view.getComponentByReference(TIME);
+        FieldComponent dateField = (FieldComponent) view.getComponentByReference(TransferFields.TIME);
 
-        LookupComponent locationFromField = (LookupComponent) view.getComponentByReference(LOCATION_FROM);
-        LookupComponent locationToField = (LookupComponent) view.getComponentByReference(LOCATION_TO);
+        LookupComponent locationFromField = (LookupComponent) view.getComponentByReference(TransferFields.LOCATION_FROM);
+        LookupComponent locationToField = (LookupComponent) view.getComponentByReference(TransferFields.LOCATION_TO);
 
         Entity locationFrom = locationFromField.getEntity();
         Entity locationTo = locationToField.getEntity();
@@ -394,11 +385,22 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Override
     public boolean isLocationIsWarehouse(final Entity location) {
-        return ((location != null) && WAREHOUSE.getStringValue().equals(location.getStringField(TYPE)));
+        return ((location != null)
+                && LocationType.WAREHOUSE.getStringValue().equals(location.getStringField(LocationFields.TYPE)));
     }
 
     @Override
     public boolean areLocationsWarehouses(final Entity locationFrom, final Entity locationTo) {
         return (isLocationIsWarehouse(locationFrom) || isLocationIsWarehouse(locationTo));
     }
+
+    private DataDefinition getLocationDD() {
+        return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_LOCATION);
+    }
+
+    private DataDefinition getResourceDD() {
+        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_RESOURCE);
+    }
+
 }

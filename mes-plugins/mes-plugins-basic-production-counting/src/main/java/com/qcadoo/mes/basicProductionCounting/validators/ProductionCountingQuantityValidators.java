@@ -34,21 +34,43 @@ import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
+
+import java.math.BigDecimal;
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-
 @Service
 public class ProductionCountingQuantityValidators {
+
+    public static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
+
+    public static final String L_FOR_EACH = "03forEach";
 
     @Autowired
     private ProductionProgressModifyLockHelper progressModifyLockHelper;
 
     public boolean validatesWith(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
         boolean isValid = true;
+        isValid = isValid && checkTypeOfProductionRecording(productionCountingQuantityDD, productionCountingQuantity);
         isValid = isValid && checkRoleAndTypeOfMaterial(productionCountingQuantityDD, productionCountingQuantity);
         return isValid;
+    }
+
+    private boolean checkTypeOfProductionRecording(DataDefinition productionCountingQuantityDD, Entity productionCountingQuantity) {
+        String typeOfProductionRecording = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER)
+                .getStringField(L_TYPE_OF_PRODUCTION_RECORDING);
+        if(L_FOR_EACH.equals(typeOfProductionRecording) && Objects.isNull(productionCountingQuantity
+                .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT))) {
+            productionCountingQuantity
+                    .addError(productionCountingQuantityDD
+                                    .getField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
+                            "basicProductionCounting.productionCountingQuantity.technologyOperationComponent.error.technologyOperationComponentRequired");
+
+            return false;
+        }
+        return true;
     }
 
     public boolean validatePlannedQuantity(final DataDefinition productionCountingQuantityDD,

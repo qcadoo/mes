@@ -325,8 +325,8 @@ public class DocumentBuilder {
             if (DocumentState.ACCEPTED.getStringValue().equals(savedDocument.getStringField(DocumentFields.STATE))) {
                 resourceManagementService.createResources(savedDocument);
 
-                if (receiptDocumentForReleaseHelper.buildConnectedPZDocument(savedDocument)) {
-                    receiptDocumentForReleaseHelper.tryBuildConnectedPZDocument(savedDocument, false);
+                if (receiptDocumentForReleaseHelper.buildConnectedDocument(savedDocument)) {
+                    receiptDocumentForReleaseHelper.tryBuildConnectedDocument(savedDocument, false);
                 }
             } else {
                 positions.forEach(p -> {

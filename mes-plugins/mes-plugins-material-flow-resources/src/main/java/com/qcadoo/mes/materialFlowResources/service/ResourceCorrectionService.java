@@ -25,9 +25,11 @@ package com.qcadoo.mes.materialFlowResources.service;
 
 import com.qcadoo.model.api.Entity;
 
+import java.util.Optional;
+
 public interface ResourceCorrectionService {
 
-    boolean createCorrectionForResource(final Entity resource);
+    Optional<Entity> createCorrectionForResource(final Entity resource, boolean fromAttribute);
 
     long getPalletsCountInStorageLocation(final Entity newStorageLocation);
 }
