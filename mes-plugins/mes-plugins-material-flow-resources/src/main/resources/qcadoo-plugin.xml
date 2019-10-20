@@ -103,13 +103,65 @@
         <model:model model="importStorageLocation" resource="model/importStorageLocation.xml"/>
         <model:model model="positionAddMultiHelper" resource="model/positionAddMultiHelper.xml"/>
 
+        <model:model model="documentPositionParameters" resource="model/documentPositionParameters.xml"/>
+        <model:model model="documentPositionParametersItem" resource="model/documentPositionParametersItem.xml"/>
+
         <model:model model="resourceAttributeValue" resource="model/resourceAttributeValue.xml"/>
         <model:model model="resourceAttributeValueAfterCorrection" resource="model/resourceAttributeValueAfterCorrection.xml"/>
         <model:model model="resourceAttributeValueBeforeCorrection" resource="model/resourceAttributeValueBeforeCorrection.xml"/>
 
+        <model:model-field plugin="basic" model="parameter">
+            <model:belongsTo name="documentPositionParameters" model="documentPositionParameters"
+                             plugin="materialFlowResources"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="resources" model="resource"
+                           plugin="materialFlowResources" joinField="product" cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="storageLocationHistory" model="productStorageLocationHistory"
+                           plugin="materialFlowResources" joinField="product" cascade="delete"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="resourceStocks" model="resourceStock"
+                           plugin="materialFlowResources" joinField="product" cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="resourceCorrections" model="resourceCorrection"
+                           plugin="materialFlowResources" joinField="product" cascade="delete"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:belongsTo name="costNormsGenerator" plugin="materialFlowResources" model="costNormsGenerator"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="company">
+            <model:hasMany name="documents" model="document"
+                           plugin="materialFlowResources" joinField="company" cascade="nullify"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="attribute">
             <hasMany name="resourceAttributeValues" plugin="materialFlowResources" joinField="attribute"
                      model="resourceAttributeValue"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="attributeValue">
+            <hasMany name="resourceAttributeValues" plugin="materialFlowResources" joinField="attributeValue"
+                     model="resourceAttributeValue"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="palletNumber">
+            <model:hasMany name="resources" model="resource"
+                           plugin="materialFlowResources" joinField="palletNumber" cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="address">
+            <model:hasMany name="documents" model="document"
+                           plugin="materialFlowResources" joinField="address" cascade="nullify"/>
         </model:model-field>
 
         <model:model-field plugin="materialFlowResources" model="resource">
@@ -127,41 +179,8 @@
                      model="resourceAttributeValueBeforeCorrection" cascade="delete"/>
         </model:model-field>
 
-
-        <model:model-field plugin="basic" model="attributeValue">
-            <hasMany name="resourceAttributeValues" plugin="materialFlowResources" joinField="attributeValue"
-                     model="resourceAttributeValue"/>
-        </model:model-field>
-
-
-        <model:model-field plugin="basic" model="company">
-            <model:hasMany name="documents" model="document"
-                           plugin="materialFlowResources" joinField="company" cascade="nullify"/>
-        </model:model-field>
-
-        <model:model-field plugin="basic" model="palletNumber">
-            <model:hasMany name="resources" model="resource"
-                           plugin="materialFlowResources" joinField="palletNumber" cascade="nullify"/>
-        </model:model-field>
-
-        <model:model-field plugin="basic" model="address">
-            <model:hasMany name="documents" model="document"
-                           plugin="materialFlowResources" joinField="address" cascade="nullify"/>
-        </model:model-field>
-
         <model:model-field plugin="materialFlow" model="transfer">
             <model:decimal name="price" default="0"/>
-        </model:model-field>
-
-        <model:model-field model="location" plugin="materialFlow">
-            <model:hasMany name="linkedPZDocuments" plugin="materialFlowResources" model="document"
-                           joinField="linkedDocumentLocation"
-                           cascade="nullify"/>
-        </model:model-field>
-
-        <model:model-field plugin="materialFlow" model="location">
-            <model:hasMany name="resources" model="resource"
-                           plugin="materialFlowResources" joinField="location" cascade="delete"/>
         </model:model-field>
 
         <model:model-field plugin="materialFlow" model="location">
@@ -193,34 +212,20 @@
                            plugin="materialFlowResources" joinField="location" cascade="nullify"/>
         </model:model-field>
 
-        <model:model-field plugin="basic" model="product">
-            <model:hasMany name="resourceCorrections" model="resourceCorrection"
-                           plugin="materialFlowResources" joinField="product" cascade="delete"/>
-        </model:model-field>
-
-        <model:model-field plugin="basic" model="product">
-            <model:hasMany name="resources" model="resource"
-                           plugin="materialFlowResources" joinField="product" cascade="nullify"/>
-        </model:model-field>
-
-        <model:model-field plugin="basic" model="product">
-            <model:hasMany name="storageLocationHistory" model="productStorageLocationHistory"
-                           plugin="materialFlowResources" joinField="product" cascade="delete"/>
-        </model:model-field>
-
-        <model:model-field plugin="basic" model="product">
-            <model:hasMany name="resourceStocks" model="resourceStock"
-                           plugin="materialFlowResources" joinField="product" cascade="nullify"/>
-        </model:model-field>
-
         <model:model-field plugin="materialFlow" model="location">
             <model:hasMany name="resourceStocks" model="resourceStock"
                            plugin="materialFlowResources" joinField="location" cascade="nullify"/>
         </model:model-field>
 
-        <!-- update cost norms for product -->
-        <model:model-field plugin="basic" model="product">
-            <model:belongsTo name="costNormsGenerator" plugin="materialFlowResources" model="costNormsGenerator"/>
+        <model:model-field plugin="materialFlow" model="location">
+            <model:hasMany name="linkedDocuments" plugin="materialFlowResources" model="document"
+                           joinField="linkedDocumentLocation"
+                           cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialFlow" model="location">
+            <model:hasMany name="resources" model="resource"
+                           plugin="materialFlowResources" joinField="location" cascade="delete"/>
         </model:model-field>
 
         <model:model-field plugin="materialFlow" model="location">
@@ -228,7 +233,6 @@
                            joinField="location" cascade="delete" copyable="false"/>
         </model:model-field>
 
-        <!-- end -->
         <model:model-hook plugin="materialFlow" model="location">
             <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.LocationValidators"
                            method="validatesWith"/>
@@ -316,34 +320,6 @@
         <menu:menu-item name="warehouseStockReports" category="materialFlow"
                         view="warehouseStockReportsList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
 
-        <view:view-listener plugin="materialFlow" view="transferDetails"
-                            component="locationFrom" event="onSelectedEntityChange"
-                            class="com.qcadoo.mes.materialFlowResources.listeners.TransferDetailsListenersMFR"
-                            method="disableDateField"/>
-
-        <view:view-listener plugin="materialFlow" view="transferDetails"
-                            component="locationTo" event="onSelectedEntityChange"
-                            class="com.qcadoo.mes.materialFlowResources.listeners.TransferDetailsListenersMFR"
-                            method="disableDateField"/>
-
-        <view:view-listener plugin="basic" view="productsList" component="window" event="updateProductCosts"
-                            class="com.qcadoo.mes.materialFlowResources.listeners.ProductsListListenersMFR"
-                            method="showCostNormsGenerator"/>
-
-        <view:view-listener plugin="basic" view="productDetails" component="form" event="showStorageLocationHistory"
-                            class="com.qcadoo.mes.materialFlowResources.listeners.ProductDetailsListenersMFR"
-                            method="showStorageLocationHistory"/>
-
-        <view:view-hook plugin="materialFlow" view="transformationsDetails"
-                        type="beforeRender"
-                        class="com.qcadoo.mes.materialFlowResources.hooks.TransformationsDetailsViewHooksMFR"
-                        method="disableDateField"/>
-
-        <view:view-hook plugin="basic" view="productDetails"
-                        type="beforeRender"
-                        class="com.qcadoo.mes.materialFlowResources.hooks.ProductDetailsHooksMFR"
-                        method="setEnabledForStorageLocationHistory"/>
-
         <view:view resource="view/productsLookup.xml"/>
         <view:view resource="view/resourceDetails.xml"/>
         <view:view resource="view/resourcesList.xml"/>
@@ -379,31 +355,51 @@
         <view:view resource="view/positionAddMulti.xml"/>
         <view:view resource="view/resourceAttributeValueDetails.xml"/>
 
+        <view:view resource="view/materialFlowResourcesParameters.xml"/>
+        <view:view resource="view/documentPositionParametersItemDetails.xml"/>
+
         <view:view-tab resource="view/tabExtensions/locationDetails.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productsList.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
 
-        <view:resource uri="public/**/*"/>
-
-        <!--  PARAMETERS -->
-        <view:view resource="view/materialFlowResourcesParameters.xml"/>
-        <view:view resource="view/documentPositionParametersItemDetails.xml"/>
-
         <view:view-ribbon-group resource="view/ribbonExtensions/parameters.xml"/>
+
         <view:view-listener plugin="basic" view="parameters"
                             component="form" event="redirectToMaterialFlowResourcesParameters"
                             class="com.qcadoo.mes.materialFlowResources.listeners.ParameterListenersMFR"
                             method="redirectToMaterialFlowResourcesParameters"/>
 
-        <model:model model="documentPositionParameters" resource="model/documentPositionParameters.xml"/>
-        <model:model model="documentPositionParametersItem" resource="model/documentPositionParametersItem.xml"/>
+        <view:view-listener plugin="basic" view="productsList" component="window" event="updateProductCosts"
+                            class="com.qcadoo.mes.materialFlowResources.listeners.ProductsListListenersMFR"
+                            method="showCostNormsGenerator"/>
 
-        <model:model-field model="parameter" plugin="basic">
-            <model:belongsTo name="documentPositionParameters" model="documentPositionParameters"
-                             plugin="materialFlowResources"/>
-        </model:model-field>
+        <view:view-listener plugin="basic" view="productDetails" component="form" event="showStorageLocationHistory"
+                            class="com.qcadoo.mes.materialFlowResources.listeners.ProductDetailsListenersMFR"
+                            method="showStorageLocationHistory"/>
+
+        <view:view-listener plugin="materialFlow" view="transferDetails"
+                            component="locationFrom" event="onSelectedEntityChange"
+                            class="com.qcadoo.mes.materialFlowResources.listeners.TransferDetailsListenersMFR"
+                            method="disableDateField"/>
+
+        <view:view-listener plugin="materialFlow" view="transferDetails"
+                            component="locationTo" event="onSelectedEntityChange"
+                            class="com.qcadoo.mes.materialFlowResources.listeners.TransferDetailsListenersMFR"
+                            method="disableDateField"/>
+
+        <view:view-hook plugin="basic" view="productDetails"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.materialFlowResources.hooks.ProductDetailsHooksMFR"
+                        method="setEnabledForStorageLocationHistory"/>
+
+        <view:view-hook plugin="materialFlow" view="transformationsDetails"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.materialFlowResources.hooks.TransformationsDetailsViewHooksMFR"
+                        method="disableDateField"/>
+
+        <view:resource uri="public/**/*"/>
 
         <custom:custom class="com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesOnStartupService"/>
     </modules>
