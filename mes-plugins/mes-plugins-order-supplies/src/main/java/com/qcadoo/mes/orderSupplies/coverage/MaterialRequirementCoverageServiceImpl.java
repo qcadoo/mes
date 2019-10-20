@@ -718,7 +718,7 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
             List<Entity> resources = getResourceDD().find(sql).setParameter("locationId", location.getId()).list().getEntities();
 
             Map<Long, BigDecimal> map = resources.stream()
-                    .collect(Collectors.toMap(res -> (Long) res.getField("product"), (res) -> res.getDecimalField("quantity")));
+                    .collect(Collectors.toMap(res -> (Long) res.getField("product"), res -> res.getDecimalField("quantity")));
 
             for (Entry<Long, Entity> productAndCoverageProduct : productAndCoverageProducts.entrySet()) {
                 Entity addedCoverageProduct = productAndCoverageProduct.getValue();

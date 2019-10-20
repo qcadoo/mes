@@ -221,11 +221,11 @@ public class DeliveriesMinStateHelper {
 
         List<Entity> minmialStates = getMinimalStateGreaterThanZeroForWarehouse(warehouse);
         Map<Long, Entity> minmialStatesByProduct = minmialStates.stream().collect(
-                Collectors.toMap(res -> res.getBelongsToField("product").getId(), (res) -> res));
+                Collectors.toMap(res -> res.getBelongsToField("product").getId(), res -> res));
         List<Entity> stocks = getWarehouseStockWithTooSmallMinState(warehouse,
                 minmialStates.stream().map(res -> res.getBelongsToField("product")).collect(Collectors.toList()));
         Map<Long, Entity> stocksByProduct = stocks.stream()
-                .collect(Collectors.toMap(res -> res.getIntegerField("product_id").longValue(), (res) -> res));
+                .collect(Collectors.toMap(res -> res.getIntegerField("product_id").longValue(), res -> res));
         Multimap<Long, Entity> positions = ArrayListMultimap.create();
         minmialStatesByProduct.keySet().forEach(
                 productId -> createPositions(positions, warehouse.getId(), productId, minmialStatesByProduct, stocksByProduct));
