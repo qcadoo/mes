@@ -149,7 +149,7 @@ public class LogService {
         logEntity.setField(LogFields.ITEM_3, builder.item3);
         logEntity.setField(LogFields.LOG_LEVEL, builder.logLevel.getCode());
         logEntity.setField(LogFields.MESSAGE, builder.message);
-        logEntity.setField(LogFields.TYPE, builder.type);
+        logEntity.setField(LogFields.LOG_TYPE, builder.type);
         Long userId;
         try {
             userId = securityService.getCurrentUserId();

@@ -21,25 +21,37 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * **************************************************************************
  */
-package com.qcadoo.mes.basic.product.importing;
+package com.qcadoo.mes.basic.importing.product;
 
-import com.qcadoo.mes.basic.constants.ProductFields;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import static com.qcadoo.mes.basic.importing.dtos.CellBinder.optional;
+import static com.qcadoo.mes.basic.importing.dtos.CellBinder.required;
 
 import javax.annotation.PostConstruct;
 
-import static com.qcadoo.mes.basic.product.importing.CellBinder.optional;
-import static com.qcadoo.mes.basic.product.importing.CellBinder.required;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.importing.dtos.CellBinderRegistry;
+import com.qcadoo.mes.basic.importing.helpers.CellParser;
+import com.qcadoo.mes.basic.importing.parsers.DictionaryCellParsers;
 
 @Component
-class BasicPluginCellBinderRegistrar {
+public class ProductCellBinderRegistry {
 
-    @Autowired
-    private CellBinderRegistry cellBinderRegistry;
+    private static final String L_NOMINAL_COST = "nominalCost";
+
+    private static final String L_LAST_PURCHASE_COST = "lastPurchaseCost";
+
+    private static final String L_AVERAGE_COST = "averageCost";
+
+    private CellBinderRegistry cellBinderRegistry = new CellBinderRegistry();
 
     @Autowired
     private CellParser globalTypeOfMaterialCellParser;
+
+    @Autowired
+    private DictionaryCellParsers dictionaryCellParsers;
 
     @Autowired
     private CellParser producerCellParser;
@@ -51,7 +63,7 @@ class BasicPluginCellBinderRegistrar {
     private CellParser productFamilyCellParser;
 
     @Autowired
-    private DictionaryCellParsers dictionaryCellParsers;
+    private CellParser bigDecimalCellParser;
 
     @PostConstruct
     private void init() {
@@ -65,16 +77,13 @@ class BasicPluginCellBinderRegistrar {
         cellBinderRegistry.setCellBinder(optional(ProductFields.PRODUCER, producerCellParser));
         cellBinderRegistry.setCellBinder(optional(ProductFields.ASSORTMENT, assortmentCellParser));
         cellBinderRegistry.setCellBinder(optional(ProductFields.PARENT, productFamilyCellParser));
+        cellBinderRegistry.setCellBinder(optional(L_NOMINAL_COST, bigDecimalCellParser));
+        cellBinderRegistry.setCellBinder(optional(L_LAST_PURCHASE_COST, bigDecimalCellParser));
+        cellBinderRegistry.setCellBinder(optional(L_AVERAGE_COST, bigDecimalCellParser));
+    }
 
-        BigDecimalCellParser bigDecimalCellParser = new BigDecimalCellParser();
-        // TODO That's the reason why we should move import functionality to CNFP plugin
-        // More sophisticated approach is to make import functionality expandable by other plugins
-        // com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.NOMINAL_COST
-        cellBinderRegistry.setCellBinder(optional("nominalCost", bigDecimalCellParser));
-        // com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.LAST_PURCHASE_COST
-        cellBinderRegistry.setCellBinder(optional("lastPurchaseCost", bigDecimalCellParser));
-        // com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.AVERAGE_COST
-        cellBinderRegistry.setCellBinder(optional("averageCost", bigDecimalCellParser));
+    public CellBinderRegistry getCellBinderRegistry() {
+        return cellBinderRegistry;
     }
 
 }

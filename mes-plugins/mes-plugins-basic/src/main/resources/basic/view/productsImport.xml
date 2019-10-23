@@ -24,49 +24,69 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_PRODUCTS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<view name="productsImport" menuAccessible="true" defaultAuthorizationRole="ROLE_PRODUCTS"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
-      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-      name="productsImport" menuAccessible="true">
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
     <component type="window" name="window" reference="window">
         <ribbon>
-            <group template="navigation"/>
-
-            <group name="action">
-                <bigButton name="import" icon="iconProducts24.png" state="enabled"
-                           action="#{spreadsheet}.fireEvent(uploadProductImportFile);"/>
-            </group>
-
-            <group name="download">
-                <bigButton name="downloadSchema" icon="xlsIcon24.png" state="enabled"
-                           action="#{window}.fireEvent(navigateToProductImportSchema);"/>
+            <template name="standardFormTemplate" includeItems="navigation.back"/>
+            <group name="import">
+                <bigButton name="processImportFile" icon="sendIcon24.png" state="enabled">
+                    <script>
+                        <![CDATA[
+								this.addOnChangeListener({
+									onClick: function() {
+										#{form}.performEvent('processImportFile', []);
+									}
+								});
+							]]>
+                    </script>
+                </bigButton>
+                <bigButton name="downloadImportSchema" icon="downloadIcon24.png" state="enabled"
+                           action="#{form}.fireEvent(downloadImportSchema);"/>
+                <bigButton name="redirectToLogs" icon="warningIcon24.png" state="disabled"
+                           action="#{form}.fireEvent(redirectToLogs);"/>
             </group>
         </ribbon>
 
-        <component type="gridLayout" name="gridLayout" columns="3"
-               rows="1">
-            <layoutElement column="1" row="1">
-                <component type="file" name="spreadsheet" reference="spreadsheet" hasDescription="true">
-                    <listener event="uploadProductImportFile" class="com.qcadoo.mes.basic.listeners.ProductImportListeners"
-                              method="uploadProductImportFile"/>
+        <component type="form" name="productsImport" reference="form">
+            <component type="gridLayout" name="gridLayout" columns="3"
+                       rows="2">
+                <layoutElement column="1" row="1" width="2">
+                    <component type="file" name="importFile" reference="importFile" hasDescription="true">
+                        <script>
+                            <![CDATA[
+                            	this.setEnabled(true, true);
+                        	]]>
+                        </script>
 
-                    <!-- Consult why onSetValue is not invoked on file type component.
-                         It would allow to enable/disable ribbon import button  -->
+                        <listener event="onInputChange"
+                                  class="com.qcadoo.mes.basic.listeners.ProductImportListeners"
+                                  method="onInputChange"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2" width="2">
+                    <component type="checkbox" name="shouldUpdate" reference="shouldUpdate">
+                        <option type="labelWidth" value="80"/>
+                        <option type="align" value="right"/>
+                    </component>
+                </layoutElement>
+            </component>
 
-                    <!-- Enable this file component. It's disabled by default when no model field is associated with it -->
-                    <script>
-                        <![CDATA[
-                            this.setEnabled(true, true);
-                        ]]>
-                    </script>
-                </component>
-            </layoutElement>
+            <listener event="processImportFile"
+                      class="com.qcadoo.mes.basic.listeners.ProductImportListeners"
+                      method="processImportFile"/>
+            <listener event="downloadImportSchema"
+                      class="com.qcadoo.mes.basic.listeners.ProductImportListeners"
+                      method="downloadImportSchema"/>
+            <listener event="redirectToLogs"
+                      class="com.qcadoo.mes.basic.listeners.ProductImportListeners"
+                      method="redirectToLogs"/>
+
+            <option type="header" value="false"/>
         </component>
-
-        <listener event="navigateToProductImportSchema" class="com.qcadoo.mes.basic.listeners.ProductImportListeners"
-                  method="navigateToProductImportSchema"/>
-
     </component>
 
 </view>

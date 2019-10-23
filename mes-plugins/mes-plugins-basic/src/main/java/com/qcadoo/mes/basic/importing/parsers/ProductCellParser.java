@@ -21,43 +21,48 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * **************************************************************************
  */
-package com.qcadoo.mes.basic.product.importing;
+package com.qcadoo.mes.basic.importing.parsers;
+
+import java.util.Objects;
+import java.util.function.Consumer;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.CompanyFields;
+import com.qcadoo.mes.basic.importing.helpers.CellErrorsAccessor;
+import com.qcadoo.mes.basic.importing.helpers.CellParser;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.function.Consumer;
 
 @Component
-class ProducerCellParser implements CellParser {
+public class ProductCellParser implements CellParser {
 
-    private final DataDefinitionService dataDefinitionService;
+    private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_LOOKUP_CODE_NOT_FOUND = "qcadooView.validate.field.error.lookupCodeNotFound";
 
     @Autowired
-    ProducerCellParser(DataDefinitionService dataDefinitionService) {
-        this.dataDefinitionService = dataDefinitionService;
-    }
-
-    private DataDefinition getCompanyDataDefinition() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY);
-    }
+    private DataDefinitionService dataDefinitionService;
 
     @Override
-    public void parse(String cellValue, BindingErrorsAccessor errorsAccessor, Consumer<Object> valueConsumer) {
-        Entity companyCandidate = getCompanyDataDefinition()
-                .find()
-                .add(SearchRestrictions.eq(CompanyFields.NUMBER, cellValue))
-                .uniqueResult();
-        if (null != companyCandidate) {
-            valueConsumer.accept(companyCandidate);
+    public void parse(final String cellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {
+        Entity product = getProductByNumber(cellValue);
+
+        if (Objects.isNull(product)) {
+            errorsAccessor.addError(L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_LOOKUP_CODE_NOT_FOUND);
         } else {
-            errorsAccessor.addError("qcadooView.validate.field.error.lookupCodeNotFound");
+            valueConsumer.accept(product);
         }
     }
+
+    private Entity getProductByNumber(final String number) {
+        return getProductDD().find().add(SearchRestrictions.eq(CompanyFields.NUMBER, number)).setMaxResults(1).uniqueResult();
+    }
+
+    private DataDefinition getProductDD() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
+    }
+
 }

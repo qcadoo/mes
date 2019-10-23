@@ -24,10 +24,10 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_PRODUCTS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<view name="productsList" modelName="productDto" menuAccessible="true" defaultAuthorizationRole="ROLE_PRODUCTS"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
-      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-      name="productsList" modelName="productDto" menuAccessible="true">
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
     <component type="window" name="window" reference="window">
 
@@ -49,9 +49,9 @@
                     </script>
                 </bigButton>
             </group>
-            <group name="productImport">
-                <bigButton name="importFromXlsx" state="enabled" icon="xlsIcon24.png"
-                           action="#{window}.fireEvent(navigateToProductImportPage);"/>
+            <group name="import">
+                <bigButton name="openProductsImportPage" state="enabled" icon="xlsIcon24.png"
+                           action="#{window}.fireEvent(openProductsImportPage);"/>
             </group>
         </ribbon>
 
@@ -126,9 +126,9 @@
                       method="getDefaultConversionsForGrid"/>
         </component>
 
-        <listener event="navigateToProductImportPage" class="com.qcadoo.mes.basic.listeners.ProductImportListeners"
-                  method="navigateToProductImportPage"/>
-
+        <listener event="openProductsImportPage"
+                  class="com.qcadoo.mes.basic.listeners.ProductsListListeners"
+                  method="openProductsImportPage"/>
 
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>

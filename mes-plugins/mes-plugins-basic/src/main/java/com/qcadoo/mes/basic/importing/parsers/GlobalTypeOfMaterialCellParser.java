@@ -21,43 +21,47 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * **************************************************************************
  */
-package com.qcadoo.mes.basic.product.importing;
+package com.qcadoo.mes.basic.importing.parsers;
 
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.constants.GlobalTypeOfMaterial;
-import org.apache.commons.lang3.StringUtils;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Consumer;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-import java.util.Optional;
-import java.util.function.Consumer;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.GlobalTypeOfMaterial;
+import com.qcadoo.mes.basic.importing.helpers.CellErrorsAccessor;
+import com.qcadoo.mes.basic.importing.helpers.CellParser;
 
 @Component
-class GlobalTypeOfMaterialCellParser implements CellParser {
+public class GlobalTypeOfMaterialCellParser implements CellParser {
 
-    private final TranslationService translationService;
+    private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM = "qcadooView.validate.field.error.custom";
 
     @Autowired
-    GlobalTypeOfMaterialCellParser(TranslationService translationService) {
-        this.translationService = translationService;
-    }
+    private TranslationService translationService;
 
     @Override
-    public void parse(String cellValue, BindingErrorsAccessor errorsAccessor, Consumer<Object> valueConsumer) {
-        if (!StringUtils.isBlank(cellValue)) {
-            Optional<GlobalTypeOfMaterial> match = Arrays.stream(GlobalTypeOfMaterial.values())
-                    .filter(gtom ->
-                            translationService.translate(
-                                    "basic.product.globalTypeOfMaterial.value." + gtom.getStringValue(),
-                                    LocaleContextHolder.getLocale()).equals(cellValue))
-                    .findAny();
+    public void parse(final String cellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {
+        if (Objects.nonNull(cellValue)) {
+            Optional<GlobalTypeOfMaterial> match = getGlobalTypeOfMaterialByName(cellValue);
+
             if (match.isPresent()) {
                 valueConsumer.accept(match.get().getStringValue());
             } else {
-                errorsAccessor.addError("qcadooView.validate.field.error.invalidDictionaryItem");
+                errorsAccessor.addError(L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM);
             }
         }
     }
+
+    private Optional<GlobalTypeOfMaterial> getGlobalTypeOfMaterialByName(final String name) {
+        return Arrays.stream(GlobalTypeOfMaterial.values()).filter(gtom -> translationService
+                .translate("basic.product.globalTypeOfMaterial.value." + gtom.getStringValue(), LocaleContextHolder.getLocale())
+                .equals(name)).findAny();
+    }
+
 }
