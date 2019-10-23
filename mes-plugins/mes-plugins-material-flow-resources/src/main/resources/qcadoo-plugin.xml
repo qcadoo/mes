@@ -356,12 +356,10 @@
         <view:view resource="view/positionAddMulti.xml"/>
         <view:view resource="view/resourceAttributeValueDetails.xml"/>
 
-<<<<<<< Updated upstream
         <view:view resource="view/materialFlowResourcesParameters.xml"/>
         <view:view resource="view/documentPositionParametersItemDetails.xml"/>
-=======
+        
         <view:view resource="view/positionsImport.xml"/>
->>>>>>> Stashed changes
 
         <view:view-tab resource="view/tabExtensions/locationDetails.xml"/>
 
