@@ -358,7 +358,7 @@
 
         <view:view resource="view/materialFlowResourcesParameters.xml"/>
         <view:view resource="view/documentPositionParametersItemDetails.xml"/>
-        
+
         <view:view resource="view/positionsImport.xml"/>
 
         <view:view-tab resource="view/tabExtensions/locationDetails.xml"/>

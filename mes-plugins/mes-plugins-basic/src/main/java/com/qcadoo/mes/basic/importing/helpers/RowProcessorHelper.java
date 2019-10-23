@@ -36,6 +36,7 @@ import com.qcadoo.mes.basic.importing.dtos.ImportError;
 import com.qcadoo.mes.basic.importing.dtos.ImportStatus;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.validators.ErrorMessage;
+import com.qcadoo.model.constants.VersionableConstants;
 
 public class RowProcessorHelper {
 
@@ -96,17 +97,23 @@ public class RowProcessorHelper {
             if (!Objects.isNull(checkOnUpdate)) {
                 if (checkOnUpdate.apply(entityToUpdate)) {
                     setId(entityToUpdate.getId());
+                    setVersion(entityToUpdate.getLongField(VersionableConstants.VERSION_FIELD_NAME));
                 } else {
                     entityToUpdate.getGlobalErrors().forEach(errorMessage -> addGlobalError(errorMessage));
                 }
             } else {
                 setId(entityToUpdate.getId());
+                setVersion(entityToUpdate.getLongField(VersionableConstants.VERSION_FIELD_NAME));
             }
         }
     }
 
     private void setId(final Long entityId) {
         entity.setId(entityId);
+    }
+
+    private void setVersion(final Long entityVersion) {
+        entity.setField(VersionableConstants.VERSION_FIELD_NAME, entityVersion);
     }
 
     private void addGlobalError(final ErrorMessage errorMessage) {
