@@ -82,6 +82,10 @@
                            state="enabled"
                            message="materialFlowResources.documentDetails.window.ribbon.resources.fillResources.message"/>
             </group>
+            <group name="import">
+                <bigButton name="openPositionsImportPage" state="enabled" icon="xlsIcon24.png"
+                           action="#{form}.fireEvent(openPositionsImportPage);"/>
+            </group>
         </ribbon>
         <windowTab name="generalTab" reference="generalTab">
             <component type="form" name="form" reference="form">
@@ -237,30 +241,27 @@
                 <listener event="createResourcesForDocuments"
                           class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                           method="createResourcesForDocuments"/>
-
                 <listener event="printDocument"
                           class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                           method="printDocument"/>
-
                 <listener event="printDispositionOrder"
                           class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                           method="printDispositionOrder"/>
-
                 <listener event="save"
                           class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                           method="onSave"/>
-
                 <listener event="fillResources"
                           class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                           method="fillResources"/>
-
                 <listener event="checkResourcesStock"
                           class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                           method="checkResourcesStock"/>
-
                 <listener event="addMultipleResources"
                           class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                           method="addMultipleResources"/>
+                <listener event="openPositionsImportPage"
+                          class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
+                          method="openPositionsImportPage"/>
             </component>
         </windowTab>
 

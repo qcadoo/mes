@@ -25,6 +25,7 @@ package com.qcadoo.mes.materialFlowResources.listeners;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.exception.LockAcquisitionException;
@@ -68,11 +69,9 @@ import com.qcadoo.view.api.components.FormComponent;
 @Service
 public class DocumentDetailsListeners {
 
-	private static final Logger LOG = LoggerFactory.getLogger(DocumentDetailsListeners.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DocumentDetailsListeners.class);
 
     private static final String L_FORM = "form";
-
-    public static final String L_NUMBER = " number = ";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -104,7 +103,7 @@ public class DocumentDetailsListeners {
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
-    public void printDocument(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void printDocument(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         Entity document = documentForm.getEntity();
@@ -112,7 +111,7 @@ public class DocumentDetailsListeners {
         view.redirectTo("/materialFlowResources/document." + args[0] + "?id=" + document.getId(), true, false);
     }
 
-    public void printDispositionOrder(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void printDispositionOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Entity documentPositionParameters = parameterService.getParameter()
                 .getBelongsToField(ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS);
 
@@ -120,7 +119,7 @@ public class DocumentDetailsListeners {
                 .getBooleanField("acceptanceOfDocumentBeforePrinting");
 
         if (acceptanceOfDocumentBeforePrinting) {
-            createResourcesForDocuments(view, componentState, args);
+            createResourcesForDocuments(view, state, args);
         }
 
         FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
@@ -138,7 +137,7 @@ public class DocumentDetailsListeners {
                             fileService.updateReportFileName(documentDb, DocumentFields.GENERATION_DATE,
                                     "materialFlowResources.dispositionOrder.fileName",
                                     documentDb.getStringField(DocumentFields.NUMBER).replaceAll("[^a-zA-Z0-9]+", "_")),
-                            componentState.getLocale());
+                            state.getLocale());
                 } catch (Exception e) {
                     LOG.error("Error when generate disposition order", e);
 
@@ -146,7 +145,7 @@ public class DocumentDetailsListeners {
                 }
             }
 
-            reportService.printGeneratedReport(view, componentState, new String[] { args[0],
+            reportService.printGeneratedReport(view, state, new String[] { args[0],
                     MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_DOCUMENT });
         }
     }
@@ -177,8 +176,7 @@ public class DocumentDetailsListeners {
         }
     }
 
-    public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
+    public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
@@ -332,7 +330,7 @@ public class DocumentDetailsListeners {
 
     }
 
-    public void fillResources(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void fillResources(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity document = form.getPersistedEntityWithIncludedFormValues();
 
@@ -357,7 +355,7 @@ public class DocumentDetailsListeners {
         }
     }
 
-    public void checkResourcesStock(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void checkResourcesStock(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
         Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
 
@@ -370,14 +368,16 @@ public class DocumentDetailsListeners {
         formComponent.setEntity(document);
     }
 
-    public void addMultipleResources(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void addMultipleResources(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
         Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
         Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
 
-        final Map<String, Object> parameters = Maps.newHashMap();
+        Long documentId = document.getId();
 
-        parameters.put("documentId", document.getId());
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        parameters.put("documentId", documentId);
 
         if (warehouseFrom != null) {
             parameters.put("warehouseId", warehouseFrom.getId());
@@ -385,12 +385,30 @@ public class DocumentDetailsListeners {
 
         JSONObject context = new JSONObject(parameters);
 
-        StringBuilder url = new StringBuilder("../page/materialFlowResources/positionAddMulti.html");
-
-        url.append("?context=");
-        url.append(context.toString());
+        StringBuilder url = new StringBuilder("../page/materialFlowResources/positionAddMulti.html").append("?context=")
+                .append(context.toString());
 
         view.openModal(url.toString());
+    }
+
+    public void openPositionsImportPage(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity document = documentForm.getPersistedEntityWithIncludedFormValues();
+
+        Long documentId = document.getId();
+
+        if (Objects.nonNull(documentId)) {
+            Map<String, Object> parameters = Maps.newHashMap();
+
+            parameters.put("form.id", document.getId());
+
+            JSONObject context = new JSONObject(parameters);
+
+            StringBuilder url = new StringBuilder("../page/materialFlowResources/positionsImport.html").append("?context=")
+                    .append(context.toString());
+
+            view.openModal(url.toString());
+        }
     }
 
 }
