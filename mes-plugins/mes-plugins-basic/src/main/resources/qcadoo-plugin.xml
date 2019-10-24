@@ -105,7 +105,10 @@
         <security:role identifier="ROLE_PLANNING_ON_LINE_ACTIONS"/>
 
         <security:role identifier="ROLE_PRODUCTION_COUNTING"/>
+
         <security:role identifier="ROLE_PRODUCTION_TRACKING"/>
+
+        <security:role identifier="ROLE_PRODUCTION_TRACKING_REGISTRATION"/>
 
         <security:role identifier="ROLE_ANALYSIS_VIEWER"/>
 
@@ -436,6 +439,9 @@
 
         <model:model-field plugin="qcadooSecurity" model="user">
             <model:belongsTo model="staff" plugin="basic" name="staff"/>
+        </model:model-field>
+        <model:model-field plugin="qcadooSecurity" model="user">
+            <model:boolean name="showOnlyMyRegistrationRecords" default="false"/>
         </model:model-field>
         <!-- For constraints sake -->
         <model:model-field plugin="basic" model="staff">

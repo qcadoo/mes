@@ -426,7 +426,7 @@
                         defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
         <menu:menu-item name="productionTracking" category="ordersTracking"
-                        view="productionTrackingsList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
+                        view="productionTrackingsList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING_REGISTRATION"/>
 
         <menu:menu-item name="productionTrackingsDraftList" category="ordersTracking"
                         view="productionTrackingsDraftList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>

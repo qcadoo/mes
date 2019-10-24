@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING" name="productionTrackingDetails"
+<view defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING_REGISTRATION" name="productionTrackingDetails"
       modelName="productionTracking"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
@@ -108,7 +108,7 @@
                     </script>
                 </bigButton>
             </group>
-            <group name="replacements" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING">
+            <group name="replacements" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING_REGISTRATION">
                 <bigButton name="useReplacement" icon="copyIcon24.png"
                            state="disabled">
                     <script>
@@ -124,7 +124,7 @@
                     </script>
                 </bigButton>
             </group>
-            <group name="anomalies" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING">
+            <group name="anomalies" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING_REGISTRATION">
                 <bigButton name="addToAnomaliesList" icon="newIcon24.png"
                            state="disabled">
                     <script>

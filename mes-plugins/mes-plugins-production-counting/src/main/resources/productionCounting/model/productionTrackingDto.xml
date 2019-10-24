@@ -71,6 +71,7 @@
         <string name="divisionNumber"/>
 
         <string name="correctionNumber"/>
+        <string name="createUser"/>
     </fields>
 
     <masterModel plugin="productionCounting" model="productionTracking"/>
