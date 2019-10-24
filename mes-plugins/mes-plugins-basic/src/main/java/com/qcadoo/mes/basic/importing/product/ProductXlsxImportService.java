@@ -35,7 +35,7 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class ProductXlsxImportService extends XlsxImportService {
 
-    public static final String L_COST_FOR_NUMBER = "costForNumber";
+    private static final String L_COST_FOR_NUMBER = "costForNumber";
 
     @Override
     public Entity createEntity(final String pluginIdentifier, final String modelName) {

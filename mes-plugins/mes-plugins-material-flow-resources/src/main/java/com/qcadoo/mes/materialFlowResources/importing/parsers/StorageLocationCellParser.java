@@ -29,7 +29,6 @@ import java.util.function.Consumer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.qcadoo.mes.basic.constants.AssortmentFields;
 import com.qcadoo.mes.basic.importing.helpers.CellErrorsAccessor;
 import com.qcadoo.mes.basic.importing.helpers.CellParser;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
@@ -64,7 +63,8 @@ public class StorageLocationCellParser implements CellParser {
     }
 
     private DataDefinition getStorageLocationDD() {
-        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_STORAGE_LOCATION);
+        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_STORAGE_LOCATION);
     }
 
 }

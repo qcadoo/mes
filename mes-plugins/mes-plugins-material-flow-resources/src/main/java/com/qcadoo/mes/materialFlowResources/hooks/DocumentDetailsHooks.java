@@ -96,7 +96,6 @@ public class DocumentDetailsHooks {
         fillAddressLookupCriteriaModifier(view);
     }
 
-    // fixme: refactor
     public void showFieldsByDocumentType(final ViewDefinitionState view) {
         FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
 
@@ -126,7 +125,7 @@ public class DocumentDetailsHooks {
         }
     }
 
-    private void showWarehouse(final ViewDefinitionState view, boolean from, boolean to) {
+    private void showWarehouse(final ViewDefinitionState view, final boolean from, final boolean to) {
         LookupComponent locationFromLookup = (LookupComponent) view.getComponentByReference(DocumentFields.LOCATION_FROM);
         locationFromLookup.setEnabled(from);
 
@@ -134,7 +133,7 @@ public class DocumentDetailsHooks {
         locationToLookup.setEnabled(to);
     }
 
-    private void showCompanyAndAddress(final ViewDefinitionState view, boolean visible) {
+    private void showCompanyAndAddress(final ViewDefinitionState view, final boolean visible) {
         LookupComponent companyLookup = (LookupComponent) view.getComponentByReference(DocumentFields.COMPANY);
         LookupComponent addressLookup = (LookupComponent) view.getComponentByReference(DocumentFields.ADDRESS);
 
@@ -152,6 +151,7 @@ public class DocumentDetailsHooks {
 
         Entity document = documentForm.getPersistedEntityWithIncludedFormValues();
         DocumentState state = DocumentState.of(document);
+
         if (documentId == null) {
             changeAcceptButtonState(window, false);
             changePrintButtonState(window, false);
@@ -182,7 +182,6 @@ public class DocumentDetailsHooks {
             changeFillResourceButtonState(window, false);
             changeCheckResourcesStockButtonState(window, false);
             changeaAdMultipleResourcesButtonState(window, false);
-
         }
     }
 
@@ -195,41 +194,38 @@ public class DocumentDetailsHooks {
         changeAcceptButtonState(window, false);
     }
 
-    private void changeAcceptButtonState(WindowComponent window, final boolean enable) {
-        RibbonActionItem acceptRibbonActionItem = (RibbonActionItem) window.getRibbon().getGroupByName(L_STATE)
-                .getItemByName(L_ACCEPT);
+    private void changeAcceptButtonState(final WindowComponent window, final boolean enable) {
+        RibbonActionItem acceptRibbonActionItem = window.getRibbon().getGroupByName(L_STATE).getItemByName(L_ACCEPT);
 
         acceptRibbonActionItem.setEnabled(enable);
         acceptRibbonActionItem.requestUpdate(true);
     }
 
-    private void changeCheckResourcesStockButtonState(WindowComponent window, final boolean enable) {
-        RibbonActionItem checkResourcesStockItem = (RibbonActionItem) window.getRibbon().getGroupByName("resourcesStock")
+    private void changeCheckResourcesStockButtonState(final WindowComponent window, final boolean enable) {
+        RibbonActionItem checkResourcesStockItem = window.getRibbon().getGroupByName("resourcesStock")
                 .getItemByName("checkResourcesStock");
 
         checkResourcesStockItem.setEnabled(enable);
         checkResourcesStockItem.requestUpdate(true);
     }
 
-    private void changeFillResourceButtonState(WindowComponent window, final boolean enable) {
-        RibbonActionItem fillResourcesItem = (RibbonActionItem) window.getRibbon().getGroupByName("resources")
-                .getItemByName("fillResources");
+    private void changeFillResourceButtonState(final WindowComponent window, final boolean enable) {
+        RibbonActionItem fillResourcesItem = window.getRibbon().getGroupByName("resources").getItemByName("fillResources");
 
         fillResourcesItem.setEnabled(enable);
         fillResourcesItem.requestUpdate(true);
     }
 
-    private void changeaAdMultipleResourcesButtonState(WindowComponent window, final boolean enable) {
-        RibbonActionItem addMultipleResources = (RibbonActionItem) window.getRibbon().getGroupByName("resources")
+    private void changeaAdMultipleResourcesButtonState(final WindowComponent window, final boolean enable) {
+        RibbonActionItem addMultipleResources = window.getRibbon().getGroupByName("resources")
                 .getItemByName("addMultipleResources");
 
         addMultipleResources.setEnabled(enable);
         addMultipleResources.requestUpdate(true);
     }
 
-    private void changePrintButtonState(WindowComponent window, final boolean enable) {
-        RibbonActionItem printRibbonActionItem = (RibbonActionItem) window.getRibbon().getGroupByName(L_PRINT)
-                .getItemByName(L_PRINT_PDF);
+    private void changePrintButtonState(final WindowComponent window, final boolean enable) {
+        RibbonActionItem printRibbonActionItem = window.getRibbon().getGroupByName(L_PRINT).getItemByName(L_PRINT_PDF);
 
         printRibbonActionItem.setEnabled(enable);
         printRibbonActionItem.requestUpdate(true);
@@ -283,9 +279,9 @@ public class DocumentDetailsHooks {
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
 
-        RibbonActionItem printDispositionOrderPdfRibbonActionItem = (RibbonActionItem) window.getRibbon().getGroupByName(L_PRINT)
+        RibbonActionItem printDispositionOrderPdfRibbonActionItem = window.getRibbon().getGroupByName(L_PRINT)
                 .getItemByName(L_PRINT_DISPOSITION_ORDER_PDF);
-        RibbonActionItem openPositionsImportPageRibbonActionItem = (RibbonActionItem) window.getRibbon().getGroupByName(L_IMPORT)
+        RibbonActionItem openPositionsImportPageRibbonActionItem = window.getRibbon().getGroupByName(L_IMPORT)
                 .getItemByName(L_OPEN_POSITIONS_IMPORT_PAGE);
 
         String errorMessage = null;

@@ -56,8 +56,9 @@ public class ProductImportListeners {
 
     public void processImportFile(final ViewDefinitionState view, final ComponentState state, final String[] args)
             throws IOException {
-        productXlsxImportService.processImportFile(view, args, productCellBinderRegistry.getCellBinderRegistry(), true,
-                BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT, ProductImportListeners::createRestrictionForProduct);
+        productXlsxImportService.processImportFile(view, productCellBinderRegistry.getCellBinderRegistry(), true,
+                BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT,
+                ProductImportListeners::createRestrictionForProduct);
     }
 
     private static SearchCriterion createRestrictionForProduct(final Entity product) {

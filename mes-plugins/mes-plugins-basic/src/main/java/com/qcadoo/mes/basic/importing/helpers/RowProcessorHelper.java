@@ -99,7 +99,7 @@ public class RowProcessorHelper {
                     setId(entityToUpdate.getId());
                     setVersion(entityToUpdate.getLongField(VersionableConstants.VERSION_FIELD_NAME));
                 } else {
-                    entityToUpdate.getGlobalErrors().forEach(errorMessage -> addGlobalError(errorMessage));
+                    entityToUpdate.getGlobalErrors().forEach(this::addGlobalError);
                 }
             } else {
                 setId(entityToUpdate.getId());
@@ -133,7 +133,7 @@ public class RowProcessorHelper {
 
         populateImportStatusWithBindingErrors();
 
-        if (rowErrors.size() == 0) {
+        if (rowErrors.isEmpty()) {
             Entity savedEntity = save();
 
             populateImportStatusWithEntityErrors(savedEntity);
@@ -152,14 +152,11 @@ public class RowProcessorHelper {
 
     private void populateImportStatusWithEntityErrors(final Entity entity) {
         if (!entity.isValid()) {
-            entity.getErrors().entrySet().forEach(entry -> {
-                importStatus.addError(
-                        new ImportError(currentRow, entry.getKey(), entry.getValue().getMessage(), entry.getValue().getVars()));
-            });
+            entity.getErrors().entrySet().forEach(entry -> importStatus.addError(
+                    new ImportError(currentRow, entry.getKey(), entry.getValue().getMessage(), entry.getValue().getVars())));
 
-            entity.getGlobalErrors().forEach(errorMessage -> {
-                importStatus.addError(new ImportError(currentRow, null, errorMessage.getMessage(), errorMessage.getVars()));
-            });
+            entity.getGlobalErrors().forEach(errorMessage -> importStatus
+                    .addError(new ImportError(currentRow, null, errorMessage.getMessage(), errorMessage.getVars())));
         }
     }
 
