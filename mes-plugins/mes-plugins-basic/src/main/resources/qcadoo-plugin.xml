@@ -71,6 +71,7 @@
     <modules>
         <localization:translation-group name="dashboard" prefix="basic.dashboard"/>
         <localization:translation-group name="documentGrid" prefix="documentGrid"/>
+        <localization:translation-group name="slickGrid" prefix="qcadooView.slickGrid."/>
 
         <localization:translation path="locales"
                                   basename="basic"/>
@@ -311,6 +312,8 @@
         <menu:menu-item name="shifts" category="basic" view="shiftsList" defaultAuthorizationRole="ROLE_SHIFTS"/>
         <menu:menu-item name="products" category="basic" view="productsList" defaultAuthorizationRole="ROLE_PRODUCTS"/>
         <menu:menu-item name="attributesList" category="basic" view="attributesList" defaultAuthorizationRole="ROLE_PRODUCTS"/>
+        <menu:menu-item-url name="productsAttributes" category="basic" url="/productsAttributes.html"
+                            defaultAuthorizationRole="ROLE_PRODUCTS"/>
         <menu:menu-item name="productsFamilies" category="basic"
                         view="productsFamilies" defaultAuthorizationRole="ROLE_PRODUCT_FAMILIES"/>
 
@@ -384,6 +387,7 @@
         <view:view resource="view/productSubstituteComponentDetails.xml"/>
         <view:view resource="view/productsFamilies.xml"/>
         <view:view resource="view/productFamiliesAddProduct.xml"/>
+        <view:view resource="view/productsAttributes.xml"/>
 
         <view:view resource="view/workstationTypesList.xml"/>
         <view:view resource="view/workstationTypeDetails.xml"/>
