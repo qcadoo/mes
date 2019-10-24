@@ -28,7 +28,6 @@ import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.importing.services.XlsxImportService;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
@@ -57,8 +56,9 @@ public class PositionsImportListeners {
 
     public void processImportFile(final ViewDefinitionState view, final ComponentState state, final String[] args)
             throws IOException {
-        positionXlsxImportService.processImportFile(view, args, positionCellBinderRegistry.getCellBinderRegistry(), true,
-                MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_POSITION, PositionsImportListeners::createRestrictionForPosition);
+        positionXlsxImportService.processImportFile(view, positionCellBinderRegistry.getCellBinderRegistry(), true,
+                MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_POSITION,
+                PositionsImportListeners::createRestrictionForPosition);
     }
 
     private static SearchCriterion createRestrictionForPosition(final Entity position) {

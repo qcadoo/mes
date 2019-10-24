@@ -127,7 +127,7 @@ public abstract class ImportService {
     private LogService logService;
 
     public void downloadImportSchema(final ViewDefinitionState view, final String pluginIdentifier, final String modelName,
-            final String extension) throws IOException {
+            final String extension) {
         String fileName = new StringBuilder(modelName).append(L_IMPORT_SCHEMA).append(L_DASH)
                 .append(LocaleContextHolder.getLocale().getLanguage()).append(L_DOT).append(extension).toString();
         String redirectToUrl = UriComponentsBuilder.newInstance().path(L_SLASH).pathSegment(pluginIdentifier)
@@ -136,22 +136,21 @@ public abstract class ImportService {
         view.redirectTo(redirectToUrl, true, false);
     }
 
-    public void processImportFile(final ViewDefinitionState view, final String[] args,
-            final CellBinderRegistry cellBinderRegistry, final Boolean rollbackOnError, final String pluginIdentifier,
-            final String modelName) throws IOException {
-        processImportFile(view, args, cellBinderRegistry, rollbackOnError, pluginIdentifier, modelName, null);
+    public void processImportFile(final ViewDefinitionState view, final CellBinderRegistry cellBinderRegistry,
+            final Boolean rollbackOnError, final String pluginIdentifier, final String modelName) throws IOException {
+        processImportFile(view, cellBinderRegistry, rollbackOnError, pluginIdentifier, modelName, null);
     }
 
-    public void processImportFile(final ViewDefinitionState view, final String[] args,
-            final CellBinderRegistry cellBinderRegistry, final Boolean rollbackOnError, final String pluginIdentifier,
-            final String modelName, final Function<Entity, SearchCriterion> criteriaSupplier) throws IOException {
-        processImportFile(view, args, cellBinderRegistry, rollbackOnError, pluginIdentifier, modelName, criteriaSupplier, null);
+    public void processImportFile(final ViewDefinitionState view, final CellBinderRegistry cellBinderRegistry,
+            final Boolean rollbackOnError, final String pluginIdentifier, final String modelName,
+            final Function<Entity, SearchCriterion> criteriaSupplier) throws IOException {
+        processImportFile(view, cellBinderRegistry, rollbackOnError, pluginIdentifier, modelName, criteriaSupplier, null);
     }
 
-    public void processImportFile(final ViewDefinitionState view, final String[] args,
-            final CellBinderRegistry cellBinderRegistry, final Boolean rollbackOnError, final String pluginIdentifier,
-            final String modelName, final Function<Entity, SearchCriterion> criteriaSupplier,
-            final Function<Entity, Boolean> checkOnUpdate) throws IOException {
+    public void processImportFile(final ViewDefinitionState view, final CellBinderRegistry cellBinderRegistry,
+            final Boolean rollbackOnError, final String pluginIdentifier, final String modelName,
+            final Function<Entity, SearchCriterion> criteriaSupplier, final Function<Entity, Boolean> checkOnUpdate)
+            throws IOException {
         FieldComponent importFileField = (FieldComponent) view.getComponentByReference(L_IMPORT_FILE);
         CheckBoxComponent shouldUpdateCheckBox = (CheckBoxComponent) view.getComponentByReference(L_SHOULD_UPDATE);
 
@@ -225,10 +224,8 @@ public abstract class ImportService {
 
     private void propagateErrors(final ImportStatus importStatus, final CellBinderRegistry cellBinderRegistry,
             final String filePath, final String pluginIdentifier, final String modelName) {
-        Comparator<ImportError> compareByIndex = (o1, o2) -> Integer
-                .valueOf(cellBinderRegistry.getIndexUsingFieldName(o1.getFieldName()))
-                .compareTo(cellBinderRegistry.getIndexUsingFieldName(o2.getFieldName()));
-
+        Comparator<ImportError> compareByIndex = Comparator
+                .comparing(o -> cellBinderRegistry.getIndexUsingFieldName(o.getFieldName()));
         Comparator<ImportError> comparator = Comparator.comparing(ImportError::getRowIndex).thenComparing(compareByIndex);
 
         importStatus.getErrors().stream().sorted(comparator).forEach(importError -> {

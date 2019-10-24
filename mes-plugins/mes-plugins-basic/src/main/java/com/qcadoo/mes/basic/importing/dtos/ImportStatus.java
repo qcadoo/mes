@@ -64,7 +64,7 @@ public class ImportStatus {
     }
 
     public int getErrorsSize() {
-        return getErrors().stream().filter(distinctByKey(importError -> importError.getRowIndex())).collect(Collectors.toList())
+        return getErrors().stream().filter(distinctByKey(ImportError::getRowIndex)).collect(Collectors.toList())
                 .size();
     }
 
