@@ -1,7 +1,7 @@
-/*
- * **************************************************************************
+/**
+ * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo Framework
+ * Project: Qcadoo MES
  * Version: 1.4
  *
  * This file is part of Qcadoo.
@@ -19,17 +19,20 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- * **************************************************************************
+ * ***************************************************************************
  */
-package com.qcadoo.mes.basic.product.importing;
+package com.qcadoo.mes.basic.constants;
 
-import org.apache.poi.ss.usermodel.Cell;
+public final class AssortmentFields {
 
-public interface RowProcessor {
+    private AssortmentFields() {
 
-    boolean isEmpty();
+    }
 
-    void append(Cell cell);
+    public static final String NAME = "name";
 
-    void process();
+    public static final String ASSORTMENT_ELEMENTS = "assortmentElements";
+
+    public static final String PRODUCTS = "products";
+
 }

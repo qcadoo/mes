@@ -1,7 +1,7 @@
-/*
- * **************************************************************************
+/**
+ * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo Framework
+ * Project: Qcadoo MES
  * Version: 1.4
  *
  * This file is part of Qcadoo.
@@ -19,23 +19,40 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- * **************************************************************************
+ * ***************************************************************************
  */
-package com.qcadoo.mes.basic.product.importing;
+package com.qcadoo.mes.basic.importing.dtos;
 
-import java.util.Objects;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class ImportError {
-    private final String fieldName;
-    private final int rowIndex;
-    private final String code;
-    private final String[] args;
 
-    ImportError(int rowIndex, String fieldName, String code, String... args) {
+    private String fieldName;
+
+    private int rowIndex;
+
+    private String code;
+
+    private String[] args;
+
+    public ImportError(final int rowIndex, final String fieldName, final String code, final String... args) {
         this.rowIndex = rowIndex;
         this.fieldName = fieldName;
         this.code = code;
-        this.args = null == args ? new String[0] : args;
+        this.args = (args == null) ? new String[0] : args;
+    }
+
+    public String getFieldName() {
+        return fieldName;
+    }
+
+    public int getRowIndex() {
+        return rowIndex;
+    }
+
+    public String getCode() {
+        return code;
     }
 
     public String[] getArgs() {
@@ -47,29 +64,20 @@ public class ImportError {
         if (this == o) {
             return true;
         }
+
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
+
         ImportError that = (ImportError) o;
-        return rowIndex == that.rowIndex &&
-                Objects.equals(fieldName, that.fieldName) &&
-                Objects.equals(code, that.code);
+
+        return new EqualsBuilder().append(rowIndex, that.rowIndex).append(fieldName, that.fieldName).append(code, that.code)
+                .append(args, that.args).isEquals();
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(fieldName, rowIndex, code);
+        return new HashCodeBuilder().append(fieldName).append(rowIndex).append(code).append(args).toHashCode();
     }
 
-    public int getRowIndex() {
-        return rowIndex;
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public String getFieldName() {
-        return fieldName;
-    }
 }

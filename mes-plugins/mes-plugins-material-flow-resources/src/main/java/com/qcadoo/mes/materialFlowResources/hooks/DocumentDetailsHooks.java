@@ -28,6 +28,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -72,6 +73,10 @@ public class DocumentDetailsHooks {
 
     private static final String L_PRINT_PDF = "printPdf";
 
+    private static final String L_IMPORT = "import";
+
+    private static final String L_OPEN_POSITIONS_IMPORT_PAGE = "openPositionsImportPage";
+
     private static final List<String> L_ACTIONS_ITEMS = Arrays.asList("saveBack", "saveNew", "save", "delete", "copy");
 
     @Autowired
@@ -87,7 +92,7 @@ public class DocumentDetailsHooks {
         initializeDocument(view);
         lockNumberAndTypeChange(view);
         fetchNameAndNumberFromDatabase(view);
-        lockDispositionOrder(view);
+        setRibbonState(view);
         fillAddressLookupCriteriaModifier(view);
     }
 
@@ -273,28 +278,33 @@ public class DocumentDetailsHooks {
         }
     }
 
-    private DataDefinition getDocumentDD() {
-        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_DOCUMENT);
-    }
-
-    private void lockDispositionOrder(ViewDefinitionState view) {
+    private void setRibbonState(final ViewDefinitionState view) {
         FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+
         RibbonActionItem printDispositionOrderPdfRibbonActionItem = (RibbonActionItem) window.getRibbon().getGroupByName(L_PRINT)
                 .getItemByName(L_PRINT_DISPOSITION_ORDER_PDF);
+        RibbonActionItem openPositionsImportPageRibbonActionItem = (RibbonActionItem) window.getRibbon().getGroupByName(L_IMPORT)
+                .getItemByName(L_OPEN_POSITIONS_IMPORT_PAGE);
 
         String errorMessage = null;
 
-        if (documentForm.getEntityId() != null) {
+        boolean isSaved = Objects.nonNull(documentForm.getEntityId());
+        boolean isDraft = true;
+
+        if (isSaved) {
             Entity document = documentForm.getEntity();
+
+            String state = document.getStringField(DocumentFields.STATE);
             String documentType = document.getStringField(DocumentFields.TYPE);
+
+            isDraft = DocumentState.DRAFT.getStringValue().equals(state);
 
             List<String> documentTypesWithDispositionOrder = Arrays.asList(DocumentType.TRANSFER.getStringValue(),
                     DocumentType.INTERNAL_OUTBOUND.getStringValue(), DocumentType.RELEASE.getStringValue());
 
-            if (documentType == null || !documentTypesWithDispositionOrder.contains(documentType)) {
+            if (Objects.isNull(documentType) || !documentTypesWithDispositionOrder.contains(documentType)) {
                 errorMessage = "materialFlowResources.printDispositionOrderPdf.error";
             }
             if (document.getBooleanField(DocumentFields.IN_BUFFER)) {
@@ -302,9 +312,12 @@ public class DocumentDetailsHooks {
             }
         }
 
-        printDispositionOrderPdfRibbonActionItem.setEnabled(errorMessage == null && documentForm.getEntityId() != null);
+        printDispositionOrderPdfRibbonActionItem.setEnabled(Objects.isNull(errorMessage) && isSaved);
         printDispositionOrderPdfRibbonActionItem.setMessage(errorMessage);
         printDispositionOrderPdfRibbonActionItem.requestUpdate(true);
+
+        openPositionsImportPageRibbonActionItem.setEnabled(isSaved && isDraft);
+        openPositionsImportPageRibbonActionItem.requestUpdate(true);
     }
 
     public void fillAddressLookupCriteriaModifier(final ViewDefinitionState view) {
@@ -335,6 +348,11 @@ public class DocumentDetailsHooks {
 
         addressLookup.setFilterValue(filterValueHolder);
         addressLookup.requestComponentUpdateState();
+    }
+
+    private DataDefinition getDocumentDD() {
+        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_DOCUMENT);
     }
 
 }

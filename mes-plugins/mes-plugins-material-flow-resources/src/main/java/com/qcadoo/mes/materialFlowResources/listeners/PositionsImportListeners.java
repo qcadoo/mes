@@ -3,36 +3,37 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- * <p>
+ *
  * This file is part of Qcadoo.
- * <p>
+ *
  * Qcadoo is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published
  * by the Free Software Foundation; either version 3 of the License,
  * or (at your option) any later version.
- * <p>
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
  * See the GNU Affero General Public License for more details.
- * <p>
+ *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic.listeners;
+package com.qcadoo.mes.materialFlowResources.listeners;
 
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.importing.product.ProductCellBinderRegistry;
-import com.qcadoo.mes.basic.importing.product.ProductXlsxImportService;
 import com.qcadoo.mes.basic.importing.services.XlsxImportService;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.importing.position.PositionCellBinderRegistry;
+import com.qcadoo.mes.materialFlowResources.importing.position.PositionXlsxImportService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -40,36 +41,36 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
-public class ProductImportListeners {
+public class PositionsImportListeners {
 
     @Autowired
-    private ProductXlsxImportService productXlsxImportService;
+    private PositionXlsxImportService positionXlsxImportService;
 
     @Autowired
-    private ProductCellBinderRegistry productCellBinderRegistry;
+    private PositionCellBinderRegistry positionCellBinderRegistry;
 
     public void downloadImportSchema(final ViewDefinitionState view, final ComponentState state, final String[] args)
             throws IOException {
-        productXlsxImportService.downloadImportSchema(view, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT,
-                XlsxImportService.L_XLSX);
+        positionXlsxImportService.downloadImportSchema(view, MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_POSITION, XlsxImportService.L_XLSX);
     }
 
     public void processImportFile(final ViewDefinitionState view, final ComponentState state, final String[] args)
             throws IOException {
-        productXlsxImportService.processImportFile(view, args, productCellBinderRegistry.getCellBinderRegistry(), true,
-                BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT, ProductImportListeners::createRestrictionForProduct);
+        positionXlsxImportService.processImportFile(view, args, positionCellBinderRegistry.getCellBinderRegistry(), true,
+                MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_POSITION, PositionsImportListeners::createRestrictionForPosition);
     }
 
-    private static SearchCriterion createRestrictionForProduct(final Entity product) {
-        return SearchRestrictions.eq(ProductFields.NUMBER, product.getStringField(ProductFields.NUMBER));
+    private static SearchCriterion createRestrictionForPosition(final Entity position) {
+        return SearchRestrictions.eq(PositionFields.NUMBER, position.getStringField(PositionFields.NUMBER));
     }
 
     public void redirectToLogs(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        productXlsxImportService.redirectToLogs(view, BasicConstants.MODEL_PRODUCT);
+        positionXlsxImportService.redirectToLogs(view, MaterialFlowResourcesConstants.MODEL_POSITION);
     }
 
     public void onInputChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        productXlsxImportService.changeButtonsState(view, false);
+        positionXlsxImportService.changeButtonsState(view, false);
     }
 
 }

@@ -21,31 +21,30 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic.constants;
+package com.qcadoo.mes.basic.importing.product;
 
-public final class LogFields {
+import java.math.BigDecimal;
 
-    private LogFields() {
+import org.springframework.stereotype.Service;
+
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.importing.services.XlsxImportService;
+import com.qcadoo.model.api.Entity;
+
+@Service
+public class ProductXlsxImportService extends XlsxImportService {
+
+    public static final String L_COST_FOR_NUMBER = "costForNumber";
+
+    @Override
+    public Entity createEntity(final String pluginIdentifier, final String modelName) {
+        Entity product = getDataDefinition(pluginIdentifier, modelName).create();
+
+        product.setField(ProductFields.ENTITY_TYPE, ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue());
+        product.setField(L_COST_FOR_NUMBER, BigDecimal.ONE);
+
+        return product;
     }
-
-    public static final String CREATE_TIME = "createTime";
-
-    public static final String USER = "user";
-
-    public static final String LOG_TYPE = "logType";
-
-    public static final String ACTION = "action";
-
-    public static final String MESSAGE = "message";
-
-    public static final String ITEM_1 = "item1";
-
-    public static final String ITEM_2 = "item2";
-
-    public static final String ITEM_3 = "item3";
-
-    public static final String DETAILS = "details";
-
-    public static final String LOG_LEVEL = "logLevel";
 
 }
