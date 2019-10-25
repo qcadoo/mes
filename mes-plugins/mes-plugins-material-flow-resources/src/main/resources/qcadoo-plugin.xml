@@ -355,6 +355,7 @@
         <view:view resource="view/importStorageLocationList.xml"/>
         <view:view resource="view/positionAddMulti.xml"/>
         <view:view resource="view/resourceAttributeValueDetails.xml"/>
+        <view:view resource="view/documentAttributePosition.xml"/>
 
         <view:view resource="view/materialFlowResourcesParameters.xml"/>
         <view:view resource="view/documentPositionParametersItemDetails.xml"/>

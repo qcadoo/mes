@@ -1,5 +1,19 @@
 package com.qcadoo.mes.materialFlowResources;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.GridResponse;
+import com.qcadoo.mes.basic.LookupUtils;
+import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.dto.ColumnProperties;
+import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,19 +29,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.GridResponse;
-import com.qcadoo.mes.basic.LookupUtils;
-import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
 
 @Repository
 public class DocumentPositionService {
@@ -171,7 +172,8 @@ public class DocumentPositionService {
         try {
             String query = "SELECT * FROM materialflowresources_documentpositionparametersitem ORDER BY ordering";
 
-            List<Map<String, Object>> items = jdbcTemplate.queryForList(query, Collections.EMPTY_MAP);
+            List<ColumnProperties> columns = jdbcTemplate.query(query,Collections.EMPTY_MAP,
+                    new BeanPropertyRowMapper(ColumnProperties.class));
 
             Map<String, Object> config = Maps.newHashMap();
 
@@ -179,13 +181,6 @@ public class DocumentPositionService {
             config.put("suggestResource", shouldSuggestResource());
             config.put("outDocument", isOutDocument(documentId));
             config.put("inBufferDocument", isInBufferDocument(documentId));
-
-            Map<String, Object> columns = Maps.newLinkedHashMap();
-
-            for (Map<String, Object> item : items) {
-                columns.put(item.get("name").toString(), item.get("checked"));
-            }
-
             config.put("columns", columns);
 
             return config;

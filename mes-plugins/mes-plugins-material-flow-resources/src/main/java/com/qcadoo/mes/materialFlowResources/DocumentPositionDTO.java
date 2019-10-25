@@ -2,10 +2,12 @@ package com.qcadoo.mes.materialFlowResources;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.SearchAttribute;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Map;
 import java.util.Objects;
 
 public class DocumentPositionDTO {
@@ -69,6 +71,12 @@ public class DocumentPositionDTO {
 
     @JsonDeserialize(using = BooleanDeserializer.class)
     private Boolean lastResource;
+
+    Map<String, Object> attrs = Maps.newHashMap();
+
+    public DocumentPositionDTO() {
+
+    }
 
     public Long getId() {
         return id;
@@ -236,6 +244,14 @@ public class DocumentPositionDTO {
 
     public void setSellingPrice(BigDecimal sellingPrice) {
         this.sellingPrice = sellingPrice;
+    }
+
+    public Map<String, Object> getAttrs() {
+        return attrs;
+    }
+
+    public void setAttrs(Map<String, Object> attrs) {
+        this.attrs = attrs;
     }
 
     @Override

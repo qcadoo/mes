@@ -35,6 +35,9 @@
         <priority name="ordering" />
         
         <belongsTo name="parameters" model="documentPositionParameters"/>
+
+        <boolean name="forAttribute" default="false" />
+        <belongsTo name="attribute" model="attribute" plugin="basic"/>
     </fields>
     <hooks>
         <validatesWith

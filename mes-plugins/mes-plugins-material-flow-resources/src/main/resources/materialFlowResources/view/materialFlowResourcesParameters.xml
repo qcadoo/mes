@@ -34,6 +34,10 @@
 
         <ribbon>
             <template name="standardFormTemplate" includeItems="navigation.back, actions.save"/>
+            <group name="attributes">
+                <bigButton name="addColumnWithResourceAttribute" icon="generateIcon24.png" action="#{form}.fireEvent(addColumnWithResourceAttribute);"
+                           state="enabled"/>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -102,6 +106,9 @@
                         </component>
                     </layoutElement>
                 </component>
+                <listener event="addColumnWithResourceAttribute"
+                          class="com.qcadoo.mes.materialFlowResources.listeners.ParametersMFRListeners"
+                          method="addColumnWithResourceAttribute"/>
                 <option type="header" value="true"/>
                 <option type="expression" value=""/>
             </component>

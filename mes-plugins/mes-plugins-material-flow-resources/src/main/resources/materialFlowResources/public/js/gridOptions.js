@@ -1001,6 +1001,23 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             return col;
         }
 
+        function getColModelOrPrepareForAttribute(columnProperties, c) {
+            c = c || $scope.config;
+            var col = c.colModel.filter(function (element, i) {
+                return element.index === columnProperties.name;
+            })[0];
+            if (columnProperties.forAttribute) {
+                var attrColModel = {};
+                attrColModel.name = columnProperties.name;
+                attrColModel.index = "attrs."+columnProperties.name;
+                attrColModel.jsonmap = "attrs."+columnProperties.name;
+                col = attrColModel;
+            } else if (!col) {
+                console.error(index);
+            }
+            return col;
+        }
+
         function updateConversionByGivenUnitValue(givenUnitValue, rowId) {
             var conversion = '';
 
@@ -1833,10 +1850,10 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 var columns = [getColModelByIndex('id', config), getColModelByIndex('document', config)];
                 var colNames = ['ID', 'document'];
 
-                angular.forEach(response.data.columns, function (showColumnInGrid, key) {
-                    var gridColModel = getColModelByIndex(key, config);
+                angular.forEach(response.data.columns, function (columnInGrid, key) {
+                    var gridColModel = getColModelOrPrepareForAttribute(columnInGrid, config);
 
-                    if (!showColumnInGrid) {
+                    if (!columnInGrid.checked) {
                         gridColModel.hidden = true;
                         gridColModel.editrules = gridColModel.editrules || {};
                         gridColModel.editrules.edithidden = true;
@@ -1855,7 +1872,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     }
 
                     columns.push(gridColModel);
-                    colNames.push(QCD.translate('documentGrid.gridColumn.' + key));
+                    if(columnInGrid.forAttribute) {
+                        colNames.push(columnInGrid.name);
+                    } else {
+                        colNames.push(QCD.translate('documentGrid.gridColumn.' + columnInGrid.name));
+                    }
+
                 });
 
                 config.colModel = columns;
