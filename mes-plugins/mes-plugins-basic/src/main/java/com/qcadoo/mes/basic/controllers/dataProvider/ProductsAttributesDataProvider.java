@@ -20,6 +20,14 @@ import com.qcadoo.mes.basic.controllers.dataProvider.dto.ColumnDTO;
 @Service
 public class ProductsAttributesDataProvider {
 
+    public static final String PRODUCT_NUMBER = "productNumber";
+
+    public static final String PRODUCT_NAME = "productName";
+
+    public static final String ATTRIBUTE_NUMBER = "attributeNumber";
+
+    public static final String ATTRIBUTE_VALUE = "attributeValue";
+
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -28,10 +36,9 @@ public class ProductsAttributesDataProvider {
 
     public List<ColumnDTO> getColumns(Locale locale) {
         List<ColumnDTO> columns = Lists.newArrayList();
-        columns.add(new ColumnDTO("productNumber", translationService.translate("basic.product.number.label", locale),
-                "productNumber"));
-        columns.add(
-                new ColumnDTO("productName", translationService.translate("basic.product.name.label", locale), "productName"));
+        columns.add(new ColumnDTO(PRODUCT_NUMBER, translationService.translate("basic.product.number.label", locale),
+                PRODUCT_NUMBER));
+        columns.add(new ColumnDTO(PRODUCT_NAME, translationService.translate("basic.product.name.label", locale), PRODUCT_NAME));
         String query = "SELECT a.number AS id, a.name, a.number AS field FROM basic_attribute a WHERE a.forproduct = TRUE ORDER BY a.id";
         columns.addAll(jdbcTemplate.query(query, Collections.emptyMap(), new BeanPropertyRowMapper(ColumnDTO.class)));
         return columns;
@@ -52,15 +59,15 @@ public class ProductsAttributesDataProvider {
             } else {
                 row = Maps.newHashMap();
                 row.put("id", productId);
-                row.put("productNumber", attribute.get("productNumber"));
-                row.put("productName", attribute.get("productName"));
+                row.put(PRODUCT_NUMBER, attribute.get(PRODUCT_NUMBER));
+                row.put(PRODUCT_NAME, attribute.get(PRODUCT_NAME));
             }
-            if (!Objects.isNull(attribute.get("attributeNumber"))) {
-                String attributeValue = (String) row.get(attribute.get("attributeNumber"));
+            if (!Objects.isNull(attribute.get(ATTRIBUTE_NUMBER))) {
+                String attributeValue = (String) row.get(attribute.get(ATTRIBUTE_NUMBER));
                 if (Objects.isNull(attributeValue)) {
-                    row.put((String) attribute.get("attributeNumber"), attribute.get("attributeValue"));
+                    row.put((String) attribute.get(ATTRIBUTE_NUMBER), attribute.get(ATTRIBUTE_VALUE));
                 } else {
-                    row.put((String) attribute.get("attributeNumber"), attributeValue + ", " + attribute.get("attributeValue"));
+                    row.put((String) attribute.get(ATTRIBUTE_NUMBER), attributeValue + ", " + attribute.get(ATTRIBUTE_VALUE));
                 }
             }
             results.put(productId, row);
