@@ -87,13 +87,17 @@ public class AttributeDetailsHooks {
                 precision.setEnabled(false);
                 unit.setEnabled(false);
                 forProduct.setEnabled(false);
-            } else if (!attribute.getHasManyField(AttributeFields.RESOURCE_ATTRIBUTE_VALUES).isEmpty()) {
+            }
+
+            if (!attribute.getHasManyField(AttributeFields.RESOURCE_ATTRIBUTE_VALUES).isEmpty()) {
                 dataType.setEnabled(false);
                 valueType.setEnabled(false);
                 precision.setEnabled(false);
                 unit.setEnabled(false);
                 forResource.setEnabled(false);
-            } else if (!attribute.getHasManyField(AttributeFields.ATTRIBUTE_VALUES).isEmpty()) {
+            }
+
+            if (!attribute.getHasManyField(AttributeFields.ATTRIBUTE_VALUES).isEmpty()) {
                 dataType.setEnabled(false);
                 valueType.setEnabled(false);
                 precision.setEnabled(false);
