@@ -25,6 +25,7 @@ package com.qcadoo.mes.materialFlowResources.listeners;
 
 import java.io.IOException;
 
+import org.apache.commons.validator.Form;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,26 +39,30 @@ import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class PositionsImportListeners {
 
+    public static final String L_FORM = "form";
     @Autowired
     private PositionXlsxImportService positionXlsxImportService;
 
     @Autowired
     private PositionCellBinderRegistry positionCellBinderRegistry;
 
-    public void downloadImportSchema(final ViewDefinitionState view, final ComponentState state, final String[] args)
-            throws IOException {
+    public void downloadImportSchema(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         positionXlsxImportService.downloadImportSchema(view, MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_POSITION, XlsxImportService.L_XLSX);
     }
 
     public void processImportFile(final ViewDefinitionState view, final ComponentState state, final String[] args)
             throws IOException {
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity document = documentForm.getEntity();
+
         positionXlsxImportService.processImportFile(view, positionCellBinderRegistry.getCellBinderRegistry(), true,
-                MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_POSITION,
+                MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_POSITION, document, PositionFields.DOCUMENT,
                 PositionsImportListeners::createRestrictionForPosition);
     }
 

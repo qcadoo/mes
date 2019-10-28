@@ -48,8 +48,7 @@ public class ProductImportListeners {
     @Autowired
     private ProductCellBinderRegistry productCellBinderRegistry;
 
-    public void downloadImportSchema(final ViewDefinitionState view, final ComponentState state, final String[] args)
-            throws IOException {
+    public void downloadImportSchema(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         productXlsxImportService.downloadImportSchema(view, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT,
                 XlsxImportService.L_XLSX);
     }

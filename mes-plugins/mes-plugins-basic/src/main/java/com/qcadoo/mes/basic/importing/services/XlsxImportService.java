@@ -45,16 +45,11 @@ import com.qcadoo.model.api.search.SearchCriterion;
 @Service
 public class XlsxImportService extends ImportService {
 
-    public ImportStatus importFile(final FileInputStream fis, final CellBinderRegistry cellBinderRegistry,
-            final Boolean rollbackOnError, final String pluginIdentifier, final String modelName) throws IOException {
-        return importFile(fis, cellBinderRegistry, rollbackOnError, pluginIdentifier, modelName, false, null, null);
-    }
-
     @Transactional
     public ImportStatus importFile(final FileInputStream fis, final CellBinderRegistry cellBinderRegistry,
-            final Boolean rollbackOnError, final String pluginIdentifier, final String modelName, final Boolean shouldUpdate,
-            final Function<Entity, SearchCriterion> criteriaSupplier, final Function<Entity, Boolean> checkOnUpdate)
-            throws IOException {
+            final Boolean rollbackOnError, final String pluginIdentifier, final String modelName, final Entity belongsTo,
+            final String belongsToName, final Boolean shouldUpdate, final Function<Entity, SearchCriterion> criteriaSupplier,
+            final Function<Entity, Boolean> checkOnUpdate) throws IOException {
         ImportStatus importStatus = new ImportStatus();
 
         XSSFWorkbook workbook = new XSSFWorkbook(fis);
@@ -68,6 +63,10 @@ public class XlsxImportService extends ImportService {
             }
 
             Entity entity = createEntity(pluginIdentifier, modelName);
+
+            if (Objects.nonNull(belongsTo) && Objects.nonNull(belongsToName)) {
+                entity.setField(belongsToName, belongsTo);
+            }
 
             RowProcessorHelper rowProcessorService = new RowProcessorHelper(entity, cellBinderRegistry, importStatus, rowIndex);
 

@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.google.common.base.Throwables;
@@ -138,19 +139,34 @@ public abstract class ImportService {
 
     public void processImportFile(final ViewDefinitionState view, final CellBinderRegistry cellBinderRegistry,
             final Boolean rollbackOnError, final String pluginIdentifier, final String modelName) throws IOException {
-        processImportFile(view, cellBinderRegistry, rollbackOnError, pluginIdentifier, modelName, null);
+        processImportFile(view, cellBinderRegistry, rollbackOnError, pluginIdentifier, modelName, null, null);
+    }
+
+    public void processImportFile(final ViewDefinitionState view, final CellBinderRegistry cellBinderRegistry,
+            final Boolean rollbackOnError, final String pluginIdentifier, final String modelName, final Entity belongsTo,
+            final String belongsToName) throws IOException {
+        processImportFile(view, cellBinderRegistry, rollbackOnError, pluginIdentifier, modelName, belongsTo, belongsToName, null,
+                null);
+    }
+
+    public void processImportFile(final ViewDefinitionState view, final CellBinderRegistry cellBinderRegistry,
+            final Boolean rollbackOnError, final String pluginIdentifier, final String modelName, final Entity belongsTo,
+            final String belongsToName, final Function<Entity, SearchCriterion> criteriaSupplier) throws IOException {
+        processImportFile(view, cellBinderRegistry, rollbackOnError, pluginIdentifier, modelName, belongsTo, belongsToName,
+                criteriaSupplier, null);
     }
 
     public void processImportFile(final ViewDefinitionState view, final CellBinderRegistry cellBinderRegistry,
             final Boolean rollbackOnError, final String pluginIdentifier, final String modelName,
             final Function<Entity, SearchCriterion> criteriaSupplier) throws IOException {
-        processImportFile(view, cellBinderRegistry, rollbackOnError, pluginIdentifier, modelName, criteriaSupplier, null);
+        processImportFile(view, cellBinderRegistry, rollbackOnError, pluginIdentifier, modelName, null, null, criteriaSupplier,
+                null);
     }
 
     public void processImportFile(final ViewDefinitionState view, final CellBinderRegistry cellBinderRegistry,
-            final Boolean rollbackOnError, final String pluginIdentifier, final String modelName,
-            final Function<Entity, SearchCriterion> criteriaSupplier, final Function<Entity, Boolean> checkOnUpdate)
-            throws IOException {
+            final Boolean rollbackOnError, final String pluginIdentifier, final String modelName, final Entity belongsTo,
+            final String belongsToName, final Function<Entity, SearchCriterion> criteriaSupplier,
+            final Function<Entity, Boolean> checkOnUpdate) throws IOException {
         FieldComponent importFileField = (FieldComponent) view.getComponentByReference(L_IMPORT_FILE);
         CheckBoxComponent shouldUpdateCheckBox = (CheckBoxComponent) view.getComponentByReference(L_SHOULD_UPDATE);
 
@@ -165,7 +181,7 @@ public abstract class ImportService {
         } else {
             try (FileInputStream fis = new FileInputStream(filePath)) {
                 ImportStatus importStatus = importFile(fis, cellBinderRegistry, rollbackOnError, pluginIdentifier, modelName,
-                        shouldUpdateCheckBox.isChecked(), criteriaSupplier, checkOnUpdate);
+                        belongsTo, belongsToName, shouldUpdateCheckBox.isChecked(), criteriaSupplier, checkOnUpdate);
 
                 Integer rowsProcessed = importStatus.getRowsProcessed();
                 Integer rowsWithErrors = importStatus.getErrorsSize();
@@ -202,13 +218,37 @@ public abstract class ImportService {
         }
     }
 
-    public abstract ImportStatus importFile(final FileInputStream fis, final CellBinderRegistry cellBinderRegistry,
-            final Boolean rollbackOnError, final String pluginIdentifier, final String modelName, final Boolean shouldUpdate,
-            final Function<Entity, SearchCriterion> criteriaSupplier, final Function<Entity, Boolean> checkOnUpdate)
-            throws IOException;
+    public ImportStatus importFile(final FileInputStream fis, final CellBinderRegistry cellBinderRegistry,
+            final Boolean rollbackOnError, final String pluginIdentifier, final String modelName) throws IOException {
+        return importFile(fis, cellBinderRegistry, rollbackOnError, pluginIdentifier, modelName, null, null);
+    }
 
+    public ImportStatus importFile(final FileInputStream fis, final CellBinderRegistry cellBinderRegistry,
+            final Boolean rollbackOnError, final String pluginIdentifier, final String modelName, final Entity belongsTo,
+            final String belongsToName) throws IOException {
+        return importFile(fis, cellBinderRegistry, rollbackOnError, pluginIdentifier, modelName, belongsTo, belongsToName, false,
+                null, null);
+    }
+
+    public ImportStatus importFile(final FileInputStream fis, final CellBinderRegistry cellBinderRegistry,
+            final Boolean rollbackOnError, final String pluginIdentifier, final String modelName, final Entity belongsTo,
+            final String belongsToName, final Function<Entity, SearchCriterion> criteriaSupplier) throws IOException {
+        return importFile(fis, cellBinderRegistry, rollbackOnError, pluginIdentifier, modelName, belongsTo, belongsToName, true,
+                criteriaSupplier, null);
+    }
+
+    public ImportStatus importFile(final FileInputStream fis, final CellBinderRegistry cellBinderRegistry,
+            final Boolean rollbackOnError, final String pluginIdentifier, final String modelName,
+            final Function<Entity, SearchCriterion> criteriaSupplier) throws IOException {
+        return importFile(fis, cellBinderRegistry, rollbackOnError, pluginIdentifier, modelName, null, null, true,
+                criteriaSupplier, null);
+    }
+
+    @Transactional
     public abstract ImportStatus importFile(final FileInputStream fis, final CellBinderRegistry cellBinderRegistry,
-            final Boolean rollbackOnError, final String pluginIdentifier, final String modelName) throws IOException;
+            final Boolean rollbackOnError, final String pluginIdentifier, final String modelName, final Entity belongsTo,
+            final String belongsToName, final Boolean shouldUpdate, final Function<Entity, SearchCriterion> criteriaSupplier,
+            final Function<Entity, Boolean> checkOnUpdate) throws IOException;
 
     public Entity createEntity(final String pluginIdentifier, final String modelName) {
         return getDataDefinition(pluginIdentifier, modelName).create();

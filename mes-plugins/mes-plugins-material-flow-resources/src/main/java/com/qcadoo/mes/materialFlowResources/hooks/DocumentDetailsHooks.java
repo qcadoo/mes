@@ -34,6 +34,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.criteriaModifiers.AddressCriteriaModifiers;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
@@ -284,35 +285,40 @@ public class DocumentDetailsHooks {
         RibbonActionItem openPositionsImportPageRibbonActionItem = window.getRibbon().getGroupByName(L_IMPORT)
                 .getItemByName(L_OPEN_POSITIONS_IMPORT_PAGE);
 
+        Entity document = documentForm.getEntity();
+
         String errorMessage = null;
+        String descriptionMessage = "materialFlowResources.documentDetails.window.ribbon.import.openPositionsImportPage.description";
+
+        String state = document.getStringField(DocumentFields.STATE);
+        String documentType = document.getStringField(DocumentFields.TYPE);
+
+        List<String> documentTypesWithDispositionOrder = Lists.newArrayList(DocumentType.TRANSFER.getStringValue(),
+                DocumentType.INTERNAL_OUTBOUND.getStringValue(), DocumentType.RELEASE.getStringValue());
+        List<String> documentTypesWithAdmission = Lists.newArrayList(DocumentType.RECEIPT.getStringValue(),
+                DocumentType.INTERNAL_INBOUND.getStringValue());
 
         boolean isSaved = Objects.nonNull(documentForm.getEntityId());
-        boolean isDraft = true;
+        boolean isDraft = DocumentState.DRAFT.getStringValue().equals(state);
+        boolean isDispositionOrder = documentTypesWithDispositionOrder.contains(documentType);
+        boolean isAdmission = documentTypesWithAdmission.contains(documentType);
+        boolean inBuffer = document.getBooleanField(DocumentFields.IN_BUFFER);
 
         if (isSaved) {
-            Entity document = documentForm.getEntity();
-
-            String state = document.getStringField(DocumentFields.STATE);
-            String documentType = document.getStringField(DocumentFields.TYPE);
-
-            isDraft = DocumentState.DRAFT.getStringValue().equals(state);
-
-            List<String> documentTypesWithDispositionOrder = Arrays.asList(DocumentType.TRANSFER.getStringValue(),
-                    DocumentType.INTERNAL_OUTBOUND.getStringValue(), DocumentType.RELEASE.getStringValue());
-
-            if (Objects.isNull(documentType) || !documentTypesWithDispositionOrder.contains(documentType)) {
+            if (Objects.isNull(documentType) || !isDispositionOrder) {
                 errorMessage = "materialFlowResources.printDispositionOrderPdf.error";
             }
-            if (document.getBooleanField(DocumentFields.IN_BUFFER)) {
+            if (inBuffer) {
                 errorMessage = "materialFlowResources.printDispositionOrderPdf.errorInBuffer";
             }
         }
 
-        printDispositionOrderPdfRibbonActionItem.setEnabled(Objects.isNull(errorMessage) && isSaved);
+        printDispositionOrderPdfRibbonActionItem.setEnabled(isSaved && isDispositionOrder && !inBuffer);
         printDispositionOrderPdfRibbonActionItem.setMessage(errorMessage);
         printDispositionOrderPdfRibbonActionItem.requestUpdate(true);
 
-        openPositionsImportPageRibbonActionItem.setEnabled(isSaved && isDraft);
+        openPositionsImportPageRibbonActionItem.setEnabled(isSaved && isDraft && isAdmission);
+        openPositionsImportPageRibbonActionItem.setMessage(descriptionMessage);
         openPositionsImportPageRibbonActionItem.requestUpdate(true);
     }
 
