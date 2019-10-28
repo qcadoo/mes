@@ -39,7 +39,9 @@ public class ProductsAttributesDataProvider {
         columns.add(new ColumnDTO(PRODUCT_NUMBER, translationService.translate("basic.product.number.label", locale),
                 PRODUCT_NUMBER));
         columns.add(new ColumnDTO(PRODUCT_NAME, translationService.translate("basic.product.name.label", locale), PRODUCT_NAME));
-        String query = "SELECT a.number AS id, a.name, a.number AS field FROM basic_attribute a WHERE a.forproduct = TRUE ORDER BY a.id";
+        String query = "SELECT a.number AS id, a.name || CASE WHEN a.valuetype = '02numeric' AND a.unit IS NOT NULL "
+                + "THEN ' (' || a.unit || ')' ELSE '' END AS name, a.number AS field FROM basic_attribute a "
+                + "WHERE a.forproduct = TRUE ORDER BY a.id";
         columns.addAll(jdbcTemplate.query(query, Collections.emptyMap(), new BeanPropertyRowMapper(ColumnDTO.class)));
         return columns;
     }

@@ -32,9 +32,7 @@ $.get("/rest/prodAttributes/columns", function (columns) {
     let dataView = new Slick.Data.DataView();
     grid = new Slick.Grid("#productAttributesGrid", dataView, columns, options);
 
-    grid.setSortColumn("productNumber", true);
-
-    let pager = new Slick.Controls.Pager(dataView, grid, $("#pager"), pagerOptions);
+    new Slick.Controls.Pager(dataView, grid, $("#pager"), pagerOptions);
 
     dataView.onRowCountChanged.subscribe(function (e, args) {
         grid.updateRowCount();
@@ -67,8 +65,16 @@ $.get("/rest/prodAttributes/columns", function (columns) {
     });
 
     grid.onSort.subscribe(function (e, args) {
-        let comparer = function(a, b) {
-            return (a[args.sortCol.field] > b[args.sortCol.field]) ? 1 : -1;
+        let comparer = function (a, b) {
+            if (a[args.sortCol.field] === b[args.sortCol.field]) {
+                return 0;
+            } else if (a[args.sortCol.field] === undefined) {
+                return 1;
+            } else if (b[args.sortCol.field] === undefined) {
+                return -1;
+            } else {
+                return a[args.sortCol.field] < b[args.sortCol.field] ? -1 : 1;
+            }
         };
 
         dataView.sort(comparer, args.sortAsc);
@@ -81,5 +87,6 @@ $.get("/rest/prodAttributes/columns", function (columns) {
         dataView.setItems(records);
         dataView.setFilter(filter);
         dataView.endUpdate();
+        $('.slick-header-columns').children().eq(0).trigger('click');
     }, 'json');
 }, 'json');
