@@ -75,4 +75,6 @@ public final class ProductFields {
 
     public static final String PRODUCT_ATTRIBUTE_VALUES = "productAttributeValues";
 
+    public static final String SIZE = "size";
+
 }

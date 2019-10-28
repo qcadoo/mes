@@ -56,7 +56,7 @@
 <script src="/qcadooView/public/SlickGrid-2.4.14/slick.dataview.js"></script>
 <script src="/qcadooView/public/SlickGrid-2.4.14/controls/slick.pager.js"></script>
 
-<div id="productAttributesGrid" style="width:600px;height:500px;" class="qcadoo-grid"></div>
+<div id="productAttributesGrid" class="qcadoo-grid"></div>
 <div id="pager" style="width:100%;height:20px;"></div>
 
 <script src="/basic/public/js/productAttributes.js?ver=${buildNumber}"></script>

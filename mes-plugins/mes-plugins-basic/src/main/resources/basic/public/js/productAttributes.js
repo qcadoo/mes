@@ -29,6 +29,11 @@ function filter(item) {
 $.get("/rest/prodAttributes/columns", function (columns) {
     $('#productAttributesGrid').height($('#window_windowContent').height() - 45);
     $('#productAttributesGrid').width($('#window_windowContent').width() - 20);
+    for (let i = 0; i < columns.length; i++) {
+        columns[i].autoSize = {
+            ignoreHeaderText: true
+        };
+    }
     let dataView = new Slick.Data.DataView();
     grid = new Slick.Grid("#productAttributesGrid", dataView, columns, options);
 
@@ -45,7 +50,7 @@ $.get("/rest/prodAttributes/columns", function (columns) {
     });
 
     dataView.onPagingInfoChanged.subscribe(function (e, pagingInfo) {
-        grid.updatePagingStatusFromView( pagingInfo );
+        grid.updatePagingStatusFromView(pagingInfo);
     });
 
     $(grid.getHeaderRow()).on("change keyup", ":input", function (e) {
@@ -56,7 +61,7 @@ $.get("/rest/prodAttributes/columns", function (columns) {
         }
     });
 
-    grid.onHeaderRowCellRendered.subscribe(function(e, args) {
+    grid.onHeaderRowCellRendered.subscribe(function (e, args) {
         $(args.node).empty();
         $("<input type='text'>")
             .data("columnId", args.column.id)
