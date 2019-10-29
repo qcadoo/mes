@@ -10,10 +10,13 @@ public class ColumnDTO implements AbstractDTO {
 
     private boolean sortable = true;
 
+    private String toolTip;
+
     public ColumnDTO(String id, String name, String field) {
         this.id = id;
         this.name = name;
         this.field = field;
+        this.toolTip = name;
     }
 
     public ColumnDTO() {
@@ -49,5 +52,13 @@ public class ColumnDTO implements AbstractDTO {
 
     public void setSortable(boolean sortable) {
         this.sortable = sortable;
+    }
+
+    public String getToolTip() {
+        return toolTip;
+    }
+
+    public void setToolTip(String toolTip) {
+        this.toolTip = toolTip;
     }
 }

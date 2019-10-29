@@ -4,7 +4,8 @@ let options = {
     showHeaderRow: true,
     headerRowHeight: 30,
     explicitInitialization: true,
-    autosizeColsMode: Slick.GridAutosizeColsMode.FitColsToViewport
+    autosizeColsMode: Slick.GridAutosizeColsMode.FitColsToViewport,
+    enableTextSelectionOnCells: true
 };
 let pagerOptions = {
     showAllText: QCD.translate('qcadooView.slickGrid.pager.showAllText'),
