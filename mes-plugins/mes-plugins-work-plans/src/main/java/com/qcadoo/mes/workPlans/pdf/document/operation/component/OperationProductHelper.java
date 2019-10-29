@@ -10,7 +10,8 @@ public class OperationProductHelper {
         return operationProductColumnHelpers;
     }
 
-    public void setOperationProductColumnHelpers(List<OperationProductColumnHelper> operationProductColumnHelpers) {
+    public void setOperationProductColumnHelpers(final List<OperationProductColumnHelper> operationProductColumnHelpers) {
         this.operationProductColumnHelpers = operationProductColumnHelpers;
     }
+
 }

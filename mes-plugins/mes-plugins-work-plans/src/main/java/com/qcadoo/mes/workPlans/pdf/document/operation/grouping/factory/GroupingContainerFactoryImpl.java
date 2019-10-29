@@ -43,6 +43,9 @@ import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.EndPro
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.NoDistinctionGroupingContainer;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.OperationProductInGroupingContainerDecorator;
+import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.ProductionLineGroupingContainer;
+import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.StaffGroupingContainer;
+import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.WorkstationGroupingContainer;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.WorkstationTypeGroupingContainer;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationProductColumn;
 import com.qcadoo.mes.workPlans.pdf.document.order.WorkPlanColumnService;
@@ -65,9 +68,9 @@ public class GroupingContainerFactoryImpl implements GroupingContainerFactory {
     private ParameterService parameterService;
 
     @Autowired
-    public GroupingContainerFactoryImpl(TranslationService translationService, WorkPlanColumnService workPlanColumnService,
-            OperationMergeService operationMergeService, ProductionCountingService productionCountingService,
-            ParameterService parameterService) {
+    public GroupingContainerFactoryImpl(final TranslationService translationService,
+            final WorkPlanColumnService workPlanColumnService, final OperationMergeService operationMergeService,
+            final ProductionCountingService productionCountingService, final ParameterService parameterService) {
         this.translationService = translationService;
         this.workPlanColumnService = workPlanColumnService;
         this.operationMergeService = operationMergeService;
@@ -75,7 +78,7 @@ public class GroupingContainerFactoryImpl implements GroupingContainerFactory {
         this.parameterService = parameterService;
     }
 
-    public GroupingContainer create(Entity workPlan, Locale locale) {
+    public GroupingContainer create(final Entity workPlan, final Locale locale) {
         String type = workPlan.getStringField(WorkPlanFields.TYPE);
         if (WorkPlanType.NO_DISTINCTION.getStringValue().equals(type)) {
             return new OperationProductInGroupingContainerDecorator(operationMergeService, noDistinction(workPlan, locale),
@@ -89,50 +92,88 @@ public class GroupingContainerFactoryImpl implements GroupingContainerFactory {
         } else if (WorkPlanType.BY_DIVISION.getStringValue().equals(type)) {
             return new OperationProductInGroupingContainerDecorator(operationMergeService, byDivision(workPlan, locale),
                     productionCountingService, parameterService);
+        } else if (WorkPlanType.BY_WORKSTATION.getStringValue().equals(type)) {
+            return new OperationProductInGroupingContainerDecorator(operationMergeService, byWorkstation(workPlan, locale),
+                    productionCountingService, parameterService);
+        } else if (WorkPlanType.BY_STAFF.getStringValue().equals(type)) {
+            return new OperationProductInGroupingContainerDecorator(operationMergeService, byStaff(workPlan, locale),
+                    productionCountingService, parameterService);
+        } else if (WorkPlanType.BY_PRODUCTION_LINE.getStringValue().equals(type)) {
+            return new OperationProductInGroupingContainerDecorator(operationMergeService, byProductionLine(workPlan, locale),
+                    productionCountingService, parameterService);
         } else {
             LOG.warn("There is no grouping container defined for work plan type: " + type);
             LOG.warn("Returning noDistinctionGroupingContainer ...");
+
             return new OperationProductInGroupingContainerDecorator(operationMergeService, noDistinction(workPlan, locale),
                     productionCountingService, parameterService);
         }
     }
 
-    private GroupingContainer noDistinction(Entity workPlan, Locale locale) {
+    private GroupingContainer noDistinction(final Entity workPlan, final Locale locale) {
         String titleAppend = translationService.translate("workPlans.workPlan.report.title.noDistinction", locale);
+
         return new NoDistinctionGroupingContainer(orderColumns(workPlan), operationProductsIn(workPlan),
                 operationProductsOut(workPlan), titleAppend);
     }
 
-    private Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationProductsOut(Entity workPlan) {
+    private Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationProductsOut(final Entity workPlan) {
         return workPlanColumnService.getOperationProductOutputColumns(workPlan);
     }
 
-    private Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationProductsIn(Entity workPlan) {
+    private Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationProductsIn(final Entity workPlan) {
         return workPlanColumnService.getOperationProductInputColumns(workPlan);
     }
 
-    private Map<OrderColumn, ColumnAlignment> orderColumns(Entity workPlan) {
+    private Map<OrderColumn, ColumnAlignment> orderColumns(final Entity workPlan) {
         return workPlanColumnService.getOrderColumns(workPlan);
     }
 
-    private GroupingContainer byEndProduct(Entity workPlan, Locale locale) {
+    private GroupingContainer byEndProduct(final Entity workPlan, final Locale locale) {
         String titleAppend = translationService.translate("workPlans.workPlan.report.title.byEndProduct", locale);
+
         return new EndProductGroupingContainer(orderColumns(workPlan), operationProductsIn(workPlan),
                 operationProductsOut(workPlan), titleAppend);
     }
 
-    private GroupingContainer byWorkstationType(Entity workPlan, Locale locale) {
+    private GroupingContainer byWorkstationType(final Entity workPlan, final Locale locale) {
         String titleAppend = translationService.translate("workPlans.workPlan.report.title.byWorkstationType", locale);
         String nullWorkstationTitle = translationService.translate("workPlans.workPlan.report.title.noWorkstationType", locale);
+
         return new WorkstationTypeGroupingContainer(orderColumns(workPlan), operationProductsIn(workPlan),
                 operationProductsOut(workPlan), titleAppend, nullWorkstationTitle);
     }
 
-    private GroupingContainer byDivision(Entity workPlan, Locale locale) {
+    private GroupingContainer byDivision(final Entity workPlan, final Locale locale) {
         String titleAppend = translationService.translate("workPlans.workPlan.report.title.byDivision", locale);
         String nullDivision = translationService.translate("workPlans.workPlan.report.title.noDivision", locale);
+
         return new DivisionGroupingContainer(orderColumns(workPlan), operationProductsIn(workPlan),
                 operationProductsOut(workPlan), titleAppend, nullDivision);
+    }
+
+    private GroupingContainer byWorkstation(final Entity workPlan, final Locale locale) {
+        String titleAppend = translationService.translate("workPlans.workPlan.report.title.byWorkstation", locale);
+        String nullWorkstation = translationService.translate("workPlans.workPlan.report.title.noWorkstation", locale);
+
+        return new WorkstationGroupingContainer(orderColumns(workPlan), operationProductsIn(workPlan),
+                operationProductsOut(workPlan), titleAppend, nullWorkstation);
+    }
+
+    private GroupingContainer byStaff(final Entity workPlan, final Locale locale) {
+        String titleAppend = translationService.translate("workPlans.workPlan.report.title.byStaff", locale);
+        String nullStaff = translationService.translate("workPlans.workPlan.report.title.noStaff", locale);
+
+        return new StaffGroupingContainer(orderColumns(workPlan), operationProductsIn(workPlan), operationProductsOut(workPlan),
+                titleAppend, nullStaff);
+    }
+
+    private GroupingContainer byProductionLine(final Entity workPlan, final Locale locale) {
+        String titleAppend = translationService.translate("workPlans.workPlan.report.title.byProductionLine", locale);
+        String nullProductionLine = translationService.translate("workPlans.workPlan.report.title.noProductionLine", locale);
+
+        return new ProductionLineGroupingContainer(orderColumns(workPlan), operationProductsIn(workPlan),
+                operationProductsOut(workPlan), titleAppend, nullProductionLine);
     }
 
 }

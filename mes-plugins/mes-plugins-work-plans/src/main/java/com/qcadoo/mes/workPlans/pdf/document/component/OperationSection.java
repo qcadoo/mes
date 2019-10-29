@@ -23,6 +23,11 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.component;
 
+import java.util.Locale;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.google.common.collect.ListMultimap;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -32,10 +37,6 @@ import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.holder.OrderOperationComponent;
 import com.qcadoo.model.api.Entity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.Locale;
 
 @Component
 public class OperationSection {
@@ -47,27 +48,29 @@ public class OperationSection {
     private OperationOrderSection operationOrderSection;
 
     @Autowired
-    public OperationSection(ParameterService parameterService, OperationSectionHeader operationSectionHeader,
-            OperationOrderSection operationOrderSection) {
+    public OperationSection(final ParameterService parameterService, final OperationSectionHeader operationSectionHeader,
+            final OperationOrderSection operationOrderSection) {
         this.operationSectionHeader = operationSectionHeader;
         this.operationOrderSection = operationOrderSection;
         this.parameterService = parameterService;
     }
 
-    public void print(Entity workPlan, PdfWriter pdfWriter, GroupingContainer groupingContainer, Document document, Locale locale)
-            throws DocumentException {
+    public void print(final Entity workPlan, final PdfWriter pdfWriter, final GroupingContainer groupingContainer,
+            final Document document, final Locale locale) throws DocumentException {
         if (notPrintOperationAtFirstPage()) {
             document.newPage();
         }
 
         ListMultimap<String, OrderOperationComponent> titleToOperationComponent = groupingContainer
                 .getTitleToOperationComponent();
+
         for (String title : titleToOperationComponent.keySet()) {
             operationSectionHeader.print(document, title);
+
             for (OrderOperationComponent orderOperationComponent : groupingContainer.getTitleToOperationComponent().get(title)) {
                 operationOrderSection.print(workPlan, pdfWriter, groupingContainer, orderOperationComponent.getOrder(),
                         orderOperationComponent.getOperationComponent(), document, locale);
-                if(generateEachOnSeparatePage()) {
+                if (generateEachOnSeparatePage()) {
                     document.newPage();
                 }
             }

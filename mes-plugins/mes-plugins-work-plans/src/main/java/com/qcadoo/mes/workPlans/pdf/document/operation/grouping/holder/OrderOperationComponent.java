@@ -31,7 +31,7 @@ public class OrderOperationComponent {
 
     private Entity operationComponent;
 
-    public OrderOperationComponent(Entity order, Entity operationComponent) {
+    public OrderOperationComponent(final Entity order, final Entity operationComponent) {
         this.order = order;
         this.operationComponent = operationComponent;
     }
@@ -40,7 +40,7 @@ public class OrderOperationComponent {
         return order;
     }
 
-    public void setOrder(Entity order) {
+    public void setOrder(final Entity order) {
         this.order = order;
     }
 
@@ -48,7 +48,7 @@ public class OrderOperationComponent {
         return operationComponent;
     }
 
-    public void setOperationComponent(Entity operationComponent) {
+    public void setOperationComponent(final Entity operationComponent) {
         this.operationComponent = operationComponent;
     }
 

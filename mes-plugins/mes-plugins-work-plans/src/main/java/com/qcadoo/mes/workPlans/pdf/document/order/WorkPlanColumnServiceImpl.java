@@ -25,6 +25,7 @@ package com.qcadoo.mes.workPlans.pdf.document.order;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
@@ -52,9 +53,9 @@ import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 @Service
 public class WorkPlanColumnServiceImpl implements WorkPlanColumnService {
 
-    public static final String L_IDENTIFIER = "identifier";
+    private static final String L_IDENTIFIER = "identifier";
 
-    public static final String L_ALIGNMENT = "alignment";
+    private static final String L_ALIGNMENT = "alignment";
 
     private final ApplicationContext applicationContext;
 
@@ -86,7 +87,7 @@ public class WorkPlanColumnServiceImpl implements WorkPlanColumnService {
 
             OrderColumn key = identifierOrderColumn.get(identifier);
 
-            if (key != null) {
+            if (Objects.nonNull(key)) {
                 orderColumnWithAlignment.put(key, alignment);
             }
         }
@@ -130,7 +131,7 @@ public class WorkPlanColumnServiceImpl implements WorkPlanColumnService {
 
                     OperationProductColumn key = identifierOperationProductColumn.get(identifier);
 
-                    if (key != null) {
+                    if (Objects.nonNull(key)) {
                         operationProductColumnWithAlignment.put(key, alignment);
                     }
                 }

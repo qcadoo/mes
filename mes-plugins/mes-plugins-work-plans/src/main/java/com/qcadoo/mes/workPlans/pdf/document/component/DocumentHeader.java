@@ -39,37 +39,37 @@ import com.qcadoo.report.api.pdf.PdfHelper;
 @Component
 public class DocumentHeader {
 
-    public static final String MSG_TITLE = "workPlans.workPlan.report.title";
+    private static final String MSG_TITLE = "workPlans.workPlan.report.title";
 
-    public static final String MSG_AUTHOR = "qcadooReport.commons.generatedBy.label";
+    private static final String MSG_AUTHOR = "qcadooReport.commons.generatedBy.label";
 
     private TranslationService translationService;
 
     private PdfHelper pdfHelper;
 
     @Autowired
-    public DocumentHeader(TranslationService translationService, PdfHelper pdfHelper) {
+    public DocumentHeader(final TranslationService translationService, final PdfHelper pdfHelper) {
         this.translationService = translationService;
         this.pdfHelper = pdfHelper;
     }
 
-    public void print(Entity workPlan, Document document, Locale locale) throws DocumentException {
+    public void print(final Entity workPlan, final Document document, final Locale locale) throws DocumentException {
         pdfHelper.addDocumentHeader(document, name(workPlan), title(locale), author(locale), date(workPlan));
     }
 
-    private Date date(Entity workPlan) {
+    private Date date(final Entity workPlan) {
         return workPlan.getDateField(WorkPlanFields.DATE);
     }
 
-    private String name(Entity workPlan) {
+    private String name(final Entity workPlan) {
         return workPlan.getStringField(WorkPlanFields.NAME);
     }
 
-    private String author(Locale locale) {
+    private String author(final Locale locale) {
         return translationService.translate(MSG_AUTHOR, locale);
     }
 
-    private String title(Locale locale) {
+    private String title(final Locale locale) {
         return translationService.translate(MSG_TITLE, locale);
     }
 

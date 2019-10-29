@@ -44,18 +44,19 @@ public class OperationOrderInfoOperation {
     private TranslationService translationService;
 
     @Autowired
-    public OperationOrderInfoOperation(PdfHelper pdfHelper, TranslationService translationService) {
+    public OperationOrderInfoOperation(final PdfHelper pdfHelper, final TranslationService translationService) {
         this.pdfHelper = pdfHelper;
         this.translationService = translationService;
     }
 
-    public void print(Entity operationComponent, PdfPTable operationTable, Locale locale) throws DocumentException {
+    public void print(final Entity operationComponent, final PdfPTable operationTable, final Locale locale)
+            throws DocumentException {
         String operationLevel = operationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER);
         pdfHelper.addTableCellAsOneColumnTable(operationTable,
                 translationService.translate("workPlans.workPlan.report.operation.level", locale), operationLevel);
 
-        String operationName = operationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION).getStringField(
-                OperationFields.NAME);
+        String operationName = operationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION)
+                .getStringField(OperationFields.NAME);
         pdfHelper.addTableCellAsOneColumnTable(operationTable,
                 translationService.translate("workPlans.workPlan.report.operation.name", locale), operationName);
 

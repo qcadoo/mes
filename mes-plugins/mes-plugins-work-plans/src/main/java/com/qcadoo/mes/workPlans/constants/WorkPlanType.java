@@ -24,8 +24,9 @@
 package com.qcadoo.mes.workPlans.constants;
 
 public enum WorkPlanType {
+
     NO_DISTINCTION("01noDistinction"), BY_END_PRODUCT("02byEndProduct"), BY_WORKSTATION_TYPE("03byWorkstationType"), BY_DIVISION(
-            "04byDivision");
+            "04byDivision"), BY_WORKSTATION("05byWorkstation"), BY_STAFF("06byStaff"), BY_PRODUCTION_LINE("07byProductionLine");
 
     private String type;
 
@@ -46,6 +47,12 @@ public enum WorkPlanType {
             return BY_WORKSTATION_TYPE;
         } else if ("04byDivision".equals(string)) {
             return BY_DIVISION;
+        } else if ("05byWorkstation".equals(string)) {
+            return BY_WORKSTATION;
+        } else if ("06byStaff".equals(string)) {
+            return BY_STAFF;
+        } else if ("07byProductionLine".equals(string)) {
+            return BY_PRODUCTION_LINE;
         }
 
         throw new IllegalStateException("Unsupported work plan type '" + string + "'");

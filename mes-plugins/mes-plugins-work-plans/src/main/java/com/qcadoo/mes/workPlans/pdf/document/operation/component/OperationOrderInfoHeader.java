@@ -47,15 +47,16 @@ public class OperationOrderInfoHeader {
     private TranslationService translationService;
 
     @Autowired
-    public OperationOrderInfoHeader(PdfHelper pdfHelper, TranslationService translationService) {
+    public OperationOrderInfoHeader(final PdfHelper pdfHelper, final TranslationService translationService) {
         this.pdfHelper = pdfHelper;
         this.translationService = translationService;
     }
 
-    public void print(Entity order, PdfPTable operationTable, Locale locale) throws DocumentException {
+    public void print(final Entity order, final PdfPTable operationTable, final Locale locale) throws DocumentException {
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         String technologyNumber = null;
-        if (technology != null) {
+
+        if (Objects.nonNull(technology)) {
             technologyNumber = technology.getStringField(TechnologyFields.NUMBER);
         }
         pdfHelper.addTableCellAsOneColumnTable(operationTable,
@@ -71,33 +72,36 @@ public class OperationOrderInfoHeader {
 
         Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
         String productionLineNumber = null;
-        if (productionLine != null) {
+        if (Objects.nonNull(productionLine)) {
             productionLineNumber = productionLine.getStringField(ProductionLineFields.NUMBER);
         }
         pdfHelper.addTableCellAsOneColumnTable(operationTable,
-                translationService.translate("workPlans.workPlan.report.operation.productionLineNumber", locale), productionLineNumber);
+                translationService.translate("workPlans.workPlan.report.operation.productionLineNumber", locale),
+                productionLineNumber);
 
         String orderCategory = order.getStringField(OrderFields.ORDER_CATEGORY);
-        if(!Objects.isNull(orderCategory)){
+        if (Objects.nonNull(orderCategory)) {
             pdfHelper.addTableCellAsOneColumnTable(operationTable,
                     translationService.translate("workPlans.workPlan.report.operation.orderCategory", locale), orderCategory);
         }
 
         Entity company = order.getBelongsToField(OrderFields.COMPANY);
         String companyNumber = null;
-        if (company != null) {
+        if (Objects.nonNull(company)) {
             companyNumber = company.getStringField(CompanyFields.NUMBER);
         }
-        if(!Objects.isNull(companyNumber)) {
+        if (Objects.nonNull(companyNumber)) {
             pdfHelper.addTableCellAsOneColumnTable(operationTable,
                     translationService.translate("workPlans.workPlan.report.operation.companyNumber", locale), companyNumber);
         }
 
         String orderDescription = order.getStringField(OrderFields.DESCRIPTION);
-        if(!Objects.isNull(orderDescription)) {
+        if (Objects.nonNull(orderDescription)) {
             pdfHelper.addTableCellAsOneColumnTable(operationTable,
-                    translationService.translate("workPlans.workPlan.report.operation.orderDescription", locale), orderDescription);
+                    translationService.translate("workPlans.workPlan.report.operation.orderDescription", locale),
+                    orderDescription);
         }
+
         operationTable.completeRow();
     }
 

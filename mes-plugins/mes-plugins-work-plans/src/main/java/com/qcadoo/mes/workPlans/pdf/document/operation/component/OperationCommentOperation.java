@@ -24,6 +24,7 @@
 package com.qcadoo.mes.workPlans.pdf.document.operation.component;
 
 import java.util.Locale;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -44,15 +45,15 @@ public class OperationCommentOperation {
     private final PdfHelper pdfHelper;
 
     @Autowired
-    public OperationCommentOperation(TranslationService translationService, PdfHelper pdfHelper) {
+    public OperationCommentOperation(final TranslationService translationService, final PdfHelper pdfHelper) {
         this.pdfHelper = pdfHelper;
         this.translationService = translationService;
     }
 
-    public void print(Entity operationComponent, Document document, Locale locale) throws DocumentException {
+    public void print(final Entity operationComponent, final Document document, final Locale locale) throws DocumentException {
         String commentContent = operationComponent.getStringField(TechnologyOperationComponentFields.COMMENT);
 
-        if (commentContent == null) {
+        if (Objects.isNull(commentContent)) {
             return;
         }
 
@@ -62,6 +63,7 @@ public class OperationCommentOperation {
         pdfHelper.addTableCellAsOneColumnTable(table, commentLabel, commentContent);
         table.setSpacingAfter(18);
         table.setSpacingBefore(9);
+
         document.add(table);
     }
 

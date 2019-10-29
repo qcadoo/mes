@@ -26,52 +26,60 @@ package com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container;
 import java.util.Map;
 import java.util.Objects;
 
-import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
+import com.qcadoo.mes.basic.constants.StaffFields;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
+import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationProductColumn;
 import com.qcadoo.mes.workPlans.pdf.document.order.column.OrderColumn;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
-public class DivisionGroupingContainer extends AbstractGroupingContainer {
+public class StaffGroupingContainer extends AbstractGroupingContainer {
 
-    protected String nullDivisionTitle;
+    private String nullStaffTitle;
 
-    public DivisionGroupingContainer(final Map<OrderColumn, ColumnAlignment> orderColumnToAlignment,
+    public StaffGroupingContainer(final Map<OrderColumn, ColumnAlignment> orderColumnToAlignment,
             final Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductInColumnToAlignment,
             final Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductOutColumnToAlignment,
-            final String titleAppend, final String nullDivisionTitle) {
+            final String titleAppend, final String nullWonullStaffTitlerkstationTitle) {
         super(orderColumnToAlignment, operationComponentIdProductInColumnToAlignment,
                 operationComponentIdProductOutColumnToAlignment, titleAppend);
-
-        this.nullDivisionTitle = nullDivisionTitle;
+        this.nullStaffTitle = nullStaffTitle;
     }
 
     @Override
     public void add(final Entity order, final Entity operationComponent,
             final OperationProductComponentWithQuantityContainer productQuantities) {
-        Entity division = order.getBelongsToField(OrderFields.DIVISION);
+        Entity operationalTask = extractOperationalTask(order, operationComponent);
 
-        if (Objects.isNull(division)) {
-            division = division(operationComponent);
-        }
-        if (Objects.isNull(division)) {
-            store(nullDivisionTitle, order, operationComponent);
+        if (Objects.isNull(operationalTask)) {
+            store(nullStaffTitle, order, operationComponent);
         } else {
-            store(title(division), order, operationComponent);
+            Entity staff = operationalTask.getBelongsToField(OperationalTaskFields.STAFF);
+
+            if (Objects.isNull(staff)) {
+                store(nullStaffTitle, order, operationComponent);
+            } else {
+                store(title(staff), order, operationComponent);
+            }
         }
     }
 
-    private String title(final Entity workstationType) {
-        String workstationName = workstationType.getStringField(WorkstationTypeFields.NAME);
+    private String title(final Entity staff) {
+        String staffName = staff.getStringField(StaffFields.NAME);
+        String staffSurname = staff.getStringField(StaffFields.SURNAME);
 
-        return new StringBuilder(titleAppend).append(" ").append(workstationName).toString();
+        return new StringBuilder(titleAppend).append(" ").append(staffName).append(" ").append(staffSurname).toString();
     }
 
-    private Entity division(final Entity operationComponent) {
-        return operationComponent.getBelongsToField(TechnologyOperationComponentFields.DIVISION);
+    private Entity extractOperationalTask(final Entity order, final Entity operationComponent) {
+        return order.getHasManyField(OrderFields.OPERATIONAL_TASKS).find()
+                .add(SearchRestrictions.belongsTo(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT, operationComponent))
+                .add(SearchRestrictions.ne(OperationalTaskFields.STATE, OperationalTaskStateStringValues.REJECTED))
+                .setMaxResults(1).uniqueResult();
     }
 
 }

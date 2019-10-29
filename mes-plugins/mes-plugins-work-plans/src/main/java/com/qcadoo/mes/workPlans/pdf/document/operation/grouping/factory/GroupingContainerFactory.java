@@ -30,6 +30,6 @@ import com.qcadoo.model.api.Entity;
 
 public interface GroupingContainerFactory {
 
-    GroupingContainer create(Entity workPlan, Locale locale);
+    GroupingContainer create(final Entity workPlan, final Locale locale);
 
 }
