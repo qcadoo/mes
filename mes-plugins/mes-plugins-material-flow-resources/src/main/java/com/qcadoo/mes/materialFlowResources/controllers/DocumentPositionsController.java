@@ -1,13 +1,23 @@
 package com.qcadoo.mes.materialFlowResources.controllers;
 
+import com.google.common.collect.Maps;
+import com.google.common.io.BaseEncoding;
+import com.qcadoo.mes.basic.GridResponse;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
+import com.qcadoo.mes.materialFlowResources.DocumentPositionDTO;
+import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
+import com.qcadoo.mes.materialFlowResources.ResourceDTO;
+import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
+
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,18 +33,11 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.google.common.io.BaseEncoding;
-import com.qcadoo.mes.basic.GridResponse;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
-import com.qcadoo.mes.materialFlowResources.DocumentPositionDTO;
-import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
-import com.qcadoo.mes.materialFlowResources.ResourceDTO;
-import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
-
 @Controller
 @RequestMapping("/rest/documentPositions")
 public class DocumentPositionsController {
+
+    private static final String L_ATTRS_PREFIX = "attrs.";
 
     @Autowired
     private DocumentPositionService documentPositionService;
@@ -43,9 +46,12 @@ public class DocumentPositionsController {
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "{id}")
     public GridResponse<DocumentPositionDTO> findAll(@PathVariable Long id, @RequestParam String sidx, @RequestParam String sord,
             @RequestParam(defaultValue = "1", required = false, value = "page") Integer page,
-            @RequestParam(value = "rows") int perPage, DocumentPositionDTO positionDTO) {
-        return documentPositionService.findAll(id, sidx, sord, page, perPage, positionDTO);
+            @RequestParam(value = "rows") int perPage, DocumentPositionDTO positionDTO,HttpServletRequest request) {
+        Map<String, String> attributeFilters = extractAttributesFilters(request);
+        return documentPositionService.findAll(id, sidx, sord, page, perPage, positionDTO, attributeFilters);
     }
+
+
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "units/{number}")
@@ -149,6 +155,18 @@ public class DocumentPositionsController {
         dateFormat.setLenient(false);
         dateFormat.setTimeZone(TimeZone.getTimeZone("CET"));
         dataBinder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
+    }
+
+    private Map<String, String> extractAttributesFilters(HttpServletRequest request) {
+        Enumeration enumeration = request.getParameterNames();
+        Map<String, String> attributeFilters = Maps.newHashMap();
+        while(enumeration.hasMoreElements()){
+            String parameterName = (String) enumeration.nextElement();
+            if(parameterName.startsWith(L_ATTRS_PREFIX)){
+                attributeFilters.put(parameterName.replace(L_ATTRS_PREFIX, ""), request.getParameter(parameterName));
+            }
+        }
+        return attributeFilters;
     }
 
 }

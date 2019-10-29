@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 
+
 public class DocumentPositionDTO {
 
     private Long id;

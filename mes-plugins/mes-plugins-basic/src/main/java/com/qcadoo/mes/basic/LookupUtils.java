@@ -46,7 +46,7 @@ public class LookupUtils {
         return new GridResponse<>(page, Double.valueOf(Math.ceil((1.0 * countRecords) / perPage)).intValue(), countRecords, records);
     }
 
-    private String addQueryWhereForObject(Object object) {
+    public String addQueryWhereForObject(Object object) {
         List<String> items = new ArrayList<>();
 
         if (object != null) {
@@ -91,7 +91,7 @@ public class LookupUtils {
         return where;
     }
 
-    private Map<String, Object> getParametersForObject(Object object) {
+    public Map<String, Object> getParametersForObject(Object object) {
         Map<String, Object> parameters = new HashMap<>();
 
         if (object != null) {
