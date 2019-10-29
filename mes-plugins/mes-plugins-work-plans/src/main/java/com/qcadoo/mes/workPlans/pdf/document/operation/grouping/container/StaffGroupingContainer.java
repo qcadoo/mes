@@ -44,7 +44,7 @@ public class StaffGroupingContainer extends AbstractGroupingContainer {
     public StaffGroupingContainer(final Map<OrderColumn, ColumnAlignment> orderColumnToAlignment,
             final Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductInColumnToAlignment,
             final Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductOutColumnToAlignment,
-            final String titleAppend, final String nullWonullStaffTitlerkstationTitle) {
+            final String titleAppend, final String nullStaffTitle) {
         super(orderColumnToAlignment, operationComponentIdProductInColumnToAlignment,
                 operationComponentIdProductOutColumnToAlignment, titleAppend);
         this.nullStaffTitle = nullStaffTitle;
