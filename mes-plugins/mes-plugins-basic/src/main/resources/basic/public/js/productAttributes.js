@@ -19,7 +19,7 @@ function filter(item) {
     for (let columnId in columnFilters) {
         if (columnId !== undefined && columnFilters[columnId] !== "") {
             let c = grid.getColumns()[grid.getColumnIndex(columnId)];
-            if (item[c.field] === undefined || item[c.field].indexOf(columnFilters[columnId]) < 0) {
+            if (item[c.field] === undefined || item[c.field] === null || item[c.field].indexOf(columnFilters[columnId]) < 0) {
                 return false;
             }
         }
@@ -74,9 +74,9 @@ $.get("/rest/prodAttributes/columns", function (columns) {
         let comparer = function (a, b) {
             if (a[args.sortCol.field] === b[args.sortCol.field]) {
                 return 0;
-            } else if (a[args.sortCol.field] === undefined) {
+            } else if (a[args.sortCol.field] === undefined || a[args.sortCol.field] === null) {
                 return 1;
-            } else if (b[args.sortCol.field] === undefined) {
+            } else if (b[args.sortCol.field] === undefined || b[args.sortCol.field] === null) {
                 return -1;
             } else {
                 return a[args.sortCol.field] < b[args.sortCol.field] ? -1 : 1;
