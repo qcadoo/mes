@@ -321,6 +321,9 @@
         <menu:menu-item name="warehouseStockReports" category="materialFlow"
                         view="warehouseStockReportsList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
 
+        <menu:menu-item-url name="resourcesAttributes" category="materialFlow" url="/resourcesAttributes.html"
+                            defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
+
         <view:view resource="view/productsLookup.xml"/>
         <view:view resource="view/resourceDetails.xml"/>
         <view:view resource="view/resourcesList.xml"/>
@@ -331,6 +334,7 @@
         <view:view resource="view/resourceCorrectionDetails.xml"/>
         <view:view resource="view/documentPositionsList.xml"/>
         <view:view resource="view/costNormsGenerator.xml"/>
+        <view:view resource="view/resourcesAttributes.xml"/>
 
         <view:view resource="view/storageLocationsMultiAdd.xml"/>
         <view:view resource="view/storageLocationsDetails.xml"/>
