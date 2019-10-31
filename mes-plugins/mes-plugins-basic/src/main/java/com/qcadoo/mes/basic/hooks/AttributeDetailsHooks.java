@@ -67,22 +67,40 @@ public class AttributeDetailsHooks {
 
     private void disableFormComponentsIfAttributeAssign(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(AttributeDetailsHooks.L_FORM);
+        FieldComponent dataType = (FieldComponent) view.getComponentByReference(AttributeFields.DATA_TYPE);
+        FieldComponent valueType = (FieldComponent) view.getComponentByReference(AttributeFields.VALUE_TYPE);
+        FieldComponent precision = (FieldComponent) view.getComponentByReference(AttributeFields.PRECISION);
+        FieldComponent unit = (FieldComponent) view.getComponentByReference(AttributeFields.UNIT);
+        CheckBoxComponent forProduct = (CheckBoxComponent) view.getComponentByReference(AttributeFields.FOR_PRODUCT);
+        CheckBoxComponent forResource = (CheckBoxComponent) view.getComponentByReference(AttributeFields.FOR_RESOURCE);
+        dataType.setEnabled(true);
+        valueType.setEnabled(true);
+        precision.setEnabled(true);
+        unit.setEnabled(true);
+        forProduct.setEnabled(true);
+        forResource.setEnabled(true);
         if (Objects.nonNull(form.getEntityId())) {
             Entity attribute = form.getEntity().getDataDefinition().get(form.getEntity().getId());
-            if (!attribute.getHasManyField(AttributeFields.PRODUCT_ATTRIBUTE_VALUES).isEmpty()
-                    || !attribute.getHasManyField(AttributeFields.RESOURCE_ATTRIBUTE_VALUES).isEmpty()) {
-                FieldComponent dataType = (FieldComponent) view.getComponentByReference(AttributeFields.DATA_TYPE);
-                FieldComponent valueType = (FieldComponent) view.getComponentByReference(AttributeFields.VALUE_TYPE);
-                FieldComponent precision = (FieldComponent) view.getComponentByReference(AttributeFields.PRECISION);
-                FieldComponent unit = (FieldComponent) view.getComponentByReference(AttributeFields.UNIT);
-                CheckBoxComponent forProduct = (CheckBoxComponent) view.getComponentByReference(AttributeFields.FOR_PRODUCT);
-                CheckBoxComponent forResource = (CheckBoxComponent) view.getComponentByReference(AttributeFields.FOR_RESOURCE);
+            if (!attribute.getHasManyField(AttributeFields.PRODUCT_ATTRIBUTE_VALUES).isEmpty()) {
                 dataType.setEnabled(false);
                 valueType.setEnabled(false);
                 precision.setEnabled(false);
                 unit.setEnabled(false);
                 forProduct.setEnabled(false);
+            }
+
+            if (!attribute.getHasManyField(AttributeFields.RESOURCE_ATTRIBUTE_VALUES).isEmpty()) {
+                dataType.setEnabled(false);
+                valueType.setEnabled(false);
+                precision.setEnabled(false);
+                unit.setEnabled(false);
                 forResource.setEnabled(false);
+            }
+
+            if (!attribute.getHasManyField(AttributeFields.ATTRIBUTE_VALUES).isEmpty()) {
+                dataType.setEnabled(false);
+                valueType.setEnabled(false);
+                precision.setEnabled(false);
             }
         }
 

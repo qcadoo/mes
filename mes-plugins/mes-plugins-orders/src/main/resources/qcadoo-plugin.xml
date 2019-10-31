@@ -283,6 +283,11 @@
                            joinField="productionLine"/>
         </model:model-field>
 
+        <model:model-field plugin="technologies" model="technologyOperationComponent">
+            <model:hasMany name="operationalTasks" plugin="orders" model="operationalTask"
+                           joinField="technologyOperationComponent"/>
+        </model:model-field>
+
         <model:model-enum-value plugin="basic" model="parameter"
                                 value="02startOperationalTask" enum="inputProductsRequiredForType" />
 

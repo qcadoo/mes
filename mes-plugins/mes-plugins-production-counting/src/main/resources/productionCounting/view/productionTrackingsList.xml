@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING" name="productionTrackingsList"
+<view defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING_REGISTRATION" name="productionTrackingsList"
       modelName="productionTrackingDto"
       menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
@@ -195,14 +195,16 @@
 
             <option type="column" name="companyNumber" fields="companyNumber"/>
 
+            <option type="column" name="createUser" fields="createUser"/>
+
             <option type="order" column="number" direction="desc"/>
 
             <option type="searchable"
-                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,outProductNumber,companyNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
+                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,outProductNumber,companyNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber,createUser"/>
             <option type="multiSearch"
-                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,outProductNumber,companyNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
+                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,outProductNumber,companyNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber,createUser"/>
             <option type="orderable"
-                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,outProductNumber,companyNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber"/>
+                    value="number,orderNumber,technologyOperationComponentNumber,productNumber,outProductNumber,companyNumber,productUnit,usedQuantity,shiftName,staffName,divisionNumber,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,correctionNumber,productionLineNumber,createUser"/>
 
             <option type="footerRow" value="true"/>
             <option type="columnsToSummary" value="usedQuantity"/>
@@ -216,6 +218,10 @@
             <listener event="changeState"
                       class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
                       method="changeTrackingState"/>
+
+            <criteriaModifier
+                    class="com.qcadoo.mes.productionCounting.criteriaModifiers.ProductionTrackingCriteriaModifiers"
+                    method="onlyMyRecords"/>
 
         </component>
 

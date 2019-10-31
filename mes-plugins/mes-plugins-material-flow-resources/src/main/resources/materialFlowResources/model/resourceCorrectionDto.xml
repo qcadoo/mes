@@ -50,6 +50,7 @@
         <string name="oldPalletNumber"/>
         <string name="newStorageLocationNumber"/>
         <string name="oldStorageLocationNumber"/>
+        <boolean name="attributeCorrection"/>
 
     </fields>
     <masterModel plugin="materialFlowResources" model="resourceCorrection"/>

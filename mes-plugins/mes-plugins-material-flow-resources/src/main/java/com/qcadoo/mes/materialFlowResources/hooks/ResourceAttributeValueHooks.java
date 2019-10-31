@@ -182,6 +182,15 @@ public class ResourceAttributeValueHooks {
                         attributeValue.getStringField(ResourceAttributeValueFields.VALUE));
                 attributeAfterCorrection.setField(L_RESOURCE_CORRECTION, correction.getId());
                 attributeAfterCorrection.getDataDefinition().save(attributeAfterCorrection);
+            } else if (Objects.isNull(resourceAttributeValue.getId())) {
+                Entity attributeAfterCorrection = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                        MaterialFlowResourcesConstants.MODEL_RESOURCE_ATTRIBUTE_VALUE_AFTER_CORRECTION).create();
+                attributeAfterCorrection.setField(ResourceAttributeValueCorrectionAfterFields.ATTRIBUTE, attributeValue
+                        .getBelongsToField(ResourceAttributeValueFields.ATTRIBUTE).getId());
+                attributeAfterCorrection.setField(ResourceAttributeValueCorrectionAfterFields.VALUE,
+                        attributeValue.getStringField(ResourceAttributeValueFields.VALUE));
+                attributeAfterCorrection.setField(L_RESOURCE_CORRECTION, correction.getId());
+                attributeAfterCorrection.getDataDefinition().save(attributeAfterCorrection);
             }
 
         });

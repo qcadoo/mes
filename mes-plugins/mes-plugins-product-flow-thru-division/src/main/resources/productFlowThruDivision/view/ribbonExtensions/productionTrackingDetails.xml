@@ -29,7 +29,7 @@
                  xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd"
                  plugin="productionCounting" view="productionTrackingDetails">
 
-    <group name="materialFlow" defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING_FROM_PRODUCTION_TRACKING">
+    <group name="materialFlow" defaultAuthorizationRole="ROLE_ORDER_MATERIAL_AVAILABILITY">
         <bigButton name="componentAvailability" icon="iconProducts24.png"
                    action="#{form}.fireEvent(showMaterialAvailabilityForProductionTracking);"/>
     </group>

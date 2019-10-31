@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.productCharacteristics.hooks;
 
-import com.qcadoo.mes.productCharacteristics.constants.ShelvesFields;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,9 +44,8 @@ public class ProductCharacteristicsHooks {
 
     private static final String L_FORM = "form";
 
-    String[] innerComponents = { ProductCharacteristicsFields.SIZE, "downShelve",
-           "upShelve", "downForm",
-            "upForm", ProductCharacteristicsFields.SHOW_IN_PRODUCT_DATA };
+    String[] innerComponents = { ProductFields.SIZE, "downShelve", "upShelve", "downForm", "upForm",
+            ProductCharacteristicsFields.SHOW_IN_PRODUCT_DATA };
 
     public void enableCharacteristicsTabForExternalItems(final ViewDefinitionState state) {
         FormComponent productForm = (FormComponent) state.getComponentByReference(L_FORM);

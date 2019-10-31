@@ -24,6 +24,7 @@
 package com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container;
 
 import java.util.Map;
+import java.util.Objects;
 
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
@@ -36,27 +37,31 @@ import com.qcadoo.model.api.Entity;
 
 public class EndProductGroupingContainer extends AbstractGroupingContainer {
 
-    public EndProductGroupingContainer(Map<OrderColumn, ColumnAlignment> orderColumnToAlignment,
-            Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductInColumnToAlignment,
-            Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductOutColumnToAlignment,
-            String titleAppend) {
+    public EndProductGroupingContainer(final Map<OrderColumn, ColumnAlignment> orderColumnToAlignment,
+            final Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductInColumnToAlignment,
+            final Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductOutColumnToAlignment,
+            final String titleAppend) {
         super(orderColumnToAlignment, operationComponentIdProductInColumnToAlignment,
                 operationComponentIdProductOutColumnToAlignment, titleAppend);
     }
 
     @Override
-    public void add(Entity order, Entity operationComponent, OperationProductComponentWithQuantityContainer productQuantities) {
+    public void add(final Entity order, final Entity operationComponent,
+            final OperationProductComponentWithQuantityContainer productQuantities) {
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        if (technology == null) {
+
+        if (Objects.isNull(technology)) {
             return;
         }
+
         store(title(technology), order, operationComponent);
     }
 
-    private String title(Entity technology) {
+    private String title(final Entity technology) {
         Entity endProduct = technology.getBelongsToField(TechnologyFields.PRODUCT);
         String endProductName = endProduct.getStringField(ProductFields.NAME);
-        return titleAppend + " " + endProductName;
+
+        return new StringBuilder(titleAppend).append(" ").append(endProductName).toString();
     }
 
 }

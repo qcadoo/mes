@@ -28,11 +28,13 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.criteriaModifiers.AddressCriteriaModifiers;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
@@ -72,6 +74,10 @@ public class DocumentDetailsHooks {
 
     private static final String L_PRINT_PDF = "printPdf";
 
+    private static final String L_IMPORT = "import";
+
+    private static final String L_OPEN_POSITIONS_IMPORT_PAGE = "openPositionsImportPage";
+
     private static final List<String> L_ACTIONS_ITEMS = Arrays.asList("saveBack", "saveNew", "save", "delete", "copy");
 
     @Autowired
@@ -87,11 +93,10 @@ public class DocumentDetailsHooks {
         initializeDocument(view);
         lockNumberAndTypeChange(view);
         fetchNameAndNumberFromDatabase(view);
-        lockDispositionOrder(view);
+        setRibbonState(view);
         fillAddressLookupCriteriaModifier(view);
     }
 
-    // fixme: refactor
     public void showFieldsByDocumentType(final ViewDefinitionState view) {
         FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
 
@@ -121,7 +126,7 @@ public class DocumentDetailsHooks {
         }
     }
 
-    private void showWarehouse(final ViewDefinitionState view, boolean from, boolean to) {
+    private void showWarehouse(final ViewDefinitionState view, final boolean from, final boolean to) {
         LookupComponent locationFromLookup = (LookupComponent) view.getComponentByReference(DocumentFields.LOCATION_FROM);
         locationFromLookup.setEnabled(from);
 
@@ -129,7 +134,7 @@ public class DocumentDetailsHooks {
         locationToLookup.setEnabled(to);
     }
 
-    private void showCompanyAndAddress(final ViewDefinitionState view, boolean visible) {
+    private void showCompanyAndAddress(final ViewDefinitionState view, final boolean visible) {
         LookupComponent companyLookup = (LookupComponent) view.getComponentByReference(DocumentFields.COMPANY);
         LookupComponent addressLookup = (LookupComponent) view.getComponentByReference(DocumentFields.ADDRESS);
 
@@ -147,6 +152,7 @@ public class DocumentDetailsHooks {
 
         Entity document = documentForm.getPersistedEntityWithIncludedFormValues();
         DocumentState state = DocumentState.of(document);
+
         if (documentId == null) {
             changeAcceptButtonState(window, false);
             changePrintButtonState(window, false);
@@ -177,7 +183,6 @@ public class DocumentDetailsHooks {
             changeFillResourceButtonState(window, false);
             changeCheckResourcesStockButtonState(window, false);
             changeaAdMultipleResourcesButtonState(window, false);
-
         }
     }
 
@@ -190,41 +195,38 @@ public class DocumentDetailsHooks {
         changeAcceptButtonState(window, false);
     }
 
-    private void changeAcceptButtonState(WindowComponent window, final boolean enable) {
-        RibbonActionItem acceptRibbonActionItem = (RibbonActionItem) window.getRibbon().getGroupByName(L_STATE)
-                .getItemByName(L_ACCEPT);
+    private void changeAcceptButtonState(final WindowComponent window, final boolean enable) {
+        RibbonActionItem acceptRibbonActionItem = window.getRibbon().getGroupByName(L_STATE).getItemByName(L_ACCEPT);
 
         acceptRibbonActionItem.setEnabled(enable);
         acceptRibbonActionItem.requestUpdate(true);
     }
 
-    private void changeCheckResourcesStockButtonState(WindowComponent window, final boolean enable) {
-        RibbonActionItem checkResourcesStockItem = (RibbonActionItem) window.getRibbon().getGroupByName("resourcesStock")
+    private void changeCheckResourcesStockButtonState(final WindowComponent window, final boolean enable) {
+        RibbonActionItem checkResourcesStockItem = window.getRibbon().getGroupByName("resourcesStock")
                 .getItemByName("checkResourcesStock");
 
         checkResourcesStockItem.setEnabled(enable);
         checkResourcesStockItem.requestUpdate(true);
     }
 
-    private void changeFillResourceButtonState(WindowComponent window, final boolean enable) {
-        RibbonActionItem fillResourcesItem = (RibbonActionItem) window.getRibbon().getGroupByName("resources")
-                .getItemByName("fillResources");
+    private void changeFillResourceButtonState(final WindowComponent window, final boolean enable) {
+        RibbonActionItem fillResourcesItem = window.getRibbon().getGroupByName("resources").getItemByName("fillResources");
 
         fillResourcesItem.setEnabled(enable);
         fillResourcesItem.requestUpdate(true);
     }
 
-    private void changeaAdMultipleResourcesButtonState(WindowComponent window, final boolean enable) {
-        RibbonActionItem addMultipleResources = (RibbonActionItem) window.getRibbon().getGroupByName("resources")
+    private void changeaAdMultipleResourcesButtonState(final WindowComponent window, final boolean enable) {
+        RibbonActionItem addMultipleResources = window.getRibbon().getGroupByName("resources")
                 .getItemByName("addMultipleResources");
 
         addMultipleResources.setEnabled(enable);
         addMultipleResources.requestUpdate(true);
     }
 
-    private void changePrintButtonState(WindowComponent window, final boolean enable) {
-        RibbonActionItem printRibbonActionItem = (RibbonActionItem) window.getRibbon().getGroupByName(L_PRINT)
-                .getItemByName(L_PRINT_PDF);
+    private void changePrintButtonState(final WindowComponent window, final boolean enable) {
+        RibbonActionItem printRibbonActionItem = window.getRibbon().getGroupByName(L_PRINT).getItemByName(L_PRINT_PDF);
 
         printRibbonActionItem.setEnabled(enable);
         printRibbonActionItem.requestUpdate(true);
@@ -273,38 +275,51 @@ public class DocumentDetailsHooks {
         }
     }
 
-    private DataDefinition getDocumentDD() {
-        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_DOCUMENT);
-    }
-
-    private void lockDispositionOrder(ViewDefinitionState view) {
+    private void setRibbonState(final ViewDefinitionState view) {
         FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
-        RibbonActionItem printDispositionOrderPdfRibbonActionItem = (RibbonActionItem) window.getRibbon().getGroupByName(L_PRINT)
+
+        RibbonActionItem printDispositionOrderPdfRibbonActionItem = window.getRibbon().getGroupByName(L_PRINT)
                 .getItemByName(L_PRINT_DISPOSITION_ORDER_PDF);
+        RibbonActionItem openPositionsImportPageRibbonActionItem = window.getRibbon().getGroupByName(L_IMPORT)
+                .getItemByName(L_OPEN_POSITIONS_IMPORT_PAGE);
+
+        Entity document = documentForm.getEntity();
 
         String errorMessage = null;
+        String descriptionMessage = "materialFlowResources.documentDetails.window.ribbon.import.openPositionsImportPage.description";
 
-        if (documentForm.getEntityId() != null) {
-            Entity document = documentForm.getEntity();
-            String documentType = document.getStringField(DocumentFields.TYPE);
+        String state = document.getStringField(DocumentFields.STATE);
+        String documentType = document.getStringField(DocumentFields.TYPE);
 
-            List<String> documentTypesWithDispositionOrder = Arrays.asList(DocumentType.TRANSFER.getStringValue(),
-                    DocumentType.INTERNAL_OUTBOUND.getStringValue(), DocumentType.RELEASE.getStringValue());
+        List<String> documentTypesWithDispositionOrder = Lists.newArrayList(DocumentType.TRANSFER.getStringValue(),
+                DocumentType.INTERNAL_OUTBOUND.getStringValue(), DocumentType.RELEASE.getStringValue());
+        List<String> documentTypesWithAdmission = Lists.newArrayList(DocumentType.RECEIPT.getStringValue(),
+                DocumentType.INTERNAL_INBOUND.getStringValue());
 
-            if (documentType == null || !documentTypesWithDispositionOrder.contains(documentType)) {
+        boolean isSaved = Objects.nonNull(documentForm.getEntityId());
+        boolean isDraft = DocumentState.DRAFT.getStringValue().equals(state);
+        boolean isDispositionOrder = documentTypesWithDispositionOrder.contains(documentType);
+        boolean isAdmission = documentTypesWithAdmission.contains(documentType);
+        boolean inBuffer = document.getBooleanField(DocumentFields.IN_BUFFER);
+
+        if (isSaved) {
+            if (Objects.isNull(documentType) || !isDispositionOrder) {
                 errorMessage = "materialFlowResources.printDispositionOrderPdf.error";
             }
-            if (document.getBooleanField(DocumentFields.IN_BUFFER)) {
+            if (inBuffer) {
                 errorMessage = "materialFlowResources.printDispositionOrderPdf.errorInBuffer";
             }
         }
 
-        printDispositionOrderPdfRibbonActionItem.setEnabled(errorMessage == null && documentForm.getEntityId() != null);
+        printDispositionOrderPdfRibbonActionItem.setEnabled(isSaved && isDispositionOrder && !inBuffer);
         printDispositionOrderPdfRibbonActionItem.setMessage(errorMessage);
         printDispositionOrderPdfRibbonActionItem.requestUpdate(true);
+
+        openPositionsImportPageRibbonActionItem.setEnabled(isSaved && isDraft && isAdmission);
+        openPositionsImportPageRibbonActionItem.setMessage(descriptionMessage);
+        openPositionsImportPageRibbonActionItem.requestUpdate(true);
     }
 
     public void fillAddressLookupCriteriaModifier(final ViewDefinitionState view) {
@@ -335,6 +350,11 @@ public class DocumentDetailsHooks {
 
         addressLookup.setFilterValue(filterValueHolder);
         addressLookup.requestComponentUpdateState();
+    }
+
+    private DataDefinition getDocumentDD() {
+        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_DOCUMENT);
     }
 
 }

@@ -41,18 +41,18 @@ public class OrderSection {
     private final OrderTable orderTable;
 
     @Autowired
-    public OrderSection(OrderTable orderTable) {
+    public OrderSection(final OrderTable orderTable) {
         this.orderTable = orderTable;
     }
 
-    public void print(Entity workPlan, GroupingContainer groupingContainer, Document document, Locale locale)
-            throws DocumentException {
+    public void print(final Entity workPlan, final GroupingContainer groupingContainer, final Document document,
+            final Locale locale) throws DocumentException {
         if (printingOrdersEnabled(workPlan)) {
             orderTable.print(groupingContainer, document, locale);
         }
     }
 
-    private boolean printingOrdersEnabled(Entity workPlan) {
+    private boolean printingOrdersEnabled(final Entity workPlan) {
         return !workPlan.getBooleanField(WorkPlanFields.DONT_PRINT_ORDERS_IN_WORK_PLANS);
     }
 

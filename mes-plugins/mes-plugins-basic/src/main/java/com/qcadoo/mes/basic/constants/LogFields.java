@@ -29,13 +29,23 @@ public final class LogFields {
     }
 
     public static final String CREATE_TIME = "createTime";
+
     public static final String USER = "user";
-    public static final String TYPE = "logType";
+
+    public static final String LOG_TYPE = "logType";
+
     public static final String ACTION = "action";
+
     public static final String MESSAGE = "message";
+
     public static final String ITEM_1 = "item1";
+
     public static final String ITEM_2 = "item2";
+
     public static final String ITEM_3 = "item3";
+
     public static final String DETAILS = "details";
+
     public static final String LOG_LEVEL = "logLevel";
+
 }

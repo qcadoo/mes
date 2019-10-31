@@ -22,4 +22,6 @@ public final class ScheduleFields {
     public static final String POSITIONS = "positions";
 
     public static final String ORDERS = "orders";
+
+    public static final String STATE = "state";
 }

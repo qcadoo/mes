@@ -37,11 +37,11 @@ public class OperationSectionHeader {
 
     }
 
-    public void print(Document document, String title) throws DocumentException {
+    public void print(final Document document, final String title) throws DocumentException {
         document.add(titleParagraph(title));
     }
 
-    private Paragraph titleParagraph(String title) {
+    private Paragraph titleParagraph(final String title) {
         return new Paragraph(title, FontUtils.getDejavuBold11Dark());
     }
 

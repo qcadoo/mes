@@ -67,6 +67,9 @@ public final class MaterialFlowResourcesConstants {
     public static final String MODEL_PALLET_STORAGE_STATE_DTO = "palletStorageStateDto";
 
     public static final String MODEL_RESOURCE_ATTRIBUTE_VALUE_AFTER_CORRECTION = "resourceAttributeValueAfterCorrection";
+
     public static final String MODEL_RESOURCE_ATTRIBUTE_VALUE_BEFORE_CORRECTION = "resourceAttributeValueBeforeCorrection";
+
+    public static final String VIEW_RESOURCES_ATTRIBUTES = "resourcesAttributes";
 
 }

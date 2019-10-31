@@ -76,9 +76,17 @@
     <modules>
         <localization:translation path="locales"/>
 
-        <model:model-field plugin="materialFlowResources" model="reservation">
-            <model:belongsTo name="productsToIssue" model="productsToIssue"
-                             plugin="productFlowThruDivision"/>
+        <model:model-field plugin="basic" model="division">
+            <model:enum name="productionFlow" values="01warehouse,02withinTheProcess"
+                        default="02withinTheProcess"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="division">
+            <model:boolean name="automaticMoveForIntermediate" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="division">
+            <model:boolean name="automaticMoveForFinal" default="false"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="division">
@@ -93,6 +101,11 @@
 
         <model:model-field plugin="basic" model="division">
             <model:belongsTo name="productsInputLocation" model="location"
+                             plugin="materialFlow"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="division">
+            <model:belongsTo name="productsFlowLocation" model="location"
                              plugin="materialFlow"/>
         </model:model-field>
 
@@ -114,28 +127,15 @@
                            cascade="nullify"/>
         </model:model-field>
 
-        <model:model-field plugin="basic" model="division">
-            <model:belongsTo name="productsFlowLocation" model="location"
-                             plugin="materialFlow"/>
-        </model:model-field>
-
         <model:model-field plugin="materialFlow" model="location">
             <model:hasMany name="productsFlowLocations"
                            model="division" plugin="basic" joinField="productsFlowLocation"
                            cascade="nullify"/>
         </model:model-field>
 
-        <model:model-field plugin="basic" model="division">
-            <model:enum name="productionFlow" values="01warehouse,02withinTheProcess"
-                        default="02withinTheProcess"/>
-        </model:model-field>
-
-        <model:model-field plugin="basic" model="division">
-            <model:boolean name="automaticMoveForIntermediate" default="false"/>
-        </model:model-field>
-
-        <model:model-field plugin="basic" model="division">
-            <model:boolean name="automaticMoveForFinal" default="false"/>
+        <model:model-field plugin="materialFlowResources" model="reservation">
+            <model:belongsTo name="productsToIssue" model="productsToIssue"
+                             plugin="productFlowThruDivision"/>
         </model:model-field>
 
         <!-- Range -->
@@ -766,7 +766,6 @@
         <view:view resource="view/productsFinalDetails.xml"/>
         <view:view resource="view/productToIssueDetails.xml"/>
         <view:view resource="view/issueList.xml"/>
-
 
         <!--  warehouseIssue -->
 

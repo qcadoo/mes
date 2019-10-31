@@ -29,8 +29,6 @@ public class ProductCharacteristicsFields {
 
     }
 
-    public static final String SIZE = "size";
-
     public static final String LOWER_SHELF = "lowerShelf";
 
     public static final String UPPER_SHELF = "upperShelf";

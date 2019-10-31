@@ -23,19 +23,19 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.order;
 
+import java.util.Map;
+
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationProductColumn;
 import com.qcadoo.mes.workPlans.pdf.document.order.column.OrderColumn;
 import com.qcadoo.model.api.Entity;
 
-import java.util.Map;
-
 public interface WorkPlanColumnService {
 
-    Map<OrderColumn, ColumnAlignment> getOrderColumns(Entity workPlan);
+    Map<OrderColumn, ColumnAlignment> getOrderColumns(final Entity workPlan);
 
-    Map<Long, Map<OperationProductColumn, ColumnAlignment>> getOperationProductInputColumns(Entity workPlan);
+    Map<Long, Map<OperationProductColumn, ColumnAlignment>> getOperationProductInputColumns(final Entity workPlan);
 
-    Map<Long, Map<OperationProductColumn, ColumnAlignment>> getOperationProductOutputColumns(Entity workPlan);
+    Map<Long, Map<OperationProductColumn, ColumnAlignment>> getOperationProductOutputColumns(final Entity workPlan);
 
 }

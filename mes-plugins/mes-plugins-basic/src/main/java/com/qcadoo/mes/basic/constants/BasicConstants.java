@@ -120,4 +120,6 @@ public final class BasicConstants {
 
     public static final String ROLE_TERMINAL_USER = "05terminalUser";
 
+    public static final String VIEW_PRODUCTS_ATTRIBUTES = "productsAttributes";
+
 }

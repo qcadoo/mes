@@ -43,7 +43,6 @@
         <datetime name="startDate" required="true"/>
         <datetime name="finishDate" required="true"/>
 
-
         <belongsTo name="staff" model="staff" plugin="basic"/>
         <belongsTo name="productionLine" model="productionLine"
                    plugin="productionLines"/>

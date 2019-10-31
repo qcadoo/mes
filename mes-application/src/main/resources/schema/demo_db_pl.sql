@@ -4188,8 +4188,8 @@ CREATE TABLE arch_materialflowresources_document (
     entityversion bigint DEFAULT 0,
     plannedevent_id bigint,
     name character varying(255) NOT NULL,
-    createlinkedpzdocument boolean,
-    linkedpzdocumentlocation_id bigint,
+    createlinkeddocument boolean,
+    linkeddocumentlocation_id bigint,
     address_id bigint,
     inbuffer boolean DEFAULT false,
     dispositionshift_id bigint,
@@ -4497,7 +4497,8 @@ CREATE TABLE qcadoosecurity_user (
     group_id bigint,
     entityversion bigint DEFAULT 0,
     factory_id bigint,
-    ipaddress character varying
+    ipaddress character varying,
+    showonlymyregistrationrecords boolean DEFAULT false
 );
 
 
@@ -15507,7 +15508,9 @@ CREATE TABLE materialflowresources_documentpositionparametersitem (
     editable boolean DEFAULT true,
     parameters_id bigint,
     name character varying(255),
-    ordering integer
+    ordering integer,
+    forattribute boolean DEFAULT false,
+    attribute_id bigint
 );
 
 
@@ -16218,7 +16221,16 @@ CREATE VIEW materialflowresources_resourcecorrectiondto AS
     newpallet.number AS newpalletnumber,
     oldpallet.number AS oldpalletnumber,
     new_storagelocation.number AS newstoragelocationnumber,
-    old_storagelocation.number AS oldstoragelocationnumber
+    old_storagelocation.number AS oldstoragelocationnumber,
+        CASE
+            WHEN (( SELECT count(*) AS count
+               FROM materialflowresources_resourceattributevalueaftercorrection resourceattributevalue
+              WHERE (resourceattributevalue.resourcecorrection_id = correction.id)) > 0) THEN true
+            WHEN (( SELECT count(*) AS count
+               FROM materialflowresources_resourceattributevaluebeforecorrection resourceattributevalue
+              WHERE (resourceattributevalue.resourcecorrection_id = correction.id)) > 0) THEN true
+            ELSE false
+        END AS attributecorrection
    FROM (((((((materialflowresources_resourcecorrection correction
      JOIN basic_product product ON ((correction.product_id = product.id)))
      LEFT JOIN materialflowresources_resource resource ON ((correction.resource_id = resource.id)))
@@ -16278,13 +16290,7 @@ CREATE VIEW materialflowresources_resourcedto AS
             ELSE (' - '::text || (additionalcode.code)::text)
         END) AS mergedproductnumberandadditionalcode,
     (r.location_id)::integer AS location_id,
-    NULL::bigint AS positionaddmultihelper_id,
-        CASE
-            WHEN (( SELECT count(*) AS count
-               FROM materialflowresources_resourceattributevalue resourceattributevalue
-              WHERE (resourceattributevalue.resource_id = r.id)) > 0) THEN true
-            ELSE false
-        END AS attributecorrection
+    NULL::bigint AS positionaddmultihelper_id
    FROM (((((materialflowresources_resource r
      JOIN materialflow_location location ON ((location.id = r.location_id)))
      JOIN basic_product product ON ((product.id = r.product_id)))
@@ -17707,7 +17713,7 @@ CREATE VIEW orders_orderplanninglistdto AS
      LEFT JOIN technologies_technology technology ON ((technology.id = ordersorder.technology_id)))
      LEFT JOIN productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
      LEFT JOIN masterorders_masterorder masterorder ON ((masterorder.id = ordersorder.masterorder_id)))
-     LEFT JOIN basic_division division ON ((division.id = technology.division_id)))
+     LEFT JOIN basic_division division ON ((division.id = ordersorder.division_id)))
      LEFT JOIN basic_company company ON ((company.id = ordersorder.company_id)));
 
 
@@ -20869,7 +20875,8 @@ CREATE VIEW productioncounting_productiontrackingdto AS
     outcomponent.usedquantity,
     company.number AS companynumber,
     COALESCE((((outproduct.number)::text || ' - '::text) || (outproduct.name)::text), (((product.number)::text || ' - '::text) || (product.name)::text)) AS outproductnumber,
-    productiontracking.shiftstartday
+    productiontracking.shiftstartday,
+    productiontracking.createuser
    FROM ((((((((((((((((productioncounting_productiontracking productiontracking
      JOIN orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
      JOIN basic_product product ON ((ordersorder.product_id = product.id)))
@@ -29000,7 +29007,7 @@ SELECT pg_catalog.setval('arch_masterorders_masterorderproduct_id_seq', 1, false
 -- Data for Name: arch_materialflowresources_document; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY arch_materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkedpzdocument, linkedpzdocumentlocation_id, address_id, inbuffer, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress, externalnumber, archived, issend) FROM stdin;
+COPY arch_materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, inbuffer, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress, externalnumber, archived, issend) FROM stdin;
 \.
 
 
@@ -33280,28 +33287,28 @@ SELECT pg_catalog.setval('materialflowresources_documentpositionparameters_id_se
 -- Data for Name: materialflowresources_documentpositionparametersitem; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY materialflowresources_documentpositionparametersitem (id, checked, editable, parameters_id, name, ordering) FROM stdin;
-1	t	f	1	act	1
-2	t	f	1	number	2
-3	t	f	1	product	3
-4	t	t	1	productName	4
-5	t	t	1	additionalCode	5
-6	t	f	1	quantity	6
-7	t	f	1	unit	7
-8	t	f	1	givenquantity	8
-9	t	f	1	givenunit	9
-10	t	f	1	conversion	10
-11	t	t	1	resource	11
-12	t	t	1	price	12
-13	t	t	1	batch	13
-14	t	t	1	productionDate	14
-15	t	t	1	expirationDate	15
-16	t	t	1	storageLocation	16
-17	t	t	1	palletNumber	17
-18	t	t	1	typeOfPallet	18
-19	t	t	1	waste	19
-21	t	t	1	resourceNumber	21
-22	f	t	1	sellingPrice	22
+COPY materialflowresources_documentpositionparametersitem (id, checked, editable, parameters_id, name, ordering, forattribute, attribute_id) FROM stdin;
+1	t	f	1	act	1	f	\N
+2	t	f	1	number	2	f	\N
+3	t	f	1	product	3	f	\N
+4	t	t	1	productName	4	f	\N
+5	t	t	1	additionalCode	5	f	\N
+6	t	f	1	quantity	6	f	\N
+7	t	f	1	unit	7	f	\N
+8	t	f	1	givenquantity	8	f	\N
+9	t	f	1	givenunit	9	f	\N
+10	t	f	1	conversion	10	f	\N
+11	t	t	1	resource	11	f	\N
+12	t	t	1	price	12	f	\N
+13	t	t	1	batch	13	f	\N
+14	t	t	1	productionDate	14	f	\N
+15	t	t	1	expirationDate	15	f	\N
+16	t	t	1	storageLocation	16	f	\N
+17	t	t	1	palletNumber	17	f	\N
+18	t	t	1	typeOfPallet	18	f	\N
+19	t	t	1	waste	19	f	\N
+21	t	t	1	resourceNumber	21	f	\N
+22	f	t	1	sellingPrice	22	f	\N
 \.
 
 
@@ -35778,6 +35785,8 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 113	ROLE_PRINTED_LABEL_DETAILS_REPRINT	Dostęp do dodruku wydrukowanych etykiet.	0
 114	ROLE_PRINTERS	\N	0
 115	ROLE_SKILLS	\N	0
+116	ROLE_PRODUCTION_TRACKING_REGISTRATION	\N	0
+117	ROLE_ORDER_MATERIAL_AVAILABILITY	\N	0
 \.
 
 
@@ -35785,16 +35794,16 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 115, true);
+SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 117, true);
 
 
 --
 -- Data for Name: qcadoosecurity_user; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY qcadoosecurity_user (id, username, email, firstname, lastname, enabled, description, password, lastactivity, staff_id, group_id, entityversion, factory_id, ipaddress) FROM stdin;
-2	admin	admin@qcadoo.com	generated admin	generated admin	t	\N	8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918	\N	\N	4	0	\N	\N
-1	superadmin	superadmin@qcadoo.com	generated superadmin	generated superadmin	t	\N	186cf774c97b60a1c106ef718d10970a6a06e06bef89553d9ae65d938a886eae	2017-02-14 14:48:32.765	\N	2	0	\N	\N
+COPY qcadoosecurity_user (id, username, email, firstname, lastname, enabled, description, password, lastactivity, staff_id, group_id, entityversion, factory_id, ipaddress, showonlymyregistrationrecords) FROM stdin;
+2	admin	admin@qcadoo.com	generated admin	generated admin	t	\N	8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918	\N	\N	4	0	\N	\N	f
+1	superadmin	superadmin@qcadoo.com	generated superadmin	generated superadmin	t	\N	186cf774c97b60a1c106ef718d10970a6a06e06bef89553d9ae65d938a886eae	2017-02-14 14:48:32.765	\N	2	0	\N	\N	f
 \.
 
 
@@ -35946,7 +35955,6 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 92	productionCounting	productionTrackingForProductGrouped	t	8	92	2	ROLE_PRODUCTION_TRACKING	0
 94	productionCounting	productionTrackingReports	t	8	94	4	ROLE_PRODUCTION_COUNTING	0
 95	productionCounting	productionBalance	t	8	95	5	ROLE_PRODUCTION_COUNTING	0
-96	productionCounting	productionTracking	t	8	96	6	ROLE_PRODUCTION_TRACKING	0
 97	workPlans	workPlans	t	7	97	9	ROLE_PLANNING	0
 98	productionPerShift	ppsReports	t	7	98	10	ROLE_PLANNING	0
 99	orderSupplies	coverageRegistryList	t	9	99	8	ROLE_SUPERADMIN	0
@@ -36000,6 +36008,9 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 149	orders	schedulesList	t	7	148	18	ROLE_PLANNING	0
 46	orders	operationalTasks	t	7	46	1	ROLE_PLANNING	0
 150	basic	attributesList	t	4	149	24	ROLE_PRODUCTS	0
+96	productionCounting	productionTracking	t	8	96	6	ROLE_PRODUCTION_TRACKING_REGISTRATION	0
+151	basic	productsAttributes	t	4	150	25	ROLE_PRODUCTS	0
+152	materialFlowResources	resourcesAttributes	t	6	151	21	ROLE_MATERIAL_FLOW	0
 \.
 
 
@@ -36007,7 +36018,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 150, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 152, true);
 
 
 --
@@ -36159,6 +36170,8 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 148	orders	schedulesList	schedulesList	\N	0
 46	orders	operationalTasksList	operationalTasksList	\N	0
 149	basic	attributesList	attributesList	\N	0
+150	basic	productsAttributes	\N	/productsAttributes.html	0
+151	materialFlowResources	resourcesAttributes	\N	/resourcesAttributes.html	0
 \.
 
 
@@ -36166,7 +36179,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 149, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 151, true);
 
 
 --
@@ -46082,11 +46095,11 @@ ALTER TABLE ONLY materialflowresources_document
 
 
 --
--- Name: document_linkedpzdocumentlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: document_linkeddocumentlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY arch_materialflowresources_document
-    ADD CONSTRAINT document_linkedpzdocumentlocation_fkey FOREIGN KEY (linkedpzdocumentlocation_id) REFERENCES materialflow_location(id) DEFERRABLE;
+    ADD CONSTRAINT document_linkeddocumentlocation_fkey FOREIGN KEY (linkeddocumentlocation_id) REFERENCES materialflow_location(id) DEFERRABLE;
 
 
 --
@@ -46183,6 +46196,14 @@ ALTER TABLE ONLY materialflowresources_document
 
 ALTER TABLE ONLY arch_materialflowresources_document
     ADD CONSTRAINT document_user_fkey FOREIGN KEY (user_id) REFERENCES qcadoosecurity_user(id) DEFERRABLE;
+
+
+--
+-- Name: documentpositionparametersitem_attribute_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY materialflowresources_documentpositionparametersitem
+    ADD CONSTRAINT documentpositionparametersitem_attribute_fkey FOREIGN KEY (attribute_id) REFERENCES basic_attribute(id) DEFERRABLE;
 
 
 --

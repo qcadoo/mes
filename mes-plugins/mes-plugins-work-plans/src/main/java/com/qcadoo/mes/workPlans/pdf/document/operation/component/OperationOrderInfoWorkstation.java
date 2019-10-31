@@ -24,6 +24,7 @@
 package com.qcadoo.mes.workPlans.pdf.document.operation.component;
 
 import java.util.Locale;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -44,12 +45,13 @@ public class OperationOrderInfoWorkstation {
     private PdfHelper pdfHelper;
 
     @Autowired
-    public OperationOrderInfoWorkstation(TranslationService translationService, PdfHelper pdfHelper) {
+    public OperationOrderInfoWorkstation(final TranslationService translationService, final PdfHelper pdfHelper) {
         this.translationService = translationService;
         this.pdfHelper = pdfHelper;
     }
 
-    public void print(Entity operationComponent, PdfPTable operationTable, Locale locale) throws DocumentException {
+    public void print(final Entity operationComponent, final PdfPTable operationTable, final Locale locale)
+            throws DocumentException {
         Entity workstationType = extractWorkstationTypeFromToc(operationComponent);
 
         String workstationTypeName = "";
@@ -58,7 +60,7 @@ public class OperationOrderInfoWorkstation {
         String divisionLabel = "";
         String supervisorLabel = "";
 
-        if (workstationType != null) {
+        if (Objects.nonNull(workstationType)) {
             workstationTypeName = workstationType.getStringField(WorkstationTypeFields.NAME);
 
             pdfHelper.addTableCellAsOneColumnTable(operationTable,

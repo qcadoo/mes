@@ -23,6 +23,17 @@
  */
 package com.qcadoo.mes.workPlans.listeners;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.collect.Lists;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.PageSize;
@@ -47,16 +58,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class WorkPlanDetailsListeners {
@@ -108,9 +109,10 @@ public class WorkPlanDetailsListeners {
                 state.addMessage("workPlans.workPlanDetails.window.workPlan.missingAssosiatedOrders", MessageType.FAILURE);
                 return;
             }
-            if(!validateOrders(state, orders)){
+            if (!validateOrders(state, orders)) {
                 return;
             }
+
             createBarcodeOCForOrders(orders);
 
             List<String> numbersOfOrdersWithoutTechnology = orderHelperService.getOrdersWithoutTechnology(orders);
@@ -135,6 +137,7 @@ public class WorkPlanDetailsListeners {
                 workerField.setFieldValue(null);
                 generatedField.setFieldValue("0");
                 dateField.setFieldValue(null);
+
                 return;
             }
 
@@ -152,69 +155,80 @@ public class WorkPlanDetailsListeners {
 
     private boolean validateOrders(final ComponentState state, final List<Entity> orders) {
         List<String> numbers = Lists.newArrayList();
-        for (Entity order : orders){
-            if(order.getBelongsToField(OrderFields.TECHNOLOGY) == null){
+
+        for (Entity order : orders) {
+            if (order.getBelongsToField(OrderFields.TECHNOLOGY) == null) {
                 numbers.add(order.getStringField(OrderFields.NUMBER));
             }
         }
 
-        if(!numbers.isEmpty()){
-            String commaSeparatedNumbers = numbers.stream()
-                    .map(i -> i.toString())
-                    .collect(Collectors.joining(", "));
-            state.addMessage("workPlans.workPlanDetails.window.workPlan.missingTechnologyInOrders", MessageType.FAILURE, commaSeparatedNumbers);
+        if (!numbers.isEmpty()) {
+            String commaSeparatedNumbers = numbers.stream().map(i -> i).collect(Collectors.joining(", "));
+            state.addMessage("workPlans.workPlanDetails.window.workPlan.missingTechnologyInOrders", MessageType.FAILURE,
+                    commaSeparatedNumbers);
+
             return false;
         }
+
         return true;
     }
 
     private boolean checkIfInactiveOrders(final ComponentState state, final List<Entity> orders) {
         List<String> numbers = Lists.newArrayList();
-        for (Entity order : orders){
-            if(!order.isActive()){
+
+        for (Entity order : orders) {
+            if (!order.isActive()) {
                 numbers.add(order.getStringField(OrderFields.NUMBER));
             }
         }
 
-        if(!numbers.isEmpty()){
-            String commaSeparatedNumbers = numbers.stream()
-                    .map(i -> i.toString())
-                    .collect(Collectors.joining(", "));
-            state.addMessage("workPlans.workPlanDetails.window.workPlan.isInactiveOrders", MessageType.INFO, commaSeparatedNumbers);
+        if (!numbers.isEmpty()) {
+            String commaSeparatedNumbers = numbers.stream().map(i -> i).collect(Collectors.joining(", "));
+            state.addMessage("workPlans.workPlanDetails.window.workPlan.isInactiveOrders", MessageType.INFO,
+                    commaSeparatedNumbers);
+
             return false;
         }
+
         return true;
     }
 
     @Transactional
-    private void generateWorkPlanDocuments(final ComponentState state, final Entity workPlan) throws IOException,
-            DocumentException {
+    private void generateWorkPlanDocuments(final ComponentState state, final Entity workPlan)
+            throws IOException, DocumentException {
         Entity workPlanWithFilename = fileService.updateReportFileName(workPlan, WorkPlanFields.DATE,
                 "workPlans.workPlan.report.fileName");
+
         workPlanPdfService.generateDocument(workPlanWithFilename, state.getLocale());
+
         if (workPlan.getStringField(WorkPlanFields.TYPE).compareTo(WorkPlanType.BY_DIVISION.getStringValue()) == 0) {
             String fileNameForDivision = "workPlans.workPlan.report.fileNameForDivision";
             Entity workPlanForDivision = fileService.updateReportFileName(workPlanWithFilename, WorkPlanFields.DATE,
                     fileNameForDivision);
+
             workPlanForDivisionPdfService.generateDocument(workPlanForDivision, state.getLocale(), fileNameForDivision,
                     PageSize.A4.rotate());
         }
     }
 
     public void printWorkPlan(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        reportService.printGeneratedReport(view, state, new String[] { args[0], WorkPlansConstants.PLUGIN_IDENTIFIER,
-                WorkPlansConstants.MODEL_WORK_PLAN, args[1] });
+        reportService.printGeneratedReport(view, state,
+                new String[] { args[0], WorkPlansConstants.PLUGIN_IDENTIFIER, WorkPlansConstants.MODEL_WORK_PLAN, args[1] });
     }
 
     public void printAtachment(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent grid = (GridComponent) view.getComponentByReference("technologyAttachments");
+
         if (grid.getSelectedEntitiesIds() == null || grid.getSelectedEntitiesIds().size() == 0) {
             state.addMessage("technologies.technologyDetails.window.ribbon.atachments.nonSelectedAtachment", MessageType.INFO);
             return;
         }
+
         StringBuffer redirectUrl = new StringBuffer();
         redirectUrl.append("/rest/workplans/printAtachment.pdf");
+
         boolean isFirstParam = true;
+
         for (Long confectionProtocolId : grid.getSelectedEntitiesIds()) {
             if (isFirstParam) {
                 redirectUrl.append("?");
@@ -225,6 +239,7 @@ public class WorkPlanDetailsListeners {
             redirectUrl.append("id=");
             redirectUrl.append(confectionProtocolId);
         }
+
         view.redirectTo(redirectUrl.toString(), true, false);
     }
 
@@ -232,14 +247,15 @@ public class WorkPlanDetailsListeners {
         for (Entity order : orders) {
             createBarcodeOCForOrder(order);
         }
-
     }
 
     private void createBarcodeOCForOrder(final Entity order) {
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        if(technology != null) {
+
+        if (technology != null) {
             List<Entity> tocs = order.getBelongsToField(OrderFields.TECHNOLOGY)
                     .getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
+
             for (Entity toc : tocs) {
                 barcodeOperationComponentService.createBarcodeOperationComponent(order, toc);
             }

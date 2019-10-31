@@ -1,5 +1,20 @@
 package com.qcadoo.mes.materialFlowResources;
 
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.GridResponse;
+import com.qcadoo.mes.basic.LookupUtils;
+import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.dto.ColumnProperties;
+import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
+
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Collections;
@@ -15,19 +30,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
-
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.GridResponse;
-import com.qcadoo.mes.basic.LookupUtils;
-import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
 
 @Repository
 public class DocumentPositionService {
@@ -51,10 +53,32 @@ public class DocumentPositionService {
     private ReservationsService reservationsService;
 
     public GridResponse<DocumentPositionDTO> findAll(final Long documentId, final String _sidx, final String _sord, int page,
-            int perPage, final DocumentPositionDTO position) {
+            int perPage, final DocumentPositionDTO position, final Map<String, String> attributeFilters) {
+        String sidx = _sidx != null ? _sidx.toLowerCase() : "";
+        String sord = _sord != null ? _sord.toLowerCase() : "";
+
+        Preconditions.checkState(Arrays.asList("asc", "desc", "").contains(sord));
+
+        Map<String, Object> config = getGridConfig(documentId);
+        List<ColumnProperties> columns = (List<ColumnProperties>) config.get("columns");
+        List<String> attrCloumns = columns.stream().filter(c -> c.isChecked() && c.isForAttribute()).map(c -> c.getName())
+                .collect(Collectors.toList());
+        StringBuilder attrQueryPart = new StringBuilder();
+        if (!attrCloumns.isEmpty()) {
+            attrCloumns.forEach(ac -> {
+                attrQueryPart.append(" , ");
+                attrQueryPart.append("(SELECT string_agg(resourceattributevalue.value, ', ') ");
+                attrQueryPart.append("FROM materialflowresources_resourceattributevalue resourceattributevalue ");
+                attrQueryPart.append("LEFT JOIN basic_attribute att ON att.id = resourceattributevalue.attribute_id ");
+                attrQueryPart.append("WHERE resourceattributevalue.resource_id = resource.id AND att.number ='" + ac
+                        + "' group by att.number) as \"" + ac + "\" ");
+            });
+
+        }
         String query = "SELECT %s FROM ( SELECT p.*, p.document_id AS document, product.number AS product, product.name AS productName, product.unit, additionalcode.code AS additionalcode, "
                 + "palletnumber.number AS palletnumber, location.number AS storagelocation, resource.number AS resource, \n"
                 + "(coalesce(r1.resourcesCount,0) < 2 AND p.quantity >= coalesce(resource.quantity,0)) AS lastResource "
+                + attrQueryPart.toString()
                 + "	FROM materialflowresources_position p\n"
                 + "	LEFT JOIN basic_product product ON (p.product_id = product.id)\n"
                 + "	LEFT JOIN basic_additionalcode additionalcode ON (p.additionalcode_id = additionalcode.id)\n"
@@ -67,7 +91,71 @@ public class DocumentPositionService {
 
         parameters.put("documentId", documentId);
 
-        return lookupUtils.getGridResponse(query, _sidx, _sord, page, perPage, position, parameters);
+        query += lookupUtils.addQueryWhereForObject(position);
+        parameters.putAll(lookupUtils.getParametersForObject(position));
+
+        if (!attributeFilters.isEmpty()) {
+            StringBuilder attributeFiltersBuilder = new StringBuilder();
+            attributeFiltersBuilder.append("WHERE ");
+            for (Map.Entry<String, String> filterElement : attributeFilters.entrySet()) {
+                attributeFiltersBuilder.append("q.\"" + filterElement.getKey() + "\" ");
+                attributeFiltersBuilder.append("ilike :" + filterElement.getKey() + " ");
+                parameters.put(filterElement.getKey(), "%" + filterElement.getValue() + "%");
+            }
+            query = query + attributeFiltersBuilder.toString();
+        }
+        String queryCount = String.format(query, "COUNT(*)", "");
+
+        String orderBy = org.apache.commons.lang3.StringUtils.EMPTY;
+        if (sidx.startsWith("attrs.")) {
+            orderBy = "\"" + sidx.replace("attrs.", "") + "\"";
+        } else {
+            orderBy = sidx;
+        }
+
+        String queryRecords = String.format(query, "*", "ORDER BY " + orderBy + " " + sord)
+                + String.format(" LIMIT %d OFFSET %d", perPage, perPage * (page - 1));
+
+        Integer countRecords = jdbcTemplate.queryForObject(queryCount, parameters, Long.class).intValue();
+        List<DocumentPositionDTO> records = jdbcTemplate.query(queryRecords, parameters, (resultSet, i) -> {
+            DocumentPositionDTO documentPositionDTO = new DocumentPositionDTO();
+            documentPositionDTO.setId(resultSet.getLong("id"));
+            documentPositionDTO.setDocument(resultSet.getLong("document"));
+            documentPositionDTO.setNumber(resultSet.getInt("number"));
+            documentPositionDTO.setProduct(resultSet.getString("product"));
+            documentPositionDTO.setProductName(resultSet.getString("productName"));
+            documentPositionDTO.setAdditionalCode(resultSet.getString("additionalCode"));
+            documentPositionDTO.setQuantity(resultSet.getBigDecimal("quantity"));
+            documentPositionDTO.setUnit(resultSet.getString("unit"));
+            documentPositionDTO.setGivenquantity(resultSet.getBigDecimal("givenquantity"));
+            documentPositionDTO.setGivenunit(resultSet.getString("givenunit"));
+            documentPositionDTO.setConversion(resultSet.getBigDecimal("conversion"));
+            documentPositionDTO.setExpirationDate(resultSet.getDate("expirationDate"));
+            documentPositionDTO.setProductionDate(resultSet.getDate("productionDate"));
+            documentPositionDTO.setPalletNumber(resultSet.getString("palletNumber"));
+            documentPositionDTO.setResourceNumber(resultSet.getString("resourceNumber"));
+            documentPositionDTO.setTypeOfPallet(resultSet.getString("typeOfPallet"));
+            documentPositionDTO.setStorageLocation(resultSet.getString("storageLocation"));
+            documentPositionDTO.setPrice(resultSet.getBigDecimal("price"));
+            documentPositionDTO.setSellingPrice(resultSet.getBigDecimal("sellingPrice"));
+            documentPositionDTO.setBatch(resultSet.getString("batch"));
+            documentPositionDTO.setResource(resultSet.getString("resource"));
+            documentPositionDTO.setWaste(resultSet.getBoolean("waste"));
+            documentPositionDTO.setLastResource(resultSet.getBoolean("lastResource"));
+            if (!attrCloumns.isEmpty()) {
+                Map<String, Object> attrs = Maps.newHashMap();
+                for (String ac : attrCloumns) {
+                    attrs.put(ac, resultSet.getString(ac));
+                }
+                documentPositionDTO.setAttrs(attrs);
+
+            }
+            return documentPositionDTO;
+        });
+
+        // pobrac attrybuty
+        return new GridResponse<>(page, Double.valueOf(Math.ceil((1.0 * countRecords) / perPage)).intValue(), countRecords,
+                records);
     }
 
     public void delete(final Long id) {
@@ -139,8 +227,8 @@ public class DocumentPositionService {
             MapSqlParameterSource queryParameters = new MapSqlParameterSource(paramMap).addValue("query", '%' + q + '%');
             preparedQuery = preparedQuery.substring(0, preparedQuery.length() - 1); // remove trailing ';' char
             preparedQuery = preparedQuery + " LIMIT " + DataProvider.MAX_RESULTS + ';';
-            return jdbcTemplate.query(preparedQuery, queryParameters,
-                    BeanPropertyRowMapper.newInstance(StorageLocationDTO.class));
+            return jdbcTemplate
+                    .query(preparedQuery, queryParameters, BeanPropertyRowMapper.newInstance(StorageLocationDTO.class));
         }
     }
 
@@ -171,7 +259,8 @@ public class DocumentPositionService {
         try {
             String query = "SELECT * FROM materialflowresources_documentpositionparametersitem ORDER BY ordering";
 
-            List<Map<String, Object>> items = jdbcTemplate.queryForList(query, Collections.EMPTY_MAP);
+            List<ColumnProperties> columns = jdbcTemplate.query(query, Collections.EMPTY_MAP, new BeanPropertyRowMapper(
+                    ColumnProperties.class));
 
             Map<String, Object> config = Maps.newHashMap();
 
@@ -179,13 +268,6 @@ public class DocumentPositionService {
             config.put("suggestResource", shouldSuggestResource());
             config.put("outDocument", isOutDocument(documentId));
             config.put("inBufferDocument", isInBufferDocument(documentId));
-
-            Map<String, Object> columns = Maps.newLinkedHashMap();
-
-            for (Map<String, Object> item : items) {
-                columns.put(item.get("name").toString(), item.get("checked"));
-            }
-
             config.put("columns", columns);
 
             return config;

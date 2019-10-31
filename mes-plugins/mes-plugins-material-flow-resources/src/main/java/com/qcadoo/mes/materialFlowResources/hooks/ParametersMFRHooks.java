@@ -15,15 +15,16 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentPositionParametersItemFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ParametersMFRHooks {
@@ -37,9 +38,11 @@ public class ParametersMFRHooks {
         GridComponent grid = (GridComponent) view.getComponentByReference("grid");
 
         for (Entity entity : grid.getEntities()) {
-            String name = entity.getStringField("name");
-            String displayName = translationService.translate(TRANSLATION_PREFIX + name, view.getLocale());
-            entity.setField("name", displayName);
+            if(!entity.getBooleanField(DocumentPositionParametersItemFields.FOR_ATTRIBUTE)) {
+                String name = entity.getStringField("name");
+                String displayName = translationService.translate(TRANSLATION_PREFIX + name, view.getLocale());
+                entity.setField("name", displayName);
+            }
         }
     }
 
