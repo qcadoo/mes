@@ -25,7 +25,6 @@ package com.qcadoo.mes.materialFlowResources.listeners;
 
 import java.io.IOException;
 
-import org.apache.commons.validator.Form;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,6 +44,7 @@ import com.qcadoo.view.api.components.FormComponent;
 public class PositionsImportListeners {
 
     public static final String L_FORM = "form";
+
     @Autowired
     private PositionXlsxImportService positionXlsxImportService;
 
@@ -62,8 +62,8 @@ public class PositionsImportListeners {
         Entity document = documentForm.getEntity();
 
         positionXlsxImportService.processImportFile(view, positionCellBinderRegistry.getCellBinderRegistry(), true,
-                MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_POSITION, document, PositionFields.DOCUMENT,
-                PositionsImportListeners::createRestrictionForPosition);
+                MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_POSITION, document,
+                PositionFields.DOCUMENT, PositionsImportListeners::createRestrictionForPosition);
     }
 
     private static SearchCriterion createRestrictionForPosition(final Entity position) {

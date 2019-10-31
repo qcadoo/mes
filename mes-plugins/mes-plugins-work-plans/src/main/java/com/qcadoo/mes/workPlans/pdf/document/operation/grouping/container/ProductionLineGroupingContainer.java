@@ -26,52 +26,44 @@ package com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container;
 import java.util.Map;
 import java.util.Objects;
 
-import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationProductColumn;
 import com.qcadoo.mes.workPlans.pdf.document.order.column.OrderColumn;
 import com.qcadoo.model.api.Entity;
 
-public class DivisionGroupingContainer extends AbstractGroupingContainer {
+public class ProductionLineGroupingContainer extends AbstractGroupingContainer {
 
-    protected String nullDivisionTitle;
+    protected String nullProductionLineTitle;
 
-    public DivisionGroupingContainer(final Map<OrderColumn, ColumnAlignment> orderColumnToAlignment,
+    public ProductionLineGroupingContainer(final Map<OrderColumn, ColumnAlignment> orderColumnToAlignment,
             final Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductInColumnToAlignment,
             final Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductOutColumnToAlignment,
-            final String titleAppend, final String nullDivisionTitle) {
+            final String titleAppend, final String nullProductionLineTitle) {
         super(orderColumnToAlignment, operationComponentIdProductInColumnToAlignment,
                 operationComponentIdProductOutColumnToAlignment, titleAppend);
 
-        this.nullDivisionTitle = nullDivisionTitle;
+        this.nullProductionLineTitle = nullProductionLineTitle;
     }
 
     @Override
     public void add(final Entity order, final Entity operationComponent,
             final OperationProductComponentWithQuantityContainer productQuantities) {
-        Entity division = order.getBelongsToField(OrderFields.DIVISION);
+        Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
 
-        if (Objects.isNull(division)) {
-            division = division(operationComponent);
-        }
-        if (Objects.isNull(division)) {
-            store(nullDivisionTitle, order, operationComponent);
+        if (Objects.isNull(productionLine)) {
+            store(nullProductionLineTitle, order, operationComponent);
         } else {
-            store(title(division), order, operationComponent);
+            store(title(productionLine), order, operationComponent);
         }
     }
 
-    private String title(final Entity workstationType) {
-        String workstationName = workstationType.getStringField(WorkstationTypeFields.NAME);
+    private String title(final Entity productionLine) {
+        String productionLineName = productionLine.getStringField(ProductionLineFields.NAME);
 
-        return new StringBuilder(titleAppend).append(" ").append(workstationName).toString();
-    }
-
-    private Entity division(final Entity operationComponent) {
-        return operationComponent.getBelongsToField(TechnologyOperationComponentFields.DIVISION);
+        return new StringBuilder(titleAppend).append(" ").append(productionLineName).toString();
     }
 
 }

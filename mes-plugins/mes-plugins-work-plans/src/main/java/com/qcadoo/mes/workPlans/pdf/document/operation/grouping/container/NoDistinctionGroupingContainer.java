@@ -33,16 +33,17 @@ import com.qcadoo.model.api.Entity;
 
 public class NoDistinctionGroupingContainer extends AbstractGroupingContainer {
 
-    public NoDistinctionGroupingContainer(Map<OrderColumn, ColumnAlignment> orderColumnToAlignment,
-            Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductInColumnToAlignment,
-            Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductOutColumnToAlignment,
-            String titleAppend) {
+    public NoDistinctionGroupingContainer(final Map<OrderColumn, ColumnAlignment> orderColumnToAlignment,
+            final Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductInColumnToAlignment,
+            final Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductOutColumnToAlignment,
+            final String titleAppend) {
         super(orderColumnToAlignment, operationComponentIdProductInColumnToAlignment,
                 operationComponentIdProductOutColumnToAlignment, titleAppend);
     }
 
     @Override
-    public void add(Entity order, Entity operationComponent, OperationProductComponentWithQuantityContainer productQuantities) {
+    public void add(final Entity order, final Entity operationComponent,
+            final OperationProductComponentWithQuantityContainer productQuantities) {
         store(titleAppend, order, operationComponent);
     }
 

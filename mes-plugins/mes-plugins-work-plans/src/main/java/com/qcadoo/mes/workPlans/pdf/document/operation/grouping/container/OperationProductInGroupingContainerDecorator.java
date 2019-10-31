@@ -28,9 +28,11 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
@@ -63,41 +65,50 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
 
     private OrderIdOperationNumberOperationComponentIdMap orderIdOperationNumberOperationComponentIdMap;
 
-    public OperationProductInGroupingContainerDecorator(OperationMergeService operationMergeService,
-            GroupingContainer groupingContainer, ProductionCountingService productionCountingService,
-            ParameterService parameterService) {
+    public OperationProductInGroupingContainerDecorator(final OperationMergeService operationMergeService,
+            final GroupingContainer groupingContainer, final ProductionCountingService productionCountingService,
+            final ParameterService parameterService) {
         this.operationMergeService = operationMergeService;
         this.groupingContainer = groupingContainer;
         this.productionCountingService = productionCountingService;
         this.parameterService = parameterService;
+
         initMaps();
     }
 
     private void initMaps() {
-        this.operationComponentIdToOrder = new HashMap<Long, Entity>();
-        this.operationComponentIdToOperationComponent = new HashMap<Long, Entity>();
+        this.operationComponentIdToOrder = Maps.newHashMap();
+        this.operationComponentIdToOperationComponent = Maps.newHashMap();
         this.orderIdOperationNumberOperationComponentIdMap = OrderIdOperationNumberOperationComponentIdMap.create();
     }
 
     @Override
-    public void add(Entity order, Entity operationComponent, OperationProductComponentWithQuantityContainer productQuantities) {
+    public void add(final Entity order, final Entity operationComponent,
+            final OperationProductComponentWithQuantityContainer productQuantities) {
         operationComponentIdToOrder.put(operationComponent.getId(), order);
         operationComponentIdToOperationComponent.put(operationComponent.getId(), operationComponent);
+
         Entity parameters = parameterService.getParameter();
+
         boolean takeActualProgress = parameters.getBooleanField(ParameterFieldsWP.TAKE_ACTUAL_PROGRESS_IN_WORK_PLANS);
         String operationNumber = operationNumber(operationComponent);
         boolean quantityChanged = false;
+
         if (operationAlreadyExists(order, operationNumber)) {
             Collection<Long> operationComponentIds = orderIdOperationNumberOperationComponentIdMap.get(order.getId(),
                     operationNumber);
+
             for (Long operationComponentId : operationComponentIds) {
                 Entity existingToc = operationComponentIdToOperationComponent.get(operationComponentId);
                 List<Entity> existingOperationProductInComponents = operationProductInComponents(existingToc);
                 List<Entity> operationProductInComponents = operationProductInComponents(operationComponent);
-                Map<String, Entity> existingProductNumberToOperationProductInComponent = productNumberToOperationProductComponent(existingOperationProductInComponents);
-                Map<String, Entity> productNumberToOperationProductInComponent = productNumberToOperationProductComponent(operationProductInComponents);
+                Map<String, Entity> existingProductNumberToOperationProductInComponent = productNumberToOperationProductComponent(
+                        existingOperationProductInComponents);
+                Map<String, Entity> productNumberToOperationProductInComponent = productNumberToOperationProductComponent(
+                        operationProductInComponents);
                 boolean sameProductsIn = sameProductsIn(existingProductNumberToOperationProductInComponent,
                         productNumberToOperationProductInComponent);
+
                 if (sameProductsIn) {
                     for (Map.Entry<String, Entity> entry : existingProductNumberToOperationProductInComponent.entrySet()) {
                         Entity existingOperationProductInComponent = entry.getValue();
@@ -118,17 +129,19 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
                     List<Entity> existingOperationProductOutComponents = Lists
                             .newArrayList(operationProductOutComponents(existingToc));
                     List<Entity> operationProductOutComponents = operationProductOutComponents(operationComponent);
-                    Map<String, Entity> existingProductNumberToOperationProductOutComponent = productNumberToOperationProductComponent(existingOperationProductOutComponents);
-                    Map<String, Entity> productNumberToOperationProductOutComponent = productNumberToOperationProductComponent(operationProductOutComponents);
+                    Map<String, Entity> existingProductNumberToOperationProductOutComponent = productNumberToOperationProductComponent(
+                            existingOperationProductOutComponents);
+                    Map<String, Entity> productNumberToOperationProductOutComponent = productNumberToOperationProductComponent(
+                            operationProductOutComponents);
+
                     for (Map.Entry<String, Entity> entry : productNumberToOperationProductOutComponent.entrySet()) {
                         Entity operationProductOutComponent = entry.getValue();
                         Entity existingOperationProductOutComponent = existingProductNumberToOperationProductOutComponent
                                 .get(entry.getKey());
-                        if (existingOperationProductOutComponent == null) {
-                            quantity(
-                                    operationProductOutComponent,
-                                    fillWithPlanedQuantityValueOUT(productQuantities, operationProductOutComponent,
-                                            takeActualProgress));
+
+                        if (Objects.isNull(existingOperationProductOutComponent)) {
+                            quantity(operationProductOutComponent, fillWithPlanedQuantityValueOUT(productQuantities,
+                                    operationProductOutComponent, takeActualProgress));
                             existingOperationProductOutComponents.add(operationProductOutComponent);
                             operationMergeService.mergeProductOut(order, existingToc, operationProductOutComponent,
                                     quantity(productQuantities, operationProductOutComponent));
@@ -177,7 +190,7 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
         if (takeActualProgress) {
             BigDecimal value = productionCountingService.getRegisteredProductValueForOperationProductIn(
                     operationProductInComponent, productQuantities.get(operationProductInComponent));
-            if (value == null) {
+            if (Objects.isNull(value)) {
                 value = productQuantities.get(operationProductInComponent);
             }
             return value;
@@ -192,7 +205,7 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
         if (takeActualProgress) {
             BigDecimal value = productionCountingService.getRegisteredProductValueForOperationProductOut(
                     operationProductOutComponent, productQuantities.get(operationProductOutComponent));
-            if (value == null) {
+            if (Objects.isNull(value)) {
                 value = productQuantities.get(operationProductOutComponent);
             }
             return value;

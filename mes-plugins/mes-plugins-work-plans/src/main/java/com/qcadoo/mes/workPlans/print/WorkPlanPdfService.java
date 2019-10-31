@@ -95,7 +95,6 @@ public class WorkPlanPdfService extends PdfDocumentWithWriterService {
     @Override
     public void buildPdfContent(final PdfWriter writer, final Document document, final Entity workPlan, final Locale locale)
             throws DocumentException {
-
         GroupingContainer groupingContainer = groupingContainerFactory.create(workPlan, locale);
 
         for (Entity order : orders(workPlan)) {

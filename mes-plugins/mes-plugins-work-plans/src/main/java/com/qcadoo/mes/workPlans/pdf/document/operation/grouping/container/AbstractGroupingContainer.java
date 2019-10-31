@@ -23,14 +23,14 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.holder.OrderOperationComponent;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationProductColumn;
@@ -49,20 +49,19 @@ public abstract class AbstractGroupingContainer implements GroupingContainer {
 
     private final ListMultimap<String, OrderOperationComponent> map = LinkedListMultimap.create();
 
-    private final Set<Entity> orders = new HashSet<>();
+    private final Set<Entity> orders = Sets.newHashSet();
 
-    protected AbstractGroupingContainer(Map<OrderColumn, ColumnAlignment> orderColumnToAlignment,
-            Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductInColumnToAlignment,
-            Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductOutColumnToAlignment,
-            String titleAppend) {
-
+    protected AbstractGroupingContainer(final Map<OrderColumn, ColumnAlignment> orderColumnToAlignment,
+            final Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductInColumnToAlignment,
+            final Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductOutColumnToAlignment,
+            final String titleAppend) {
         this.orderColumnToAlignment = orderColumnToAlignment;
         this.operationComponentIdProductInColumnToAlignment = operationComponentIdProductInColumnToAlignment;
         this.operationComponentIdProductOutColumnToAlignment = operationComponentIdProductOutColumnToAlignment;
         this.titleAppend = titleAppend;
     }
 
-    protected void store(String title, Entity order, Entity operationComponent) {
+    protected void store(final String title, final Entity order, final Entity operationComponent) {
         map.put(title, new OrderOperationComponent(order, operationComponent));
         orders.add(order);
     }
@@ -74,7 +73,7 @@ public abstract class AbstractGroupingContainer implements GroupingContainer {
 
     @Override
     public List<Entity> getOrders() {
-        return new ArrayList<>(orders);
+        return Lists.newArrayList(orders);
     }
 
     @Override

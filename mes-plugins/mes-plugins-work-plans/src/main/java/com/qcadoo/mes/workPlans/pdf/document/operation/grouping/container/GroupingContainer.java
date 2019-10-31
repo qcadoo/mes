@@ -36,7 +36,8 @@ import com.qcadoo.model.api.Entity;
 
 public interface GroupingContainer {
 
-    void add(Entity order, Entity operationComponent, OperationProductComponentWithQuantityContainer productQuantities);
+    void add(final Entity order, final Entity operationComponent,
+            final OperationProductComponentWithQuantityContainer productQuantities);
 
     ListMultimap<String, OrderOperationComponent> getTitleToOperationComponent();
 

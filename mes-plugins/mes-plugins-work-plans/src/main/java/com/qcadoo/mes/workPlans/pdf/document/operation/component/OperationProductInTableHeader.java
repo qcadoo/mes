@@ -40,22 +40,22 @@ public class OperationProductInTableHeader {
     private TranslationService translationService;
 
     @Autowired
-    public OperationProductInTableHeader(TranslationService translationService) {
+    public OperationProductInTableHeader(final TranslationService translationService) {
         this.translationService = translationService;
     }
 
     public OperationProductInTableHeader() {
     }
 
-    public void print(Document document, Locale locale) throws DocumentException {
+    public void print(final Document document, final Locale locale) throws DocumentException {
         document.add(paragraph(title(locale)));
     }
 
-    private Paragraph paragraph(String title) {
+    private Paragraph paragraph(final String title) {
         return new Paragraph(title, FontUtils.getDejavuBold10Dark());
     }
 
-    private String title(Locale locale) {
+    private String title(final Locale locale) {
         return translationService.translate("workPlans.workPlan.report.productsInTable", locale);
     }
 

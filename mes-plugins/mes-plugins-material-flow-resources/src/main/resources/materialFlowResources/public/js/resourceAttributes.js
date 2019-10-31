@@ -27,16 +27,16 @@ function filter(item) {
     return true;
 }
 
-$.get("/rest/prodAttributes/columns", function (columns) {
-    $('#productAttributesGrid').height($('#window_windowContent').height() - 45);
-    $('#productAttributesGrid').width($('#window_windowContent').width() - 20);
+$.get("/rest/resAttributes/columns", function (columns) {
+    $('#resourceAttributesGrid').height($('#window_windowContent').height() - 45);
+    $('#resourceAttributesGrid').width($('#window_windowContent').width() - 20);
     for (let i = 0; i < columns.length; i++) {
         columns[i].autoSize = {
             ignoreHeaderText: true
         };
     }
     let dataView = new Slick.Data.DataView();
-    grid = new Slick.Grid("#productAttributesGrid", dataView, columns, options);
+    grid = new Slick.Grid("#resourceAttributesGrid", dataView, columns, options);
 
     new Slick.Controls.Pager(dataView, grid, $("#pager"), pagerOptions);
 
@@ -86,7 +86,7 @@ $.get("/rest/prodAttributes/columns", function (columns) {
         dataView.sort(comparer, args.sortAsc);
     });
 
-    $.get("/rest/prodAttributes/records", function (records) {
+    $.get("/rest/resAttributes/records", function (records) {
         grid.init();
         grid.autosizeColumns();
         dataView.beginUpdate();

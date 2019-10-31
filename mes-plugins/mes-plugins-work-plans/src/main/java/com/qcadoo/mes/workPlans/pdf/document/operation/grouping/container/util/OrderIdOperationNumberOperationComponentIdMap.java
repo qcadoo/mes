@@ -25,6 +25,7 @@ package com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.util;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Maps;
@@ -42,27 +43,31 @@ public final class OrderIdOperationNumberOperationComponentIdMap {
         return new OrderIdOperationNumberOperationComponentIdMap();
     }
 
-    public void put(Long orderId, String operationNumber, Long operationComponentId) {
+    public void put(final Long orderId, final String operationNumber, final Long operationComponentId) {
         Multimap<String, Long> innerMap = map.get(orderId);
-        if (innerMap == null) {
+
+        if (Objects.isNull(innerMap)) {
             innerMap = HashMultimap.create();
             map.put(orderId, innerMap);
         }
+
         innerMap.put(operationNumber, operationComponentId);
     }
 
-    public Collection<Long> get(Long orderId, String operationNumber) {
+    public Collection<Long> get(final Long orderId, final String operationNumber) {
         Multimap<String, Long> innerMap = map.get(orderId);
+
         return isEmpty(innerMap) ? null : innerMap.get(operationNumber);
     }
 
-    public boolean containsKey(Long orderId, String operationNumber) {
+    public boolean containsKey(final Long orderId, final String operationNumber) {
         Multimap<String, Long> innerMap = map.get(orderId);
+
         return !isEmpty(innerMap) && innerMap.containsKey(operationNumber);
     }
 
-    private boolean isEmpty(Multimap<String, Long> innerMap) {
-        return innerMap == null || innerMap.isEmpty();
+    private boolean isEmpty(final Multimap<String, Long> innerMap) {
+        return Objects.isNull(innerMap) || innerMap.isEmpty();
     }
 
 }

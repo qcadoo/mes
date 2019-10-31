@@ -48,12 +48,12 @@ public class OperationAdditionalFields {
     private final TranslationService translationService;
 
     @Autowired
-    public OperationAdditionalFields(PdfHelper pdfHelper, TranslationService translationService) {
+    public OperationAdditionalFields(final PdfHelper pdfHelper, final TranslationService translationService) {
         this.pdfHelper = pdfHelper;
         this.translationService = translationService;
     }
 
-    public void print(Entity operationComponent, Document document, Locale locale) throws DocumentException {
+    public void print(final Entity operationComponent, final Document document, final Locale locale) throws DocumentException {
         Optional<String> imageUrlInWorkPlan = getImageUrlInWorkPlan(operationComponent);
 
         if (!imageUrlInWorkPlan.isPresent()) {
@@ -63,10 +63,9 @@ public class OperationAdditionalFields {
         document.add(new Paragraph(title(locale), FontUtils.getDejavuBold10Dark()));
         pdfHelper.addImage(document, imageUrlInWorkPlan.get());
         document.add(Chunk.NEXTPAGE);
-
     }
 
-    private String title(Locale locale) {
+    private String title(final Locale locale) {
         return translationService.translate("workPlans.workPlan.report.additionalFields", locale);
     }
 
@@ -74,7 +73,7 @@ public class OperationAdditionalFields {
         return Optional.fromNullable(imagePath(technologyOperationComponent));
     }
 
-    private String imagePath(Entity technologyOperationComponent) {
+    private String imagePath(final Entity technologyOperationComponent) {
         Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
 
         return operation.getStringField(OperationFieldsWP.IMAGE_URL_IN_WORK_PLAN);

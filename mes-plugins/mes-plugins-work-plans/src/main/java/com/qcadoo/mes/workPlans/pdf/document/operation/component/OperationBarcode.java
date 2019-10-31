@@ -44,11 +44,12 @@ public class OperationBarcode {
     private BarcodeOperationComponentService barcodeOperationComponentService;
 
     @Autowired
-    public OperationBarcode(BarcodeOperationComponentService barcodeOperationComponentService) {
+    public OperationBarcode(final BarcodeOperationComponentService barcodeOperationComponentService) {
         this.barcodeOperationComponentService = barcodeOperationComponentService;
     }
 
-    public void print(PdfWriter pdfWriter, Entity order, Entity operationComponent, Document document) throws DocumentException {
+    public void print(final PdfWriter pdfWriter, final Entity order, final Entity operationComponent, final Document document)
+            throws DocumentException {
         PdfContentByte cb = pdfWriter.getDirectContent();
         Barcode128 code128 = new Barcode128();
         code128.setCode(barcodeOperationComponentService.getCodeFromBarcode(order, operationComponent));
@@ -60,6 +61,7 @@ public class OperationBarcode {
         barcodeTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
         Image barcodeImage = code128.createImageWithBarcode(cb, null, null);
         barcodeTable.addCell(barcodeImage);
+
         document.add(barcodeTable);
     }
 

@@ -23,6 +23,16 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.component;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.google.common.collect.Lists;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -41,15 +51,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 
 @Component
 public class OperationProductInTable {
@@ -60,12 +61,12 @@ public class OperationProductInTable {
     private WorkPlansService workPlansService;
 
     @Autowired
-    public OperationProductInTable(PdfHelper pdfHelper) {
+    public OperationProductInTable(final PdfHelper pdfHelper) {
         this.pdfHelper = pdfHelper;
     }
 
-    public void print(Entity workPlan, GroupingContainer groupingContainer, Entity operationComponent, Document document, Locale locale)
-            throws DocumentException {
+    public void print(final Entity workPlan, final GroupingContainer groupingContainer, final Entity operationComponent,
+            final Document document, final Locale locale) throws DocumentException {
         Map<Long, Map<OperationProductColumn, ColumnAlignment>> map = groupingContainer
                 .getOperationComponentIdProductInColumnToAlignment();
         Map<OperationProductColumn, ColumnAlignment> operationProductColumnAlignmentMap = map.get(operationComponent.getId());
@@ -80,14 +81,13 @@ public class OperationProductInTable {
         PdfPCell defaultCell = table.getDefaultCell();
         List<OperationProductHelper> operationProductsValue = prepareOperationProductsValue(
                 operationProductInComponents(operationComponent), operationProductColumnAlignmentMap.entrySet());
-        operationProductsValue = workPlansService.sortByColumn(workPlan,
-                operationProductsValue, headers);
+        operationProductsValue = workPlansService.sortByColumn(workPlan, operationProductsValue, headers);
+
         for (OperationProductHelper operationProduct : operationProductsValue) {
             for (OperationProductColumnHelper e : operationProduct.getOperationProductColumnHelpers()) {
                 alignColumn(defaultCell, e.getColumnAlignment());
                 table.addCell(operationProductPhrase(e.getValue()));
             }
-
         }
 
         int additionalRows = workPlansService.getAdditionalRowsFromParameter(ParameterFieldsWP.ADDITIONAL_INPUT_ROWS);
@@ -105,9 +105,8 @@ public class OperationProductInTable {
         document.add(table);
     }
 
-    private List<Entity> operationProductInComponents(Entity operationComponent) {
-        return operationComponent
-                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
+    private List<Entity> operationProductInComponents(final Entity operationComponent) {
+        return operationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
     }
 
     private void alignColumn(final PdfPCell cell, final ColumnAlignment columnAlignment) {
@@ -118,44 +117,47 @@ public class OperationProductInTable {
         }
     }
 
-    private void fill(Locale locale, Map<OperationProductColumn, ColumnAlignment> operationProductColumnAlignmentMap,
-            List<String> headers, Map<String, HeaderAlignment> headerAlignments) {
+    private void fill(final Locale locale, final Map<OperationProductColumn, ColumnAlignment> operationProductColumnAlignmentMap,
+            final List<String> headers, final Map<String, HeaderAlignment> headerAlignments) {
         // for optimization method fills two collections simultaneously
         for (Map.Entry<OperationProductColumn, ColumnAlignment> entry : operationProductColumnAlignmentMap.entrySet()) {
             String name = entry.getKey().getName(locale, ProductDirection.IN);
             headerAlignments.put(name, headerAlignment(entry.getValue()));
             headers.add(name);
         }
-
     }
 
-    private Phrase operationProductPhrase(Entity operationProduct, OperationProductColumn operationProductColumn) {
+    private Phrase operationProductPhrase(final Entity operationProduct, final OperationProductColumn operationProductColumn) {
         return new Phrase(operationProductColumn.getColumnValue(operationProduct), FontUtils.getDejavuRegular7Dark());
     }
 
-    private Phrase operationProductPhrase(String value) {
+    private Phrase operationProductPhrase(final String value) {
         return new Phrase(value, FontUtils.getDejavuRegular7Dark());
     }
 
-    private HeaderAlignment headerAlignment(ColumnAlignment value) {
+    private HeaderAlignment headerAlignment(final ColumnAlignment value) {
         return ColumnAlignment.LEFT.equals(value) ? HeaderAlignment.LEFT : HeaderAlignment.RIGHT;
     }
 
-    private List<OperationProductHelper> prepareOperationProductsValue(List<Entity> operationProducts,
-            Set<Map.Entry<OperationProductColumn, ColumnAlignment>> alignments) {
+    private List<OperationProductHelper> prepareOperationProductsValue(final List<Entity> operationProducts,
+            final Set<Map.Entry<OperationProductColumn, ColumnAlignment>> alignments) {
         List<OperationProductHelper> operationProductsValue = Lists.newArrayList();
+
         for (Entity operationProduct : operationProducts) {
             OperationProductHelper operationProductHelper = new OperationProductHelper();
             List<OperationProductColumnHelper> operationProductColumnHelpers = Lists.newArrayList();
+
             for (Map.Entry<OperationProductColumn, ColumnAlignment> e : alignments) {
-                OperationProductColumnHelper operationProductColumnHelper = new OperationProductColumnHelper(e.getValue(),  e.getKey().getColumnValue(
-                        operationProduct), e.getKey().getIdentifier());
+                OperationProductColumnHelper operationProductColumnHelper = new OperationProductColumnHelper(e.getValue(),
+                        e.getKey().getColumnValue(operationProduct), e.getKey().getIdentifier());
                 operationProductColumnHelpers.add(operationProductColumnHelper);
             }
+
             operationProductHelper.setOperationProductColumnHelpers(operationProductColumnHelpers);
             operationProductsValue.add(operationProductHelper);
         }
 
         return operationProductsValue;
     }
+
 }

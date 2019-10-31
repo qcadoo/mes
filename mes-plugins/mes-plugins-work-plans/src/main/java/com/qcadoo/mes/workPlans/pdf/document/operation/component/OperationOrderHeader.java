@@ -43,25 +43,30 @@ public class OperationOrderHeader {
 
     private PdfHelper pdfHelper;
 
+    private OperationOrderInfoOperation operationOrderInfoOperation;
+
     private OperationOrderInfoHeader operationOrderInfoHeader;
+
+    private OperationOrderInfoOperationalTask operationOrderInfoOperationalTask;
 
     private OperationOrderInfoWorkstation operationOrderInfoWorkstation;
 
-    private OperationOrderInfoOperation operationOrderInfoOperation;
-
     @Autowired
-    public OperationOrderHeader(ParameterService parameterService, PdfHelper pdfHelper,
-            OperationOrderInfoHeader operationOrderInfoHeader, OperationOrderInfoWorkstation operationOrderInfoWorkstation,
-            OperationOrderInfoOperation operationOrderInfoOperation) {
+    public OperationOrderHeader(final ParameterService parameterService, final PdfHelper pdfHelper,
+            final OperationOrderInfoOperation operationOrderInfoOperation,
+            final OperationOrderInfoHeader operationOrderInfoHeader,
+            final OperationOrderInfoOperationalTask operationOrderInfoOperationalTask,
+            final OperationOrderInfoWorkstation operationOrderInfoWorkstation) {
         this.parameterService = parameterService;
         this.pdfHelper = pdfHelper;
-        this.operationOrderInfoHeader = operationOrderInfoHeader;
-        this.operationOrderInfoWorkstation = operationOrderInfoWorkstation;
         this.operationOrderInfoOperation = operationOrderInfoOperation;
+        this.operationOrderInfoHeader = operationOrderInfoHeader;
+        this.operationOrderInfoOperationalTask = operationOrderInfoOperationalTask;
+        this.operationOrderInfoWorkstation = operationOrderInfoWorkstation;
     }
 
-    public void print(Entity order, Entity operationComponent, Document document,
-            Locale locale) throws DocumentException {
+    public void print(final Entity order, final Entity operationComponent, final Document document, final Locale locale)
+            throws DocumentException {
         PdfPTable operationTable = pdfHelper.createPanelTable(3);
 
         operationOrderInfoOperation.print(operationComponent, operationTable, locale);
@@ -70,14 +75,16 @@ public class OperationOrderHeader {
             operationOrderInfoHeader.print(order, operationTable, locale);
         }
 
+        operationOrderInfoOperationalTask.print(order, operationComponent, operationTable, locale);
         operationOrderInfoWorkstation.print(operationComponent, operationTable, locale);
 
         operationTable.setSpacingAfter(18);
         operationTable.setSpacingBefore(9);
+
         document.add(operationTable);
     }
 
-    boolean isOrderInfoEnabled() {
+    private boolean isOrderInfoEnabled() {
         return !parameterService.getParameter().getBooleanField(ParameterFieldsWP.HIDE_TECHNOLOGY_AND_ORDER_IN_WORK_PLANS);
     }
 

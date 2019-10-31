@@ -21,28 +21,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.workPlans.pdf.document.component;
+package com.qcadoo.mes.orders.constants;
 
-import org.springframework.stereotype.Component;
+public final class TechnologyOperationComponentFieldsO {
 
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Paragraph;
-import com.qcadoo.report.api.FontUtils;
-
-@Component
-public class OperationSectionHeader {
-
-    public OperationSectionHeader() {
+    private TechnologyOperationComponentFieldsO() {
 
     }
 
-    public void print(final Document document, final String title) throws DocumentException {
-        document.add(titleParagraph(title));
-    }
-
-    private Paragraph titleParagraph(final String title) {
-        return new Paragraph(title, FontUtils.getDejavuBold11Dark());
-    }
+    public static final String OPERATIONAL_TASKS = "operationalTasks";
 
 }

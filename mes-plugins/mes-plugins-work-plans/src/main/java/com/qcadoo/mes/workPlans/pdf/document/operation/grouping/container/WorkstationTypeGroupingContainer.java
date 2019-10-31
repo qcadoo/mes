@@ -24,6 +24,7 @@
 package com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container;
 
 import java.util.Map;
+import java.util.Objects;
 
 import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
@@ -37,31 +38,34 @@ public class WorkstationTypeGroupingContainer extends AbstractGroupingContainer 
 
     private String nullWorkstationTitle;
 
-    public WorkstationTypeGroupingContainer(Map<OrderColumn, ColumnAlignment> orderColumnToAlignment,
-            Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductInColumnToAlignment,
-            Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductOutColumnToAlignment,
-            String titleAppend, String nullWorkstationTitle) {
+    public WorkstationTypeGroupingContainer(final Map<OrderColumn, ColumnAlignment> orderColumnToAlignment,
+            final Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductInColumnToAlignment,
+            final Map<Long, Map<OperationProductColumn, ColumnAlignment>> operationComponentIdProductOutColumnToAlignment,
+            final String titleAppend, final String nullWorkstationTitle) {
         super(orderColumnToAlignment, operationComponentIdProductInColumnToAlignment,
                 operationComponentIdProductOutColumnToAlignment, titleAppend);
         this.nullWorkstationTitle = nullWorkstationTitle;
     }
 
     @Override
-    public void add(Entity order, Entity operationComponent, OperationProductComponentWithQuantityContainer productQuantities) {
+    public void add(final Entity order, final Entity operationComponent,
+            final OperationProductComponentWithQuantityContainer productQuantities) {
         Entity workstationType = workstationType(operationComponent);
-        if (workstationType == null) {
+
+        if (Objects.isNull(workstationType)) {
             store(nullWorkstationTitle, order, operationComponent);
         } else {
             store(title(workstationType), order, operationComponent);
         }
     }
 
-    private String title(Entity workstationType) {
+    private String title(final Entity workstationType) {
         String workstationName = workstationType.getStringField(WorkstationTypeFields.NAME);
-        return titleAppend + " " + workstationName;
+
+        return new StringBuilder(titleAppend).append(" ").append(workstationName).toString();
     }
 
-    private Entity workstationType(Entity operationComponent) {
+    private Entity workstationType(final Entity operationComponent) {
         return operationComponent.getBelongsToField(TechnologyOperationComponentFields.WORKSTATION_TYPE);
     }
 

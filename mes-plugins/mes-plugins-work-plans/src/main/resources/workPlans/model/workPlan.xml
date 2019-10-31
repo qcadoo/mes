@@ -42,7 +42,7 @@
         <boolean name="dontPrintOrdersInWorkPlans"/>
 
         <enum name="type"
-              values="01noDistinction,02byEndProduct,03byWorkstationType,04byDivision"
+              values="01noDistinction,02byEndProduct,03byWorkstationType,04byDivision,05byWorkstation,06byStaff,07byProductionLine"
               default="01noDistinction" required="true"/>
 
         <hasMany name="workPlanOrderColumns" plugin="workPlans"
