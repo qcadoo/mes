@@ -59,4 +59,9 @@
 <div id="productAttributesGrid" class="qcadoo-grid"></div>
 <div id="pager" style="width:100%;height:20px;"></div>
 
-<script src="/basic/public/js/productAttributes.js?ver=${buildNumber}"></script>
+<script src="/basic/public/js/productsAttributes.js?ver=${buildNumber}"></script>
+<script type="text/JavaScript">
+    jQuery(document).ready(function() {
+        QCD.productsAttributes.init();
+    });
+</script>

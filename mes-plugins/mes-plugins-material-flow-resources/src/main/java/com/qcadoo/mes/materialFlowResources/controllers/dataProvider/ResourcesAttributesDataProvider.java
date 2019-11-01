@@ -58,8 +58,6 @@ public class ResourcesAttributesDataProvider {
                 new ColumnDTO(VALUE, translationService.translate("materialFlowResources.resource.value.label", locale), VALUE));
         columns.add(new ColumnDTO(ResourceFields.TIME,
                 translationService.translate("materialFlowResources.resource.time.label", locale), ResourceFields.TIME));
-        columns.add(new ColumnDTO(ResourceFields.TIME,
-                translationService.translate("materialFlowResources.resource.time.label", locale), ResourceFields.TIME));
         columns.add(new ColumnDTO(ResourceFields.EXPIRATION_DATE,
                 translationService.translate("materialFlowResources.resource.expirationDate.label", locale),
                 ResourceFields.EXPIRATION_DATE));

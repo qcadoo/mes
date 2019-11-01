@@ -59,4 +59,9 @@
 <div id="resourceAttributesGrid" class="qcadoo-grid"></div>
 <div id="pager" style="width:100%;height:20px;"></div>
 
-<script src="/materialFlowResources/public/js/resourceAttributes.js?ver=${buildNumber}"></script>
+<script src="/materialFlowResources/public/js/resourcesAttributes.js?ver=${buildNumber}"></script>
+<script type="text/JavaScript">
+    jQuery(document).ready(function() {
+        QCD.resourcesAttributes.init();
+    });
+</script>
