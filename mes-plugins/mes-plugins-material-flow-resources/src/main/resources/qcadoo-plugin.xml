@@ -110,6 +110,8 @@
         <model:model model="resourceAttributeValueAfterCorrection" resource="model/resourceAttributeValueAfterCorrection.xml"/>
         <model:model model="resourceAttributeValueBeforeCorrection" resource="model/resourceAttributeValueBeforeCorrection.xml"/>
 
+        <model:model model="positionAttributeValue" resource="model/positionAttributeValue.xml"/>
+
         <model:model-field plugin="basic" model="parameter">
             <model:belongsTo name="documentPositionParameters" model="documentPositionParameters"
                              plugin="materialFlowResources"/>
@@ -152,6 +154,21 @@
         <model:model-field plugin="basic" model="attributeValue">
             <hasMany name="resourceAttributeValues" plugin="materialFlowResources" joinField="attributeValue"
                      model="resourceAttributeValue"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="attribute">
+            <hasMany name="positionAttributeValues" plugin="materialFlowResources" joinField="attribute"
+                     model="positionAttributeValue"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="attributeValue">
+            <hasMany name="positionAttributeValues" plugin="materialFlowResources" joinField="attributeValue"
+                     model="positionAttributeValue"/>
+        </model:model-field>
+
+        <model:model-field plugin="materialFlowResources" model="position">
+            <hasMany name="positionAttributeValues" plugin="materialFlowResources" joinField="position"
+                     model="positionAttributeValue"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="palletNumber">

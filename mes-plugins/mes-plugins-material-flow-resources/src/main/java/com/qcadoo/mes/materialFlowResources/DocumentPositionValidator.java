@@ -1,5 +1,21 @@
 package com.qcadoo.mes.materialFlowResources;
 
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.qcadoo.commons.functional.Either;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.BasicException;
+import com.qcadoo.mes.basic.constants.AttributeDataType;
+import com.qcadoo.mes.basic.constants.AttributeValueType;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.model.api.BigDecimalUtils;
+
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -19,17 +35,6 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
-
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.BasicException;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 
 @Service
 public class DocumentPositionValidator {
@@ -59,9 +64,9 @@ public class DocumentPositionValidator {
         Preconditions.checkNotNull(position, "documentGrid.required.documentPosition");
         Preconditions.checkNotNull(position.getDocument(), "documentGrid.required.documentPosition.document");
 
-        DocumentDTO document = jdbcTemplate.queryForObject("SELECT * FROM materialflowresources_document WHERE id = :id",
-                Collections.singletonMap("id", position.getDocument()),
-                new BeanPropertyRowMapper<DocumentDTO>(DocumentDTO.class));
+        DocumentDTO document = jdbcTemplate
+                .queryForObject("SELECT * FROM materialflowresources_document WHERE id = :id", Collections.singletonMap("id",
+                        position.getDocument()), new BeanPropertyRowMapper<DocumentDTO>(DocumentDTO.class));
 
         List<String> errors = Lists.newArrayList();
 
@@ -89,6 +94,7 @@ public class DocumentPositionValidator {
             errors.addAll(checkAttributesRequirement(position, document));
             errors.addAll(validateResources(position, document));
             errors.addAll(validatePallet(position, document));
+            errors.addAll(validateAttributes(position, document));
 
             if (errors.isEmpty()) {
                 errors.addAll(validateAvailableQuantity(position, document, errors));
@@ -407,6 +413,39 @@ public class DocumentPositionValidator {
         return Lists.newArrayList();
     }
 
+    private Collection<? extends String> validateAttributes(DocumentPositionDTO position, DocumentDTO document) {
+        List<String> errors = Lists.newArrayList();
+        Map<String, Object> attrs = position.getAttrs();
+        if (!attrs.isEmpty()) {
+            String getAttributeValueByValue = "SELECT av.id FROM basic_attributevalue av WHERE av.attribute_id = :attrId AND value = :value";
+            String getAttributes = "SELECT at.* FROM basic_attribute at WHERE at.number in (:numbers)";
+            Map<String, Object> attDefinitionsParameters = Maps.newHashMap();
+            attDefinitionsParameters.put("numbers", attrs.keySet());
+            List<AttributeDto> attDefinitions = jdbcTemplate.query(getAttributes, attDefinitionsParameters,
+                    new BeanPropertyRowMapper(AttributeDto.class));
+            for (AttributeDto attributeDefinition : attDefinitions) {
+                if (StringUtils.isNotEmpty((String) attrs.get(attributeDefinition.getNumber()))) {
+                    if (attributeDefinition.getDataType().equals(AttributeDataType.CALCULATED.getStringValue())) {
+                        Map<String, Object> parameters = Maps.newHashMap();
+                        parameters.put("attrId", attributeDefinition.getId());
+                        parameters.put("value", attrs.get(attributeDefinition.getNumber()));
+                        List attrValues = jdbcTemplate.queryForList(getAttributeValueByValue.toString(), parameters);
+                        if (attrValues.isEmpty()) {
+                            errors.add(translationService.translate("documentGrid.error.position.attribiuteNotFound",
+                                    LocaleContextHolder.getLocale(), attributeDefinition.getNumber()));
+                        }
+                    } else if (attributeDefinition.getValueType().equals(AttributeValueType.NUMERIC.getStringValue())) {
+                        errors.addAll(validateBigDecimalFromAttribute((String) attrs.get(attributeDefinition.getNumber()),
+                                attributeDefinition));
+                    }
+                }
+
+            }
+
+        }
+        return errors;
+    }
+
     private Collection<? extends String> validateConversion(final DocumentPositionDTO position) {
         if (position.getConversion() == null) {
             return Lists.newArrayList("documentGrid.error.position.conversion.required");
@@ -429,10 +468,11 @@ public class DocumentPositionValidator {
                 filters.put("code", additionalCode);
                 filters.put("productNumber", position.getProduct());
 
-                Long additionalCodeId = jdbcTemplate.queryForObject(
-                        "SELECT additionalcode.id FROM basic_additionalcode additionalcode WHERE additionalcode.code = :code "
-                                + "AND additionalcode.product_id IN (SELECT id FROM basic_product WHERE number = :productNumber)",
-                        filters, Long.class);
+                Long additionalCodeId = jdbcTemplate
+                        .queryForObject(
+                                "SELECT additionalcode.id FROM basic_additionalcode additionalcode WHERE additionalcode.code = :code "
+                                        + "AND additionalcode.product_id IN (SELECT id FROM basic_product WHERE number = :productNumber)",
+                                filters, Long.class);
 
             } catch (EmptyResultDataAccessException e) {
                 return Lists.newArrayList("documentGrid.error.position.additionalCode.doesntMatch");
@@ -528,9 +568,10 @@ public class DocumentPositionValidator {
         }
 
         try {
-            Long storageLocationId = jdbcTemplate.queryForObject(
-                    "SELECT storagelocation.id FROM materialflowresources_storagelocation storagelocation WHERE storagelocation.number = :number",
-                    Collections.singletonMap("number", storageLocationNumber), Long.class);
+            Long storageLocationId = jdbcTemplate
+                    .queryForObject(
+                            "SELECT storagelocation.id FROM materialflowresources_storagelocation storagelocation WHERE storagelocation.number = :number",
+                            Collections.singletonMap("number", storageLocationNumber), Long.class);
 
             return storageLocationId;
         } catch (EmptyResultDataAccessException e) {
@@ -557,8 +598,7 @@ public class DocumentPositionValidator {
         }
     }
 
-    private List<String> validateBigDecimal(final BigDecimal value, final String field, final int maxScale,
-            final int maxPrecision) {
+    private List<String> validateBigDecimal(final BigDecimal value, final String field, final int maxScale, final int maxPrecision) {
         List<String> errors = Lists.newArrayList();
 
         BigDecimal noZero = value.stripTrailingZeros();
@@ -574,15 +614,42 @@ public class DocumentPositionValidator {
         String fieldName = translationService.translate("documentGrid.gridColumn." + field, LocaleContextHolder.getLocale());
 
         if (scale > maxScale) {
-            errors.add(String.format(translationService.translate("documentGrid.error.position.bigdecimal.invalidScale",
-                    LocaleContextHolder.getLocale()), fieldName, maxScale));
+            errors.add(String.format(
+                    translationService.translate("documentGrid.error.position.bigdecimal.invalidScale",
+                            LocaleContextHolder.getLocale()), fieldName, maxScale));
         }
 
         if ((precision - scale) > maxPrecision) {
-            errors.add(String.format(translationService.translate("documentGrid.error.position.bigdecimal.invalidPrecision",
-                    LocaleContextHolder.getLocale()), fieldName, maxPrecision));
+            errors.add(String.format(
+                    translationService.translate("documentGrid.error.position.bigdecimal.invalidPrecision",
+                            LocaleContextHolder.getLocale()), fieldName, maxPrecision));
         }
 
+        return errors;
+    }
+
+    private List<String> validateBigDecimalFromAttribute(final String value, final AttributeDto attribute) {
+        List<String> errors = Lists.newArrayList();
+        try {
+            new BigDecimal(value);
+        } catch (IllegalArgumentException var5) {
+            errors.add(String.format(translationService.translate("documentGrid.error.position.bigdecimal.invalidNumericFormat",
+                    LocaleContextHolder.getLocale()), attribute.getNumber()));
+            return errors;
+        }
+        Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParse(value, LocaleContextHolder.getLocale());
+        if (eitherNumber.isRight() && eitherNumber.getRight().isPresent()) {
+            int scale = attribute.getPrecision();
+            int valueScale = eitherNumber.getRight().get().scale();
+            if (valueScale > scale) {
+                errors.add(String.format(
+                        translationService.translate("documentGrid.error.position.bigdecimal.invalidScale",
+                                LocaleContextHolder.getLocale()), attribute.getNumber(), valueScale));
+            }
+        } else {
+            errors.add(String.format(translationService.translate("documentGrid.error.position.bigdecimal.invalidNumericFormat",
+                    LocaleContextHolder.getLocale()), attribute.getNumber()));
+        }
         return errors;
     }
 
@@ -591,13 +658,13 @@ public class DocumentPositionValidator {
 
         if (DocumentType.isInbound(document.getType())) {
             if (existsNotMatchingResourceForPalletNumber(position, document)) {
-                errors.add(
-                        translationService.translate("documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation",
-                                LocaleContextHolder.getLocale()));
+                errors.add(translationService.translate(
+                        "documentGrid.error.position.existsOtherResourceForPalletAndStorageLocation",
+                        LocaleContextHolder.getLocale()));
             } else if (existsNotMatchingPositionForPalletNumber(position, document)) {
-                errors.add(
-                        translationService.translate("documentGrid.error.position.existsOtherPositionForPalletAndStorageLocation",
-                                LocaleContextHolder.getLocale()));
+                errors.add(translationService.translate(
+                        "documentGrid.error.position.existsOtherPositionForPalletAndStorageLocation",
+                        LocaleContextHolder.getLocale()));
             } else if (existsNotMatchingDeliveredProductForPalletNumber(position, document)) {
                 errors.add(translationService.translate(
                         "documentGrid.error.position.existsOtherDeliveredProductForPalletAndStorageLocation",
@@ -618,8 +685,7 @@ public class DocumentPositionValidator {
         query.append("SELECT count(*) FROM materialflowresources_resource resource ");
         query.append("JOIN basic_palletnumber pallet ON (resource.palletnumber_id = pallet.id) ");
         query.append("LEFT JOIN materialflowresources_storagelocation storage ON (resource.storagelocation_id = storage.id) ");
-        query.append(
-                "WHERE pallet.number = :palletNumber AND (storage.number <> :storageNumber OR resource.typeofpallet <> :typeOfPallet) ");
+        query.append("WHERE pallet.number = :palletNumber AND (storage.number <> :storageNumber OR resource.typeofpallet <> :typeOfPallet) ");
         query.append("AND resource.location_id = :locationId");
 
         Map<String, Object> params = Maps.newHashMap();
@@ -644,8 +710,7 @@ public class DocumentPositionValidator {
         query.append("SELECT count(*) FROM materialflowresources_position position ");
         query.append("JOIN basic_palletnumber pallet ON (position.palletnumber_id = pallet.id) ");
         query.append("LEFT JOIN materialflowresources_storagelocation storage ON (position.storagelocation_id = storage.id) ");
-        query.append(
-                "WHERE pallet.number = :palletNumber AND (storage.number <> :storageNumber OR position.typeofpallet <> :typeOfPallet) ");
+        query.append("WHERE pallet.number = :palletNumber AND (storage.number <> :storageNumber OR position.typeofpallet <> :typeOfPallet) ");
         query.append("AND position.document_id = :documentId AND position.id <> :positionId ");
 
         Map<String, Object> params = Maps.newHashMap();
@@ -673,8 +738,7 @@ public class DocumentPositionValidator {
         query.append("JOIN basic_palletnumber pallet ON (position.palletnumber_id = pallet.id) ");
         query.append("JOIN deliveries_delivery delivery ON position.delivery_id = delivery.id ");
         query.append("LEFT JOIN materialflowresources_storagelocation storage ON (position.storagelocation_id = storage.id) ");
-        query.append(
-                "WHERE pallet.number = :palletNumber AND (storage.number <> :storageNumber OR position.pallettype <> :typeOfPallet) ");
+        query.append("WHERE pallet.number = :palletNumber AND (storage.number <> :storageNumber OR position.pallettype <> :typeOfPallet) ");
         query.append("AND delivery.location_id = :locationId");
 
         Map<String, Object> params = Maps.newHashMap();

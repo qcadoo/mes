@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.AdditionalCodeDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.AttribiuteValueDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.PalletNumberDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
@@ -65,6 +66,24 @@ public class DataProvider {
                 + "FROM basic_palletnumber palletnumber WHERE palletnumber.active = true AND palletnumber.number ilike :query;";
     }
 
+    private String prepareAttributesQuery() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("SELECT av.id as id, av.value as value FROM basic_attributevalue av ");
+        builder.append("LEFT JOIN basic_attribute a  ON a.id = av.attribute_id ");
+        builder.append("WHERE a.number = :attr AND av.value ilike :query ");
+        return builder.toString();
+
+    }
+
+    private String prepareAttributesQueryLimit(int limit) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("SELECT av.id as id, av.value as value FROM basic_attributevalue av ");
+        builder.append("LEFT JOIN basic_attribute a  ON a.id = av.attribute_id ");
+        builder.append("WHERE a.number = :attr AND av.value ilike :query LIMIT " + limit + ";");
+        return builder.toString();
+
+    }
+
     private String preparePalletNumbersQueryWithLimit(int limit) {
         return "SELECT palletnumber.id AS id, palletnumber.number AS code, palletnumber.number AS number "
                 + "FROM basic_palletnumber palletnumber WHERE palletnumber.active = true AND palletnumber.number ilike :query LIMIT "
@@ -107,6 +126,13 @@ public class DataProvider {
         }
 
         return new DataResponse(entities, numberOfResults);
+    }
+
+    public DataResponse getAttributesByQuery(String attr, String query) {
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("attr", attr);
+        return getDataResponse(query, prepareAttributesQuery(), getAttribiutesByQuery(attr, query), parameters);
+
     }
 
     public List<ProductDTO> getAllProducts(final String sidx, final String sord) {
@@ -187,6 +213,22 @@ public class DataProvider {
         return pallets;
     }
 
+    public List<AbstractDTO> getAttribiutesByQuery(final String attr, final String query) {
+        String _query = prepareAttributesQueryLimit(MAX_RESULTS);
+
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        String ilikeQuery = buildConditionParameterForIlike(query);
+        parameters.put("query", ilikeQuery);
+        parameters.put("attr", attr);
+
+        SqlParameterSource nParameters = new MapSqlParameterSource(parameters);
+
+        List<AbstractDTO> attrs = jdbcTemplate.query(_query, nParameters, new BeanPropertyRowMapper(AttribiuteValueDTO.class));
+
+        return attrs;
+    }
+
     public List<Map<String, String>> getUnits() {
         return dictionaryService.getKeys("units").stream().map(unit -> {
             Map<String, String> type = Maps.newHashMap();
@@ -215,5 +257,6 @@ public class DataProvider {
         ilikeQuery = ilikeQuery.replace("%%", "%");
         return ilikeQuery;
     }
+
 
 }

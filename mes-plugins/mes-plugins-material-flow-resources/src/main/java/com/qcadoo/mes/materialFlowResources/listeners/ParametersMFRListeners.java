@@ -10,6 +10,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.GridComponent;
 
 import java.util.Set;
@@ -37,8 +38,14 @@ public class ParametersMFRListeners {
 
     public void addColumns(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
+        CheckBoxComponent generated = (CheckBoxComponent) view.getComponentByReference("generated");
 
         Set<Long> ids = grid.getSelectedEntitiesIds();
+        if (ids.isEmpty()) {
+            generated.setChecked(false);
+            view.addMessage("materialFlowResources.documentAttributePosition.noSelectedAttributes", ComponentState.MessageType.INFO);
+            return;
+        }
         ids.forEach(attrId -> {
             Entity attribute = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.ATTRIBUTE).get(attrId);
 
@@ -53,5 +60,6 @@ public class ParametersMFRListeners {
             positionItem.setField(DocumentPositionParametersItemFields.ATTRIBUTE, attribute.getId());
             positionItem = positionItem.getDataDefinition().save(positionItem);
         });
+        generated.setChecked(true);
     }
 }

@@ -8,6 +8,10 @@ public class ColumnProperties {
 
     boolean forAttribute;
 
+    String attributeDataType;
+
+    String attributeValueType;
+
     public boolean isChecked() {
         return checked;
     }
@@ -30,5 +34,21 @@ public class ColumnProperties {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getAttributeDataType() {
+        return attributeDataType;
+    }
+
+    public void setAttributeDataType(String attributeDataType) {
+        this.attributeDataType = attributeDataType;
+    }
+
+    public String getAttributeValueType() {
+        return attributeValueType;
+    }
+
+    public void setAttributeValueType(String attributeValueType) {
+        this.attributeValueType = attributeValueType;
     }
 }

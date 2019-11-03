@@ -1,10 +1,12 @@
 package com.qcadoo.mes.materialFlowResources;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
+
 import java.math.BigDecimal;
 import java.util.Date;
-
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
+import java.util.Map;
 
 public class ResourceDTO implements AbstractDTO {
 
@@ -57,6 +59,8 @@ public class ResourceDTO implements AbstractDTO {
     private String lastResourceString;
 
     private String wasteString;
+
+    private Map<String, Object> attrs = Maps.newHashMap();
 
     public Long getId() {
         return id;
@@ -240,5 +244,13 @@ public class ResourceDTO implements AbstractDTO {
 
     public void setLastResourceString(String lastResourceString) {
         this.lastResourceString = lastResourceString;
+    }
+
+    public Map<String, Object> getAttrs() {
+        return attrs;
+    }
+
+    public void setAttrs(Map<String, Object> attrs) {
+        this.attrs = attrs;
     }
 }

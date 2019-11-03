@@ -356,13 +356,19 @@ function addNewRow() {
 
 function openLookup(name, parameters) {
     var lookupHtml = '/lookup.html'
-    if (parameters) {
-        var urlParams = $.param(parameters);
-        lookupHtml = lookupHtml + "?" + urlParams;
+    if(name == 'attribute') {
+        mainController.openModal('body', '../' + name + "/" + parameters.custom_attr_name + lookupHtml, false, function onModalClose() {
+                        }, function onModalRender(modalWindow) {
+                        }, {width: 1000, height: 560});
+    } else {
+        if (parameters) {
+            var urlParams = $.param(parameters);
+            lookupHtml = lookupHtml + "?" + urlParams;
+        }
+        mainController.openModal('body', '../' + name + lookupHtml, false, function onModalClose() {
+                }, function onModalRender(modalWindow) {
+                }, {width: 1000, height: 560});
     }
-    mainController.openModal('body', '../' + name + lookupHtml, false, function onModalClose() {
-    }, function onModalRender(modalWindow) {
-    }, {width: 1000, height: 560});
 }
 
 function updateFieldValue(field, value, rowId) {
@@ -410,8 +416,8 @@ function clearSelect(field,rowId)
 
 function onSelectLookupRow(row, recordName) {
     if (row) {
-        var code = row.code || row.number;
-
+        var code = row.code || row.number || row.value;
+        recordName = recordName.replace('attribute/','');
         var rowId = $('#product').length ? null : jQuery('#grid').jqGrid('getGridParam', 'selrow');
         var field = updateFieldValue(recordName, code, rowId);
         field.trigger('change');
@@ -421,7 +427,7 @@ function onSelectLookupRow(row, recordName) {
 }
 
 var messagesController = new QCD.MessagesController();
-
+var columnConfiguration;
 myApp.controller('GridController', ['$scope', '$window', '$http', function ($scope, $window, $http) {
         var _this = this;
         var quantities = {};
@@ -508,7 +514,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     });
                 },
                 renderItem: function (item, search) {
-                    var code = item.code || item.number;
+                    var code = item.code || item.number || item.value;
                     var id = item.id;
                     // escape special characters
                     search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
@@ -536,7 +542,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             wrapper.append($ac);
             wrapper.append(button);
 
-            var isReadonly = getColModelByIndex(name).editoptions.readonly === 'readonly';
+            var isReadonly
+            if(name == 'attribute') {
+               isReadonly = getColModelByIndex(options.custom_attr_name).editoptions.readonly === 'readonly';
+            } else {
+                isReadonly = getColModelByIndex(name).editoptions.readonly === 'readonly';
+            }
+
             $ac.attr('readonly', isReadonly);
             $ac.attr('disabled', isReadonly);
             button.attr('disabled', isReadonly);
@@ -598,18 +610,49 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         updateFieldValue('lastResource', resource['lastResource'], rowId);
                     }
                 }
+                angular.forEach(columnConfiguration, function (columnInGrid, key) {
+                    if (columnInGrid.forAttribute) {
+                        updateFieldValue(columnInGrid.name, '', rowId);
+                    }
+                });
+                angular.forEach(resource['attrs'], function (value, key) {
+                    updateFieldValue(key, value, rowId);
+                });
             });
         }
 
         function clearResourceRelatedFields(rowId) {
             var fieldnames = ['resource', 'batch', 'productionDate', 'expirationDate', 'storageLocation', 'palletNumber', 'price', 'typeOfPallet', 'waste', 'lastResource'];
+
             for (var i in fieldnames) {
                 updateFieldValue(fieldnames[i], '', rowId);
             }
+
+            angular.forEach(columnConfiguration, function (columnInGrid, key) {
+                if (columnInGrid.forAttribute) {
+                   updateFieldValue(name, '', rowId);
+                }
+            });
         }
 
         function palletNumbersLookup_createElement(value, options) {
             var lookup = createLookupElement('palletNumber', value, '/rest/palletnumbers', options);
+
+            return lookup;
+        }
+
+        function attributeLookup_createElement(value, options) {
+
+            var url = '/rest/attribute/' + options.custom_attr_name;
+            var params = {};
+            params.custom_attr_name = options.custom_attr_name;
+            params.url = url;
+            var lookup = createLookupElement('attribute', value, url, options, function () {
+                return  {
+                   custom_attr_name : options.custom_attr_name,
+                   url: url
+                };
+            });
 
             return lookup;
         }
@@ -773,6 +816,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     ac: ac,
                     conversion: 1
                 }
+
             }
             $.get('/rest/rest/documentPositions/resource.html?' + $.param(params), function (resource) {
                 var gridData = $('#grid').jqGrid('getRowData');
@@ -993,7 +1037,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         function getColModelByIndex(index, c) {
             c = c || $scope.config;
             var col = c.colModel.filter(function (element, i) {
-                return element.index === index;
+                return element.name === index;
             })[0];
             if (!col) {
                 console.error(index);
@@ -1011,6 +1055,25 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 attrColModel.name = columnProperties.name;
                 attrColModel.index = "attrs."+columnProperties.name;
                 attrColModel.jsonmap = "attrs."+columnProperties.name;
+                attrColModel.editable = true;
+                if(columnProperties.attributeDataType == '01calculated') {
+                    attrColModel.edittype = 'custom';
+                    var editoptions = {};
+                    editoptions.custom_element = attributeLookup_createElement;
+                    editoptions.custom_value = lookup_value;
+                    editoptions.custom_attr_name = columnProperties.name;
+                    attrColModel.editoptions = editoptions;
+                } else if(columnProperties.attributeValueType == '02numeric') {
+                    attrColModel.formatter = numberFormatter;
+                    attrColModel.unformat = numberUnformat;
+                     attrColModel.edittype = 'custom';
+                     var editoptions = {};
+                     editoptions.custom_element = attribute_createElement;
+                     editoptions.custom_value = input_value;
+                     editoptions.custom_attr_name = columnProperties.name;
+                     attrColModel.editoptions = editoptions;
+                }
+
                 col = attrColModel;
             } else if (!col) {
                 console.error(index);
@@ -1157,6 +1220,32 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             });
 
             return $input;
+        }
+
+        function attribute_createElement(value, options) {
+                 var $input = $('<input type="customNumber" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
+                 $input.val(value);
+                 $input.attr('readonly', getColModelByIndex(options.name).editoptions.readonly === 'readonly');
+
+                 var aValue = value;
+                 var aValueNew;
+                 $($input).bind('change keydown paste input', function () {
+                     var t = $(this);
+
+                     window.clearTimeout(t.data("timeout"));
+                     aValueNew = t.val();
+                     if (aValue !== aValueNew) {
+                         aValue = aValueNew;
+
+                         $(this).data("timeout", setTimeout(function () {
+                             gridRunner(function () {
+                                 parseAndValidateInputNumber(t);
+                             });
+                         }, 500));
+                     }
+                 });
+
+                 return $input;
         }
 
         function givenquantity_createElement(value, options) {
@@ -1804,6 +1893,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             },
             serializeRowData: function (postdata) {
                 delete postdata.oper;
+                postdata.attrs = {};
+                angular.forEach(columnConfiguration, function (columnInGrid, key) {
+                    if (columnInGrid.forAttribute) {
+                        postdata.attrs[columnInGrid.name] = postdata[columnInGrid.name];
+                        delete postdata[columnInGrid.name];
+                    }
+                });
 
                 return validateSerializeData(postdata);
             },
@@ -1811,6 +1907,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 return [false, 'ble'];
             }
         };
+
 
         function prepareGridConfig(config) {
             var c = $.cookie("jqgrid_conf");
@@ -1842,6 +1939,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 url: '../../rest/rest/documentPositions/gridConfig/' + config.document_id + '.html'
 
             }).then(function successCallback(response) {
+                columnConfiguration = response.data.columns;
                 config.readOnly = response.data.readOnly;
                 config.inBufferDocument = response.data.inBufferDocument;
                 config.suggestResource = !response.data.inBufferDocument && response.data.suggestResource;
@@ -1862,13 +1960,17 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         delete gridColModel.editoptions.disabled;
                         delete gridColModel.editoptions.readonly;
                     }
-                    if (readOnlyInType(config.outDocument, config.inBufferDocument, key)) {
+                    if (readOnlyInType(config.outDocument, config.inBufferDocument, columnInGrid.name)) {
                         gridColModel.editoptions = gridColModel.editoptions || {};
                         if (gridColModel.edittype === 'select' || gridColModel.edittype === 'checkbox') {
                             gridColModel.editoptions.disabled = 'disabled';
                         } else {
                             gridColModel.editoptions.readonly = 'readonly';
                         }
+                    }
+
+                    if (columnInGrid.forAttribute && config.outDocument) {
+                        gridColModel.editoptions.readonly = 'readonly';
                     }
 
                     columns.push(gridColModel);
@@ -1922,7 +2024,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
             return config;
         }
-
         $scope.documentIdChanged = function (id) {
             config.url = '../../rest/rest/documentPositions/' + id + '.html';
             config.document_id = id;

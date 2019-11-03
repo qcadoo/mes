@@ -1,18 +1,20 @@
 package com.qcadoo.mes.basic.controllers;
 
+import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
+
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 
 @Controller
 public final class BasicApiController {
@@ -36,6 +38,13 @@ public final class BasicApiController {
     @RequestMapping(value = "/palletnumbers", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public DataResponse getPalletNumbersByQuery(@RequestParam("query") String query) {
         return dataProvider.getPalletNumbersResponseByQuery(query);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/attribute/{attr}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public DataResponse getAttributesByQuery(@PathVariable String attr, @RequestParam("query") String query)
+            throws UnsupportedEncodingException {
+        return dataProvider.getAttributesByQuery(attr, query);
     }
 
     @ResponseBody
