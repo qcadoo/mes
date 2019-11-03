@@ -28,11 +28,11 @@ import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.importing.services.XlsxImportService;
+import com.qcadoo.mes.basic.imports.services.XlsxImportService;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
-import com.qcadoo.mes.materialFlowResources.importing.position.PositionCellBinderRegistry;
-import com.qcadoo.mes.materialFlowResources.importing.position.PositionXlsxImportService;
+import com.qcadoo.mes.materialFlowResources.imports.position.PositionCellBinderRegistry;
+import com.qcadoo.mes.materialFlowResources.imports.position.PositionXlsxImportService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -59,7 +59,8 @@ public class PositionsImportListeners {
     public void processImportFile(final ViewDefinitionState view, final ComponentState state, final String[] args)
             throws IOException {
         FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity document = documentForm.getEntity();
+        Long documentId = documentForm.getEntityId();
+        Entity document = documentForm.getEntity().getDataDefinition().get(documentId);
 
         positionXlsxImportService.processImportFile(view, positionCellBinderRegistry.getCellBinderRegistry(), true,
                 MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_POSITION, document,
