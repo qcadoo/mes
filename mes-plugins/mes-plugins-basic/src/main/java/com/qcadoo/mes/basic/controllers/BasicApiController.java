@@ -4,8 +4,13 @@ import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -42,9 +47,13 @@ public final class BasicApiController {
 
     @ResponseBody
     @RequestMapping(value = "/attribute/{attr}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public DataResponse getAttributesByQuery(@PathVariable String attr, @RequestParam("query") String query)
+    public DataResponse getAttributesByQuery(@PathVariable String attr, @RequestParam("query") String query, HttpServletRequest httpServletRequest)
             throws UnsupportedEncodingException {
-        return dataProvider.getAttributesByQuery(attr, query);
+        String requestURI = httpServletRequest.getRequestURI();
+        URI uri = URI.create(requestURI);
+        Path path = Paths.get(uri.getPath());
+        String last = path.getFileName().toString();
+        return dataProvider.getAttributesByQuery(last, query);
     }
 
     @ResponseBody
