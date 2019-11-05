@@ -4,10 +4,15 @@ import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.GridResponse;
 import com.qcadoo.mes.basic.LookupUtils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -31,11 +36,14 @@ public class AttributeLookupController {
     public GridResponse<AttributeDto> getRecords(@PathVariable String name, @RequestParam String sidx, @RequestParam String sord,
             @RequestParam(defaultValue = "1", required = false, value = "page") Integer page,
             @RequestParam(value = "rows") int perPage,
-            @RequestParam(defaultValue = "0", required = false, value = "context") Long context, AttributeDto record) {
-
+            @RequestParam(defaultValue = "0", required = false, value = "context") Long context, AttributeDto record,
+            HttpServletRequest httpServletRequest) {
         String query = getQueryForRecords();
-
-        return lookupUtils.getGridResponse(query, sidx, sord, page, perPage, record, getQueryParameters(name, record));
+        String requestURI = httpServletRequest.getRequestURI();
+        URI uri = URI.create(requestURI);
+        Path path = Paths.get(uri.getPath());
+        String secondToLast = path.getName(path.getNameCount() - 2).toString();
+        return lookupUtils.getGridResponse(query, sidx, sord, page, perPage, record, getQueryParameters(secondToLast, record));
     }
 
     private Map<String, Object> getQueryParameters(String name, AttributeDto record) {
@@ -46,7 +54,8 @@ public class AttributeLookupController {
 
     @ResponseBody
     @RequestMapping(value = "{name}/config", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getConfigView(@PathVariable String name, Locale locale) {
+    public Map<String, Object> getConfigView(@PathVariable String name, Locale locale)
+            throws UnsupportedEncodingException {
         return lookupUtils.getConfigMap(getGridFields());
     }
 

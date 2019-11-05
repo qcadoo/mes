@@ -57,8 +57,8 @@ public class DocumentPositionService {
 
     public GridResponse<DocumentPositionDTO> findAll(final Long documentId, final String _sidx, final String _sord, int page,
             int perPage, final DocumentPositionDTO position, final Map<String, String> attributeFilters) {
-        String sidx = _sidx != null ? _sidx.toLowerCase() : "";
-        String sord = _sord != null ? _sord.toLowerCase() : "";
+        String sidx = _sidx != null ? _sidx : "";
+        String sord = _sord != null ? _sord : "";
 
         Preconditions.checkState(Arrays.asList("asc", "desc", "").contains(sord));
 
@@ -102,8 +102,8 @@ public class DocumentPositionService {
             attributeFiltersBuilder.append("WHERE ");
             for (Map.Entry<String, String> filterElement : attributeFilters.entrySet()) {
                 attributeFiltersBuilder.append("q.\"" + filterElement.getKey() + "\" ");
-                attributeFiltersBuilder.append("ilike :" + filterElement.getKey() + " ");
-                parameters.put(filterElement.getKey(), "%" + filterElement.getValue() + "%");
+                attributeFiltersBuilder.append("ilike :" + filterElement.getKey().replaceAll("[^a-zA-Z0-9]+","") + " ");
+                parameters.put(filterElement.getKey().replaceAll("[^a-zA-Z0-9]+",""), "%" + filterElement.getValue() + "%");
             }
             query = query + attributeFiltersBuilder.toString();
         }

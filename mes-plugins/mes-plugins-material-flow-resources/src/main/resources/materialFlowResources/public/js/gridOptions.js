@@ -381,7 +381,7 @@ function updateFieldValue(field, value, rowId) {
 
     } else {
         // edit inline
-        selector = $('#' + rowId + '_' + field);
+        selector =  $("[id='"+rowId + '_' + field+"']");
     }
 
     var element = $(selector);
@@ -1071,6 +1071,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                      editoptions.custom_element = attribute_createElement;
                      editoptions.custom_value = input_value;
                      editoptions.custom_attr_name = columnProperties.name;
+                     attrColModel.editoptions = editoptions;
+                } else {
+                     var editoptions = {};
                      attrColModel.editoptions = editoptions;
                 }
 
