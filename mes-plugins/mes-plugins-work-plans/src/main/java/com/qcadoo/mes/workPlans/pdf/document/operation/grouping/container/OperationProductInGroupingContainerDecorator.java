@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container;
 
-import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -48,6 +41,13 @@ import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.holder.OrderOper
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationProductColumn;
 import com.qcadoo.mes.workPlans.pdf.document.order.column.OrderColumn;
 import com.qcadoo.model.api.Entity;
+
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class OperationProductInGroupingContainerDecorator implements GroupingContainer {
 
@@ -102,65 +102,65 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
                 Entity existingToc = operationComponentIdToOperationComponent.get(operationComponentId);
                 List<Entity> existingOperationProductInComponents = operationProductInComponents(existingToc);
                 List<Entity> operationProductInComponents = operationProductInComponents(operationComponent);
-                Map<String, Entity> existingProductNumberToOperationProductInComponent = productNumberToOperationProductComponent(
-                        existingOperationProductInComponents);
-                Map<String, Entity> productNumberToOperationProductInComponent = productNumberToOperationProductComponent(
-                        operationProductInComponents);
-                boolean sameProductsIn = sameProductsIn(existingProductNumberToOperationProductInComponent,
-                        productNumberToOperationProductInComponent);
+                Map<String, Entity> existingProductNumberToOperationProductInComponent = productNumberToOperationProductComponent(existingOperationProductInComponents);
+                Map<String, Entity> productNumberToOperationProductInComponent = productNumberToOperationProductComponent(operationProductInComponents);
+                if (parameters.getBooleanField(ParameterFieldsWP.ENABLE_OPERATION_GROUPING)) {
+                    boolean sameProductsIn = sameProductsIn(existingProductNumberToOperationProductInComponent,
+                            productNumberToOperationProductInComponent);
 
-                if (sameProductsIn) {
-                    for (Map.Entry<String, Entity> entry : existingProductNumberToOperationProductInComponent.entrySet()) {
-                        Entity existingOperationProductInComponent = entry.getValue();
-                        Entity operationProductInComponent = productNumberToOperationProductInComponent.get(entry.getKey());
+                    if (sameProductsIn) {
+                        for (Map.Entry<String, Entity> entry : existingProductNumberToOperationProductInComponent.entrySet()) {
+                            Entity existingOperationProductInComponent = entry.getValue();
+                            Entity operationProductInComponent = productNumberToOperationProductInComponent.get(entry.getKey());
 
-                        BigDecimal quantity = fillWithPlanedQuantityValueIN(productQuantities, operationProductInComponent,
-                                takeActualProgress);
-                        productQuantities.get(operationProductInComponent);
-                        BigDecimal increasedQuantity = increaseQuantityBy(productQuantities, existingOperationProductInComponent,
-                                quantity);
-                        quantityChanged = true;
-                        operationMergeService.mergeProductIn(order, existingToc, existingOperationProductInComponent,
-                                increasedQuantity);
-                        operationMergeService.storeProductIn(order, existingToc, operationComponent, operationProductInComponent,
-                                quantity.negate());
-                    }
-
-                    List<Entity> existingOperationProductOutComponents = Lists
-                            .newArrayList(operationProductOutComponents(existingToc));
-                    List<Entity> operationProductOutComponents = operationProductOutComponents(operationComponent);
-                    Map<String, Entity> existingProductNumberToOperationProductOutComponent = productNumberToOperationProductComponent(
-                            existingOperationProductOutComponents);
-                    Map<String, Entity> productNumberToOperationProductOutComponent = productNumberToOperationProductComponent(
-                            operationProductOutComponents);
-
-                    for (Map.Entry<String, Entity> entry : productNumberToOperationProductOutComponent.entrySet()) {
-                        Entity operationProductOutComponent = entry.getValue();
-                        Entity existingOperationProductOutComponent = existingProductNumberToOperationProductOutComponent
-                                .get(entry.getKey());
-
-                        if (Objects.isNull(existingOperationProductOutComponent)) {
-                            quantity(operationProductOutComponent, fillWithPlanedQuantityValueOUT(productQuantities,
-                                    operationProductOutComponent, takeActualProgress));
-                            existingOperationProductOutComponents.add(operationProductOutComponent);
-                            operationMergeService.mergeProductOut(order, existingToc, operationProductOutComponent,
-                                    quantity(productQuantities, operationProductOutComponent));
-                            operationMergeService.storeProductOut(order, existingToc, operationComponent,
-                                    operationProductOutComponent, null);
-                        } else {
-                            BigDecimal quantity = fillWithPlanedQuantityValueOUT(productQuantities, operationProductOutComponent,
+                            BigDecimal quantity = fillWithPlanedQuantityValueIN(productQuantities, operationProductInComponent,
                                     takeActualProgress);
+                            productQuantities.get(operationProductInComponent);
                             BigDecimal increasedQuantity = increaseQuantityBy(productQuantities,
-                                    existingOperationProductOutComponent, quantity);
-                            quantity(operationProductOutComponent, BigDecimal.ZERO);
-                            operationMergeService.mergeProductOut(order, existingToc, existingOperationProductOutComponent,
+                                    existingOperationProductInComponent, quantity);
+                            quantityChanged = true;
+                            operationMergeService.mergeProductIn(order, existingToc, existingOperationProductInComponent,
                                     increasedQuantity);
-                            operationMergeService.storeProductOut(order, existingToc, operationComponent,
-                                    operationProductOutComponent, quantity.negate());
+                            operationMergeService.storeProductIn(order, existingToc, operationComponent,
+                                    operationProductInComponent, quantity.negate());
                         }
+
+                        List<Entity> existingOperationProductOutComponents = Lists
+                                .newArrayList(operationProductOutComponents(existingToc));
+                        List<Entity> operationProductOutComponents = operationProductOutComponents(operationComponent);
+                        Map<String, Entity> existingProductNumberToOperationProductOutComponent = productNumberToOperationProductComponent(existingOperationProductOutComponents);
+                        Map<String, Entity> productNumberToOperationProductOutComponent = productNumberToOperationProductComponent(operationProductOutComponents);
+
+                        for (Map.Entry<String, Entity> entry : productNumberToOperationProductOutComponent.entrySet()) {
+                            Entity operationProductOutComponent = entry.getValue();
+                            Entity existingOperationProductOutComponent = existingProductNumberToOperationProductOutComponent
+                                    .get(entry.getKey());
+
+                            if (Objects.isNull(existingOperationProductOutComponent)) {
+                                quantity(
+                                        operationProductOutComponent,
+                                        fillWithPlanedQuantityValueOUT(productQuantities, operationProductOutComponent,
+                                                takeActualProgress));
+                                existingOperationProductOutComponents.add(operationProductOutComponent);
+                                operationMergeService.mergeProductOut(order, existingToc, operationProductOutComponent,
+                                        quantity(productQuantities, operationProductOutComponent));
+                                operationMergeService.storeProductOut(order, existingToc, operationComponent,
+                                        operationProductOutComponent, null);
+                            } else {
+                                BigDecimal quantity = fillWithPlanedQuantityValueOUT(productQuantities,
+                                        operationProductOutComponent, takeActualProgress);
+                                BigDecimal increasedQuantity = increaseQuantityBy(productQuantities,
+                                        existingOperationProductOutComponent, quantity);
+                                quantity(operationProductOutComponent, BigDecimal.ZERO);
+                                operationMergeService.mergeProductOut(order, existingToc, existingOperationProductOutComponent,
+                                        increasedQuantity);
+                                operationMergeService.storeProductOut(order, existingToc, operationComponent,
+                                        operationProductOutComponent, quantity.negate());
+                            }
+                        }
+                        existingToc.setField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS,
+                                existingOperationProductOutComponents);
                     }
-                    existingToc.setField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS,
-                            existingOperationProductOutComponents);
                 }
             }
         }
