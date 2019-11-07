@@ -125,6 +125,8 @@
 
         <model:model model="trackingInProductReplacementHelper" resource="model/trackingInProductReplacementHelper.xml"/>
 
+        <model:model model="prodOutResourceAttrVal" resource="model/prodOutResourceAttrVal.xml"/>
+
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="productionTracking"/>
 
         <model:model-field model="parameter" plugin="basic">
@@ -485,6 +487,8 @@
         <view:view resource="view/productionTrackingsDraftList.xml"/>
 
         <view:view resource="view/useReplacement.xml"/>
+
+        <view:view resource="view/prodOutResourceAttrValDetails.xml"/>
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>

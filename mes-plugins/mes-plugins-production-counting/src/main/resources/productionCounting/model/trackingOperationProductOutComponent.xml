@@ -62,6 +62,8 @@
         <enum name="typeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"
               default="01component" />
         <boolean name="enteredFromTerminal" persistent="false"/>
+        <hasMany name="prodOutResourceAttrVals" joinField="trackingOperationProductOutComponent" model="prodOutResourceAttrVal" cascade="delete"/>
+
     </fields>
 
     <hooks>

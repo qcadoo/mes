@@ -45,4 +45,6 @@ public final class TrackingOperationProductOutComponentFields {
 
     public static final String ENTERED_FROM_TERMINAL = "enteredFromTerminal";
 
+    public static final String PROD_OUT_RESOURCE_ATTR_VALS = "prodOutResourceAttrVals";
+
 }

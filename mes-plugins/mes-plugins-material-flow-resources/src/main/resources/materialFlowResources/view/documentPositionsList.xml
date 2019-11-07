@@ -34,6 +34,22 @@
     <component type="window" name="window">
         <ribbon>
             <template name="standardGridTemplate" excludeItems="actions.copy,actions.delete,actions.new"/>
+            <group name="attributes">
+                <bigButton name="showProductAttributes" state="enabled" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                        #{grid}.performEvent({
+                                            name : 'showProductAttributesFromPositionLists'
+                                        });
+
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <component type="grid" name="grid" reference="grid">
@@ -116,6 +132,9 @@
 
             <criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.DocumentPositionsCriteriaModifier"
                               method="restrictToUserLocations"/>
+            <listener event="showProductAttributesFromPositionLists"
+                      class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
+                      method="showProductAttributesFromPositionLists"/>
         </component>
 
         <option type="fixedHeight" value="true"/>

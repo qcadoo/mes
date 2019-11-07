@@ -350,6 +350,10 @@ function documentIdChanged(id) {
     return false;
 }
 
+function getSelectedRowId() {
+    return jQuery('#grid').jqGrid('getGridParam', 'selarrrow');
+}
+
 function addNewRow() {
     angular.element($("#GridController")).scope().addNewRow();
 }
