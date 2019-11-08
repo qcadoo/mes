@@ -59,4 +59,6 @@ public final class DeliveriesConstants {
 
     public static final String MODEL_DELIVERY_ATTACHMENT = "deliveryAttachment";
 
+    public static final String MODEL_DELIVERED_PRODUCT_ATTRIBUTE_VAL = "deliveredProductAttributeVal";
+
 }

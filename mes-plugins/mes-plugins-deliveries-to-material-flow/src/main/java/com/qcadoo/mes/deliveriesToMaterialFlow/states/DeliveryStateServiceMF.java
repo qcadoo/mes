@@ -29,17 +29,21 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.CurrencyFields;
 import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductAttributeValFields;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveredProductFieldsDTMF;
 import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DocumentFieldsDTMF;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
+import com.qcadoo.mes.materialFlowResources.constants.PositionAttributeValueFields;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.units.UnitConversionService;
@@ -48,6 +52,7 @@ import com.qcadoo.model.api.validators.ErrorMessage;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +74,9 @@ public class DeliveryStateServiceMF {
 
     @Autowired
     private UnitConversionService unitConversionService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public void createDocumentsForTheReceivedProducts(final StateChangeContext stateChangeContext) {
         final Entity delivery = stateChangeContext.getOwner();
@@ -112,11 +120,12 @@ public class DeliveryStateServiceMF {
                 if(StringUtils.isEmpty(additionalUnit)) {
                     additionalUnit = product.getStringField(ProductFields.UNIT);
                 }
+                List<Entity> attributes = prepareAttributes(deliveredProduct);
                 documentBuilder.addPosition(product, positionQuantity, numberService.setScaleWithDefaultMathContext(givenQuantity), additionalUnit,
                         conversion, price(deliveredProduct, currency), batch(deliveredProduct), productionDate(deliveredProduct),
                         expirationDate(deliveredProduct), null, storageLocation(deliveredProduct),
                         palletNumber(deliveredProduct), typeOfPallet(deliveredProduct), additionalCode(deliveredProduct),
-                        isWaste(deliveredProduct));
+                        isWaste(deliveredProduct), attributes);
             }
         }
         Entity createdDocument = documentBuilder.setAccepted().build();
@@ -129,6 +138,24 @@ public class DeliveryStateServiceMF {
             tryCreateIssuesForDeliveriesReservations(stateChangeContext);
         }
 
+    }
+
+    private List<Entity> prepareAttributes(Entity deliveredProduct) {
+        List<Entity> attributes = Lists.newArrayList();
+        deliveredProduct.getHasManyField(DeliveredProductFields.DELIVERED_PRODUCT_ATTRIBUTE_VALS).forEach(aVal -> {
+            Entity deliveredProductAttributeVal = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                    DeliveriesConstants.MODEL_DELIVERED_PRODUCT_ATTRIBUTE_VAL).create();
+            deliveredProductAttributeVal.setField(PositionAttributeValueFields.ATTRIBUTE,
+                    aVal.getBelongsToField(DeliveredProductAttributeValFields.ATTRIBUTE).getId());
+            if (Objects.nonNull(aVal.getBelongsToField(PositionAttributeValueFields.ATTRIBUTE_VALUE))) {
+                deliveredProductAttributeVal.setField(PositionAttributeValueFields.ATTRIBUTE_VALUE,
+                        aVal.getBelongsToField(DeliveredProductAttributeValFields.ATTRIBUTE_VALUE).getId());
+            }
+            deliveredProductAttributeVal
+                    .setField(PositionAttributeValueFields.VALUE, aVal.getStringField(DeliveredProductAttributeValFields.VALUE));
+            attributes.add(deliveredProductAttributeVal);
+        });
+        return attributes;
     }
 
     // BEWARE! do not remove this empty method - it is used to avoid transactional mixup in

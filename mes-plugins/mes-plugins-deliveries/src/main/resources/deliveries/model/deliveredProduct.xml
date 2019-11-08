@@ -67,6 +67,7 @@
         <string name="deliveredProductIds" persistent="false"/>
         <boolean name="validatePallet" default="true" persistent="false"/>
         <boolean name="damaged" default="false"/>
+        <hasMany name="deliveredProductAttributeVals" joinField="deliveredProduct" model="deliveredProductAttributeVal" cascade="delete"/>
 
     </fields>
 
