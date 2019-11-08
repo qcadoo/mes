@@ -44,6 +44,22 @@
                 <bigButton name="fillStorageLocations" icon="genealogyIcon24.png"
                            action="#{grid}.fireEvent(fillStorageLocations);"/>
             </group>
+            <group name="attributes">
+                <bigButton name="showProductAttributes" state="enabled" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                        #{grid}.performEvent({
+                                            name : 'showProductAttributes'
+                                        });
+
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <component type="grid" name="warehouseIssueForm"
@@ -118,7 +134,9 @@
             <listener event="fillStorageLocations"
                       method="fillStorageLocations"
                       class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.ProductsToIssueListListeners"/>
-
+            <listener event="showProductAttributes"
+                      class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.ProductsToIssueListListeners"
+                      method="showProductAttributes"/>
             <listener event="onSelectedEntityChange"
                       method="changeRibbonState"
                       class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.ProductsToIssueListListeners"/>

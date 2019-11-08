@@ -86,6 +86,22 @@
                     </script>
                 </smallButton>
             </group>
+            <group name="attributes">
+                <bigButton name="showProductAttributes" state="enabled" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                        #{form}.performEvent({
+                                            name : 'showProductAttributes'
+                                        });
+
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -100,6 +116,10 @@
                 <listener event="copyProductsToIssue"
                           class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.WarehouseIssueDetailsListeners"
                           method="copyProductsToIssue"/>
+
+                <listener event="showProductAttributes"
+                          class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.WarehouseIssueDetailsListeners"
+                          method="showProductAttributes"/>
                 <script>
                     <![CDATA[
 						this.addOnChangeListener({

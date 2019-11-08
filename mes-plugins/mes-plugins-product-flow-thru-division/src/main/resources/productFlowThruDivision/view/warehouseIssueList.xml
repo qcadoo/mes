@@ -85,6 +85,7 @@
                            action="#{grid}.fireEvent(generateWarehouseIssues);"
                            state="enabled"/>
             </group>
+
         </ribbon>
 
         <component type="grid" name="warehouseIssueForm"
