@@ -66,7 +66,7 @@ public class ProductsAttributesDataProvider {
                 + "p.additionalunit, p.category, p.size, a.number AS attributeNumber, pav.value AS attributeValue "
                 + "FROM basic_product p LEFT JOIN basic_productattributevalue pav ON p.id = pav.product_id "
                 + "LEFT JOIN basic_attribute a ON a.id = pav.attribute_id "
-                + "WHERE (a.forproduct = TRUE OR a.id IS NULL) ORDER BY p.number, a.id";
+                + "WHERE (a.forproduct = TRUE OR a.id IS NULL) AND p.active = TRUE ORDER BY p.number, a.id";
         List<Map<String, Object>> attributes = jdbcTemplate.queryForList(query, Collections.emptyMap());
         Map<Long, Map<String, Object>> results = Maps.newHashMap();
         for (Map<String, Object> attribute : attributes) {
