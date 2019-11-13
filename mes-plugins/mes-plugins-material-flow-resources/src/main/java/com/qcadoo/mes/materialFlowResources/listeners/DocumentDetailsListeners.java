@@ -111,6 +111,10 @@ public class DocumentDetailsListeners {
     public void showProductAttributes(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         List<String> ids = Arrays.asList(args[0].replace("[", "").replace("]", "").replaceAll("\"", "").split("\\s*,\\s*"));
         if (ids.size() == 1 && StringUtils.isNoneBlank(ids.get(0))) {
+            if (Long.valueOf(ids.get(0)) == 0) {
+                view.addMessage("materialFlow.info.document.showProductAttributes.toManyPositionsSelected", MessageType.INFO);
+                return;
+            }
             Entity position = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                     MaterialFlowResourcesConstants.MODEL_POSITION).get(Long.valueOf(ids.get(0)));
             Map<String, Object> parameters = Maps.newHashMap();
@@ -121,7 +125,8 @@ public class DocumentDetailsListeners {
         }
     }
 
-    public void showProductAttributesFromPositionLists(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void showProductAttributesFromPositionLists(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
         GridComponent positionGird = (GridComponent) view.getComponentByReference("grid");
         Set<Long> ids = positionGird.getSelectedEntitiesIds();
         if (ids.size() == 1) {
