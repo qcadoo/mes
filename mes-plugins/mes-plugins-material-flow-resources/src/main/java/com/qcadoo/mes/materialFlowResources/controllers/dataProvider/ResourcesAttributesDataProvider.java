@@ -44,39 +44,31 @@ public class ResourcesAttributesDataProvider {
     public List<ColumnDTO> getColumns(Locale locale) {
         List<ColumnDTO> columns = Lists.newArrayList();
         columns.add(new ColumnDTO(ResourceFields.NUMBER,
-                translationService.translate("materialFlowResources.resource.number.label", locale), ResourceFields.NUMBER));
-        columns.add(new ColumnDTO(WAREHOUSE_NUMBER,
-                translationService.translate(
-                        "materialFlowResources.resourcesList.window.mainTab.resourceGrid.column.locationNumber", locale),
-                WAREHOUSE_NUMBER));
+                translationService.translate("materialFlowResources.resource.number.label", locale)));
+        columns.add(new ColumnDTO(WAREHOUSE_NUMBER, translationService
+                .translate("materialFlowResources.resourcesList.window.mainTab.resourceGrid.column.locationNumber", locale)));
         columns.add(new ColumnDTO(PRODUCT_NUMBER,
-                translationService.translate("materialFlowResources.resource.product.label", locale), PRODUCT_NUMBER));
+                translationService.translate("materialFlowResources.resource.product.label", locale)));
         columns.add(new ColumnDTO(PRODUCT_NAME,
-                translationService.translate("materialFlowResources.resourceDto.productName.label", locale), PRODUCT_NAME));
+                translationService.translate("materialFlowResources.resourceDto.productName.label", locale)));
         columns.add(new ColumnDTO(ResourceFields.AVAILABLE_QUANTITY,
-                translationService.translate("materialFlowResources.resource.availableQuantity.label", locale),
-                ResourceFields.AVAILABLE_QUANTITY));
+                translationService.translate("materialFlowResources.resource.availableQuantity.label", locale), "02numeric"));
         columns.add(new ColumnDTO(PRODUCT_UNIT,
-                translationService.translate("materialFlowResources.resourceDto.productUnit.label", locale), PRODUCT_UNIT));
+                translationService.translate("materialFlowResources.resourceDto.productUnit.label", locale)));
         columns.add(new ColumnDTO(ResourceFields.PRICE,
-                translationService.translate("materialFlowResources.resource.price.label", locale), ResourceFields.PRICE));
-        columns.add(
-                new ColumnDTO(VALUE, translationService.translate("materialFlowResources.resource.value.label", locale), VALUE));
+                translationService.translate("materialFlowResources.resource.price.label", locale), "02numeric"));
+        columns.add(new ColumnDTO(VALUE, translationService.translate("materialFlowResources.resource.value.label", locale),
+                "02numeric"));
         columns.add(new ColumnDTO(ResourceFields.TIME,
-                translationService.translate("materialFlowResources.resource.time.label", locale), ResourceFields.TIME));
+                translationService.translate("materialFlowResources.resource.time.label", locale)));
         columns.add(new ColumnDTO(ResourceFields.EXPIRATION_DATE,
-                translationService.translate("materialFlowResources.resource.expirationDate.label", locale),
-                ResourceFields.EXPIRATION_DATE));
+                translationService.translate("materialFlowResources.resource.expirationDate.label", locale)));
         columns.add(new ColumnDTO(ResourceFields.PRODUCTION_DATE,
-                translationService.translate("materialFlowResources.resource.productionDate.label", locale),
-                ResourceFields.PRODUCTION_DATE));
+                translationService.translate("materialFlowResources.resource.productionDate.label", locale)));
         columns.add(new ColumnDTO(ResourceFields.BATCH,
-                translationService.translate("materialFlowResources.resource.batch.label", locale), ResourceFields.BATCH));
-        String query = "SELECT a.number AS id, a.name || CASE WHEN a.valuetype = '02numeric' AND a.unit IS NOT NULL "
-                + "THEN ' (' || a.unit || ')' ELSE '' END AS name, a.number AS field, "
-                + "a.name || CASE WHEN a.valuetype = '02numeric' AND a.unit IS NOT NULL "
-                + "THEN ' (' || a.unit || ')' ELSE '' END AS toolTip FROM basic_attribute a "
-                + "WHERE a.forresource = TRUE ORDER BY a.id";
+                translationService.translate("materialFlowResources.resource.batch.label", locale)));
+        String query = "SELECT a.number AS id, a.name, a.unit, a.valuetype AS dataType "
+                + "FROM basic_attribute a WHERE a.forresource = TRUE ORDER BY a.id";
         columns.addAll(jdbcTemplate.query(query, Collections.emptyMap(), new BeanPropertyRowMapper(ColumnDTO.class)));
         return columns;
     }

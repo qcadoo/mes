@@ -22,7 +22,8 @@ QCD.productsAttributes = (function () {
         for (let columnId in columnFilters) {
             if (columnId !== undefined && columnFilters[columnId] !== "") {
                 let c = grid.getColumns()[grid.getColumnIndex(columnId)];
-                if (item[c.field] === undefined || item[c.field] === null || item[c.field].indexOf(columnFilters[columnId]) < 0) {
+                if (item[c.field] === undefined || item[c.field] === null
+                    || item[c.field].toString().toUpperCase().indexOf(columnFilters[columnId].toUpperCase()) < 0) {
                     return false;
                 }
             }
@@ -30,14 +31,29 @@ QCD.productsAttributes = (function () {
         return true;
     }
 
+    function numberFormatter(row, cell, value, columnDef, dataContext) {
+        return value ? value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") : value;
+    }
+
     function init() {
         $.get("/rest/prodAttributes/columns", function (columns) {
             $('#productAttributesGrid').height($('#window_windowContent').height() - 45);
             $('#productAttributesGrid').width($('#window_windowContent').width() - 20);
             for (let i = 0; i < columns.length; i++) {
+                columns[i].field = columns[i].id;
+                columns[i].toolTip = columns[i].name;
+                columns[i].sortable = true;
                 columns[i].autoSize = {
                     ignoreHeaderText: true
                 };
+                if (columns[i].dataType === '02numeric') {
+                    columns[i].cssClass = 'right-align';
+                    columns[i].formatter = numberFormatter;
+                    if (columns[i].unit) {
+                        columns[i].name = columns[i].name + '(' + columns[i].unit + ')';
+                        columns[i].toolTip = columns[i].name;
+                    }
+                }
             }
             let dataView = new Slick.Data.DataView();
             grid = new Slick.Grid("#productAttributesGrid", dataView, columns, options);
