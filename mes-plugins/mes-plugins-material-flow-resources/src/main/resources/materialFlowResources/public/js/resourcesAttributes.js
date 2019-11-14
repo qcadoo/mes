@@ -22,7 +22,8 @@ QCD.resourcesAttributes = (function () {
         for (let columnId in columnFilters) {
             if (columnId !== undefined && columnFilters[columnId] !== "") {
                 let c = grid.getColumns()[grid.getColumnIndex(columnId)];
-                if (item[c.field] === undefined || item[c.field] === null || item[c.field].indexOf(columnFilters[columnId]) < 0) {
+                if (item[c.field] === undefined || item[c.field] === null
+                    || item[c.field].toUpperCase().indexOf(columnFilters[columnId].toUpperCase()) < 0) {
                     return false;
                 }
             }
