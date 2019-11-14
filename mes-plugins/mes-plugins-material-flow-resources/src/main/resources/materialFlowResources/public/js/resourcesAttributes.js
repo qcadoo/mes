@@ -36,6 +36,7 @@ QCD.resourcesAttributes = (function () {
     }
 
     function init() {
+        QCD.components.elements.utils.LoadingIndicator.blockElement($('body'));
         $.get("/rest/resAttributes/columns", function (columns) {
             $('#resourceAttributesGrid').height($('#window_windowContent').height() - 45);
             $('#resourceAttributesGrid').width($('#window_windowContent').width() - 20);
@@ -114,6 +115,7 @@ QCD.resourcesAttributes = (function () {
                 dataView.setFilter(filter);
                 dataView.endUpdate();
                 $('.slick-header-columns').children().eq(0).trigger('click');
+                QCD.components.elements.utils.LoadingIndicator.unblockElement($('body'));
             }, 'json');
         }, 'json');
     }

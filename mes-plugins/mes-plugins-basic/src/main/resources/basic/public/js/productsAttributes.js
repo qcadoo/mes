@@ -36,6 +36,7 @@ QCD.productsAttributes = (function () {
     }
 
     function init() {
+        QCD.components.elements.utils.LoadingIndicator.blockElement($('body'));
         $.get("/rest/prodAttributes/columns", function (columns) {
             $('#productAttributesGrid').height($('#window_windowContent').height() - 45);
             $('#productAttributesGrid').width($('#window_windowContent').width() - 20);
@@ -114,6 +115,7 @@ QCD.productsAttributes = (function () {
                 dataView.setFilter(filter);
                 dataView.endUpdate();
                 $('.slick-header-columns').children().eq(0).trigger('click');
+                QCD.components.elements.utils.LoadingIndicator.unblockElement($('body'));
             }, 'json');
         }, 'json');
     }
