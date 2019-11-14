@@ -25,6 +25,8 @@ public class ResourcesAttributesDataProvider {
 
     public static final String PRODUCT_NAME = "productName";
 
+    public static final String WAREHOUSE_NUMBER = "warehouseNumber";
+
     public static final String PRODUCT_UNIT = "productUnit";
 
     public static final String VALUE = "value";
@@ -43,6 +45,10 @@ public class ResourcesAttributesDataProvider {
         List<ColumnDTO> columns = Lists.newArrayList();
         columns.add(new ColumnDTO(ResourceFields.NUMBER,
                 translationService.translate("materialFlowResources.resource.number.label", locale), ResourceFields.NUMBER));
+        columns.add(new ColumnDTO(WAREHOUSE_NUMBER,
+                translationService.translate(
+                        "materialFlowResources.resourcesList.window.mainTab.resourceGrid.column.locationNumber", locale),
+                WAREHOUSE_NUMBER));
         columns.add(new ColumnDTO(PRODUCT_NUMBER,
                 translationService.translate("materialFlowResources.resource.product.label", locale), PRODUCT_NUMBER));
         columns.add(new ColumnDTO(PRODUCT_NAME,
@@ -77,9 +83,11 @@ public class ResourcesAttributesDataProvider {
 
     public List<Map<String, Object>> getRecords() {
         String query = "SELECT r.id, r.number, p.number AS productNumber, p.name AS productName, r.availablequantity, "
-                + "p.unit AS productUnit, r.price, (r.quantity * r.price) AS value, to_char(r.\"time\", 'YYYY-MM-DD HH24:MI:SS') AS \"time\", "
+                + "l.number AS warehouseNumber, p.unit AS productUnit, r.price, (r.quantity * r.price) AS value, "
+                + "to_char(r.\"time\", 'YYYY-MM-DD HH24:MI:SS') AS \"time\", "
                 + "r.productiondate, r.expirationdate, r.batch, a.number AS attributeNumber, rav.value AS attributeValue "
                 + "FROM materialflowresources_resource r JOIN basic_product p ON p.id = r.product_id "
+                + "JOIN materialflow_location l ON l.id = r.location_id "
                 + "LEFT JOIN materialflowresources_resourceattributevalue rav ON r.id = rav.resource_id "
                 + "LEFT JOIN basic_attribute a ON a.id = rav.attribute_id "
                 + "WHERE (a.forresource = TRUE OR a.id IS NULL) ORDER BY r.number, a.id";
@@ -94,6 +102,7 @@ public class ResourcesAttributesDataProvider {
                 row = Maps.newHashMap();
                 row.put("id", resourceId);
                 row.put(ResourceFields.NUMBER, attribute.get(ResourceFields.NUMBER));
+                row.put(WAREHOUSE_NUMBER, attribute.get(WAREHOUSE_NUMBER));
                 row.put(PRODUCT_NUMBER, attribute.get(PRODUCT_NUMBER));
                 row.put(PRODUCT_NAME, attribute.get(PRODUCT_NAME));
                 row.put(ResourceFields.AVAILABLE_QUANTITY, attribute.get(ResourceFields.AVAILABLE_QUANTITY));
