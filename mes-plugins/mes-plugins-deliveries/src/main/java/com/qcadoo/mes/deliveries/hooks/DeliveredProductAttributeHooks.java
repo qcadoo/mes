@@ -60,11 +60,7 @@ public class DeliveredProductAttributeHooks {
                 return false;
             }
         }
-        if (checkIfValueExists(resourceAttributeValueDD, resourceAttributeValue)) {
-            return false;
-        }
-
-        return true;
+        return !checkIfValueExists(resourceAttributeValueDD, resourceAttributeValue);
     }
 
     private boolean checkIfValueExists(DataDefinition resourceAttributeValueDD, Entity resourceAttributeValue) {
