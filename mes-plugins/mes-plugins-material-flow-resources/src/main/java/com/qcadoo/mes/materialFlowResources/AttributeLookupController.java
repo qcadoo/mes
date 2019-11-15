@@ -67,12 +67,12 @@ public class AttributeLookupController {
     }
 
     private List<String> getGridFields() {
-        return Arrays.asList("value");
+        return Arrays.asList("value", "description");
     }
 
     private String getQueryForRecords() {
         StringBuilder builder = new StringBuilder();
-        builder.append("SELECT %s FROM ( SELECT av.id as id, av.value as value FROM basic_attributevalue av ");
+        builder.append("SELECT %s FROM ( SELECT av.id as id, av.value as value, av.description as description FROM basic_attributevalue av ");
         builder.append("LEFT JOIN basic_attribute a  ON a.id = av.attribute_id ");
         builder.append("WHERE a.number = :atrr %s) q");
         return builder.toString();

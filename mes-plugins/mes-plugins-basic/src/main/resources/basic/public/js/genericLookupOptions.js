@@ -137,7 +137,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         
         function getSpecificTranslationOrDefault(value, recordName) {
             if(recordName.includes('attribute')) {
-                 return QCD.translate('documentGrid.gridColumn.attributeValues');
+                 return QCD.translate('documentGrid.gridColumn.attributeValues.' + value);
             }
 
         	var translation = QCD.translate('documentGrid.gridColumn.' + recordName + '.' + value);

@@ -12,6 +12,8 @@ public class AttributeDto {
 
     private String valueType;
 
+    private String description;
+
     private Integer precision;
 
     public Long getId() {
@@ -52,6 +54,14 @@ public class AttributeDto {
 
     public void setValueType(String valueType) {
         this.valueType = valueType;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public Integer getPrecision() {
