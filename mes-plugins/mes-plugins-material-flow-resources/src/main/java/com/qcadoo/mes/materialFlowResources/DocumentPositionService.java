@@ -166,6 +166,10 @@ public class DocumentPositionService {
         Map<String, Object> params = Maps.newHashMap();
 
         params.put("id", id);
+        String deleteQuery = "DELETE FROM materialflowresources_positionattributevalue WHERE position_id = :positionId";
+        Map<String, Object> paramsDeleteAttribute = Maps.newHashMap();
+        paramsDeleteAttribute.put("positionId", id);
+        jdbcTemplate.update(deleteQuery, paramsDeleteAttribute);
 
         StringBuilder queryBuilder = new StringBuilder();
 

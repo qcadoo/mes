@@ -36,6 +36,7 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
+import com.qcadoo.mes.materialFlowResources.constants.PositionAttributeValueFields;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceAttributeValueFields;
@@ -1022,8 +1023,28 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         newPosition.setField(PositionFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));
         newPosition.setField(PositionFields.WASTE, resource.getField(ResourceFields.WASTE));
         newPosition.setField(PositionFields.SELLING_PRICE, position.getField(PositionFields.SELLING_PRICE));
+        newPosition.setField(PositionFields.POSITION_ATTRIBUTE_VALUES, prepareAttributes(resource));
 
         return newPosition;
+    }
+
+    private List<Entity> prepareAttributes(Entity resource) {
+        List<Entity> attributes = Lists.newArrayList();
+        resource.getHasManyField(ResourceFields.RESOURCE_ATTRIBIUTE_VALUES).forEach(
+                aVal -> {
+                    Entity positionAttributeVal = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                            MaterialFlowResourcesConstants.MODEL_POSITION_ATTRIBUTE_VALUE).create();
+                    positionAttributeVal.setField(PositionAttributeValueFields.ATTRIBUTE,
+                            aVal.getBelongsToField(ResourceAttributeValueFields.ATTRIBUTE).getId());
+                    if (Objects.nonNull(aVal.getBelongsToField(PositionAttributeValueFields.ATTRIBUTE_VALUE))) {
+                        positionAttributeVal.setField(PositionAttributeValueFields.ATTRIBUTE_VALUE,
+                                aVal.getBelongsToField(ResourceAttributeValueFields.ATTRIBUTE_VALUE).getId());
+                    }
+                    positionAttributeVal.setField(PositionAttributeValueFields.VALUE,
+                            aVal.getStringField(ResourceAttributeValueFields.VALUE));
+                    attributes.add(positionAttributeVal);
+                });
+        return attributes;
     }
 
     private BigDecimal recalculateQuantity(final BigDecimal quantity, final BigDecimal conversion, final String givenUnit,

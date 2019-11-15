@@ -634,7 +634,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
             angular.forEach(columnConfiguration, function (columnInGrid, key) {
                 if (columnInGrid.forAttribute) {
-                   updateFieldValue(name, '', rowId);
+                   updateFieldValue(columnInGrid.name, '', rowId);
                 }
             });
         }
