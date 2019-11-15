@@ -35,6 +35,8 @@ public class ResourcesAttributesDataProvider {
 
     public static final String ATTRIBUTE_VALUE = "attributeValue";
 
+    public static final String NUMERIC_DATA_TYPE = "02numeric";
+
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -52,13 +54,14 @@ public class ResourcesAttributesDataProvider {
         columns.add(new ColumnDTO(PRODUCT_NAME,
                 translationService.translate("materialFlowResources.resourceDto.productName.label", locale)));
         columns.add(new ColumnDTO(ResourceFields.AVAILABLE_QUANTITY,
-                translationService.translate("materialFlowResources.resource.availableQuantity.label", locale), "02numeric"));
+                translationService.translate("materialFlowResources.resource.availableQuantity.label", locale),
+                NUMERIC_DATA_TYPE));
         columns.add(new ColumnDTO(PRODUCT_UNIT,
                 translationService.translate("materialFlowResources.resourceDto.productUnit.label", locale)));
         columns.add(new ColumnDTO(ResourceFields.PRICE,
-                translationService.translate("materialFlowResources.resource.price.label", locale), "02numeric"));
+                translationService.translate("materialFlowResources.resource.price.label", locale), NUMERIC_DATA_TYPE));
         columns.add(new ColumnDTO(VALUE, translationService.translate("materialFlowResources.resource.value.label", locale),
-                "02numeric"));
+                NUMERIC_DATA_TYPE));
         columns.add(new ColumnDTO(ResourceFields.TIME,
                 translationService.translate("materialFlowResources.resource.time.label", locale)));
         columns.add(new ColumnDTO(ResourceFields.EXPIRATION_DATE,

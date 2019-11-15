@@ -8,7 +8,10 @@ QCD.resourcesAttributes = (function () {
         headerRowHeight: 30,
         explicitInitialization: true,
         autosizeColsMode: Slick.GridAutosizeColsMode.FitColsToViewport,
-        enableTextSelectionOnCells: true
+        enableTextSelectionOnCells: true,
+        createFooterRow: true,
+        showFooterRow: true,
+        footerRowHeight: 21
     };
     let pagerOptions = {
         showAllText: QCD.translate('qcadooView.slickGrid.pager.showAllText'),
@@ -34,6 +37,58 @@ QCD.resourcesAttributes = (function () {
     function numberFormatter(row, cell, value, columnDef, dataContext) {
         return value ? value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") : value;
     }
+
+    /** Calculate the total of an existing field from the datagrid
+     * @param object aggregator
+     * @return mixed total
+     */
+    function CalculateTotalByAggregator(agg, dataview) {
+        var constructorName = agg.constructor.name; // get constructor name, ex.: SumAggregator
+        var type = constructorName.replace(/aggregator/gi, '').toLowerCase(); // remove the word Aggregator and make it lower case, ex.: SumAggregator -> sum
+
+        var totals = new Slick.GroupTotals();
+        var fn = compileAccumulatorLoop(agg);
+        fn.call(agg, dataview.getFilteredItems());
+        agg.storeResult(totals);
+
+        return totals[type][agg.field_];
+    }
+
+    /** This function comes from SlickGrid DataView but was slightly adapted for our usage */
+    function compileAccumulatorLoop(aggregator) {
+        aggregator.init();
+        var accumulatorInfo = getFunctionInfo(aggregator.accumulate);
+        var fn = new Function(
+            "_items",
+            " for (var " + accumulatorInfo.params[0] + ", _i=0, _il=_items.length; _i<_il; _i++) {" +
+            accumulatorInfo.params[0] + " = _items[_i]; " +
+            accumulatorInfo.body +
+            "}"
+        );
+        fn.displayName = "compiledAccumulatorLoop";
+        return fn;
+    }
+
+    /** This function comes from Slick DataView, but since it's a private function, you will need to copy it in your own code */
+    function getFunctionInfo(fn) {
+        var fnRegex = /^function[^(]*\(([^)]*)\)\s*{([\s\S]*)}$/;
+        var matches = fn.toString().match(fnRegex);
+        return {
+            params: matches[1].split(","),
+            body: matches[2]
+        };
+    }
+
+    function updateTotalRowValue(grid, columnId, total){
+        let columnElement = grid.getFooterRowColumn(columnId);
+        $(columnElement).html(total);
+    }
+
+    function updateAllTotals(grid, dataView){
+        updateTotalRowValue(grid, "availableQuantity", CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("availableQuantity"), dataView));
+        updateTotalRowValue(grid, "value", CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("value"), dataView));
+    }
+
 
     function init() {
         QCD.components.elements.utils.LoadingIndicator.blockElement($('body'));
@@ -64,6 +119,7 @@ QCD.resourcesAttributes = (function () {
             dataView.onRowCountChanged.subscribe(function (e, args) {
                 grid.updateRowCount();
                 grid.render();
+                updateAllTotals(grid, dataView);
             });
 
             dataView.onRowsChanged.subscribe(function (e, args) {
@@ -107,6 +163,10 @@ QCD.resourcesAttributes = (function () {
                 dataView.sort(comparer, args.sortAsc);
             });
 
+            grid.onColumnsReordered.subscribe(function(e, args) {
+                updateAllTotals(grid, dataView);
+            });
+
             $.get("/rest/resAttributes/records", function (records) {
                 grid.init();
                 grid.autosizeColumns();
@@ -114,6 +174,7 @@ QCD.resourcesAttributes = (function () {
                 dataView.setItems(records);
                 dataView.setFilter(filter);
                 dataView.endUpdate();
+                updateAllTotals(grid, dataView);
                 $('.slick-header-columns').children().eq(0).trigger('click');
                 QCD.components.elements.utils.LoadingIndicator.unblockElement($('body'));
             }, 'json');
