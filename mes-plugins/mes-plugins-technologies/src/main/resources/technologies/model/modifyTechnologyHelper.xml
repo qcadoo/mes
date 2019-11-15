@@ -31,7 +31,9 @@
         <boolean name="remove" default="false"/>
         <boolean name="addNew" default="false"/>
         <boolean name="replace" default="false"/>
-        <string name="selectedEntities" required="true"/>
+        <string name="selectedEntities" required="true">
+            <validatesLength max="4096"/>
+        </string>
         <belongsTo name="product" plugin="basic" model="product"
                    required="true"/>
         <belongsTo name="replaceProduct" plugin="basic" model="product"/>
