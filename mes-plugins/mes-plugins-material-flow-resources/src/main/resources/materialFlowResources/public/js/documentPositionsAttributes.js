@@ -1,6 +1,6 @@
 var QCD = QCD || {};
 
-QCD.resourcesAttributes = (function () {
+QCD.documentPositionsAttributes = (function () {
     let grid;
     let options = {
         enableCellNavigation: true,
@@ -85,15 +85,15 @@ QCD.resourcesAttributes = (function () {
     }
 
     function updateAllTotals(grid, dataView){
-        updateTotalRowValue(grid, "availableQuantity", CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("availableQuantity"), dataView));
+        updateTotalRowValue(grid, "quantity", CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("quantity"), dataView));
         updateTotalRowValue(grid, "value", CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("value"), dataView));
     }
 
     function init() {
         QCD.components.elements.utils.LoadingIndicator.blockElement($('body'));
-        $.get("/rest/resAttributes/columns", function (columns) {
-            $('#resourceAttributesGrid').height($('#window_windowContent').height() - 45);
-            $('#resourceAttributesGrid').width($('#window_windowContent').width() - 20);
+        $.get("/rest/docPositionsAttributes/columns", function (columns) {
+            $('#documentPositionsAttributesGrid').height($('#window_windowContent').height() - 45);
+            $('#documentPositionsAttributesGrid').width($('#window_windowContent').width() - 20);
             for (let i = 0; i < columns.length; i++) {
                 columns[i].field = columns[i].id;
                 columns[i].toolTip = columns[i].name;
@@ -111,7 +111,7 @@ QCD.resourcesAttributes = (function () {
                 }
             }
             let dataView = new Slick.Data.DataView();
-            grid = new Slick.Grid("#resourceAttributesGrid", dataView, columns, options);
+            grid = new Slick.Grid("#documentPositionsAttributesGrid", dataView, columns, options);
 
             new Slick.Controls.Pager(dataView, grid, $("#pager"), pagerOptions);
 
@@ -166,7 +166,7 @@ QCD.resourcesAttributes = (function () {
                 updateAllTotals(grid, dataView);
             });
 
-            $.get("/rest/resAttributes/records", function (records) {
+            $.get("/rest/docPositionsAttributes/records", function (records) {
                 grid.init();
                 grid.autosizeColumns();
                 dataView.beginUpdate();

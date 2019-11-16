@@ -341,6 +341,9 @@
         <menu:menu-item-url name="resourcesAttributes" category="materialFlow" url="/resourcesAttributes.html"
                             defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
 
+        <menu:menu-item-url name="documentPositionsAttributes" category="materialFlow" url="/documentPositionsAttributes.html"
+                            defaultAuthorizationRole="ROLE_DOCUMENT_POSITIONS"/>
+
         <view:view resource="view/productsLookup.xml"/>
         <view:view resource="view/resourceDetails.xml"/>
         <view:view resource="view/resourcesList.xml"/>
@@ -352,6 +355,7 @@
         <view:view resource="view/documentPositionsList.xml"/>
         <view:view resource="view/costNormsGenerator.xml"/>
         <view:view resource="view/resourcesAttributes.xml"/>
+        <view:view resource="view/documentPositionsAttributes.xml"/>
 
         <view:view resource="view/storageLocationsMultiAdd.xml"/>
         <view:view resource="view/storageLocationsDetails.xml"/>
