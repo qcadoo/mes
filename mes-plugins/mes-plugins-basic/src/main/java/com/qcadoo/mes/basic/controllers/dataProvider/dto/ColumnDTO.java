@@ -6,17 +6,19 @@ public class ColumnDTO {
 
     private String name;
 
-    private String field;
+    private String unit;
 
-    private boolean sortable = true;
+    private String dataType;
 
-    private String toolTip;
-
-    public ColumnDTO(String id, String name, String field) {
+    public ColumnDTO(String id, String name) {
         this.id = id;
         this.name = name;
-        this.field = field;
-        this.toolTip = name;
+    }
+
+    public ColumnDTO(String id, String name, String dataType) {
+        this.id = id;
+        this.name = name;
+        this.dataType = dataType;
     }
 
     public ColumnDTO() {
@@ -38,27 +40,19 @@ public class ColumnDTO {
         this.name = name;
     }
 
-    public String getField() {
-        return field;
+    public String getDataType() {
+        return dataType;
     }
 
-    public void setField(String field) {
-        this.field = field;
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
     }
 
-    public boolean isSortable() {
-        return sortable;
+    public String getUnit() {
+        return unit;
     }
 
-    public void setSortable(boolean sortable) {
-        this.sortable = sortable;
-    }
-
-    public String getToolTip() {
-        return toolTip;
-    }
-
-    public void setToolTip(String toolTip) {
-        this.toolTip = toolTip;
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 }

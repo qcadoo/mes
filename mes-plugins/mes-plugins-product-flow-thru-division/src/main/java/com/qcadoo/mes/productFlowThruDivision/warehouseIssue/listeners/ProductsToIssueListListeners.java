@@ -16,14 +16,15 @@ import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductsToIssueListListeners {
@@ -33,6 +34,21 @@ public class ProductsToIssueListListeners {
 
     @Autowired
     private ProductsToIssueService productsToIssueService;
+
+    public void showProductAttributes(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent positionGird = (GridComponent) view.getComponentByReference("grid");
+        Set<Long> ids = positionGird.getSelectedEntitiesIds();
+        if (ids.size() == 1) {
+            Entity productToIssue = dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
+                    ProductFlowThruDivisionConstants.MODEL_PRODUCTS_TO_ISSUE).get(ids.stream().findFirst().get());
+            Map<String, Object> parameters = Maps.newHashMap();
+            parameters.put("form.id", productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT).getId());
+            view.redirectTo("/page/materialFlowResources/productAttributesForPositionList.html", false, true, parameters);
+        } else {
+            view.addMessage("materialFlow.info.document.showProductAttributes.toManyPositionsSelected",
+                    ComponentState.MessageType.INFO);
+        }
+    }
 
     public void correctReservations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent grid = (GridComponent) view.getComponentByReference("grid");

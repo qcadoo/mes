@@ -33,6 +33,12 @@
 
         <ribbon>
             <template name="standardGridTemplate"/>
+            <group name="valueImport">
+                <bigButton name="openProductAttrValueImport" state="enabled" icon="xlsIcon24.png"
+                           action="#{window}.fireEvent(openProductAttrValueImport);"/>
+                <bigButton name="openResourceAttrValueImport" state="enabled" icon="xlsIcon24.png"
+                           action="#{window}.fireEvent(openResourceAttrValueImport);"/>
+            </group>
         </ribbon>
 
         <component type="grid" name="attributes" reference="grid">
@@ -54,6 +60,14 @@
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
         </component>
+
+        <listener event="openProductAttrValueImport"
+                  class="com.qcadoo.mes.basic.listeners.AttributeValueImportListeners"
+                  method="openProductAttrValueImport"/>
+
+        <listener event="openResourceAttrValueImport"
+                  class="com.qcadoo.mes.basic.listeners.AttributeValueImportListeners"
+                  method="openResourceAttrValueImport"/>
 
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>

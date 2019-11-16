@@ -101,6 +101,8 @@
 
         <model:model model="deliveryAttachment" resource="model/deliveryAttachment.xml"/>
 
+        <model:model model="deliveredProductAttributeVal" resource="model/deliveredProductAttributeVal.xml"/>
+
         <model:model-field plugin="states" model="message">
             <model:belongsTo name="deliveryStateChange" plugin="deliveries"
                              model="deliveryStateChange"/>
@@ -238,6 +240,7 @@
         <view:view resource="view/parameterOrderColumnDetails.xml"/>
         <view:view resource="view/deliveryByPalletTypeReportDetails.xml"/>
         <view:view resource="view/changeStorageLocationHelper.xml"/>
+        <view:view resource="view/deliveredProductAttributeValDetails.xml"/>
 
         <view:view-tab resource="view/tabExtensions/companyDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/productDetails.xml"/>

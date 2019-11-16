@@ -65,6 +65,7 @@
         </decimal>
         <dictionary name="wasteUnit" dictionary="units"/>
         <string name="additionalInformation"/>
+
     </fields>
 
     <hooks>

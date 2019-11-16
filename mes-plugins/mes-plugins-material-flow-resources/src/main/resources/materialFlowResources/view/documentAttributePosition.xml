@@ -32,41 +32,63 @@
     <component type="window" name="window" reference="window">
         <ribbon>
             <group name="navigation">
-                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack" />
+                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack"/>
             </group>
             <group name="actions">
-                <bigButton name="addColumns" icon="generateIcon24.png" action="#{grid}.fireEvent(addColumns);"
-                           state="enabled"/>
+                <bigButton name="addColumns" icon="newIcon24.png" state="enabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+										#{form}.performEvent('addColumns', []);
+
+								}
+							});
+							#{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									var generated = #{generated}.getValue().content.value;
+
+                                    if (generated && generated == true) {
+									    #{window}.performBackWithoutConfirm();
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
             </group>
         </ribbon>
+        <windowTab name="mainTab">
+            <component type="form" name="helper" reference="form">
+                <component type="checkbox" name="generated" defaultVisible="false"
+                           reference="generated" defaultEnabled="false"/>
+                <component type="grid" name="attributes" reference="grid">
+                    <option type="column" name="number" fields="number" link="true" width="200"/>
+                    <option type="column" name="name" fields="name" link="true" width="200"/>
+                    <option type="column" name="dataType" fields="dataType" width="100"/>
+                    <option type="column" name="valueType" fields="valueType" width="100"/>
+                    <option type="column" name="forProduct" fields="forProduct" width="100"/>
+                    <option type="column" name="forResource" fields="forResource" width="100"/>
 
-        <component type="grid" name="attributes" reference="grid">
-            <option type="column" name="number" fields="number" link="true" width="200"/>
-            <option type="column" name="name" fields="name" link="true" width="200"/>
-            <option type="column" name="dataType" fields="dataType" width="100"/>
-            <option type="column" name="valueType" fields="valueType" width="100"/>
-            <option type="column" name="forProduct" fields="forProduct" width="100"/>
-            <option type="column" name="forResource" fields="forResource" width="100"/>
+                    <option type="order" column="number" direction="asc"/>
 
-            <option type="order" column="number" direction="asc"/>
+                    <option type="searchable" value="number,name,dataType,valueType,forProduct,forResource"/>
+                    <option type="orderable" value="number,name,dataType,valueType,forProduct,forResource"/>
 
-            <option type="searchable" value="number,name,dataType,valueType,forProduct,forResource"/>
-            <option type="orderable" value="number,name,dataType,valueType,forProduct,forResource"/>
+                    <criteriaModifier
+                            class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.AttributeCriteriaModifiersMFR"
+                            method="showForResourceAndColumnPosition"/>
+                    <option type="fixedHeight" value="true"/>
 
-            <criteriaModifier
-                    class="com.qcadoo.mes.basic.criteriaModifiers.AttributeCriteriaModifiers"
-                    method="showForResource"/>
-
-            <listener event="addColumns"
-                      class="com.qcadoo.mes.materialFlowResources.listeners.ParametersMFRListeners"
-                      method="addColumns"/>
-
-            <option type="fullscreen" value="true"/>
-            <option type="multiselect" value="true"/>
-        </component>
-
-        <option type="fixedHeight" value="true"/>
+                    <option type="fullscreen" value="true"/>
+                    <option type="multiselect" value="true"/>
+                </component>
+                <listener event="addColumns"
+                          class="com.qcadoo.mes.materialFlowResources.listeners.ParametersMFRListeners"
+                          method="addColumns"/>
+            </component>
+        </windowTab>
         <option type="header" value="false"/>
-    </component>
 
+    </component>
 </view>

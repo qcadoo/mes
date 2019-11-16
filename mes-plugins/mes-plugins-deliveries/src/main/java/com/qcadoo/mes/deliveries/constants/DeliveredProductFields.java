@@ -64,4 +64,6 @@ public final class DeliveredProductFields {
     public static final String ADDITIONAL_UNIT = "additionalUnit";
 
     public static final String RESERVATIONS = "reservations";
+
+    public static final String DELIVERED_PRODUCT_ATTRIBUTE_VALS = "deliveredProductAttributeVals";
 }

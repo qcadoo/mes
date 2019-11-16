@@ -69,7 +69,7 @@
 					</component>
 				</layoutElement>
 				<layoutElement column="1" row="2" width="2">
-					<component type="checkbox" name="shouldUpdate" reference="shouldUpdate">
+					<component type="checkbox" name="shouldUpdate" reference="shouldUpdate" defaultVisible="false">
 						<option type="labelWidth" value="80"/>
 						<option type="align" value="right"/>
 					</component>

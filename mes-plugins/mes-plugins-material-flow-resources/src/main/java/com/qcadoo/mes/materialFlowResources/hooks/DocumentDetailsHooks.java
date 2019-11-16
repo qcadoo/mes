@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.utils.DateUtils;
@@ -54,6 +44,16 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
+
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class DocumentDetailsHooks {
@@ -79,6 +79,10 @@ public class DocumentDetailsHooks {
     private static final String L_OPEN_POSITIONS_IMPORT_PAGE = "openPositionsImportPage";
 
     private static final List<String> L_ACTIONS_ITEMS = Arrays.asList("saveBack", "saveNew", "save", "delete", "copy");
+
+    public static final String L_SHOW_PRODUCT_ATTRIBUTES = "showProductAttributes";
+
+    public static final String L_ATTRIBUTES = "attributes";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -284,6 +288,8 @@ public class DocumentDetailsHooks {
                 .getItemByName(L_PRINT_DISPOSITION_ORDER_PDF);
         RibbonActionItem openPositionsImportPageRibbonActionItem = window.getRibbon().getGroupByName(L_IMPORT)
                 .getItemByName(L_OPEN_POSITIONS_IMPORT_PAGE);
+        RibbonActionItem showProductAttributesActionItem = window.getRibbon().getGroupByName(L_ATTRIBUTES)
+                .getItemByName(L_SHOW_PRODUCT_ATTRIBUTES);
 
         Entity document = documentForm.getEntity();
 
@@ -320,6 +326,9 @@ public class DocumentDetailsHooks {
         openPositionsImportPageRibbonActionItem.setEnabled(isSaved && isDraft && isAdmission);
         openPositionsImportPageRibbonActionItem.setMessage(descriptionMessage);
         openPositionsImportPageRibbonActionItem.requestUpdate(true);
+
+        showProductAttributesActionItem.setEnabled(isSaved);
+        showProductAttributesActionItem.requestUpdate(true);
     }
 
     public void fillAddressLookupCriteriaModifier(final ViewDefinitionState view) {

@@ -43,6 +43,8 @@
         <hasMany name="attributeValues" joinField="attribute" model="attributeValue" cascade="delete"/>
         <hasMany name="productAttributeValues" joinField="attribute" model="productAttributeValue"/>
 
+        <file name="positionsFile" copyable="false" persistent="false"/>
+
     </fields>
 
     <hooks>

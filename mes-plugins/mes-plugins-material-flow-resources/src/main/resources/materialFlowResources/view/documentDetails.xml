@@ -86,6 +86,23 @@
                 <bigButton name="openPositionsImportPage" state="enabled" icon="xlsIcon24.png"
                            action="#{form}.fireEvent(openPositionsImportPage);"/>
             </group>
+            <group name="attributes">
+                <bigButton name="showProductAttributes" state="enabled" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                        #{form}.performEvent({
+                                            name : 'showProductAttributes',
+                                            args : [getSelectedRowId()]
+                                        });
+
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
         <windowTab name="generalTab" reference="generalTab">
             <component type="form" name="form" reference="form">
@@ -262,6 +279,9 @@
                 <listener event="openPositionsImportPage"
                           class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
                           method="openPositionsImportPage"/>
+                <listener event="showProductAttributes"
+                          class="com.qcadoo.mes.materialFlowResources.listeners.DocumentDetailsListeners"
+                          method="showProductAttributes"/>
             </component>
         </windowTab>
 

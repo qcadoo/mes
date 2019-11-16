@@ -56,11 +56,7 @@ public class ProductAttributeValueHooks {
                 return false;
             }
         }
-        if (checkIfValueExists(productAttributeValueDD, productAttributeValue)) {
-            return false;
-        }
-
-        return true;
+        return !checkIfValueExists(productAttributeValueDD, productAttributeValue);
     }
 
     private boolean checkIfValueExists(DataDefinition productAttributeValueDD, Entity productAttributeValue) {

@@ -48,6 +48,8 @@ public class ProductionCountingQuantityValidators {
 
     public static final String L_FOR_EACH = "03forEach";
 
+    public static final String TECHNOLOGY_OPERATION_COMPONENT_REQUIRED = "basicProductionCounting.productionCountingQuantity.technologyOperationComponent.error.technologyOperationComponentRequired";
+
     @Autowired
     private ProductionProgressModifyLockHelper progressModifyLockHelper;
 
@@ -61,12 +63,12 @@ public class ProductionCountingQuantityValidators {
     private boolean checkTypeOfProductionRecording(DataDefinition productionCountingQuantityDD, Entity productionCountingQuantity) {
         String typeOfProductionRecording = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER)
                 .getStringField(L_TYPE_OF_PRODUCTION_RECORDING);
-        if(L_FOR_EACH.equals(typeOfProductionRecording) && Objects.isNull(productionCountingQuantity
-                .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT))) {
-            productionCountingQuantity
-                    .addError(productionCountingQuantityDD
-                                    .getField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
-                            "basicProductionCounting.productionCountingQuantity.technologyOperationComponent.error.technologyOperationComponentRequired");
+        if (L_FOR_EACH.equals(typeOfProductionRecording)
+                && Objects.isNull(productionCountingQuantity
+                        .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT))) {
+            productionCountingQuantity.addError(
+                    productionCountingQuantityDD.getField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
+                    TECHNOLOGY_OPERATION_COMPONENT_REQUIRED);
 
             return false;
         }
@@ -107,10 +109,9 @@ public class ProductionCountingQuantityValidators {
                         .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
 
                 if (technologyOperationComponent == null) {
-                    productionCountingQuantity
-                            .addError(productionCountingQuantityDD
-                                    .getField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
-                                    "basicProductionCounting.productionCountingQuantity.technologyOperationComponent.error.technologyOperationComponentRequired");
+                    productionCountingQuantity.addError(productionCountingQuantityDD
+                            .getField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
+                            TECHNOLOGY_OPERATION_COMPONENT_REQUIRED);
 
                     return false;
                 }
@@ -126,10 +127,9 @@ public class ProductionCountingQuantityValidators {
                         .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
 
                 if (technologyOperationComponent == null) {
-                    productionCountingQuantity
-                            .addError(productionCountingQuantityDD
-                                    .getField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
-                                    "basicProductionCounting.productionCountingQuantity.technologyOperationComponent.error.technologyOperationComponentRequired");
+                    productionCountingQuantity.addError(productionCountingQuantityDD
+                            .getField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
+                            TECHNOLOGY_OPERATION_COMPONENT_REQUIRED);
 
                     return false;
                 }

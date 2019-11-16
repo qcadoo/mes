@@ -1,26 +1,41 @@
 package com.qcadoo.mes.basic;
 
 import com.google.common.base.Preconditions;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.security.api.SecurityService;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.ModelAndView;
 
 @Service
 public class LookupUtils {
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
+
+    @Autowired
+    protected TranslationService translationService;
+
+    @Autowired
+    protected SecurityService securityService;
+
+    @Value("${useCompressedStaticResources}")
+    protected boolean useCompressedStaticResources;
 
     public <R> GridResponse<R> getGridResponse(String query, String sidx, String sord, Integer page, int perPage, R recordExample) {
         return getGridResponse(query, sidx, sord, page, perPage, recordExample, new HashMap<>());
@@ -126,5 +141,51 @@ public class LookupUtils {
         }
 
         return parameters;
+    }
+
+    public ModelAndView getModelAndView(final String recordName, final String view, final Locale locale) {
+        ModelAndView mav = new ModelAndView();
+
+        mav.addObject("userLogin", securityService.getCurrentUserName());
+        mav.addObject("translationsMap", translationService.getMessagesGroup("documentGrid", locale));
+        mav.addObject("recordName", recordName);
+
+        mav.setViewName("basic/" + view);
+        mav.addObject("useCompressedStaticResources", useCompressedStaticResources);
+        return mav;
+    }
+
+    public Map<String, Object> getConfigMap(List<String> columns) {
+        Map<String, Object> config = new HashMap<>();
+
+        Map<String, Object> modelId = new HashMap<>();
+        modelId.put("name", "id");
+        modelId.put("index", "id");
+        modelId.put("key", true);
+        modelId.put("hidden", true);
+
+        Map<String, Map<String, Object>> colModel = new LinkedHashMap<>();
+        colModel.put("ID", modelId);
+
+        columns.forEach(column -> {
+            Map<String, Object> model = new HashMap<>();
+            model.put("name", column);
+            model.put("index", column);
+            model.put("editable", false);
+
+            Map<String, Object> editoptions = new HashMap<>();
+            editoptions.put("readonly", "readonly");
+            model.put("editoptions", editoptions);
+
+            Map<String, Object> searchoptions = new HashMap<>();
+            model.put("searchoptions", searchoptions);
+
+            colModel.put(column, model);
+        });
+
+        config.put("colModel", colModel.values());
+        config.put("colNames", colModel.keySet());
+
+        return config;
     }
 }

@@ -23,18 +23,8 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
@@ -63,6 +53,18 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class WarehouseIssueDetailsListeners {
@@ -93,6 +95,21 @@ public class WarehouseIssueDetailsListeners {
     @Autowired
     private WarehouseIssueParameterService warehouseIssueParameterService;
 
+    public void showProductAttributes(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent positionGird = (GridComponent) view.getComponentByReference("productsToIssues");
+        Set<Long> ids = positionGird.getSelectedEntitiesIds();
+        if (ids.size() == 1) {
+            Entity productToIssue = dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
+                    ProductFlowThruDivisionConstants.MODEL_PRODUCTS_TO_ISSUE).get(ids.stream().findFirst().get());
+            Map<String, Object> parameters = Maps.newHashMap();
+            parameters.put("form.id", productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT).getId());
+            view.redirectTo("/page/materialFlowResources/productAttributesForPositionList.html", false, true, parameters);
+        } else {
+            view.addMessage("productFlowThruDivision.warehouseIssueDetails.showProductAttributes.toManyPositionsSelected",
+                    ComponentState.MessageType.INFO);
+        }
+    }
+
     public void fillProductsToIssue(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent issueForm = (FormComponent) view.getComponentByReference(L_FORM);
         FieldComponent collectionProductsField = (FieldComponent) view
@@ -119,8 +136,8 @@ public class WarehouseIssueDetailsListeners {
                 Multimap<String, String> errors = ArrayListMultimap.create();
 
                 for (Entity productToIssue : invalidProducts) {
-                    String number = productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT)
-                            .getStringField(ProductFields.NUMBER);
+                    String number = productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT).getStringField(
+                            ProductFields.NUMBER);
                     Map<String, ErrorMessage> errorMessages = productToIssue.getErrors();
                     errorMessages.entrySet().stream().forEach(entry -> errors.put(entry.getValue().getMessage(), number));
                     productToIssue.getGlobalErrors().stream().forEach(error -> errors.put(error.getMessage(), number));
@@ -193,8 +210,8 @@ public class WarehouseIssueDetailsListeners {
             issueQuantity = BigDecimal.ZERO;
         }
 
-        BigDecimal toIssueQuantity = demandQuantity.subtract(issueQuantity, numberService.getMathContext())
-                .subtract(correctionQuantity);
+        BigDecimal toIssueQuantity = demandQuantity.subtract(issueQuantity, numberService.getMathContext()).subtract(
+                correctionQuantity);
 
         if (toIssueQuantity.compareTo(BigDecimal.ZERO) == 1) {
             issue.setField(IssueFields.ISSUE_QUANTITY, toIssueQuantity);
@@ -206,8 +223,8 @@ public class WarehouseIssueDetailsListeners {
             Entity order = getOrderDD().get(warehouseIssue.getBelongsToField(WarehouseIssueFields.ORDER).getId());
 
             if (order != null) {
-                BigDecimal quantityPerUnit = productToIssue.getDecimalField(ProductsToIssueFields.DEMAND_QUANTITY)
-                        .divide(order.getDecimalField(OrderFields.PLANNED_QUANTITY), numberService.getMathContext());
+                BigDecimal quantityPerUnit = productToIssue.getDecimalField(ProductsToIssueFields.DEMAND_QUANTITY).divide(
+                        order.getDecimalField(OrderFields.PLANNED_QUANTITY), numberService.getMathContext());
 
                 issue.setField(IssueFields.QUANTITY_PER_UNIT, quantityPerUnit);
             }
@@ -243,8 +260,8 @@ public class WarehouseIssueDetailsListeners {
         Entity order = null;
 
         if (state.getFieldValue() != null) {
-            order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
-                    .get((Long) state.getFieldValue());
+            order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
+                    (Long) state.getFieldValue());
         }
 
         // warehouseIssue.setField(WarehouseIssueFields.ORDER, order);

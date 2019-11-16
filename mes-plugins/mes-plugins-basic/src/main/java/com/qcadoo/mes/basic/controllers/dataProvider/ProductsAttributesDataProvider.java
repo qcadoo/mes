@@ -38,25 +38,17 @@ public class ProductsAttributesDataProvider {
 
     public List<ColumnDTO> getColumns(Locale locale) {
         List<ColumnDTO> columns = Lists.newArrayList();
-        columns.add(new ColumnDTO(PRODUCT_NUMBER, translationService.translate("basic.product.number.label", locale),
-                PRODUCT_NUMBER));
-        columns.add(new ColumnDTO(PRODUCT_NAME, translationService.translate("basic.product.name.label", locale), PRODUCT_NAME));
+        columns.add(new ColumnDTO(PRODUCT_NUMBER, translationService.translate("basic.product.number.label", locale)));
+        columns.add(new ColumnDTO(PRODUCT_NAME, translationService.translate("basic.product.name.label", locale)));
         columns.add(new ColumnDTO(ProductFields.GLOBAL_TYPE_OF_MATERIAL,
-                translationService.translate("basic.product.globalTypeOfMaterial.label", locale),
-                ProductFields.GLOBAL_TYPE_OF_MATERIAL));
-        columns.add(new ColumnDTO(ProductFields.UNIT, translationService.translate("basic.product.unit.label", locale),
-                ProductFields.UNIT));
+                translationService.translate("basic.product.globalTypeOfMaterial.label", locale)));
+        columns.add(new ColumnDTO(ProductFields.UNIT, translationService.translate("basic.product.unit.label", locale)));
         columns.add(new ColumnDTO(ProductFields.ADDITIONAL_UNIT,
-                translationService.translate("basic.product.additionalUnit.label", locale), ProductFields.ADDITIONAL_UNIT));
-        columns.add(new ColumnDTO(ProductFields.CATEGORY, translationService.translate("basic.product.category.label", locale),
-                ProductFields.CATEGORY));
-        columns.add(new ColumnDTO(ProductFields.SIZE, translationService.translate("basic.product.size.label", locale),
-                ProductFields.SIZE));
-        String query = "SELECT a.number AS id, a.name || CASE WHEN a.valuetype = '02numeric' AND a.unit IS NOT NULL "
-                + "THEN ' (' || a.unit || ')' ELSE '' END AS name, a.number AS field, "
-                + "a.name || CASE WHEN a.valuetype = '02numeric' AND a.unit IS NOT NULL "
-                + "THEN ' (' || a.unit || ')' ELSE '' END AS toolTip FROM basic_attribute a "
-                + "WHERE a.forproduct = TRUE ORDER BY a.id";
+                translationService.translate("basic.product.additionalUnit.label", locale)));
+        columns.add(new ColumnDTO(ProductFields.CATEGORY, translationService.translate("basic.product.category.label", locale)));
+        columns.add(new ColumnDTO(ProductFields.SIZE, translationService.translate("basic.product.size.label", locale)));
+        String query = "SELECT a.number AS id, a.name, a.unit, a.valuetype AS dataType "
+                + "FROM basic_attribute a WHERE a.forproduct = TRUE ORDER BY a.id";
         columns.addAll(jdbcTemplate.query(query, Collections.emptyMap(), new BeanPropertyRowMapper(ColumnDTO.class)));
         return columns;
     }
@@ -66,7 +58,7 @@ public class ProductsAttributesDataProvider {
                 + "p.additionalunit, p.category, p.size, a.number AS attributeNumber, pav.value AS attributeValue "
                 + "FROM basic_product p LEFT JOIN basic_productattributevalue pav ON p.id = pav.product_id "
                 + "LEFT JOIN basic_attribute a ON a.id = pav.attribute_id "
-                + "WHERE (a.forproduct = TRUE OR a.id IS NULL) ORDER BY p.number, a.id";
+                + "WHERE (a.forproduct = TRUE OR a.id IS NULL) AND p.active = TRUE ORDER BY p.number, a.id";
         List<Map<String, Object>> attributes = jdbcTemplate.queryForList(query, Collections.emptyMap());
         Map<Long, Map<String, Object>> results = Maps.newHashMap();
         for (Map<String, Object> attribute : attributes) {

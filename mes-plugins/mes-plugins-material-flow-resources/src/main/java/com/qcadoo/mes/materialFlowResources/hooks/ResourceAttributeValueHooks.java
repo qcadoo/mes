@@ -211,17 +211,6 @@ public class ResourceAttributeValueHooks {
     }
 
     public boolean onDelete(final DataDefinition resourceAttributeValueDD, final Entity resourceAttributeValue) {
-        Entity resource = resourceAttributeValue.getBelongsToField(ResourceAttributeValueFields.RESOURCE);
-
-        java.util.Optional<Entity> maybeCorrection = resourceCorrectionService.createCorrectionForResource(resource, true);
-        if (maybeCorrection.isPresent()) {
-            Entity correction = maybeCorrection.get();
-            List<Entity> values = resource.getHasManyField(ResourceFields.RESOURCE_ATTRIBIUTE_VALUES);
-            createAttributeBeforeCorrection(values, correction);
-            createAttributeAfterCorrection(values, resourceAttributeValue, correction, true);
-
-        }
-
         return true;
     }
 }

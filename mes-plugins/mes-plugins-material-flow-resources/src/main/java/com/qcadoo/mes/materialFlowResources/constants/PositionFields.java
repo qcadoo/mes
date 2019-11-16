@@ -75,4 +75,5 @@ public final class PositionFields {
 
     public static final String WASTE = "waste";
 
+    public static final String POSITION_ATTRIBUTE_VALUES = "positionAttributeValues";
 }

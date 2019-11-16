@@ -23,23 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources.listeners;
 
-import java.util.Date;
-import java.util.Map;
-import java.util.Objects;
-
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.exception.LockAcquisitionException;
-import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -47,6 +30,7 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
 import com.qcadoo.mes.materialFlowResources.print.DispositionOrderPdfService;
@@ -65,6 +49,27 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.exception.LockAcquisitionException;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 @Service
 public class DocumentDetailsListeners {
@@ -103,6 +108,38 @@ public class DocumentDetailsListeners {
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
+    public void showProductAttributes(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        List<String> ids = Arrays.asList(args[0].replace("[", "").replace("]", "").replaceAll("\"", "").split("\\s*,\\s*"));
+        if (ids.size() == 1 && StringUtils.isNoneBlank(ids.get(0))) {
+            if (Long.valueOf(ids.get(0)) == 0) {
+                view.addMessage("materialFlow.info.document.showProductAttributes.toManyPositionsSelected", MessageType.INFO);
+                return;
+            }
+            Entity position = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                    MaterialFlowResourcesConstants.MODEL_POSITION).get(Long.valueOf(ids.get(0)));
+            Map<String, Object> parameters = Maps.newHashMap();
+            parameters.put("form.id", position.getBelongsToField(PositionFields.PRODUCT).getId());
+            view.redirectTo("/page/materialFlowResources/productAttributesForPositionList.html", false, true, parameters);
+        } else {
+            view.addMessage("materialFlow.info.document.showProductAttributes.toManyPositionsSelected", MessageType.INFO);
+        }
+    }
+
+    public void showProductAttributesFromPositionLists(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        GridComponent positionGird = (GridComponent) view.getComponentByReference("grid");
+        Set<Long> ids = positionGird.getSelectedEntitiesIds();
+        if (ids.size() == 1) {
+            Entity position = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                    MaterialFlowResourcesConstants.MODEL_POSITION).get(ids.stream().findFirst().get());
+            Map<String, Object> parameters = Maps.newHashMap();
+            parameters.put("form.id", position.getBelongsToField(PositionFields.PRODUCT).getId());
+            view.redirectTo("/page/materialFlowResources/productAttributesForPositionList.html", false, true, parameters);
+        } else {
+            view.addMessage("materialFlow.info.document.showProductAttributes.toManyPositionsSelected", MessageType.INFO);
+        }
+    }
+
     public void printDocument(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
 
@@ -112,8 +149,8 @@ public class DocumentDetailsListeners {
     }
 
     public void printDispositionOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        Entity documentPositionParameters = parameterService.getParameter()
-                .getBelongsToField(ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS);
+        Entity documentPositionParameters = parameterService.getParameter().getBelongsToField(
+                ParameterFieldsMFR.DOCUMENT_POSITION_PARAMETERS);
 
         boolean acceptanceOfDocumentBeforePrinting = documentPositionParameters
                 .getBooleanField("acceptanceOfDocumentBeforePrinting");
@@ -133,11 +170,9 @@ public class DocumentDetailsListeners {
                 documentDb = documentDb.getDataDefinition().save(documentDb);
 
                 try {
-                    dispositionOrderPdfService.generateDocument(
-                            fileService.updateReportFileName(documentDb, DocumentFields.GENERATION_DATE,
-                                    "materialFlowResources.dispositionOrder.fileName",
-                                    documentDb.getStringField(DocumentFields.NUMBER).replaceAll("[^a-zA-Z0-9]+", "_")),
-                            state.getLocale());
+                    dispositionOrderPdfService.generateDocument(fileService.updateReportFileName(documentDb,
+                            DocumentFields.GENERATION_DATE, "materialFlowResources.dispositionOrder.fileName", documentDb
+                                    .getStringField(DocumentFields.NUMBER).replaceAll("[^a-zA-Z0-9]+", "_")), state.getLocale());
                 } catch (Exception e) {
                     LOG.error("Error when generate disposition order", e);
 
@@ -161,8 +196,8 @@ public class DocumentDetailsListeners {
         String documentName = document.getStringField(DocumentFields.NAME);
 
         if (StringUtils.isNotEmpty(documentName)) {
-            SearchCriteriaBuilder searchCriteriaBuilder = documentDD.find()
-                    .add(SearchRestrictions.eq(DocumentFields.NAME, documentName));
+            SearchCriteriaBuilder searchCriteriaBuilder = documentDD.find().add(
+                    SearchRestrictions.eq(DocumentFields.NAME, documentName));
 
             if (document.getId() != null) {
                 searchCriteriaBuilder.add(SearchRestrictions.ne("id", document.getId()));
@@ -277,8 +312,8 @@ public class DocumentDetailsListeners {
                 String productNumber = ire.getEntity().getBelongsToField(ResourceFields.PRODUCT)
                         .getStringField(ProductFields.NUMBER);
 
-                documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource", MessageType.FAILURE, false,
-                        resourceNumber, productNumber);
+                documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource", MessageType.FAILURE,
+                        false, resourceNumber, productNumber);
             }
         } else {
             document.setNotValid();
@@ -385,8 +420,8 @@ public class DocumentDetailsListeners {
 
         JSONObject context = new JSONObject(parameters);
 
-        StringBuilder url = new StringBuilder("../page/materialFlowResources/positionAddMulti.html").append("?context=")
-                .append(context.toString());
+        StringBuilder url = new StringBuilder("../page/materialFlowResources/positionAddMulti.html").append("?context=").append(
+                context.toString());
 
         view.openModal(url.toString());
     }

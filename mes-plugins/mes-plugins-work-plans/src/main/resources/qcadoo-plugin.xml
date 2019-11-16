@@ -87,6 +87,10 @@
         <model:model model="parameterOutputColumn" resource="model/parameterOutputColumn.xml"/>
 
         <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="enableOperationGroupingWorkPlan"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
             <model:boolean name="takeActualProgressInWorkPlans"/>
         </model:model-field>
 

@@ -25,6 +25,8 @@ public class ResourcesAttributesDataProvider {
 
     public static final String PRODUCT_NAME = "productName";
 
+    public static final String WAREHOUSE_NUMBER = "warehouseNumber";
+
     public static final String PRODUCT_UNIT = "productUnit";
 
     public static final String VALUE = "value";
@@ -32,6 +34,8 @@ public class ResourcesAttributesDataProvider {
     public static final String ATTRIBUTE_NUMBER = "attributeNumber";
 
     public static final String ATTRIBUTE_VALUE = "attributeValue";
+
+    public static final String NUMERIC_DATA_TYPE = "02numeric";
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -42,46 +46,43 @@ public class ResourcesAttributesDataProvider {
     public List<ColumnDTO> getColumns(Locale locale) {
         List<ColumnDTO> columns = Lists.newArrayList();
         columns.add(new ColumnDTO(ResourceFields.NUMBER,
-                translationService.translate("materialFlowResources.resource.number.label", locale), ResourceFields.NUMBER));
+                translationService.translate("materialFlowResources.resource.number.label", locale)));
+        columns.add(new ColumnDTO(WAREHOUSE_NUMBER, translationService
+                .translate("materialFlowResources.resourcesList.window.mainTab.resourceGrid.column.locationNumber", locale)));
         columns.add(new ColumnDTO(PRODUCT_NUMBER,
-                translationService.translate("materialFlowResources.resource.product.label", locale), PRODUCT_NUMBER));
+                translationService.translate("materialFlowResources.resource.product.label", locale)));
         columns.add(new ColumnDTO(PRODUCT_NAME,
-                translationService.translate("materialFlowResources.resourceDto.productName.label", locale), PRODUCT_NAME));
+                translationService.translate("materialFlowResources.resourceDto.productName.label", locale)));
         columns.add(new ColumnDTO(ResourceFields.AVAILABLE_QUANTITY,
                 translationService.translate("materialFlowResources.resource.availableQuantity.label", locale),
-                ResourceFields.AVAILABLE_QUANTITY));
+                NUMERIC_DATA_TYPE));
         columns.add(new ColumnDTO(PRODUCT_UNIT,
-                translationService.translate("materialFlowResources.resourceDto.productUnit.label", locale), PRODUCT_UNIT));
+                translationService.translate("materialFlowResources.resourceDto.productUnit.label", locale)));
         columns.add(new ColumnDTO(ResourceFields.PRICE,
-                translationService.translate("materialFlowResources.resource.price.label", locale), ResourceFields.PRICE));
-        columns.add(
-                new ColumnDTO(VALUE, translationService.translate("materialFlowResources.resource.value.label", locale), VALUE));
+                translationService.translate("materialFlowResources.resource.price.label", locale), NUMERIC_DATA_TYPE));
+        columns.add(new ColumnDTO(VALUE, translationService.translate("materialFlowResources.resource.value.label", locale),
+                NUMERIC_DATA_TYPE));
         columns.add(new ColumnDTO(ResourceFields.TIME,
-                translationService.translate("materialFlowResources.resource.time.label", locale), ResourceFields.TIME));
-        columns.add(new ColumnDTO(ResourceFields.TIME,
-                translationService.translate("materialFlowResources.resource.time.label", locale), ResourceFields.TIME));
+                translationService.translate("materialFlowResources.resource.time.label", locale)));
         columns.add(new ColumnDTO(ResourceFields.EXPIRATION_DATE,
-                translationService.translate("materialFlowResources.resource.expirationDate.label", locale),
-                ResourceFields.EXPIRATION_DATE));
+                translationService.translate("materialFlowResources.resource.expirationDate.label", locale)));
         columns.add(new ColumnDTO(ResourceFields.PRODUCTION_DATE,
-                translationService.translate("materialFlowResources.resource.productionDate.label", locale),
-                ResourceFields.PRODUCTION_DATE));
+                translationService.translate("materialFlowResources.resource.productionDate.label", locale)));
         columns.add(new ColumnDTO(ResourceFields.BATCH,
-                translationService.translate("materialFlowResources.resource.batch.label", locale), ResourceFields.BATCH));
-        String query = "SELECT a.number AS id, a.name || CASE WHEN a.valuetype = '02numeric' AND a.unit IS NOT NULL "
-                + "THEN ' (' || a.unit || ')' ELSE '' END AS name, a.number AS field, "
-                + "a.name || CASE WHEN a.valuetype = '02numeric' AND a.unit IS NOT NULL "
-                + "THEN ' (' || a.unit || ')' ELSE '' END AS toolTip FROM basic_attribute a "
-                + "WHERE a.forresource = TRUE ORDER BY a.id";
+                translationService.translate("materialFlowResources.resource.batch.label", locale)));
+        String query = "SELECT a.number AS id, a.name, a.unit, a.valuetype AS dataType "
+                + "FROM basic_attribute a WHERE a.forresource = TRUE ORDER BY a.id";
         columns.addAll(jdbcTemplate.query(query, Collections.emptyMap(), new BeanPropertyRowMapper(ColumnDTO.class)));
         return columns;
     }
 
     public List<Map<String, Object>> getRecords() {
         String query = "SELECT r.id, r.number, p.number AS productNumber, p.name AS productName, r.availablequantity, "
-                + "p.unit AS productUnit, r.price, (r.quantity * r.price) AS value, to_char(r.\"time\", 'YYYY-MM-DD HH24:MI:SS') AS \"time\", "
+                + "l.number AS warehouseNumber, p.unit AS productUnit, r.price, (r.quantity * r.price) AS value, "
+                + "to_char(r.\"time\", 'YYYY-MM-DD HH24:MI:SS') AS \"time\", "
                 + "r.productiondate, r.expirationdate, r.batch, a.number AS attributeNumber, rav.value AS attributeValue "
                 + "FROM materialflowresources_resource r JOIN basic_product p ON p.id = r.product_id "
+                + "JOIN materialflow_location l ON l.id = r.location_id "
                 + "LEFT JOIN materialflowresources_resourceattributevalue rav ON r.id = rav.resource_id "
                 + "LEFT JOIN basic_attribute a ON a.id = rav.attribute_id "
                 + "WHERE (a.forresource = TRUE OR a.id IS NULL) ORDER BY r.number, a.id";
@@ -96,6 +97,7 @@ public class ResourcesAttributesDataProvider {
                 row = Maps.newHashMap();
                 row.put("id", resourceId);
                 row.put(ResourceFields.NUMBER, attribute.get(ResourceFields.NUMBER));
+                row.put(WAREHOUSE_NUMBER, attribute.get(WAREHOUSE_NUMBER));
                 row.put(PRODUCT_NUMBER, attribute.get(PRODUCT_NUMBER));
                 row.put(PRODUCT_NAME, attribute.get(PRODUCT_NAME));
                 row.put(ResourceFields.AVAILABLE_QUANTITY, attribute.get(ResourceFields.AVAILABLE_QUANTITY));

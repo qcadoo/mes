@@ -52,10 +52,13 @@ public class DocumentPositionService {
     @Autowired
     private ReservationsService reservationsService;
 
+    @Autowired
+    private AttributePositionService attributePositionService;
+
     public GridResponse<DocumentPositionDTO> findAll(final Long documentId, final String _sidx, final String _sord, int page,
             int perPage, final DocumentPositionDTO position, final Map<String, String> attributeFilters) {
-        String sidx = _sidx != null ? _sidx.toLowerCase() : "";
-        String sord = _sord != null ? _sord.toLowerCase() : "";
+        String sidx = _sidx != null ? _sidx : "";
+        String sord = _sord != null ? _sord : "";
 
         Preconditions.checkState(Arrays.asList("asc", "desc", "").contains(sord));
 
@@ -67,10 +70,10 @@ public class DocumentPositionService {
         if (!attrCloumns.isEmpty()) {
             attrCloumns.forEach(ac -> {
                 attrQueryPart.append(" , ");
-                attrQueryPart.append("(SELECT string_agg(resourceattributevalue.value, ', ') ");
-                attrQueryPart.append("FROM materialflowresources_resourceattributevalue resourceattributevalue ");
-                attrQueryPart.append("LEFT JOIN basic_attribute att ON att.id = resourceattributevalue.attribute_id ");
-                attrQueryPart.append("WHERE resourceattributevalue.resource_id = resource.id AND att.number ='" + ac
+                attrQueryPart.append("(SELECT string_agg(positionattributevalue.value, ', ') ");
+                attrQueryPart.append("FROM materialflowresources_positionattributevalue positionattributevalue ");
+                attrQueryPart.append("LEFT JOIN basic_attribute att ON att.id = positionattributevalue.attribute_id ");
+                attrQueryPart.append("WHERE positionattributevalue.position_id = p.id AND att.number ='" + ac
                         + "' group by att.number) as \"" + ac + "\" ");
             });
 
@@ -99,8 +102,8 @@ public class DocumentPositionService {
             attributeFiltersBuilder.append("WHERE ");
             for (Map.Entry<String, String> filterElement : attributeFilters.entrySet()) {
                 attributeFiltersBuilder.append("q.\"" + filterElement.getKey() + "\" ");
-                attributeFiltersBuilder.append("ilike :" + filterElement.getKey() + " ");
-                parameters.put(filterElement.getKey(), "%" + filterElement.getValue() + "%");
+                attributeFiltersBuilder.append("ilike :" + filterElement.getKey().replaceAll("[^a-zA-Z0-9]+","") + " ");
+                parameters.put(filterElement.getKey().replaceAll("[^a-zA-Z0-9]+",""), "%" + filterElement.getValue() + "%");
             }
             query = query + attributeFiltersBuilder.toString();
         }
@@ -153,7 +156,6 @@ public class DocumentPositionService {
             return documentPositionDTO;
         });
 
-        // pobrac attrybuty
         return new GridResponse<>(page, Double.valueOf(Math.ceil((1.0 * countRecords) / perPage)).intValue(), countRecords,
                 records);
     }
@@ -164,6 +166,10 @@ public class DocumentPositionService {
         Map<String, Object> params = Maps.newHashMap();
 
         params.put("id", id);
+        String deleteQuery = "DELETE FROM materialflowresources_positionattributevalue WHERE position_id = :positionId";
+        Map<String, Object> paramsDeleteAttribute = Maps.newHashMap();
+        paramsDeleteAttribute.put("positionId", id);
+        jdbcTemplate.update(deleteQuery, paramsDeleteAttribute);
 
         StringBuilder queryBuilder = new StringBuilder();
 
@@ -204,6 +210,7 @@ public class DocumentPositionService {
 
             reservationsService.createReservationFromDocumentPosition(params);
         }
+        attributePositionService.createOrUpdateAttributePositionValues(true, positionId, documentPositionVO.getAttrs());
     }
 
     public void update(final Long id, final DocumentPositionDTO documentPositionVO) {
@@ -218,6 +225,9 @@ public class DocumentPositionService {
 
         reservationsService.updateReservationFromDocumentPosition(params);
         jdbcTemplate.update(query, params);
+        attributePositionService.createOrUpdateAttributePositionValues(false, documentPositionVO.getId(),
+                documentPositionVO.getAttrs());
+
     }
 
     private List<StorageLocationDTO> getStorageLocations(String preparedQuery, String q, Map<String, Object> paramMap) {
@@ -257,10 +267,13 @@ public class DocumentPositionService {
 
     public Map<String, Object> getGridConfig(final Long documentId) {
         try {
-            String query = "SELECT * FROM materialflowresources_documentpositionparametersitem ORDER BY ordering";
-
-            List<ColumnProperties> columns = jdbcTemplate.query(query, Collections.EMPTY_MAP, new BeanPropertyRowMapper(
-                    ColumnProperties.class));
+            StringBuilder query = new StringBuilder();
+            query.append("SELECT documentpositionparametersitem.*, attr.dataType as attributeDataType, attr.valueType as attributeValueType ");
+            query.append("FROM materialflowresources_documentpositionparametersitem documentpositionparametersitem ");
+            query.append("LEFT JOIN basic_attribute attr ON attr.id = documentpositionparametersitem.attribute_id ");
+            query.append(" ORDER BY documentpositionparametersitem.ordering");
+            List<ColumnProperties> columns = jdbcTemplate.query(query.toString(), Collections.EMPTY_MAP,
+                    new BeanPropertyRowMapper(ColumnProperties.class));
 
             Map<String, Object> config = Maps.newHashMap();
 
@@ -588,7 +601,25 @@ public class DocumentPositionService {
         if (batches.isEmpty()) {
             return null;
         } else {
-            return batches.get(0);
+            ResourceDTO resourceDTO = batches.get(0);
+            StringBuilder attrBuilder = new StringBuilder();
+            attrBuilder.append("SELECT ");
+            attrBuilder.append("att.number, ");
+            attrBuilder.append("resourceattributevalue.value ");
+            attrBuilder.append("FROM materialflowresources_resourceattributevalue resourceattributevalue ");
+            attrBuilder.append("LEFT JOIN materialflowresources_resource res ON res.id = resourceattributevalue.resource_id ");
+            attrBuilder.append("LEFT JOIN basic_attribute att ON att.id = resourceattributevalue.attribute_id ");
+            attrBuilder.append("WHERE res.id = :resourceId");
+            //AttributeDto
+            Map<String, Object> params = Maps.newHashMap();
+            params.put("resourceId", resourceDTO.getId());
+            List<AttributeDto> attributes = jdbcTemplate.query(attrBuilder.toString(), params, new BeanPropertyRowMapper(AttributeDto.class));
+            Map<String, Object> attributeMap = Maps.newHashMap();
+            attributes.forEach(att -> {
+                attributeMap.put(att.getNumber(), att.getValue());
+            });
+            resourceDTO.setAttrs(attributeMap);
+            return resourceDTO;
         }
     }
 

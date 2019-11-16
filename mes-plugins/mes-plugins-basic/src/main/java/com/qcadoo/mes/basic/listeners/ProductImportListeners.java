@@ -30,9 +30,9 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.importing.product.ProductCellBinderRegistry;
-import com.qcadoo.mes.basic.importing.product.ProductXlsxImportService;
-import com.qcadoo.mes.basic.importing.services.XlsxImportService;
+import com.qcadoo.mes.basic.imports.product.ProductCellBinderRegistry;
+import com.qcadoo.mes.basic.imports.product.ProductXlsxImportService;
+import com.qcadoo.mes.basic.imports.services.XlsxImportService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
