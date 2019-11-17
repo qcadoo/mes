@@ -111,7 +111,7 @@ public class PositionXlsxImportService extends XlsxImportService {
                 position.setField(PositionFields.GIVEN_UNIT, unit);
             }
         }
-        if (Objects.nonNull(storageLocation)) {
+        if (Objects.nonNull(locationTo) && Objects.nonNull(product) && Objects.nonNull(storageLocation) ) {
             Entity storageLocationLocation = storageLocation.getBelongsToField(StorageLocationFields.LOCATION);
             Entity storageLocationProduct = storageLocation.getBelongsToField(StorageLocationFields.PRODUCT);
 
