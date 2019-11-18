@@ -211,16 +211,17 @@ public class AttributeImportService {
                                         LocaleContextHolder.getLocale(), valEntry.getKey(), valEntry.getValue()));
                         throw new IllegalStateException("No attribute value defined");
                     } else {
-                        Entity productAttributeVal = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
-                                "productAttributeValue").create();
-                        productAttributeVal.setField(ProductAttributeValueFields.VALUE, valEntry.getValue());
-                        productAttributeVal.setField(ProductAttributeValueFields.ATTRIBUTE, attribute.getId());
-                        productAttributeVal.setField("resource", resource.getId());
-                        productAttributeVal.setField(ProductAttributeValueFields.ATTRIBUTE_VALUE, attributeValue.getId());
-                        productAttributeVal = productAttributeVal.getDataDefinition().save(productAttributeVal);
-                        if (!productAttributeVal.isValid()
-                                && !Objects.nonNull(productAttributeVal.getError(ProductAttributeValueFields.ATTRIBUTE_VALUE))
-                                && !"basic.attributeValue.error.valueExists".equals(productAttributeVal
+                        Entity resourceAttributeValue = dataDefinitionService.get("materialFlowResources",
+                                "resourceAttributeValue").create();
+                        resourceAttributeValue.setField(ProductAttributeValueFields.VALUE, valEntry.getValue());
+                        resourceAttributeValue.setField(ProductAttributeValueFields.ATTRIBUTE, attribute.getId());
+                        resourceAttributeValue.setField("resource", resource.getId());
+                        resourceAttributeValue.setField("fromDefinition", true);
+                        resourceAttributeValue.setField(ProductAttributeValueFields.ATTRIBUTE_VALUE, attributeValue.getId());
+                        resourceAttributeValue = resourceAttributeValue.getDataDefinition().save(resourceAttributeValue);
+                        if (!resourceAttributeValue.isValid()
+                                && !Objects.nonNull(resourceAttributeValue.getError(ProductAttributeValueFields.ATTRIBUTE_VALUE))
+                                && !"basic.attributeValue.error.valueExists".equals(resourceAttributeValue
                                         .getError(ProductAttributeValueFields.ATTRIBUTE_VALUE))) {
                             container.getErrors().add(
                                     translationService.translate("basic.attributeImport.attributeValueValidationErrors",
@@ -229,29 +230,30 @@ public class AttributeImportService {
                         }
                     }
                 } else {
-                    Entity productAttributeVal = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
-                            "productAttributeValue").create();
+                    Entity resourceAttributeValue = dataDefinitionService.get("materialFlowResources",
+                            "resourceAttributeValue").create();
                     if (AttributeValueType.NUMERIC.getStringValue().equals(attribute.getStringField(AttributeFields.VALUE_TYPE))) {
-                        productAttributeVal.setField(ProductAttributeValueFields.VALUE, valEntry.getValue().replace(".", ","));
+                        resourceAttributeValue.setField(ProductAttributeValueFields.VALUE, valEntry.getValue().replace(".", ","));
                     } else {
-                        productAttributeVal.setField(ProductAttributeValueFields.VALUE, valEntry.getValue());
+                        resourceAttributeValue.setField(ProductAttributeValueFields.VALUE, valEntry.getValue());
                     }
-                    productAttributeVal.setField(ProductAttributeValueFields.ATTRIBUTE, attribute.getId());
-                    productAttributeVal.setField("resource", resource.getId());
-                    productAttributeVal = productAttributeVal.getDataDefinition().save(productAttributeVal);
-                    if (!productAttributeVal.isValid()
+                    resourceAttributeValue.setField(ProductAttributeValueFields.ATTRIBUTE, attribute.getId());
+                    resourceAttributeValue.setField("resource", resource.getId());
+                    resourceAttributeValue.setField("fromDefinition", true);
+                    resourceAttributeValue = resourceAttributeValue.getDataDefinition().save(resourceAttributeValue);
+                    if (!resourceAttributeValue.isValid()
                             && (AttributeValueType.NUMERIC.getStringValue().equals(attribute
                                     .getStringField(AttributeFields.VALUE_TYPE)))) {
                         int scale = attribute.getIntegerField(AttributeFields.PRECISION);
 
-                        if ("qcadooView.validate.field.error.invalidNumericFormat".equals(productAttributeVal.getError(
+                        if ("qcadooView.validate.field.error.invalidNumericFormat".equals(resourceAttributeValue.getError(
                                 ProductAttributeValueFields.VALUE).getMessage())) {
                             container.getErrors().add(
                                     translationService.translate("basic.attributeImport.invalidNumericFormat",
                                             LocaleContextHolder.getLocale(), valEntry.getKey(), valEntry.getValue()));
                             throw new IllegalStateException("No attribute value defined");
 
-                        } else if ("qcadooView.validate.field.error.invalidScale.max".equals(productAttributeVal.getError(
+                        } else if ("qcadooView.validate.field.error.invalidScale.max".equals(resourceAttributeValue.getError(
                                 ProductAttributeValueFields.VALUE).getMessage())) {
                             container.getErrors().add(
                                     translationService.translate("basic.attributeImport.invalidScale",
