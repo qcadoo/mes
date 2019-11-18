@@ -85,8 +85,8 @@ QCD.resourcesAttributes = (function () {
     }
 
     function updateAllTotals(grid, dataView){
-        updateTotalRowValue(grid, "availableQuantity", CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("availableQuantity"), dataView));
-        updateTotalRowValue(grid, "value", CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("value"), dataView));
+        updateTotalRowValue(grid, "availableQuantity", Number(CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("availableQuantity"), dataView).toFixed(5)));
+        updateTotalRowValue(grid, "value", Number(CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("value"), dataView).toFixed(5)));
     }
 
     function init() {
