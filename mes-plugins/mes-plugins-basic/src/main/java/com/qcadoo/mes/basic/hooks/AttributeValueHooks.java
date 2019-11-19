@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
@@ -77,7 +78,7 @@ public class AttributeValueHooks {
                     attributeValue.getStringField(AttributeValueFields.VALUE), LocaleContextHolder.getLocale());
             if (eitherNumber.isRight() && eitherNumber.getRight().isPresent()) {
                 attributeValue.setField(AttributeValueFields.VALUE,
-                        numberService.formatWithMinimumFractionDigits(eitherNumber.getRight().get(), 0));
+                        StringUtils.deleteWhitespace(eitherNumber.getRight().get().toPlainString()));
             }
         }
     }
