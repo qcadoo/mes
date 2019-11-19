@@ -68,12 +68,11 @@
                     <option type="column" name="dataType" fields="dataType" width="100"/>
                     <option type="column" name="valueType" fields="valueType" width="100"/>
                     <option type="column" name="forProduct" fields="forProduct" width="100"/>
-                    <option type="column" name="forResource" fields="forResource" width="100"/>
 
                     <option type="order" column="number" direction="asc"/>
 
-                    <option type="searchable" value="number,name,dataType,valueType,forProduct,forResource"/>
-                    <option type="orderable" value="number,name,dataType,valueType,forProduct,forResource"/>
+                    <option type="searchable" value="number,name,dataType,valueType,forProduct"/>
+                    <option type="orderable" value="number,name,dataType,valueType,forProduct"/>
 
                     <criteriaModifier
                             class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.AttributeCriteriaModifiersMFR"
