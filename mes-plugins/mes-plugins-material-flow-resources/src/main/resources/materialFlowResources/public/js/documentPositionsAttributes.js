@@ -85,8 +85,8 @@ QCD.documentPositionsAttributes = (function () {
     }
 
     function updateAllTotals(grid, dataView){
-        updateTotalRowValue(grid, "quantity", CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("quantity"), dataView));
-        updateTotalRowValue(grid, "value", CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("value"), dataView));
+        updateTotalRowValue(grid, "quantity", Number(CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("quantity"), dataView).toFixed(5)));
+        updateTotalRowValue(grid, "value", Number(CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("value"), dataView).toFixed(5)));
     }
 
     function init() {

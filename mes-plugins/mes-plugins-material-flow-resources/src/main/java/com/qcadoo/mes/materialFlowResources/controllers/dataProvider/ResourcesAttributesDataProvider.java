@@ -71,7 +71,7 @@ public class ResourcesAttributesDataProvider {
         columns.add(new ColumnDTO(ResourceFields.BATCH,
                 translationService.translate("materialFlowResources.resource.batch.label", locale)));
         String query = "SELECT a.number AS id, a.name, a.unit, a.valuetype AS dataType "
-                + "FROM basic_attribute a WHERE a.forresource = TRUE ORDER BY a.id";
+                + "FROM basic_attribute a WHERE a.forresource = TRUE ORDER BY a.number";
         columns.addAll(jdbcTemplate.query(query, Collections.emptyMap(), new BeanPropertyRowMapper(ColumnDTO.class)));
         return columns;
     }
@@ -84,8 +84,7 @@ public class ResourcesAttributesDataProvider {
                 + "FROM materialflowresources_resource r JOIN basic_product p ON p.id = r.product_id "
                 + "JOIN materialflow_location l ON l.id = r.location_id "
                 + "LEFT JOIN materialflowresources_resourceattributevalue rav ON r.id = rav.resource_id "
-                + "LEFT JOIN basic_attribute a ON a.id = rav.attribute_id "
-                + "WHERE (a.forresource = TRUE OR a.id IS NULL) ORDER BY r.number, a.id";
+                + "LEFT JOIN basic_attribute a ON a.id = rav.attribute_id ORDER BY r.number, a.number";
         List<Map<String, Object>> attributes = jdbcTemplate.queryForList(query, Collections.emptyMap());
         Map<Long, Map<String, Object>> results = Maps.newHashMap();
         for (Map<String, Object> attribute : attributes) {
