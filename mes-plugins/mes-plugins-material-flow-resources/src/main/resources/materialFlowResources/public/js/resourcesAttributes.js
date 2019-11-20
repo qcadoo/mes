@@ -91,13 +91,15 @@ QCD.resourcesAttributes = (function () {
     }
 
     function updateAllTotals(grid, dataView) {
-        updateTotalRowValue(grid, "availableQuantity", numberFormatter(null, null, Number(CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("availableQuantity"), dataView).toFixed(5))));
-        updateTotalRowValue(grid, "value", numberFormatter(null, null, Number(CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("value"), dataView).toFixed(5))));
+        let availableQuantitySum = CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("availableQuantity"), dataView);
+        let valueSum = CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("value"), dataView);
+        updateTotalRowValue(grid, "availableQuantity", availableQuantitySum ? numberFormatter(null, null, Number(availableQuantitySum.toFixed(5))) : availableQuantitySum);
+        updateTotalRowValue(grid, "value", valueSum ? numberFormatter(null, null, Number(valueSum.toFixed(5))) : valueSum);
     }
 
     function init() {
-        QCD.components.elements.utils.LoadingIndicator.blockElement($('body'));
         $.get("/rest/resAttributes/columns", function (columns) {
+            QCD.components.elements.utils.LoadingIndicator.blockElement($('body'));
             $('#resourceAttributesGrid').height($('#window_windowContent').height() - 45);
             $('#resourceAttributesGrid').width($('#window_windowContent').width() - 20);
             for (let i = 0; i < columns.length; i++) {

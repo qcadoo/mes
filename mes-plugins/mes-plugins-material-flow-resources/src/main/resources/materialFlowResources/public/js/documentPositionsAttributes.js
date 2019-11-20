@@ -91,13 +91,15 @@ QCD.documentPositionsAttributes = (function () {
     }
 
     function updateAllTotals(grid, dataView) {
-        updateTotalRowValue(grid, "quantity", numberFormatter(null, null, Number(CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("quantity"), dataView).toFixed(5))));
-        updateTotalRowValue(grid, "value", numberFormatter(null, null, Number(CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("value"), dataView).toFixed(5))));
+        let quantitySum = CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("quantity"), dataView);
+        let valueSum = CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("value"), dataView);
+        updateTotalRowValue(grid, "quantity", quantitySum ? numberFormatter(null, null, Number(quantitySum.toFixed(5))) : quantitySum);
+        updateTotalRowValue(grid, "value", valueSum ? numberFormatter(null, null, Number(valueSum.toFixed(5))) : valueSum);
     }
 
     function init() {
-        QCD.components.elements.utils.LoadingIndicator.blockElement($('body'));
         $.get("/rest/docPositionsAttributes/columns", function (columns) {
+            QCD.components.elements.utils.LoadingIndicator.blockElement($('body'));
             $('#documentPositionsAttributesGrid').height($('#window_windowContent').height() - 45);
             $('#documentPositionsAttributesGrid').width($('#window_windowContent').width() - 20);
             for (let i = 0; i < columns.length; i++) {

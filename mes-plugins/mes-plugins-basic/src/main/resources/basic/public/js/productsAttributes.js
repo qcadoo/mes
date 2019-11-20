@@ -42,8 +42,8 @@ QCD.productsAttributes = (function () {
     }
 
     function init() {
-        QCD.components.elements.utils.LoadingIndicator.blockElement($('body'));
         $.get("/rest/prodAttributes/columns", function (columns) {
+            QCD.components.elements.utils.LoadingIndicator.blockElement($('body'));
             $('#productAttributesGrid').height($('#window_windowContent').height() - 45);
             $('#productAttributesGrid').width($('#window_windowContent').width() - 20);
             for (let i = 0; i < columns.length; i++) {
