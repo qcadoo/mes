@@ -32,7 +32,13 @@ QCD.productsAttributes = (function () {
     }
 
     function numberFormatter(row, cell, value, columnDef, dataContext) {
-        return value ? value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") : value;
+        if (value) {
+            let parts = value.toString().split(".");
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+            return parts.join(",");
+        } else {
+            return value;
+        }
     }
 
     function init() {

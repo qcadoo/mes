@@ -35,7 +35,13 @@ QCD.documentPositionsAttributes = (function () {
     }
 
     function numberFormatter(row, cell, value, columnDef, dataContext) {
-        return value ? value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") : value;
+        if (value) {
+            let parts = value.toString().split(".");
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+            return parts.join(",");
+        } else {
+            return value;
+        }
     }
 
     /** Calculate the total of an existing field from the datagrid
@@ -79,14 +85,14 @@ QCD.documentPositionsAttributes = (function () {
         };
     }
 
-    function updateTotalRowValue(grid, columnId, total){
+    function updateTotalRowValue(grid, columnId, total) {
         let columnElement = grid.getFooterRowColumn(columnId);
         $(columnElement).html(total);
     }
 
-    function updateAllTotals(grid, dataView){
-        updateTotalRowValue(grid, "quantity", Number(CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("quantity"), dataView).toFixed(5)));
-        updateTotalRowValue(grid, "value", Number(CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("value"), dataView).toFixed(5)));
+    function updateAllTotals(grid, dataView) {
+        updateTotalRowValue(grid, "quantity", numberFormatter(null, null, Number(CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("quantity"), dataView).toFixed(5))));
+        updateTotalRowValue(grid, "value", numberFormatter(null, null, Number(CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("value"), dataView).toFixed(5))));
     }
 
     function init() {
@@ -162,7 +168,7 @@ QCD.documentPositionsAttributes = (function () {
                 dataView.sort(comparer, args.sortAsc);
             });
 
-            grid.onColumnsReordered.subscribe(function(e, args) {
+            grid.onColumnsReordered.subscribe(function (e, args) {
                 updateAllTotals(grid, dataView);
             });
 
