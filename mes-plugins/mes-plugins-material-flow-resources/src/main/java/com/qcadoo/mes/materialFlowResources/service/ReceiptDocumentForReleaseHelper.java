@@ -1,14 +1,5 @@
 package com.qcadoo.mes.materialFlowResources.service;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
@@ -22,6 +13,15 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 @Component
 public class ReceiptDocumentForReleaseHelper {
@@ -98,6 +98,7 @@ public class ReceiptDocumentForReleaseHelper {
             copiedPosition.setId(null);
             copiedPosition.setField(PositionFields.DOCUMENT, null);
             copiedPosition.setField(PositionFields.RESOURCE, null);
+            copiedPosition.setField(PositionFields.RESOURCE_NUMBER, null);
             copiedPosition.setField(PositionFields.TYPE_OF_PALLET, null);
             copiedPosition.setField(PositionFields.PALLET_NUMBER, null);
 
