@@ -12,6 +12,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -23,6 +24,7 @@ import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.StaffSkillsFields;
+import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ScheduleFields;
@@ -55,7 +57,7 @@ public class ScheduleDetailsListeners {
     private static final String REJECTED = "04rejected";
 
     private static final String STATE = "state";
-    
+
     private static final String SCHEDULE_ID = "scheduleId";
 
     @Autowired
@@ -92,8 +94,13 @@ public class ScheduleDetailsListeners {
             Map<Long, Date> operationWorkstationsFinishDates = Maps.newHashMap();
             Map<Long, Date> operationWorkstationsStartDates = Maps.newHashMap();
 
-            getWorkstationsNewFinishDate(workstationsFinishDates, scheduleStartTime, position, workstations,
-                    operationWorkstationsFinishDates, operationWorkstationsStartDates);
+            String workstationNumber = getWorkstationsNewFinishDate(workstationsFinishDates, scheduleStartTime, position,
+                    workstations, operationWorkstationsFinishDates, operationWorkstationsStartDates);
+            if (!workstationNumber.isEmpty()) {
+                view.addMessage("orders.validate.workstation.error.emptyProductionLine", ComponentState.MessageType.INFO,
+                        workstationNumber);
+                return;
+            }
 
             if (ScheduleWorkstationAssignCriterion.SHORTEST_TIME.getStringValue()
                     .equals(schedule.getStringField(ScheduleFields.WORKSTATION_ASSIGN_CRITERION))) {
@@ -115,7 +122,7 @@ public class ScheduleDetailsListeners {
         }
     }
 
-    private void getWorkstationsNewFinishDate(Map<Long, Date> workstationsFinishDates, Date scheduleStartTime, Entity position,
+    private String getWorkstationsNewFinishDate(Map<Long, Date> workstationsFinishDates, Date scheduleStartTime, Entity position,
             List<Entity> workstations, Map<Long, Date> operationWorkstationsFinishDates,
             Map<Long, Date> operationWorkstationsStartDates) {
         for (Entity workstation : workstations) {
@@ -142,9 +149,12 @@ public class ScheduleDetailsListeners {
                 }
             }
             DateTime finishDateTime = new DateTime(finishDate);
-            Date newStartDate = shiftsService
-                    .getNearestWorkingDate(finishDateTime, workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE))
-                    .orElse(finishDateTime).toDate();
+            Entity productionLine = workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE);
+            if (productionLine == null) {
+                return workstation.getStringField(WorkstationFields.NUMBER);
+            }
+            Date newStartDate = shiftsService.getNearestWorkingDate(finishDateTime, productionLine).orElse(finishDateTime)
+                    .toDate();
 
             Integer machineWorkTime = position.getIntegerField(SchedulePositionFields.MACHINE_WORK_TIME);
             Date newFinishDate = shiftsService.findDateToForProductionLine(newStartDate, machineWorkTime,
@@ -152,6 +162,7 @@ public class ScheduleDetailsListeners {
             operationWorkstationsStartDates.put(workstation.getId(), newStartDate);
             operationWorkstationsFinishDates.put(workstation.getId(), newFinishDate);
         }
+        return StringUtils.EMPTY;
     }
 
     private List<Entity> getChildren(Entity technologyOperationComponent, Entity order, Entity schedule) {
