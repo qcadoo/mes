@@ -1,10 +1,12 @@
 package com.qcadoo.mes.materialFlowResources.service;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.PositionAttributeValueFields;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -101,6 +103,7 @@ public class ReceiptDocumentForReleaseHelper {
             copiedPosition.setField(PositionFields.RESOURCE_NUMBER, null);
             copiedPosition.setField(PositionFields.TYPE_OF_PALLET, null);
             copiedPosition.setField(PositionFields.PALLET_NUMBER, null);
+            copiedPosition.setField(PositionFields.POSITION_ATTRIBUTE_VALUES, null);
 
             Optional<Entity> maybyStorageLocation = findStorageLocationForProduct(
                     position.getBelongsToField(PositionFields.PRODUCT), location);
@@ -110,7 +113,18 @@ public class ReceiptDocumentForReleaseHelper {
             } else {
                 copiedPosition.setField(PositionFields.STORAGE_LOCATION, null);
             }
-
+            List<Entity> attributeValues = Lists.newArrayList();
+            position.getHasManyField(PositionFields.POSITION_ATTRIBUTE_VALUES).forEach(
+                    pav -> {
+                        Entity av = pav.getDataDefinition().create();
+                        av.setField(PositionAttributeValueFields.VALUE, pav.getStringField(PositionAttributeValueFields.VALUE));
+                        av.setField(PositionAttributeValueFields.ATTRIBUTE,
+                                pav.getBelongsToField(PositionAttributeValueFields.ATTRIBUTE));
+                        av.setField(PositionAttributeValueFields.ATTRIBUTE_VALUE,
+                                pav.getBelongsToField(PositionAttributeValueFields.ATTRIBUTE_VALUE));
+                        attributeValues.add(av);
+                    });
+            copiedPosition.setField(PositionFields.POSITION_ATTRIBUTE_VALUES, attributeValues);
             documentBuilder.addPosition(copiedPosition);
         });
     }
@@ -121,9 +135,8 @@ public class ReceiptDocumentForReleaseHelper {
     }
 
     private Optional<Entity> findStorageLocationForProduct(final Entity product, final Entity location) {
-        SearchCriteriaBuilder scb = dataDefinitionService
-                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_STORAGE_LOCATION)
-                .find();
+        SearchCriteriaBuilder scb = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_STORAGE_LOCATION).find();
 
         scb.add(SearchRestrictions.belongsTo(StorageLocationFields.PRODUCT, product));
         scb.add(SearchRestrictions.belongsTo(StorageLocationFields.LOCATION, location));
