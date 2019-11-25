@@ -60,7 +60,7 @@ public class DateTimeCellParser implements CellParser {
             Either<? extends Exception, Optional<DateTime>> either = DateUtils.tryParse(cellValue);
 
             if (either.isLeft()) {
-                Optional<Date> mayBeValue = parseDate(cellValue);
+                Optional<Date> mayBeValue = parseDateTime(cellValue);
 
                 if (mayBeValue.isPresent()) {
                     Date value = mayBeValue.get();
@@ -75,14 +75,14 @@ public class DateTimeCellParser implements CellParser {
         }
     }
 
-    private Optional<Date> parseDate(final String cellValue) {
+    private Optional<Date> parseDateTime(final String cellValue) {
         String trimmedDateExpression = StringUtils.trim(cellValue);
 
         for (String pattern : SUPPORTED_PATTERNS) {
             try {
-                Date parsedDate = org.apache.commons.lang3.time.DateUtils.parseDateStrictly(trimmedDateExpression, pattern);
+                Date parsedDateTime = org.apache.commons.lang3.time.DateUtils.parseDateStrictly(trimmedDateExpression, pattern);
 
-                return Optional.of(parsedDate);
+                return Optional.of(parsedDateTime);
             } catch (ParseException e) {
             }
         }

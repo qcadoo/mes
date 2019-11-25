@@ -259,7 +259,7 @@ public abstract class ImportService {
         return getDataDefinition(pluginIdentifier, modelName).find().add(searchCriterion).setMaxResults(1).uniqueResult();
     }
 
-    public boolean validateEntity(final Entity entity) {
+    public boolean validateEntity(final Entity entity, final DataDefinition entityDD) {
         return entity.isValid();
     }
 

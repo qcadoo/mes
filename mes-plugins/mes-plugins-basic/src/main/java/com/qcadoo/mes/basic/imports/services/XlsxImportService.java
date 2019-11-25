@@ -84,7 +84,7 @@ public class XlsxImportService extends ImportService {
                 rowProcessorHelper.update(entityToUpdate, checkOnUpdate);
             }
 
-            validateEntity(entity);
+            validateEntity(entity, entity.getDataDefinition());
 
             rowProcessorHelper.process();
         }
