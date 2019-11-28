@@ -207,6 +207,9 @@ public class TechnologyOperationComponentHooks {
         copy.setField("productionCountingQuantities", null);
         copy.setField("productionCountingOperationRuns", null);
         copy.setField("coverageRegisters", null);
+        copy.setField("operationalTasks", null);
+        copy.setField("operCompTimeCalculations", null);
+        copy.setField("barcodeOperationComponents", null);
         return copy;
     }
 
