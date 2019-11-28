@@ -61,7 +61,10 @@ public class AttributeImportService {
         XSSFSheet sheet = workbook.getSheetAt(0);
 
         List<AttributePosition> attributes = prepareAttributesList(sheet);
-
+        if (attributes.isEmpty()) {
+            view.addMessage("basic.attributeValuesImport.importFileEmpty", ComponentState.MessageType.INFO);
+            return container.getErrors().isEmpty();
+        }
         try {
             fillContainer(container, sheet, attributes, L_PRODUCT);
             if (container.getAtribiutesValuesByType().isEmpty()) {
@@ -87,7 +90,10 @@ public class AttributeImportService {
         XSSFSheet sheet = workbook.getSheetAt(0);
 
         List<AttributePosition> attributes = prepareAttributesList(sheet);
-
+        if (attributes.isEmpty()) {
+            view.addMessage("basic.attributeValuesImport.importFileEmpty", ComponentState.MessageType.INFO);
+            return container.getErrors().isEmpty();
+        }
         try {
             fillContainer(container, sheet, attributes, L_RESOURCE);
             if (container.getAtribiutesValuesByType().isEmpty()) {
@@ -238,12 +244,8 @@ public class AttributeImportService {
 
     private void addErrorsForCalculated(AttributeImportContainer container, String key, String value,
             Entity resourceAttributeValue) {
-        if ("basic.attributeValue.error.valueExists".equals(resourceAttributeValue.getError(ProductAttributeValueFields.VALUE)
+        if (!"basic.attributeValue.error.valueExists".equals(resourceAttributeValue.getError(ProductAttributeValueFields.ATTRIBUTE_VALUE)
                 .getMessage())) {
-            container.getErrors().add(
-                    translationService.translate("basic.attributeValue.error.valueExists", LocaleContextHolder.getLocale()));
-            throw new IllegalStateException("Value exists");
-        } else {
             container.getErrors().add(
                     translationService.translate("basic.attributeImport.attributeValueValidationErrors",
                             LocaleContextHolder.getLocale(), key, value));
@@ -268,11 +270,6 @@ public class AttributeImportService {
                     translationService.translate("basic.attributeImport.invalidScale", LocaleContextHolder.getLocale(),
                             String.valueOf(scale), key, value));
             throw new IllegalStateException("No attribute value defined");
-        } else if ("basic.attributeValue.error.valueExists".equals(attributeVal.getError(ProductAttributeValueFields.VALUE)
-                .getMessage())) {
-            container.getErrors().add(
-                    translationService.translate("basic.attributeValue.error.valueExists", LocaleContextHolder.getLocale()));
-            throw new IllegalStateException("Value exists");
         }
     }
 
@@ -301,6 +298,9 @@ public class AttributeImportService {
     private List<AttributePosition> prepareAttributesList(XSSFSheet sheet) {
         List<AttributePosition> positions = Lists.newArrayList();
         Row row = sheet.getRow(0);
+        if(Objects.isNull(row)) {
+            return positions;
+        }
         Iterator<Cell> cellIterator = row.cellIterator();
         while (cellIterator.hasNext()) {
             Cell cell = cellIterator.next();
