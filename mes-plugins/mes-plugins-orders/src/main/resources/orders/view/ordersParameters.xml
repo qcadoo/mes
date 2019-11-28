@@ -56,7 +56,7 @@
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="ordersParameters" reference="form">
                 <component type="flowGridLayout" name="mainTabGridLayout"
-                           columns="3" rows="8">
+                           columns="3" rows="9">
                     <layoutElement column="1" row="1">
                         <component type="lookup" name="defaultProductionLine"
                                    field="#{form}.defaultProductionLine" reference="defaultProductionLine">
@@ -130,7 +130,13 @@
                             <option type="labelWidth" value="40"/>
                         </component>
                     </layoutElement>
-
+                    <layoutElement column="1" row="9">
+                        <component type="checkbox" name="createCollectiveOrders"
+                                   field="#{form}.createCollectiveOrders"
+                                   reference="createCollectiveOrders" hasDescription="true">
+                            <option type="labelWidth" value="40"/>
+                        </component>
+                    </layoutElement>
                     <layoutElement column="2" row="1">
                         <component type="checkbox" name="setEffectiveDateFromOnInProgress"
                                    field="#{form}.setEffectiveDateFromOnInProgress"

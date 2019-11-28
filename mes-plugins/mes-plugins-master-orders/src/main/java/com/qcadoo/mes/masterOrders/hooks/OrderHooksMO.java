@@ -1,15 +1,8 @@
 package com.qcadoo.mes.masterOrders.hooks;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderPositionDtoFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
@@ -19,6 +12,15 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderHooksMO {
@@ -41,14 +43,30 @@ public class OrderHooksMO {
         Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
 
         if (Objects.nonNull(masterOrder)
-                && (MasterOrderState.IN_EXECUTION.getStringValue().equals(masterOrder.getStringField(MasterOrderFields.STATE))
-                || MasterOrderState.NEW.getStringValue().equals(masterOrder.getStringField(MasterOrderFields.STATE)))
+                && (MasterOrderState.IN_EXECUTION.getStringValue().equals(masterOrder.getStringField(MasterOrderFields.STATE)) || MasterOrderState.NEW
+                        .getStringValue().equals(masterOrder.getStringField(MasterOrderFields.STATE)))
                 && canChangeToCompleted(order, orderDb)) {
             changeToCompleted(order);
         } else if (canChangeMasterOrderStateToInExecution(order, orderDb)) {
             changeToInExecution(order);
         } else if (canChangeMasterOrderStateToNew(order, orderDb)) {
             changeToNew(order);
+        }
+
+        if (Objects.nonNull(masterOrder)) {
+            BigDecimal plannedQuantity = BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.PLANNED_QUANTITY));
+            Entity masterOrderProduct = getMasterOrderProduct(masterOrder, order.getBelongsToField(OrderFields.PRODUCT));
+            if (!MasterOrderPositionStatus.ORDERED.getStringValue().equals(
+                    masterOrderProduct.getStringField(MasterOrderProductFields.MASTER_ORDER_POSITION_STATUS))) {
+                BigDecimal masterOrderQuantity = BigDecimalUtils.convertNullToZero(masterOrderProduct
+                        .getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY));
+                if (plannedQuantity.compareTo(masterOrderQuantity) >= 0) {
+                    masterOrderProduct.setField(MasterOrderProductFields.MASTER_ORDER_POSITION_STATUS,
+                            MasterOrderPositionStatus.ORDERED.getText());
+                    masterOrderProduct.getDataDefinition().save(masterOrderProduct);
+                }
+            }
+
         }
     }
 
@@ -89,7 +107,8 @@ public class OrderHooksMO {
             Integer orderProductId = order.getBelongsToField(OrderFields.PRODUCT).getId().intValue();
 
             if ((productId != null) && productId.equals(orderProductId)) {
-                BigDecimal value = position.getDecimalField(MasterOrderPositionDtoFields.PRODUCED_ORDER_QUANTITY).add(done, numberService.getMathContext());
+                BigDecimal value = position.getDecimalField(MasterOrderPositionDtoFields.PRODUCED_ORDER_QUANTITY).add(done,
+                        numberService.getMathContext());
 
                 if (value.compareTo(doneQuantity) == -1) {
                     value = doneQuantity;
@@ -99,9 +118,10 @@ public class OrderHooksMO {
             }
         }
 
-        List<Entity> producedPositions = positions.stream().filter(position ->
-                position.getDecimalField(MasterOrderPositionDtoFields.PRODUCED_ORDER_QUANTITY)
-                        .compareTo(position.getDecimalField(MasterOrderPositionDtoFields.MASTER_ORDER_QUANTITY)) >= 0)
+        List<Entity> producedPositions = positions
+                .stream()
+                .filter(position -> position.getDecimalField(MasterOrderPositionDtoFields.PRODUCED_ORDER_QUANTITY).compareTo(
+                        position.getDecimalField(MasterOrderPositionDtoFields.MASTER_ORDER_QUANTITY)) >= 0)
                 .collect(Collectors.toList());
 
         return (positions.size() == producedPositions.size());
@@ -114,9 +134,16 @@ public class OrderHooksMO {
                 .getEntities();
     }
 
+    private Entity getMasterOrderProduct(final Entity masterOrder, final Entity product) {
+        return dataDefinitionService
+                .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_PRODUCT).find()
+                .add(SearchRestrictions.belongsTo(MasterOrderProductFields.MASTER_ORDER, masterOrder))
+                .add(SearchRestrictions.belongsTo(MasterOrderProductFields.PRODUCT, product)).setMaxResults(1).uniqueResult();
+    }
+
     private void changeToNew(final Entity order) {
         Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
-        if(Objects.isNull(masterOrder)) {
+        if (Objects.isNull(masterOrder)) {
             return;
         }
         String masterOrderStatus = masterOrder.getStringField(MasterOrderFields.STATE);
@@ -131,7 +158,7 @@ public class OrderHooksMO {
 
     private void changeToInExecution(final Entity order) {
         Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
-        if(Objects.isNull(masterOrder)) {
+        if (Objects.isNull(masterOrder)) {
             return;
         }
         String masterOrderStatus = masterOrder.getStringField(MasterOrderFields.STATE);

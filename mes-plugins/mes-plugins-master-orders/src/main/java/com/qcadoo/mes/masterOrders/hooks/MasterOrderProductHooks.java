@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
@@ -34,8 +35,10 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.DictionaryService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.constants.DictionaryItemFields;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -48,13 +51,24 @@ import org.springframework.stereotype.Service;
 @Service
 public class MasterOrderProductHooks {
 
+    private static final String L_MASTER_ORDER_POSITION_STATUS = "masterOrderPositionStatus";
+
     @Autowired
     private MasterOrderOrdersDataProvider masterOrderOrdersDataProvider;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private DictionaryService dictionaryService;
+
+    @Autowired
+    private ParameterService parameterService;
+
     public void onSave(final DataDefinition masterOrderProductDD, final Entity masterOrderProduct) {
+
+        setMasterOrderPositionStatus(masterOrderProduct);
+
         if (Objects.nonNull(masterOrderProduct.getBelongsToField(MasterOrderProductFields.TECHNOLOGY))) {
             List<Entity> entities = dataDefinitionService
                     .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
@@ -83,6 +97,35 @@ public class MasterOrderProductHooks {
                         BigDecimal.ZERO) > 0) {
             masterOrder.setField(MasterOrderFields.STATE, MasterOrderState.IN_EXECUTION.getStringValue());
             masterOrder = masterOrder.getDataDefinition().save(masterOrder);
+        }
+        if (parameterService.getParameter().getBooleanField("completeMasterOrderAfterOrderingPositions")
+                && !MasterOrderState.COMPLETED.getStringValue().equals(masterOrder.getStringField(MasterOrderFields.STATE))
+                && MasterOrderPositionStatus.ORDERED.getText().equals(
+                        masterOrderProduct.getStringField(MasterOrderProductFields.MASTER_ORDER_POSITION_STATUS))
+                && isAllOrdered(masterOrderProduct, masterOrder)) {
+            masterOrder.setField(MasterOrderFields.STATE, MasterOrderState.COMPLETED.getStringValue());
+            masterOrder = masterOrder.getDataDefinition().save(masterOrder);
+        }
+    }
+
+    private boolean isAllOrdered(final Entity masterOrderProduct, final Entity masterOrder) {
+        List<Entity> newPositions = masterOrder
+                .getHasManyField(MasterOrderFields.MASTER_ORDER_PRODUCTS)
+                .stream()
+                .filter(mop -> MasterOrderPositionStatus.NEW.getText().equals(
+                        mop.getStringField(MasterOrderProductFields.MASTER_ORDER_POSITION_STATUS)))
+                .filter(mop -> !mop.getId().equals(masterOrderProduct.getId())).collect(Collectors.toList());
+        return newPositions.isEmpty();
+    }
+
+    private void setMasterOrderPositionStatus(final Entity masterOrderProduct) {
+        if (Objects.isNull(masterOrderProduct.getId())) {
+            Entity item = dictionaryService.getItemEntityByTechnicalCode(L_MASTER_ORDER_POSITION_STATUS,
+                    MasterOrderPositionStatus.NEW.getStringValue());
+            if (Objects.nonNull(item)) {
+                masterOrderProduct.setField(MasterOrderProductFields.MASTER_ORDER_POSITION_STATUS,
+                        item.getStringField(DictionaryItemFields.NAME));
+            }
         }
     }
 

@@ -73,6 +73,12 @@
                     <option type="labelWidth" value="50"/>
                 </component>
             </layoutElement>
+            <layoutElement column="2" row="2">
+                <component type="checkbox" name="completeMasterOrderAfterOrderingPositions" field="#{form}.completeMasterOrderAfterOrderingPositions"
+                           reference="completeMasterOrderAfterOrderingPositions" hasDescription="true">
+                    <option type="labelWidth" value="90"/>
+                </component>
+            </layoutElement>
         </component>
     </windowTab>
 

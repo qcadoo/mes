@@ -23,19 +23,29 @@
  */
 package com.qcadoo.mes.masterOrders.listeners;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.masterOrders.OrdersFromMOProductsGenerationService;
+import com.qcadoo.mes.masterOrders.constants.GeneratingOrdersHelperFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderPositionDtoFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
+import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
+import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class MasterOrderPositionsListListeners {
@@ -46,6 +56,9 @@ public class MasterOrderPositionsListListeners {
 
     @Autowired
     private OrdersFromMOProductsGenerationService ordersGenerationService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public void createOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent masterOrderPositionComponent = (GridComponent) view.getComponentByReference(L_GRID);
@@ -76,15 +89,11 @@ public class MasterOrderPositionsListListeners {
 
         parameters.put("form.masterOrder", masterOrderId);
 
-        String masterOrderTypeValue = masterOrderPosition.getStringField(MasterOrderPositionDtoFields.MASTER_ORDER_TYPE);
+        Integer productId = masterOrderPosition.getIntegerField(MasterOrderPositionDtoFields.PRODUCT_ID);
+        Integer masterOrderProductId = masterOrderPosition.getIntegerField(MasterOrderPositionDtoFields.MASTER_ORDER_PRODUCT_ID);
 
-        if (masterOrderTypeValue.equals(MasterOrderType.MANY_PRODUCTS.getStringValue())) {
-            Integer productId = masterOrderPosition.getIntegerField(MasterOrderPositionDtoFields.PRODUCT_ID);
-            Integer masterOrderProductId = masterOrderPosition.getIntegerField(MasterOrderPositionDtoFields.MASTER_ORDER_PRODUCT_ID);
-
-            parameters.put("form.masterOrderProduct", productId);
-            parameters.put("form.masterOrderProductComponent", masterOrderProductId);
-        }
+        parameters.put("form.masterOrderProduct", productId);
+        parameters.put("form.masterOrderProductComponent", masterOrderProductId);
 
         parameters.put(L_WINDOW_ACTIVE_MENU, "orders.productionOrders");
 
@@ -92,10 +101,37 @@ public class MasterOrderPositionsListListeners {
         view.redirectTo(url, false, true, parameters);
     }
 
-    public void generateOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void goToGenerateOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent masterOrderPositionComponent = (GridComponent) view.getComponentByReference(L_GRID);
-        List<Entity> selectedEntity = masterOrderPositionComponent.getSelectedEntities();
-        ordersGenerationService.generateOrders(selectedEntity, true).showMessage(view);
+        Set<Long> selected = masterOrderPositionComponent.getSelectedEntitiesIds();
+
+        Entity generatingOrders = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
+                MasterOrdersConstants.GENERATING_ORDERS_HELPER).create();
+        generatingOrders.setField(GeneratingOrdersHelperFields.SELECTED_ENTITIES, selected.stream().map(Object::toString)
+                .collect(Collectors.joining(",")));
+        generatingOrders = generatingOrders.getDataDefinition().save(generatingOrders);
+
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("form.id", generatingOrders.getId());
+        String url = "../page/masterOrders/generatingOrders.html";
+        view.openModal(url, parameters);
+    }
+
+    public void generateOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        Entity helper = form.getPersistedEntityWithIncludedFormValues();
+        String selectedEntities = helper.getStringField(GeneratingOrdersHelperFields.SELECTED_ENTITIES);
+        Date start = helper.getDateField(GeneratingOrdersHelperFields.START_DATE);
+        Date finish = helper.getDateField(GeneratingOrdersHelperFields.FINISH_DATE);
+        List<Long> ids = Lists.newArrayList(selectedEntities.split(",")).stream().map(Long::valueOf).collect(Collectors.toList());
+
+        List<Entity> masterOrderProducts = dataDefinitionService
+                .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO).find()
+                .add(SearchRestrictions.in("id", ids)).list().getEntities();
+
+        ordersGenerationService.generateOrders(masterOrderProducts, start, finish, true).showMessage(view);
+        CheckBoxComponent generated = (CheckBoxComponent) view.getComponentByReference("generated");
+        generated.setChecked(true);
     }
 
 }
