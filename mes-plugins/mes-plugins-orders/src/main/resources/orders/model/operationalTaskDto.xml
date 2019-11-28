@@ -39,6 +39,7 @@
 		<string name="staffName"/>
 		<string name="productionLineName" />
 		<string name="workstationName" />
+		<integer name="workstationId"/>
 		<integer name="orderId"/>
 		<integer name="tocId"/>
 		<string name="orderNumber"/>
