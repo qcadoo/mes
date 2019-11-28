@@ -200,6 +200,8 @@
             <model:onDelete class="com.qcadoo.mes.technologies.hooks.DivisionHooksT" method="onDelete"/>
         </model:model-hook>
 
+        <model:model-enum-value plugin="basic" model="log" enum="logType" value="operationProductInComponentImport"/>
+
         <menu:menu-category name="technology" defaultAuthorizationRole="ROLE_TECHNOLOGIES"/>
 
         <menu:menu-item name="technologies" category="technology"
@@ -233,6 +235,8 @@
 
         <view:view resource="view/operationSkillDetails.xml"/>
         <view:view resource="view/skillOperationDetails.xml"/>
+
+        <view:view resource="view/operationProductInComponentsImport.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
 

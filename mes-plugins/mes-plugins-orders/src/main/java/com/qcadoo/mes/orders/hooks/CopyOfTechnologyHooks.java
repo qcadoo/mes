@@ -32,7 +32,7 @@ import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.criteriaModifiers.TechnologyCriteriaModifires;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.hooks.TechnologyDetailsViewHooks;
+import com.qcadoo.mes.technologies.hooks.TechnologyDetailsHooks;
 import com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinition;
@@ -77,7 +77,7 @@ public class CopyOfTechnologyHooks {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private TechnologyDetailsViewHooks technologyDetailsViewHooks;
+    private TechnologyDetailsHooks technologyDetailsHooks;
 
     @Autowired
     private TechnologyDetailsListeners technologyDetailsListeners;
@@ -103,8 +103,8 @@ public class CopyOfTechnologyHooks {
         disableRibbonItem(view, orderType, order);
         setVisibleFileds(view, orderType);
         setCriteriaModifierParameters(view, order);
-        technologyDetailsViewHooks.filterStateChangeHistory(view);
-        technologyDetailsViewHooks.setTreeTabEditable(view);
+        technologyDetailsHooks.filterStateChangeHistory(view);
+        technologyDetailsHooks.setTreeTabEditable(view);
         technologyDetailsListeners.setGridEditable(view);
         disableForm(view, order, technology);
         enableGroupField(view, order);
@@ -148,9 +148,9 @@ public class CopyOfTechnologyHooks {
         technologyForm.setFormEnabled(!isDisabled);
 
         if (lockTechnologyTree()) {
-            technologyDetailsViewHooks.setTreeTabEditable(view, false);
+            technologyDetailsHooks.setTreeTabEditable(view, false);
         } else {
-            technologyDetailsViewHooks.setTreeTabEditable(view, !isDisabled);
+            technologyDetailsHooks.setTreeTabEditable(view, !isDisabled);
         }
     }
 

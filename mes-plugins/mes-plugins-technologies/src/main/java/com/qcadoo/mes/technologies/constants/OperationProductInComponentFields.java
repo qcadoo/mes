@@ -29,6 +29,8 @@ public final class OperationProductInComponentFields {
 
     }
 
+    public static final String TECHNOLOGY = "technology";
+
     public static final String OPERATION_COMPONENT = "operationComponent";
 
     public static final String PRIORITY = "priority";
