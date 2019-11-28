@@ -435,7 +435,7 @@ public class DocumentDetailsListeners {
         if (Objects.nonNull(documentId)) {
             Map<String, Object> parameters = Maps.newHashMap();
 
-            parameters.put("form.id", document.getId());
+            parameters.put("form.id", documentId);
 
             JSONObject context = new JSONObject(parameters);
 

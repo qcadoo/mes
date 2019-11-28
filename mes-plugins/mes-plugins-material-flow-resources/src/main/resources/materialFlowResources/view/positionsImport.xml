@@ -56,7 +56,7 @@
 			<component type="gridLayout" name="gridLayout" columns="3"
 					   rows="2">
 				<layoutElement column="1" row="1" width="2">
-					<component type="file" name="importFile" reference="importFile">
+					<component type="file" name="importFile" reference="importFile" hasDescription="true">
 						<script>
 							<![CDATA[
                             	this.setEnabled(true, true);
