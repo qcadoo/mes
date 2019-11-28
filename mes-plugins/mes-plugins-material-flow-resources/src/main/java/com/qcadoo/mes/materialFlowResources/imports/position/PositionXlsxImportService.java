@@ -97,7 +97,7 @@ public class PositionXlsxImportService extends XlsxImportService {
                 if (quantitiesNonNull) {
                     BigDecimal multipliedQuantity = quantity.multiply(conversion, numberService.getMathContext());
 
-                    if (!multipliedQuantity.equals(givenQuantity)) {
+                    if (multipliedQuantity.compareTo(givenQuantity) != 0) {
                         position.addError(positionDD.getField(PositionFields.GIVEN_QUANTITY),
                                 L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM);
                     }
