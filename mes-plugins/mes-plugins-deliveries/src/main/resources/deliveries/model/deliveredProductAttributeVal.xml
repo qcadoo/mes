@@ -41,6 +41,9 @@
     <hooks>
         <validatesWith class="com.qcadoo.mes.deliveries.hooks.DeliveredProductAttributeHooks"
                        method="validate"/>
+
+        <onSave class="com.qcadoo.mes.deliveries.hooks.DeliveredProductAttributeHooks"
+                method="onSave"/>
     </hooks>
 
     <identifier expression="#value"/>

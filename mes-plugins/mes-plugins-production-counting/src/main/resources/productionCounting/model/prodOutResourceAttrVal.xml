@@ -41,6 +41,8 @@
     <hooks>
         <validatesWith class="com.qcadoo.mes.productionCounting.hooks.ProdOutResourceAttrValHooks"
                        method="validate"/>
+        <onSave class="com.qcadoo.mes.productionCounting.hooks.ProdOutResourceAttrValHooks"
+                method="onSave"/>
     </hooks>
 
     <identifier expression="#value"/>

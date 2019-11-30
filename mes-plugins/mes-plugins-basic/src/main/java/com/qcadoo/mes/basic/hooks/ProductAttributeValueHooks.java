@@ -40,7 +40,7 @@ public class ProductAttributeValueHooks {
 
         if (AttributeDataType.CONTINUOUS.getStringValue().equals(attribute.getStringField(AttributeFields.DATA_TYPE))
                 && AttributeValueType.NUMERIC.getStringValue().equals(attribute.getStringField(AttributeFields.VALUE_TYPE))) {
-            Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParse(
+            Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParseAndIgnoreSeparator(
                     productAttributeValue.getStringField(ProductAttributeValueFields.VALUE), LocaleContextHolder.getLocale());
             if (eitherNumber.isRight() && eitherNumber.getRight().isPresent()) {
                 int scale = attribute.getIntegerField(AttributeFields.PRECISION);
@@ -55,6 +55,8 @@ public class ProductAttributeValueHooks {
                         "qcadooView.validate.field.error.invalidNumericFormat");
                 return false;
             }
+            productAttributeValue.setField(
+                    ProductAttributeValueFields.VALUE, BigDecimalUtils.toString(eitherNumber.getRight().get()));
         }
         return !checkIfValueExists(productAttributeValueDD, productAttributeValue);
     }
@@ -99,6 +101,14 @@ public class ProductAttributeValueHooks {
     }
 
     public void onSave(final DataDefinition productAttributeValueDD, final Entity productAttributeValue) {
-
+        Entity attribute = productAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE);
+        if (AttributeValueType.NUMERIC.getStringValue().equals(attribute.getStringField(AttributeFields.VALUE_TYPE))) {
+            Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParseAndIgnoreSeparator(
+                    productAttributeValue.getStringField(ProductAttributeValueFields.VALUE), LocaleContextHolder.getLocale());
+            if (eitherNumber.isRight() && eitherNumber.getRight().isPresent()) {
+                productAttributeValue.setField(
+                        ProductAttributeValueFields.VALUE, BigDecimalUtils.toString(eitherNumber.getRight().get()));
+            }
+        }
     }
 }

@@ -6,6 +6,7 @@ import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.constants.AttributeDataType;
 import com.qcadoo.mes.basic.constants.AttributeFields;
 import com.qcadoo.mes.basic.constants.AttributeValueType;
+import com.qcadoo.mes.basic.constants.ProductAttributeValueFields;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceAttributeValueCorrectionAfterFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceAttributeValueCorrectionBeforeFields;
@@ -53,7 +54,7 @@ public class ResourceAttributeValueHooks {
 
         if (AttributeDataType.CONTINUOUS.getStringValue().equals(attribute.getStringField(AttributeFields.DATA_TYPE))
                 && AttributeValueType.NUMERIC.getStringValue().equals(attribute.getStringField(AttributeFields.VALUE_TYPE))) {
-            Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParse(
+            Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParseAndIgnoreSeparator(
                     resourceAttributeValue.getStringField(ResourceAttributeValueFields.VALUE), LocaleContextHolder.getLocale());
             if (eitherNumber.isRight() && eitherNumber.getRight().isPresent()) {
                 int scale = attribute.getIntegerField(AttributeFields.PRECISION);
@@ -68,6 +69,8 @@ public class ResourceAttributeValueHooks {
                         "qcadooView.validate.field.error.invalidNumericFormat");
                 return false;
             }
+            resourceAttributeValue.setField(
+                    ProductAttributeValueFields.VALUE, BigDecimalUtils.toString(eitherNumber.getRight().get()));
         }
         if (checkIfValueExists(resourceAttributeValueDD, resourceAttributeValue)) {
             return false;
@@ -118,6 +121,15 @@ public class ResourceAttributeValueHooks {
     }
 
     public void onSave(final DataDefinition resourceAttributeValueDD, final Entity resourceAttributeValue) {
+        Entity attribute = resourceAttributeValue.getBelongsToField(ResourceAttributeValueFields.ATTRIBUTE);
+        if (AttributeValueType.NUMERIC.getStringValue().equals(attribute.getStringField(AttributeFields.VALUE_TYPE))) {
+            Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParseAndIgnoreSeparator(
+                    resourceAttributeValue.getStringField(ResourceAttributeValueFields.VALUE), LocaleContextHolder.getLocale());
+            if (eitherNumber.isRight() && eitherNumber.getRight().isPresent()) {
+                resourceAttributeValue.setField(
+                        ResourceAttributeValueFields.VALUE, BigDecimalUtils.toString(eitherNumber.getRight().get()));
+            }
+        }
         if (resourceAttributeValue.getBooleanField(ResourceAttributeValueFields.FROM_DEFINITION)) {
             if (isChanged(resourceAttributeValue)) {
                 Entity resource = resourceAttributeValue.getBelongsToField(ResourceAttributeValueFields.RESOURCE);
