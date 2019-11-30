@@ -48,7 +48,7 @@ public class ProductsAttributesDataProvider {
         columns.add(new ColumnDTO(ProductFields.CATEGORY, translationService.translate("basic.product.category.label", locale)));
         columns.add(new ColumnDTO(ProductFields.SIZE, translationService.translate("basic.product.size.label", locale)));
         String query = "SELECT a.number AS id, a.name, a.unit, a.valuetype AS dataType "
-                + "FROM basic_attribute a WHERE a.forproduct = TRUE ORDER BY a.id";
+                + "FROM basic_attribute a WHERE a.forproduct = TRUE ORDER BY a.number";
         columns.addAll(jdbcTemplate.query(query, Collections.emptyMap(), new BeanPropertyRowMapper(ColumnDTO.class)));
         return columns;
     }
@@ -57,8 +57,7 @@ public class ProductsAttributesDataProvider {
         String query = "SELECT p.id, p.number AS productNumber, p.name AS productName, p.globaltypeofmaterial, p.unit, "
                 + "p.additionalunit, p.category, p.size, a.number AS attributeNumber, pav.value AS attributeValue "
                 + "FROM basic_product p LEFT JOIN basic_productattributevalue pav ON p.id = pav.product_id "
-                + "LEFT JOIN basic_attribute a ON a.id = pav.attribute_id "
-                + "WHERE (a.forproduct = TRUE OR a.id IS NULL) AND p.active = TRUE ORDER BY p.number, a.id";
+                + "LEFT JOIN basic_attribute a ON a.id = pav.attribute_id WHERE p.active = TRUE ORDER BY p.number, a.number";
         List<Map<String, Object>> attributes = jdbcTemplate.queryForList(query, Collections.emptyMap());
         Map<Long, Map<String, Object>> results = Maps.newHashMap();
         for (Map<String, Object> attribute : attributes) {

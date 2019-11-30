@@ -11,6 +11,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormatSymbols;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,7 +35,7 @@ public class AttributeValueHooks {
 
         if (AttributeValueType.NUMERIC.getStringValue().equals(attribute.getStringField(AttributeFields.VALUE_TYPE))) {
 
-            Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParse(
+            Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParseAndIgnoreSeparator(
                     attributeValue.getStringField(AttributeValueFields.VALUE), LocaleContextHolder.getLocale());
             if (eitherNumber.isRight() && eitherNumber.getRight().isPresent()) {
 
@@ -51,9 +52,10 @@ public class AttributeValueHooks {
                         "qcadooView.validate.field.error.invalidNumericFormat");
                 return false;
             }
+            DecimalFormatSymbols symbols = new DecimalFormatSymbols(LocaleContextHolder.getLocale());
 
             return !checkIfValueExists(attributeValueDD, attributeValue, attribute,
-                    numberService.formatWithMinimumFractionDigits(eitherNumber.getRight().get(), 0));
+                    BigDecimalUtils.toString(eitherNumber.getRight().get()));
         }
         return true;
     }
@@ -73,11 +75,10 @@ public class AttributeValueHooks {
     public void onSave(final DataDefinition attributeValueDD, final Entity attributeValue) {
         Entity attribute = attributeValue.getBelongsToField(AttributeValueFields.ATTRIBUTE);
         if (AttributeValueType.NUMERIC.getStringValue().equals(attribute.getStringField(AttributeFields.VALUE_TYPE))) {
-            Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParse(
+            Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParseAndIgnoreSeparator(
                     attributeValue.getStringField(AttributeValueFields.VALUE), LocaleContextHolder.getLocale());
             if (eitherNumber.isRight() && eitherNumber.getRight().isPresent()) {
-                attributeValue.setField(AttributeValueFields.VALUE,
-                        numberService.formatWithMinimumFractionDigits(eitherNumber.getRight().get(), 0));
+                attributeValue.setField(AttributeValueFields.VALUE, BigDecimalUtils.toString(eitherNumber.getRight().get()));
             }
         }
     }

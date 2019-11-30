@@ -61,4 +61,6 @@ public final class WorkstationFields {
 
     public static final String FAULT_TYPES = "faultTypes";
 
+    public static final String ACTIVE = "active";
+
 }

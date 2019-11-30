@@ -43,4 +43,14 @@ public final class OperationalTaskDtoFields {
 
     public static final String ORDER_NUMBER = "orderNumber";
 
+    public static final String PRODUCT_NUMBER = "productNumber";
+
+    public static final String TECHNOLOGY_OPERATION_COMPONENT_NODE_NUMBER = "technologyOperationComponentNodeNumber";
+
+    public static final String PLANNED_QUANTITY = "plannedQuantity";
+
+    public static final String DONE_IN_PERCENTAGE = "doneInPercentage";
+
+    public static final String WORKSTATION_ID = "workstationId";
+
 }

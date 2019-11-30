@@ -55,7 +55,7 @@ public class ScheduleDetailsListeners {
     private static final String REJECTED = "04rejected";
 
     private static final String STATE = "state";
-    
+
     private static final String SCHEDULE_ID = "scheduleId";
 
     @Autowired

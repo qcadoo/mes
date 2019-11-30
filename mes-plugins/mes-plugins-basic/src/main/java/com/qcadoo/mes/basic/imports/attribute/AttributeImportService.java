@@ -61,9 +61,16 @@ public class AttributeImportService {
         XSSFSheet sheet = workbook.getSheetAt(0);
 
         List<AttributePosition> attributes = prepareAttributesList(sheet);
-
+        if (attributes.isEmpty()) {
+            view.addMessage("basic.attributeValuesImport.importFileEmpty", ComponentState.MessageType.INFO);
+            return container.getErrors().isEmpty();
+        }
         try {
             fillContainer(container, sheet, attributes, L_PRODUCT);
+            if (container.getAtribiutesValuesByType().isEmpty()) {
+                view.addMessage("basic.attributeValuesImport.importFileEmpty", ComponentState.MessageType.INFO);
+                return container.getErrors().isEmpty();
+            }
             storeProductAttributes(container, attributes);
             view.addMessage("basic.attributeValuesImport.success", ComponentState.MessageType.SUCCESS);
             return container.getErrors().isEmpty();
@@ -83,9 +90,16 @@ public class AttributeImportService {
         XSSFSheet sheet = workbook.getSheetAt(0);
 
         List<AttributePosition> attributes = prepareAttributesList(sheet);
-
+        if (attributes.isEmpty()) {
+            view.addMessage("basic.attributeValuesImport.importFileEmpty", ComponentState.MessageType.INFO);
+            return container.getErrors().isEmpty();
+        }
         try {
             fillContainer(container, sheet, attributes, L_RESOURCE);
+            if (container.getAtribiutesValuesByType().isEmpty()) {
+                view.addMessage("basic.attributeValuesImport.importFileEmpty", ComponentState.MessageType.INFO);
+                return container.getErrors().isEmpty();
+            }
             storeResourceAttributes(container, attributes);
             view.addMessage("basic.attributeValuesImport.success", ComponentState.MessageType.SUCCESS);
             return container.getErrors().isEmpty();
@@ -100,7 +114,7 @@ public class AttributeImportService {
     @Transactional
     private void storeProductAttributes(AttributeImportContainer container, List<AttributePosition> attributes) {
         Map<String, Entity> attributeEntitiesByNumber = getAttributeEntityByNumberForProduct(attributes);
-        for (Map.Entry<String, Map<String, String>> entry : container.getAtribiutesValuesByType().entrySet()) {
+        for (Map.Entry<String, Map<String, List<String>>> entry : container.getAtribiutesValuesByType().entrySet()) {
             Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).find()
                     .add(SearchRestrictions.eq(ProductFields.NUMBER, entry.getKey())).setMaxResults(1).uniqueResult();
             if (Objects.isNull(product)) {
@@ -109,8 +123,8 @@ public class AttributeImportService {
                                 entry.getKey()));
                 throw new IllegalStateException("No attribute defined");
             }
-            Map<String, String> valueByAttribute = container.getAtribiutesValuesByType().get(entry.getKey());
-            for (Map.Entry<String, String> valEntry : valueByAttribute.entrySet()) {
+            Map<String, List<String>> valueByAttribute = container.getAtribiutesValuesByType().get(entry.getKey());
+            for (Map.Entry<String, List<String>> valEntry : valueByAttribute.entrySet()) {
                 Entity attribute = attributeEntitiesByNumber.get(valEntry.getKey());
                 if (Objects.isNull(attribute)) {
                     container.getErrors().add(
@@ -118,63 +132,42 @@ public class AttributeImportService {
                                     LocaleContextHolder.getLocale(), valEntry.getKey()));
                     throw new IllegalStateException("No attribute defined");
                 }
-                if (AttributeDataType.CALCULATED.getStringValue().equals(attribute.getStringField(AttributeFields.DATA_TYPE))) {
-                    Entity attributeValue = getAttributeValue(valEntry, attribute);
-                    if (Objects.isNull(attributeValue)) {
-                        container.getErrors().add(
-                                translationService.translate("basic.attributeImport.attributeValueNotExists",
-                                        LocaleContextHolder.getLocale(), valEntry.getKey(), valEntry.getValue()));
-                        throw new IllegalStateException("No attribute value defined");
-                    } else {
+
+                for (String valueAttr : valEntry.getValue()) {
+                    String value = valueAttr;
+                    if (AttributeValueType.NUMERIC.getStringValue().equals(attribute.getStringField(AttributeFields.VALUE_TYPE))) {
+                        value = valueAttr.replace(".", ",");
+                    }
+
+                    if (AttributeDataType.CALCULATED.getStringValue().equals(attribute.getStringField(AttributeFields.DATA_TYPE))) {
+                        Entity attributeValue = getAttributeValue(value, attribute);
+                        if (Objects.isNull(attributeValue)) {
+                            container.getErrors().add(
+                                    translationService.translate("basic.attributeImport.attributeValueNotExists",
+                                            LocaleContextHolder.getLocale(), valEntry.getKey(), value));
+                            throw new IllegalStateException("No attribute value defined");
+                        }
                         Entity productAttributeVal = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
                                 "productAttributeValue").create();
-                        productAttributeVal.setField(ProductAttributeValueFields.VALUE, valEntry.getValue());
+                        productAttributeVal.setField(ProductAttributeValueFields.VALUE, value);
                         productAttributeVal.setField(ProductAttributeValueFields.ATTRIBUTE, attribute.getId());
                         productAttributeVal.setField(ProductAttributeValueFields.PRODUCT, product.getId());
                         productAttributeVal.setField(ProductAttributeValueFields.ATTRIBUTE_VALUE, attributeValue.getId());
                         productAttributeVal = productAttributeVal.getDataDefinition().save(productAttributeVal);
-                        if (!productAttributeVal.isValid()
-                                && !Objects.nonNull(productAttributeVal.getError(ProductAttributeValueFields.ATTRIBUTE_VALUE))
-                                && !"basic.attributeValue.error.valueExists".equals(productAttributeVal
-                                        .getError(ProductAttributeValueFields.ATTRIBUTE_VALUE))) {
-                            container.getErrors().add(
-                                    translationService.translate("basic.attributeImport.attributeValueValidationErrors",
-                                            LocaleContextHolder.getLocale(), valEntry.getKey(), valEntry.getValue()));
-                            throw new IllegalStateException("No attribute value defined");
+                        if (!productAttributeVal.isValid()) {
+                            addErrorsForCalculated(container, valEntry.getKey(), value, productAttributeVal);
                         }
-                    }
-                } else {
-                    Entity productAttributeVal = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
-                            "productAttributeValue").create();
-                    if (AttributeValueType.NUMERIC.getStringValue().equals(attribute.getStringField(AttributeFields.VALUE_TYPE))) {
-                        productAttributeVal.setField(ProductAttributeValueFields.VALUE, valEntry.getValue().replace(".", ","));
                     } else {
-                        productAttributeVal.setField(ProductAttributeValueFields.VALUE, valEntry.getValue());
-                    }
-                    productAttributeVal.setField(ProductAttributeValueFields.ATTRIBUTE, attribute.getId());
-                    productAttributeVal.setField(ProductAttributeValueFields.PRODUCT, product.getId());
-                    productAttributeVal = productAttributeVal.getDataDefinition().save(productAttributeVal);
-                    if (!productAttributeVal.isValid()
-                            && (AttributeValueType.NUMERIC.getStringValue().equals(attribute
-                                    .getStringField(AttributeFields.VALUE_TYPE)))) {
-                        int scale = attribute.getIntegerField(AttributeFields.PRECISION);
+                        Entity productAttributeVal = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
+                                "productAttributeValue").create();
+                        productAttributeVal.setField(ProductAttributeValueFields.VALUE, value);
+                        productAttributeVal.setField(ProductAttributeValueFields.ATTRIBUTE, attribute.getId());
+                        productAttributeVal.setField(ProductAttributeValueFields.PRODUCT, product.getId());
+                        productAttributeVal = productAttributeVal.getDataDefinition().save(productAttributeVal);
+                        if (!productAttributeVal.isValid()) {
+                            addErrorsForContinuous(container, valEntry.getKey(), value, attribute, productAttributeVal);
 
-                        if ("qcadooView.validate.field.error.invalidNumericFormat".equals(productAttributeVal.getError(
-                                ProductAttributeValueFields.VALUE).getMessage())) {
-                            container.getErrors().add(
-                                    translationService.translate("basic.attributeImport.invalidNumericFormat",
-                                            LocaleContextHolder.getLocale(), valEntry.getKey(), valEntry.getValue()));
-                            throw new IllegalStateException("No attribute value defined");
-
-                        } else if ("qcadooView.validate.field.error.invalidScale.max".equals(productAttributeVal.getError(
-                                ProductAttributeValueFields.VALUE).getMessage())) {
-                            container.getErrors().add(
-                                    translationService.translate("basic.attributeImport.invalidScale",
-                                            LocaleContextHolder.getLocale(), String.valueOf(scale), valEntry.getKey(),
-                                            valEntry.getValue()));
-                            throw new IllegalStateException("No attribute value defined");
                         }
-
                     }
                 }
             }
@@ -185,7 +178,7 @@ public class AttributeImportService {
     @Transactional
     private void storeResourceAttributes(AttributeImportContainer container, List<AttributePosition> attributes) {
         Map<String, Entity> attributeEntitiesByNumber = getAttributeEntityByNumberForResource(attributes);
-        for (Map.Entry<String, Map<String, String>> entry : container.getAtribiutesValuesByType().entrySet()) {
+        for (Map.Entry<String, Map<String, List<String>>> entry : container.getAtribiutesValuesByType().entrySet()) {
             Entity resource = dataDefinitionService.get("materialFlowResources", "resource").find()
                     .add(SearchRestrictions.eq("number", entry.getKey())).setMaxResults(1).uniqueResult();
             if (Objects.isNull(resource)) {
@@ -194,8 +187,8 @@ public class AttributeImportService {
                                 entry.getKey()));
                 throw new IllegalStateException("No attribute defined");
             }
-            Map<String, String> valueByAttribute = container.getAtribiutesValuesByType().get(entry.getKey());
-            for (Map.Entry<String, String> valEntry : valueByAttribute.entrySet()) {
+            Map<String, List<String>> valueByAttribute = container.getAtribiutesValuesByType().get(entry.getKey());
+            for (Map.Entry<String, List<String>> valEntry : valueByAttribute.entrySet()) {
                 Entity attribute = attributeEntitiesByNumber.get(valEntry.getKey());
                 if (Objects.isNull(attribute)) {
                     container.getErrors().add(
@@ -203,63 +196,45 @@ public class AttributeImportService {
                                     LocaleContextHolder.getLocale(), valEntry.getKey()));
                     throw new IllegalStateException("No attribute defined");
                 }
-                if (AttributeDataType.CALCULATED.getStringValue().equals(attribute.getStringField(AttributeFields.DATA_TYPE))) {
-                    Entity attributeValue = getAttributeValue(valEntry, attribute);
-                    if (Objects.isNull(attributeValue)) {
-                        container.getErrors().add(
-                                translationService.translate("basic.attributeImport.attributeValueNotExists",
-                                        LocaleContextHolder.getLocale(), valEntry.getKey(), valEntry.getValue()));
-                        throw new IllegalStateException("No attribute value defined");
-                    } else {
-                        Entity productAttributeVal = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
-                                "productAttributeValue").create();
-                        productAttributeVal.setField(ProductAttributeValueFields.VALUE, valEntry.getValue());
-                        productAttributeVal.setField(ProductAttributeValueFields.ATTRIBUTE, attribute.getId());
-                        productAttributeVal.setField("resource", resource.getId());
-                        productAttributeVal.setField(ProductAttributeValueFields.ATTRIBUTE_VALUE, attributeValue.getId());
-                        productAttributeVal = productAttributeVal.getDataDefinition().save(productAttributeVal);
-                        if (!productAttributeVal.isValid()
-                                && !Objects.nonNull(productAttributeVal.getError(ProductAttributeValueFields.ATTRIBUTE_VALUE))
-                                && !"basic.attributeValue.error.valueExists".equals(productAttributeVal
-                                        .getError(ProductAttributeValueFields.ATTRIBUTE_VALUE))) {
-                            container.getErrors().add(
-                                    translationService.translate("basic.attributeImport.attributeValueValidationErrors",
-                                            LocaleContextHolder.getLocale(), valEntry.getKey(), valEntry.getValue()));
-                            throw new IllegalStateException("No attribute value defined");
-                        }
-                    }
-                } else {
-                    Entity productAttributeVal = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
-                            "productAttributeValue").create();
+                for (String valueAttr : valEntry.getValue()) {
+                    String value = valueAttr;
                     if (AttributeValueType.NUMERIC.getStringValue().equals(attribute.getStringField(AttributeFields.VALUE_TYPE))) {
-                        productAttributeVal.setField(ProductAttributeValueFields.VALUE, valEntry.getValue().replace(".", ","));
-                    } else {
-                        productAttributeVal.setField(ProductAttributeValueFields.VALUE, valEntry.getValue());
+                        value = valueAttr.replace(".", ",");
                     }
-                    productAttributeVal.setField(ProductAttributeValueFields.ATTRIBUTE, attribute.getId());
-                    productAttributeVal.setField("resource", resource.getId());
-                    productAttributeVal = productAttributeVal.getDataDefinition().save(productAttributeVal);
-                    if (!productAttributeVal.isValid()
-                            && (AttributeValueType.NUMERIC.getStringValue().equals(attribute
-                                    .getStringField(AttributeFields.VALUE_TYPE)))) {
-                        int scale = attribute.getIntegerField(AttributeFields.PRECISION);
-
-                        if ("qcadooView.validate.field.error.invalidNumericFormat".equals(productAttributeVal.getError(
-                                ProductAttributeValueFields.VALUE).getMessage())) {
+                    if (AttributeDataType.CALCULATED.getStringValue().equals(attribute.getStringField(AttributeFields.DATA_TYPE))) {
+                        Entity attributeValue = getAttributeValue(value, attribute);
+                        if (Objects.isNull(attributeValue)) {
                             container.getErrors().add(
-                                    translationService.translate("basic.attributeImport.invalidNumericFormat",
-                                            LocaleContextHolder.getLocale(), valEntry.getKey(), valEntry.getValue()));
-                            throw new IllegalStateException("No attribute value defined");
-
-                        } else if ("qcadooView.validate.field.error.invalidScale.max".equals(productAttributeVal.getError(
-                                ProductAttributeValueFields.VALUE).getMessage())) {
-                            container.getErrors().add(
-                                    translationService.translate("basic.attributeImport.invalidScale",
-                                            LocaleContextHolder.getLocale(), String.valueOf(scale), valEntry.getKey(),
-                                            valEntry.getValue()));
+                                    translationService.translate("basic.attributeImport.attributeValueNotExists",
+                                            LocaleContextHolder.getLocale(), valEntry.getKey(), value));
                             throw new IllegalStateException("No attribute value defined");
                         }
 
+                        Entity resourceAttributeValue = dataDefinitionService.get("materialFlowResources",
+                                "resourceAttributeValue").create();
+                        resourceAttributeValue.setField(ProductAttributeValueFields.VALUE, value);
+                        resourceAttributeValue.setField(ProductAttributeValueFields.ATTRIBUTE, attribute.getId());
+                        resourceAttributeValue.setField("resource", resource.getId());
+                        resourceAttributeValue.setField("fromDefinition", true);
+                        resourceAttributeValue.setField(ProductAttributeValueFields.ATTRIBUTE_VALUE, attributeValue.getId());
+                        resourceAttributeValue = resourceAttributeValue.getDataDefinition().save(resourceAttributeValue);
+                        if (!resourceAttributeValue.isValid()) {
+                            addErrorsForCalculated(container, valEntry.getKey(), value, resourceAttributeValue);
+                            return;
+                        }
+                    } else {
+                        Entity resourceAttributeValue = dataDefinitionService.get("materialFlowResources",
+                                "resourceAttributeValue").create();
+
+                        resourceAttributeValue.setField(ProductAttributeValueFields.VALUE, value);
+                        resourceAttributeValue.setField(ProductAttributeValueFields.ATTRIBUTE, attribute.getId());
+                        resourceAttributeValue.setField("resource", resource.getId());
+                        resourceAttributeValue.setField("fromDefinition", true);
+                        resourceAttributeValue = resourceAttributeValue.getDataDefinition().save(resourceAttributeValue);
+                        if (!resourceAttributeValue.isValid()) {
+                            addErrorsForContinuous(container, valEntry.getKey(), value, attribute, resourceAttributeValue);
+
+                        }
                     }
                 }
             }
@@ -267,10 +242,41 @@ public class AttributeImportService {
         }
     }
 
-    private Entity getAttributeValue(Map.Entry<String, String> valEntry, Entity attribute) {
+    private void addErrorsForCalculated(AttributeImportContainer container, String key, String value,
+            Entity resourceAttributeValue) {
+        if (!"basic.attributeValue.error.valueExists".equals(resourceAttributeValue.getError(ProductAttributeValueFields.ATTRIBUTE_VALUE)
+                .getMessage())) {
+            container.getErrors().add(
+                    translationService.translate("basic.attributeImport.attributeValueValidationErrors",
+                            LocaleContextHolder.getLocale(), key, value));
+            throw new IllegalStateException("No attribute value defined");
+        }
+    }
+
+    private void addErrorsForContinuous(AttributeImportContainer container, String key, String value, Entity attribute,
+            Entity attributeVal) {
+        Integer scale = attribute.getIntegerField(AttributeFields.PRECISION);
+
+        if ("qcadooView.validate.field.error.invalidNumericFormat".equals(attributeVal
+                .getError(ProductAttributeValueFields.VALUE).getMessage())) {
+            container.getErrors().add(
+                    translationService.translate("basic.attributeImport.invalidNumericFormat", LocaleContextHolder.getLocale(),
+                            key, value));
+            throw new IllegalStateException("No attribute value defined");
+
+        } else if ("qcadooView.validate.field.error.invalidScale.max".equals(attributeVal.getError(
+                ProductAttributeValueFields.VALUE).getMessage())) {
+            container.getErrors().add(
+                    translationService.translate("basic.attributeImport.invalidScale", LocaleContextHolder.getLocale(),
+                            String.valueOf(scale), key, value));
+            throw new IllegalStateException("No attribute value defined");
+        }
+    }
+
+    private Entity getAttributeValue(String valEntry, Entity attribute) {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.ATTRIBUTE_VALUE).find()
                 .add(SearchRestrictions.belongsTo(AttributeValueFields.ATTRIBUTE, attribute))
-                .add(SearchRestrictions.eq(AttributeValueFields.VALUE, valEntry.getValue())).setMaxResults(1).uniqueResult();
+                .add(SearchRestrictions.eq(AttributeValueFields.VALUE, valEntry)).setMaxResults(1).uniqueResult();
     }
 
     private Map<String, Entity> getAttributeEntityByNumberForProduct(List<AttributePosition> attributes) {
@@ -292,6 +298,9 @@ public class AttributeImportService {
     private List<AttributePosition> prepareAttributesList(XSSFSheet sheet) {
         List<AttributePosition> positions = Lists.newArrayList();
         Row row = sheet.getRow(0);
+        if(Objects.isNull(row)) {
+            return positions;
+        }
         Iterator<Cell> cellIterator = row.cellIterator();
         while (cellIterator.hasNext()) {
             Cell cell = cellIterator.next();
@@ -317,7 +326,7 @@ public class AttributeImportService {
                 if (Objects.nonNull(productCell) && StringUtils.isNoneEmpty(productCell.getStringCellValue())) {
                     String number = productCell.getStringCellValue();
                     if (container.getAtribiutesValuesByType().containsKey(number)) {
-                        Map<String, String> valueByAttribute = container.getAtribiutesValuesByType().get(number);
+                        Map<String, List<String>> valueByAttribute = container.getAtribiutesValuesByType().get(number);
                         attributes.forEach(ap -> {
                             Cell valCell = row.getCell(ap.getPosition());
                             if (Objects.nonNull(valCell)) {
@@ -325,20 +334,25 @@ public class AttributeImportService {
                                 String val = valCell.getStringCellValue();
 
                                 if (StringUtils.isNoneEmpty(val)) {
-                                    valueByAttribute.put(ap.getNumber(), val);
+                                    List<String> vals = valueByAttribute.get(ap.getNumber());
+                                    if (Objects.isNull(vals)) {
+                                        vals = Lists.newArrayList();
+                                    }
+                                    vals.add(val);
+                                    valueByAttribute.put(ap.getNumber(), vals);
                                 }
                             }
                         });
                     } else {
-                        Map<String, String> valueByAttribute = Maps.newHashMap();
+                        Map<String, List<String>> valueByAttribute = Maps.newHashMap();
                         attributes.forEach(ap -> {
                             Cell valCell = row.getCell(ap.getPosition());
                             if (Objects.nonNull(valCell)) {
                                 valCell.setCellType(Cell.CELL_TYPE_STRING);
                                 String val = valCell.getStringCellValue();
-
+                                List<String> vals = Lists.newArrayList(val);
                                 if (StringUtils.isNoneEmpty(val)) {
-                                    valueByAttribute.put(ap.getNumber(), val);
+                                    valueByAttribute.put(ap.getNumber(), vals);
                                 }
                             }
                         });
@@ -353,7 +367,7 @@ public class AttributeImportService {
             }
         }
 
-        for (Map.Entry<String, Map<String, String>> entry : container.getAtribiutesValuesByType().entrySet()) {
+        for (Map.Entry<String, Map<String, List<String>>> entry : container.getAtribiutesValuesByType().entrySet()) {
             if (entry.getValue().isEmpty()) {
                 container.getErrors().add(
                         translationService.translate("basic.attributeImport.no" + attributeValueFor + "AttributeDefined",

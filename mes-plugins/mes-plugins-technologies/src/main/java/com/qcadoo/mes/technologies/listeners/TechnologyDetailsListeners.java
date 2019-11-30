@@ -26,13 +26,16 @@ package com.qcadoo.mes.technologies.listeners;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT_STRUCTURE_TREE;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
@@ -55,6 +58,14 @@ import com.qcadoo.view.api.components.WindowComponent;
 
 @Service
 public class TechnologyDetailsListeners {
+
+    private static final String L_WINDOW = "window";
+
+    private static final String L_FORM = "form";
+
+    private static final String L_PRODUCT_STRUCTURE_FORM = "productStructureForm";
+
+    private static final String L_PRODUCT_STRUCTURE = "productStructure";
 
     private static final String L_OUT_PRODUCTS_REFERENCE = "outProducts";
 
@@ -79,16 +90,14 @@ public class TechnologyDetailsListeners {
         final TreeComponent technologyTree = (TreeComponent) view.getComponentByReference(L_TECHNOLOGY_TREE_REFERENCE);
         final Long selectedEntityId = technologyTree.getSelectedEntityId();
 
-        Entity selectedOperation = dataDefinitionService
-                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
-                .get(selectedEntityId);
+        Entity selectedOperation = getTechnologyOperationComponentDD().get(selectedEntityId);
 
         boolean removed = removeTOCService.removeOnlySelectedOperation(selectedOperation, view);
 
         if (removed) {
-            FormComponent form = (FormComponent) view.getComponentByReference("form");
+            FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
 
-            form.performEvent(view, "reset");
+            technologyForm.performEvent(view, "reset");
 
             view.addMessage("technologies.technologyDetails.window.treeTab.technologyTree.success",
                     ComponentState.MessageType.SUCCESS);
@@ -97,7 +106,7 @@ public class TechnologyDetailsListeners {
 
     public void setGridEditable(final ViewDefinitionState view) {
         final TreeComponent technologyTree = (TreeComponent) view.getComponentByReference(L_TECHNOLOGY_TREE_REFERENCE);
-        final boolean gridsShouldBeEnabled = technologyTree.getSelectedEntityId() != null;
+        final boolean gridsShouldBeEnabled = Objects.nonNull(technologyTree.getSelectedEntityId());
 
         for (String componentReference : Sets.newHashSet(L_OUT_PRODUCTS_REFERENCE, L_IN_PRODUCTS_REFERENCE)) {
             view.getComponentByReference(componentReference).setEnabled(gridsShouldBeEnabled);
@@ -105,42 +114,47 @@ public class TechnologyDetailsListeners {
     }
 
     public void generateProductStructure(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
-        FormComponent productStructureForm = (FormComponent) view.getComponentByReference("productStructureForm");
-        Entity technology = form.getEntity();
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productStructureForm = (FormComponent) view.getComponentByReference(L_PRODUCT_STRUCTURE_FORM);
+
+        Entity technology = technologyForm.getEntity();
         Entity productTechnology = technology.copy();
         EntityTree generatedTree = productStructureTreeService.generateProductStructureTree(view, technology);
 
         productTechnology.setField(PRODUCT_STRUCTURE_TREE, generatedTree);
         productStructureForm.setEntity(productTechnology);
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-        window.setActiveTab("productStructure");
+
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        window.setActiveTab(L_PRODUCT_STRUCTURE);
     }
 
     public void fillProducts(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
-        Entity technology = dataDefinitionService
-                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).get(form.getEntityId());
-        List<Entity> tocs = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
-        DataDefinition opicDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT);
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Entity technology = getTechnologyDD().get(technologyForm.getEntityId());
+
+        List<Entity> technologyOperationComponents = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
         List<Entity> operationsWithManyOutProducts = Lists.newArrayList();
 
-        for (Entity toc : tocs) {
-            List<Entity> outComponents = toc.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
-            Entity parent = toc.getBelongsToField(TechnologyOperationComponentFields.PARENT);
+        for (Entity technologyOperationComponent : technologyOperationComponents) {
+            List<Entity> operationProductOutComponents = technologyOperationComponent
+                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
+            Entity parent = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.PARENT);
 
-            if (outComponents.size() == 1 && Objects.nonNull(parent)) {
-                Entity opoc = outComponents.get(0);
-                Entity opic = opicDD.create();
-                opic.setField(OperationProductInComponentFields.QUANTITY,
-                        opoc.getField(OperationProductOutComponentFields.QUANTITY));
-                opic.setField(OperationProductInComponentFields.PRODUCT,
-                        opoc.getBelongsToField(OperationProductOutComponentFields.PRODUCT));
-                opic.setField(OperationProductInComponentFields.OPERATION_COMPONENT, parent);
-                opicDD.save(opic);
-            } else if (outComponents.size() > 1) {
-                operationsWithManyOutProducts.add(toc.getBelongsToField(TechnologyOperationComponentFields.OPERATION));
+            if (operationProductOutComponents.size() == 1 && Objects.nonNull(parent)) {
+                Entity operationProductOutComponent = operationProductOutComponents.get(0);
+                Entity operationProductInComponent = getOperationProductInComponentDD().create();
+
+                operationProductInComponent.setField(OperationProductInComponentFields.QUANTITY,
+                        operationProductOutComponent.getField(OperationProductOutComponentFields.QUANTITY));
+                operationProductInComponent.setField(OperationProductInComponentFields.PRODUCT,
+                        operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT));
+                operationProductInComponent.setField(OperationProductInComponentFields.OPERATION_COMPONENT, parent);
+
+                operationProductInComponent.getDataDefinition().save(operationProductInComponent);
+            } else if (operationProductOutComponents.size() > 1) {
+                operationsWithManyOutProducts
+                        .add(technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION));
             }
         }
 
@@ -149,6 +163,41 @@ public class TechnologyDetailsListeners {
                     operationsWithManyOutProducts.stream().map(o -> o.getStringField(OperationFields.NUMBER))
                             .collect(Collectors.joining(", ")));
         }
+    }
+
+    public void openOperationProductInComponentsImportPage(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity technology = technologyForm.getPersistedEntityWithIncludedFormValues();
+
+        Long technologyId = technology.getId();
+
+        if (Objects.nonNull(technologyId)) {
+            Map<String, Object> parameters = Maps.newHashMap();
+
+            parameters.put("form.id", technologyId);
+
+            JSONObject context = new JSONObject(parameters);
+
+            StringBuilder url = new StringBuilder("../page/technologies/operationProductInComponentsImport.html")
+                    .append("?context=").append(context.toString());
+
+            view.openModal(url.toString());
+        }
+    }
+
+    private DataDefinition getTechnologyDD() {
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY);
+    }
+
+    private DataDefinition getTechnologyOperationComponentDD() {
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT);
+    }
+
+    private DataDefinition getOperationProductInComponentDD() {
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT);
     }
 
 }

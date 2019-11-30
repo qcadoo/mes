@@ -292,10 +292,6 @@ public class DocumentDetailsHooks {
                 .getItemByName(L_SHOW_PRODUCT_ATTRIBUTES);
 
         Entity document = documentForm.getEntity();
-
-        String errorMessage = null;
-        String descriptionMessage = "materialFlowResources.documentDetails.window.ribbon.import.openPositionsImportPage.description";
-
         String state = document.getStringField(DocumentFields.STATE);
         String documentType = document.getStringField(DocumentFields.TYPE);
 
@@ -303,6 +299,9 @@ public class DocumentDetailsHooks {
                 DocumentType.INTERNAL_OUTBOUND.getStringValue(), DocumentType.RELEASE.getStringValue());
         List<String> documentTypesWithAdmission = Lists.newArrayList(DocumentType.RECEIPT.getStringValue(),
                 DocumentType.INTERNAL_INBOUND.getStringValue());
+
+        String errorMessage = null;
+        String descriptionMessage = "materialFlowResources.documentDetails.window.ribbon.import.openPositionsImportPage.description";
 
         boolean isSaved = Objects.nonNull(documentForm.getEntityId());
         boolean isDraft = DocumentState.DRAFT.getStringValue().equals(state);

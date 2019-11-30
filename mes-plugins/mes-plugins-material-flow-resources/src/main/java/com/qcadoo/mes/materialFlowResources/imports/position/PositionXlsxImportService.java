@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
@@ -36,7 +37,9 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 
 @Service
 public class PositionXlsxImportService extends XlsxImportService {
@@ -45,29 +48,73 @@ public class PositionXlsxImportService extends XlsxImportService {
 
     private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM = "qcadooView.validate.field.error.custom";
 
+    @Autowired
+    private NumberService numberService;
+
     @Override
     public Entity createEntity(final String pluginIdentifier, final String modelName) {
         Entity position = getDataDefinition(pluginIdentifier, modelName).create();
-
-        position.setField(PositionFields.CONVERSION, BigDecimal.ONE);
 
         return position;
     }
 
     @Override
-    public boolean validateEntity(final Entity position) {
+    public boolean validateEntity(final Entity position, final DataDefinition positionDD) {
         Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+        Entity locationTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
+
+        validateQuantitiesAndUnits(position, positionDD, product);
+        validateRequiredFields(position, positionDD, locationTo);
+        validateStorageLocation(position, positionDD, product, locationTo);
+        validatePalletNumber(position, positionDD);
+
+        return position.isValid();
+    }
+
+    private void validateQuantitiesAndUnits(final Entity position, final DataDefinition positionDD, final Entity product) {
+        BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
         BigDecimal givenQuantity = position.getDecimalField(PositionFields.GIVEN_QUANTITY);
         BigDecimal conversion = position.getDecimalField(PositionFields.CONVERSION);
+
+        if (Objects.nonNull(product)) {
+            String unit = product.getStringField(ProductFields.UNIT);
+            String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+
+            boolean quantitiesNonNull = Objects.nonNull(givenQuantity) && Objects.nonNull(conversion);
+
+            if (Objects.nonNull(additionalUnit)) {
+                position.setField(PositionFields.GIVEN_UNIT, additionalUnit);
+
+                if (Objects.isNull(givenQuantity)) {
+                    position.addError(positionDD.getField(PositionFields.GIVEN_QUANTITY),
+                            L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
+                }
+                if (Objects.isNull(conversion)) {
+                    position.addError(positionDD.getField(PositionFields.CONVERSION), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
+                }
+
+                if (quantitiesNonNull) {
+                    BigDecimal multipliedQuantity = quantity.multiply(conversion, numberService.getMathContext());
+
+                    if (multipliedQuantity.compareTo(givenQuantity) != 0) {
+                        position.addError(positionDD.getField(PositionFields.GIVEN_QUANTITY),
+                                L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM);
+                    }
+                }
+            } else {
+                position.setField(PositionFields.GIVEN_QUANTITY, quantity);
+                position.setField(PositionFields.GIVEN_UNIT, unit);
+                position.setField(PositionFields.CONVERSION, BigDecimal.ONE);
+            }
+        }
+    }
+
+    private void validateRequiredFields(final Entity position, final DataDefinition positionDD, final Entity locationTo) {
         BigDecimal price = position.getDecimalField(PositionFields.PRICE);
         String batch = position.getStringField(PositionFields.BATCH);
         Date productionDate = position.getDateField(PositionFields.PRODUCTION_DATE);
         Date expirationDate = position.getDateField(PositionFields.EXPIRATION_DATE);
-        Entity storageLocation = position.getBelongsToField(PositionFields.STORAGE_LOCATION);
-        Entity palletNumber = position.getBelongsToField(PositionFields.PALLET_NUMBER);
-
-        Entity locationTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
 
         if (Objects.nonNull(locationTo)) {
             boolean requirePrice = locationTo.getBooleanField(LocationFieldsMFR.REQUIRE_PRICE);
@@ -76,60 +123,48 @@ public class PositionXlsxImportService extends XlsxImportService {
             boolean requireExpirationDate = locationTo.getBooleanField(LocationFieldsMFR.REQUIRE_EXPIRATION_DATE);
 
             if (requirePrice && Objects.isNull(price)) {
-                position.addError(position.getDataDefinition().getField(PositionFields.PRICE),
-                        L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
+                position.addError(positionDD.getField(PositionFields.PRICE), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
             }
             if (requireBatch && Objects.isNull(batch)) {
-                position.addError(position.getDataDefinition().getField(PositionFields.BATCH),
-                        L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
+                position.addError(positionDD.getField(PositionFields.BATCH), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
             }
             if (requireProductionDate && Objects.isNull(productionDate)) {
-                position.addError(position.getDataDefinition().getField(PositionFields.PRODUCTION_DATE),
+                position.addError(positionDD.getField(PositionFields.PRODUCTION_DATE),
                         L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
             }
             if (requireExpirationDate && Objects.isNull(expirationDate)) {
-                position.addError(position.getDataDefinition().getField(PositionFields.EXPIRATION_DATE),
+                position.addError(positionDD.getField(PositionFields.EXPIRATION_DATE),
                         L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
             }
         }
-        if (Objects.nonNull(product)) {
-            String unit = product.getStringField(ProductFields.UNIT);
-            String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+    }
 
-            if (Objects.nonNull(additionalUnit)) {
-                position.setField(PositionFields.GIVEN_UNIT, additionalUnit);
+    private void validateStorageLocation(final Entity position, final DataDefinition positionDD, final Entity product,
+            final Entity locationTo) {
+        Entity storageLocation = position.getBelongsToField(PositionFields.STORAGE_LOCATION);
 
-                if (Objects.isNull(givenQuantity)) {
-                    position.addError(position.getDataDefinition().getField(PositionFields.GIVEN_QUANTITY),
-                            L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
-                }
-                if (Objects.isNull(conversion)) {
-                    position.addError(position.getDataDefinition().getField(PositionFields.CONVERSION),
-                            L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
-                }
-            } else {
-                position.setField(PositionFields.GIVEN_UNIT, unit);
-            }
-        }
-        if (Objects.nonNull(storageLocation)) {
+        if (Objects.nonNull(product) && Objects.nonNull(locationTo) && Objects.nonNull(storageLocation)) {
             Entity storageLocationLocation = storageLocation.getBelongsToField(StorageLocationFields.LOCATION);
             Entity storageLocationProduct = storageLocation.getBelongsToField(StorageLocationFields.PRODUCT);
 
-            if ((Objects.nonNull(storageLocationLocation) && !locationTo.equals(storageLocationLocation))
+            if (!storageLocation.isActive()
+                    || (Objects.nonNull(storageLocationLocation) && !locationTo.equals(storageLocationLocation))
                     || (Objects.nonNull(storageLocationProduct) && !product.equals(storageLocationProduct)))
-                position.addError(position.getDataDefinition().getField(PositionFields.STORAGE_LOCATION),
+                position.addError(positionDD.getField(PositionFields.STORAGE_LOCATION),
                         L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM);
         }
+    }
+
+    private void validatePalletNumber(final Entity position, final DataDefinition positionDD) {
+        Entity palletNumber = position.getBelongsToField(PositionFields.PALLET_NUMBER);
+
         if (Objects.nonNull(palletNumber)) {
             Date issueDateTime = palletNumber.getDateField(PalletNumberFields.ISSUE_DATE_TIME);
 
             if (!palletNumber.isActive() || Objects.nonNull(issueDateTime)) {
-                position.addError(position.getDataDefinition().getField(PositionFields.PALLET_NUMBER),
-                        L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM);
+                position.addError(positionDD.getField(PositionFields.PALLET_NUMBER), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM);
             }
         }
-
-        return position.isValid();
     }
 
 }

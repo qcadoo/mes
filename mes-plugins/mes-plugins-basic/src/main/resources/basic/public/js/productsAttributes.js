@@ -32,12 +32,18 @@ QCD.productsAttributes = (function () {
     }
 
     function numberFormatter(row, cell, value, columnDef, dataContext) {
-        return value ? value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") : value;
+        if (value) {
+            let parts = value.toString().split(".");
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+            return parts.join(",");
+        } else {
+            return value;
+        }
     }
 
     function init() {
-        QCD.components.elements.utils.LoadingIndicator.blockElement($('body'));
         $.get("/rest/prodAttributes/columns", function (columns) {
+            QCD.components.elements.utils.LoadingIndicator.blockElement($('body'));
             $('#productAttributesGrid').height($('#window_windowContent').height() - 45);
             $('#productAttributesGrid').width($('#window_windowContent').width() - 20);
             for (let i = 0; i < columns.length; i++) {

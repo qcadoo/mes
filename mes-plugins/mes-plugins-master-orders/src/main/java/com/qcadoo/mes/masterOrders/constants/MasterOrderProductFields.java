@@ -45,7 +45,7 @@ public final class MasterOrderProductFields {
 
     public static final String LEFT_TO_RELASE = "leftToRelease";
 
-    public static final String CPMMENTS = "comments";
+    public static final String COMMENTS = "comments";
 
     public static final String MASTER_ORDER_POSITION_STATUS = "masterOrderPositionStatus";
 

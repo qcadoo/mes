@@ -85,7 +85,7 @@ public class CsvImportService extends ImportService {
                 rowProcessorService.update(entityToUpdate, checkOnUpdate);
             }
 
-            validateEntity(entity);
+            validateEntity(entity, entity.getDataDefinition());
 
             rowProcessorService.process();
 

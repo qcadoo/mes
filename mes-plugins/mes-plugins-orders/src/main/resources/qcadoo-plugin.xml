@@ -159,6 +159,10 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="createCollectiveOrders" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
             <model:boolean name="reasonNeededWhenCorrectingDateFrom" default="false"/>
         </model:model-field>
         <model:model-field plugin="basic" model="parameter">

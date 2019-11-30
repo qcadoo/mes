@@ -6,6 +6,7 @@ import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.constants.AttributeDataType;
 import com.qcadoo.mes.basic.constants.AttributeFields;
 import com.qcadoo.mes.basic.constants.AttributeValueType;
+import com.qcadoo.mes.basic.constants.ProductAttributeValueFields;
 import com.qcadoo.mes.productionCounting.constants.ProdOutResourceAttrValFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.model.api.BigDecimalUtils;
@@ -44,7 +45,7 @@ public class ProdOutResourceAttrValHooks {
 
         if (AttributeDataType.CONTINUOUS.getStringValue().equals(attribute.getStringField(AttributeFields.DATA_TYPE))
                 && AttributeValueType.NUMERIC.getStringValue().equals(attribute.getStringField(AttributeFields.VALUE_TYPE))) {
-            Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParse(
+            Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParseAndIgnoreSeparator(
                     resourceAttributeValue.getStringField(ProdOutResourceAttrValFields.VALUE), LocaleContextHolder.getLocale());
             if (eitherNumber.isRight() && eitherNumber.getRight().isPresent()) {
                 int scale = attribute.getIntegerField(AttributeFields.PRECISION);
@@ -59,6 +60,8 @@ public class ProdOutResourceAttrValHooks {
                         "qcadooView.validate.field.error.invalidNumericFormat");
                 return false;
             }
+            resourceAttributeValue.setField(
+                    ProductAttributeValueFields.VALUE, BigDecimalUtils.toString(eitherNumber.getRight().get()));
         }
         if (checkIfValueExists(resourceAttributeValueDD, resourceAttributeValue)) {
             return false;
@@ -106,5 +109,17 @@ public class ProdOutResourceAttrValHooks {
         }
 
         return false;
+    }
+
+    public void onSave(final DataDefinition attributeValueDD, final Entity attributeValue) {
+        Entity attribute = attributeValue.getBelongsToField(ProdOutResourceAttrValFields.ATTRIBUTE);
+        if (AttributeValueType.NUMERIC.getStringValue().equals(attribute.getStringField(AttributeFields.VALUE_TYPE))) {
+            Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParseAndIgnoreSeparator(
+                    attributeValue.getStringField(ProdOutResourceAttrValFields.VALUE), LocaleContextHolder.getLocale());
+            if (eitherNumber.isRight() && eitherNumber.getRight().isPresent()) {
+                attributeValue.setField(
+                        ProdOutResourceAttrValFields.VALUE, BigDecimalUtils.toString(eitherNumber.getRight().get()));
+            }
+        }
     }
 }

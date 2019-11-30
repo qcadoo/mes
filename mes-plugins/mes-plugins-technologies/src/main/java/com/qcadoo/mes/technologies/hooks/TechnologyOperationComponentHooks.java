@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.technologies.TechnologyService;
@@ -47,6 +38,15 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class TechnologyOperationComponentHooks {
@@ -204,7 +204,12 @@ public class TechnologyOperationComponentHooks {
                 copy.setField(entry.getKey(), copies);
             }
         }
-
+        copy.setField("productionCountingQuantities", null);
+        copy.setField("productionCountingOperationRuns", null);
+        copy.setField("coverageRegisters", null);
+        copy.setField("operationalTasks", null);
+        copy.setField("operCompTimeCalculations", null);
+        copy.setField("barcodeOperationComponents", null);
         return copy;
     }
 

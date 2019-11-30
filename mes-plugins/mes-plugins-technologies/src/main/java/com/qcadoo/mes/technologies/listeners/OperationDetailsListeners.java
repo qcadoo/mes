@@ -42,7 +42,8 @@ public class OperationDetailsListeners {
     @Autowired
     private OperationDetailsHooks operationDetailsHooks;
 
-    public void setProductionLineLookup(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void setProductionLineLookup(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
         operationDetailsHooks.setProductionLineLookup(view);
     }
 
@@ -50,10 +51,13 @@ public class OperationDetailsListeners {
         operationDetailsHooks.setWorkstationsLookup(view);
     }
 
-    public void setWorkstationsTabFields(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+    public void setWorkstationsTabFields(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
         operationDetailsHooks.setWorkstationsTabFields(view);
+
         FieldComponent assignedToOperation = (FieldComponent) view.getComponentByReference(OperationFields.ASSIGNED_TO_OPERATION);
         String assignedToOperationValue = (String) assignedToOperation.getFieldValue();
+
         if (AssignedToOperation.WORKSTATIONS.getStringValue().equals(assignedToOperationValue)) {
             operationDetailsHooks.clearLookupField(view, OperationFields.WORKSTATION_TYPE);
             operationDetailsHooks.clearLookupField(view, OperationFields.DIVISION);
@@ -65,13 +69,17 @@ public class OperationDetailsListeners {
         }
     }
 
-    public void addUpTheNumberOfWorktations(final ViewDefinitionState view, final ComponentState componentState,
+    public void addUpTheNumberOfWorkstations(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+
         int size = form.getPersistedEntityWithIncludedFormValues().getHasManyField(OperationFields.WORKSTATIONS).size();
+
         FieldComponent quantityOfWorkstations = (FieldComponent) view
                 .getComponentByReference(OperationFields.QUANTITY_OF_WORKSTATIONS);
+
         quantityOfWorkstations.setFieldValue(size);
         quantityOfWorkstations.requestComponentUpdateState();
     }
+
 }

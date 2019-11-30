@@ -8,17 +8,17 @@ import java.util.Map;
 
 public class AttributeImportContainer {
 
-    private Map<String, Map<String, String>> atribiutesValuesByType = Maps.newHashMap();
+    private Map<String, Map<String, List<String>>> atribiutesValuesByType = Maps.newHashMap();
 
     private List<String> errors = Lists.newArrayList();
 
     private List<String> messages = Lists.newArrayList();
 
-    public Map<String, Map<String, String>> getAtribiutesValuesByType() {
+    public Map<String, Map<String, List<String>>> getAtribiutesValuesByType() {
         return atribiutesValuesByType;
     }
 
-    public void setAtribiutesValuesByType(Map<String, Map<String, String>> atribiutesValuesByType) {
+    public void setAtribiutesValuesByType(Map<String, Map<String, List<String>>> atribiutesValuesByType) {
         this.atribiutesValuesByType = atribiutesValuesByType;
     }
 

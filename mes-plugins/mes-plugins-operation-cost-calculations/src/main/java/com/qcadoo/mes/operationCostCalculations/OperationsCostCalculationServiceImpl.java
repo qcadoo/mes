@@ -23,18 +23,6 @@
  */
 package com.qcadoo.mes.operationCostCalculations;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
@@ -58,6 +46,17 @@ import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.IntegerUtils;
 import com.qcadoo.model.api.NumberService;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import static com.google.common.base.Preconditions.checkArgument;
 
 @Service
 public class OperationsCostCalculationServiceImpl implements OperationsCostCalculationService {
@@ -330,6 +329,10 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         if (areHourly) {
             calculationOperationComponent.setField(CalculationOperationComponentFields.DURATION, new BigDecimal(
                     operationWorkTimes.getDuration(), numberService.getMathContext()));
+            calculationOperationComponent.setField(CalculationOperationComponentFields.MACHINE_WORK_TIME,
+                    operationWorkTimes.getMachineWorkTime());
+            calculationOperationComponent.setField(CalculationOperationComponentFields.LABOR_WORK_TIME,
+                    operationWorkTimes.getLaborWorkTime());
             calculationOperationComponent.setField(CalculationOperationComponentFields.MACHINE_HOURLY_COST,
                     costs.get(L_MACHINE_HOURLY_COST));
             calculationOperationComponent.setField(CalculationOperationComponentFields.LABOR_HOURLY_COST,

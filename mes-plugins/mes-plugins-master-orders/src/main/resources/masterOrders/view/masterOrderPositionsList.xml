@@ -53,7 +53,7 @@
                             this.addOnChangeListener({
                                 onClick: function() {
                                         if(window.canClose()) {
-                                             #{grid}.performEvent('generateOrders', []);
+                                             #{grid}.performEvent('goToGenerateOrders', []);
                                         }
                                 }
                             });
@@ -132,12 +132,26 @@
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
 
+            <option type="hasPredefinedFilters" value="true"/>
+            <option type="defaultPredefinedFilterName" value="new"/>
+
+            <predefinedFilters>
+                <predefinedFilter name="all">
+                </predefinedFilter>
+                <predefinedFilter name="new">
+                    <filterRestriction column="masterOrderPositionStatus" value="nowa"/>
+                </predefinedFilter>
+                <predefinedFilter name="ordered">
+                    <filterRestriction column="masterOrderPositionStatus" value="zlecona"/>
+                </predefinedFilter>
+            </predefinedFilters>
+
             <listener event="createOrder"
                       class="com.qcadoo.mes.masterOrders.listeners.MasterOrderPositionsListListeners"
                       method="createOrder"/>
-            <listener event="generateOrders"
+            <listener event="goToGenerateOrders"
                       class="com.qcadoo.mes.masterOrders.listeners.MasterOrderPositionsListListeners"
-                      method="generateOrders"/>
+                      method="goToGenerateOrders"/>
         </component>
 
         <option type="fixedHeight" value="true"/>

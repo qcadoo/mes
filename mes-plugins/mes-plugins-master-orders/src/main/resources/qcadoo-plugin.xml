@@ -76,6 +76,7 @@
         <model:model model="masterOrderProduct" resource="model/masterOrderProduct.xml"/>
         <model:model model="masterOrderPositionDto" resource="model/masterOrderPositionDto.xml"/>
         <model:model model="masterOrderDto" resource="model/masterOrderDto.xml"/>
+        <model:model model="generatingOrdersHelper" resource="model/generatingOrdersHelper.xml"/>
 
         <model:dictionary name="masterOrderState"/>
         <model:dictionary name="masterOrderPositionStatus"/>
@@ -90,6 +91,9 @@
 
         <model:model-field model="parameter" plugin="basic">
             <model:boolean name="ordersGenerationNotCompleteDates" default="false"/>
+        </model:model-field>
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="completeMasterOrderAfterOrderingPositions" default="false"/>
         </model:model-field>
         <model:model-field model="parameter" plugin="basic">
             <model:hasMany name="masterOrderDefinitions" model="masterOrderDefinition" plugin="masterOrders"
@@ -162,6 +166,7 @@
         <view:view resource="view/masterOrderDefinitionDetails.xml"/>
 
         <view:view resource="view/masterOrderPositionsList.xml"/>
+        <view:view resource="view/generatingOrders.xml"/>
 
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/masterOrderDefinitionsParameters.xml"/>

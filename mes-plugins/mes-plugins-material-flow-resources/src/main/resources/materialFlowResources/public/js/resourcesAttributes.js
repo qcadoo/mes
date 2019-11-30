@@ -35,7 +35,13 @@ QCD.resourcesAttributes = (function () {
     }
 
     function numberFormatter(row, cell, value, columnDef, dataContext) {
-        return value ? value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") : value;
+        if (value) {
+            let parts = value.toString().split(".");
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+            return parts.join(",");
+        } else {
+            return value;
+        }
     }
 
     /** Calculate the total of an existing field from the datagrid
@@ -79,20 +85,21 @@ QCD.resourcesAttributes = (function () {
         };
     }
 
-    function updateTotalRowValue(grid, columnId, total){
+    function updateTotalRowValue(grid, columnId, total) {
         let columnElement = grid.getFooterRowColumn(columnId);
         $(columnElement).html(total);
     }
 
-    function updateAllTotals(grid, dataView){
-        updateTotalRowValue(grid, "availableQuantity", CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("availableQuantity"), dataView));
-        updateTotalRowValue(grid, "value", CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("value"), dataView));
+    function updateAllTotals(grid, dataView) {
+        let availableQuantitySum = CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("availableQuantity"), dataView);
+        let valueSum = CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("value"), dataView);
+        updateTotalRowValue(grid, "availableQuantity", availableQuantitySum ? numberFormatter(null, null, Number(availableQuantitySum.toFixed(5))) : availableQuantitySum);
+        updateTotalRowValue(grid, "value", valueSum ? numberFormatter(null, null, Number(valueSum.toFixed(5))) : valueSum);
     }
 
-
     function init() {
-        QCD.components.elements.utils.LoadingIndicator.blockElement($('body'));
         $.get("/rest/resAttributes/columns", function (columns) {
+            QCD.components.elements.utils.LoadingIndicator.blockElement($('body'));
             $('#resourceAttributesGrid').height($('#window_windowContent').height() - 45);
             $('#resourceAttributesGrid').width($('#window_windowContent').width() - 20);
             for (let i = 0; i < columns.length; i++) {
@@ -163,7 +170,7 @@ QCD.resourcesAttributes = (function () {
                 dataView.sort(comparer, args.sortAsc);
             });
 
-            grid.onColumnsReordered.subscribe(function(e, args) {
+            grid.onColumnsReordered.subscribe(function (e, args) {
                 updateAllTotals(grid, dataView);
             });
 

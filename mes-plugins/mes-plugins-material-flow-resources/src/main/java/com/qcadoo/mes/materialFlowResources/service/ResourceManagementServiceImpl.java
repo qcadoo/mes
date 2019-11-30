@@ -258,6 +258,18 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
         newResource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, quantityInAdditionalUnit);
 
+        List<Entity> attributeValues = Lists.newArrayList();
+        resource.getHasManyField(ResourceFields.RESOURCE_ATTRIBIUTE_VALUES).forEach(
+                pav -> {
+                    Entity av = pav.getDataDefinition().create();
+                    av.setField(ResourceAttributeValueFields.VALUE, pav.getStringField(ResourceAttributeValueFields.VALUE));
+                    av.setField(ResourceAttributeValueFields.ATTRIBUTE,
+                            pav.getBelongsToField(ResourceAttributeValueFields.ATTRIBUTE));
+                    av.setField(ResourceAttributeValueFields.ATTRIBUTE_VALUE,
+                            pav.getBelongsToField(ResourceAttributeValueFields.ATTRIBUTE_VALUE));
+                    attributeValues.add(av);
+                });
+        newResource.setField(ResourceFields.RESOURCE_ATTRIBIUTE_VALUES, attributeValues);
         resourceStockService.createResourceStock(newResource);
 
         return resource.getDataDefinition().save(newResource);
@@ -449,6 +461,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         position.setField(PositionFields.WASTE, newPosition.getField(PositionFields.WASTE));
         position.setField(PositionFields.QUANTITY, newPosition.getField(PositionFields.QUANTITY));
         position.setField(PositionFields.GIVEN_QUANTITY, newPosition.getField(PositionFields.GIVEN_QUANTITY));
+        if(position.getHasManyField(PositionFields.POSITION_ATTRIBUTE_VALUES).isEmpty()) {
+            position.setField(PositionFields.POSITION_ATTRIBUTE_VALUES, newPosition.getField(PositionFields.POSITION_ATTRIBUTE_VALUES));
+        }
     }
 
     private List<Entity> updateResources(final Entity warehouse, final Entity position,
