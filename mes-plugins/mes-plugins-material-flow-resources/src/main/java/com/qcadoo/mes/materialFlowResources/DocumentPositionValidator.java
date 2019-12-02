@@ -1,9 +1,11 @@
 package com.qcadoo.mes.materialFlowResources;
 
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.qcadoo.commons.functional.Either;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.BasicException;
 import com.qcadoo.mes.basic.constants.AttributeDataType;
@@ -12,6 +14,7 @@ import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.model.api.BigDecimalUtils;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -627,15 +630,16 @@ public class DocumentPositionValidator {
 
     private List<String> validateBigDecimalFromAttribute(final String value, final AttributeDto attribute) {
         List<String> errors = Lists.newArrayList();
-        BigDecimal val = null;
-        try {
-            val = new BigDecimal(value);
-        } catch (IllegalArgumentException var5) {
+        Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParseAndIgnoreSeparator((String) value,
+                LocaleContextHolder.getLocale());
+
+        if (eitherNumber.isLeft()) {
             errors.add(String.format(translationService.translate("documentGrid.error.position.bigdecimal.invalidNumericFormat",
                     LocaleContextHolder.getLocale()), attribute.getNumber()));
             return errors;
         }
 
+        BigDecimal val = eitherNumber.getRight().get();
         int scale = attribute.getPrecision();
         int valueScale = val.scale();
         if (valueScale > scale) {
