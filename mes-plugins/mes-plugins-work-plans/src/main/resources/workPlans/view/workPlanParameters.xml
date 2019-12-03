@@ -120,7 +120,7 @@
                 <layoutElement column="1" row="1">
                     <component type="borderLayout" name="workPlansBasicBorderLayout">
                         <component type="gridLayout" name="workPlansGridLayout"
-                                   columns="1" rows="3">
+                                   columns="1" rows="4">
                             <layoutElement column="1" row="1">
                                 <component type="checkbox" name="hideDescriptionInWorkPlans"
                                            field="#{form}.hideDescriptionInWorkPlans" reference="hideDescriptionInWorkPlans">
@@ -135,6 +135,13 @@
                                 </component>
                             </layoutElement>
                             <layoutElement column="1" row="3">
+                                <component type="checkbox" name="hideOrderedProductWorkPlan"
+                                           field="#{form}.hideOrderedProductWorkPlan"
+                                           reference="hideOrderedProductWorkPlan" hasDescription="true">
+                                    <option type="labelWidth" value="50"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="4">
                                 <component type="file" name="imageUrlInWorkPlan"
                                            field="#{form}.imageUrlInWorkPlan" reference="imageUrlInWorkPlan"
                                            hasDescription="true">

@@ -61,4 +61,6 @@ public final class ParameterFieldsWP {
 
     public static final String ENABLE_OPERATION_GROUPING = "enableOperationGroupingWorkPlan";
 
+    public static final String HIDE_ORDERED_PRODUCT_WORK_PLAN = "hideOrderedProductWorkPlan";
+
 }

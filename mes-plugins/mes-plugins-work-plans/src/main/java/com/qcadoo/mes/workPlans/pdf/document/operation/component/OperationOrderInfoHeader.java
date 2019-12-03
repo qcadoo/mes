@@ -23,21 +23,30 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.component;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.pdf.PdfPTable;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.AttributeFields;
+import com.qcadoo.mes.basic.constants.CompanyFields;
+import com.qcadoo.mes.basic.constants.ProductAttributeValueFields;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.report.api.pdf.PdfHelper;
+
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.pdf.PdfPTable;
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.constants.CompanyFields;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.report.api.pdf.PdfHelper;
 
 @Component
 public class OperationOrderInfoHeader {
@@ -46,10 +55,14 @@ public class OperationOrderInfoHeader {
 
     private TranslationService translationService;
 
+    private ParameterService parameterService;
+
     @Autowired
-    public OperationOrderInfoHeader(final PdfHelper pdfHelper, final TranslationService translationService) {
+    public OperationOrderInfoHeader(final PdfHelper pdfHelper, final TranslationService translationService,
+            final ParameterService parameterService) {
         this.pdfHelper = pdfHelper;
         this.translationService = translationService;
+        this.parameterService = parameterService;
     }
 
     public void print(final Entity order, final PdfPTable operationTable, final Locale locale) throws DocumentException {
@@ -102,7 +115,37 @@ public class OperationOrderInfoHeader {
                     orderDescription);
         }
 
+        if (!parameterService.getParameter().getBooleanField(ParameterFieldsWP.HIDE_ORDERED_PRODUCT_WORK_PLAN)) {
+            Entity product = order.getBelongsToField(OrderFields.PRODUCT);
+
+            pdfHelper.addTableCellAsOneColumnTable(operationTable,
+                    translationService.translate("workPlans.workPlan.report.operation.orderedProduct", locale),
+                    buildOrderedProductValue(product));
+        }
+
         operationTable.completeRow();
+    }
+
+    private String buildOrderedProductValue(Entity product) {
+        StringBuilder builder = new StringBuilder();
+        builder.append(product.getStringField(ProductFields.NUMBER));
+        List<Entity> attrValues = product.getHasManyField(ProductFields.PRODUCT_ATTRIBUTE_VALUES);
+        Map<String, List<String>> valuesByAttribute = Maps.newHashMap();
+        attrValues.forEach(prodAttrVal -> {
+            String number = prodAttrVal.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).getStringField(
+                    AttributeFields.NUMBER);
+            if (valuesByAttribute.containsKey(number)) {
+                valuesByAttribute.get(number).add(prodAttrVal.getStringField(ProductAttributeValueFields.VALUE));
+            } else {
+                valuesByAttribute.put(number, Lists.newArrayList(prodAttrVal.getStringField(ProductAttributeValueFields.VALUE)));
+            }
+        });
+        for (Map.Entry<String, List<String>> entry : valuesByAttribute.entrySet()) {
+            builder.append("\n");
+            builder.append(entry.getKey()).append(": ");
+            builder.append(String.join(", ", entry.getValue()));
+        }
+        return builder.toString();
     }
 
 }
