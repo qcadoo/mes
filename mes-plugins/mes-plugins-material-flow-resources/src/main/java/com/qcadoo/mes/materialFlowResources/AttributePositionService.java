@@ -58,7 +58,9 @@ public class AttributePositionService {
                         Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParseAndIgnoreSeparator(
                                 (String) entry.getValue(), LocaleContextHolder.getLocale());
                         if (eitherNumber.isRight() && eitherNumber.getRight().isPresent()) {
-                            params.put("value", BigDecimalUtils.toString(eitherNumber.getRight().get()));
+                            int scale = attDefinition.getPrecision();
+
+                            params.put("value", BigDecimalUtils.toString(eitherNumber.getRight().get(), scale));
                         } else {
                             params.put("value", entry.getValue());
                         }

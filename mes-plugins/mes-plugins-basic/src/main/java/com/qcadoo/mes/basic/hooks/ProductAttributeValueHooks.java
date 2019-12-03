@@ -55,8 +55,11 @@ public class ProductAttributeValueHooks {
                         "qcadooView.validate.field.error.invalidNumericFormat");
                 return false;
             }
-            productAttributeValue.setField(
-                    ProductAttributeValueFields.VALUE, BigDecimalUtils.toString(eitherNumber.getRight().get()));
+            productAttributeValue
+                    .setField(
+                            ProductAttributeValueFields.VALUE,
+                            BigDecimalUtils.toString(eitherNumber.getRight().get(),
+                                    attribute.getIntegerField(AttributeFields.PRECISION)));
         }
         return !checkIfValueExists(productAttributeValueDD, productAttributeValue);
     }
@@ -75,8 +78,8 @@ public class ProductAttributeValueHooks {
                     .filter(val -> val.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).getId().equals(attribute.getId())
                             && Objects.nonNull(val.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE))
                             && val.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE).getId()
-                                    .equals(attributeValue.getId())).filter(val -> !val.getId().equals(productAttributeValue.getId()))
-                    .collect(Collectors.toList());
+                                    .equals(attributeValue.getId()))
+                    .filter(val -> !val.getId().equals(productAttributeValue.getId())).collect(Collectors.toList());
             if (!sameValue.isEmpty()) {
                 productAttributeValue.addError(productAttributeValueDD.getField(ProductAttributeValueFields.ATTRIBUTE_VALUE),
                         "basic.attributeValue.error.valueExists");
@@ -107,7 +110,9 @@ public class ProductAttributeValueHooks {
                     productAttributeValue.getStringField(ProductAttributeValueFields.VALUE), LocaleContextHolder.getLocale());
             if (eitherNumber.isRight() && eitherNumber.getRight().isPresent()) {
                 productAttributeValue.setField(
-                        ProductAttributeValueFields.VALUE, BigDecimalUtils.toString(eitherNumber.getRight().get()));
+                        ProductAttributeValueFields.VALUE,
+                        BigDecimalUtils.toString(eitherNumber.getRight().get(),
+                                attribute.getIntegerField(AttributeFields.PRECISION)));
             }
         }
     }
