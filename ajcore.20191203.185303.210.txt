@@ -1,0 +1,424 @@
+---- AspectJ Properties ---
+AspectJ Compiler 1.8.2 built on Thursday Aug 14, 2014 at 21:45:02 GMT
+---- Dump Properties ---
+Dump file: ajcore.20191203.185303.210.txt
+Dump reason: java.lang.IllegalArgumentException
+Dump on exception: true
+Dump at exit condition: abort
+---- Exception Information ---
+java.lang.IllegalArgumentException: MALFORMED
+	at java.util.zip.ZipCoder.toString(ZipCoder.java:58)
+	at java.util.zip.ZipFile.getZipEntry(ZipFile.java:583)
+	at java.util.zip.ZipFile.access$900(ZipFile.java:60)
+	at java.util.zip.ZipFile$ZipEntryIterator.next(ZipFile.java:539)
+	at java.util.zip.ZipFile$ZipEntryIterator.nextElement(ZipFile.java:514)
+	at java.util.zip.ZipFile$ZipEntryIterator.nextElement(ZipFile.java:495)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.batch.ClasspathJar.isPackage(ClasspathJar.java:211)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.batch.ClasspathJar.findClass(ClasspathJar.java:129)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.batch.FileSystem.findClass(FileSystem.java:309)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.batch.FileSystem.findType(FileSystem.java:401)
+	at org.aspectj.ajdt.internal.core.builder.StatefulNameEnvironment.findType(StatefulNameEnvironment.java:102)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment.createPackage(LookupEnvironment.java:768)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope.buildTypeBindings(CompilationUnitScope.java:107)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment.buildTypeBindings(LookupEnvironment.java:201)
+	at org.aspectj.ajdt.internal.compiler.lookup.AjLookupEnvironment.buildTypeBindings(AjLookupEnvironment.java:1435)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.internalBeginToCompile(Compiler.java:749)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.beginToCompile(Compiler.java:383)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.compile(Compiler.java:436)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.compile(Compiler.java:420)
+	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.performCompilation(AjBuildManager.java:1036)
+	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.performBuild(AjBuildManager.java:272)
+	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.batchBuild(AjBuildManager.java:185)
+	at org.aspectj.ajdt.ajc.AjdtCommand.doCommand(AjdtCommand.java:112)
+	at org.aspectj.ajdt.ajc.AjdtCommand.runCommand(AjdtCommand.java:60)
+	at org.aspectj.tools.ajc.Main.run(Main.java:371)
+	at org.aspectj.tools.ajc.Main.runMain(Main.java:248)
+	at org.codehaus.mojo.aspectj.AbstractAjcCompiler.execute(AbstractAjcCompiler.java:524)
+	at org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo(DefaultBuildPluginManager.java:134)
+	at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:208)
+	at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:154)
+	at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:146)
+	at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject(LifecycleModuleBuilder.java:117)
+	at org.apache.maven.lifecycle.internal.builder.multithreaded.MultiThreadedBuilder$1.call(MultiThreadedBuilder.java:200)
+	at org.apache.maven.lifecycle.internal.builder.multithreaded.MultiThreadedBuilder$1.call(MultiThreadedBuilder.java:196)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+---- System Properties ---
+java.runtime.name=Java(TM) SE Runtime Environment
+sun.boot.library.path=/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib
+java.vm.version=25.71-b01-dcevmlight-2
+gopherProxySet=false
+profile=tomcat
+maven.multiModuleProjectDirectory=/Users/krna/Projects/mes
+java.vm.vendor=Oracle Corporation
+java.vendor.url=http://java.oracle.com/
+guice.disable.misplaced.annotation.check=true
+path.separator=:
+java.vm.name=Dynamic Code Evolution 64-Bit Server VM
+file.encoding.pkg=sun.io
+user.country=PL
+sun.java.launcher=SUN_STANDARD
+sun.os.patch.level=unknown
+java.vm.specification.name=Java Virtual Machine Specification
+user.dir=/Users/krna/Projects/mes
+java.runtime.version=1.8.0_144-b01
+java.awt.graphicsenv=sun.awt.CGraphicsEnvironment
+java.endorsed.dirs=/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/endorsed
+os.arch=x86_64
+java.io.tmpdir=/var/folders/gc/95gjsdk5097gpk0z3r8x2qb80000gn/T/
+line.separator=
+
+java.vm.specification.vendor=Oracle Corporation
+os.name=Mac OS X
+classworlds.conf=/usr/local/apache-maven-3.5.0/bin/m2.conf
+sun.jnu.encoding=UTF-8
+java.library.path=/Users/krna/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:.
+maven.conf=/usr/local/apache-maven-3.5.0/conf
+java.specification.name=Java Platform API Specification
+java.class.version=52.0
+sun.management.compiler=HotSpot 64-Bit Tiered Compilers
+os.version=10.14.6
+library.jansi.path=/usr/local/apache-maven-3.5.0/lib/jansi-native/osx64
+http.nonProxyHosts=local|*.local|169.254/16|*.169.254/16
+user.home=/Users/krna
+user.timezone=Europe/Warsaw
+java.awt.printerjob=sun.lwawt.macosx.CPrinterJob
+file.encoding=UTF-8
+java.specification.version=1.8
+java.class.path=/usr/local/apache-maven-3.5.0/boot/plexus-classworlds-2.5.2.jar
+user.name=krna
+java.vm.specification.version=1.8
+sun.java.command=org.codehaus.plexus.classworlds.launcher.Launcher -T 1C clean install -o -Pdev,tomcat,commercial,commercial-dev,fast -Dprofile=tomcat
+java.home=/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre
+sun.arch.data.model=64
+user.language=pl
+java.specification.vendor=Oracle Corporation
+awt.toolkit=sun.lwawt.macosx.LWCToolkit
+java.vm.info=mixed mode
+java.version=1.8.0_144
+java.ext.dirs=/Users/krna/Library/Java/Extensions:/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/ext:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java
+sun.boot.class.path=/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/resources.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/rt.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/sunrsasign.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/jsse.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/jce.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/charsets.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/jfr.jar:/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/classes
+java.vendor=Oracle Corporation
+maven.home=/usr/local/apache-maven-3.5.0
+file.separator=/
+java.vendor.url.bug=http://bugreport.sun.com/bugreport/
+sun.io.unicode.encoding=UnicodeBig
+sun.cpu.endian=little
+socksNonProxyHosts=local|*.local|169.254/16|*.169.254/16
+ftp.nonProxyHosts=local|*.local|169.254/16|*.169.254/16
+sun.cpu.isalist=
+---- Command Line ---
+-1.8
+-encoding
+UTF-8
+-showWeaveInfo
+-source
+1.8
+-target
+1.8
+-classpath
+/Users/krna/Projects/mes/mes-plugins/mes-plugins-basic/target/mes-plugins-basic-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/qcadoo-plugin/1.5-SNAPSHOT-DEV/qcadoo-plugin-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/qcadoo-localization/1.5-SNAPSHOT-DEV/qcadoo-localization-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/qcadoo-security/1.5-SNAPSHOT-DEV/qcadoo-security-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/qcadoo-view/1.5-SNAPSHOT-DEV/qcadoo-view-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/qcadoo-report/1.5-SNAPSHOT-DEV/qcadoo-report-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/qcadoo-plugins-menu-management/1.5-SNAPSHOT-DEV/qcadoo-plugins-menu-management-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/qcadoo-plugins-user-management/1.5-SNAPSHOT-DEV/qcadoo-plugins-user-management-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/qcadoo-plugins-dictionary-management/1.5-SNAPSHOT-DEV/qcadoo-plugins-dictionary-management-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/qcadoo-custom-translation/1.5-SNAPSHOT-DEV/qcadoo-custom-translation-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/qcadoo-plugins-custom-translation-management/1.5-SNAPSHOT-DEV/qcadoo-plugins-custom-translation-management-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/qcadoo-plugins-export/1.5-SNAPSHOT-DEV/qcadoo-plugins-export-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/qcadoo-commons/1.5-SNAPSHOT-DEV/qcadoo-commons-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/qcadoo-testing/1.5-SNAPSHOT-DEV/qcadoo-testing-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/org/springframework/spring-core/3.2.11.RELEASE/spring-core-3.2.11.RELEASE.jar:/Users/krna/.m2/repository/org/jdom/jdom/1.1/jdom-1.1.jar:/Users/krna/.m2/repository/joda-time/joda-time/2.3/joda-time-2.3.jar:/Users/krna/.m2/repository/com/google/guava/guava/17.0/guava-17.0.jar:/Users/krna/.m2/repository/org/slf4j/slf4j-api/1.6.1/slf4j-api-1.6.1.jar:/Users/krna/.m2/repository/org/slf4j/slf4j-log4j12/1.6.1/slf4j-log4j12-1.6.1.jar:/Users/krna/.m2/repository/org/slf4j/jcl-over-slf4j/1.6.1/jcl-over-slf4j-1.6.1.jar:/Users/krna/.m2/repository/javax/servlet/servlet-api/2.5/servlet-api-2.5.jar:/Users/krna/.m2/repository/junit/junit/4.9/junit-4.9.jar:/Users/krna/.m2/repository/org/mockito/mockito-all/1.10.8/mockito-all-1.10.8.jar:/Users/krna/.m2/repository/org/powermock/powermock-module-junit4/1.5.6/powermock-module-junit4-1.5.6.jar:/Users/krna/.m2/repository/org/powermock/powermock-api-mockito/1.5.6/powermock-api-mockito-1.5.6.jar:/Users/krna/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.6.3/jackson-core-2.6.3.jar:/Users/krna/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.6.3/jackson-databind-2.6.3.jar:/Users/krna/.m2/repository/com/google/code/gson/gson/2.6.2/gson-2.6.2.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-cfc-simple/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-cfc-simple-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-core/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-core-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-basic/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-basic-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-orders/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-orders-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-material-requirements/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-material-requirements-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-material-availability/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-material-availability-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-cost-norms-for-product/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-cost-norms-for-product-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-basic-production-counting/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-basic-production-counting-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-production-counting/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-production-counting-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-technologies/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-technologies-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-src-warehouse/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-src-warehouse-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-erc-warehouse/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-erc-warehouse-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-agfo/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-agfo-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-src-agfo/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-src-agfo-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-cost-norms-for-materials/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-cost-norms-for-materials-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-zmbak/1.5-SNAPSHOT-DEV/mes-commercial-plugins-zmbak-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-good-food/1.5-SNAPSHOT-DEV/mes-commercial-plugins-good-food-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-walusiak/1.5-SNAPSHOT-DEV/mes-commercial-plugins-walusiak-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-cdnrc-goodFood/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-cdnrc-goodFood-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-orc-walusiak/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-orc-walusiak-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-material-flow-resources/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-material-flow-resources-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-deliveries-to-warehouse/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-deliveries-to-warehouse-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-master-orders/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-master-orders-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-nutrition-facts/1.5-SNAPSHOT-DEV/mes-commercial-plugins-nutrition-facts-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/qcadoo-plugins-plugin-management/1.5-SNAPSHOT-DEV/qcadoo-plugins-plugin-management-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/qcadoo-plugins-unit-conversion-management/1.5-SNAPSHOT-DEV/qcadoo-plugins-unit-conversion-management-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-orders-progress-gantt-chart/1.5-SNAPSHOT-DEV/mes-commercial-plugins-orders-progress-gantt-chart-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-subcontractor-portal/1.5-SNAPSHOT-DEV/mes-commercial-plugins-subcontractor-portal-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-product-data/1.5-SNAPSHOT-DEV/mes-commercial-plugins-product-data-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-pantone/1.5-SNAPSHOT-DEV/mes-commercial-plugins-pantone-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-nblsport/1.5-SNAPSHOT-DEV/mes-commercial-plugins-nblsport-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-scada/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-scada-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-bartender/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-bartender-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-cmms-scheduler/1.5-SNAPSHOT-DEV/mes-commercial-plugins-cmms-scheduler-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-repairs/1.5-SNAPSHOT-DEV/mes-commercial-plugins-repairs-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-esilco/1.5-SNAPSHOT-DEV/mes-commercial-plugins-esilco-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-orders-gantt/1.5-SNAPSHOT-DEV/mes-commercial-plugins-orders-gantt-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-schedule-gantt/1.5-SNAPSHOT-DEV/mes-commercial-plugins-schedule-gantt-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-ziepiwowarski/1.5-SNAPSHOT-DEV/mes-commercial-plugins-ziepiwowarski-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-cdnrc-aneks/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-cdnrc-aneks-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-orders-groups/1.5-SNAPSHOT-DEV/mes-commercial-plugins-orders-groups-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-baselinker/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-baselinker-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-pipedrive/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-pipedrive-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-asana/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-asana-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-scales/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-scales-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-arch/1.5-SNAPSHOT-DEV/mes-commercial-plugins-arch-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/logdigger/logdigger-connector-core/3.0.2/logdigger-connector-core-3.0.2.jar:/Users/krna/.m2/repository/com/logdigger/logdigger-connector-jdbc/3.0.2/logdigger-connector-jdbc-3.0.2.jar:/Users/krna/.m2/repository/com/atlassian/jira/jira-rest-java-client/0.6-m9/jira-rest-java-client-0.6-m9.jar:/Users/krna/.m2/repository/com/sun/jersey/jersey-client/1.5/jersey-client-1.5.jar:/Users/krna/.m2/repository/com/sun/jersey/jersey-core/1.5/jersey-core-1.5.jar:/Users/krna/.m2/repository/com/sun/jersey/contribs/jersey-multipart/1.5/jersey-multipart-1.5.jar:/Users/krna/.m2/repository/org/jvnet/mimepull/1.4/mimepull-1.4.jar:/Users/krna/.m2/repository/com/sun/jersey/contribs/jersey-apache-client/1.5/jersey-apache-client-1.5.jar:/Users/krna/.m2/repository/com/sun/jersey/jersey-json/1.5/jersey-json-1.5.jar:/Users/krna/.m2/repository/org/codehaus/jettison/jettison/1.1/jettison-1.1.jar:/Users/krna/.m2/repository/stax/stax-api/1.0.1/stax-api-1.0.1.jar:/Users/krna/.m2/repository/org/codehaus/jackson/jackson-core-asl/1.5.5/jackson-core-asl-1.5.5.jar:/Users/krna/.m2/repository/org/codehaus/jackson/jackson-mapper-asl/1.5.5/jackson-mapper-asl-1.5.5.jar:/Users/krna/.m2/repository/org/codehaus/jackson/jackson-jaxrs/1.5.5/jackson-jaxrs-1.5.5.jar:/Users/krna/.m2/repository/org/codehaus/jackson/jackson-xc/1.5.5/jackson-xc-1.5.5.jar:/Users/krna/.m2/repository/com/sun/jersey/contribs/jersey-oauth/oauth-client/1.5/oauth-client-1.5.jar:/Users/krna/.m2/repository/com/sun/jersey/contribs/jersey-oauth/oauth-signature/1.5/oauth-signature-1.5.jar:/Users/krna/.m2/repository/com/opencsv/opencsv/4.0/opencsv-4.0.jar:/Users/krna/.m2/repository/org/apache/commons/commons-text/1.1/commons-text-1.1.jar:/Users/krna/.m2/repository/com/qcadoo/qcadoo-tenant/1.5-SNAPSHOT-DEV/qcadoo-tenant-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/jgrapht/jgrapht/0.8.2/jgrapht-0.8.2.jar:/Users/krna/.m2/repository/com/zaxxer/HikariCP/3.3.1/HikariCP-3.3.1.jar:/Users/krna/.m2/repository/org/springframework/spring-aop/3.2.11.RELEASE/spring-aop-3.2.11.RELEASE.jar:/Users/krna/.m2/repository/aopalliance/aopalliance/1.0/aopalliance-1.0.jar:/Users/krna/.m2/repository/org/springframework/spring-beans/3.2.11.RELEASE/spring-beans-3.2.11.RELEASE.jar:/Users/krna/.m2/repository/org/springframework/spring-context/3.2.11.RELEASE/spring-context-3.2.11.RELEASE.jar:/Users/krna/.m2/repository/org/springframework/spring-context-support/3.2.11.RELEASE/spring-context-support-3.2.11.RELEASE.jar:/Users/krna/.m2/repository/org/springframework/spring-expression/3.2.11.RELEASE/spring-expression-3.2.11.RELEASE.jar:/Users/krna/.m2/repository/org/springframework/spring-orm/3.2.11.RELEASE/spring-orm-3.2.11.RELEASE.jar:/Users/krna/.m2/repository/org/springframework/spring-jdbc/3.2.11.RELEASE/spring-jdbc-3.2.11.RELEASE.jar:/Users/krna/.m2/repository/org/springframework/spring-tx/3.2.11.RELEASE/spring-tx-3.2.11.RELEASE.jar:/Users/krna/.m2/repository/org/springframework/spring-web/3.2.11.RELEASE/spring-web-3.2.11.RELEASE.jar:/Users/krna/.m2/repository/org/springframework/spring-webmvc/3.2.11.RELEASE/spring-webmvc-3.2.11.RELEASE.jar:/Users/krna/.m2/repository/org/springframework/security/spring-security-core/3.2.5.RELEASE/spring-security-core-3.2.5.RELEASE.jar:/Users/krna/.m2/repository/org/springframework/security/spring-security-config/3.2.5.RELEASE/spring-security-config-3.2.5.RELEASE.jar:/Users/krna/.m2/repository/org/springframework/security/spring-security-web/3.2.5.RELEASE/spring-security-web-3.2.5.RELEASE.jar:/Users/krna/.m2/repository/org/springframework/security/spring-security-aspects/3.2.5.RELEASE/spring-security-aspects-3.2.5.RELEASE.jar:/Users/krna/.m2/repository/org/springframework/spring-aspects/3.2.11.RELEASE/spring-aspects-3.2.11.RELEASE.jar:/Users/krna/.m2/repository/org/aspectj/aspectjweaver/1.8.2/aspectjweaver-1.8.2.jar:/Users/krna/.m2/repository/org/hibernate/hibernate-core/3.6.9.Final/hibernate-core-3.6.9.Final.jar:/Users/krna/.m2/repository/antlr/antlr/2.7.6/antlr-2.7.6.jar:/Users/krna/.m2/repository/commons-collections/commons-collections/3.1/commons-collections-3.1.jar:/Users/krna/.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar:/Users/krna/.m2/repository/org/hibernate/hibernate-commons-annotations/3.2.0.Final/hibernate-commons-annotations-3.2.0.Final.jar:/Users/krna/.m2/repository/org/hibernate/javax/persistence/hibernate-jpa-2.0-api/1.0.1.Final/hibernate-jpa-2.0-api-1.0.1.Final.jar:/Users/krna/.m2/repository/javax/transaction/jta/1.1/jta-1.1.jar:/Users/krna/.m2/repository/org/apache/commons/commons-lang3/3.3.2/commons-lang3-3.3.2.jar:/Users/krna/.m2/repository/commons-beanutils/commons-beanutils/1.9.1/commons-beanutils-1.9.1.jar:/Users/krna/.m2/repository/commons-io/commons-io/2.4/commons-io-2.4.jar:/Users/krna/.m2/repository/commons-validator/commons-validator/1.4.0/commons-validator-1.4.0.jar:/Users/krna/.m2/repository/commons-digester/commons-digester/1.8/commons-digester-1.8.jar:/Users/krna/.m2/repository/org/springframework/spring-test/3.2.11.RELEASE/spring-test-3.2.11.RELEASE.jar:/Users/krna/.m2/repository/org/javassist/javassist/3.18.1-GA/javassist-3.18.1-GA.jar:/Users/krna/.m2/repository/org/quartz-scheduler/quartz/1.8.5/quartz-1.8.5.jar:/Users/krna/.m2/repository/org/aspectj/aspectjrt/1.8.2/aspectjrt-1.8.2.jar:/Users/krna/.m2/repository/com/qcadoo/qcadoo-model/1.5-SNAPSHOT-DEV/qcadoo-model-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/net/sourceforge/saxon/saxon/9.1.0.8/saxon-9.1.0.8.jar:/Users/krna/.m2/repository/com/qcadoo/qcadoo-mail/1.5-SNAPSHOT-DEV/qcadoo-mail-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/javax/mail/mail/1.4.5/mail-1.4.5.jar:/Users/krna/.m2/repository/javax/activation/activation/1.1/activation-1.1.jar:/Users/krna/.m2/repository/org/json/json/20090211/json-20090211.jar:/Users/krna/.m2/repository/commons-codec/commons-codec/1.2/commons-codec-1.2.jar:/Users/krna/.m2/repository/org/apache/httpcomponents/httpclient/4.4/httpclient-4.4.jar:/Users/krna/.m2/repository/com/lowagie/itext/2.1.7/itext-2.1.7.jar:/Users/krna/.m2/repository/bouncycastle/bcmail-jdk14/138/bcmail-jdk14-138.jar:/Users/krna/.m2/repository/bouncycastle/bcprov-jdk14/138/bcprov-jdk14-138.jar:/Users/krna/.m2/repository/org/bouncycastle/bctsp-jdk14/1.38/bctsp-jdk14-1.38.jar:/Users/krna/.m2/repository/org/bouncycastle/bcprov-jdk14/1.38/bcprov-jdk14-1.38.jar:/Users/krna/.m2/repository/org/bouncycastle/bcmail-jdk14/1.38/bcmail-jdk14-1.38.jar:/Users/krna/.m2/repository/org/apache/poi/poi/3.9/poi-3.9.jar:/Users/krna/.m2/repository/org/apache/poi/poi-ooxml/3.9/poi-ooxml-3.9.jar:/Users/krna/.m2/repository/org/apache/poi/poi-ooxml-schemas/3.9/poi-ooxml-schemas-3.9.jar:/Users/krna/.m2/repository/org/apache/xmlbeans/xmlbeans/2.3.0/xmlbeans-2.3.0.jar:/Users/krna/.m2/repository/net/sf/jasperreports/jasperreports/4.0.2/jasperreports-4.0.2.jar:/Users/krna/.m2/repository/jfree/jcommon/1.0.15/jcommon-1.0.15.jar:/Users/krna/.m2/repository/jfree/jfreechart/1.0.12/jfreechart-1.0.12.jar:/Users/krna/.m2/repository/xml-apis/xml-apis/1.3.02/xml-apis-1.3.02.jar:/Users/krna/.m2/repository/eclipse/jdtcore/3.1.0/jdtcore-3.1.0.jar:/Users/krna/.m2/repository/commons-logging/commons-logging/1.1.3/commons-logging-1.1.3.jar:/Users/krna/.m2/repository/log4j/log4j/1.2.16/log4j-1.2.16.jar:/Users/krna/.m2/repository/org/hamcrest/hamcrest-core/1.1/hamcrest-core-1.1.jar:/Users/krna/.m2/repository/org/powermock/powermock-module-junit4-common/1.5.6/powermock-module-junit4-common-1.5.6.jar:/Users/krna/.m2/repository/org/powermock/powermock-core/1.5.6/powermock-core-1.5.6.jar:/Users/krna/.m2/repository/org/powermock/powermock-reflect/1.5.6/powermock-reflect-1.5.6.jar:/Users/krna/.m2/repository/org/objenesis/objenesis/2.1/objenesis-2.1.jar:/Users/krna/.m2/repository/org/powermock/powermock-api-support/1.5.6/powermock-api-support-1.5.6.jar:/Users/krna/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.6.0/jackson-annotations-2.6.0.jar:/Users/krna/.m2/repository/commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-orders/1.5-SNAPSHOT-DEV/mes-plugins-orders-1.5-SNAPSHOT-DEV.jar:/Users/krna/Projects/mes/mes-plugins/mes-plugins-cost-norms-for-product/target/classes:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-basic-production-counting/1.5-SNAPSHOT-DEV/mes-plugins-basic-production-counting-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-technologies/1.5-SNAPSHOT-DEV/mes-plugins-technologies-1.5-SNAPSHOT-DEV.jar:/Users/krna/Projects/mes/mes-plugins/mes-plugins-states/target/classes:/Users/krna/.m2/repository/net/objecthunter/exp4j/0.4.4/exp4j-0.4.4.jar:/Users/krna/.m2/repository/commons-net/commons-net/3.6/commons-net-3.6.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-production-counting/1.5-SNAPSHOT-DEV/mes-plugins-production-counting-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-operation-time-calculations/1.5-SNAPSHOT-DEV/mes-plugins-operation-time-calculations-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-time-norms-for-operations/1.5-SNAPSHOT-DEV/mes-plugins-time-norms-for-operations-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-cost-calculation/1.5-SNAPSHOT-DEV/mes-plugins-cost-calculation-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-operation-cost-calculations/1.5-SNAPSHOT-DEV/mes-plugins-operation-cost-calculations-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-cost-norms-for-operation/1.5-SNAPSHOT-DEV/mes-plugins-cost-norms-for-operation-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-advanced-genealogy-for-orders/1.5-SNAPSHOT-DEV/mes-plugins-advanced-genealogy-for-orders-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-cost-norms-for-materials/1.5-SNAPSHOT-DEV/mes-plugins-cost-norms-for-materials-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-material-flow-multitransfers/1.5-SNAPSHOT-DEV/mes-plugins-material-flow-multitransfers-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-assignment-to-shift/1.5-SNAPSHOT-DEV/mes-plugins-assignment-to-shift-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-wage-groups/1.5-SNAPSHOT-DEV/mes-plugins-wage-groups-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-production-per-shift/1.5-SNAPSHOT-DEV/mes-plugins-production-per-shift-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-master-orders/1.5-SNAPSHOT-DEV/mes-plugins-master-orders-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-minimal-affordable-quantity/1.5-SNAPSHOT-DEV/mes-plugins-minimal-affordable-quantity-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-advanced-genealogy/1.5-SNAPSHOT-DEV/mes-plugins-advanced-genealogy-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-line-changeover-norms-for-orders/1.5-SNAPSHOT-DEV/mes-plugins-line-changeover-norms-for-orders-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-line-changeover-norms/1.5-SNAPSHOT-DEV/mes-plugins-line-changeover-norms-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-supply-negotiations/1.5-SNAPSHOT-DEV/mes-plugins-supply-negotiations-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-work-plans/1.5-SNAPSHOT-DEV/mes-plugins-work-plans-1.5-SNAPSHOT-DEV.jar:/Users/krna/Projects/mes/mes-plugins/mes-plugins-column-extension/target/mes-plugins-column-extension-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-product-flow-thru-division/1.5-SNAPSHOT-DEV/mes-plugins-product-flow-thru-division-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-email-notifications/1.5-SNAPSHOT-DEV/mes-plugins-email-notifications-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-material-flow-resources/1.5-SNAPSHOT-DEV/mes-plugins-material-flow-resources-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-material-flow/1.5-SNAPSHOT-DEV/mes-plugins-material-flow-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-deliveries/1.5-SNAPSHOT-DEV/mes-plugins-deliveries-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-product-characteristics/1.5-SNAPSHOT-DEV/mes-plugins-product-characteristics-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/net/sf/opencsv/opencsv/2.3/opencsv-2.3.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-deliveries-to-material-flow/1.5-SNAPSHOT-DEV/mes-plugins-deliveries-to-material-flow-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-order-supplies/1.5-SNAPSHOT-DEV/mes-plugins-order-supplies-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-material-requirements/1.5-SNAPSHOT-DEV/mes-plugins-material-requirements-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-product-catalog-numbers/1.5-SNAPSHOT-DEV/mes-plugins-product-catalog-numbers-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-warehouse-minimal-state/1.5-SNAPSHOT-DEV/mes-plugins-warehouse-minimal-state-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-tech-subcontr-for-negot/1.5-SNAPSHOT-DEV/mes-plugins-tech-subcontr-for-negot-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-tech-subcontr-for-deliveries/1.5-SNAPSHOT-DEV/mes-plugins-tech-subcontr-for-deliveries-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-tech-subcontracting/1.5-SNAPSHOT-DEV/mes-plugins-tech-subcontracting-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-simple-material-balance/1.5-SNAPSHOT-DEV/mes-plugins-simple-material-balance-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-cat-numbers-in-negot/1.5-SNAPSHOT-DEV/mes-plugins-cat-numbers-in-negot-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-cat-numbers-in-deliveries/1.5-SNAPSHOT-DEV/mes-plugins-cat-numbers-in-deliveries-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-material-requirement-coverage-for-order/1.5-SNAPSHOT-DEV/mes-plugins-material-requirement-coverage-for-order-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-cmms-machine-parts/1.5-SNAPSHOT-DEV/mes-plugins-cmms-machine-parts-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-orders-for-subproducts-generation/1.5-SNAPSHOT-DEV/mes-plugins-orders-for-subproducts-generation-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-production-scheduling/1.5-SNAPSHOT-DEV/mes-plugins-production-scheduling-1.5-SNAPSHOT-DEV.jar:/Users/krna/.m2/repository/org/apache/httpcomponents/httpcore/4.4.5/httpcore-4.4.5.jar:/Users/krna/.m2/repository/com/asana/asana/0.9.0/asana-0.9.0.jar:/Users/krna/.m2/repository/com/google/http-client/google-http-client/1.20.0/google-http-client-1.20.0.jar:/Users/krna/.m2/repository/com/google/code/findbugs/jsr305/1.3.9/jsr305-1.3.9.jar:/Users/krna/.m2/repository/com/google/http-client/google-http-client-gson/1.20.0/google-http-client-gson-1.20.0.jar:/Users/krna/.m2/repository/com/google/oauth-client/google-oauth-client/1.20.0/google-oauth-client-1.20.0.jar:/Users/krna/Projects/mes/mes-plugins/mes-plugins-production-lines/target/mes-plugins-production-lines-1.5-SNAPSHOT-DEV.jar:/Users/krna/Projects/mes/mes-plugins/mes-plugins-wage-groups/target/test-classes:/Users/krna/Projects/mes/mes-plugins/mes-plugins-wage-groups/target/classes
+-aspectpath
+/Users/krna/Projects/mes/mes-plugins/mes-plugins-wage-groups/target/classes:/Users/krna/.m2/repository/org/springframework/spring-aspects/3.2.11.RELEASE/spring-aspects-3.2.11.RELEASE.jar:/Users/krna/.m2/repository/org/springframework/security/spring-security-aspects/3.2.5.RELEASE/spring-security-aspects-3.2.5.RELEASE.jar
+-d
+/Users/krna/Projects/mes/mes-plugins/mes-plugins-wage-groups/target/test-classes
+/Users/krna/Projects/mes/mes-plugins/mes-plugins-wage-groups/src/test/java/com/qcadoo/mes/wageGroups/hooks/StaffDetailsHooksTest.java
+/Users/krna/Projects/mes/mes-plugins/mes-plugins-wage-groups/src/test/java/com/qcadoo/mes/wageGroups/hooks/StaffHooksTest.java
+/Users/krna/Projects/mes/mes-plugins/mes-plugins-wage-groups/src/test/java/com/qcadoo/mes/wageGroups/hooks/WageGroupsDetailsHooksTest.java
+---- Full Classpath ---
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/resources.jar(3505340 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/rt.jar(66815280 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/sunrsasign.jar(missing)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/jsse.jar(648816 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/jce.jar(116446 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/charsets.jar(3135391 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/jfr.jar(560581 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/classes(missing)
+/Users/krna/Projects/mes/mes-plugins/mes-plugins-wage-groups/target/classes(5 entries)
+/Users/krna/.m2/repository/org/springframework/spring-aspects/3.2.11.RELEASE/spring-aspects-3.2.11.RELEASE.jar(51435 bytes)
+/Users/krna/.m2/repository/org/springframework/security/spring-security-aspects/3.2.5.RELEASE/spring-security-aspects-3.2.5.RELEASE.jar(6471 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/ext/sunec.jar(42185 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/ext/nashorn.jar(2022734 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/ext/cldrdata.jar(3860502 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/ext/jfxrt.jar(18606587 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/ext/dnsns.jar(8286 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/ext/localedata.jar(1179093 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/ext/sunjce_provider.jar(280161 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/ext/sunpkcs11.jar(251327 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/ext/jaccess.jar(44516 bytes)
+/Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/ext/zipfs.jar(68924 bytes)
+/System/Library/Java/Extensions/MRJToolkit.jar(12849 bytes)
+/Users/krna/Projects/mes/mes-plugins/mes-plugins-basic/target/mes-plugins-basic-1.5-SNAPSHOT-DEV.jar(1050882 bytes)
+/Users/krna/.m2/repository/com/qcadoo/qcadoo-plugin/1.5-SNAPSHOT-DEV/qcadoo-plugin-1.5-SNAPSHOT-DEV.jar(100122 bytes)
+/Users/krna/.m2/repository/com/qcadoo/qcadoo-localization/1.5-SNAPSHOT-DEV/qcadoo-localization-1.5-SNAPSHOT-DEV.jar(27778 bytes)
+/Users/krna/.m2/repository/com/qcadoo/qcadoo-security/1.5-SNAPSHOT-DEV/qcadoo-security-1.5-SNAPSHOT-DEV.jar(71087 bytes)
+/Users/krna/.m2/repository/com/qcadoo/qcadoo-view/1.5-SNAPSHOT-DEV/qcadoo-view-1.5-SNAPSHOT-DEV.jar(4068371 bytes)
+/Users/krna/.m2/repository/com/qcadoo/qcadoo-report/1.5-SNAPSHOT-DEV/qcadoo-report-1.5-SNAPSHOT-DEV.jar(1743369 bytes)
+/Users/krna/.m2/repository/com/qcadoo/qcadoo-plugins-menu-management/1.5-SNAPSHOT-DEV/qcadoo-plugins-menu-management-1.5-SNAPSHOT-DEV.jar(19649 bytes)
+/Users/krna/.m2/repository/com/qcadoo/qcadoo-plugins-user-management/1.5-SNAPSHOT-DEV/qcadoo-plugins-user-management-1.5-SNAPSHOT-DEV.jar(32077 bytes)
+/Users/krna/.m2/repository/com/qcadoo/qcadoo-plugins-dictionary-management/1.5-SNAPSHOT-DEV/qcadoo-plugins-dictionary-management-1.5-SNAPSHOT-DEV.jar(23589 bytes)
+/Users/krna/.m2/repository/com/qcadoo/qcadoo-custom-translation/1.5-SNAPSHOT-DEV/qcadoo-custom-translation-1.5-SNAPSHOT-DEV.jar(39842 bytes)
+/Users/krna/.m2/repository/com/qcadoo/qcadoo-plugins-custom-translation-management/1.5-SNAPSHOT-DEV/qcadoo-plugins-custom-translation-management-1.5-SNAPSHOT-DEV.jar(25759 bytes)
+/Users/krna/.m2/repository/com/qcadoo/qcadoo-plugins-export/1.5-SNAPSHOT-DEV/qcadoo-plugins-export-1.5-SNAPSHOT-DEV.jar(28671 bytes)
+/Users/krna/.m2/repository/com/qcadoo/qcadoo-commons/1.5-SNAPSHOT-DEV/qcadoo-commons-1.5-SNAPSHOT-DEV.jar(21861 bytes)
+/Users/krna/.m2/repository/com/qcadoo/qcadoo-testing/1.5-SNAPSHOT-DEV/qcadoo-testing-1.5-SNAPSHOT-DEV.jar(11807 bytes)
+/Users/krna/.m2/repository/org/springframework/spring-core/3.2.11.RELEASE/spring-core-3.2.11.RELEASE.jar(885064 bytes)
+/Users/krna/.m2/repository/org/jdom/jdom/1.1/jdom-1.1.jar(153115 bytes)
+/Users/krna/.m2/repository/joda-time/joda-time/2.3/joda-time-2.3.jar(581571 bytes)
+/Users/krna/.m2/repository/com/google/guava/guava/17.0/guava-17.0.jar(2243036 bytes)
+/Users/krna/.m2/repository/org/slf4j/slf4j-api/1.6.1/slf4j-api-1.6.1.jar(25496 bytes)
+/Users/krna/.m2/repository/org/slf4j/slf4j-log4j12/1.6.1/slf4j-log4j12-1.6.1.jar(9753 bytes)
+/Users/krna/.m2/repository/org/slf4j/jcl-over-slf4j/1.6.1/jcl-over-slf4j-1.6.1.jar(17308 bytes)
+/Users/krna/.m2/repository/javax/servlet/servlet-api/2.5/servlet-api-2.5.jar(105112 bytes)
+/Users/krna/.m2/repository/junit/junit/4.9/junit-4.9.jar(248994 bytes)
+/Users/krna/.m2/repository/org/mockito/mockito-all/1.10.8/mockito-all-1.10.8.jar(1211231 bytes)
+/Users/krna/.m2/repository/org/powermock/powermock-module-junit4/1.5.6/powermock-module-junit4-1.5.6.jar(24088 bytes)
+/Users/krna/.m2/repository/org/powermock/powermock-api-mockito/1.5.6/powermock-api-mockito-1.5.6.jar(70993 bytes)
+/Users/krna/.m2/repository/com/fasterxml/jackson/core/jackson-core/2.6.3/jackson-core-2.6.3.jar(258875 bytes)
+/Users/krna/.m2/repository/com/fasterxml/jackson/core/jackson-databind/2.6.3/jackson-databind-2.6.3.jar(1170801 bytes)
+/Users/krna/.m2/repository/com/google/code/gson/gson/2.6.2/gson-2.6.2.jar(229650 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-cfc-simple/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-cfc-simple-1.5-SNAPSHOT-DEV.jar(61377 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-core/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-core-1.5-SNAPSHOT-DEV.jar(64828 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-basic/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-basic-1.5-SNAPSHOT-DEV.jar(61312 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-orders/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-orders-1.5-SNAPSHOT-DEV.jar(92883 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-material-requirements/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-material-requirements-1.5-SNAPSHOT-DEV.jar(21703 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-material-availability/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-material-availability-1.5-SNAPSHOT-DEV.jar(56386 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-cost-norms-for-product/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-cost-norms-for-product-1.5-SNAPSHOT-DEV.jar(20562 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-basic-production-counting/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-basic-production-counting-1.5-SNAPSHOT-DEV.jar(25391 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-production-counting/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-production-counting-1.5-SNAPSHOT-DEV.jar(1175107 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-technologies/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-technologies-1.5-SNAPSHOT-DEV.jar(31345 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-src-warehouse/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-src-warehouse-1.5-SNAPSHOT-DEV.jar(16029 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-erc-warehouse/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-erc-warehouse-1.5-SNAPSHOT-DEV.jar(16029 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-agfo/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-agfo-1.5-SNAPSHOT-DEV.jar(47070 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-src-agfo/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-src-agfo-1.5-SNAPSHOT-DEV.jar(7418 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-cost-norms-for-materials/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-cost-norms-for-materials-1.5-SNAPSHOT-DEV.jar(18638 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-zmbak/1.5-SNAPSHOT-DEV/mes-commercial-plugins-zmbak-1.5-SNAPSHOT-DEV.jar(151460 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-good-food/1.5-SNAPSHOT-DEV/mes-commercial-plugins-good-food-1.5-SNAPSHOT-DEV.jar(889589 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-walusiak/1.5-SNAPSHOT-DEV/mes-commercial-plugins-walusiak-1.5-SNAPSHOT-DEV.jar(74375 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-cdnrc-goodFood/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-cdnrc-goodFood-1.5-SNAPSHOT-DEV.jar(305801 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-orc-walusiak/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-orc-walusiak-1.5-SNAPSHOT-DEV.jar(27216 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-material-flow-resources/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-material-flow-resources-1.5-SNAPSHOT-DEV.jar(17958 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-deliveries-to-warehouse/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-deliveries-to-warehouse-1.5-SNAPSHOT-DEV.jar(39677 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-urc-master-orders/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-urc-master-orders-1.5-SNAPSHOT-DEV.jar(60445 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-nutrition-facts/1.5-SNAPSHOT-DEV/mes-commercial-plugins-nutrition-facts-1.5-SNAPSHOT-DEV.jar(116027 bytes)
+/Users/krna/.m2/repository/com/qcadoo/qcadoo-plugins-plugin-management/1.5-SNAPSHOT-DEV/qcadoo-plugins-plugin-management-1.5-SNAPSHOT-DEV.jar(44134 bytes)
+/Users/krna/.m2/repository/com/qcadoo/qcadoo-plugins-unit-conversion-management/1.5-SNAPSHOT-DEV/qcadoo-plugins-unit-conversion-management-1.5-SNAPSHOT-DEV.jar(20175 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-orders-progress-gantt-chart/1.5-SNAPSHOT-DEV/mes-commercial-plugins-orders-progress-gantt-chart-1.5-SNAPSHOT-DEV.jar(49079 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-subcontractor-portal/1.5-SNAPSHOT-DEV/mes-commercial-plugins-subcontractor-portal-1.5-SNAPSHOT-DEV.jar(239344 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-product-data/1.5-SNAPSHOT-DEV/mes-commercial-plugins-product-data-1.5-SNAPSHOT-DEV.jar(142060 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-pantone/1.5-SNAPSHOT-DEV/mes-commercial-plugins-pantone-1.5-SNAPSHOT-DEV.jar(59874 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-nblsport/1.5-SNAPSHOT-DEV/mes-commercial-plugins-nblsport-1.5-SNAPSHOT-DEV.jar(76537 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-1.5-SNAPSHOT-DEV.jar(308755 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-scada/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-scada-1.5-SNAPSHOT-DEV.jar(54433 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-bartender/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-bartender-1.5-SNAPSHOT-DEV.jar(102760 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-cmms-scheduler/1.5-SNAPSHOT-DEV/mes-commercial-plugins-cmms-scheduler-1.5-SNAPSHOT-DEV.jar(983405 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-repairs/1.5-SNAPSHOT-DEV/mes-commercial-plugins-repairs-1.5-SNAPSHOT-DEV.jar(104727 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-esilco/1.5-SNAPSHOT-DEV/mes-commercial-plugins-esilco-1.5-SNAPSHOT-DEV.jar(270521 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-orders-gantt/1.5-SNAPSHOT-DEV/mes-commercial-plugins-orders-gantt-1.5-SNAPSHOT-DEV.jar(991830 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-schedule-gantt/1.5-SNAPSHOT-DEV/mes-commercial-plugins-schedule-gantt-1.5-SNAPSHOT-DEV.jar(44786 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-ziepiwowarski/1.5-SNAPSHOT-DEV/mes-commercial-plugins-ziepiwowarski-1.5-SNAPSHOT-DEV.jar(45439 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-cdnrc-aneks/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-cdnrc-aneks-1.5-SNAPSHOT-DEV.jar(17059 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-orders-groups/1.5-SNAPSHOT-DEV/mes-commercial-plugins-orders-groups-1.5-SNAPSHOT-DEV.jar(130047 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-baselinker/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-baselinker-1.5-SNAPSHOT-DEV.jar(67050 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-pipedrive/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-pipedrive-1.5-SNAPSHOT-DEV.jar(51770 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-asana/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-asana-1.5-SNAPSHOT-DEV.jar(37604 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-integration-scales/1.5-SNAPSHOT-DEV/mes-commercial-plugins-integration-scales-1.5-SNAPSHOT-DEV.jar(36778 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-commercial-plugins-arch/1.5-SNAPSHOT-DEV/mes-commercial-plugins-arch-1.5-SNAPSHOT-DEV.jar(27261 bytes)
+/Users/krna/.m2/repository/com/logdigger/logdigger-connector-core/3.0.2/logdigger-connector-core-3.0.2.jar(282147 bytes)
+/Users/krna/.m2/repository/com/logdigger/logdigger-connector-jdbc/3.0.2/logdigger-connector-jdbc-3.0.2.jar(215425 bytes)
+/Users/krna/.m2/repository/com/atlassian/jira/jira-rest-java-client/0.6-m9/jira-rest-java-client-0.6-m9.jar(268923 bytes)
+/Users/krna/.m2/repository/com/sun/jersey/jersey-client/1.5/jersey-client-1.5.jar(128096 bytes)
+/Users/krna/.m2/repository/com/sun/jersey/jersey-core/1.5/jersey-core-1.5.jar(455665 bytes)
+/Users/krna/.m2/repository/com/sun/jersey/contribs/jersey-multipart/1.5/jersey-multipart-1.5.jar(49330 bytes)
+/Users/krna/.m2/repository/org/jvnet/mimepull/1.4/mimepull-1.4.jar(39165 bytes)
+/Users/krna/.m2/repository/com/sun/jersey/contribs/jersey-apache-client/1.5/jersey-apache-client-1.5.jar(21150 bytes)
+/Users/krna/.m2/repository/com/sun/jersey/jersey-json/1.5/jersey-json-1.5.jar(144810 bytes)
+/Users/krna/.m2/repository/org/codehaus/jettison/jettison/1.1/jettison-1.1.jar(67758 bytes)
+/Users/krna/.m2/repository/stax/stax-api/1.0.1/stax-api-1.0.1.jar(26514 bytes)
+/Users/krna/.m2/repository/org/codehaus/jackson/jackson-core-asl/1.5.5/jackson-core-asl-1.5.5.jar(171958 bytes)
+/Users/krna/.m2/repository/org/codehaus/jackson/jackson-mapper-asl/1.5.5/jackson-mapper-asl-1.5.5.jar(485699 bytes)
+/Users/krna/.m2/repository/org/codehaus/jackson/jackson-jaxrs/1.5.5/jackson-jaxrs-1.5.5.jar(17065 bytes)
+/Users/krna/.m2/repository/org/codehaus/jackson/jackson-xc/1.5.5/jackson-xc-1.5.5.jar(24745 bytes)
+/Users/krna/.m2/repository/com/sun/jersey/contribs/jersey-oauth/oauth-client/1.5/oauth-client-1.5.jar(9193 bytes)
+/Users/krna/.m2/repository/com/sun/jersey/contribs/jersey-oauth/oauth-signature/1.5/oauth-signature-1.5.jar(22097 bytes)
+/Users/krna/.m2/repository/com/opencsv/opencsv/4.0/opencsv-4.0.jar(103036 bytes)
+/Users/krna/.m2/repository/org/apache/commons/commons-text/1.1/commons-text-1.1.jar(129145 bytes)
+/Users/krna/.m2/repository/com/qcadoo/qcadoo-tenant/1.5-SNAPSHOT-DEV/qcadoo-tenant-1.5-SNAPSHOT-DEV.jar(7724 bytes)
+/Users/krna/.m2/repository/jgrapht/jgrapht/0.8.2/jgrapht-0.8.2.jar(239262 bytes)
+/Users/krna/.m2/repository/com/zaxxer/HikariCP/3.3.1/HikariCP-3.3.1.jar(139168 bytes)
+/Users/krna/.m2/repository/org/springframework/spring-aop/3.2.11.RELEASE/spring-aop-3.2.11.RELEASE.jar(338138 bytes)
+/Users/krna/.m2/repository/aopalliance/aopalliance/1.0/aopalliance-1.0.jar(4467 bytes)
+/Users/krna/.m2/repository/org/springframework/spring-beans/3.2.11.RELEASE/spring-beans-3.2.11.RELEASE.jar(613325 bytes)
+/Users/krna/.m2/repository/org/springframework/spring-context/3.2.11.RELEASE/spring-context-3.2.11.RELEASE.jar(866651 bytes)
+/Users/krna/.m2/repository/org/springframework/spring-context-support/3.2.11.RELEASE/spring-context-support-3.2.11.RELEASE.jar(128645 bytes)
+/Users/krna/.m2/repository/org/springframework/spring-expression/3.2.11.RELEASE/spring-expression-3.2.11.RELEASE.jar(196425 bytes)
+/Users/krna/.m2/repository/org/springframework/spring-orm/3.2.11.RELEASE/spring-orm-3.2.11.RELEASE.jar(385561 bytes)
+/Users/krna/.m2/repository/org/springframework/spring-jdbc/3.2.11.RELEASE/spring-jdbc-3.2.11.RELEASE.jar(405951 bytes)
+/Users/krna/.m2/repository/org/springframework/spring-tx/3.2.11.RELEASE/spring-tx-3.2.11.RELEASE.jar(242531 bytes)
+/Users/krna/.m2/repository/org/springframework/spring-web/3.2.11.RELEASE/spring-web-3.2.11.RELEASE.jar(631709 bytes)
+/Users/krna/.m2/repository/org/springframework/spring-webmvc/3.2.11.RELEASE/spring-webmvc-3.2.11.RELEASE.jar(638589 bytes)
+/Users/krna/.m2/repository/org/springframework/security/spring-security-core/3.2.5.RELEASE/spring-security-core-3.2.5.RELEASE.jar(366941 bytes)
+/Users/krna/.m2/repository/org/springframework/security/spring-security-config/3.2.5.RELEASE/spring-security-config-3.2.5.RELEASE.jar(406830 bytes)
+/Users/krna/.m2/repository/org/springframework/security/spring-security-web/3.2.5.RELEASE/spring-security-web-3.2.5.RELEASE.jar(342469 bytes)
+/Users/krna/.m2/repository/org/springframework/security/spring-security-aspects/3.2.5.RELEASE/spring-security-aspects-3.2.5.RELEASE.jar(6471 bytes)
+/Users/krna/.m2/repository/org/springframework/spring-aspects/3.2.11.RELEASE/spring-aspects-3.2.11.RELEASE.jar(51435 bytes)
+/Users/krna/.m2/repository/org/aspectj/aspectjweaver/1.8.2/aspectjweaver-1.8.2.jar(1859293 bytes)
+/Users/krna/.m2/repository/org/hibernate/hibernate-core/3.6.9.Final/hibernate-core-3.6.9.Final.jar(3119700 bytes)
+/Users/krna/.m2/repository/antlr/antlr/2.7.6/antlr-2.7.6.jar(443432 bytes)
+/Users/krna/.m2/repository/commons-collections/commons-collections/3.1/commons-collections-3.1.jar(559366 bytes)
+/Users/krna/.m2/repository/dom4j/dom4j/1.6.1/dom4j-1.6.1.jar(313898 bytes)
+/Users/krna/.m2/repository/org/hibernate/hibernate-commons-annotations/3.2.0.Final/hibernate-commons-annotations-3.2.0.Final.jar(71283 bytes)
+/Users/krna/.m2/repository/org/hibernate/javax/persistence/hibernate-jpa-2.0-api/1.0.1.Final/hibernate-jpa-2.0-api-1.0.1.Final.jar(102661 bytes)
+/Users/krna/.m2/repository/javax/transaction/jta/1.1/jta-1.1.jar(15071 bytes)
+/Users/krna/.m2/repository/org/apache/commons/commons-lang3/3.3.2/commons-lang3-3.3.2.jar(412739 bytes)
+/Users/krna/.m2/repository/commons-beanutils/commons-beanutils/1.9.1/commons-beanutils-1.9.1.jar(232563 bytes)
+/Users/krna/.m2/repository/commons-io/commons-io/2.4/commons-io-2.4.jar(185140 bytes)
+/Users/krna/.m2/repository/commons-validator/commons-validator/1.4.0/commons-validator-1.4.0.jar(176897 bytes)
+/Users/krna/.m2/repository/commons-digester/commons-digester/1.8/commons-digester-1.8.jar(143602 bytes)
+/Users/krna/.m2/repository/org/springframework/spring-test/3.2.11.RELEASE/spring-test-3.2.11.RELEASE.jar(458285 bytes)
+/Users/krna/.m2/repository/org/javassist/javassist/3.18.1-GA/javassist-3.18.1-GA.jar(714194 bytes)
+/Users/krna/.m2/repository/org/quartz-scheduler/quartz/1.8.5/quartz-1.8.5.jar(446447 bytes)
+/Users/krna/.m2/repository/org/aspectj/aspectjrt/1.8.2/aspectjrt-1.8.2.jar(117099 bytes)
+/Users/krna/.m2/repository/com/qcadoo/qcadoo-model/1.5-SNAPSHOT-DEV/qcadoo-model-1.5-SNAPSHOT-DEV.jar(381323 bytes)
+/Users/krna/.m2/repository/net/sourceforge/saxon/saxon/9.1.0.8/saxon-9.1.0.8.jar(5046534 bytes)
+/Users/krna/.m2/repository/com/qcadoo/qcadoo-mail/1.5-SNAPSHOT-DEV/qcadoo-mail-1.5-SNAPSHOT-DEV.jar(7967 bytes)
+/Users/krna/.m2/repository/javax/mail/mail/1.4.5/mail-1.4.5.jar(508143 bytes)
+/Users/krna/.m2/repository/javax/activation/activation/1.1/activation-1.1.jar(62983 bytes)
+/Users/krna/.m2/repository/org/json/json/20090211/json-20090211.jar(45944 bytes)
+/Users/krna/.m2/repository/commons-codec/commons-codec/1.2/commons-codec-1.2.jar(30085 bytes)
+/Users/krna/.m2/repository/org/apache/httpcomponents/httpclient/4.4/httpclient-4.4.jar(719304 bytes)
+/Users/krna/.m2/repository/com/lowagie/itext/2.1.7/itext-2.1.7.jar(1130070 bytes)
+/Users/krna/.m2/repository/bouncycastle/bcmail-jdk14/138/bcmail-jdk14-138.jar(192035 bytes)
+/Users/krna/.m2/repository/bouncycastle/bcprov-jdk14/138/bcprov-jdk14-138.jar(1551468 bytes)
+/Users/krna/.m2/repository/org/bouncycastle/bctsp-jdk14/1.38/bctsp-jdk14-1.38.jar(22994 bytes)
+/Users/krna/.m2/repository/org/bouncycastle/bcprov-jdk14/1.38/bcprov-jdk14-1.38.jar(1551468 bytes)
+/Users/krna/.m2/repository/org/bouncycastle/bcmail-jdk14/1.38/bcmail-jdk14-1.38.jar(192035 bytes)
+/Users/krna/.m2/repository/org/apache/poi/poi/3.9/poi-3.9.jar(1869113 bytes)
+/Users/krna/.m2/repository/org/apache/poi/poi-ooxml/3.9/poi-ooxml-3.9.jar(936648 bytes)
+/Users/krna/.m2/repository/org/apache/poi/poi-ooxml-schemas/3.9/poi-ooxml-schemas-3.9.jar(4802621 bytes)
+/Users/krna/.m2/repository/org/apache/xmlbeans/xmlbeans/2.3.0/xmlbeans-2.3.0.jar(2666695 bytes)
+/Users/krna/.m2/repository/net/sf/jasperreports/jasperreports/4.0.2/jasperreports-4.0.2.jar(3122066 bytes)
+/Users/krna/.m2/repository/jfree/jcommon/1.0.15/jcommon-1.0.15.jar(309294 bytes)
+/Users/krna/.m2/repository/jfree/jfreechart/1.0.12/jfreechart-1.0.12.jar(1368681 bytes)
+/Users/krna/.m2/repository/xml-apis/xml-apis/1.3.02/xml-apis-1.3.02.jar(194205 bytes)
+/Users/krna/.m2/repository/eclipse/jdtcore/3.1.0/jdtcore-3.1.0.jar(3555707 bytes)
+/Users/krna/.m2/repository/commons-logging/commons-logging/1.1.3/commons-logging-1.1.3.jar(62050 bytes)
+/Users/krna/.m2/repository/log4j/log4j/1.2.16/log4j-1.2.16.jar(481535 bytes)
+/Users/krna/.m2/repository/org/hamcrest/hamcrest-core/1.1/hamcrest-core-1.1.jar(76643 bytes)
+/Users/krna/.m2/repository/org/powermock/powermock-module-junit4-common/1.5.6/powermock-module-junit4-common-1.5.6.jar(13946 bytes)
+/Users/krna/.m2/repository/org/powermock/powermock-core/1.5.6/powermock-core-1.5.6.jar(85071 bytes)
+/Users/krna/.m2/repository/org/powermock/powermock-reflect/1.5.6/powermock-reflect-1.5.6.jar(44728 bytes)
+/Users/krna/.m2/repository/org/objenesis/objenesis/2.1/objenesis-2.1.jar(41755 bytes)
+/Users/krna/.m2/repository/org/powermock/powermock-api-support/1.5.6/powermock-api-support-1.5.6.jar(18665 bytes)
+/Users/krna/.m2/repository/com/fasterxml/jackson/core/jackson-annotations/2.6.0/jackson-annotations-2.6.0.jar(46968 bytes)
+/Users/krna/.m2/repository/commons-httpclient/commons-httpclient/3.1/commons-httpclient-3.1.jar(305001 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-orders/1.5-SNAPSHOT-DEV/mes-plugins-orders-1.5-SNAPSHOT-DEV.jar(369931 bytes)
+/Users/krna/Projects/mes/mes-plugins/mes-plugins-cost-norms-for-product/target/classes(5 entries)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-basic-production-counting/1.5-SNAPSHOT-DEV/mes-plugins-basic-production-counting-1.5-SNAPSHOT-DEV.jar(105418 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-technologies/1.5-SNAPSHOT-DEV/mes-plugins-technologies-1.5-SNAPSHOT-DEV.jar(460516 bytes)
+/Users/krna/Projects/mes/mes-plugins/mes-plugins-states/target/classes(6 entries)
+/Users/krna/.m2/repository/net/objecthunter/exp4j/0.4.4/exp4j-0.4.4.jar(42092 bytes)
+/Users/krna/.m2/repository/commons-net/commons-net/3.6/commons-net-3.6.jar(307410 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-production-counting/1.5-SNAPSHOT-DEV/mes-plugins-production-counting-1.5-SNAPSHOT-DEV.jar(476692 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-operation-time-calculations/1.5-SNAPSHOT-DEV/mes-plugins-operation-time-calculations-1.5-SNAPSHOT-DEV.jar(33090 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-time-norms-for-operations/1.5-SNAPSHOT-DEV/mes-plugins-time-norms-for-operations-1.5-SNAPSHOT-DEV.jar(53702 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-cost-calculation/1.5-SNAPSHOT-DEV/mes-plugins-cost-calculation-1.5-SNAPSHOT-DEV.jar(97717 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-operation-cost-calculations/1.5-SNAPSHOT-DEV/mes-plugins-operation-cost-calculations-1.5-SNAPSHOT-DEV.jar(23756 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-cost-norms-for-operation/1.5-SNAPSHOT-DEV/mes-plugins-cost-norms-for-operation-1.5-SNAPSHOT-DEV.jar(23941 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-advanced-genealogy-for-orders/1.5-SNAPSHOT-DEV/mes-plugins-advanced-genealogy-for-orders-1.5-SNAPSHOT-DEV.jar(98876 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-cost-norms-for-materials/1.5-SNAPSHOT-DEV/mes-plugins-cost-norms-for-materials-1.5-SNAPSHOT-DEV.jar(72953 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-material-flow-multitransfers/1.5-SNAPSHOT-DEV/mes-plugins-material-flow-multitransfers-1.5-SNAPSHOT-DEV.jar(32473 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-assignment-to-shift/1.5-SNAPSHOT-DEV/mes-plugins-assignment-to-shift-1.5-SNAPSHOT-DEV.jar(139069 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-wage-groups/1.5-SNAPSHOT-DEV/mes-plugins-wage-groups-1.5-SNAPSHOT-DEV.jar(26427 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-production-per-shift/1.5-SNAPSHOT-DEV/mes-plugins-production-per-shift-1.5-SNAPSHOT-DEV.jar(217873 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-master-orders/1.5-SNAPSHOT-DEV/mes-plugins-master-orders-1.5-SNAPSHOT-DEV.jar(137005 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-minimal-affordable-quantity/1.5-SNAPSHOT-DEV/mes-plugins-minimal-affordable-quantity-1.5-SNAPSHOT-DEV.jar(16540 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-advanced-genealogy/1.5-SNAPSHOT-DEV/mes-plugins-advanced-genealogy-1.5-SNAPSHOT-DEV.jar(134613 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-line-changeover-norms-for-orders/1.5-SNAPSHOT-DEV/mes-plugins-line-changeover-norms-for-orders-1.5-SNAPSHOT-DEV.jar(34634 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-line-changeover-norms/1.5-SNAPSHOT-DEV/mes-plugins-line-changeover-norms-1.5-SNAPSHOT-DEV.jar(36466 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-supply-negotiations/1.5-SNAPSHOT-DEV/mes-plugins-supply-negotiations-1.5-SNAPSHOT-DEV.jar(255012 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-work-plans/1.5-SNAPSHOT-DEV/mes-plugins-work-plans-1.5-SNAPSHOT-DEV.jar(238559 bytes)
+/Users/krna/Projects/mes/mes-plugins/mes-plugins-column-extension/target/mes-plugins-column-extension-1.5-SNAPSHOT-DEV.jar(15428 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-product-flow-thru-division/1.5-SNAPSHOT-DEV/mes-plugins-product-flow-thru-division-1.5-SNAPSHOT-DEV.jar(445181 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-email-notifications/1.5-SNAPSHOT-DEV/mes-plugins-email-notifications-1.5-SNAPSHOT-DEV.jar(26327 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-material-flow-resources/1.5-SNAPSHOT-DEV/mes-plugins-material-flow-resources-1.5-SNAPSHOT-DEV.jar(687239 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-material-flow/1.5-SNAPSHOT-DEV/mes-plugins-material-flow-1.5-SNAPSHOT-DEV.jar(102297 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-deliveries/1.5-SNAPSHOT-DEV/mes-plugins-deliveries-1.5-SNAPSHOT-DEV.jar(690469 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-product-characteristics/1.5-SNAPSHOT-DEV/mes-plugins-product-characteristics-1.5-SNAPSHOT-DEV.jar(38877 bytes)
+/Users/krna/.m2/repository/net/sf/opencsv/opencsv/2.3/opencsv-2.3.jar(19827 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-deliveries-to-material-flow/1.5-SNAPSHOT-DEV/mes-plugins-deliveries-to-material-flow-1.5-SNAPSHOT-DEV.jar(31928 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-order-supplies/1.5-SNAPSHOT-DEV/mes-plugins-order-supplies-1.5-SNAPSHOT-DEV.jar(221863 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-material-requirements/1.5-SNAPSHOT-DEV/mes-plugins-material-requirements-1.5-SNAPSHOT-DEV.jar(55783 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-product-catalog-numbers/1.5-SNAPSHOT-DEV/mes-plugins-product-catalog-numbers-1.5-SNAPSHOT-DEV.jar(22544 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-warehouse-minimal-state/1.5-SNAPSHOT-DEV/mes-plugins-warehouse-minimal-state-1.5-SNAPSHOT-DEV.jar(41275 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-tech-subcontr-for-negot/1.5-SNAPSHOT-DEV/mes-plugins-tech-subcontr-for-negot-1.5-SNAPSHOT-DEV.jar(46214 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-tech-subcontr-for-deliveries/1.5-SNAPSHOT-DEV/mes-plugins-tech-subcontr-for-deliveries-1.5-SNAPSHOT-DEV.jar(34957 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-tech-subcontracting/1.5-SNAPSHOT-DEV/mes-plugins-tech-subcontracting-1.5-SNAPSHOT-DEV.jar(40020 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-simple-material-balance/1.5-SNAPSHOT-DEV/mes-plugins-simple-material-balance-1.5-SNAPSHOT-DEV.jar(43329 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-cat-numbers-in-negot/1.5-SNAPSHOT-DEV/mes-plugins-cat-numbers-in-negot-1.5-SNAPSHOT-DEV.jar(20562 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-cat-numbers-in-deliveries/1.5-SNAPSHOT-DEV/mes-plugins-cat-numbers-in-deliveries-1.5-SNAPSHOT-DEV.jar(29949 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-material-requirement-coverage-for-order/1.5-SNAPSHOT-DEV/mes-plugins-material-requirement-coverage-for-order-1.5-SNAPSHOT-DEV.jar(130616 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-cmms-machine-parts/1.5-SNAPSHOT-DEV/mes-plugins-cmms-machine-parts-1.5-SNAPSHOT-DEV.jar(609448 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-orders-for-subproducts-generation/1.5-SNAPSHOT-DEV/mes-plugins-orders-for-subproducts-generation-1.5-SNAPSHOT-DEV.jar(119075 bytes)
+/Users/krna/.m2/repository/com/qcadoo/mes/mes-plugins-production-scheduling/1.5-SNAPSHOT-DEV/mes-plugins-production-scheduling-1.5-SNAPSHOT-DEV.jar(74499 bytes)
+/Users/krna/.m2/repository/org/apache/httpcomponents/httpcore/4.4.5/httpcore-4.4.5.jar(327373 bytes)
+/Users/krna/.m2/repository/com/asana/asana/0.9.0/asana-0.9.0.jar(91647 bytes)
+/Users/krna/.m2/repository/com/google/http-client/google-http-client/1.20.0/google-http-client-1.20.0.jar(286717 bytes)
+/Users/krna/.m2/repository/com/google/code/findbugs/jsr305/1.3.9/jsr305-1.3.9.jar(33015 bytes)
+/Users/krna/.m2/repository/com/google/http-client/google-http-client-gson/1.20.0/google-http-client-gson-1.20.0.jar(8550 bytes)
+/Users/krna/.m2/repository/com/google/oauth-client/google-oauth-client/1.20.0/google-oauth-client-1.20.0.jar(61092 bytes)
+/Users/krna/Projects/mes/mes-plugins/mes-plugins-production-lines/target/mes-plugins-production-lines-1.5-SNAPSHOT-DEV.jar(82974 bytes)
+/Users/krna/Projects/mes/mes-plugins/mes-plugins-wage-groups/target/test-classes(1 entries)
+/Users/krna/Projects/mes/mes-plugins/mes-plugins-wage-groups/target/classes(5 entries)
+---- Compiler Messages ---
+info directory classpath entry does not exist: /Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/lib/sunrsasign.jar
+info zipfile classpath entry does not exist: /Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdkdcevm/Contents/Home/jre/classes
+info Pipelining compilation
+abort ABORT -- (IllegalArgumentException) MALFORMED
+MALFORMED
+java.lang.IllegalArgumentException: MALFORMED
+	at java.util.zip.ZipCoder.toString(ZipCoder.java:58)
+	at java.util.zip.ZipFile.getZipEntry(ZipFile.java:583)
+	at java.util.zip.ZipFile.access$900(ZipFile.java:60)
+	at java.util.zip.ZipFile$ZipEntryIterator.next(ZipFile.java:539)
+	at java.util.zip.ZipFile$ZipEntryIterator.nextElement(ZipFile.java:514)
+	at java.util.zip.ZipFile$ZipEntryIterator.nextElement(ZipFile.java:495)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.batch.ClasspathJar.isPackage(ClasspathJar.java:211)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.batch.ClasspathJar.findClass(ClasspathJar.java:129)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.batch.FileSystem.findClass(FileSystem.java:309)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.batch.FileSystem.findType(FileSystem.java:401)
+	at org.aspectj.ajdt.internal.core.builder.StatefulNameEnvironment.findType(StatefulNameEnvironment.java:102)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment.createPackage(LookupEnvironment.java:768)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.CompilationUnitScope.buildTypeBindings(CompilationUnitScope.java:107)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.lookup.LookupEnvironment.buildTypeBindings(LookupEnvironment.java:201)
+	at org.aspectj.ajdt.internal.compiler.lookup.AjLookupEnvironment.buildTypeBindings(AjLookupEnvironment.java:1435)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.internalBeginToCompile(Compiler.java:749)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.beginToCompile(Compiler.java:383)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.compile(Compiler.java:436)
+	at org.aspectj.org.eclipse.jdt.internal.compiler.Compiler.compile(Compiler.java:420)
+	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.performCompilation(AjBuildManager.java:1036)
+	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.performBuild(AjBuildManager.java:272)
+	at org.aspectj.ajdt.internal.core.builder.AjBuildManager.batchBuild(AjBuildManager.java:185)
+	at org.aspectj.ajdt.ajc.AjdtCommand.doCommand(AjdtCommand.java:112)
+	at org.aspectj.ajdt.ajc.AjdtCommand.runCommand(AjdtCommand.java:60)
+	at org.aspectj.tools.ajc.Main.run(Main.java:371)
+	at org.aspectj.tools.ajc.Main.runMain(Main.java:248)
+	at org.codehaus.mojo.aspectj.AbstractAjcCompiler.execute(AbstractAjcCompiler.java:524)
+	at org.apache.maven.plugin.DefaultBuildPluginManager.executeMojo(DefaultBuildPluginManager.java:134)
+	at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:208)
+	at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:154)
+	at org.apache.maven.lifecycle.internal.MojoExecutor.execute(MojoExecutor.java:146)
+	at org.apache.maven.lifecycle.internal.LifecycleModuleBuilder.buildProject(LifecycleModuleBuilder.java:117)
+	at org.apache.maven.lifecycle.internal.builder.multithreaded.MultiThreadedBuilder$1.call(MultiThreadedBuilder.java:200)
+	at org.apache.maven.lifecycle.internal.builder.multithreaded.MultiThreadedBuilder$1.call(MultiThreadedBuilder.java:196)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.Executors$RunnableAdapter.call(Executors.java:511)
+	at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+	at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1149)
+	at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:624)
+	at java.lang.Thread.run(Thread.java:748)
+

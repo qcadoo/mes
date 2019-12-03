@@ -49,6 +49,8 @@ public final class OperationalTaskDtoFields {
 
     public static final String PLANNED_QUANTITY = "plannedQuantity";
 
+    public static final String USED_QUANTITY = "usedQuantity";
+
     public static final String DONE_IN_PERCENTAGE = "doneInPercentage";
 
     public static final String WORKSTATION_ID = "workstationId";
