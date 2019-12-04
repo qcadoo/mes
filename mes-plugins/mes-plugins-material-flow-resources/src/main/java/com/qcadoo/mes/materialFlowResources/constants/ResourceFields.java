@@ -75,6 +75,8 @@ public final class ResourceFields {
 
     public static final String DELIVERY_NUMBER = "deliveryNumber";
 
+    public static final String DOCUMENT_NUMBER = "documentNumber";
+
     public static final String DELIVERY = "delivery";
 
     public static final String RESOURCE_ATTRIBIUTE_VALUES = "resourceAttributeValues";

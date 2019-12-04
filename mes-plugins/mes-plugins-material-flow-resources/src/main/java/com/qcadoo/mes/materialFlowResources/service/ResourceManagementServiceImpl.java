@@ -173,6 +173,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         resource.setField(ResourceFields.PALLET_NUMBER, position.getField(PositionFields.PALLET_NUMBER));
         resource.setField(ResourceFields.TYPE_OF_PALLET, position.getField(PositionFields.TYPE_OF_PALLET));
         resource.setField(ResourceFields.WASTE, position.getField(PositionFields.WASTE));
+        resource.setField(ResourceFields.DOCUMENT_NUMBER, document.getStringField(DocumentFields.NUMBER));
 
         if (delivery != null) {
             resource.setField(ResourceFields.DELIVERY_NUMBER, delivery.getStringField("number"));
@@ -231,7 +232,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 newResource.setField(ResourceFields.USER_NAME,
                         user.getStringField(UserFields.FIRST_NAME) + " " + user.getStringField(UserFields.LAST_NAME));
+                newResource.setField(ResourceFields.DOCUMENT_NUMBER, document.getField(DocumentFields.NUMBER));
             }
+
         }
 
         newResource.setField(ResourceFields.TIME, date);

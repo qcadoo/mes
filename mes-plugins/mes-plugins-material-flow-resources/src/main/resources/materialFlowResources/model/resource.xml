@@ -82,6 +82,7 @@
         <boolean name="validatePallet" default="true" persistent="false"/>
 
         <string name="deliveryNumber"/>
+        <string name="documentNumber"/>
 
     </fields>
     <hooks>        

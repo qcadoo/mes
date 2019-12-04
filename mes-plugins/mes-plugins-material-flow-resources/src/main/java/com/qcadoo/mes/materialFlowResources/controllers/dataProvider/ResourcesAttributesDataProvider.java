@@ -1,5 +1,11 @@
 package com.qcadoo.mes.materialFlowResources.controllers.dataProvider;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.ColumnDTO;
+import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -11,12 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.ColumnDTO;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 
 @Service
 public class ResourcesAttributesDataProvider {
@@ -70,6 +70,8 @@ public class ResourcesAttributesDataProvider {
                 translationService.translate("materialFlowResources.resource.productionDate.label", locale)));
         columns.add(new ColumnDTO(ResourceFields.BATCH,
                 translationService.translate("materialFlowResources.resource.batch.label", locale)));
+        columns.add(new ColumnDTO(ResourceFields.DOCUMENT_NUMBER,
+                translationService.translate("materialFlowResources.resource.documentNumber.label", locale)));
         String query = "SELECT a.number AS id, a.name, a.unit, a.valuetype AS dataType "
                 + "FROM basic_attribute a WHERE a.forresource = TRUE ORDER BY a.number";
         columns.addAll(jdbcTemplate.query(query, Collections.emptyMap(), new BeanPropertyRowMapper(ColumnDTO.class)));
@@ -80,7 +82,7 @@ public class ResourcesAttributesDataProvider {
         String query = "SELECT r.id, r.number, p.number AS productNumber, p.name AS productName, r.availablequantity, "
                 + "l.number AS warehouseNumber, p.unit AS productUnit, r.price, (r.quantity * r.price) AS value, "
                 + "to_char(r.\"time\", 'YYYY-MM-DD HH24:MI:SS') AS \"time\", "
-                + "r.productiondate, r.expirationdate, r.batch, a.number AS attributeNumber, rav.value AS attributeValue "
+                + "r.productiondate, r.expirationdate, r.batch, r.documentNumber, a.number AS attributeNumber, rav.value AS attributeValue "
                 + "FROM materialflowresources_resource r JOIN basic_product p ON p.id = r.product_id "
                 + "JOIN materialflow_location l ON l.id = r.location_id "
                 + "LEFT JOIN materialflowresources_resourceattributevalue rav ON r.id = rav.resource_id "
@@ -107,6 +109,7 @@ public class ResourcesAttributesDataProvider {
                 row.put(ResourceFields.PRODUCTION_DATE, attribute.get(ResourceFields.PRODUCTION_DATE));
                 row.put(ResourceFields.EXPIRATION_DATE, attribute.get(ResourceFields.EXPIRATION_DATE));
                 row.put(ResourceFields.BATCH, attribute.get(ResourceFields.BATCH));
+                row.put(ResourceFields.DOCUMENT_NUMBER, attribute.get(ResourceFields.DOCUMENT_NUMBER));
             }
             if (!Objects.isNull(attribute.get(ATTRIBUTE_NUMBER))) {
                 String attributeValue = (String) row.get(attribute.get(ATTRIBUTE_NUMBER));
