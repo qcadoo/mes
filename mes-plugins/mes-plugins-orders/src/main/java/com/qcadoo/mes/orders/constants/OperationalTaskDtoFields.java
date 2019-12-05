@@ -55,4 +55,6 @@ public final class OperationalTaskDtoFields {
 
     public static final String WORKSTATION_ID = "workstationId";
 
+    public static final String STATE = "state";
+
 }

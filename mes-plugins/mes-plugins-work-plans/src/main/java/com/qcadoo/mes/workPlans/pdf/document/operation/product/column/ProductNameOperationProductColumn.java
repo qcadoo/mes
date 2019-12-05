@@ -23,6 +23,12 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.product.column;
 
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
@@ -32,12 +38,6 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.ProductDirection;
 import com.qcadoo.model.api.Entity;
-
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 @Component("productNameOperationProductColumn")
 public class ProductNameOperationProductColumn extends AbstractOperationProductColumn {
@@ -77,7 +77,7 @@ public class ProductNameOperationProductColumn extends AbstractOperationProductC
 
     private String buildValue(Entity product) {
         StringBuilder builder = new StringBuilder();
-        builder.append(name(product) + " (" + number(product) + ")");
+        builder.append(name(product)).append(" (").append(number(product)).append(")");
         List<Entity> attrValues = product.getHasManyField(ProductFields.PRODUCT_ATTRIBUTE_VALUES);
         Map<String, List<String>> valuesByAttribute = Maps.newHashMap();
         attrValues.forEach(prodAttrVal -> {
