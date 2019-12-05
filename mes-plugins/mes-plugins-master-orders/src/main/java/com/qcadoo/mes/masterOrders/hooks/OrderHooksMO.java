@@ -56,11 +56,19 @@ public class OrderHooksMO {
         if (Objects.nonNull(masterOrder)) {
             BigDecimal plannedQuantity = BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.PLANNED_QUANTITY));
             Entity masterOrderProduct = getMasterOrderProduct(masterOrder, order.getBelongsToField(OrderFields.PRODUCT));
-            if (!MasterOrderPositionStatus.ORDERED.getStringValue().equals(
-                    masterOrderProduct.getStringField(MasterOrderProductFields.MASTER_ORDER_POSITION_STATUS))) {
+            if (Objects.nonNull(masterOrderProduct)
+                    && !MasterOrderPositionStatus.ORDERED.getStringValue().equals(
+                            masterOrderProduct.getStringField(MasterOrderProductFields.MASTER_ORDER_POSITION_STATUS))) {
                 BigDecimal masterOrderQuantity = BigDecimalUtils.convertNullToZero(masterOrderProduct
                         .getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY));
-                if (plannedQuantity.compareTo(masterOrderQuantity) >= 0) {
+                BigDecimal planned = masterOrder
+                        .getHasManyField(MasterOrderFields.ORDERS)
+                        .stream()
+                        .filter(o -> o.getBelongsToField(OrderFields.PRODUCT).getId()
+                                .equals(order.getBelongsToField(OrderFields.PRODUCT).getId()))
+                        .map(o -> o.getDecimalField(OrderFields.PLANNED_QUANTITY)).reduce(BigDecimal.ZERO, BigDecimal::add);
+                planned = planned.add(plannedQuantity, numberService.getMathContext());
+                if (planned.compareTo(masterOrderQuantity) >= 0) {
                     masterOrderProduct.setField(MasterOrderProductFields.MASTER_ORDER_POSITION_STATUS,
                             MasterOrderPositionStatus.ORDERED.getText());
                     masterOrderProduct.getDataDefinition().save(masterOrderProduct);

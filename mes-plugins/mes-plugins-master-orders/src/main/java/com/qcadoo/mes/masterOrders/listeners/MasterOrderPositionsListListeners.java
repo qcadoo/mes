@@ -25,6 +25,7 @@ package com.qcadoo.mes.masterOrders.listeners;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.masterOrders.OrdersFromMOProductsGenerationService;
 import com.qcadoo.mes.masterOrders.constants.GeneratingOrdersHelperFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderPositionDtoFields;
@@ -54,11 +55,16 @@ public class MasterOrderPositionsListListeners {
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
+    private static final String CREATE_COLLECTIVE_ORDERS = "createCollectiveOrders";
+
     @Autowired
     private OrdersFromMOProductsGenerationService ordersGenerationService;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     public void createOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent masterOrderPositionComponent = (GridComponent) view.getComponentByReference(L_GRID);
@@ -104,17 +110,24 @@ public class MasterOrderPositionsListListeners {
     public void goToGenerateOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent masterOrderPositionComponent = (GridComponent) view.getComponentByReference(L_GRID);
         Set<Long> selected = masterOrderPositionComponent.getSelectedEntitiesIds();
+        boolean createCollectiveOrders = parameterService.getParameter().getBooleanField(CREATE_COLLECTIVE_ORDERS);
+        if (createCollectiveOrders) {
 
-        Entity generatingOrders = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
-                MasterOrdersConstants.GENERATING_ORDERS_HELPER).create();
-        generatingOrders.setField(GeneratingOrdersHelperFields.SELECTED_ENTITIES, selected.stream().map(Object::toString)
-                .collect(Collectors.joining(",")));
-        generatingOrders = generatingOrders.getDataDefinition().save(generatingOrders);
+            Entity generatingOrders = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.GENERATING_ORDERS_HELPER).create();
+            generatingOrders.setField(GeneratingOrdersHelperFields.SELECTED_ENTITIES, selected.stream().map(Object::toString).collect(Collectors.joining(",")));
+            generatingOrders = generatingOrders.getDataDefinition().save(generatingOrders);
 
-        Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("form.id", generatingOrders.getId());
-        String url = "../page/masterOrders/generatingOrders.html";
-        view.openModal(url, parameters);
+            Map<String, Object> parameters = Maps.newHashMap();
+            parameters.put("form.id", generatingOrders.getId());
+            String url = "../page/masterOrders/generatingOrders.html";
+            view.openModal(url, parameters);
+        } else {
+            List<Entity> masterOrderProducts = dataDefinitionService
+                    .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO).find()
+                    .add(SearchRestrictions.in("id", selected)).list().getEntities();
+            ordersGenerationService.generateOrders(masterOrderProducts, null, null, true).showMessage(view);
+            state.performEvent(view, "reset", new String[0]);
+        }
     }
 
     public void generateOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {
