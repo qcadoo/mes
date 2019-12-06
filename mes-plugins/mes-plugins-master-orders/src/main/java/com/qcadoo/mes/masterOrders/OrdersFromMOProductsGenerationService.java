@@ -183,6 +183,13 @@ public class OrdersFromMOProductsGenerationService {
 
         masterOrderProductsEntities.forEach(mop -> {
             ProductTechnologyKey key = new ProductTechnologyKey(mop);
+            if(Objects.isNull(key.getTechnology())){
+                Entity technology = technologyServiceO.getDefaultTechnology(key.getProduct());
+                if(Objects.nonNull(technology)) {
+                    key.setTechnology(technology);
+                    key.setTechnologyId(technology.getId());
+                }
+            }
             if (groupedMap.containsKey(key)) {
                 List<Entity> values = groupedMap.get(key);
                 values.add(mop);

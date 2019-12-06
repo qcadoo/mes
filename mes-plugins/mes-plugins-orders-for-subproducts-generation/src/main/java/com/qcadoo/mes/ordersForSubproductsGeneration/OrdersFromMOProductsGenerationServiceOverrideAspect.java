@@ -1,5 +1,17 @@
 package com.qcadoo.mes.ordersForSubproductsGeneration;
 
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.masterOrders.GenerationOrderResult;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.ordersForSubproductsGeneration.constants.OrdersForSubproductsGenerationConstans;
+import com.qcadoo.mes.technologies.constants.ProductStructureTreeNodeFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.plugin.api.RunIfEnabled;
+
 import java.util.List;
 
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -8,15 +20,6 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
-
-import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.masterOrders.GenerationOrderResult;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.ordersForSubproductsGeneration.constants.OrdersForSubproductsGenerationConstans;
-import com.qcadoo.mes.technologies.constants.ProductStructureTreeNodeFields;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.plugin.api.RunIfEnabled;
 
 @Aspect
 @Configurable
@@ -32,6 +35,9 @@ public class OrdersFromMOProductsGenerationServiceOverrideAspect {
 
     @Autowired
     private OrdersForSubproductsGenerationService ordersForSubproductsGenerationService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     @Pointcut("execution(public void com.qcadoo.mes.masterOrders.OrdersFromMOProductsGenerationService.generateSubOrders(..)) "
             + "&& args(result, order)")
@@ -54,7 +60,12 @@ public class OrdersFromMOProductsGenerationServiceOverrideAspect {
                 } else {
                     ordersForSubproductsGenerationService.generateOrders(order);
                 }
-
+            }
+            List<Entity> orders = getOrderAndSubOrders(order.getId());
+            if (orders.isEmpty()) {
+                result.addOrderWithNoGeneratedSubOrders(order.getStringField(OrderFields.NUMBER));
+            } else {
+                result.addOrderWithGeneratedSubOrders(order.getStringField(OrderFields.NUMBER));
             }
         } catch (Exception exc) {
             result.addOrderWithoutGeneratedSubOrders(order.getStringField(OrderFields.NUMBER));
@@ -68,5 +79,14 @@ public class OrdersFromMOProductsGenerationServiceOverrideAspect {
                     .map(node -> node.getBelongsToField(ProductStructureTreeNodeFields.PRODUCT).getStringField(
                             ProductFields.NUMBER)).forEach(result::addProductWithoutAcceptedTechnology);
         }
+    }
+
+    private List<Entity> getOrderAndSubOrders(final Long orderID) {
+        String sql = "SELECT o FROM #orders_order AS o WHERE o.root = :orderID OR o.id = :orderID";
+        return getOrderDD().find(sql).setLong("orderID", orderID).list().getEntities();
+    }
+
+    private DataDefinition getOrderDD() {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
     }
 }
