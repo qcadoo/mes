@@ -25,6 +25,10 @@ public class GenerationOrderResult {
 
     private List<String> ordersWithoutGeneratedSubOrders = Lists.newArrayList();
 
+    private List<String> ordersWithGeneratedSubOrders = Lists.newArrayList();
+
+    private List<String> ordersWithNoGeneratedSubOrders = Lists.newArrayList();
+
     private List<String> productsWithoutAcceptedTechnologies = Lists.newArrayList();
 
     public void addNotGeneratedProductError(MasterOrderProductErrorContainer err) {
@@ -47,15 +51,19 @@ public class GenerationOrderResult {
         ordersWithoutGeneratedSubOrders.add(number);
     }
 
+    public void addOrderWithGeneratedSubOrders(String number) {
+        ordersWithGeneratedSubOrders.add(number);
+    }
+
+    public void addOrderWithNoGeneratedSubOrders(String number) {
+        ordersWithNoGeneratedSubOrders.add(number);
+    }
+
     public void addProductWithoutAcceptedTechnology(String number) {
         productsWithoutAcceptedTechnologies.add(number);
     }
 
     public void showMessage(ViewDefinitionState view) {
-        if (!generatedOrderNumbers.isEmpty()) {
-            view.addMessage("masterOrders.masterOrder.generationOrder.generatedOrderNumbers", ComponentState.MessageType.INFO,
-                    false, String.join(", ", generatedOrderNumbers));
-        }
 
         if (!realizationFromStock.isEmpty()) {
             view.addMessage("masterOrders.masterOrder.generationOrder.realizationFromStockNumbers", ComponentState.MessageType.INFO,
@@ -70,6 +78,21 @@ public class GenerationOrderResult {
         if (!ordersWithoutGeneratedSubOrders.isEmpty()) {
             view.addMessage("masterOrders.masterOrder.generationOrder.ordersWithoutGeneratedSubOrders",
                     ComponentState.MessageType.INFO, false, String.join(", ", ordersWithoutGeneratedSubOrders));
+        }
+
+        if (!ordersWithGeneratedSubOrders.isEmpty()) {
+            view.addMessage("masterOrders.masterOrder.generationOrder.ordersWithGeneratedSubOrders",
+                    ComponentState.MessageType.INFO, false, String.join(", ", ordersWithGeneratedSubOrders));
+        }
+
+        if (!ordersWithNoGeneratedSubOrders.isEmpty()) {
+            view.addMessage("masterOrders.masterOrder.generationOrder.ordersWithNoGeneratedSubOrders",
+                    ComponentState.MessageType.INFO, false, String.join(", ", ordersWithNoGeneratedSubOrders));
+        }
+
+        if (!generatedOrderNumbers.isEmpty()) {
+            view.addMessage("masterOrders.masterOrder.generationOrder.generatedOrderNumbers", ComponentState.MessageType.INFO,
+                    false, String.join(", ", generatedOrderNumbers));
         }
 
         if (!productOrderErrors.isEmpty()) {
@@ -92,6 +115,8 @@ public class GenerationOrderResult {
             view.addMessage("masterOrders.masterOrder.generationOrder.productsWithoutAcceptedTechnologies",
                     ComponentState.MessageType.INFO, false, String.join(", ", productsWithoutAcceptedTechnologies));
         }
+
+
     }
 
     public List<String> getRealizationFromStock() {
