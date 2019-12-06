@@ -98,14 +98,19 @@ public class MasterOrderProductHooks {
             masterOrder.setField(MasterOrderFields.STATE, MasterOrderState.IN_EXECUTION.getStringValue());
             masterOrder = masterOrder.getDataDefinition().save(masterOrder);
         }
-        if (parameterService.getParameter().getBooleanField("completeMasterOrderAfterOrderingPositions")
+        if (isCompleteMasterOrderAfterOrderingPositions(masterOrderProduct, masterOrder)) {
+            masterOrder.setField(MasterOrderFields.STATE, MasterOrderState.COMPLETED.getStringValue());
+            masterOrder.getDataDefinition().save(masterOrder);
+        }
+    }
+
+    private boolean isCompleteMasterOrderAfterOrderingPositions(Entity masterOrderProduct, Entity masterOrder) {
+        return parameterService.getParameter().getBooleanField("completeMasterOrderAfterOrderingPositions")
+                && !masterOrder.getHasManyField(MasterOrderFields.MASTER_ORDER_PRODUCTS).isEmpty()
                 && !MasterOrderState.COMPLETED.getStringValue().equals(masterOrder.getStringField(MasterOrderFields.STATE))
                 && MasterOrderPositionStatus.ORDERED.getText().equals(
                         masterOrderProduct.getStringField(MasterOrderProductFields.MASTER_ORDER_POSITION_STATUS))
-                && isAllOrdered(masterOrderProduct, masterOrder)) {
-            masterOrder.setField(MasterOrderFields.STATE, MasterOrderState.COMPLETED.getStringValue());
-            masterOrder = masterOrder.getDataDefinition().save(masterOrder);
-        }
+                && isAllOrdered(masterOrderProduct, masterOrder);
     }
 
     private boolean isAllOrdered(final Entity masterOrderProduct, final Entity masterOrder) {
