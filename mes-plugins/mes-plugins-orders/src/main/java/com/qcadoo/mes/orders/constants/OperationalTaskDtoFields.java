@@ -57,4 +57,8 @@ public final class OperationalTaskDtoFields {
 
     public static final String STATE = "state";
 
+    public static final String STAFF_NAME = "staffName";
+
+    public static final String PRODUCTION_LINE_NAME = "productionLineName";
+
 }
