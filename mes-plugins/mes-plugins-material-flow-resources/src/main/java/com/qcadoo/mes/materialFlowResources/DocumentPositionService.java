@@ -79,7 +79,7 @@ public class DocumentPositionService {
 
         }
         String query = "SELECT %s FROM ( SELECT p.*, p.document_id AS document, product.number AS product, product.name AS productName, product.unit, additionalcode.code AS additionalcode, "
-                + "palletnumber.number AS palletnumber, location.number AS storagelocation, resource.number AS resource, \n"
+                + "palletnumber.number AS palletnumber, location.number AS storagelocation, resource.number AS resource, batch.number as batch, \n"
                 + "(coalesce(r1.resourcesCount,0) < 2 AND p.quantity >= coalesce(resource.quantity,0)) AS lastResource "
                 + attrQueryPart.toString()
                 + "	FROM materialflowresources_position p\n"
@@ -87,6 +87,7 @@ public class DocumentPositionService {
                 + "	LEFT JOIN basic_additionalcode additionalcode ON (p.additionalcode_id = additionalcode.id)\n"
                 + "	LEFT JOIN basic_palletnumber palletnumber ON (p.palletnumber_id = palletnumber.id)\n"
                 + "	LEFT JOIN materialflowresources_resource resource ON (p.resource_id = resource.id)\n"
+                + "	LEFT JOIN advancedgenealogy_batch batch ON (p.batch_id = batch.id)\n"
                 + " LEFT JOIN (SELECT palletnumber_id, count(id) as resourcesCount FROM materialflowresources_resource GROUP BY palletnumber_id) r1 ON r1.palletnumber_id = resource.palletnumber_id \n"
                 + "	LEFT JOIN materialflowresources_storagelocation location ON (p.storagelocation_id = location.id) WHERE p.document_id = :documentId %s) q ";
 
@@ -263,6 +264,28 @@ public class DocumentPositionService {
         List<StorageLocationDTO> entities = getStorageLocations(preparedQuery, q, paramMap);
 
         return dataProvider.getDataResponse(q, preparedQuery, entities, paramMap);
+    }    
+    
+    public DataResponse getBatchesResponse(final String q, String product) {
+        if(StringUtils.isEmpty(product)) {
+            return new DataResponse(Lists.newArrayList(), 0);
+        } else {
+            String preparedQuery;
+
+            Map<String, Object> paramMap = Maps.newHashMap();
+            paramMap.put("product", product);
+                preparedQuery = "SELECT _batch.id, _batch.number as number, p.number as product "
+                        + "FROM advancedgenealogy_batch _batch "
+                        + "LEFT JOIN basic_product p on p.id = _batch.product_id "
+                        + "WHERE p.number = :product AND _batch.number ilike :query AND _batch.active=true";
+
+            MapSqlParameterSource queryParameters = new MapSqlParameterSource(paramMap).addValue("query", '%' + q + '%');
+            preparedQuery = preparedQuery + " LIMIT " + DataProvider.MAX_RESULTS + ';';
+            List<BatchDTO> entities = jdbcTemplate
+                    .query(preparedQuery, queryParameters, BeanPropertyRowMapper.newInstance(BatchDTO.class));
+
+            return dataProvider.getDataResponse(q, preparedQuery, entities, paramMap);
+        }
     }
 
     public Map<String, Object> getGridConfig(final Long documentId) {

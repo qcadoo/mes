@@ -97,6 +97,12 @@ public class DocumentPositionsController {
     }
 
     @ResponseBody
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "batch")
+    public DataResponse getBatches(@RequestParam("query") String query, @RequestParam("product") String product) {
+        return documentPositionService.getBatchesResponse(query, product);
+    }
+
+    @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "storageLocation//{document}")
     public StorageLocationDTO getStorageLocationForEmptyProduct(@PathVariable String document) {
         return null;

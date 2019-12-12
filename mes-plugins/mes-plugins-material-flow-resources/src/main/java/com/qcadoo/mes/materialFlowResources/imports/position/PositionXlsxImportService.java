@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources.imports.position;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.imports.services.XlsxImportService;
@@ -40,6 +33,13 @@ import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class PositionXlsxImportService extends XlsxImportService {
@@ -112,7 +112,7 @@ public class PositionXlsxImportService extends XlsxImportService {
 
     private void validateRequiredFields(final Entity position, final DataDefinition positionDD, final Entity locationTo) {
         BigDecimal price = position.getDecimalField(PositionFields.PRICE);
-        String batch = position.getStringField(PositionFields.BATCH);
+        Entity batch = position.getBelongsToField(PositionFields.BATCH);
         Date productionDate = position.getDateField(PositionFields.PRODUCTION_DATE);
         Date expirationDate = position.getDateField(PositionFields.EXPIRATION_DATE);
 

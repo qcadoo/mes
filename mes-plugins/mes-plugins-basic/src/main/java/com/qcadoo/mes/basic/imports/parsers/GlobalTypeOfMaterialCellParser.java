@@ -23,6 +23,11 @@
  */
 package com.qcadoo.mes.basic.imports.parsers;
 
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.GlobalTypeOfMaterial;
+import com.qcadoo.mes.basic.imports.helpers.CellErrorsAccessor;
+import com.qcadoo.mes.basic.imports.helpers.CellParser;
+
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
@@ -31,11 +36,6 @@ import java.util.function.Consumer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
-
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.constants.GlobalTypeOfMaterial;
-import com.qcadoo.mes.basic.imports.helpers.CellErrorsAccessor;
-import com.qcadoo.mes.basic.imports.helpers.CellParser;
 
 @Component
 public class GlobalTypeOfMaterialCellParser implements CellParser {
@@ -46,7 +46,7 @@ public class GlobalTypeOfMaterialCellParser implements CellParser {
     private TranslationService translationService;
 
     @Override
-    public void parse(final String cellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {
+    public void parse(final String cellValue, final String dependentCellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {
         if (Objects.nonNull(cellValue)) {
             Optional<GlobalTypeOfMaterial> match = getGlobalTypeOfMaterialByName(cellValue);
 

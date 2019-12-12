@@ -89,6 +89,11 @@
 
 		<belongsTo name="user" model="user" plugin="qcadooSecurity" persistent="false"/>
 
+		<belongsTo name="batch" model="batch" plugin="advancedGenealogy"/>
+		<boolean name="addBatch" default="false" persistent="false"/>
+		<string name="batchNumber" persistent="false"/>
+
+
 	</fields>
 
 	<hooks>

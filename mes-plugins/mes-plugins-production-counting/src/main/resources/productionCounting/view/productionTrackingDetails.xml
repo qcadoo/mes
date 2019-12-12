@@ -683,7 +683,43 @@
                 </layoutElement>
             </component>
         </windowTab>
+        <windowTab name="batchOrderedProduct">
+            <component type="gridLayout" name="batchOrderedGridLayout"
+                       columns="3" rows="4">
+                <layoutElement column="1" row="1" width="3">
+                    <component type="label" name="batchOrderedProductLabel">
+                        <option type="alignment" value="left"/>
+                        <option type="labelStyle" value="text"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2">
+                    <component type="lookup" name="batch" reference="batch"
+                               field="#{form}.batch">
+                        <option type="column" name="supplierName" fields="supplier"
+                                expression="#supplier.get('name')"/>
 
+                        <option type="searchable" value="number,supplierName"/>
+                        <option type="orderable" value="number,supplierName"/>
+
+                        <option type="expression" value="#number"/>
+                        <option type="fieldCode" value="number"/>
+
+                        <!--<criteriaModifier
+                                class="com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier"
+                                method="filterByProduct"/>-->
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="3">
+                    <component type="checkbox" name="addBatch" field="#{form}.addBatch"
+                               reference="addBatch"/>
+                </layoutElement>
+                <layoutElement column="1" row="4">
+                    <component type="input" name="batchNumber"
+                               reference="batchNumber" field="#{form}.batchNumber">
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
         <windowTab name="historyTab">
             <component type="gridLayout" name="loggingsGridLayout"
                        columns="2" rows="1">

@@ -291,6 +291,11 @@
                            joinField="division" plugin="productionCounting"/>
         </model:model-field>
 
+        <model:model-field model="batch" plugin="advancedGenealogy">
+            <model:hasMany name="productionTrackings" model="productionTracking"
+                           joinField="batch" plugin="productionCounting"/>
+        </model:model-field>
+
         <model:model-field model="message" plugin="states">
             <model:belongsTo name="productionTrackingStateChange"
                              plugin="productionCounting" model="productionTrackingStateChange"/>

@@ -23,15 +23,15 @@
  */
 package com.qcadoo.mes.basic.imports.parsers;
 
+import com.qcadoo.mes.basic.imports.helpers.CellErrorsAccessor;
+import com.qcadoo.mes.basic.imports.helpers.CellParser;
+
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Component;
-
-import com.qcadoo.mes.basic.imports.helpers.CellErrorsAccessor;
-import com.qcadoo.mes.basic.imports.helpers.CellParser;
 
 @Component
 public class BooleanCellParser implements CellParser {
@@ -43,7 +43,7 @@ public class BooleanCellParser implements CellParser {
     private static final String L_FALSE_BOOLEAN_PATTERN = "^(false|nie|f|n|0)$";
 
     @Override
-    public void parse(final String cellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {
+    public void parse(final String cellValue, final String dependentCellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {
         if (validateBooleanFormat(cellValue, errorsAccessor)) {
             Optional<Boolean> mayBeValue = parse(cellValue);
 

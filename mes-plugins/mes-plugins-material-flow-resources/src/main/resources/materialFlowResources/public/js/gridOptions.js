@@ -961,6 +961,24 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             });
         }
 
+        function batchLookup_createElement(value, options) {
+            var lookup = createLookupElement('batch', value, '/rest/rest/documentPositions/batch.html', options, function () {
+                return  {
+                    product: getFieldValue('product', getRowIdFromElement($('input', lookup)))
+                };
+            });
+
+            $('input', lookup).bind('change keydown paste input', function () {
+                var t = $(this);
+                window.clearTimeout(t.data("timeout"));
+                $(this).data("timeout", setTimeout(function () {
+
+                }, 500));
+            });
+
+            return lookup;
+        }
+
         function storageLocationLookup_createElement(value, options) {
             var lookup = createLookupElement('storageLocation', value, '/rest/rest/documentPositions/storagelocations.html', options, function () {
                 return  {
@@ -1767,7 +1785,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     name: 'batch',
                     index: 'batch',
                     editable: true,
-                    required: true,
+                    edittype: 'custom',
+                    editoptions: {
+                        custom_element: batchLookup_createElement,
+                        custom_value: lookup_value
+                    },
                     formoptions: {
                         rowpos: 6,
                         colpos: 2
