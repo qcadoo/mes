@@ -220,7 +220,6 @@ public class AttributeImportService {
                         resourceAttributeValue = resourceAttributeValue.getDataDefinition().save(resourceAttributeValue);
                         if (!resourceAttributeValue.isValid()) {
                             addErrorsForCalculated(container, valEntry.getKey(), value, resourceAttributeValue);
-                            return;
                         }
                     } else {
                         Entity resourceAttributeValue = dataDefinitionService.get("materialFlowResources",
@@ -233,7 +232,6 @@ public class AttributeImportService {
                         resourceAttributeValue = resourceAttributeValue.getDataDefinition().save(resourceAttributeValue);
                         if (!resourceAttributeValue.isValid()) {
                             addErrorsForContinuous(container, valEntry.getKey(), value, attribute, resourceAttributeValue);
-
                         }
                     }
                 }

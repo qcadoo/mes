@@ -60,8 +60,11 @@ public class ProdOutResourceAttrValHooks {
                         "qcadooView.validate.field.error.invalidNumericFormat");
                 return false;
             }
-            resourceAttributeValue.setField(
-                    ProductAttributeValueFields.VALUE, BigDecimalUtils.toString(eitherNumber.getRight().get()));
+            resourceAttributeValue
+                    .setField(
+                            ProductAttributeValueFields.VALUE,
+                            BigDecimalUtils.toString(eitherNumber.getRight().get(),
+                                    attribute.getIntegerField(AttributeFields.PRECISION)));
         }
         if (checkIfValueExists(resourceAttributeValueDD, resourceAttributeValue)) {
             return false;
@@ -72,7 +75,8 @@ public class ProdOutResourceAttrValHooks {
 
     private boolean checkIfValueExists(DataDefinition resourceAttributeValueDD, Entity resourceAttributeValue) {
         Entity attribute = resourceAttributeValue.getBelongsToField(ProdOutResourceAttrValFields.ATTRIBUTE);
-        Entity tocp = resourceAttributeValue.getBelongsToField(ProdOutResourceAttrValFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENT);
+        Entity tocp = resourceAttributeValue
+                .getBelongsToField(ProdOutResourceAttrValFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENT);
         Entity attributeValue = resourceAttributeValue.getBelongsToField(ProdOutResourceAttrValFields.ATTRIBUTE_VALUE);
 
         List<Entity> values = tocp.getHasManyField(TrackingOperationProductOutComponentFields.PROD_OUT_RESOURCE_ATTR_VALS);
@@ -118,7 +122,9 @@ public class ProdOutResourceAttrValHooks {
                     attributeValue.getStringField(ProdOutResourceAttrValFields.VALUE), LocaleContextHolder.getLocale());
             if (eitherNumber.isRight() && eitherNumber.getRight().isPresent()) {
                 attributeValue.setField(
-                        ProdOutResourceAttrValFields.VALUE, BigDecimalUtils.toString(eitherNumber.getRight().get()));
+                        ProdOutResourceAttrValFields.VALUE,
+                        BigDecimalUtils.toString(eitherNumber.getRight().get(),
+                                attribute.getIntegerField(AttributeFields.PRECISION)));
             }
         }
     }

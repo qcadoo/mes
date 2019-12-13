@@ -489,6 +489,7 @@
         <view:view resource="view/useReplacement.xml"/>
 
         <view:view resource="view/prodOutResourceAttrValDetails.xml"/>
+        <view:view resource="view/prodOutResourceAttrValList.xml"/>
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>

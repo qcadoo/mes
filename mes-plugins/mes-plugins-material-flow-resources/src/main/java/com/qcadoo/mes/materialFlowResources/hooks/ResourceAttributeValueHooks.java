@@ -69,8 +69,11 @@ public class ResourceAttributeValueHooks {
                         "qcadooView.validate.field.error.invalidNumericFormat");
                 return false;
             }
-            resourceAttributeValue.setField(
-                    ProductAttributeValueFields.VALUE, BigDecimalUtils.toString(eitherNumber.getRight().get()));
+            resourceAttributeValue
+                    .setField(
+                            ProductAttributeValueFields.VALUE,
+                            BigDecimalUtils.toString(eitherNumber.getRight().get(),
+                                    attribute.getIntegerField(AttributeFields.PRECISION)));
         }
         if (checkIfValueExists(resourceAttributeValueDD, resourceAttributeValue)) {
             return false;
@@ -127,7 +130,9 @@ public class ResourceAttributeValueHooks {
                     resourceAttributeValue.getStringField(ResourceAttributeValueFields.VALUE), LocaleContextHolder.getLocale());
             if (eitherNumber.isRight() && eitherNumber.getRight().isPresent()) {
                 resourceAttributeValue.setField(
-                        ResourceAttributeValueFields.VALUE, BigDecimalUtils.toString(eitherNumber.getRight().get()));
+                        ResourceAttributeValueFields.VALUE,
+                        BigDecimalUtils.toString(eitherNumber.getRight().get(),
+                                attribute.getIntegerField(AttributeFields.PRECISION)));
             }
         }
         if (resourceAttributeValue.getBooleanField(ResourceAttributeValueFields.FROM_DEFINITION)) {

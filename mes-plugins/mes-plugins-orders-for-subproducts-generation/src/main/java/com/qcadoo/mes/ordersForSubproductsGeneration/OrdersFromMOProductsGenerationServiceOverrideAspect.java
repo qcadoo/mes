@@ -61,7 +61,7 @@ public class OrdersFromMOProductsGenerationServiceOverrideAspect {
                     ordersForSubproductsGenerationService.generateOrders(order);
                 }
             }
-            List<Entity> orders = getOrderAndSubOrders(order.getId());
+            List<Entity> orders = geSubOrders(order.getId());
             if (orders.isEmpty()) {
                 result.addOrderWithNoGeneratedSubOrders(order.getStringField(OrderFields.NUMBER));
             } else {
@@ -81,8 +81,8 @@ public class OrdersFromMOProductsGenerationServiceOverrideAspect {
         }
     }
 
-    private List<Entity> getOrderAndSubOrders(final Long orderID) {
-        String sql = "SELECT o FROM #orders_order AS o WHERE o.root = :orderID OR o.id = :orderID";
+    private List<Entity> geSubOrders(final Long orderID) {
+        String sql = "SELECT o FROM #orders_order AS o WHERE o.root = :orderID";
         return getOrderDD().find(sql).setLong("orderID", orderID).list().getEntities();
     }
 

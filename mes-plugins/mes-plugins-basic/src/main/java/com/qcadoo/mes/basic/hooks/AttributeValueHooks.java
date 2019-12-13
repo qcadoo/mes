@@ -34,12 +34,12 @@ public class AttributeValueHooks {
         }
 
         if (AttributeValueType.NUMERIC.getStringValue().equals(attribute.getStringField(AttributeFields.VALUE_TYPE))) {
+            int scale = attribute.getIntegerField(AttributeFields.PRECISION);
 
             Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParseAndIgnoreSeparator(
                     attributeValue.getStringField(AttributeValueFields.VALUE), LocaleContextHolder.getLocale());
             if (eitherNumber.isRight() && eitherNumber.getRight().isPresent()) {
 
-                int scale = attribute.getIntegerField(AttributeFields.PRECISION);
                 int valueScale = eitherNumber.getRight().get().scale();
                 if (valueScale > scale) {
                     attributeValue.addError(attributeValueDD.getField(AttributeValueFields.VALUE),
@@ -55,7 +55,7 @@ public class AttributeValueHooks {
             DecimalFormatSymbols symbols = new DecimalFormatSymbols(LocaleContextHolder.getLocale());
 
             return !checkIfValueExists(attributeValueDD, attributeValue, attribute,
-                    BigDecimalUtils.toString(eitherNumber.getRight().get()));
+                    BigDecimalUtils.toString(eitherNumber.getRight().get(), scale));
         }
         return true;
     }
@@ -78,7 +78,10 @@ public class AttributeValueHooks {
             Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParseAndIgnoreSeparator(
                     attributeValue.getStringField(AttributeValueFields.VALUE), LocaleContextHolder.getLocale());
             if (eitherNumber.isRight() && eitherNumber.getRight().isPresent()) {
-                attributeValue.setField(AttributeValueFields.VALUE, BigDecimalUtils.toString(eitherNumber.getRight().get()));
+                attributeValue.setField(
+                        AttributeValueFields.VALUE,
+                        BigDecimalUtils.toString(eitherNumber.getRight().get(),
+                                attribute.getIntegerField(AttributeFields.PRECISION)));
             }
         }
     }

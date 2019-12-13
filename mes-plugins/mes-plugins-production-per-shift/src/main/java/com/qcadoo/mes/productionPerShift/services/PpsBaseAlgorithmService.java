@@ -1,7 +1,6 @@
 package com.qcadoo.mes.productionPerShift.services;
 
 import java.math.BigDecimal;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -10,12 +9,11 @@ import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.base.Function;
-import com.google.common.collect.FluentIterable;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.ShiftExceptionService;
+import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.mes.basic.util.DateTimeRange;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
@@ -50,6 +48,9 @@ public abstract class PpsBaseAlgorithmService {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
+    private ShiftsService shiftsService;
+
+    @Autowired
     private ShiftExceptionService shiftExceptionService;
 
     @Autowired
@@ -77,7 +78,7 @@ public abstract class PpsBaseAlgorithmService {
             throw new IllegalStateException("No production line in order");
         }
 
-        List<Shift> shifts = extractShiftsFormOrder(order);
+        List<Shift> shifts = shiftsService.findAll(productionLine);
         if (shifts.isEmpty()) {
             progressForDaysContainer
                     .addError(new ErrorMessage("productionPerShift.automaticAlgorithm.productionLine.shiftsRequired", false,
@@ -206,20 +207,6 @@ public abstract class PpsBaseAlgorithmService {
         progressForDay.setField(ProgressForDayFields.CORRECTED, shouldBeCorrected);
 
         return progressForDay;
-    }
-
-    private List<Shift> extractShiftsFormOrder(final Entity order) {
-        Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
-        List<Entity> entityShifts = productionLine.getManyToManyField(ProductionLineFields.SHIFTS);
-        Collections.sort(entityShifts, (p1, p2) -> p1.getId().compareTo(p2.getId()));
-
-        return FluentIterable.from(entityShifts).transform(new Function<Entity, Shift>() {
-
-            @Override
-            public Shift apply(final Entity shiftEntity) {
-                return new Shift(shiftEntity);
-            }
-        }).toList();
     }
 
     private BigDecimal calculateRegisteredQuantity(final ProgressForDaysContainer progressForDaysContainer, final Entity order,

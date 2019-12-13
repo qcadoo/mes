@@ -43,7 +43,7 @@
             <option type="column" name="finishDate" fields="finishDate" width="100"/>
             <option type="column" name="staffName" fields="staffName" width="125"/>
             <option type="column" name="productionLineName" fields="productionLineName" width="100"/>
-            <option type="column" name="workstationName" fields="workstationName" width="100"/>
+            <option type="column" name="workstationNumber" fields="workstationNumber" width="100"/>
             <option type="column" name="orderNumber" fields="orderNumber" link="true"
                     correspondingView="orders/orderDetails" correspondingField="orderId"
                     width="100"/>
@@ -65,11 +65,11 @@
             <option type="column" name="state" fields="state" width="50"/>
             <option type="column" name="type" fields="type" width="50"/>
 
-            <option type="order" column="name" direction="asc"/>
+            <option type="order" column="startDate" direction="desc"/>
 
-            <option type="searchable" value="name,number,startDate,finishDate,staffName,productionLineName,workstationName,orderNumber,state,type,
+            <option type="searchable" value="name,number,startDate,finishDate,staffName,productionLineName,workstationNumber,orderNumber,state,type,
 							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,usedQuantity,remainingQuantity,doneInPercentage,productUnit"/>
-            <option type="orderable" value="name,number,startDate,finishDate,staffName,productionLineName,workstationName,orderNumber,state,type,
+            <option type="orderable" value="name,number,startDate,finishDate,staffName,productionLineName,workstationNumber,orderNumber,state,type,
 							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,usedQuantity,remainingQuantity,doneInPercentage,productUnit"/>
 
             <option type="correspondingView" value="orders/operationalTaskDetails"/>
@@ -78,6 +78,19 @@
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
 
+            <option type="hasPredefinedFilters" value="true"/>
+            <option type="defaultPredefinedFilterName" value="open"/>
+
+            <predefinedFilters>
+                <predefinedFilter name="all">
+                </predefinedFilter>
+                <predefinedFilter name="open">
+                    <filterRestriction column="state" value="[01pending,02started]"/>
+                </predefinedFilter>
+                <predefinedFilter name="closed">
+                    <filterRestriction column="state" value="[03finished,04rejected]"/>
+                </predefinedFilter>
+            </predefinedFilters>
 
         </component>
         <option type="fixedHeight" value="true"/>

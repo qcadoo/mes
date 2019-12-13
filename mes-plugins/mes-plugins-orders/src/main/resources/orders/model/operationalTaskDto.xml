@@ -38,7 +38,7 @@
 		<datetime name="finishDate" />
 		<string name="staffName"/>
 		<string name="productionLineName" />
-		<string name="workstationName" />
+		<string name="workstationNumber" />
 		<integer name="workstationId"/>
 		<integer name="orderId"/>
 		<integer name="tocId"/>

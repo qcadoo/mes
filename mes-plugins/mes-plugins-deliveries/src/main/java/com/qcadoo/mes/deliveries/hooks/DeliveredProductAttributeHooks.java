@@ -38,7 +38,8 @@ public class DeliveredProductAttributeHooks {
 
         if (AttributeDataType.CALCULATED.getStringValue().equals(attribute.getStringField(AttributeFields.DATA_TYPE))
                 && Objects.isNull(resourceAttributeValue.getBelongsToField(DeliveredProductAttributeValFields.ATTRIBUTE_VALUE))) {
-            resourceAttributeValue.addError(resourceAttributeValueDD.getField(DeliveredProductAttributeValFields.ATTRIBUTE_VALUE),
+            resourceAttributeValue.addError(
+                    resourceAttributeValueDD.getField(DeliveredProductAttributeValFields.ATTRIBUTE_VALUE),
                     "qcadooView.validate.field.error.missing");
             return false;
         }
@@ -46,7 +47,8 @@ public class DeliveredProductAttributeHooks {
         if (AttributeDataType.CONTINUOUS.getStringValue().equals(attribute.getStringField(AttributeFields.DATA_TYPE))
                 && AttributeValueType.NUMERIC.getStringValue().equals(attribute.getStringField(AttributeFields.VALUE_TYPE))) {
             Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParseAndIgnoreSeparator(
-                    resourceAttributeValue.getStringField(DeliveredProductAttributeValFields.VALUE), LocaleContextHolder.getLocale());
+                    resourceAttributeValue.getStringField(DeliveredProductAttributeValFields.VALUE),
+                    LocaleContextHolder.getLocale());
             if (eitherNumber.isRight() && eitherNumber.getRight().isPresent()) {
                 int scale = attribute.getIntegerField(AttributeFields.PRECISION);
                 int valueScale = eitherNumber.getRight().get().scale();
@@ -60,8 +62,11 @@ public class DeliveredProductAttributeHooks {
                         "qcadooView.validate.field.error.invalidNumericFormat");
                 return false;
             }
-            resourceAttributeValue.setField(
-                    ProductAttributeValueFields.VALUE, BigDecimalUtils.toString(eitherNumber.getRight().get()));
+            resourceAttributeValue
+                    .setField(
+                            ProductAttributeValueFields.VALUE,
+                            BigDecimalUtils.toString(eitherNumber.getRight().get(),
+                                    attribute.getIntegerField(AttributeFields.PRECISION)));
         }
         return !checkIfValueExists(resourceAttributeValueDD, resourceAttributeValue);
     }
@@ -81,10 +86,11 @@ public class DeliveredProductAttributeHooks {
                             .equals(attribute.getId())
                             && Objects.nonNull(val.getBelongsToField(DeliveredProductAttributeValFields.ATTRIBUTE_VALUE))
                             && val.getBelongsToField(DeliveredProductAttributeValFields.ATTRIBUTE_VALUE).getId()
-                            .equals(attributeValue.getId()))
+                                    .equals(attributeValue.getId()))
                     .filter(val -> !val.getId().equals(resourceAttributeValue.getId())).collect(Collectors.toList());
             if (!sameValue.isEmpty()) {
-                resourceAttributeValue.addError(resourceAttributeValueDD.getField(DeliveredProductAttributeValFields.ATTRIBUTE_VALUE),
+                resourceAttributeValue.addError(
+                        resourceAttributeValueDD.getField(DeliveredProductAttributeValFields.ATTRIBUTE_VALUE),
                         "basic.attributeValue.error.valueExists");
                 return true;
             }
@@ -95,7 +101,7 @@ public class DeliveredProductAttributeHooks {
                             .equals(attribute.getId())
                             && Objects.isNull(val.getBelongsToField(DeliveredProductAttributeValFields.ATTRIBUTE_VALUE))
                             && val.getStringField(DeliveredProductAttributeValFields.VALUE).equals(
-                            resourceAttributeValue.getStringField(DeliveredProductAttributeValFields.VALUE)))
+                                    resourceAttributeValue.getStringField(DeliveredProductAttributeValFields.VALUE)))
                     .filter(val -> !val.getId().equals(resourceAttributeValue.getId())).collect(Collectors.toList());
             if (!sameValue.isEmpty()) {
                 resourceAttributeValue.addError(resourceAttributeValueDD.getField(DeliveredProductAttributeValFields.VALUE),
@@ -114,7 +120,9 @@ public class DeliveredProductAttributeHooks {
                     attributeValue.getStringField(DeliveredProductAttributeValFields.VALUE), LocaleContextHolder.getLocale());
             if (eitherNumber.isRight() && eitherNumber.getRight().isPresent()) {
                 attributeValue.setField(
-                        DeliveredProductAttributeValFields.VALUE, BigDecimalUtils.toString(eitherNumber.getRight().get()));
+                        DeliveredProductAttributeValFields.VALUE,
+                        BigDecimalUtils.toString(eitherNumber.getRight().get(),
+                                attribute.getIntegerField(AttributeFields.PRECISION)));
             }
         }
     }

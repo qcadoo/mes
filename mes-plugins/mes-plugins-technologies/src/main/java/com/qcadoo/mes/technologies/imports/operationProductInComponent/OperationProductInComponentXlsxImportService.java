@@ -32,7 +32,6 @@ import com.qcadoo.mes.basic.imports.services.XlsxImportService;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.technologies.tree.builder.api.TechnologyOperationComponent;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -62,20 +61,26 @@ public class OperationProductInComponentXlsxImportService extends XlsxImportServ
         return operationProductInComponent.isValid();
     }
 
-    private void validateOperationComponent(final Entity operationProductInComponent, final DataDefinition operationProductInComponentDD, final Entity technology) {
-        Entity operationComponent = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT);
+    private void validateOperationComponent(final Entity operationProductInComponent,
+            final DataDefinition operationProductInComponentDD, final Entity technology) {
+        Entity operationComponent = operationProductInComponent
+                .getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT);
 
         if (Objects.nonNull(technology) && Objects.nonNull(operationComponent)) {
-            Entity operationComponentTechnology = operationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
+            Entity operationComponentTechnology = operationComponent
+                    .getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
             String nodeNumber = operationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER);
 
             if (Objects.nonNull(operationComponentTechnology) && !technology.equals(operationComponentTechnology)) {
                 operationComponent = getTechnologyOperationComponentFromTechnologyByNodeNumber(technology, nodeNumber);
 
                 if (Objects.isNull(operationComponent)) {
-                    operationProductInComponent.addError(operationProductInComponentDD.getField(OperationProductInComponentFields.OPERATION_COMPONENT), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM);
+                    operationProductInComponent.addError(
+                            operationProductInComponentDD.getField(OperationProductInComponentFields.OPERATION_COMPONENT),
+                            L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM);
                 } else {
-                    operationProductInComponent.setField(OperationProductInComponentFields.OPERATION_COMPONENT, operationComponent);
+                    operationProductInComponent.setField(OperationProductInComponentFields.OPERATION_COMPONENT,
+                            operationComponent);
                 }
             }
         }

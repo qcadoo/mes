@@ -8872,7 +8872,10 @@ CREATE TABLE basic_parameter (
     notshowtasksdownloadedbyanotheremployee boolean DEFAULT false,
     enableoperationgroupingworkplan boolean DEFAULT false,
     createcollectiveorders boolean DEFAULT false,
-    completemasterorderafterorderingpositions boolean DEFAULT false
+    completemasterorderafterorderingpositions boolean DEFAULT false,
+    hideorderedproductworkplan boolean DEFAULT false,
+    selectiontasksbyorderdateinterminal boolean DEFAULT false,
+    showprogress boolean DEFAULT false
 );
 
 
@@ -15725,7 +15728,8 @@ CREATE TABLE materialflowresources_resource (
     waste boolean DEFAULT false,
     availablequantity numeric(14,5),
     reservedquantity numeric(14,5),
-    deliverynumber character varying
+    deliverynumber character varying,
+    documentnumber character varying
 );
 
 
@@ -16387,7 +16391,8 @@ CREATE VIEW materialflowresources_resourcedto AS
             ELSE (' - '::text || (additionalcode.code)::text)
         END) AS mergedproductnumberandadditionalcode,
     (r.location_id)::integer AS location_id,
-    NULL::bigint AS positionaddmultihelper_id
+    NULL::bigint AS positionaddmultihelper_id,
+    r.documentnumber
    FROM (((((materialflowresources_resource r
      JOIN materialflow_location location ON ((location.id = r.location_id)))
      JOIN basic_product product ON ((product.id = r.product_id)))
@@ -17360,27 +17365,6 @@ CREATE TABLE orders_scheduleposition (
 
 
 --
--- Name: technologies_operationproductoutcomponent; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE technologies_operationproductoutcomponent (
-    id bigint NOT NULL,
-    operationcomponent_id bigint,
-    product_id bigint,
-    quantity numeric(14,5),
-    productsinputlocation_id bigint,
-    isdivisioninputlocation boolean,
-    isdivisioninputlocationmodified boolean,
-    flowtypeoutcomponent character varying(255) DEFAULT '01withinTheProcess'::character varying,
-    productsflowlocation_id bigint,
-    productsshiftinglocation_id bigint,
-    productionflow character varying(255) DEFAULT '02withinTheProcess'::character varying,
-    automaticmove boolean DEFAULT false,
-    entityversion bigint DEFAULT 0
-);
-
-
---
 -- Name: orders_operationaltaskdto; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -17395,7 +17379,7 @@ CREATE VIEW orders_operationaltaskdto AS
     operationaltask.finishdate,
     (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
     productionline.name AS productionlinename,
-    workstation.number AS workstationname,
+    workstation.number AS workstationnumber,
     (workstation.id)::integer AS workstationid,
     (ordersorder.id)::integer AS orderid,
     ordersorder.number AS ordernumber,
@@ -17411,13 +17395,12 @@ CREATE VIEW orders_operationaltaskdto AS
     NULL::numeric AS doneinpercentage,
     NULL::numeric AS opertaskflagpercentexecutionwithcolor,
     NULL::character varying AS percentageofexecutioncellcolor
-   FROM (((((((orders_operationaltask operationaltask
+   FROM ((((((orders_operationaltask operationaltask
      LEFT JOIN basic_staff staff ON ((staff.id = operationaltask.staff_id)))
      LEFT JOIN productionlines_productionline productionline ON ((productionline.id = operationaltask.productionline_id)))
      LEFT JOIN basic_workstation workstation ON ((workstation.id = operationaltask.workstation_id)))
      LEFT JOIN orders_order ordersorder ON ((ordersorder.id = operationaltask.order_id)))
      LEFT JOIN technologies_technologyoperationcomponent technologyoperationcomponent ON ((technologyoperationcomponent.id = operationaltask.technologyoperationcomponent_id)))
-     LEFT JOIN technologies_operationproductoutcomponent operationproductoutcomponent ON ((operationproductoutcomponent.operationcomponent_id = technologyoperationcomponent.id)))
      LEFT JOIN basic_product product ON ((product.id = operationaltask.product_id)))
   WHERE ((operationaltask.type)::text = '01otherCase'::text)
 UNION ALL
@@ -17431,7 +17414,7 @@ UNION ALL
     operationaltask.finishdate,
     (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
     productionline.name AS productionlinename,
-    workstation.number AS workstationname,
+    workstation.number AS workstationnumber,
     (workstation.id)::integer AS workstationid,
     (ordersorder.id)::integer AS orderid,
     ordersorder.number AS ordernumber,
@@ -17452,13 +17435,12 @@ UNION ALL
             ELSE (0)::numeric
         END AS opertaskflagpercentexecutionwithcolor,
     'red-cell'::character varying(255) AS percentageofexecutioncellcolor
-   FROM ((((((((orders_operationaltask operationaltask
+   FROM (((((((orders_operationaltask operationaltask
      LEFT JOIN basic_staff staff ON ((staff.id = operationaltask.staff_id)))
      LEFT JOIN productionlines_productionline productionline ON ((productionline.id = operationaltask.productionline_id)))
      LEFT JOIN basic_workstation workstation ON ((workstation.id = operationaltask.workstation_id)))
      LEFT JOIN orders_order ordersorder ON ((ordersorder.id = operationaltask.order_id)))
      LEFT JOIN technologies_technologyoperationcomponent technologyoperationcomponent ON ((technologyoperationcomponent.id = operationaltask.technologyoperationcomponent_id)))
-     LEFT JOIN technologies_operationproductoutcomponent operationproductoutcomponent ON ((operationproductoutcomponent.operationcomponent_id = technologyoperationcomponent.id)))
      LEFT JOIN basic_product product ON ((product.id = operationaltask.product_id)))
      LEFT JOIN orders_scheduleposition scheduleposition ON ((scheduleposition.id = operationaltask.scheduleposition_id)))
   WHERE (((ordersorder.state)::text = '01pending'::text) AND (operationaltask.scheduleposition_id IS NULL) AND ((operationaltask.type)::text = '02executionOperationInOrder'::text))
@@ -17473,7 +17455,7 @@ UNION ALL
     operationaltask.finishdate,
     (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
     productionline.name AS productionlinename,
-    workstation.number AS workstationname,
+    workstation.number AS workstationnumber,
     (workstation.id)::integer AS workstationid,
     (ordersorder.id)::integer AS orderid,
     ordersorder.number AS ordernumber,
@@ -17494,13 +17476,12 @@ UNION ALL
             ELSE (0)::numeric
         END AS opertaskflagpercentexecutionwithcolor,
     'red-cell'::character varying(255) AS percentageofexecutioncellcolor
-   FROM ((((((((orders_operationaltask operationaltask
+   FROM (((((((orders_operationaltask operationaltask
      LEFT JOIN basic_staff staff ON ((staff.id = operationaltask.staff_id)))
      LEFT JOIN productionlines_productionline productionline ON ((productionline.id = operationaltask.productionline_id)))
      LEFT JOIN basic_workstation workstation ON ((workstation.id = operationaltask.workstation_id)))
      LEFT JOIN orders_order ordersorder ON ((ordersorder.id = operationaltask.order_id)))
      LEFT JOIN technologies_technologyoperationcomponent technologyoperationcomponent ON ((technologyoperationcomponent.id = operationaltask.technologyoperationcomponent_id)))
-     LEFT JOIN technologies_operationproductoutcomponent operationproductoutcomponent ON ((operationproductoutcomponent.operationcomponent_id = technologyoperationcomponent.id)))
      LEFT JOIN basic_product product ON ((product.id = operationaltask.product_id)))
      LEFT JOIN orders_scheduleposition scheduleposition ON ((scheduleposition.id = operationaltask.scheduleposition_id)))
   WHERE (((ordersorder.state)::text = '01pending'::text) AND (operationaltask.scheduleposition_id IS NOT NULL) AND ((operationaltask.type)::text = '02executionOperationInOrder'::text))
@@ -17515,7 +17496,7 @@ UNION ALL
     operationaltask.finishdate,
     (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
     productionline.name AS productionlinename,
-    workstation.number AS workstationname,
+    workstation.number AS workstationnumber,
     (workstation.id)::integer AS workstationid,
     (ordersorder.id)::integer AS orderid,
     ordersorder.number AS ordernumber,
@@ -17540,13 +17521,12 @@ UNION ALL
             WHEN (((COALESCE(productioncountingquantitydto.producedquantity, (0)::numeric) * (100)::numeric) / productioncountingquantitydto.plannedquantity) = (0)::numeric) THEN 'red-cell'::character varying(255)
             ELSE 'yellow-cell'::character varying(255)
         END AS percentageofexecutioncellcolor
-   FROM ((((((((orders_operationaltask operationaltask
+   FROM (((((((orders_operationaltask operationaltask
      LEFT JOIN basic_staff staff ON ((staff.id = operationaltask.staff_id)))
      LEFT JOIN productionlines_productionline productionline ON ((productionline.id = operationaltask.productionline_id)))
      LEFT JOIN basic_workstation workstation ON ((workstation.id = operationaltask.workstation_id)))
      LEFT JOIN orders_order ordersorder ON ((ordersorder.id = operationaltask.order_id)))
      LEFT JOIN technologies_technologyoperationcomponent technologyoperationcomponent ON ((technologyoperationcomponent.id = operationaltask.technologyoperationcomponent_id)))
-     LEFT JOIN technologies_operationproductoutcomponent operationproductoutcomponent ON ((operationproductoutcomponent.operationcomponent_id = technologyoperationcomponent.id)))
      LEFT JOIN basic_product product ON ((product.id = operationaltask.product_id)))
      LEFT JOIN basicproductioncounting_productioncountingquantitydto productioncountingquantitydto ON (((productioncountingquantitydto.orderid = ordersorder.id) AND (productioncountingquantitydto.tocid = technologyoperationcomponent.id) AND ((productioncountingquantitydto.role)::text = '02produced'::text) AND (((productioncountingquantitydto.typeofmaterial)::text = '02intermediate'::text) OR ((productioncountingquantitydto.typeofmaterial)::text = '03finalProduct'::text)))))
   WHERE (((ordersorder.state)::text <> '01pending'::text) AND ((operationaltask.type)::text = '02executionOperationInOrder'::text));
@@ -23826,6 +23806,27 @@ CREATE SEQUENCE technologies_operationproductincomponentdto_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+--
+-- Name: technologies_operationproductoutcomponent; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE technologies_operationproductoutcomponent (
+    id bigint NOT NULL,
+    operationcomponent_id bigint,
+    product_id bigint,
+    quantity numeric(14,5),
+    productsinputlocation_id bigint,
+    isdivisioninputlocation boolean,
+    isdivisioninputlocationmodified boolean,
+    flowtypeoutcomponent character varying(255) DEFAULT '01withinTheProcess'::character varying,
+    productsflowlocation_id bigint,
+    productsshiftinglocation_id bigint,
+    productionflow character varying(255) DEFAULT '02withinTheProcess'::character varying,
+    automaticmove boolean DEFAULT false,
+    entityversion bigint DEFAULT 0
+);
 
 
 --
@@ -30874,8 +30875,8 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, trackingrecordforordertreatment, batchnumberrequiredproducts, batchnumberuniqueness, batchnumberrequiredinputproducts, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, enableoperationgroupingworkplan, createcollectiveorders, completemasterorderafterorderingpositions) FROM stdin;
-1	\N	5	pc	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01duringProduction	f	01globally	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	50	3000	f	f	f	f	f	f	f	f	t	t	t	f	t	t	f	f	f	f	f	f
+COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, trackingrecordforordertreatment, batchnumberrequiredproducts, batchnumberuniqueness, batchnumberrequiredinputproducts, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, enableoperationgroupingworkplan, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress) FROM stdin;
+1	\N	5	pc	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01duringProduction	f	01globally	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	50	3000	f	f	f	f	f	f	f	f	t	t	t	f	t	t	f	f	f	f	f	f	f	f	f
 \.
 
 
@@ -33655,7 +33656,7 @@ SELECT pg_catalog.setval('materialflowresources_reservation_id_seq', 1, false);
 -- Data for Name: materialflowresources_resource; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY materialflowresources_resource (id, location_id, product_id, quantity, price, batch, "time", productiondate, expirationdate, iscorrected, entityversion, storagelocation_id, number, quantityinadditionalunit, additionalcode_id, conversion, palletnumber_id, typeofpallet, givenunit, username, waste, availablequantity, reservedquantity, deliverynumber) FROM stdin;
+COPY materialflowresources_resource (id, location_id, product_id, quantity, price, batch, "time", productiondate, expirationdate, iscorrected, entityversion, storagelocation_id, number, quantityinadditionalunit, additionalcode_id, conversion, palletnumber_id, typeofpallet, givenunit, username, waste, availablequantity, reservedquantity, deliverynumber, documentnumber) FROM stdin;
 \.
 
 
