@@ -137,8 +137,22 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="7" row="1" width="5">
-                        <component type="input" name="batch" field="batch"
+                        <component type="lookup" name="batch" field="batch"
                                    reference="batch" defaultEnabled="true">
+                            <option type="column" name="supplierName" fields="supplier"
+                                    expression="#supplier.get('name')"/>
+
+                            <option type="searchable" value="number,supplierName"/>
+                            <option type="orderable" value="number,supplierName"/>
+
+                            <option type="expression" value="#number"/>
+                            <option type="fieldCode" value="number"/>
+
+                            <option type="required" value="true"/>
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier"
+                                    method="filterByProduct"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="7" row="2" width="5">

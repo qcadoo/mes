@@ -25,6 +25,14 @@ import com.qcadoo.view.api.components.GridComponent;
 @Service
 public class PositionAddMultiListeners {
 
+    private static final String L_FORM = "form";
+
+    private static final String L_RESOURCE_GRID = "resourceGrid";
+
+    private static final String L_GENERATED = "generated";
+
+    private static final String L_DOCUMENT_ID = "documentId";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -32,45 +40,53 @@ public class PositionAddMultiListeners {
     private NumberService numberService;
 
     public void addPositions(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent grid = (GridComponent) view.getComponentByReference("resourceGrid");
-        Set<Long> selectedEntities = grid.getSelectedEntitiesIds();
-        CheckBoxComponent generated = (CheckBoxComponent) view.getComponentByReference("generated");
+        GridComponent resourceGrid = (GridComponent) view.getComponentByReference(L_RESOURCE_GRID);
+        CheckBoxComponent generated = (CheckBoxComponent) view.getComponentByReference(L_GENERATED);
+
+        Set<Long> selectedEntities = resourceGrid.getSelectedEntitiesIds();
+
         if (selectedEntities.isEmpty()) {
             generated.setChecked(false);
+
             view.addMessage("materialFlowResources.positionAddMulti.noSelectedResources", ComponentState.MessageType.INFO);
+
             return;
         }
 
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
-        Entity helper = form.getPersistedEntityWithIncludedFormValues();
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
 
-        Entity document = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_DOCUMENT).get(helper.getLongField("documentId"));
+        Entity helper = form.getPersistedEntityWithIncludedFormValues();
+        Entity document = getDocumentDD().get(helper.getLongField(L_DOCUMENT_ID));
+
         List<String> errorNumbers = Lists.newArrayList();
+
         for (Long resourceId : selectedEntities) {
-            Entity resource = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                    MaterialFlowResourcesConstants.MODEL_RESOURCE).get(resourceId);
+            Entity resource = getResourceDD().get(resourceId);
+
             Entity newPosition = createPosition(document, resource);
+
             if (!newPosition.isValid()) {
                 errorNumbers.add(resource.getStringField(ResourceFields.NUMBER));
             }
         }
+
         if (!errorNumbers.isEmpty()) {
             view.addMessage("materialFlowResources.positionAddMulti.errorForResource", ComponentState.MessageType.INFO,
                     errorNumbers.stream().collect(Collectors.joining(", ")));
-
         }
-        generated.setChecked(true);
 
+        generated.setChecked(true);
     }
 
     private Entity createPosition(final Entity document, final Entity resource) {
-        DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_POSITION);
+        DataDefinition positionDD = getPositionDD();
+
         Entity newPosition = positionDD.create();
+
         BigDecimal conversion = resource.getDecimalField(ResourceFields.CONVERSION);
         BigDecimal availableQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
         BigDecimal givenQuantity = availableQuantity.multiply(conversion, numberService.getMathContext());
+
         newPosition.setField(PositionFields.DOCUMENT, document);
         newPosition.setField(PositionFields.PRODUCT, resource.getBelongsToField(ResourceFields.PRODUCT));
         newPosition.setField(PositionFields.QUANTITY, availableQuantity);
@@ -88,7 +104,23 @@ public class PositionAddMultiListeners {
         newPosition.setField(PositionFields.PALLET_NUMBER, resource.getField(ResourceFields.PALLET_NUMBER));
         newPosition.setField(PositionFields.TYPE_OF_PALLET, resource.getField(ResourceFields.TYPE_OF_PALLET));
         newPosition.setField(PositionFields.WASTE, resource.getField(ResourceFields.WASTE));
-        return positionDD.save(newPosition);
 
+        return positionDD.save(newPosition);
     }
+
+    private DataDefinition getResourceDD() {
+        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_RESOURCE);
+    }
+
+    private DataDefinition getDocumentDD() {
+        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_DOCUMENT);
+    }
+
+    private DataDefinition getPositionDD() {
+        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_POSITION);
+    }
+
 }

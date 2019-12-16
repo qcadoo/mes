@@ -28,6 +28,7 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd"
        activable="false" auditable="false" deletable="false" insertable="false" updatable="false">
+
     <fields>
         <string name="number"/>
         <string name="locationNumber"/>
@@ -46,7 +47,7 @@
         <datetime name="time"/>
         <date name="productionDate"/>
         <date name="expirationDate"/>
-        <string name="batch"/>
+        <string name="batchNumber"/>
         <string name="storageLocationNumber"/>
         <string name="additionalCode"/>
         <string name="palletNumber"/>
@@ -59,5 +60,6 @@
         <string name="mergedProductNumberAndAdditionalCode"/>
         <belongsTo name="positionAddMultiHelper" model="positionAddMultiHelper"/>
     </fields>
+
     <masterModel plugin="materialFlowResources" model="resource"/>
 </model>

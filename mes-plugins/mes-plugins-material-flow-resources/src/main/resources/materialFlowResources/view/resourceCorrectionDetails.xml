@@ -52,7 +52,6 @@
                         <component type="input" name="createUser" field="createUser"
                                    reference="createUser" defaultEnabled="false"/>
                     </layoutElement>
-
                     <layoutElement column="1" row="4">
                         <component type="lookup" name="resource" field="resource"
                                    reference="resource" defaultEnabled="false">
@@ -60,7 +59,6 @@
                             <option type="fieldCode" value="number"/>
                         </component>
                     </layoutElement>
-
                     <layoutElement column="1" row="5">
                         <component type="lookup" name="product" field="product"
                                    reference="product" defaultEnabled="false">
@@ -73,7 +71,6 @@
                             <option type="fieldCode" value="number"/>
                         </component>
                     </layoutElement>
-
                     <layoutElement column="1" row="6">
                         <component type="lookup" name="location" field="location"
                                    reference="location" defaultEnabled="false">
@@ -84,24 +81,20 @@
                             <option type="fieldCode" value="number"/>
                         </component>
                     </layoutElement>
-
                     <layoutElement column="1" row="7">
                         <component type="calendar" name="time" field="time"
                                    reference="time" defaultEnabled="false">
                             <option type="withTimePicker" value="true"/>
                         </component>
                     </layoutElement>
-
                     <layoutElement column="1" row="8">
                         <component type="calendar" name="productionDate" field="productionDate"
                                    reference="productionDate" defaultEnabled="false">
                             <option type="withTimePicker" value="false"/>
                         </component>
                     </layoutElement>
-
                     <layoutElement column="2" row="1" height="8" width="2">
                         <component type="gridLayout" name="correctedResourceLayout" columns="10" rows="9" hasBorders="false">
-
                             <layoutElement column="3" row="1" width="2">
                                 <component type="label" name="beforeCorrection">
                                     <option type="labelStyle" value="normal"/>
@@ -112,42 +105,36 @@
                                     <option type="labelStyle" value="normal"/>
                                 </component>
                             </layoutElement>
-
                             <layoutElement column="1" row="2" width="5">
                                 <component type="input" name="oldQuantity" field="oldQuantity"
                                            reference="oldQuantity" defaultEnabled="false">
                                     <option type="alignment" value="right"/>
                                 </component>
                             </layoutElement>
-
                             <layoutElement column="6" row="2" width="4">
                                 <component type="input" name="newQuantity" field="newQuantity"
                                            reference="newQuantity" defaultEnabled="false" hasLabel="false">
                                     <option type="alignment" value="right"/>
                                 </component>
                             </layoutElement>
-
                             <layoutElement column="10" row="2" width="1">
                                 <component type="input" name="quantityUNIT" reference="quantityUNIT"
                                            defaultEnabled="false" hasLabel="false">
                                     <option type="textRepresentationOnDisabled" value="true"/>
                                 </component>
                             </layoutElement>
-
                             <layoutElement column="1" row="3" width="5">
                                 <component type="input" name="oldConversion" field="oldConversion"
                                            reference="oldConversion" defaultEnabled="false">
                                     <option type="alignment" value="right"/>
                                 </component>
                             </layoutElement>
-
                             <layoutElement column="6" row="3" width="4">
                                 <component type="input" name="newConversion" field="newConversion"
                                            reference="newConversion" defaultEnabled="false" hasLabel="false">
                                     <option type="alignment" value="right"/>
                                 </component>
                             </layoutElement>
-
                             <layoutElement column="1" row="4" width="5">
                                 <component type="input" name="oldPrice" field="oldPrice"
                                            reference="oldPrice" defaultEnabled="false">
@@ -160,33 +147,56 @@
                                     <option type="alignment" value="right"/>
                                 </component>
                             </layoutElement>
-
                             <layoutElement column="1" row="5" width="5">
-                                <component type="input" name="oldBatch" field="oldBatch"
+                                <component type="lookup" name="oldBatch" field="oldBatch"
                                            reference="oldBatch" defaultEnabled="false">
+                                    <option type="column" name="supplierName" fields="supplier"
+                                            expression="#supplier.get('name')"/>
+
+                                    <option type="searchable" value="number,supplierName"/>
+                                    <option type="orderable" value="number,supplierName"/>
+
+                                    <option type="expression" value="#number"/>
+                                    <option type="fieldCode" value="number"/>
+
+                                    <option type="required" value="true"/>
+
+                                    <criteriaModifier
+                                            class="com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier"
+                                            method="filterByProduct"/>
                                 </component>
                             </layoutElement>
-
                             <layoutElement column="6" row="5" width="4">
-                                <component type="input" name="newBatch" field="newBatch"
+                                <component type="lookup" name="newBatch" field="newBatch"
                                            reference="newBatch" defaultEnabled="false" hasLabel="false">
+                                    <option type="column" name="supplierName" fields="supplier"
+                                            expression="#supplier.get('name')"/>
+
+                                    <option type="searchable" value="number,supplierName"/>
+                                    <option type="orderable" value="number,supplierName"/>
+
+                                    <option type="expression" value="#number"/>
+                                    <option type="fieldCode" value="number"/>
+
+                                    <option type="required" value="true"/>
+
+                                    <criteriaModifier
+                                            class="com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier"
+                                            method="filterByProduct"/>
                                 </component>
                             </layoutElement>
-
                             <layoutElement column="1" row="6" width="5">
                                 <component type="calendar" name="oldExpirationDate" field="oldExpirationDate"
                                            reference="oldExpirationDate" defaultEnabled="false">
                                     <option type="withTimePicker" value="false"/>
                                 </component>
                             </layoutElement>
-
                             <layoutElement column="6" row="6" width="4">
                                 <component type="calendar" name="newExpirationDate" field="newExpirationDate"
                                            reference="newExpirationDate" defaultEnabled="false" hasLabel="false">
                                     <option type="withTimePicker" value="false"/>
                                 </component>
                             </layoutElement>
-
                             <layoutElement column="1" row="7" width="5">
                                 <component type="lookup" name="oldStorageLocation" field="oldStorageLocation"
                                            reference="oldStorageLocation" defaultEnabled="false">
@@ -200,7 +210,6 @@
                                     <option type="fieldCode" value="number"/>
                                 </component>
                             </layoutElement>
-
                             <layoutElement column="6" row="7" width="4">
                                 <component type="lookup" name="newStorageLocation" field="newStorageLocation"
                                            reference="newStorageLocation" defaultEnabled="false" hasLabel="false">
@@ -214,7 +223,6 @@
                                     <option type="fieldCode" value="number"/>
                                 </component>
                             </layoutElement>
-
                             <layoutElement column="1" row="8" width="5">
                                 <component type="lookup" name="oldPalletNumber" field="oldPalletNumber"
                                            reference="oldPalletNumber" defaultEnabled="false">
@@ -226,7 +234,6 @@
                                     <option type="fieldCode" value="number"/>
                                 </component>
                             </layoutElement>
-
                             <layoutElement column="6" row="8" width="4">
                                 <component type="lookup" name="newPalletNumber" field="newPalletNumber"
                                            reference="newPalletNumber" defaultEnabled="false" hasLabel="false">
@@ -238,19 +245,16 @@
                                     <option type="fieldCode" value="number"/>
                                 </component>
                             </layoutElement>
-
                             <layoutElement column="1" row="9" width="5">
                                 <component type="input" name="oldTypeOfPallet" field="oldTypeOfPallet"
                                            reference="oldTypeOfPallet" defaultEnabled="false">
                                 </component>
                             </layoutElement>
-
                             <layoutElement column="6" row="9" width="4">
                                 <component type="input" name="newTypeOfPallet" field="newTypeOfPallet"
                                            reference="newTypeOfPallet" defaultEnabled="false" hasLabel="false">
                                 </component>
                             </layoutElement>
-
                         </component>
                     </layoutElement>
 
@@ -259,23 +263,20 @@
                 <option type="expression" value="#number"/>
             </component>
         </windowTab>
+
         <windowTab name="attributes" reference="attributes">
             <component type="flowGridLayout" name="attributesGridsLayout" columns="2"
                        rows="5" hasBorders="false">
-
                 <layoutElement column="1" row="1">
                     <component type="grid" name="resourceAttributeValueBeforeCorrections"
                                reference="resourceAttributeValueBeforeCorrections"
                                source="#{form}.resourceAttributeValueBeforeCorrections">
                         <option type="column" name="number" fields="attribute"
                                 expression="#attribute['number']" width="100"/>
-
                         <option type="column" name="name" fields="attribute"
                                 expression="#attribute['name']" width="200"/>
-
                         <option type="column" name="value" fields="value"
                                 width="100"/>
-
 
                         <option type="order" column="number" direction="desc"/>
 
@@ -295,13 +296,10 @@
                                source="#{form}.resourceAttributeValueAfterCorrections">
                         <option type="column" name="number" fields="attribute"
                                 expression="#attribute['number']" width="100"/>
-
                         <option type="column" name="name" fields="attribute"
                                 expression="#attribute['name']" width="200"/>
-
                         <option type="column" name="value" fields="value"
                                width="100"/>
-
 
                         <option type="order" column="number" direction="desc"/>
 
@@ -316,14 +314,15 @@
                     </component>
                 </layoutElement>
             </component>
-
-
         </windowTab>
     </component>
+
     <hooks>
         <beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService"
                       method="fillUnitFieldValues"/>
         <beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService"
                       method="fillCurrencyFieldValues"/>
+        <beforeRender class="com.qcadoo.mes.materialFlowResources.hooks.ResourceCorrectionDetailsHooks"
+                      method="onBeforeRender"/>
     </hooks>
 </view>
