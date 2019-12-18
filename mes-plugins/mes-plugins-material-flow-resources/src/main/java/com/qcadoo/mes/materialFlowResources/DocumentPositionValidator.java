@@ -326,7 +326,7 @@ public class DocumentPositionValidator {
             boolean find = false;
 
             DataResponse resourcesResponse = documentPositionService.getResourcesResponse(position.getDocument(), "",
-                    position.getProduct(), position.getConversion(), position.getAdditionalCode(), false);
+                    position.getProduct(), position.getConversion(), position.getAdditionalCode(), position.getBatch(), false);
 
             List<? extends AbstractDTO> resources = resourcesResponse.getEntities();
 

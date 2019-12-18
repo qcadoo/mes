@@ -569,6 +569,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         product: getFieldValue('product', rowId),
                         conversion: getFieldValue('conversion', rowId),
                         ac: getFieldValue('additionalCode', rowId),
+                        batch : getFieldValue('batch', rowId),
                         context: getDocumentId()
                     }
                 } else {
@@ -576,6 +577,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         product: getFieldValue('product', rowId),
                         conversion: 1,
                         ac: getFieldValue('additionalCode', rowId),
+                        batch : getFieldValue('batch', rowId),
                         context: getDocumentId()
                     }
                 }
@@ -626,7 +628,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function clearResourceRelatedFields(rowId) {
-            var fieldnames = ['resource', 'batch', 'productionDate', 'expirationDate', 'storageLocation', 'palletNumber', 'price', 'typeOfPallet', 'waste', 'lastResource'];
+            var fieldnames = ['resource', 'productionDate', 'expirationDate', 'storageLocation', 'palletNumber', 'price', 'typeOfPallet', 'waste', 'lastResource'];
 
             for (var i in fieldnames) {
                 updateFieldValue(fieldnames[i], '', rowId);
@@ -1946,7 +1948,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
             var readOnlyInType = function (outDocument, inBufferDocument, columnIndex) {
                 if (outDocument && (columnIndex === 'expirationDate' || columnIndex === 'productionDate' ||
-                        columnIndex === 'batch' || columnIndex === 'price' ||  columnIndex === 'waste' ||
+                        columnIndex === 'price' ||  columnIndex === 'waste' ||
                         columnIndex === 'palletNumber' || columnIndex === 'typeOfPallet' || columnIndex === 'storageLocation')) {
                     return true;
                 }
