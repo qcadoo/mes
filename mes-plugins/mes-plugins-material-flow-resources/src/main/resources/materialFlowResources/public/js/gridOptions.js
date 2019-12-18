@@ -600,7 +600,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         function fillWithAttributesFromResource(resource, rowId) {
             $.get('/rest/rest/documentPositions/resourceByNumber/' + getDocumentId() + '/' + Base64.encodeURI(resource) + ".html", function (resource) {
-                updateFieldValue('batch', resource['batch'], rowId);
+                if(resource !== '') {
+                    updateFieldValue('batch', resource['batch'], rowId);
+                }
                 updateFieldValue('productionDate', resource['productionDate'], rowId);
                 updateFieldValue('expirationDate', resource['expirationDate'], rowId);
                 updateFieldValue('storageLocation', resource['storageLocation'], rowId);
