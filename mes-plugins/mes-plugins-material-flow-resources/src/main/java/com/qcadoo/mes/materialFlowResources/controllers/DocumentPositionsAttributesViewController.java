@@ -27,6 +27,8 @@ public class DocumentPositionsAttributesViewController {
         ModelAndView mav = crudService.prepareView(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.VIEW_DOCUMENT_POSITIONS_ATTRIBUTES, Collections.emptyMap(), locale);
         Map<String, String> slickGridTranslations = translationService.getMessagesGroup("slickGrid", locale);
+        slickGridTranslations.putAll(translationService.getMessagesGroup("commons", locale));
+        slickGridTranslations.putAll(translationService.getMessagesGroup("documentPositionsAttributes", locale));
         mav.addObject("slickGridTranslations", slickGridTranslations);
         return mav;
     }

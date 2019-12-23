@@ -100,7 +100,7 @@ QCD.documentPositionsAttributes = (function () {
     function init() {
         $.get("/rest/docPositionsAttributes/columns", function (columns) {
             QCD.components.elements.utils.LoadingIndicator.blockElement($('body'));
-            $('#documentPositionsAttributesGrid').height($('#window_windowContent').height() - 45);
+            $('#documentPositionsAttributesGrid').height($('#window_windowContent').height() - 80);
             $('#documentPositionsAttributesGrid').width($('#window_windowContent').width() - 20);
             for (let i = 0; i < columns.length; i++) {
                 columns[i].field = columns[i].id;
@@ -174,23 +174,39 @@ QCD.documentPositionsAttributes = (function () {
                 updateAllTotals(grid, dataView);
             });
 
-            $.get("/rest/docPositionsAttributes/records", function (records) {
-                grid.init();
-                grid.autosizeColumns();
-                dataView.beginUpdate();
-                dataView.setItems(records);
-                dataView.setFilter(filter);
-                dataView.endUpdate();
-                updateAllTotals(grid, dataView);
-                $('.slick-header-columns').children().eq(0).trigger('click');
-                QCD.components.elements.utils.LoadingIndicator.unblockElement($('body'));
-            }, 'json');
+            let params = {
+                dateFrom: document.getElementById("window.mainTab.form.gridLayout.dateFrom_input").value,
+                dateTo: document.getElementById("window.mainTab.form.gridLayout.dateTo_input").value
+            };
+            $.get("/rest/docPositionsAttributes/validate", params, function (message) {
+                if (message) {
+                    QCD.components.elements.utils.LoadingIndicator.unblockElement($('body'));
+                    new QCD.MessagesController().addMessage({
+                        type: 'failure',
+                        title: QCD.translate('qcadooView.notification.failure'),
+                        content: QCD.translate(message),
+                        autoClose: false,
+                        extraLarge: false
+                    });
+                } else {
+                    $.get("/rest/docPositionsAttributes/records", params, function (records) {
+                        grid.init();
+                        grid.autosizeColumns();
+                        dataView.beginUpdate();
+                        dataView.setItems(records);
+                        dataView.setFilter(filter);
+                        dataView.endUpdate();
+                        updateAllTotals(grid, dataView);
+                        $('.slick-header-columns').children().eq(0).trigger('click');
+                        QCD.components.elements.utils.LoadingIndicator.unblockElement($('body'));
+                    }, 'json');
+                }
+            }, 'text');
         }, 'json');
     }
 
     return {
-        init: init,
-        refresh: init
+        generate: init
     }
 
 })();
