@@ -52,24 +52,15 @@ public class PositionXlsxImportService extends XlsxImportService {
     private NumberService numberService;
 
     @Override
-    public Entity createEntity(final String pluginIdentifier, final String modelName) {
-        Entity position = getDataDefinition(pluginIdentifier, modelName).create();
-
-        return position;
-    }
-
-    @Override
-    public boolean validateEntity(final Entity position, final DataDefinition positionDD) {
-        Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
+    public void validateEntity(final Entity position, final DataDefinition positionDD) {
         Entity product = position.getBelongsToField(PositionFields.PRODUCT);
+        Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
         Entity locationTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
 
         validateQuantitiesAndUnits(position, positionDD, product);
         validateRequiredFields(position, positionDD, locationTo);
         validateStorageLocation(position, positionDD, product, locationTo);
         validatePalletNumber(position, positionDD);
-
-        return position.isValid();
     }
 
     private void validateQuantitiesAndUnits(final Entity position, final DataDefinition positionDD, final Entity product) {

@@ -33,14 +33,17 @@
         <boolean name="acceptanceOfDocumentBeforePrinting" default="false"/>
         <boolean name="notShowPrices" default="false"/>
         <boolean name="presentTotalAmountAndRest" default="false"/>
-        <integer  name="palletToShift">
+        <integer name="palletToShift">
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="7" />
-        </integer >
-        <integer  name="palletWithFreePlace">
+        </integer>
+        <integer name="palletWithFreePlace">
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="7" />
-        </integer >
+        </integer>
+        <integer name="numberOfMonthsForPositionsData" default="1">
+            <validatesRange from="0" exclusively="true"/>
+        </integer>
         <enum name="changeDateWhenTransferToWarehouseType"
                         values="01never,02validateWithResources" default="01never"/>
 
