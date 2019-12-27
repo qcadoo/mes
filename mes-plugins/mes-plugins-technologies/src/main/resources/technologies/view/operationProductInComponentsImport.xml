@@ -54,7 +54,7 @@
 
 		<component type="form" name="operationProductInComponentsImport" reference="form">
 			<component type="gridLayout" name="gridLayout" columns="3"
-					   rows="2">
+					   rows="1">
 				<layoutElement column="1" row="1" width="2">
 					<component type="file" name="importFile" reference="importFile" hasDescription="true">
 						<script>
@@ -66,12 +66,6 @@
 						<listener event="onInputChange"
 								  class="com.qcadoo.mes.technologies.listeners.OperationProductInComponentImportListeners"
 								  method="onInputChange"/>
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="2" width="2">
-					<component type="checkbox" name="shouldUpdate" reference="shouldUpdate" defaultVisible="false">
-						<option type="labelWidth" value="80"/>
-						<option type="align" value="right"/>
 					</component>
 				</layoutElement>
 			</component>

@@ -52,7 +52,6 @@ import com.qcadoo.mes.basic.imports.dtos.ImportStatus;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -123,15 +122,12 @@ public abstract class ImportService {
     private TranslationService translationService;
 
     @Autowired
-    private FileService fileService;
-
-    @Autowired
     private LogService logService;
 
     public void downloadImportSchema(final ViewDefinitionState view, final String pluginIdentifier, final String modelName,
             final String extension) {
-        String fileName = new StringBuilder(modelName).append(L_IMPORT_SCHEMA).append(L_DASH)
-                .append(LocaleContextHolder.getLocale().getLanguage()).append(L_DOT).append(extension).toString();
+        String fileName = modelName + L_IMPORT_SCHEMA + L_DASH + LocaleContextHolder.getLocale().getLanguage() + L_DOT
+                + extension;
         String redirectToUrl = UriComponentsBuilder.newInstance().path(L_SLASH).pathSegment(pluginIdentifier)
                 .pathSegment(L_RESOURCES).pathSegment(fileName).build().toUriString();
 
@@ -168,9 +164,13 @@ public abstract class ImportService {
             final Boolean rollbackOnError, final String pluginIdentifier, final String modelName, final Entity belongsTo,
             final String belongsToName, final Function<Entity, SearchCriterion> criteriaSupplier,
             final Function<Entity, Boolean> checkOnUpdate) throws IOException {
-        FieldComponent importFileField = (FieldComponent) view.getComponentByReference(L_IMPORT_FILE);
+        boolean shouldUpdate = false;
         CheckBoxComponent shouldUpdateCheckBox = (CheckBoxComponent) view.getComponentByReference(L_SHOULD_UPDATE);
+        if (shouldUpdateCheckBox != null) {
+            shouldUpdate = shouldUpdateCheckBox.isChecked();
+        }
 
+        FieldComponent importFileField = (FieldComponent) view.getComponentByReference(L_IMPORT_FILE);
         String filePath = (String) importFileField.getFieldValue();
 
         changeButtonsState(view, false);
@@ -182,7 +182,7 @@ public abstract class ImportService {
         } else {
             try (FileInputStream fis = new FileInputStream(filePath)) {
                 ImportStatus importStatus = importFile(fis, cellBinderRegistry, rollbackOnError, pluginIdentifier, modelName,
-                        belongsTo, belongsToName, shouldUpdateCheckBox.isChecked(), criteriaSupplier, checkOnUpdate);
+                        belongsTo, belongsToName, shouldUpdate, criteriaSupplier, checkOnUpdate);
 
                 Integer rowsProcessed = importStatus.getRowsProcessed();
                 Integer rowsWithErrors = importStatus.getErrorsSize();
@@ -259,8 +259,7 @@ public abstract class ImportService {
         return getDataDefinition(pluginIdentifier, modelName).find().add(searchCriterion).setMaxResults(1).uniqueResult();
     }
 
-    public boolean validateEntity(final Entity entity, final DataDefinition entityDD) {
-        return entity.isValid();
+    public void validateEntity(final Entity entity, final DataDefinition entityDD) {
     }
 
     public DataDefinition getDataDefinition(final String pluginIdentifier, final String modelName) {

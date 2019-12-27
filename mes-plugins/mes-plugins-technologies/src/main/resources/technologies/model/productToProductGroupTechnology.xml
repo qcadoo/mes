@@ -25,15 +25,18 @@
 
 -->
 <model name="productToProductGroupTechnology"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-	<fields>
-		<belongsTo name="finalProduct" plugin="basic" model="product"
-			required="true" />
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <belongsTo name="finalProduct" plugin="basic" model="product"
+                   required="true"/>
         <belongsTo name="productFamily" plugin="basic" model="product"
-            required="true" />
+                   required="true"/>
         <belongsTo name="orderProduct" plugin="basic" model="product"
-            required="true" />
-	</fields>
-	<hooks />
+                   required="true"/>
+    </fields>
+    <hooks>
+        <validatesWith class="com.qcadoo.mes.technologies.validators.ProductToProductGroupTechnologyValidators"
+                       method="validatesWith"/>
+    </hooks>
 </model>

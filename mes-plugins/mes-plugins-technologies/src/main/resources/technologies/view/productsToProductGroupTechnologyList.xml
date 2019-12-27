@@ -31,6 +31,10 @@
     <component type="window" name="window" reference="window">
         <ribbon>
             <template name="standardGridTemplate"/>
+            <group name="import">
+                <bigButton name="openProductsToProductGroupTechnologyImportPage" state="enabled" icon="xlsIcon24.png"
+                           action="#{window}.fireEvent(openProductsToProductGroupTechnologyImportPage);"/>
+            </group>
         </ribbon>
 
         <component type="grid" name="technologies" reference="grid">
@@ -52,6 +56,11 @@
             <option type="multiselect" value="true"/>
 
         </component>
+
+        <listener event="openProductsToProductGroupTechnologyImportPage"
+                  class="com.qcadoo.mes.technologies.listeners.ProductsToProductGroupTechnologyListListeners"
+                  method="openProductsToProductGroupTechnologyImportPage"/>
+
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
     </component>
