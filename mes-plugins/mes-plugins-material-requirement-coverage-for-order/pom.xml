@@ -6,7 +6,7 @@
   <parent>
     <groupId>com.qcadoo.mes</groupId>
     <artifactId>mes-plugins</artifactId>
-    <version>1.5-SNAPSHOT</version>
+    <version>1.5-SNAPSHOT-DEV</version>
   </parent>
 
   <artifactId>mes-plugins-material-requirement-coverage-for-order</artifactId>
@@ -18,37 +18,37 @@
     <dependency>
       <groupId>com.qcadoo.mes</groupId>
       <artifactId>mes-plugins-orders</artifactId>
-      <version>1.5-SNAPSHOT</version>
+      <version>1.5-SNAPSHOT-DEV</version>
     </dependency>
     <dependency>
       <groupId>com.qcadoo.mes</groupId>
       <artifactId>mes-plugins-production-counting</artifactId>
-      <version>1.5-SNAPSHOT</version>
+      <version>1.5-SNAPSHOT-DEV</version>
     </dependency>
     <dependency>
       <groupId>com.qcadoo.mes</groupId>
       <artifactId>mes-plugins-material-flow-resources</artifactId>
-      <version>1.5-SNAPSHOT</version>
+      <version>1.5-SNAPSHOT-DEV</version>
     </dependency>
     <dependency>
       <groupId>com.qcadoo.mes</groupId>
       <artifactId>mes-plugins-deliveries</artifactId>
-      <version>1.5-SNAPSHOT</version>
+      <version>1.5-SNAPSHOT-DEV</version>
     </dependency>
     <dependency>
       <groupId>com.qcadoo.mes</groupId>
       <artifactId>mes-plugins-material-requirements</artifactId>
-      <version>1.5-SNAPSHOT</version>
+      <version>1.5-SNAPSHOT-DEV</version>
     </dependency>
     <dependency>
       <groupId>com.qcadoo.mes</groupId>
       <artifactId>mes-plugins-product-flow-thru-division</artifactId>
-      <version>1.5-SNAPSHOT</version>
+      <version>1.5-SNAPSHOT-DEV</version>
     </dependency>
     <dependency>
       <groupId>com.qcadoo.mes</groupId>
       <artifactId>mes-plugins-order-supplies</artifactId>
-      <version>1.5-SNAPSHOT</version>
+      <version>1.5-SNAPSHOT-DEV</version>
     </dependency>
   </dependencies>
 
