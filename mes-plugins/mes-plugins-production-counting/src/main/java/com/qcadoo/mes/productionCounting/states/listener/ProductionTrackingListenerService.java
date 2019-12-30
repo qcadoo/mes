@@ -25,6 +25,7 @@ package com.qcadoo.mes.productionCounting.states.listener;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.advancedGenealogy.constants.ProductFieldsAG;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
@@ -56,6 +57,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
@@ -105,6 +107,18 @@ public final class ProductionTrackingListenerService {
     public void validationOnAccept(final Entity productionTracking) {
         checkIfExistsFinalRecord(productionTracking);
         checkIfTimesIsSet(productionTracking);
+        checkIfBatchEvidenceSet(productionTracking);
+    }
+
+    private void checkIfBatchEvidenceSet(final Entity productionTracking) {
+        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        Entity product = order.getBelongsToField(OrderFields.PRODUCT);
+        if (product.getBooleanField(ProductFieldsAG.BATCH_EVIDENCE)
+                && Objects.isNull(productionTracking.getBelongsToField(ProductionTrackingFields.BATCH))
+                && StringUtils.isEmpty(productionTracking.getStringField(ProductionTrackingFields.BATCH_NUMBER))) {
+            productionTracking.addError(productionTracking.getDataDefinition().getField(ProductionTrackingFields.BATCH),
+                    "qcadooView.validate.field.error.missing");
+        }
     }
 
     public void onLeavingDraft(final Entity productionTracking) {
@@ -342,8 +356,8 @@ public final class ProductionTrackingListenerService {
         List<Entity> worTimesWithNotSetEnd = productionTracking
                 .getHasManyField(ProductionTrackingFields.STAFF_WORK_TIMES)
                 .stream()
-                .filter(entity -> Objects.nonNull(entity.getDateField(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_START)) && Objects
-                                .isNull(entity.getDateField(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_END)))
+                .filter(entity -> Objects.nonNull(entity.getDateField(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_START))
+                        && Objects.isNull(entity.getDateField(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_END)))
                 .collect(Collectors.toList());
         if (!worTimesWithNotSetEnd.isEmpty()) {
             productionTracking.addGlobalError("productionCounting.productionTracking.messages.error.worTimesWithNotSetTime");
@@ -351,8 +365,8 @@ public final class ProductionTrackingListenerService {
         List<Entity> worTimesWithNotSetStart = productionTracking
                 .getHasManyField(ProductionTrackingFields.STAFF_WORK_TIMES)
                 .stream()
-                .filter(entity -> Objects.nonNull(entity.getDateField(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_END)) && Objects
-                        .isNull(entity.getDateField(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_START)))
+                .filter(entity -> Objects.nonNull(entity.getDateField(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_END))
+                        && Objects.isNull(entity.getDateField(StaffWorkTimeFields.EFFECTIVE_EXECUTION_TIME_START)))
                 .collect(Collectors.toList());
 
         if (!worTimesWithNotSetStart.isEmpty()) {

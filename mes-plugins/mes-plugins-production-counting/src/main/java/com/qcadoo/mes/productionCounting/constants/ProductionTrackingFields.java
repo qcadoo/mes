@@ -77,4 +77,14 @@ public final class ProductionTrackingFields {
 
     public static final String STATE_CHANGES = "stateChanges";
 
+    public static final String BATCH = "batch";
+
+    public static final String BATCH_NUMBER = "batchNumber";
+
+    public static final String ADD_BATCH = "addBatch";
+
+    public static final String EXPIRATION_DATE = "expirationDate";
+
+    public static final String STORAGE_LOCATION = "storageLocation";
+
 }

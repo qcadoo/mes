@@ -128,7 +128,8 @@ public class ProductionTrackingDetailsListeners {
 
             Map<String, Object> parameters = Maps.newHashMap();
             parameters.put("form.productionTracking", productionTrackingId);
-            parameters.put("form.basicProduct", inProductTracking.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId());
+            parameters.put("form.basicProduct",
+                    inProductTracking.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId());
 
             String url = "/productionCounting/useReplacement.html";
             view.openModal(url, parameters);
@@ -496,6 +497,11 @@ public class ProductionTrackingDetailsListeners {
         } else {
             divisionLookup.setFieldValue(division.getId());
         }
+    }
+
+    public void onAddBatchChange(final ViewDefinitionState view, final ComponentState component, final String[] args) {
+        FieldComponent batchNumber = (FieldComponent) view.getComponentByReference(ProductionTrackingFields.BATCH_NUMBER);
+        batchNumber.setEnabled(true);
     }
 
     public void correct(final ViewDefinitionState view, final ComponentState component, final String[] args) {

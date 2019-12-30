@@ -399,19 +399,20 @@ public final class ProductionTrackingListenerServicePFTD {
 
     private void fillAttributes(Entity outProductRecord, Entity position) {
         List<Entity> attributes = Lists.newArrayList();
-        outProductRecord.getHasManyField(TrackingOperationProductOutComponentFields.PROD_OUT_RESOURCE_ATTR_VALS).forEach(aVal -> {
-            Entity docPositionAtrrVal = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                    MaterialFlowResourcesConstants.MODEL_POSITION_ATTRIBUTE_VALUE).create();
-            docPositionAtrrVal.setField(PositionAttributeValueFields.ATTRIBUTE,
-                    aVal.getBelongsToField(ProdOutResourceAttrValFields.ATTRIBUTE).getId());
-            if (Objects.nonNull(aVal.getBelongsToField(PositionAttributeValueFields.ATTRIBUTE_VALUE))) {
-                docPositionAtrrVal.setField(PositionAttributeValueFields.ATTRIBUTE_VALUE,
-                        aVal.getBelongsToField(ProdOutResourceAttrValFields.ATTRIBUTE_VALUE).getId());
-            }
-            docPositionAtrrVal
-                    .setField(PositionAttributeValueFields.VALUE, aVal.getStringField(ProdOutResourceAttrValFields.VALUE));
-            attributes.add(docPositionAtrrVal);
-        });
+        outProductRecord.getHasManyField(TrackingOperationProductOutComponentFields.PROD_OUT_RESOURCE_ATTR_VALS).forEach(
+                aVal -> {
+                    Entity docPositionAtrrVal = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                            MaterialFlowResourcesConstants.MODEL_POSITION_ATTRIBUTE_VALUE).create();
+                    docPositionAtrrVal.setField(PositionAttributeValueFields.ATTRIBUTE,
+                            aVal.getBelongsToField(ProdOutResourceAttrValFields.ATTRIBUTE).getId());
+                    if (Objects.nonNull(aVal.getBelongsToField(PositionAttributeValueFields.ATTRIBUTE_VALUE))) {
+                        docPositionAtrrVal.setField(PositionAttributeValueFields.ATTRIBUTE_VALUE,
+                                aVal.getBelongsToField(ProdOutResourceAttrValFields.ATTRIBUTE_VALUE).getId());
+                    }
+                    docPositionAtrrVal.setField(PositionAttributeValueFields.VALUE,
+                            aVal.getStringField(ProdOutResourceAttrValFields.VALUE));
+                    attributes.add(docPositionAtrrVal);
+                });
         position.setField(PositionFields.POSITION_ATTRIBUTE_VALUES, attributes);
     }
 
@@ -496,6 +497,16 @@ public final class ProductionTrackingListenerServicePFTD {
             }
 
             position.setField(PositionFields.PRODUCTION_DATE, new Date());
+            if (Objects.nonNull(productionTracking.getBelongsToField(ProductionTrackingFields.BATCH))) {
+                position.setField(PositionFields.BATCH, productionTracking.getBelongsToField(ProductionTrackingFields.BATCH)
+                        .getId());
+            }
+            if (Objects.nonNull(productionTracking.getBelongsToField(ProductionTrackingFields.STORAGE_LOCATION))) {
+                position.setField(PositionFields.STORAGE_LOCATION,
+                        productionTracking.getBelongsToField(ProductionTrackingFields.STORAGE_LOCATION).getId());
+            }
+            position.setField(PositionFields.EXPIRATION_DATE,
+                    productionTracking.getDateField(ProductionTrackingFields.EXPIRATION_DATE));
             fillAttributes(outProductRecord, position);
             internalInboundBuilder.addPosition(position);
         }
