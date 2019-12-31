@@ -33,7 +33,7 @@
         <string name="name"/>
         <enum name="state"
               values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"/>
-
+        <decimal name="plannedQuantity"/>
     </fields>
 
     <masterModel plugin="orders" model="order"/>
