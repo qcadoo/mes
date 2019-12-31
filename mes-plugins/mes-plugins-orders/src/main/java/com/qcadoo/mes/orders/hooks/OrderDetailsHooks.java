@@ -23,6 +23,17 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
@@ -35,6 +46,7 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
+import com.qcadoo.mes.orders.criteriaModifiers.TechnologyCriteriaModifiersO;
 import com.qcadoo.mes.orders.states.OrderStateService;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
@@ -64,21 +76,11 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 @Service
 public class OrderDetailsHooks {
@@ -162,7 +164,6 @@ public class OrderDetailsHooks {
         orderProductQuantityHooks.fillProductUnit(view);
         changeFieldsEnabledForSpecificOrderState(view);
         setFieldsVisibility(view);
-        checkIfLockTechnologyTree(view);
         setQuantities(view);
         additionalUnitService.setAdditionalUnitField(view);
         unitService.fillProductForAdditionalUnitBeforeRender(view);
@@ -218,11 +219,18 @@ public class OrderDetailsHooks {
 
     public void fillDefaultTechnology(final ViewDefinitionState view) {
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCT);
+        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
         FieldComponent defaultTechnologyField = (FieldComponent) view.getComponentByReference(OrderFields.DEFAULT_TECHNOLOGY);
 
         Entity product = productLookup.getEntity();
 
         if (product != null) {
+            FilterValueHolder holder = technologyLookup.getFilterValue();
+
+            holder.put(TechnologyCriteriaModifiersO.PRODUCT_PARAMETER, product.getId());
+
+            technologyLookup.setFilterValue(holder);
+
             Entity defaultTechnology = technologyServiceO.getDefaultTechnology(product);
 
             if (defaultTechnology != null) {
@@ -309,14 +317,6 @@ public class OrderDetailsHooks {
         stateField.setFieldValue(OrderState.PENDING.getStringValue());
     }
 
-    private void checkIfLockTechnologyTree(final ViewDefinitionState view) {
-
-        FieldComponent orderType = (FieldComponent) view.getComponentByReference(OrderFields.ORDER_TYPE);
-        orderType.setEnabled(false);
-        orderType.requestComponentUpdateState();
-
-    }
-
     public void changedEnabledFieldForSpecificOrderState(final ViewDefinitionState view) {
         final FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
         Long orderId = orderForm.getEntityId();
@@ -347,7 +347,7 @@ public class OrderDetailsHooks {
                     OrderFields.REASON_TYPES_CORRECTION_DATE_FROM, OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_FROM,
                     OrderFields.REASON_TYPES_CORRECTION_DATE_TO, OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO,
                     OrderFields.DATE_FROM, OrderFields.DATE_TO);
-            Boolean canChangeProdLineForAcceptedOrders = parameterService.getParameter().getBooleanField(
+            boolean canChangeProdLineForAcceptedOrders = parameterService.getParameter().getBooleanField(
                     "canChangeProdLineForAcceptedOrders");
             if (canChangeProdLineForAcceptedOrders) {
                 LookupComponent productionLineLookup = (LookupComponent) view
@@ -581,39 +581,12 @@ public class OrderDetailsHooks {
 
         boolean selectForPatternTechnology = OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType.getFieldValue());
 
-        changeFieldsVisibility(view, L_PREDEFINED_TECHNOLOGY_FIELDS, selectForPatternTechnology);
+        changeFieldsVisibility(view, selectForPatternTechnology);
     }
 
-    public void setFieldsVisibilityAndFill(final ViewDefinitionState view) {
-        FieldComponent orderType = (FieldComponent) view.getComponentByReference(OrderFields.ORDER_TYPE);
-
-        boolean selectForPatternTechnology = OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType.getFieldValue());
-
-        changeFieldsVisibility(view, L_PREDEFINED_TECHNOLOGY_FIELDS, selectForPatternTechnology);
-
-        if (selectForPatternTechnology) {
-            LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCT);
-            FieldComponent technology = (FieldComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
-            FieldComponent defaultTechnology = (FieldComponent) view.getComponentByReference("defaultTechnology");
-
-            Entity product = productLookup.getEntity();
-
-            defaultTechnology.setFieldValue("");
-            technology.setFieldValue(null);
-
-            if (product != null) {
-                Entity defaultTechnologyEntity = technologyServiceO.getDefaultTechnology(product);
-                if (defaultTechnologyEntity != null) {
-                    technology.setFieldValue(defaultTechnologyEntity.getId());
-                }
-            }
-
-        }
-    }
-
-    private void changeFieldsVisibility(final ViewDefinitionState view, final List<String> references,
-            final boolean selectForPatternTechnology) {
-        for (String reference : references) {
+    private void changeFieldsVisibility(final ViewDefinitionState view,
+                                        final boolean selectForPatternTechnology) {
+        for (String reference : OrderDetailsHooks.L_PREDEFINED_TECHNOLOGY_FIELDS) {
             ComponentState componentState = view.getComponentByReference(reference);
 
             componentState.setVisible(selectForPatternTechnology);

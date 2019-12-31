@@ -23,13 +23,19 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
+import java.util.List;
+
+import org.json.JSONException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
-import com.qcadoo.mes.orders.criteriaModifiers.TechnologyCriteriaModifires;
+import com.qcadoo.mes.orders.criteriaModifiers.TechnologyCriteriaModifiersO;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.hooks.TechnologyDetailsHooks;
@@ -47,11 +53,6 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
-import org.json.JSONException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class CopyOfTechnologyHooks {
@@ -160,7 +161,7 @@ public class CopyOfTechnologyHooks {
 
         FilterValueHolder holder = patternTechnologyLookup.getFilterValue();
 
-        holder.put(TechnologyCriteriaModifires.PRODUCT_PARAMETER, order.getBelongsToField(OrderFields.PRODUCT).getId());
+        holder.put(TechnologyCriteriaModifiersO.PRODUCT_PARAMETER, order.getBelongsToField(OrderFields.PRODUCT).getId());
 
         patternTechnologyLookup.setFilterValue(holder);
     }

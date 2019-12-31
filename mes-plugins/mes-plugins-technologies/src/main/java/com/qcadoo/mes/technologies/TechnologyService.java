@@ -23,6 +23,17 @@
  */
 package com.qcadoo.mes.technologies;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.technologies.constants.OperationFields;
@@ -45,17 +56,6 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class TechnologyService {
@@ -297,14 +297,6 @@ public class TechnologyService {
             return false;
         }
         return true;
-    }
-
-    public Entity getTechnologyForProduct(final Entity product) {
-        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY)
-                .find().add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, product))
-                .add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE))
-                .add(SearchRestrictions.eq(TechnologyFields.STATE, TechnologyState.ACCEPTED.getStringValue()))
-                .add(SearchRestrictions.eq(TechnologyFields.MASTER, true)).uniqueResult();
     }
 
     private boolean listContainsProduct(final List<Entity> list, final Entity product, final Entity operationProductComponent) {

@@ -23,11 +23,20 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
+import com.qcadoo.mes.orders.criteriaModifiers.TechnologyCriteriaModifiersO;
 import com.qcadoo.mes.orders.hooks.OrderDetailsHooks;
 import com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient;
 import com.qcadoo.mes.orders.states.constants.OrderState;
@@ -45,14 +54,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Service
 public class OrderDetailsListeners {
@@ -154,15 +156,17 @@ public class OrderDetailsListeners {
         if (orderId != null) {
             Entity order = orderService.getOrder(orderId);
 
-            String orderType = order.getStringField(OrderFields.ORDER_TYPE);
-
-            if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType)) {
+            if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(order.getStringField(OrderFields.ORDER_TYPE))) {
                 LookupComponent patternTechnologyLookup = (LookupComponent) view
                         .getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
 
                 if (patternTechnologyLookup.getEntity() == null) {
                     state.addMessage("order.technology.patternTechnology.not.set", MessageType.INFO);
-
+                    return;
+                }
+                if (!patternTechnologyLookup.getEntity().getBelongsToField(TechnologyFields.PRODUCT)
+                        .equals(order.getBelongsToField(OrderFields.PRODUCT))) {
+                    state.addMessage("order.technology.patternTechnology.productGroupTechnology.set", MessageType.INFO);
                     return;
                 }
             }
@@ -285,6 +289,12 @@ public class OrderDetailsListeners {
             technologyLookup.setFieldValue(null);
 
             if (product != null) {
+                FilterValueHolder holder = technologyLookup.getFilterValue();
+
+                holder.put(TechnologyCriteriaModifiersO.PRODUCT_PARAMETER, product.getId());
+
+                technologyLookup.setFilterValue(holder);
+                
                 Entity defaultTechnologyEntity = technologyServiceO.getDefaultTechnology(product);
 
                 if (defaultTechnologyEntity != null) {
@@ -297,25 +307,6 @@ public class OrderDetailsListeners {
             }
         }
 
-    }
-
-    public void onOrderTypeChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        orderDetailsHooks.setFieldsVisibilityAndFill(view);
-
-        final FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
-
-        Long orderId = orderForm.getEntityId();
-
-        if (orderId != null) {
-            FieldComponent orderTypeField = (FieldComponent) view.getComponentByReference(OrderFields.ORDER_TYPE);
-
-            boolean selectForPatternTechnology = OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(
-                    orderTypeField.getFieldValue());
-
-            if (selectForPatternTechnology) {
-                orderForm.addMessage("order.orderType.changeOrderType", MessageType.INFO, false);
-            }
-        }
     }
 
     public void printOrderReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {

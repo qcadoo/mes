@@ -102,11 +102,17 @@ public class OperationDurationDetailsInOrderListeners {
         if (orderId != null) {
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
 
-            if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(order.getField(OrderFields.ORDER_TYPE))
-                    && (order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE) == null)) {
-                state.addMessage("order.technology.patternTechnology.not.set", MessageType.INFO);
-
-                return;
+            if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(order.getField(OrderFields.ORDER_TYPE))) {
+                Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+                if (technologyPrototype == null) {
+                    state.addMessage("order.technology.patternTechnology.not.set", MessageType.INFO);
+                    return;
+                }
+                if (!technologyPrototype.getBelongsToField(TechnologyFields.PRODUCT)
+                        .equals(order.getBelongsToField(OrderFields.PRODUCT))) {
+                    state.addMessage("order.technology.patternTechnology.productGroupTechnology.set", MessageType.INFO);
+                    return;
+                }
             }
 
             Long technologyId = order.getBelongsToField(OrderFields.TECHNOLOGY).getId();
