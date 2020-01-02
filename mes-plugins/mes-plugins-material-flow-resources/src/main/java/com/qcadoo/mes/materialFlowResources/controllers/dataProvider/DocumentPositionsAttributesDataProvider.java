@@ -111,7 +111,7 @@ public class DocumentPositionsAttributesDataProvider {
         String query = "SELECT (SELECT COUNT(*) " + positionProductAttributeFrom + dateFrom + "' AND '" + dateTo
                 + "') + (SELECT COUNT(*) " + positionResourceAttributeFrom + dateFrom + "' AND '" + dateTo + "') AS numOfRows";
         Integer numOfRows = jdbcTemplate.queryForObject(query, Collections.emptyMap(), Integer.class);
-        if (numOfRows > 600000) {
+        if (numOfRows > 400000) {
             return "materialFlowResources.validate.global.error.documentPositionsAttributes.tooManyRows";
         }
         return "";
