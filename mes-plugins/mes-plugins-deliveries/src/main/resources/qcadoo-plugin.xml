@@ -198,6 +198,10 @@
                            model="delivery" plugin="deliveries" cascade="nullify"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="requireSupplierIdentification" default="false"/>
+        </model:model-field>
+
         <model:model-hook plugin="basic" model="company">
             <model:onDelete class="com.qcadoo.mes.deliveries.hooks.CompanyHooksD"
                             method="onDelete"/>

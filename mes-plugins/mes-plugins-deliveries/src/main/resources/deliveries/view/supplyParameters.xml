@@ -87,6 +87,12 @@
                             <option type="labelWidth" value="50" />
                         </component>
                     </layoutElement>
+                    <layoutElement column="1" row="9">
+                        <component type="checkbox" name="requireSupplierIdentification" hasDescription="true"
+                                   field="#{form}.requireSupplierIdentification" reference="requireSupplierIdentification">
+                            <option type="labelWidth" value="50" />
+                        </component>
+                    </layoutElement>
 
                     <layoutElement column="2" row="1" width="2" height="9">
                         <component type="borderLayout" name="columnsForOrdersBorderLayout">
