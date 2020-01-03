@@ -23,15 +23,15 @@
  */
 package com.qcadoo.mes.basicProductionCounting;
 
-import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ViewDefinitionState;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ViewDefinitionState;
 
 public interface BasicProductionCountingService {
 
@@ -65,7 +65,7 @@ public interface BasicProductionCountingService {
      * @param order
      *            order
      */
-    void createProductionCounting(final Entity order);
+    boolean createProductionCounting(final Entity order);
 
     /**
      * Creates basic production counting
