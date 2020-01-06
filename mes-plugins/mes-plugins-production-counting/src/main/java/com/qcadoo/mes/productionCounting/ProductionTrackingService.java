@@ -27,6 +27,9 @@ import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStat
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 
+import java.math.BigDecimal;
+import java.util.Optional;
+
 public interface ProductionTrackingService {
 
     void setTimeAndPieceworkComponentsVisible(final ViewDefinitionState view, final Entity order);
@@ -42,4 +45,6 @@ public interface ProductionTrackingService {
     Entity correct(Entity productionTracking);
 
     void unCorrect(Entity productionTracking);
+
+    Optional<BigDecimal> calculateGivenQuantity(Entity trackingOperationProductInComponent, BigDecimal usedQuantity);
 }

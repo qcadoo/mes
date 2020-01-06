@@ -59,6 +59,8 @@ public final class ProductionCountingConstants {
 
     public static final String MODEL_ANOMALY_EXPLANATION = "anomalyExplanation";
 
+    public static final String MODEL_USED_BATCH = "usedBatch";
+
     // VIEW
 
     public static String productionTrackingDetailsUrl(final Long id) {

@@ -23,18 +23,19 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentDtoFields;
 import com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class TrackingOperationProductInComponentDetailsHooks {
@@ -75,6 +76,22 @@ public class TrackingOperationProductInComponentDetailsHooks {
                 .getComponentByReference(TrackingOperationProductInComponentDtoFields.PLANNED_QUANTITY);
         plannedQuantity.setFieldValue(trackingOperationProductInComponentDto
                 .getDecimalField(TrackingOperationProductInComponentDtoFields.PLANNED_QUANTITY));
+        disableQuantityFieldsIfUsedBatches(view);
+    }
+
+    private void disableQuantityFieldsIfUsedBatches(final ViewDefinitionState view) {
+        FormComponent trackingOperationProductInComponentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        long usedBatches = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_USED_BATCH).count(
+                SearchRestrictions.belongsTo("trackingOperationProductInComponent",
+                        trackingOperationProductInComponentForm.getEntity()));
+        if (usedBatches > 0) {
+            FieldComponent usedQuantity = (FieldComponent) view.getComponentByReference(L_USED_QUANTITY);
+            FieldComponent givenQuantity = (FieldComponent) view.getComponentByReference(L_GIVEN_QUANTITY);
+            usedQuantity.setEnabled(false);
+            givenQuantity.setEnabled(false);
+        }
+
     }
 
     private void toggleEnabledForWastes(final ViewDefinitionState view) {
