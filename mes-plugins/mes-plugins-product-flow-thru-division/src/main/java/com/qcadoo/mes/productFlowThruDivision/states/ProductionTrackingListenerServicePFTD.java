@@ -51,12 +51,14 @@ import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductInCompon
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductionCountingQuantityFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductionFlowComponent;
 import com.qcadoo.mes.productFlowThruDivision.validators.ProductionTrackingValidatorsPFTD;
+import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.PriceBasedOn;
 import com.qcadoo.mes.productionCounting.constants.ProdOutResourceAttrValFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
+import com.qcadoo.mes.productionCounting.constants.UsedBatchFields;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.productionCounting.utils.OrderClosingHelper;
 import com.qcadoo.mes.productionCounting.utils.ProductionTrackingDocumentsHelper;
@@ -121,6 +123,9 @@ public final class ProductionTrackingListenerServicePFTD {
 
     @Autowired
     private ProductionTrackingDocumentsHelper productionTrackingDocumentsHelper;
+
+    @Autowired
+    private ProductionTrackingService productionTrackingService;
 
     public Entity onAccept(final Entity productionTracking, final String sourceState) {
         boolean isCorrection = productionTracking.getBooleanField(ProductionTrackingFields.IS_CORRECTION);
@@ -219,36 +224,21 @@ public final class ProductionTrackingListenerServicePFTD {
         DataDefinition positionDD = getPositionDD();
 
         for (Entity inProductRecord : inProductsRecords) {
+
+            List<Entity> usedBatches = inProductRecord.getHasManyField(TrackingOperationProductInComponentFields.USED_BATCHES);
+
             Entity inProduct = inProductRecord.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
 
             if (!inProductsWithoutDuplicates.contains(inProduct)) {
-                Entity position = positionDD.create();
-                BigDecimal usedQuantity = inProductRecord
-                        .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
-                BigDecimal givenQuantity = inProductRecord
-                        .getDecimalField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY);
-                BigDecimal conversion = BigDecimal.ONE;
-                String unit = inProduct.getStringField(ProductFields.UNIT);
-                String givenUnit = inProductRecord.getStringField(TrackingOperationProductOutComponentFields.GIVEN_UNIT);
-
-                if (Objects.nonNull(usedQuantity) && Objects.nonNull(givenQuantity)) {
-                    PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-                            searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
-                                    UnitConversionItemFieldsB.PRODUCT, inProduct)));
-
-                    if (unitConversions.isDefinedFor(givenUnit)) {
-                        conversion = numberService.setScaleWithDefaultMathContext(unitConversions.asUnitToConversionMap().get(
-                                givenUnit));
+                if (usedBatches.isEmpty()) {
+                    Entity position = preparePositionForInProduct(positionDD, inProductRecord, inProduct);
+                    internalOutboundBuilder.addPosition(position);
+                } else {
+                    for (Entity usedBatch : usedBatches) {
+                        Entity position = preparePositionForUsedBatch(positionDD, inProductRecord, inProduct, usedBatch);
+                        internalOutboundBuilder.addPosition(position);
                     }
                 }
-
-                position.setField(PositionFields.GIVEN_UNIT,
-                        inProductRecord.getStringField(TrackingOperationProductInComponentFields.GIVEN_UNIT));
-                position.setField(PositionFields.PRODUCT, inProduct);
-                position.setField(PositionFields.QUANTITY, usedQuantity);
-                position.setField(PositionFields.GIVEN_QUANTITY, givenQuantity);
-                position.setField(PositionFields.CONVERSION, conversion);
-                internalOutboundBuilder.addPosition(position);
             }
 
             inProductsWithoutDuplicates.add(inProduct);
@@ -256,9 +246,65 @@ public final class ProductionTrackingListenerServicePFTD {
 
         internalOutboundBuilder.setField(DocumentFieldsPFTD.ORDER, order);
 
-        Entity document = internalOutboundBuilder.setAccepted().buildWithEntityRuntimeException();
+        return internalOutboundBuilder.setAccepted().buildWithEntityRuntimeException();
+    }
 
-        return document;
+    private Entity preparePositionForUsedBatch(DataDefinition positionDD, Entity inProductRecord, Entity inProduct,
+            Entity usedBatch) {
+        Entity position = positionDD.create();
+        BigDecimal usedQuantity = usedBatch.getDecimalField(UsedBatchFields.QUANTITY);
+        BigDecimal givenQuantity = productionTrackingService.calculateGivenQuantity(inProductRecord, usedQuantity).orElse(
+                usedQuantity);
+
+        BigDecimal conversion = BigDecimal.ONE;
+        String unit = inProduct.getStringField(ProductFields.UNIT);
+        String givenUnit = inProductRecord.getStringField(TrackingOperationProductOutComponentFields.GIVEN_UNIT);
+
+        if (Objects.nonNull(usedQuantity)) {
+            PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
+                    searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
+                            UnitConversionItemFieldsB.PRODUCT, inProduct)));
+
+            if (unitConversions.isDefinedFor(givenUnit)) {
+                conversion = numberService.setScaleWithDefaultMathContext(unitConversions.asUnitToConversionMap().get(givenUnit));
+            }
+        }
+
+        position.setField(PositionFields.GIVEN_UNIT,
+                inProductRecord.getStringField(TrackingOperationProductInComponentFields.GIVEN_UNIT));
+        position.setField(PositionFields.PRODUCT, inProduct);
+        position.setField(PositionFields.QUANTITY, usedQuantity);
+        position.setField(PositionFields.GIVEN_QUANTITY, givenQuantity);
+        position.setField(PositionFields.CONVERSION, conversion);
+        position.setField(PositionFields.BATCH, usedBatch.getBelongsToField(UsedBatchFields.BATCH).getId());
+        return position;
+    }
+
+    private Entity preparePositionForInProduct(DataDefinition positionDD, Entity inProductRecord, Entity inProduct) {
+        Entity position = positionDD.create();
+        BigDecimal usedQuantity = inProductRecord.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
+        BigDecimal givenQuantity = inProductRecord.getDecimalField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY);
+        BigDecimal conversion = BigDecimal.ONE;
+        String unit = inProduct.getStringField(ProductFields.UNIT);
+        String givenUnit = inProductRecord.getStringField(TrackingOperationProductOutComponentFields.GIVEN_UNIT);
+
+        if (Objects.nonNull(usedQuantity) && Objects.nonNull(givenQuantity)) {
+            PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
+                    searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
+                            UnitConversionItemFieldsB.PRODUCT, inProduct)));
+
+            if (unitConversions.isDefinedFor(givenUnit)) {
+                conversion = numberService.setScaleWithDefaultMathContext(unitConversions.asUnitToConversionMap().get(givenUnit));
+            }
+        }
+
+        position.setField(PositionFields.GIVEN_UNIT,
+                inProductRecord.getStringField(TrackingOperationProductInComponentFields.GIVEN_UNIT));
+        position.setField(PositionFields.PRODUCT, inProduct);
+        position.setField(PositionFields.QUANTITY, usedQuantity);
+        position.setField(PositionFields.GIVEN_QUANTITY, givenQuantity);
+        position.setField(PositionFields.CONVERSION, conversion);
+        return position;
     }
 
     private Entity createOrUpdateInternalInboundDocumentForFinalProducts(final Entity locationTo, final Entity order,

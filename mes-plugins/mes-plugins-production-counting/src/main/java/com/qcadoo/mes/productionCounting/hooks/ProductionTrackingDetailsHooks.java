@@ -25,6 +25,8 @@ package com.qcadoo.mes.productionCounting.hooks;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
@@ -63,6 +65,7 @@ import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -117,6 +120,10 @@ public class ProductionTrackingDetailsHooks {
 
     private static final String L_PRODUCT_ID = "productId";
 
+    public static final String L_ORDER = "order";
+
+    public static final String L_BATCH_ORDERED_PRODUCT_LABEL = "batchOrderedProductLabel";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -131,6 +138,9 @@ public class ProductionTrackingDetailsHooks {
 
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
+
+    @Autowired
+    private TranslationService translationService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
         FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
@@ -157,6 +167,22 @@ public class ProductionTrackingDetailsHooks {
             toggleCorrectButton(view, productionTracking);
             toggleCorrectionFields(view, productionTracking);
             fetchNumberFromDatabase(view, productionTracking);
+        }
+
+        fillBatchOrderedProductLabel(view);
+    }
+
+    private void fillBatchOrderedProductLabel(final ViewDefinitionState view) {
+        LookupComponent orderLookupComponent = (LookupComponent) view.getComponentByReference(L_ORDER);
+        if (!orderLookupComponent.isEmpty()) {
+            Entity order = orderLookupComponent.getEntity();
+            FieldComponent batchOrderedProductLabel = (FieldComponent) view
+                    .getComponentByReference(L_BATCH_ORDERED_PRODUCT_LABEL);
+            batchOrderedProductLabel.setFieldValue(translationService.translate(
+                    "productionCounting.productionTrackingDetails.window.batchOrderedProduct.batchOrderedProductLabel.label",
+                    LocaleContextHolder.getLocale())
+                    + " " + order.getBelongsToField(OrderFields.PRODUCT).getStringField(ProductFields.NUMBER));
+            batchOrderedProductLabel.requestComponentUpdateState();
         }
     }
 
