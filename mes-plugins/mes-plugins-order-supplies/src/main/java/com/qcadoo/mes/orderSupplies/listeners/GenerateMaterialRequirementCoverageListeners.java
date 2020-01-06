@@ -69,9 +69,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,6 +91,8 @@ public class GenerateMaterialRequirementCoverageListeners {
     private static final String L_FORM = "form";
 
     private static final String L_GRID = "coverageProducts";
+
+    public static final String L_REQUIRE_SUPPLIER_IDENTIFICATION = "requireSupplierIdentification";
 
     @Autowired
     private OrderSuppliesService orderSuppliesService;
@@ -396,33 +400,38 @@ public class GenerateMaterialRequirementCoverageListeners {
             delivery.setField(CURRENCY, currency);
             delivery.setField(EXTERNAL_SYNCHRONIZED, true);
 
-            deliveryNumbers.append("<br/>").append(number);
-
             Entity saved = deliveriesService.getDeliveryDD().save(delivery);
+            if(saved.isValid()) {
+                deliveryNumbers.append("<br/>").append(number);
+                entry.getValue().forEach(coverageProduct -> {
+                    Integer product = coverageProduct.getIntegerField("productId");
+                    BigDecimal reserveMissingQuantity = coverageProduct.getDecimalField(CoverageProductFields.RESERVE_MISSING_QUANTITY);
 
-            entry.getValue().forEach(
-                    coverageProduct -> {
-                        Integer product = coverageProduct.getIntegerField("productId");
-                        BigDecimal reserveMissingQuantity = coverageProduct
-                                .getDecimalField(CoverageProductFields.RESERVE_MISSING_QUANTITY);
+                    BigDecimal orderedQuantity = reserveMissingQuantity.min(BigDecimal.ZERO).abs();
+                    BigDecimal conversion = getConversion(product);
 
-                        BigDecimal orderedQuantity = reserveMissingQuantity.min(BigDecimal.ZERO).abs();
-                        BigDecimal conversion = getConversion(product);
+                    Entity orderedProduct = orderedProductDataDefinition.create();
+                    orderedProduct.setField("delivery", saved);
+                    orderedProduct.setField("product", product.longValue());
+                    orderedProduct.setField("orderedQuantity", reserveMissingQuantity.min(BigDecimal.ZERO).abs());
 
-                        Entity orderedProduct = orderedProductDataDefinition.create();
-                        orderedProduct.setField("delivery", saved);
-                        orderedProduct.setField("product", product.longValue());
-                        orderedProduct.setField("orderedQuantity", reserveMissingQuantity.min(BigDecimal.ZERO).abs());
+                    orderedProduct.setField(OrderedProductFields.CONVERSION, conversion);
+                    orderedProduct.setField(OrderedProductFields.ADDITIONAL_QUANTITY,
+                            orderedQuantity.multiply(conversion, numberService.getMathContext()));
 
-                        orderedProduct.setField(OrderedProductFields.CONVERSION, conversion);
-                        orderedProduct.setField(OrderedProductFields.ADDITIONAL_QUANTITY,
-                                orderedQuantity.multiply(conversion, numberService.getMathContext()));
-
-                        orderedProductDataDefinition.save(orderedProduct);
-                    });
+                    orderedProductDataDefinition.save(orderedProduct);
+                });
+            }
+            if (parameterService.getParameter().getBooleanField(L_REQUIRE_SUPPLIER_IDENTIFICATION) && Objects.isNull(delivery.getBelongsToField(SUPPLIER))) {
+                state.addMessage("orderSupplies.materialRequirementCoverage.deliveries.requireSupplierIdentification", MessageType.INFO, false);
+            }
         }
-        state.addMessage("orderSupplies.materialRequirementCoverage.deliveries.created", MessageType.SUCCESS, false,
-                deliveryNumbers.toString());
+        if(StringUtils.isNoneEmpty(deliveryNumbers.toString())) {
+            state.addMessage("orderSupplies.materialRequirementCoverage.deliveries.created", MessageType.SUCCESS, false,
+                    deliveryNumbers.toString());
+        } else {
+            state.addMessage("orderSupplies.materialRequirementCoverage.deliveries.notCreated", MessageType.INFO, false);
+        }
     }
 
     private BigDecimal getConversion(Integer productId) {
