@@ -66,6 +66,8 @@ public final class TechnologiesConstants {
 
     public static final String MODIFY_TECHNOLOGY_HELPER = "modifyTechnologyHelper";
 
+    public static final String MODEL_PRODUCT_TO_PRODUCT_GROUP_TECHNOLOGY = "productToProductGroupTechnology";
+
     // VIEW
 
     public static final String VIEW_OPERATION_DETAILS = "operationDetails";

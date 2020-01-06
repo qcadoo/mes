@@ -46,23 +46,9 @@ public class OperationProductInComponentXlsxImportService extends XlsxImportServ
     private DataDefinitionService dataDefinitionService;
 
     @Override
-    public Entity createEntity(final String pluginIdentifier, final String modelName) {
-        Entity operationProductInComponent = getDataDefinition(pluginIdentifier, modelName).create();
-
-        return operationProductInComponent;
-    }
-
-    @Override
-    public boolean validateEntity(final Entity operationProductInComponent, final DataDefinition operationProductInComponentDD) {
+    public void validateEntity(final Entity operationProductInComponent, final DataDefinition operationProductInComponentDD) {
         Entity technology = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.TECHNOLOGY);
 
-        validateOperationComponent(operationProductInComponent, operationProductInComponentDD, technology);
-
-        return operationProductInComponent.isValid();
-    }
-
-    private void validateOperationComponent(final Entity operationProductInComponent,
-            final DataDefinition operationProductInComponentDD, final Entity technology) {
         Entity operationComponent = operationProductInComponent
                 .getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT);
 

@@ -1,26 +1,5 @@
 package com.qcadoo.mes.orders.listeners;
 
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.orders.OrderService;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderType;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.orders.constants.ParameterFieldsO;
-import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
-import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.CheckBoxComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
-
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
@@ -36,6 +15,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.orders.OrderService;
+import com.qcadoo.mes.orders.TechnologyServiceO;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.constants.OrderType;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.constants.ParameterFieldsO;
+import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 @Service
 public class OrdersGenerationFromProductsListeners {
@@ -54,7 +54,7 @@ public class OrdersGenerationFromProductsListeners {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private TechnologyService technologyService;
+    private TechnologyServiceO technologyServiceO;
 
     @Autowired
     private ParameterService parameterService;
@@ -123,7 +123,7 @@ public class OrdersGenerationFromProductsListeners {
     @Transactional
     private Entity createOrder(Entity parameters, final Entity product, final BigDecimal plannedQuantity, final Date dateFrom,
             final Date dateTo) {
-        Entity technology = technologyService.getTechnologyForProduct(product);
+        Entity technology = technologyServiceO.getDefaultTechnology(product);
         Entity order = getOrderDD().create();
         order.setField(OrderFields.NUMBER,
                 numberGeneratorService.generateNumber(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER));

@@ -23,22 +23,53 @@
  */
 package com.qcadoo.mes.orders.criteriaModifiers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Service
 public class TechnologyCriteriaModifiersO {
 
-    public void showAcceptedPatternTechnology(final SearchCriteriaBuilder scb) {
+    public static final String PRODUCT_PARAMETER = "product";
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    public void showTechnologyForProduct(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+        Long productId = filterValue.getLong(PRODUCT_PARAMETER);
+        scb.add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, BasicConstants.PLUGIN_IDENTIFIER,
+                BasicConstants.MODEL_PRODUCT, productId));
+        scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE));
+    }
+
+    public void showAcceptedPatternTechnologyForProduct(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+        if (filterValue.has(PRODUCT_PARAMETER)) {
+            Long productId = filterValue.getLong(PRODUCT_PARAMETER);
+            Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT)
+                    .get(productId);
+            Entity parent = product.getBelongsToField(ProductFields.PARENT);
+            if (parent != null) {
+                scb.add(SearchRestrictions.or(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, product),
+                        SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, parent)));
+            } else {
+                scb.add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, product));
+            }
+        } else {
+            scb.add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, BasicConstants.PLUGIN_IDENTIFIER,
+                    BasicConstants.MODEL_PRODUCT, 0L));
+        }
+
         scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE));
         scb.add(SearchRestrictions.eq(TechnologyFields.STATE, TechnologyStateStringValues.ACCEPTED));
     }
 
-    public void showAcceptedRecipes(final SearchCriteriaBuilder scb) {
-        scb.add(SearchRestrictions.eq("state", "03accepted"));
-    }
 }

@@ -32,6 +32,24 @@ public class DocumentPositionsAttributesDataProvider {
 
     public static final String NUMERIC_DATA_TYPE = "02numeric";
 
+    private static final String positionProductAttributeFrom = "FROM materialflowresources_position pos "
+            + "LEFT JOIN materialflowresources_document doc ON doc.id = pos.document_id "
+            + "LEFT JOIN materialflow_location locationfrom ON locationfrom.id = doc.locationfrom_id "
+            + "LEFT JOIN materialflow_location locationto ON locationto.id = doc.locationto_id "
+            + "JOIN basic_product p ON p.id = pos.product_id LEFT JOIN deliveries_delivery d ON d.id = doc.delivery_id "
+            + "LEFT JOIN orders_order o ON (o.id = doc.order_id OR o.id = pos.orderid) "
+            + "LEFT JOIN basic_productattributevalue pav ON p.id = pav.product_id "
+            + "LEFT JOIN basic_attribute a ON a.id = pav.attribute_id WHERE doc.\"time\" BETWEEN '";
+
+    private static final String positionResourceAttributeFrom = "FROM materialflowresources_position pos "
+            + "LEFT JOIN materialflowresources_document doc ON doc.id = pos.document_id "
+            + "LEFT JOIN materialflow_location locationfrom ON locationfrom.id = doc.locationfrom_id "
+            + "LEFT JOIN materialflow_location locationto ON locationto.id = doc.locationto_id "
+            + "JOIN basic_product p ON p.id = pos.product_id LEFT JOIN deliveries_delivery d ON d.id = doc.delivery_id "
+            + "LEFT JOIN orders_order o ON (o.id = doc.order_id OR o.id = pos.orderid) "
+            + "LEFT JOIN materialflowresources_positionattributevalue posav ON pos.id = posav.position_id "
+            + "LEFT JOIN basic_attribute a ON a.id = posav.attribute_id WHERE doc.\"time\" BETWEEN '";
+
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -86,7 +104,20 @@ public class DocumentPositionsAttributesDataProvider {
         return columns;
     }
 
-    public List<Map<String, Object>> getRecords() {
+    public String validate(String dateFrom, String dateTo) {
+        if(dateFrom.isEmpty() || dateTo.isEmpty()){
+            return "materialFlowResources.validate.global.error.documentPositionsAttributes.datesCannotBeEmpty";
+        }
+        String query = "SELECT (SELECT COUNT(*) " + positionProductAttributeFrom + dateFrom + "' AND '" + dateTo
+                + "') + (SELECT COUNT(*) " + positionResourceAttributeFrom + dateFrom + "' AND '" + dateTo + "') AS numOfRows";
+        Integer numOfRows = jdbcTemplate.queryForObject(query, Collections.emptyMap(), Integer.class);
+        if (numOfRows > 400000) {
+            return "materialFlowResources.validate.global.error.documentPositionsAttributes.tooManyRows";
+        }
+        return "";
+    }
+
+    public List<Map<String, Object>> getRecords(String dateFrom, String dateTo) {
         String query = "SELECT pos.id, locationfrom.number AS locationFrom, locationto.number AS locationTo, "
                 + "p.number AS productNumber, p.name AS productName, pos.quantity, p.unit AS productUnit, pos.price, "
                 + "(pos.price * pos.quantity) AS value, CASE WHEN (pos.externaldocumentnumber IS NULL) THEN doc.number "
@@ -96,13 +127,7 @@ public class DocumentPositionsAttributesDataProvider {
                 + "pos.resourcenumber AS resourceNumber, to_char(pos.expirationdate, 'YYYY-MM-DD HH24:MI:SS') AS expirationDate, "
                 + "to_char(pos.productiondate, 'YYYY-MM-DD HH24:MI:SS') AS productionDate, d.number AS deliveryNumber, "
                 + "pos.batch, 'product' || a.number AS attributeNumber, pav.value AS attributeValue "
-                + "FROM materialflowresources_position pos LEFT JOIN materialflowresources_document doc ON doc.id = pos.document_id "
-                + "LEFT JOIN materialflow_location locationfrom ON locationfrom.id = doc.locationfrom_id "
-                + "LEFT JOIN materialflow_location locationto ON locationto.id = doc.locationto_id "
-                + "JOIN basic_product p ON p.id = pos.product_id LEFT JOIN deliveries_delivery d ON d.id = doc.delivery_id "
-                + "LEFT JOIN orders_order o ON (o.id = doc.order_id OR o.id = pos.orderid) "
-                + "LEFT JOIN basic_productattributevalue pav ON p.id = pav.product_id "
-                + "LEFT JOIN basic_attribute a ON a.id = pav.attribute_id "
+                + positionProductAttributeFrom + dateFrom + "' AND '" + dateTo + "'"
                 + "UNION ALL SELECT pos.id, locationfrom.number AS locationFrom, locationto.number AS locationTo, "
                 + "p.number AS productNumber, p.name AS productName, pos.quantity, p.unit AS productUnit, pos.price, "
                 + "(pos.price * pos.quantity) AS value, CASE WHEN (pos.externaldocumentnumber IS NULL) THEN doc.number "
@@ -112,13 +137,7 @@ public class DocumentPositionsAttributesDataProvider {
                 + "pos.resourcenumber AS resourceNumber, to_char(pos.expirationdate, 'YYYY-MM-DD HH24:MI:SS') AS expirationDate, "
                 + "to_char(pos.productiondate, 'YYYY-MM-DD HH24:MI:SS') AS productionDate, d.number AS deliveryNumber, "
                 + "pos.batch, 'resource' || a.number AS attributeNumber, posav.value AS attributeValue "
-                + "FROM materialflowresources_position pos LEFT JOIN materialflowresources_document doc ON doc.id = pos.document_id "
-                + "LEFT JOIN materialflow_location locationfrom ON locationfrom.id = doc.locationfrom_id "
-                + "LEFT JOIN materialflow_location locationto ON locationto.id = doc.locationto_id "
-                + "JOIN basic_product p ON p.id = pos.product_id LEFT JOIN deliveries_delivery d ON d.id = doc.delivery_id "
-                + "LEFT JOIN orders_order o ON (o.id = doc.order_id OR o.id = pos.orderid) "
-                + "LEFT JOIN materialflowresources_positionattributevalue posav ON pos.id = posav.position_id "
-                + "LEFT JOIN basic_attribute a ON a.id = posav.attribute_id ORDER BY id, attributeNumber";
+                + positionResourceAttributeFrom + dateFrom + "' AND '" + dateTo + "' ORDER BY id, attributeNumber";
 
         List<Map<String, Object>> attributes = jdbcTemplate.queryForList(query, Collections.emptyMap());
         Map<Long, Map<String, Object>> results = Maps.newHashMap();

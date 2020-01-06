@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.ColumnDTO;
@@ -28,9 +29,15 @@ public class DocumentPositionsAttributesController {
     }
 
     @ResponseBody
+    @RequestMapping(value = "/validate", method = RequestMethod.GET, produces = MediaType.TEXT_PLAIN_VALUE)
+    public String validate(@RequestParam String dateFrom, @RequestParam String dateTo) {
+        return documentPositionsAttributesDataProvider.validate(dateFrom, dateTo);
+    }
+
+    @ResponseBody
     @RequestMapping(value = "/records", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<Map<String, Object>> getRecords() {
-        return documentPositionsAttributesDataProvider.getRecords();
+    public List<Map<String, Object>> getRecords(@RequestParam String dateFrom, @RequestParam String dateTo) {
+        return documentPositionsAttributesDataProvider.getRecords(dateFrom, dateTo);
     }
 
 }

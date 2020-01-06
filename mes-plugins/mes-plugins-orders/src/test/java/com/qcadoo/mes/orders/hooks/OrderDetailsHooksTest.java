@@ -23,6 +23,22 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
@@ -43,22 +59,8 @@ import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(SearchRestrictions.class)
@@ -95,7 +97,7 @@ public class OrderDetailsHooksTest {
     private FormComponent orderForm;
 
     @Mock
-    private LookupComponent productLookup, technologyLookup, productionLineLookup, addressLookup;
+    private LookupComponent productLookup, technologyLookup, addressLookup;
 
     @Mock
     private FieldComponent defaultTechnologyField, plannedQuantityField, stateField, correctDateFromField, correctDateToField,
@@ -108,13 +110,16 @@ public class OrderDetailsHooksTest {
     private DataDefinition orderDD, technologyDD;
 
     @Mock
-    private Entity order, product, defaultTechnology, defaultProductionLine, company, parameter;
+    private Entity order, product, defaultTechnology, company, parameter;
 
     @Mock
     private SearchCriteriaBuilder searchCriteriaBuilder;
 
     @Mock
     private SearchResult searchResult;
+
+    @Mock
+    private FilterValueHolder filterValueHolder;
 
     @Before
     public void init() {
@@ -211,9 +216,11 @@ public class OrderDetailsHooksTest {
     public void shouldNotFillDefaultTechnologyIfThereIsNoDefaultTechnology() throws Exception {
         // given
         given(view.getComponentByReference(OrderFields.PRODUCT)).willReturn(productLookup);
+        given(view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE)).willReturn(technologyLookup);
         given(view.getComponentByReference(OrderFields.DEFAULT_TECHNOLOGY)).willReturn(defaultTechnologyField);
 
         given(productLookup.getEntity()).willReturn(product);
+        given(technologyLookup.getFilterValue()).willReturn(filterValueHolder);
 
         given(technologyServiceO.getDefaultTechnology(product)).willReturn(null);
 
@@ -228,9 +235,11 @@ public class OrderDetailsHooksTest {
     public void shouldFillDefaultTechnology() throws Exception {
         // given
         given(view.getComponentByReference(OrderFields.PRODUCT)).willReturn(productLookup);
+        given(view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE)).willReturn(technologyLookup);
         given(view.getComponentByReference(OrderFields.DEFAULT_TECHNOLOGY)).willReturn(defaultTechnologyField);
 
         given(productLookup.getEntity()).willReturn(product);
+        given(technologyLookup.getFilterValue()).willReturn(filterValueHolder);
 
         given(technologyServiceO.getDefaultTechnology(product)).willReturn(defaultTechnology);
         given(defaultTechnology.getId()).willReturn(1L);

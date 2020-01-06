@@ -24,7 +24,7 @@
 package com.qcadoo.mes.basic.imports.parsers;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.CompanyFields;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.imports.helpers.CellErrorsAccessor;
 import com.qcadoo.mes.basic.imports.helpers.CellParser;
 import com.qcadoo.model.api.DataDefinition;
@@ -58,7 +58,7 @@ public class ProductCellParser implements CellParser {
     }
 
     private Entity getProductByNumber(final String number) {
-        return getProductDD().find().add(SearchRestrictions.eq(CompanyFields.NUMBER, number)).setMaxResults(1).uniqueResult();
+        return getProductDD().find().add(SearchRestrictions.eq(ProductFields.NUMBER, number)).setMaxResults(1).uniqueResult();
     }
 
     private DataDefinition getProductDD() {
