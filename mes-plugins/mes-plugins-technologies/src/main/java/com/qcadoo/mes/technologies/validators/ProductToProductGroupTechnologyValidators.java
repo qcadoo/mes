@@ -20,9 +20,7 @@ public class ProductToProductGroupTechnologyValidators {
                 .add(SearchRestrictions.belongsTo(ProductToProductGroupFields.FINAL_PRODUCT,
                         entity.getBelongsToField(ProductToProductGroupFields.FINAL_PRODUCT)))
                 .add(SearchRestrictions.belongsTo(ProductToProductGroupFields.PRODUCT_FAMILY,
-                        entity.getBelongsToField(ProductToProductGroupFields.PRODUCT_FAMILY)))
-                .add(SearchRestrictions.belongsTo(ProductToProductGroupFields.ORDER_PRODUCT,
-                        entity.getBelongsToField(ProductToProductGroupFields.ORDER_PRODUCT)));
+                        entity.getBelongsToField(ProductToProductGroupFields.PRODUCT_FAMILY)));
         if (id != null) {
             scb.add(SearchRestrictions.idNe(id));
         }
