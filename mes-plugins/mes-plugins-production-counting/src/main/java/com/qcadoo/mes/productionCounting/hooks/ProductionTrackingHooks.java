@@ -26,6 +26,7 @@ package com.qcadoo.mes.productionCounting.hooks;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.advancedGenealogy.AdvancedGenealogyService;
+import com.qcadoo.mes.advancedGenealogy.constants.AdvancedGenealogyConstants;
 import com.qcadoo.mes.advancedGenealogy.constants.TrackingRecordFields;
 import com.qcadoo.mes.advancedGenealogy.constants.TrackingRecordType;
 import com.qcadoo.mes.basic.LogService;
@@ -130,7 +131,9 @@ public class ProductionTrackingHooks {
                         TrackingRecordFields.PRODUCED_BATCH).getId().equals(batch.getId())).collect(Collectors.toList());
                 if(filteredTrackingRecords.isEmpty()) {
                     Entity trackingRecord = advancedGenealogyService.getTrackingRecordDD().create();
-                    trackingRecord.setField(TrackingRecordFields.NUMBER, productionTracking.getStringField(ProductionTrackingFields.BATCH_NUMBER));
+                    trackingRecord.setField(TrackingRecordFields.NUMBER, numberGeneratorService.generateNumber(
+                            AdvancedGenealogyConstants.PLUGIN_IDENTIFIER,
+                            AdvancedGenealogyConstants.MODEL_TRACKING_RECORD));
                     trackingRecord.setField("order", order.getId());
                     trackingRecord.setField(TrackingRecordFields.ENTITY_TYPE, TrackingRecordType.FOR_ORDER);
                     trackingRecord.setField(TrackingRecordFields.PRODUCED_BATCH, batch.getId());

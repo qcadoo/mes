@@ -28,6 +28,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.qcadoo.mes.advancedGenealogy.constants.AdvancedGenealogyConstants;
+import com.qcadoo.mes.advancedGenealogy.constants.TrackingRecordFields;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.StaffFields;
@@ -86,6 +88,10 @@ public class ProductionTrackingDetailsListeners {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductionTrackingDetailsListeners.class);
 
     public static final String L_DIVISION = "division";
+
+    public static final String L_BATCH = "batch";
+
+    public static final String L_ORDER = "order";
 
     @Autowired
     private NumberService numberService;
@@ -368,6 +374,29 @@ public class ProductionTrackingDetailsListeners {
         enableOrDisableFields(view, componentState, args);
         checkJustOne(view, componentState, args);
         fillDivisionFieldFromOrder(view);
+        fillOrderedProductBatch(view);
+    }
+
+    private void fillOrderedProductBatch(final ViewDefinitionState view) {
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.ORDER);
+        LookupComponent batchLookup = (LookupComponent) view.getComponentByReference(L_BATCH);
+        Entity order = orderLookup.getEntity();
+        if (Objects.nonNull(order)) {
+            List<Entity> records = dataDefinitionService
+                    .get(AdvancedGenealogyConstants.PLUGIN_IDENTIFIER, AdvancedGenealogyConstants.MODEL_TRACKING_RECORD).find()
+                    .add(SearchRestrictions.belongsTo(L_ORDER, order)).list().getEntities();
+            if(records.size() == 1) {
+                Entity record = records.get(0);
+                batchLookup.setFieldValue(record.getBelongsToField(TrackingRecordFields.PRODUCED_BATCH).getId());
+                batchLookup.requestComponentUpdateState();
+            } else {
+                batchLookup.setFieldValue(null);
+                batchLookup.requestComponentUpdateState();
+            }
+        } else {
+            batchLookup.setFieldValue(null);
+            batchLookup.requestComponentUpdateState();
+        }
     }
 
     private void fillDivisionFieldFromOrder(final ViewDefinitionState view) {
