@@ -230,6 +230,8 @@
 
         <security:role identifier="ROLE_ORDER_MATERIAL_AVAILABILITY"/>
 
+        <security:role identifier="ROLE_NUMBER_PATTERN"/>
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="crew" resource="model/crew.xml"/>
@@ -283,6 +285,9 @@
 		<model:model model="attribute" resource="model/attribute.xml"/>
 		<model:model model="attributeValue" resource="model/attributeValue.xml"/>
 		<model:model model="productAttributeValue" resource="model/productAttributeValue.xml"/>
+
+		<model:model model="numberPattern" resource="model/numberPattern.xml"/>
+		<model:model model="numberPatternElement" resource="model/numberPatternElement.xml"/>
 
         <model:dictionary name="categories"/>
         <model:dictionary name="posts"/>
@@ -369,6 +374,9 @@
 		<menu:menu-item name="skillsList" category="basic"
 						view="skillsList" defaultAuthorizationRole="ROLE_SKILLS"/>
 
+        <menu:menu-item name="numberPatternsList" category="administration"
+                        view="numberPatternsList" defaultAuthorizationRole="ROLE_NUMBER_PATTERN"/>
+
         <view:view resource="view/reportColumnWidthDetails.xml"/>
         <view:view resource="view/companiesList.xml"/>
         <view:view resource="view/companyDetails.xml"/>
@@ -444,6 +452,10 @@
         <view:view resource="view/productAttributeValueDetails.xml"/>
         <view:view resource="view/importProductAttrValue.xml"/>
         <view:view resource="view/importResourceAttrValue.xml"/>
+
+        <view:view resource="view/numberPatternsList.xml"/>
+        <view:view resource="view/numberPatternDetails.xml"/>
+        <view:view resource="view/numberPatternElementDetails.xml"/>
 
         <model:model-field plugin="qcadooSecurity" model="user">
             <model:belongsTo model="staff" plugin="basic" name="staff"/>
