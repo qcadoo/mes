@@ -36,7 +36,7 @@ public class BatchLookupController extends BasicLookupController<BatchDTO> {
 
     @Override
     protected List<String> getGridFields() {
-        return Arrays.asList("number", "product", "supplier");
+        return Arrays.asList("number", "supplier");
     }
 
     @Override
