@@ -43,6 +43,7 @@ import org.springframework.stereotype.Component;
 public class BatchCellParser implements CellParser {
 
     private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_LOOKUP_CODE_NOT_FOUND = "qcadooView.validate.field.error.lookupCodeNotFound";
+    private static final String L_BATCH_ERROR = "materialFlow.document.importPositions.batchError";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -59,7 +60,13 @@ public class BatchCellParser implements CellParser {
         Entity batch = getBatch(cellValue, product);
 
         if (Objects.isNull(batch)) {
-            valueConsumer.accept(create(cellValue, product));
+            Entity newBatch = create(cellValue, product);
+            if(newBatch.isValid()) {
+                valueConsumer.accept(newBatch);
+            } else {
+                errorsAccessor.addError(L_BATCH_ERROR);
+            }
+
         } else {
             valueConsumer.accept(batch);
         }
