@@ -39,6 +39,5 @@
     <hooks>
         <validatesWith class="com.qcadoo.mes.basic.hooks.NumberPatternElementHooks"
                        method="validatesWith"/>
-        <onSave class="com.qcadoo.mes.basic.hooks.NumberPatternElementHooks" method="onSave"/>
     </hooks>
 </model>

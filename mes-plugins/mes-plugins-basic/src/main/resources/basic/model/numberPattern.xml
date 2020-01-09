@@ -36,6 +36,7 @@
         </string>
         <string name="pattern"/>
         <string name="usedIn"/>
+        <boolean name="used"/>
         <hasMany name="numberPatternElements" joinField="numberPattern" model="numberPatternElement" cascade="delete"/>
     </fields>
 

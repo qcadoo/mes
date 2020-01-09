@@ -23,15 +23,32 @@
  */
 package com.qcadoo.mes.advancedGenealogyForOrders.hooks;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.advancedGenealogyForOrders.constants.ParameterFieldsAGFO;
 import com.qcadoo.mes.advancedGenealogyForOrders.constants.TrackingRecordForOrderTreatment;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.NumberPatternFields;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class ParameterHooksAGFO {
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private TranslationService translationService;
+
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     public void addFieldsForParameter(final DataDefinition parameterDD, final Entity parameter) {
         parameter.setField(ParameterFieldsAGFO.TRACKING_RECORD_FOR_ORDER_TREATMENT,
@@ -39,4 +56,35 @@ public class ParameterHooksAGFO {
         parameter.setField(ParameterFieldsAGFO.BATCH_NUMBER_REQUIRED_PRODUCTS, false);
     }
 
+    public void setUsedInForNumberPattern(final DataDefinition parameterDD, final Entity parameter) {
+        Entity numberPattern = parameter.getBelongsToField(ParameterFieldsAGFO.NUMBER_PATTERN);
+        DataDefinition numberPatternDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
+                BasicConstants.MODEL_NUMBER_PATTERN);
+        String usedInValue = translationService.translate("basic.parameter.numberPattern.usedIn.value",
+                LocaleContextHolder.getLocale());
+        Entity numberPatternWithUsedIn = numberPatternDD.find()
+                .add(SearchRestrictions.eq(NumberPatternFields.USED_IN, usedInValue)).uniqueResult();
+        if (numberPattern != null) {
+            if (!numberPattern.getBooleanField(NumberPatternFields.USED)) {
+                createSequence(numberPattern.getStringField(NumberPatternFields.NUMBER));
+            }
+            numberPattern.setField(NumberPatternFields.USED, true);
+            if (numberPatternWithUsedIn != null && !numberPatternWithUsedIn.getId().equals(numberPattern.getId())) {
+                numberPatternWithUsedIn.setField(NumberPatternFields.USED_IN, null);
+                numberPatternDD.save(numberPatternWithUsedIn);
+                numberPattern.setField(NumberPatternFields.USED_IN, usedInValue);
+                numberPatternDD.save(numberPattern);
+            } else if (numberPatternWithUsedIn == null) {
+                numberPattern.setField(NumberPatternFields.USED_IN, usedInValue);
+                numberPatternDD.save(numberPattern);
+            }
+        } else if (numberPatternWithUsedIn != null) {
+            numberPatternWithUsedIn.setField(NumberPatternFields.USED_IN, null);
+            numberPatternDD.save(numberPatternWithUsedIn);
+        }
+    }
+
+    private void createSequence(String number) {
+        // jdbcTemplate.update("select generate_number_pattern_sequence(?)", new Object[] { number });
+    }
 }

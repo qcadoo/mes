@@ -32,7 +32,8 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class ParameterValidatorsAGFO {
 
-    public final boolean checkIfTrackingRecordForOrderTreatmentIsSelected(final DataDefinition parameterDD, final Entity parameter) {
+    public final boolean checkIfTrackingRecordForOrderTreatmentIsSelected(final DataDefinition parameterDD,
+            final Entity parameter) {
         String trackingRecordForOrderTreatment = parameter
                 .getStringField(ParameterFieldsAGFO.TRACKING_RECORD_FOR_ORDER_TREATMENT);
 
@@ -40,6 +41,17 @@ public class ParameterValidatorsAGFO {
             parameter.addError(parameterDD.getField(ParameterFieldsAGFO.TRACKING_RECORD_FOR_ORDER_TREATMENT),
                     "basic.parameter.message.trackingRecordForOrderTreatmentIsNotSelected");
 
+            return false;
+        }
+
+        return true;
+    }
+
+    public final boolean checkIfNumberPatternIsSelected(final DataDefinition parameterDD, final Entity parameter) {
+        if (parameter.getBooleanField(ParameterFieldsAGFO.GENERATE_BATCH_FOR_ORDERED_PRODUCT)
+                && parameter.getBelongsToField(ParameterFieldsAGFO.NUMBER_PATTERN) == null) {
+            parameter.addError(parameterDD.getField(ParameterFieldsAGFO.NUMBER_PATTERN),
+                    "basic.parameter.message.numberPatternIsNotSelected");
             return false;
         }
 
