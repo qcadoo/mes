@@ -59,8 +59,8 @@ public class OperationProductInComponentImportListeners {
     public void processImportFile(final ViewDefinitionState view, final ComponentState state, final String[] args)
             throws IOException {
         FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
-        Long documentId = technologyForm.getEntityId();
-        Entity technology = technologyForm.getEntity().getDataDefinition().get(documentId);
+        Entity technology = technologyForm.getEntity();
+        technology = technology.getDataDefinition().save(technology);
 
         operationProductInComponentXlsxImportService.processImportFile(view,
                 operationProductInComponentCellBinderRegistry.getCellBinderRegistry(), true,
