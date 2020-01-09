@@ -17,7 +17,7 @@ public class BatchLookupController extends BasicLookupController<BatchDTO> {
 
     @Override
     protected String getQueryForRecords(final Long context) {
-        String query = "SELECT %s FROM ( SELECT _batch.id, _batch.number as number, p.number as product, _company.number as supplier \n" +
+        String query = "SELECT %s FROM ( SELECT _batch.id, _batch.number as number, p.number as product, _company.name as supplier \n" +
                 "FROM advancedgenealogy_batch _batch " +
                 "LEFT JOIN basic_product p on p.id = _batch.product_id "+
                 "LEFT JOIN basic_company _company on _company.id = _batch.supplier_id " +
