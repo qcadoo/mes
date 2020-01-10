@@ -42,6 +42,7 @@
 
     <hooks>
         <onSave class="com.qcadoo.mes.basic.hooks.NumberPatternHooks" method="onSave"/>
+        <onDelete class="com.qcadoo.mes.basic.hooks.NumberPatternHooks" method="onDelete"/>
     </hooks>
 
     <identifier expression="#number + ' - ' + #name" />

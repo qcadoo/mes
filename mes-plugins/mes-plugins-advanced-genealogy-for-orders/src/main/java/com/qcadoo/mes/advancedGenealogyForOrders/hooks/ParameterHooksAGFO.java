@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.advancedGenealogyForOrders.hooks;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.advancedGenealogyForOrders.constants.ParameterFieldsAGFO;
 import com.qcadoo.mes.advancedGenealogyForOrders.constants.TrackingRecordForOrderTreatment;
@@ -37,6 +32,13 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.jdbc.core.PreparedStatementCallback;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.sql.PreparedStatement;
 
 @Service
 public class ParameterHooksAGFO {
@@ -85,6 +87,6 @@ public class ParameterHooksAGFO {
     }
 
     private void createSequence(String number) {
-        // jdbcTemplate.update("select generate_number_pattern_sequence(?)", new Object[] { number });
+        jdbcTemplate.execute("CREATE SEQUENCE number_pattern_" + number + "_seq", (PreparedStatementCallback) PreparedStatement::executeUpdate);
     }
 }
