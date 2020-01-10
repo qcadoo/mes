@@ -25,6 +25,8 @@ package com.qcadoo.mes.orders;
 
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyType;
 import com.qcadoo.model.api.DataDefinition;
@@ -47,6 +49,11 @@ public class OrdersTechnologyExtensionService {
 
         for (Entity order : orders) {
             Entity orderProduct = order.getBelongsToField("product");
+
+            if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue()
+                    .equals(newProduct.getStringField(ProductFields.ENTITY_TYPE))) {
+                orderProduct = orderProduct.getBelongsToField(ProductFields.PARENT);
+            }
 
             if (!newProduct.getField("number").equals(orderProduct.getField("number"))) {
                 entity.addError(dataDefinition.getField("product"), "orders.validate.global.error.technologyUsedInOrder");
