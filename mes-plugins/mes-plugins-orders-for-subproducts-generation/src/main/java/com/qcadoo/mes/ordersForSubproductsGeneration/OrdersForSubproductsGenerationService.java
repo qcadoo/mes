@@ -23,6 +23,20 @@
  */
 package com.qcadoo.mes.ordersForSubproductsGeneration;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -39,6 +53,7 @@ import com.qcadoo.mes.orderSupplies.constants.ProductType;
 import com.qcadoo.mes.orderSupplies.coverage.MaterialRequirementCoverageService;
 import com.qcadoo.mes.orderSupplies.register.RegisterService;
 import com.qcadoo.mes.orders.OrderService;
+import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -48,7 +63,6 @@ import com.qcadoo.mes.productFlowThruDivision.constants.OrderFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
-import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.ProductStructureTreeNodeFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -67,21 +81,6 @@ import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class OrdersForSubproductsGenerationService {
@@ -99,16 +98,10 @@ public class OrdersForSubproductsGenerationService {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private NumberGeneratorService numberGeneratorService;
-
-    @Autowired
     private OrderService orderService;
 
     @Autowired
     private NumberService numberService;
-
-    @Autowired
-    private ProductQuantitiesService productQuantitiesService;
 
     @Autowired
     private RegisterService registerService;
@@ -121,6 +114,9 @@ public class OrdersForSubproductsGenerationService {
 
     @Autowired
     private ProductStructureTreeService productStructureTreeService;
+
+    @Autowired
+    private TechnologyServiceO technologyServiceO;
 
     private static final Integer START_LEVEL = 1;
 
@@ -178,17 +174,6 @@ public class OrdersForSubproductsGenerationService {
         return products;
     }
 
-    private Entity getTechnologyForProduct(final Entity product) {
-        Entity technology = null;
-        technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY)
-                .find().add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, product))
-                .add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE))
-                .add(SearchRestrictions.eq(TechnologyFields.STATE, TechnologyState.ACCEPTED.getStringValue()))
-                .add(SearchRestrictions.eq(TechnologyFields.MASTER, true)).uniqueResult();
-
-        return technology;
-    }
-
     @Transactional
     public void generateSimpleOrderForSubProduct(final Entity entry, final Entity parentOrder, final Locale locale,
             final int index) {
@@ -200,7 +185,7 @@ public class OrdersForSubproductsGenerationService {
         order.setField(OrderFields.COMMISSIONED_PLANNED_QUANTITY, entry.getDecimalField("productionCountingQuantities"));
         order.setField(OrderFields.PLANNED_QUANTITY, entry.getDecimalField("productionCountingQuantities"));
 
-        Entity technology = getTechnologyForProduct(product);
+        Entity technology = technologyServiceO.getDefaultTechnology(product);
         order.setField(OrderFieldsOFSPG.PARENT, parentOrder);
         if (parentOrder.getBelongsToField(OrderFieldsOFSPG.PARENT) == null) {
             order.setField(OrderFieldsOFSPG.ROOT, parentOrder);
@@ -246,7 +231,7 @@ public class OrdersForSubproductsGenerationService {
         BigDecimal planedQuantity = coverageProduct.getDecimalField(CoverageProductFields.PLANED_QUANTITY);
         BigDecimal missing = productLog.getDecimalField(CoverageProductLoggingFields.RESERVE_MISSING_QUANTITY).abs(
                 numberService.getMathContext());
-        if (missing.compareTo(planedQuantity) == 1) {
+        if (missing.compareTo(planedQuantity) > 0) {
             order.setField(OrderFields.COMMISSIONED_PLANNED_QUANTITY, planedQuantity);
             order.setField(OrderFields.PLANNED_QUANTITY, planedQuantity);
         } else {
@@ -254,7 +239,7 @@ public class OrdersForSubproductsGenerationService {
             order.setField(OrderFields.PLANNED_QUANTITY, missing);
         }
 
-        Entity technology = getTechnologyForProduct(product);
+        Entity technology = technologyServiceO.getDefaultTechnology(product);
         order.setField(OrderFieldsOFSPG.PARENT, parentOrder);
         if (parentOrder.getBelongsToField(OrderFieldsOFSPG.PARENT) == null) {
             order.setField(OrderFieldsOFSPG.ROOT, parentOrder);

@@ -225,11 +225,12 @@
                                    field="order">
                             <option type="column" name="name" fields="name" link="true"/>
                             <option type="column" name="state" fields="state"/>
+                            <option type="column" name="plannedQuantity" fields="plannedQuantity"/>
 
                             <option type="required" value="true"/>
 
-                            <option type="searchable" value="name,number,state"/>
-                            <option type="orderable" value="name,number,state"/>
+                            <option type="searchable" value="name,number,state,plannedQuantity"/>
+                            <option type="orderable" value="name,number,state,plannedQuantity"/>
 
                             <option type="order" column="number" direction="desc"/>
 

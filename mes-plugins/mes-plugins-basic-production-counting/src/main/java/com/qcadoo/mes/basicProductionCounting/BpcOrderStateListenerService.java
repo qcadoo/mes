@@ -23,19 +23,16 @@
  */
 package com.qcadoo.mes.basicProductionCounting;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class BpcOrderStateListenerService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(BpcOrderStateListenerService.class);
 
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
@@ -47,7 +44,12 @@ public class BpcOrderStateListenerService {
         if (technology == null) {
             stateChangeContext.addValidationError("orders.order.technology.isEmpty");
         } else {
-            basicProductionCountingService.createProductionCounting(order);
+            boolean productToProductGroupTechnologyDoesntExists = basicProductionCountingService.createProductionCounting(order);
+            if (productToProductGroupTechnologyDoesntExists) {
+                stateChangeContext.addMessage(
+                        "basicProductionCounting.productionCountingQuantity.error.productToProductGroupTechnologyDoesntExists",
+                        StateMessageType.INFO);
+            }
         }
     }
 

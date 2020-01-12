@@ -84,6 +84,14 @@
 				default="false" />
 		</model:model-field>
 
+		<model:model-field plugin="basic" model="parameter">
+			<model:boolean name="generateBatchForOrderedProduct" />
+		</model:model-field>
+
+		<model:model-field plugin="basic" model="parameter">
+			<model:belongsTo name="numberPattern" model="numberPattern"/>
+		</model:model-field>
+
 		<model:model-field plugin="orders" model="order">
 			<model:enum name="trackingRecordTreatment"
 				values="01duringProduction,02unchangablePlanAfterOrderAccept,03unchangablePlanAfterOrderStart"
@@ -124,9 +132,19 @@
 				method="checkIfTrackingRecordForOrderTreatmentIsSelected" />
 		</model:model-hook>
 		<model:model-hook model="parameter" plugin="basic">
+			<model:validatesWith
+				class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.ParameterValidatorsAGFO"
+				method="checkIfNumberPatternIsSelected" />
+		</model:model-hook>
+		<model:model-hook model="parameter" plugin="basic">
 			<model:onCreate
 				class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.ParameterHooksAGFO"
 				method="addFieldsForParameter" />
+		</model:model-hook>
+		<model:model-hook model="parameter" plugin="basic">
+			<model:onSave
+					class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.ParameterHooksAGFO"
+					method="setUsedInForNumberPattern" />
 		</model:model-hook>
 
 		<model:model-hook model="order" plugin="orders">
@@ -240,6 +258,11 @@
 			view="operationProductInComponentDetails" type="beforeRender"
 			class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.OperationProductInComponentViewHooks"
 			method="setDefaultProductBatchRequired" />
+
+		<view:view-hook plugin="advancedGenealogy"
+			view="advancedGenealogyParameters" type="beforeRender"
+			class="com.qcadoo.mes.advancedGenealogyForOrders.hooks.ParametersViewHooks"
+			method="setNumberPatternEnabled" />
 
 		<view:resource uri="public/**/*" />
 

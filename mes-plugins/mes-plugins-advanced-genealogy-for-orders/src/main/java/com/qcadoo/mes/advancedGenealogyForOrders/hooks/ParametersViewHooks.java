@@ -26,11 +26,13 @@ package com.qcadoo.mes.advancedGenealogyForOrders.hooks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.advancedGenealogyForOrders.constants.ParameterFieldsAGFO;
 import com.qcadoo.mes.advancedGenealogyForOrders.constants.TrackingRecordForOrderTreatment;
 import com.qcadoo.plugin.api.PluginManager;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 
@@ -45,12 +47,28 @@ public class ParametersViewHooks {
         if (pluginManager.isPluginEnabled("srcAdvGenealogyForOrders")) {
             FieldComponent trackingRecordForOrderTreatment = (FieldComponent) view
                     .getComponentByReference("trackingRecordForOrderTreatment");
-            if (trackingRecordForOrderTreatment.getFieldValue().equals(
-                    TrackingRecordForOrderTreatment.UNCHANGABLE_PLAN_AFTER_ORDER_ACCEPT.getStringValue())) {
+            if (trackingRecordForOrderTreatment.getFieldValue()
+                    .equals(TrackingRecordForOrderTreatment.UNCHANGABLE_PLAN_AFTER_ORDER_ACCEPT.getStringValue())) {
                 FormComponent form = (FormComponent) view.getComponentByReference("form");
                 form.addMessage("srcAdvGenealogy.trackingRecordForOrderTreatment.inParameters", MessageType.INFO, false);
             }
         }
     }
 
+    public void generateBatchForOrderedProductChange(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+    }
+
+    public final void setNumberPatternEnabled(final ViewDefinitionState view) {
+        CheckBoxComponent generateBatchForOrderedProduct = (CheckBoxComponent) view
+                .getComponentByReference(ParameterFieldsAGFO.GENERATE_BATCH_FOR_ORDERED_PRODUCT);
+        FieldComponent numberPattern = (FieldComponent) view.getComponentByReference(ParameterFieldsAGFO.NUMBER_PATTERN);
+
+        if (generateBatchForOrderedProduct.isChecked()) {
+            numberPattern.setEnabled(true);
+        } else {
+            numberPattern.setEnabled(false);
+            numberPattern.setFieldValue(null);
+        }
+    }
 }

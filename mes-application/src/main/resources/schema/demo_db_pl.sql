@@ -1093,6 +1093,37 @@ $$;
 
 
 --
+-- Name: generate_number_pattern_number(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION generate_number_pattern_number() RETURNS text
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    _pattern text;
+    _sequence_value numeric;
+    _seq text;
+    _number text;
+BEGIN
+    _pattern := '#seq';
+
+    select nextval('number_pattern_number_seq') into _sequence_value;
+
+    _seq := to_char(_sequence_value, 'fm000000');
+
+    if _seq like '%#%' then
+        _seq := _sequence_value;
+    end if;
+
+    _number := _pattern;
+    _number := replace(_number, '#seq', _seq);
+
+    RETURN _number;
+END;
+$$;
+
+
+--
 -- Name: generate_pallet_externalnumber(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -8639,6 +8670,71 @@ ALTER SEQUENCE basic_log_id_seq OWNED BY basic_log.id;
 
 
 --
+-- Name: basic_numberpattern; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_numberpattern (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(1024),
+    pattern character varying(255),
+    usedin character varying(255),
+    used boolean
+);
+
+
+--
+-- Name: basic_numberpattern_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE basic_numberpattern_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_numberpattern_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE basic_numberpattern_id_seq OWNED BY basic_numberpattern.id;
+
+
+--
+-- Name: basic_numberpatternelement; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_numberpatternelement (
+    id bigint NOT NULL,
+    numberpattern_id bigint,
+    element character varying(255),
+    value character varying(1024),
+    succession integer
+);
+
+
+--
+-- Name: basic_numberpatternelement_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE basic_numberpatternelement_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_numberpatternelement_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE basic_numberpatternelement_id_seq OWNED BY basic_numberpatternelement.id;
+
+
+--
 -- Name: basic_palletnumber_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -8876,7 +8972,10 @@ CREATE TABLE basic_parameter (
     hideorderedproductworkplan boolean DEFAULT false,
     selectiontasksbyorderdateinterminal boolean DEFAULT false,
     showprogress boolean DEFAULT false,
-    showdelays boolean DEFAULT false
+    showdelays boolean DEFAULT false,
+    requiresupplieridentification boolean DEFAULT false,
+    numberpattern_id bigint,
+    generatebatchfororderedproduct boolean
 );
 
 
@@ -17063,6 +17162,18 @@ ALTER SEQUENCE nblsport_overhead_id_seq OWNED BY nblsport_overhead.id;
 
 
 --
+-- Name: number_pattern_number_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE number_pattern_number_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
 -- Name: nutritionfacts_nutrientcalculation; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -17642,7 +17753,8 @@ CREATE VIEW orders_orderdto AS
     orders_order.number,
     orders_order.name,
     orders_order.state,
-    orders_order.typeofproductionrecording
+    orders_order.typeofproductionrecording,
+    orders_order.plannedquantity
    FROM orders_order;
 
 
@@ -26054,6 +26166,20 @@ ALTER TABLE ONLY basic_log ALTER COLUMN id SET DEFAULT nextval('basic_log_id_seq
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY basic_numberpattern ALTER COLUMN id SET DEFAULT nextval('basic_numberpattern_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_numberpatternelement ALTER COLUMN id SET DEFAULT nextval('basic_numberpatternelement_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY basic_palletnumber ALTER COLUMN id SET DEFAULT nextval('basic_palletnumber_id_seq'::regclass);
 
 
@@ -30882,6 +31008,36 @@ SELECT pg_catalog.setval('basic_log_id_seq', 1, false);
 
 
 --
+-- Data for Name: basic_numberpattern; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY basic_numberpattern (id, number, name, pattern, usedin, used) FROM stdin;
+\.
+
+
+--
+-- Name: basic_numberpattern_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('basic_numberpattern_id_seq', 1, false);
+
+
+--
+-- Data for Name: basic_numberpatternelement; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY basic_numberpatternelement (id, numberpattern_id, element, value, succession) FROM stdin;
+\.
+
+
+--
+-- Name: basic_numberpatternelement_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('basic_numberpatternelement_id_seq', 1, false);
+
+
+--
 -- Data for Name: basic_palletnumber; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -30915,8 +31071,8 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, trackingrecordforordertreatment, batchnumberrequiredproducts, batchnumberuniqueness, batchnumberrequiredinputproducts, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, enableoperationgroupingworkplan, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays) FROM stdin;
-1	167	124	szt	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01duringProduction	f	01globally	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	50	3000	f	f	f	f	f	f	f	f	t	t	t	f	t	t	f	f	f	f	f	f	f	f	f	f
+COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, trackingrecordforordertreatment, batchnumberrequiredproducts, batchnumberuniqueness, batchnumberrequiredinputproducts, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, enableoperationgroupingworkplan, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct) FROM stdin;
+1	167	124	szt	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01duringProduction	f	01globally	f	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	50	3000	f	f	f	f	f	f	f	f	t	t	t	f	t	t	f	f	f	f	f	f	f	f	f	f	f	\N	\N
 \.
 
 
@@ -34072,6 +34228,13 @@ SELECT pg_catalog.setval('nblsport_overhead_id_seq', 1, false);
 
 
 --
+-- Name: number_pattern_number_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('number_pattern_number_seq', 1, false);
+
+
+--
 -- Data for Name: nutritionfacts_nutrientcalculation; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -36051,6 +36214,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 115	ROLE_SKILLS	\N	0
 116	ROLE_PRODUCTION_TRACKING_REGISTRATION	\N	0
 117	ROLE_ORDER_MATERIAL_AVAILABILITY	\N	0
+118	ROLE_NUMBER_PATTERN	\N	0
 \.
 
 
@@ -36058,7 +36222,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 117, true);
+SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 118, true);
 
 
 --
@@ -36278,6 +36442,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 153	materialFlowResources	documentPositionsAttributes	t	6	152	22	ROLE_DOCUMENT_POSITIONS	0
 154	scheduleGantt	operationalTasksGantt	t	7	153	19	ROLE_PLANNING	0
 155	technologies	productsToProductGroupTechnology	t	5	154	7	ROLE_TECHNOLOGIES	0
+156	basic	numberPatternsList	t	1	155	16	ROLE_NUMBER_PATTERN	0
 \.
 
 
@@ -36285,7 +36450,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 155, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 156, true);
 
 
 --
@@ -36442,6 +36607,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 152	materialFlowResources	documentPositionsAttributes	\N	/documentPositionsAttributes.html	0
 153	scheduleGantt	operationalTasksGantt	\N	/operationalTasksGantt.html	0
 154	technologies	productsToProductGroupTechnologyList	productsToProductGroupTechnologyList	\N	0
+155	basic	numberPatternsList	numberPatternsList	\N	0
 \.
 
 
@@ -36449,7 +36615,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 154, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 155, true);
 
 
 --
@@ -38899,6 +39065,22 @@ ALTER TABLE ONLY basic_faulttype
 
 ALTER TABLE ONLY basic_log
     ADD CONSTRAINT basic_log_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: basic_numberpattern_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_numberpattern
+    ADD CONSTRAINT basic_numberpattern_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: basic_numberpatternelement_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_numberpatternelement
+    ADD CONSTRAINT basic_numberpatternelement_pkey PRIMARY KEY (id);
 
 
 --
@@ -48732,6 +48914,14 @@ ALTER TABLE ONLY supplynegotiations_negotiationstatechange
 
 
 --
+-- Name: numberpatternelement_numberpattern_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_numberpatternelement
+    ADD CONSTRAINT numberpatternelement_numberpattern_fkey FOREIGN KEY (numberpattern_id) REFERENCES basic_numberpattern(id);
+
+
+--
 -- Name: nutrientcalculation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -49841,6 +50031,14 @@ ALTER TABLE ONLY zmbak_parameter
 
 ALTER TABLE ONLY zmbak_parameter
     ADD CONSTRAINT parameter_meatcuttingoperation_fkey FOREIGN KEY (meatcuttingoperation_id) REFERENCES technologies_operation(id) DEFERRABLE;
+
+
+--
+-- Name: parameter_numberpattern_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_parameter
+    ADD CONSTRAINT parameter_numberpattern_fkey FOREIGN KEY (numberpattern_id) REFERENCES basic_numberpattern(id) DEFERRABLE;
 
 
 --

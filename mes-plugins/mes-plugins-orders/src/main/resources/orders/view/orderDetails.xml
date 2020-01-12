@@ -225,10 +225,10 @@
 							});		
 							#{form}.addOnChangeListener({
 								onSetValue: function(value) {
-									if (! value || ! value.content) {
+									if (!value || !value.content) {
 										return;
 									}
-									if (! value.content.entityId) {
+									if (!value.content.entityId) {
 										this.disable();
 									} else {
 										this.enable();
@@ -375,11 +375,8 @@
                            rows="11">
                     <layoutElement column="1" row="1">
                         <component type="select" name="orderType" field="orderType"
-                                   reference="orderType" hasDescription="true">
-
-                            <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
-                                      method="onOrderTypeChange"/>
+                                   reference="orderType" hasDescription="true"
+                                   defaultEnabled="never">
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
@@ -496,7 +493,7 @@
                                 </layoutElement>
                                 <layoutElement column="1" row="2">
                                     <component type="lookup" name="technology" reference="technologyPrototype"
-                                               field="technologyPrototype" source="#{product}.technologies">
+                                               field="technologyPrototype">
                                         <option type="column" name="name" fields="name" link="true"
                                                 width="300"/>
                                         <option type="column" name="state" fields="state"/>
@@ -509,8 +506,8 @@
                                         <option type="fieldCode" value="number"/>
 
                                         <criteriaModifier
-                                                class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
-                                                method="showAcceptedPatternTechnology"/>
+                                                class="com.qcadoo.mes.orders.criteriaModifiers.TechnologyCriteriaModifiersO"
+                                                method="showAcceptedPatternTechnologyForProduct"/>
 
                                         <listener event="onSelectedEntityChange"
                                                   class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"
