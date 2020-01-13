@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view name="productsImport" menuAccessible="true" defaultAuthorizationRole="ROLE_PRODUCTS"
+<view name="staffsImport" menuAccessible="true" defaultAuthorizationRole="ROLE_STAFF_WAGES"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
@@ -63,7 +63,7 @@
                         </script>
 
                         <listener event="onInputChange"
-                                  class="com.qcadoo.mes.basic.listeners.ProductsImportListeners"
+                                  class="com.qcadoo.mes.basic.listeners.StaffsImportListeners"
                                   method="onInputChange"/>
                     </component>
                 </layoutElement>
@@ -76,13 +76,13 @@
             </component>
 
             <listener event="processImportFile"
-                      class="com.qcadoo.mes.basic.listeners.ProductsImportListeners"
+                      class="com.qcadoo.mes.basic.listeners.StaffsImportListeners"
                       method="processImportFile"/>
             <listener event="downloadImportSchema"
-                      class="com.qcadoo.mes.basic.listeners.ProductsImportListeners"
+                      class="com.qcadoo.mes.basic.listeners.StaffsImportListeners"
                       method="downloadImportSchema"/>
             <listener event="redirectToLogs"
-                      class="com.qcadoo.mes.basic.listeners.ProductsImportListeners"
+                      class="com.qcadoo.mes.basic.listeners.StaffsImportListeners"
                       method="redirectToLogs"/>
 
             <option type="header" value="false"/>

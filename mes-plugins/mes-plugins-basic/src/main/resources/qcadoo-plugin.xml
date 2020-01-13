@@ -384,6 +384,7 @@
         <view:view resource="view/countriesList.xml"/>
         <view:view resource="view/countryDetails.xml"/>
         <view:view resource="view/staffsList.xml"/>
+        <view:view resource="view/staffsImport.xml"/>
         <view:view resource="view/staffDetails.xml"/>
         <view:view resource="view/crewsList.xml"/>
         <view:view resource="view/crewDetails.xml"/>
@@ -408,6 +409,7 @@
         <view:view resource="view/parameters.xml"/>
 
         <view:view resource="view/workstationsList.xml"/>
+        <view:view resource="view/workstationsImport.xml"/>
         <view:view resource="view/workstationDetails.xml"/>
         <view:view resource="view/workstationDetailsAddSubassembly.xml"/>
 

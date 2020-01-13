@@ -32,6 +32,10 @@
 	
 		<ribbon>
 			<template name="standardGridTemplate" />
+			<group name="import">
+				<bigButton name="openStaffsImportPage" state="enabled" icon="xlsIcon24.png"
+						   action="#{window}.fireEvent(openStaffsImportPage);"/>
+			</group>
 		</ribbon>
 		
 		<component type="grid" name="staffs" reference="grid">
@@ -66,6 +70,10 @@
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 		</component>
+
+		<listener event="openStaffsImportPage"
+				  class="com.qcadoo.mes.basic.listeners.StaffsListListeners"
+				  method="openStaffsImportPage"/>
 		
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />

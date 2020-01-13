@@ -47,6 +47,11 @@ public class OperationProductInComponentXlsxImportService extends XlsxImportServ
 
     @Override
     public void validateEntity(final Entity operationProductInComponent, final DataDefinition operationProductInComponentDD) {
+        validateOperationComponent(operationProductInComponent, operationProductInComponentDD);
+    }
+
+    private void validateOperationComponent(final Entity operationProductInComponent,
+            final DataDefinition operationProductInComponentDD) {
         Entity technology = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.TECHNOLOGY);
 
         Entity operationComponent = operationProductInComponent
