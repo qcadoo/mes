@@ -53,20 +53,20 @@ public class PositionXlsxImportService extends XlsxImportService {
 
     @Override
     public void validateEntity(final Entity position, final DataDefinition positionDD) {
-        Entity product = position.getBelongsToField(PositionFields.PRODUCT);
         Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
         Entity locationTo = document.getBelongsToField(DocumentFields.LOCATION_TO);
 
-        validateQuantitiesAndUnits(position, positionDD, product);
+        validateQuantitiesAndUnits(position, positionDD);
         validateRequiredFields(position, positionDD, locationTo);
-        validateStorageLocation(position, positionDD, product, locationTo);
+        validateStorageLocation(position, positionDD, locationTo);
         validatePalletNumber(position, positionDD);
     }
 
-    private void validateQuantitiesAndUnits(final Entity position, final DataDefinition positionDD, final Entity product) {
+    private void validateQuantitiesAndUnits(final Entity position, final DataDefinition positionDD) {
         BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
         BigDecimal givenQuantity = position.getDecimalField(PositionFields.GIVEN_QUANTITY);
         BigDecimal conversion = position.getDecimalField(PositionFields.CONVERSION);
+        Entity product = position.getBelongsToField(PositionFields.PRODUCT);
 
         if (Objects.nonNull(product)) {
             String unit = product.getStringField(ProductFields.UNIT);
@@ -130,9 +130,9 @@ public class PositionXlsxImportService extends XlsxImportService {
         }
     }
 
-    private void validateStorageLocation(final Entity position, final DataDefinition positionDD, final Entity product,
-            final Entity locationTo) {
+    private void validateStorageLocation(final Entity position, final DataDefinition positionDD, final Entity locationTo) {
         Entity storageLocation = position.getBelongsToField(PositionFields.STORAGE_LOCATION);
+        Entity product = position.getBelongsToField(PositionFields.PRODUCT);
 
         if (Objects.nonNull(product) && Objects.nonNull(locationTo) && Objects.nonNull(storageLocation)) {
             Entity storageLocationLocation = storageLocation.getBelongsToField(StorageLocationFields.LOCATION);

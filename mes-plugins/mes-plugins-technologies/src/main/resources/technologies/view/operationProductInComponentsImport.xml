@@ -52,7 +52,7 @@
 			</group>
 		</ribbon>
 
-		<component type="form" name="operationProductInComponentsImport" reference="form">
+		<component type="form" name="import" reference="form">
 			<component type="gridLayout" name="gridLayout" columns="3"
 					   rows="1">
 				<layoutElement column="1" row="1" width="2">
@@ -64,20 +64,20 @@
 						</script>
 
 						<listener event="onInputChange"
-								  class="com.qcadoo.mes.technologies.listeners.OperationProductInComponentImportListeners"
+								  class="com.qcadoo.mes.technologies.listeners.OperationProductInComponentsImportListeners"
 								  method="onInputChange"/>
 					</component>
 				</layoutElement>
 			</component>
 
 			<listener event="processImportFile"
-					  class="com.qcadoo.mes.technologies.listeners.OperationProductInComponentImportListeners"
+					  class="com.qcadoo.mes.technologies.listeners.OperationProductInComponentsImportListeners"
 					  method="processImportFile"/>
 			<listener event="downloadImportSchema"
-					  class="com.qcadoo.mes.technologies.listeners.OperationProductInComponentImportListeners"
+					  class="com.qcadoo.mes.technologies.listeners.OperationProductInComponentsImportListeners"
 					  method="downloadImportSchema"/>
 			<listener event="redirectToLogs"
-					  class="com.qcadoo.mes.technologies.listeners.OperationProductInComponentImportListeners"
+					  class="com.qcadoo.mes.technologies.listeners.OperationProductInComponentsImportListeners"
 					  method="redirectToLogs"/>
 
 			<option type="header" value="false"/>

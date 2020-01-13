@@ -29,10 +29,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.imports.product.ProductCellBinderRegistry;
-import com.qcadoo.mes.basic.imports.product.ProductXlsxImportService;
+import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.basic.imports.services.XlsxImportService;
+import com.qcadoo.mes.basic.imports.workstation.WorkstationCellBinderRegistry;
+import com.qcadoo.mes.basic.imports.workstation.WorkstationXlsxImportService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -40,36 +40,36 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
-public class ProductImportListeners {
+public class WorkstationsImportListeners {
 
     @Autowired
-    private ProductXlsxImportService productXlsxImportService;
+    private WorkstationXlsxImportService workstationXlsxImportService;
 
     @Autowired
-    private ProductCellBinderRegistry productCellBinderRegistry;
+    private WorkstationCellBinderRegistry workstationCellBinderRegistry;
 
     public void downloadImportSchema(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        productXlsxImportService.downloadImportSchema(view, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT,
-                XlsxImportService.L_XLSX);
+        workstationXlsxImportService.downloadImportSchema(view, BasicConstants.PLUGIN_IDENTIFIER,
+                BasicConstants.MODEL_WORKSTATION, XlsxImportService.L_XLSX);
     }
 
     public void processImportFile(final ViewDefinitionState view, final ComponentState state, final String[] args)
             throws IOException {
-        productXlsxImportService.processImportFile(view, productCellBinderRegistry.getCellBinderRegistry(), true,
-                BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT,
-                ProductImportListeners::createRestrictionForProduct);
+        workstationXlsxImportService.processImportFile(view, workstationCellBinderRegistry.getCellBinderRegistry(), true,
+                BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION,
+                WorkstationsImportListeners::createRestrictionForWorkstation);
     }
 
-    private static SearchCriterion createRestrictionForProduct(final Entity product) {
-        return SearchRestrictions.eq(ProductFields.NUMBER, product.getStringField(ProductFields.NUMBER));
+    private static SearchCriterion createRestrictionForWorkstation(final Entity workstation) {
+        return SearchRestrictions.eq(WorkstationFields.NUMBER, workstation.getStringField(WorkstationFields.NUMBER));
     }
 
     public void redirectToLogs(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        productXlsxImportService.redirectToLogs(view, BasicConstants.MODEL_PRODUCT);
+        workstationXlsxImportService.redirectToLogs(view, BasicConstants.MODEL_WORKSTATION);
     }
 
     public void onInputChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        productXlsxImportService.changeButtonsState(view, false);
+        workstationXlsxImportService.changeButtonsState(view, false);
     }
 
 }

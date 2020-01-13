@@ -54,7 +54,7 @@ public class ProductCellBinderRegistry {
     private DictionaryCellParsers dictionaryCellParsers;
 
     @Autowired
-    private CellParser producerCellParser;
+    private CellParser companyCellParser;
 
     @Autowired
     private CellParser assortmentCellParser;
@@ -74,7 +74,7 @@ public class ProductCellBinderRegistry {
         cellBinderRegistry.setCellBinder(optional(ProductFields.EAN));
         cellBinderRegistry.setCellBinder(optional(ProductFields.CATEGORY, dictionaryCellParsers.productCategory()));
         cellBinderRegistry.setCellBinder(optional(ProductFields.DESCRIPTION));
-        cellBinderRegistry.setCellBinder(optional(ProductFields.PRODUCER, producerCellParser));
+        cellBinderRegistry.setCellBinder(optional(ProductFields.PRODUCER, companyCellParser));
         cellBinderRegistry.setCellBinder(optional(ProductFields.ASSORTMENT, assortmentCellParser));
         cellBinderRegistry.setCellBinder(optional(ProductFields.PARENT, productFamilyCellParser));
         cellBinderRegistry.setCellBinder(optional(L_NOMINAL_COST, bigDecimalCellParser));

@@ -49,6 +49,8 @@ public final class OperationFields {
 
     public static final String OPERATION_GROUP = "operationGroup";
 
+    public static final String WORKSTATION = "workstation";
+
     public static final String WORKSTATIONS = "workstations";
 
     public static final String WORKSTATION_TYPE = "workstationType";

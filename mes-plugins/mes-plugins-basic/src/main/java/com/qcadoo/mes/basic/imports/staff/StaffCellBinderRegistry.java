@@ -1,7 +1,7 @@
-/**
- * ***************************************************************************
+/*
+ * **************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo MES
+ * Project: Qcadoo Framework
  * Version: 1.4
  *
  * This file is part of Qcadoo.
@@ -19,10 +19,11 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- * ***************************************************************************
+ * **************************************************************************
  */
-package com.qcadoo.mes.technologies.imports.operationProductInComponent;
+package com.qcadoo.mes.basic.imports.staff;
 
+import static com.qcadoo.mes.basic.imports.dtos.CellBinder.optional;
 import static com.qcadoo.mes.basic.imports.dtos.CellBinder.required;
 
 import javax.annotation.PostConstruct;
@@ -30,30 +31,39 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.qcadoo.mes.basic.constants.StaffFields;
 import com.qcadoo.mes.basic.imports.dtos.CellBinderRegistry;
 import com.qcadoo.mes.basic.imports.helpers.CellParser;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 
 @Component
-public class OperationProductInComponentCellBinderRegistry {
+public class StaffCellBinderRegistry {
 
     private CellBinderRegistry cellBinderRegistry = new CellBinderRegistry();
 
     @Autowired
-    private CellParser technologyOperationComponentCellParser;
+    private CellParser companyCellParser;
 
     @Autowired
-    private CellParser productCellParser;
+    private CellParser divisionCellParser;
 
     @Autowired
-    private CellParser bigDecimalCellParser;
+    private CellParser workstationCellParser;
+
+    @Autowired
+    private CellParser crewCellParser;
 
     @PostConstruct
     private void init() {
-        cellBinderRegistry.setCellBinder(
-                required(OperationProductInComponentFields.OPERATION_COMPONENT, technologyOperationComponentCellParser));
-        cellBinderRegistry.setCellBinder(required(OperationProductInComponentFields.PRODUCT, productCellParser));
-        cellBinderRegistry.setCellBinder(required(OperationProductInComponentFields.QUANTITY, bigDecimalCellParser));
+        cellBinderRegistry.setCellBinder(required(StaffFields.NUMBER));
+        cellBinderRegistry.setCellBinder(required(StaffFields.NAME));
+        cellBinderRegistry.setCellBinder(required(StaffFields.SURNAME));
+        cellBinderRegistry.setCellBinder(optional(StaffFields.EMAIL));
+        cellBinderRegistry.setCellBinder(optional(StaffFields.PHONE));
+        cellBinderRegistry.setCellBinder(optional(StaffFields.WORK_FOR, companyCellParser));
+        cellBinderRegistry.setCellBinder(optional(StaffFields.POST));
+        cellBinderRegistry.setCellBinder(optional(StaffFields.DIVISION, divisionCellParser));
+        cellBinderRegistry.setCellBinder(optional(StaffFields.WORKSTATION, workstationCellParser));
+        cellBinderRegistry.setCellBinder(optional(StaffFields.CREW, crewCellParser));
     }
 
     public CellBinderRegistry getCellBinderRegistry() {

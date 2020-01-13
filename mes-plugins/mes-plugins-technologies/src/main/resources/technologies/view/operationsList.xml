@@ -33,21 +33,36 @@
 	<component type="window" name="window">
 		<ribbon>
 			<template name="standardGridTemplate" />
+			<group name="import">
+				<bigButton name="openOperationsImportPage" state="enabled" icon="xlsIcon24.png"
+						   action="#{window}.fireEvent(openOperationsImportPage);"/>
+			</group>
 		</ribbon>
+
 		<component type="grid" name="operations" reference="grid">
 			<option type="column" name="number" fields="number" link="true" />
 			<option type="column" name="name" fields="name" link="true" />
 			<option type="column" name="operationGroupNumber" fields="operationGroup" expression="#operationGroup['number']" link="true"/>
 			<option type="column" name="division" fields="division" expression="#division['name']" link="false" />
+
 			<option type="order" column="number" direction="asc" />
-			<option type="correspondingView" value="technologies/operationDetails" />
-			<option type="correspondingComponent" value="form" />
+
 			<option type="searchable" value="number, name, operationGroupNumber,division" />
 			<option type="orderable" value="number, name, operationGroupNumber,division" />
+
+			<option type="correspondingView" value="technologies/operationDetails" />
+			<option type="correspondingComponent" value="form" />
+
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 		</component>
+
+		<listener event="openOperationsImportPage"
+				  class="com.qcadoo.mes.technologies.listeners.OperationsListListeners"
+				  method="openOperationsImportPage"/>
+
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>
+
 </view>
