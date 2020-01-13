@@ -30,7 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.CompanyFields;
+import com.qcadoo.mes.basic.constants.WorkstationFields;
+import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
 import com.qcadoo.mes.basic.imports.helpers.CellErrorsAccessor;
 import com.qcadoo.mes.basic.imports.helpers.CellParser;
 import com.qcadoo.model.api.DataDefinition;
@@ -39,7 +40,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Component
-public class ProducerCellParser implements CellParser {
+public class WorkstationTypeCellParser implements CellParser {
 
     private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_LOOKUP_CODE_NOT_FOUND = "qcadooView.validate.field.error.lookupCodeNotFound";
 
@@ -48,21 +49,22 @@ public class ProducerCellParser implements CellParser {
 
     @Override
     public void parse(final String cellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {
-        Entity company = getCompanyByNumber(cellValue);
+        Entity workstationType = getWorkstationTypeByNumber(cellValue);
 
-        if (Objects.isNull(company)) {
+        if (Objects.isNull(workstationType)) {
             errorsAccessor.addError(L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_LOOKUP_CODE_NOT_FOUND);
         } else {
-            valueConsumer.accept(company);
+            valueConsumer.accept(workstationType);
         }
     }
 
-    private Entity getCompanyByNumber(final String number) {
-        return getCompanyDD().find().add(SearchRestrictions.eq(CompanyFields.NUMBER, number)).setMaxResults(1).uniqueResult();
+    private Entity getWorkstationTypeByNumber(final String number) {
+        return getWorkstationTypeDD().find().add(SearchRestrictions.eq(WorkstationTypeFields.NUMBER, number)).setMaxResults(1)
+                .uniqueResult();
     }
 
-    private DataDefinition getCompanyDD() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY);
+    private DataDefinition getWorkstationTypeDD() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION_TYPE);
     }
 
 }

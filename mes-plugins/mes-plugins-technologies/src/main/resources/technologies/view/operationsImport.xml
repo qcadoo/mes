@@ -24,8 +24,8 @@
     ***************************************************************************
 
 -->
-<view name="positionsImport" modelName="document" menuAccessible="true"
-	  defaultAuthorizationRole="ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES"
+<view name="operationsImport" modelName="technology" menuAccessible="true"
+	  defaultAuthorizationRole="ROLE_TECHNOLOGIES"
 	  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	  xmlns="http://schema.qcadoo.org/view"
 	  xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
@@ -54,7 +54,7 @@
 
 		<component type="form" name="import" reference="form">
 			<component type="gridLayout" name="gridLayout" columns="3"
-					   rows="1">
+					   rows="2">
 				<layoutElement column="1" row="1" width="2">
 					<component type="file" name="importFile" reference="importFile" hasDescription="true">
 						<script>
@@ -64,20 +64,26 @@
 						</script>
 
 						<listener event="onInputChange"
-								  class="com.qcadoo.mes.materialFlowResources.listeners.PositionsImportListeners"
+								  class="com.qcadoo.mes.technologies.listeners.OperationsImportListeners"
 								  method="onInputChange"/>
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="2" width="2">
+					<component type="checkbox" name="shouldUpdate" reference="shouldUpdate">
+						<option type="labelWidth" value="80"/>
+						<option type="align" value="right"/>
 					</component>
 				</layoutElement>
 			</component>
 
 			<listener event="processImportFile"
-					  class="com.qcadoo.mes.materialFlowResources.listeners.PositionsImportListeners"
+					  class="com.qcadoo.mes.technologies.listeners.OperationsImportListeners"
 					  method="processImportFile"/>
 			<listener event="downloadImportSchema"
-					  class="com.qcadoo.mes.materialFlowResources.listeners.PositionsImportListeners"
+					  class="com.qcadoo.mes.technologies.listeners.OperationsImportListeners"
 					  method="downloadImportSchema"/>
 			<listener event="redirectToLogs"
-					  class="com.qcadoo.mes.materialFlowResources.listeners.PositionsImportListeners"
+					  class="com.qcadoo.mes.technologies.listeners.OperationsImportListeners"
 					  method="redirectToLogs"/>
 
 			<option type="header" value="false"/>

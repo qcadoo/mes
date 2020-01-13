@@ -41,7 +41,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 
 @Service
-public class OperationProductInComponentImportListeners {
+public class OperationProductInComponentsImportListeners {
 
     public static final String L_FORM = "form";
 
@@ -66,7 +66,7 @@ public class OperationProductInComponentImportListeners {
                 operationProductInComponentCellBinderRegistry.getCellBinderRegistry(), true,
                 TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT, technology,
                 OperationProductInComponentFields.TECHNOLOGY,
-                OperationProductInComponentImportListeners::createRestrictionForOperationProductInComponent);
+                OperationProductInComponentsImportListeners::createRestrictionForOperationProductInComponent);
     }
 
     private static SearchCriterion createRestrictionForOperationProductInComponent(final Entity operationProductInComponent) {

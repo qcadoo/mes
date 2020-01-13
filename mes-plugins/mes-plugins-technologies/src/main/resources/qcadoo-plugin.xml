@@ -201,6 +201,7 @@
             <model:onDelete class="com.qcadoo.mes.technologies.hooks.DivisionHooksT" method="onDelete"/>
         </model:model-hook>
 
+        <model:model-enum-value plugin="basic" model="log" enum="logType" value="operationImport"/>
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="operationProductInComponentImport"/>
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="productToProductGroupTechnologyImport"/>
 
@@ -218,10 +219,12 @@
                         view="productsToProductGroupTechnologyList" defaultAuthorizationRole="ROLE_TECHNOLOGIES"/>
 
         <view:view resource="view/operationsList.xml"/>
+        <view:view resource="view/operationsImport.xml"/>
         <view:view resource="view/operationDetails.xml"/>
         <view:view resource="view/operationGroupsList.xml"/>
         <view:view resource="view/operationGroupDetails.xml"/>
         <view:view resource="view/technologiesList.xml"/>
+        <view:view resource="view/operationProductInComponentsImport.xml"/>
         <view:view resource="view/technologyDetails.xml"/>
         <view:view resource="view/technologyOperationComponentDetails.xml"/>
         <view:view resource="view/technologyReferenceTechnologyComponentDetails.xml"/>
@@ -239,8 +242,6 @@
 
         <view:view resource="view/operationSkillDetails.xml"/>
         <view:view resource="view/skillOperationDetails.xml"/>
-
-        <view:view resource="view/operationProductInComponentsImport.xml"/>
 
         <view:view resource="view/productsToProductGroupTechnologyList.xml"/>
         <view:view resource="view/productsToProductGroupTechnologyImport.xml"/>
