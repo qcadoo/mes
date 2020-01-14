@@ -16,8 +16,6 @@ public class StorageLocationCriteriaModifierPC {
     public void filter(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
         if (filterValue.has(L_LOCATION_ID) && filterValue.has(L_PRODUCT_ID)) {
             Long location = filterValue.getLong(L_LOCATION_ID);
-            Long product = filterValue.getLong(L_PRODUCT_ID);
-            scb.add(SearchRestrictions.eq("product.id", product));
             scb.add(SearchRestrictions.eq("location.id", location));
         }
 
