@@ -28,6 +28,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
@@ -543,7 +544,8 @@ public final class ProductionTrackingListenerServicePFTD {
             }
 
             position.setField(PositionFields.PRODUCTION_DATE, new Date());
-            if (Objects.nonNull(productionTracking.getBelongsToField(ProductionTrackingFields.BATCH))) {
+            Entity batch = productionTracking.getBelongsToField(ProductionTrackingFields.BATCH);
+            if (Objects.nonNull(batch) && batch.getBelongsToField(BatchFields.PRODUCT).getId().equals(outProduct.getId())) {
                 position.setField(PositionFields.BATCH, productionTracking.getBelongsToField(ProductionTrackingFields.BATCH)
                         .getId());
             }

@@ -110,7 +110,8 @@ public class ProductionTrackingDetailsHooks {
             ProductionTrackingFields.EXECUTED_OPERATION_CYCLES, ProductionTrackingFields.TIME_RANGE_FROM,
             ProductionTrackingFields.TIME_RANGE_TO, ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS,
             ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS, ProductionTrackingFields.SHIFT_START_DAY,
-            ProductionTrackingFields.STAFF_WORK_TIMES);
+            ProductionTrackingFields.STAFF_WORK_TIMES, ProductionTrackingFields.BATCH, ProductionTrackingFields.EXPIRATION_DATE,
+            ProductionTrackingFields.STORAGE_LOCATION, ProductionTrackingFields.ADD_BATCH);
 
     private static final String L_ORDER_ID = "orderId";
 
@@ -120,9 +121,9 @@ public class ProductionTrackingDetailsHooks {
 
     private static final String L_PRODUCT_ID = "productId";
 
-    public static final String L_ORDER = "order";
+    private static final String L_ORDER = "order";
 
-    public static final String L_BATCH_ORDERED_PRODUCT_LABEL = "batchOrderedProductLabel";
+    private static final String L_BATCH_ORDERED_PRODUCT_LABEL = "batchOrderedProductLabel";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -176,13 +177,15 @@ public class ProductionTrackingDetailsHooks {
         LookupComponent orderLookupComponent = (LookupComponent) view.getComponentByReference(L_ORDER);
         if (!orderLookupComponent.isEmpty()) {
             Entity order = orderLookupComponent.getEntity();
-            FieldComponent batchOrderedProductLabel = (FieldComponent) view
-                    .getComponentByReference(L_BATCH_ORDERED_PRODUCT_LABEL);
-            batchOrderedProductLabel.setFieldValue(translationService.translate(
-                    "productionCounting.productionTrackingDetails.window.batchOrderedProduct.batchOrderedProductLabel.label",
-                    LocaleContextHolder.getLocale())
-                    + " " + order.getBelongsToField(OrderFields.PRODUCT).getStringField(ProductFields.NUMBER));
-            batchOrderedProductLabel.requestComponentUpdateState();
+            if (Objects.nonNull(order)) {
+                FieldComponent batchOrderedProductLabel = (FieldComponent) view
+                        .getComponentByReference(L_BATCH_ORDERED_PRODUCT_LABEL);
+                batchOrderedProductLabel.setFieldValue(translationService.translate(
+                        "productionCounting.productionTrackingDetails.window.batchOrderedProduct.batchOrderedProductLabel.label",
+                        LocaleContextHolder.getLocale())
+                        + " " + order.getBelongsToField(OrderFields.PRODUCT).getStringField(ProductFields.NUMBER));
+                batchOrderedProductLabel.requestComponentUpdateState();
+            }
         }
     }
 
