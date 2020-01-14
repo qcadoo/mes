@@ -549,12 +549,13 @@ public final class ProductionTrackingListenerServicePFTD {
                 position.setField(PositionFields.BATCH, productionTracking.getBelongsToField(ProductionTrackingFields.BATCH)
                         .getId());
             }
-            if (Objects.nonNull(productionTracking.getBelongsToField(ProductionTrackingFields.STORAGE_LOCATION))) {
-                position.setField(PositionFields.STORAGE_LOCATION,
-                        productionTracking.getBelongsToField(ProductionTrackingFields.STORAGE_LOCATION).getId());
+            if(order.getBelongsToField(OrderFields.PRODUCT).getId().equals(outProduct.getId())) {
+                if (Objects.nonNull(productionTracking.getBelongsToField(ProductionTrackingFields.STORAGE_LOCATION))) {
+                    position.setField(PositionFields.STORAGE_LOCATION,
+                            productionTracking.getBelongsToField(ProductionTrackingFields.STORAGE_LOCATION).getId());
+                }
+                position.setField(PositionFields.EXPIRATION_DATE, productionTracking.getDateField(ProductionTrackingFields.EXPIRATION_DATE));
             }
-            position.setField(PositionFields.EXPIRATION_DATE,
-                    productionTracking.getDateField(ProductionTrackingFields.EXPIRATION_DATE));
             fillAttributes(outProductRecord, position);
             internalInboundBuilder.addPosition(position);
         }
