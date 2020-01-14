@@ -30,7 +30,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
 import com.qcadoo.mes.basic.imports.helpers.CellErrorsAccessor;
 import com.qcadoo.mes.basic.imports.helpers.CellParser;
@@ -48,7 +47,8 @@ public class WorkstationTypeCellParser implements CellParser {
     private DataDefinitionService dataDefinitionService;
 
     @Override
-    public void parse(final String cellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {
+    public void parse(final String cellValue, final String dependentCellValue, final CellErrorsAccessor errorsAccessor,
+            final Consumer<Object> valueConsumer) {
         Entity workstationType = getWorkstationTypeByNumber(cellValue);
 
         if (Objects.isNull(workstationType)) {

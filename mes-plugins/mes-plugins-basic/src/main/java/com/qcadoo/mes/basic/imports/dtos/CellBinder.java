@@ -118,8 +118,8 @@ public abstract class CellBinder {
     private static class DefaultCellParser implements CellParser {
 
         @Override
-        public void parse(String cellValue, String dependentCellValue, CellErrorsAccessor errorsAccessor,
-                Consumer<Object> valueConsumer) {
+        public void parse(final String cellValue, final String dependentCellValue, final CellErrorsAccessor errorsAccessor,
+                final Consumer<Object> valueConsumer) {
             valueConsumer.accept(cellValue);
         }
     }
