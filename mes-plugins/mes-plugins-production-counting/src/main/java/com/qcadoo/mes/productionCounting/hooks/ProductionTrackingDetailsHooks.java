@@ -23,14 +23,15 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
@@ -41,11 +42,14 @@ import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
@@ -54,6 +58,15 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductionTrackingDetailsHooks {
@@ -88,6 +101,8 @@ public class ProductionTrackingDetailsHooks {
 
     private static final String L_PRODUCTS_TAB = "productsTab";
 
+    private static final String L_ID = ".id";
+
     private static final List<String> L_PRODUCTION_TRACKING_FIELD_NAMES = Lists.newArrayList(ProductionTrackingFields.ORDER,
             ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, ProductionTrackingFields.STAFF,
             ProductionTrackingFields.SHIFT, ProductionTrackingFields.WORKSTATION, ProductionTrackingFields.DIVISION,
@@ -95,7 +110,20 @@ public class ProductionTrackingDetailsHooks {
             ProductionTrackingFields.EXECUTED_OPERATION_CYCLES, ProductionTrackingFields.TIME_RANGE_FROM,
             ProductionTrackingFields.TIME_RANGE_TO, ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS,
             ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS, ProductionTrackingFields.SHIFT_START_DAY,
-            ProductionTrackingFields.STAFF_WORK_TIMES);
+            ProductionTrackingFields.STAFF_WORK_TIMES, ProductionTrackingFields.BATCH, ProductionTrackingFields.EXPIRATION_DATE,
+            ProductionTrackingFields.STORAGE_LOCATION, ProductionTrackingFields.ADD_BATCH);
+
+    private static final String L_ORDER_ID = "orderId";
+
+    private static final String L_LOCATION_ID = "locationId";
+
+    private static final String L_STORAGE_LOCATION = "storageLocation";
+
+    private static final String L_PRODUCT_ID = "productId";
+
+    private static final String L_ORDER = "order";
+
+    private static final String L_BATCH_ORDERED_PRODUCT_LABEL = "batchOrderedProductLabel";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -109,12 +137,24 @@ public class ProductionTrackingDetailsHooks {
     @Autowired
     private ProductionTrackingDetailsListeners productionTrackingDetailsListeners;
 
+    @Autowired
+    private BasicProductionCountingService basicProductionCountingService;
+
+    @Autowired
+    private TranslationService translationService;
+
     public void onBeforeRender(final ViewDefinitionState view) {
         FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         setCriteriaModifierParameters(view);
 
         productionTrackingService.fillProductionLineLookup(view);
+        fillStorageLocation(view);
+        if ((view.isViewAfterRedirect() || view.isViewAfterReload())
+                && !((CheckBoxComponent) view.getComponentByReference(ProductionTrackingFields.ADD_BATCH)).isChecked()) {
+            FieldComponent batchNumber = (FieldComponent) view.getComponentByReference(ProductionTrackingFields.BATCH_NUMBER);
+            batchNumber.setEnabled(false);
+        }
 
         if (productionTrackingForm.getEntityId() == null) {
             setStateFieldValueToDraft(view);
@@ -128,6 +168,24 @@ public class ProductionTrackingDetailsHooks {
             toggleCorrectButton(view, productionTracking);
             toggleCorrectionFields(view, productionTracking);
             fetchNumberFromDatabase(view, productionTracking);
+        }
+
+        fillBatchOrderedProductLabel(view);
+    }
+
+    private void fillBatchOrderedProductLabel(final ViewDefinitionState view) {
+        LookupComponent orderLookupComponent = (LookupComponent) view.getComponentByReference(L_ORDER);
+        if (!orderLookupComponent.isEmpty()) {
+            Entity order = orderLookupComponent.getEntity();
+            if (Objects.nonNull(order)) {
+                FieldComponent batchOrderedProductLabel = (FieldComponent) view
+                        .getComponentByReference(L_BATCH_ORDERED_PRODUCT_LABEL);
+                batchOrderedProductLabel.setFieldValue(translationService.translate(
+                        "productionCounting.productionTrackingDetails.window.batchOrderedProduct.batchOrderedProductLabel.label",
+                        LocaleContextHolder.getLocale())
+                        + " " + order.getBelongsToField(OrderFields.PRODUCT).getStringField(ProductFields.NUMBER));
+                batchOrderedProductLabel.requestComponentUpdateState();
+            }
         }
     }
 
@@ -169,8 +227,8 @@ public class ProductionTrackingDetailsHooks {
             view.getComponentByReference(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT).setEnabled(false);
 
             view.getComponentByReference(L_CORRECTS).setVisible(true);
-            view.getComponentByReference(L_CORRECTS)
-                    .setFieldValue(correctedProductionTracking.getStringField(ProductionTrackingFields.NUMBER));
+            view.getComponentByReference(L_CORRECTS).setFieldValue(
+                    correctedProductionTracking.getStringField(ProductionTrackingFields.NUMBER));
         }
     }
 
@@ -198,6 +256,60 @@ public class ProductionTrackingDetailsHooks {
                 technologyOperationComponentLookup.setFilterValue(filterValueHolder);
             }
         }
+        LookupComponent batchLookup = (LookupComponent) view.getComponentByReference("batch");
+        FilterValueHolder batchFilterValueHolder = batchLookup.getFilterValue();
+        if (Objects.isNull(order)) {
+            if (batchFilterValueHolder.has(L_ORDER_ID)) {
+                batchFilterValueHolder.remove(L_ORDER_ID);
+            }
+        } else {
+            batchFilterValueHolder.put(L_ORDER_ID, order.getId());
+        }
+
+        batchLookup.setFilterValue(batchFilterValueHolder);
+
+    }
+
+    private void fillStorageLocation(final ViewDefinitionState view) {
+        FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity productionTracking = productionTrackingForm.getEntity();
+
+        LookupComponent storageLocationLookup = (LookupComponent) view.getComponentByReference(L_STORAGE_LOCATION);
+
+        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        FilterValueHolder storageLocationFilterValueHolder = storageLocationLookup.getFilterValue();
+
+        if (Objects.isNull(order)) {
+            if (storageLocationFilterValueHolder.has(L_LOCATION_ID)) {
+                storageLocationFilterValueHolder.remove(L_LOCATION_ID);
+            }
+        } else {
+            Entity bpcq = basicProductionCountingService
+                    .getProductionCountingQuantityDD()
+                    .find()
+                    .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ORDER + L_ID, order.getId()))
+                    .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
+                            ProductionCountingQuantityRole.PRODUCED.getStringValue()))
+                    .add(SearchRestrictions.eq(ProductionCountingQuantityFields.PRODUCT + L_ID,
+                            order.getBelongsToField(OrderFields.PRODUCT).getId())).setMaxResults(1).uniqueResult();
+            if (Objects.nonNull(bpcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION))) {
+                storageLocationFilterValueHolder.put(L_LOCATION_ID,
+                        bpcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION).getId());
+                storageLocationFilterValueHolder.put(L_PRODUCT_ID, order.getBelongsToField(OrderFields.PRODUCT).getId());
+                if (view.isViewAfterRedirect()) {
+                    Optional<Entity> option = findStorageLocationForProduct(order.getBelongsToField(OrderFields.PRODUCT),
+                            bpcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION));
+                    if (option.isPresent()) {
+                        storageLocationLookup.setFieldValue(option.get().getId());
+                        storageLocationLookup.setEnabled(false);
+                        storageLocationLookup.requestComponentUpdateState();
+                    }
+
+                }
+            }
+        }
+
+        storageLocationLookup.setFilterValue(storageLocationFilterValueHolder);
     }
 
     private void setStateFieldValueToDraft(final ViewDefinitionState view) {
@@ -208,9 +320,8 @@ public class ProductionTrackingDetailsHooks {
     }
 
     private Entity getProductionTrackingFromDB(final Long productionTrackingId) {
-        return dataDefinitionService
-                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_TRACKING)
-                .get(productionTrackingId);
+        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_PRODUCTION_TRACKING).get(productionTrackingId);
     }
 
     public void initializeProductionTrackingDetailsView(final ViewDefinitionState view) {
@@ -237,8 +348,7 @@ public class ProductionTrackingDetailsHooks {
     }
 
     private void changeProductsTabVisible(final ViewDefinitionState view, final Entity productionTracking, final Entity order) {
-        view.getComponentByReference(L_PRODUCTS_TAB)
-                .setVisible(checkIfShouldProductTabBeVisible(productionTracking, order));
+        view.getComponentByReference(L_PRODUCTS_TAB).setVisible(checkIfShouldProductTabBeVisible(productionTracking, order));
     }
 
     public boolean checkIfShouldProductTabBeVisible(final Entity productionTracking, final Entity order) {
@@ -256,8 +366,7 @@ public class ProductionTrackingDetailsHooks {
         return (registerQuantityInProduct || registerQuantityOutProduct);
     }
 
-    private void showLastStateChangeFailNotification(final FormComponent productionTrackingForm,
-            final Entity productionTracking) {
+    private void showLastStateChangeFailNotification(final FormComponent productionTrackingForm, final Entity productionTracking) {
         boolean lastStateChangeFails = productionTracking.getBooleanField(ProductionTrackingFields.LAST_STATE_CHANGE_FAILS);
 
         if (lastStateChangeFails) {
@@ -346,16 +455,29 @@ public class ProductionTrackingDetailsHooks {
         boolean registerQuantityOutProduct = order.getBooleanField(OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT);
 
         copyRibbonActionItem.setEnabled(isInProgress);
-        copyPlannedQuantityToUsedQuantityRibbonActionItem
-                .setEnabled(isDraft && (registerQuantityInProduct || registerQuantityOutProduct));
-        productionCountingQuantitiesRibbonActionItem
-                .setEnabled(isDraft && (registerQuantityInProduct || registerQuantityOutProduct));
+        copyPlannedQuantityToUsedQuantityRibbonActionItem.setEnabled(isDraft
+                && (registerQuantityInProduct || registerQuantityOutProduct));
+        productionCountingQuantitiesRibbonActionItem.setEnabled(isDraft
+                && (registerQuantityInProduct || registerQuantityOutProduct));
         addToAnomaliesListRibbonActionItem.setEnabled(isDraft && (registerQuantityInProduct || registerQuantityOutProduct));
 
         copyRibbonActionItem.requestUpdate(true);
         copyPlannedQuantityToUsedQuantityRibbonActionItem.requestUpdate(true);
         productionCountingQuantitiesRibbonActionItem.requestUpdate(true);
         addToAnomaliesListRibbonActionItem.requestUpdate(true);
+    }
+
+    private DataDefinition getStorageLocationDD() {
+        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_STORAGE_LOCATION);
+    }
+
+    private Optional<Entity> findStorageLocationForProduct(final Entity product, final Entity location) {
+        SearchCriteriaBuilder scb = getStorageLocationDD().find();
+        scb.add(SearchRestrictions.belongsTo(StorageLocationFields.PRODUCT, product));
+        scb.add(SearchRestrictions.belongsTo(StorageLocationFields.LOCATION, location));
+        scb.add(SearchRestrictions.eq(StorageLocationFields.ACTIVE, true));
+        return Optional.ofNullable(scb.setMaxResults(1).uniqueResult());
     }
 
 }

@@ -24,6 +24,8 @@
 package com.qcadoo.mes.productionCounting;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.util.ProductUnitsConversionService;
 import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -31,6 +33,7 @@ import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.StaffWorkTimeFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.newstates.ProductionTrackingStateServiceMarker;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
@@ -49,7 +52,9 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,7 +79,7 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
     private static final String L_FORM = "form";
 
-    public static final String USER_CHANGE_STATE = "user";
+    private static final String USER_CHANGE_STATE = "user";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -87,6 +92,9 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
     @Autowired
     private SecurityService securityService;
+
+    @Autowired
+    private ProductUnitsConversionService productUnitsConversionService;
 
     @Override
     public void setTimeAndPieceworkComponentsVisible(final ViewDefinitionState view, final Entity order) {
@@ -271,5 +279,27 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
             correctingProductionTracking.setField(ProductionTrackingFields.IS_CORRECTION, false);
             correctingProductionTracking.getDataDefinition().save(correctingProductionTracking);
         }
+    }
+
+    @Override
+    public Optional<BigDecimal> calculateGivenQuantity(final Entity trackingOperationProductInComponent,
+            final BigDecimal usedQuantity) {
+
+        Entity product = trackingOperationProductInComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
+
+        String givenUnit = trackingOperationProductInComponent
+                .getStringField(TrackingOperationProductInComponentFields.GIVEN_UNIT);
+
+        if (givenUnit == null) {
+            String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+            if (StringUtils.isNotEmpty(additionalUnit)) {
+                givenUnit = additionalUnit;
+            } else {
+                givenUnit = product.getStringField(ProductFields.UNIT);
+            }
+            trackingOperationProductInComponent.setField(TrackingOperationProductInComponentFields.GIVEN_UNIT, givenUnit);
+        }
+        return productUnitsConversionService.forProduct(product).fromPrimaryUnit().to(givenUnit).convertValue(usedQuantity);
+
     }
 }

@@ -27,6 +27,6 @@ import java.util.function.Consumer;
 
 public interface CellParser {
 
-    void parse(final String cellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer);
+    void parse(final String cellValue, final String dependentCellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer);
 
 }

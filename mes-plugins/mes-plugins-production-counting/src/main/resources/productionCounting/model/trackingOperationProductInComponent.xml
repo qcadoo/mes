@@ -65,7 +65,9 @@
         </decimal>
         <dictionary name="wasteUnit" dictionary="units"/>
         <string name="additionalInformation"/>
-
+        <hasMany name="usedBatches"
+                 joinField="trackingOperationProductInComponent" model="usedBatch"
+                 cascade="delete"/>
     </fields>
 
     <hooks>

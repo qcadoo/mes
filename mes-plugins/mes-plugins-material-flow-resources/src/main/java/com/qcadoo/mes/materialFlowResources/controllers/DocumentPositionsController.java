@@ -97,6 +97,12 @@ public class DocumentPositionsController {
     }
 
     @ResponseBody
+    @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "batch")
+    public DataResponse getBatches(@RequestParam("query") String query, @RequestParam("product") String product) {
+        return documentPositionService.getBatchesResponse(query, product);
+    }
+
+    @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "storageLocation//{document}")
     public StorageLocationDTO getStorageLocationForEmptyProduct(@PathVariable String document) {
         return null;
@@ -115,16 +121,16 @@ public class DocumentPositionsController {
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "resource")
     public ResourceDTO getResourceForProduct(@RequestParam("context") Long document, @RequestParam("product") String product,
-            @RequestParam("conversion") BigDecimal conversion, @RequestParam("ac") String additionalCode) {
-        return documentPositionService.getResource(document, product, conversion, additionalCode);
+            @RequestParam("conversion") BigDecimal conversion, @RequestParam("ac") String additionalCode, @RequestParam("batch") String batch) {
+        return documentPositionService.getResource(document, product, conversion, additionalCode, batch);
     }
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "resources")
     public DataResponse getResources(@RequestParam("query") String query, @RequestParam("product") String product,
             @RequestParam("conversion") BigDecimal conversion, @RequestParam("context") Long document,
-            @RequestParam("ac") String additionalCode) {
-        return documentPositionService.getResourcesResponse(document, query, product, conversion, additionalCode, true);
+            @RequestParam("ac") String additionalCode, @RequestParam("batch") String batch) {
+        return documentPositionService.getResourcesResponse(document, query, product, conversion, additionalCode, batch,true);
     }
 
     @ResponseBody

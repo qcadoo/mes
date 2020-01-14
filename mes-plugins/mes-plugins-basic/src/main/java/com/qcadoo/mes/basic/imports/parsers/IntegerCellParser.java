@@ -23,16 +23,16 @@
  */
 package com.qcadoo.mes.basic.imports.parsers;
 
+import com.qcadoo.mes.basic.imports.helpers.CellErrorsAccessor;
+import com.qcadoo.mes.basic.imports.helpers.CellParser;
+import com.qcadoo.model.api.IntegerUtils;
+
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Component;
-
-import com.qcadoo.mes.basic.imports.helpers.CellErrorsAccessor;
-import com.qcadoo.mes.basic.imports.helpers.CellParser;
-import com.qcadoo.model.api.IntegerUtils;
 
 @Component
 public class IntegerCellParser implements CellParser {
@@ -44,7 +44,7 @@ public class IntegerCellParser implements CellParser {
     private static final String L_INTEGER_PATTERN = "^-?\\d+(\\.\\d+)?$";
 
     @Override
-    public void parse(final String cellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {
+    public void parse(final String cellValue, final String dependentCellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {
         if (validateIntegerFormat(cellValue, errorsAccessor)) {
             Optional<Integer> mayBeValue = Optional.ofNullable(IntegerUtils.parse(cellValue));
 

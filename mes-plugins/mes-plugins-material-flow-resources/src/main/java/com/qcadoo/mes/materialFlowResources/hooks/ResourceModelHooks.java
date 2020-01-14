@@ -23,25 +23,21 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants.MODEL_RESOURCE;
-import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.BATCH;
+import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 
 @Service
 public class ResourceModelHooks {
@@ -55,67 +51,34 @@ public class ResourceModelHooks {
     public void onSave(final DataDefinition resourceDD, final Entity resource) {
         if (StringUtils.isEmpty(resource.getStringField(ResourceFields.NUMBER))) {
             Date time = resource.getDateField(ResourceFields.TIME);
-            if (time == null) {
+
+            if (Objects.isNull(time)) {
                 time = new Date();
             }
+
             Map<String, Object> parameters = new HashMap<String, Object>();
+
             parameters.put("date", time);
+
             String number = jdbcTemplate.queryForObject("select generate_and_set_resource_number(:date)", parameters,
                     String.class);
+
             resource.setField(ResourceFields.NUMBER, number);
         }
     }
 
     public void onCreate(final DataDefinition resourceDD, final Entity resource) {
         resource.setField(ResourceFields.IS_CORRECTED, false);
-        if (resource.getField(ResourceFields.WASTE) == null) {
+
+        if (Objects.isNull(resource.getField(ResourceFields.WASTE))) {
             resource.setField(ResourceFields.WASTE, false);
         }
-        if (resource.getDecimalField(ResourceFields.RESERVED_QUANTITY) == null) {
+        if (Objects.isNull(resource.getDecimalField(ResourceFields.RESERVED_QUANTITY))) {
             resource.setField(ResourceFields.RESERVED_QUANTITY, BigDecimal.ZERO);
         }
-        if (resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY) == null) {
+        if (Objects.isNull(resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY))) {
             resource.setField(ResourceFields.AVAILABLE_QUANTITY, resource.getDecimalField(ResourceFields.QUANTITY));
         }
-    }
-
-    public void generateBatch(final DataDefinition resourceDD, final Entity resource) {
-        if (resource.getField(BATCH) == null) {
-            resource.setField(BATCH, generateBatchForResource(MODEL_RESOURCE));
-        }
-    }
-
-    private String generateBatchForResource(final String model) {
-        Entity lastBatch = getLastBatch();
-
-        String batch = null;
-
-        if (lastBatch == null) {
-            batch = "000001";
-        } else {
-            batch = lastBatch.getStringField(BATCH);
-
-            Long parsedNumber = Long.parseLong(batch);
-
-            do {
-                parsedNumber++;
-
-                batch = String.format("%06d", parsedNumber);
-            } while (batchAlreadyExist(model, batch));
-        }
-
-        return batch;
-    }
-
-    private boolean batchAlreadyExist(final String model, final String batch) {
-        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, model).find()
-                .add(SearchRestrictions.eq(BATCH, batch)).setMaxResults(1).uniqueResult() != null;
-    }
-
-    private Entity getLastBatch() {
-        return dataDefinitionService
-                .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE).find()
-                .addOrder(SearchOrders.desc(BATCH)).setMaxResults(1).uniqueResult();
     }
 
 }

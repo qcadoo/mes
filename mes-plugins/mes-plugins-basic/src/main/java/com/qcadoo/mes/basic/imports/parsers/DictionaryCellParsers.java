@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.basic.imports.parsers;
 
-import static com.qcadoo.model.api.search.SearchRestrictions.and;
-import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
-import static com.qcadoo.model.api.search.SearchRestrictions.eq;
-
-import java.util.Objects;
-import java.util.function.Consumer;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.qcadoo.mes.basic.imports.helpers.CellErrorsAccessor;
 import com.qcadoo.mes.basic.imports.helpers.CellParser;
 import com.qcadoo.model.api.DataDefinition;
@@ -41,6 +31,15 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.constants.DictionaryFields;
 import com.qcadoo.model.constants.DictionaryItemFields;
 import com.qcadoo.model.constants.QcadooModelConstants;
+
+import java.util.Objects;
+import java.util.function.Consumer;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import static com.qcadoo.model.api.search.SearchRestrictions.and;
+import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
+import static com.qcadoo.model.api.search.SearchRestrictions.eq;
 
 @Component
 public class DictionaryCellParsers {
@@ -73,7 +72,7 @@ public class DictionaryCellParsers {
         }
 
         @Override
-        public void parse(final String cellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {
+        public void parse(final String cellValue, final String dependentCellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {
             Entity dictionaryItem = getDictionaryItemByName(cellValue);
 
             if (Objects.isNull(dictionaryItem)) {

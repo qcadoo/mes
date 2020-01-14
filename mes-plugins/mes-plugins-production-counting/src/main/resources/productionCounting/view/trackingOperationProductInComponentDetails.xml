@@ -178,7 +178,33 @@
             </component>
 
         </windowTab>
+        <windowTab name="batches">
+            <component type="grid" name="usedBatches" reference="usedBatches"
+                       source="#{form}.usedBatches">
 
+                <option type="column" name="number" fields="batch"
+                        expression="#batch['number']" width="100" link="true"/>
+
+                <option type="column" name="quantity" fields="quantity"
+                        width="100"/>
+                <option type="column" name="unit" fields="batch"
+                        expression="#batch['product']?.get('unit')"/>
+                <option type="order" column="number" direction="desc"/>
+
+                <option type="orderable" value="number,quantity"/>
+                <option type="searchable" value="number,quantity"/>
+
+                <option type="correspondingView" value="productionCounting/usedBatchDetails"/>
+                <option type="correspondingComponent" value="form"/>
+                <option type="correspondingViewInModal" value="true"/>
+
+                <option type="paginable" value="true"/>
+                <option type="creatable" value="true"/>
+                <option type="deletable" value="true"/>
+                <option type="fullscreen" value="true"/>
+                <option type="multiselect" value="true"/>
+            </component>
+        </windowTab>
     </component>
 
     <hooks>

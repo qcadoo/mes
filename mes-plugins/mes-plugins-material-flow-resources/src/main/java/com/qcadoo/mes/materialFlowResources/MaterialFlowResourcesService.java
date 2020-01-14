@@ -42,7 +42,7 @@ public interface MaterialFlowResourcesService {
     void manageResources(final Entity transfer);
 
     void addResource(final Entity locationTo, final Entity product, final BigDecimal quantity, final Date time,
-            final BigDecimal price, final String batch);
+            final BigDecimal price, final Entity batch);
 
     void addResource(final Entity locationTo, final Entity product, final BigDecimal quantity, final Date time,
             final BigDecimal price);
