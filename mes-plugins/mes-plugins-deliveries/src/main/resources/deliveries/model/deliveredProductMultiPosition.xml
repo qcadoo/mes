@@ -27,6 +27,7 @@
 <model name="deliveredProductMultiPosition"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
 	<fields>
 		<belongsTo name="deliveredProductMulti" model="deliveredProductMulti"/>
 		<decimal name="ordinal" persistent="false"/>
@@ -39,11 +40,12 @@
 		</decimal>
 		<boolean name="isWaste"/>
 		<date name="expirationDate"/>
-		<string name="batch"/>
+		<belongsTo name="batch" model="batch" plugin="advancedGenealogy"/>
 		<string name="unit"/>
 		<string name="additionalUnit" />
         <belongsTo name="additionalCode" model="additionalCode" plugin="basic"/>
 	</fields>
-	<hooks>
-	</hooks>
+
+	<hooks/>
+
 </model>

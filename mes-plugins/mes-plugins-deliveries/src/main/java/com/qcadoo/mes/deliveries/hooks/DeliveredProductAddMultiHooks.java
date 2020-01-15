@@ -26,10 +26,12 @@ package com.qcadoo.mes.deliveries.hooks;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiFields;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiPositionFields;
@@ -45,37 +47,65 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 @Service
 public class DeliveredProductAddMultiHooks {
 
+    private static final String L_FORM = "form";
+
+    private static final String L_LOCATION = "location";
+
+    private static final String L_PRODUCT = "product";
+
     @Autowired
     private DeliveriesService deliveriesService;
 
+    @Autowired
+    private BatchCriteriaModifier batchCriteriaModifier;
+
     public void beforeRender(final ViewDefinitionState view) {
         AwesomeDynamicListComponent deliveredProductMultiPositions = (AwesomeDynamicListComponent) view
-                .getComponentByReference("deliveredProductMultiPositions");
+                .getComponentByReference(DeliveredProductMultiFields.DELIVERED_PRODUCT_MULTI_POSITIONS);
+
         List<FormComponent> formComponents = deliveredProductMultiPositions.getFormComponents();
+
         BigInteger ordinal = BigInteger.ONE;
+
         for (FormComponent formComponent : formComponents) {
-            FieldComponent conversion = formComponent.findFieldComponentByName("conversion");
-            LookupComponent productComponent = (LookupComponent) formComponent.findFieldComponentByName("product");
-            FieldComponent unitComponent = formComponent.findFieldComponentByName("unit");
-            FieldComponent additionalUnitComponent = formComponent.findFieldComponentByName("additionalUnit");
-            LookupComponent additionalCodeComponent = (LookupComponent) formComponent.findFieldComponentByName("additionalCode");
-            FieldComponent ordinalComponent = formComponent.findFieldComponentByName("ordinal");
-            ordinalComponent.setFieldValue(ordinal);
-            ordinalComponent.requestComponentUpdateState();
+            FieldComponent conversionField = formComponent
+                    .findFieldComponentByName(DeliveredProductMultiPositionFields.CONVERSION);
+            LookupComponent productLookup = (LookupComponent) formComponent
+                    .findFieldComponentByName(DeliveredProductMultiPositionFields.PRODUCT);
+            FieldComponent unitField = formComponent.findFieldComponentByName(DeliveredProductMultiPositionFields.UNIT);
+            FieldComponent additionalUnitField = formComponent
+                    .findFieldComponentByName(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT);
+            LookupComponent additionalCodeLookup = (LookupComponent) formComponent
+                    .findFieldComponentByName(DeliveredProductMultiPositionFields.ADDITIONAL_CODE);
+            FieldComponent ordinalField = formComponent.findFieldComponentByName(DeliveredProductMultiPositionFields.ORDINAL);
+            LookupComponent batchLookup = (LookupComponent) formComponent
+                    .findFieldComponentByName(DeliveredProductMultiPositionFields.BATCH);
+
+            ordinalField.setFieldValue(ordinal);
+            ordinalField.requestComponentUpdateState();
+
             ordinal = ordinal.add(BigInteger.ONE);
-            filterAdditionalCode(productComponent.getEntity(), additionalCodeComponent);
-            String unit = (String) unitComponent.getFieldValue();
-            String additionalUnit = (String) additionalUnitComponent.getFieldValue();
+
+            Entity product = productLookup.getEntity();
+
+            filterAdditionalCode(additionalCodeLookup, product);
+            filterBatch(batchLookup, product);
+
+            String unit = (String) unitField.getFieldValue();
+            String additionalUnit = (String) additionalUnitField.getFieldValue();
+
             if (unit.equals(additionalUnit)) {
-                conversion.setEnabled(false);
-                conversion.requestComponentUpdateState();
+                conversionField.setEnabled(false);
+                conversionField.requestComponentUpdateState();
             }
 
             boldRequired(formComponent);
         }
 
         FieldComponent palletNumber = (FieldComponent) view.getComponentByReference(DeliveredProductMultiFields.PALLET_NUMBER);
+
         palletNumber.setRequired(true);
+
         FieldComponent storageLocation = (FieldComponent) view
                 .getComponentByReference(DeliveredProductMultiFields.STORAGE_LOCATION);
         storageLocation.setRequired(true);
@@ -86,38 +116,52 @@ public class DeliveredProductAddMultiHooks {
     public void boldRequired(final FormComponent formComponent) {
         Arrays.asList(DeliveredProductMultiPositionFields.PRODUCT, DeliveredProductMultiPositionFields.QUANTITY,
                 DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY, DeliveredProductMultiPositionFields.CONVERSION).stream()
-                .forEach(f -> {
-            FieldComponent component = formComponent.findFieldComponentByName(f);
-            component.setRequired(true);
-            component.requestComponentUpdateState();
-        });
+                .forEach(fieldName -> {
+                    FieldComponent fieldComponent = formComponent.findFieldComponentByName(fieldName);
+
+                    fieldComponent.setRequired(true);
+                    fieldComponent.requestComponentUpdateState();
+                });
     }
 
-    private void setStorageLocationFilter(ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
-        Entity deliveredProductMultiEntity = form.getPersistedEntityWithIncludedFormValues();
+    private void setStorageLocationFilter(final ViewDefinitionState view) {
+        FormComponent deliveredProductMultiForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Entity deliveredProductMultiEntity = deliveredProductMultiForm.getPersistedEntityWithIncludedFormValues();
+
         Entity delivery = deliveredProductMultiEntity.getBelongsToField(DeliveredProductMultiFields.DELIVERY);
         Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
-        if (location != null) {
-            LookupComponent storageLocationComponent = (LookupComponent) view.getComponentByReference("storageLocation");
-            FilterValueHolder filterValueHolder = storageLocationComponent.getFilterValue();
-            filterValueHolder.put("location", location.getId());
-            storageLocationComponent.setFilterValue(filterValueHolder);
-            storageLocationComponent.requestComponentUpdateState();
+
+        if (Objects.nonNull(location)) {
+            LookupComponent storageLocationLookup = (LookupComponent) view
+                    .getComponentByReference(DeliveredProductMultiFields.STORAGE_LOCATION);
+
+            FilterValueHolder filterValueHolder = storageLocationLookup.getFilterValue();
+            filterValueHolder.put(L_LOCATION, location.getId());
+
+            storageLocationLookup.setFilterValue(filterValueHolder);
+            storageLocationLookup.requestComponentUpdateState();
         }
     }
 
-    public void filterAdditionalCode(Entity product, LookupComponent additionalCodeComponent) {
-        if (product != null) {
-            additionalCodeComponent.setEnabled(true);
-            FilterValueHolder filterValueHolder = additionalCodeComponent.getFilterValue();
-            filterValueHolder.put("product", product.getId());
-            additionalCodeComponent.setFilterValue(filterValueHolder);
-            additionalCodeComponent.requestComponentUpdateState();
+    public void filterAdditionalCode(final LookupComponent additionalCodeLookup, final Entity product) {
+        if (Objects.nonNull(product)) {
+            additionalCodeLookup.setEnabled(true);
+
+            FilterValueHolder filterValueHolder = additionalCodeLookup.getFilterValue();
+            filterValueHolder.put(L_PRODUCT, product.getId());
+
+            additionalCodeLookup.setFilterValue(filterValueHolder);
+            additionalCodeLookup.requestComponentUpdateState();
         } else {
-            additionalCodeComponent.setFieldValue(null);
-            additionalCodeComponent.setEnabled(false);
-            additionalCodeComponent.requestComponentUpdateState();
+            additionalCodeLookup.setFieldValue(null);
+            additionalCodeLookup.setEnabled(false);
+            additionalCodeLookup.requestComponentUpdateState();
         }
     }
+
+    public void filterBatch(final LookupComponent batchLookup, final Entity product) {
+        batchCriteriaModifier.putProductFilterValue(batchLookup, product);
+    }
+
 }

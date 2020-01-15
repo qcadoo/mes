@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.deliveries.constants;
 
-public final class DeliveredProductDtoFields {
+public final class OrderedProductListDtoFields {
 
-    private DeliveredProductDtoFields() {
+    private OrderedProductListDtoFields() {
 
     }
 
@@ -41,40 +41,40 @@ public final class DeliveredProductDtoFields {
 
     public static final String PRODUCT_UNIT = "productUnit";
 
-    public static final String DAMAGED_QUANTITY = "damagedQuantity";
-
-    public static final String DELIVERED_QUANTITY = "deliveredQuantity";
-
-    public static final String ADDITIONAL_QUANTITY = "additionalQuantity";
-
-    public static final String ADDITIONAL_UNIT = "additionalUnit";
+    public static final String ORDERED_QUANTITY = "orderedQuantity";
 
     public static final String CONVERSION = "conversion";
 
     public static final String PRICE_PER_UNIT = "pricePerUnit";
 
-    public static final String TOTAL_PRICE = "totalPrice";
-
-    public static final String ADDITIONAL_CODE = "additionalCode";
-
-    public static final String STORAGE_LOCATION_NUMBER = "storageLocationNumber";
-
-    public static final String PALLET_NUMBER = "palletNumber";
-
-    public static final String PALLET_TYPE = "palletType";
-
-    public static final String BATCH_NUMBER = "batchNumber";
-
-    public static final String BATCH = "batch";
+    public static final String DESCRIPTION = "description";
 
     public static final String OFFER_NUMBER = "offerNumber";
 
-    public static final String PRODUCT_CATALOG_NUMBER = "productCatalogNumber";
+    public static final String PRODUCT_NORM = "productNorm";
 
     public static final String OPERATION_NUMBER = "operationNumber";
 
-    public static final String IS_WASTE = "isWaste";
+    public static final String PRODUCT_CATALOG_NUMBER = "productCatalogNumber";
 
-    public static final String DAMAGED = "damaged";
+    public static final String ACTUAL_VERSION = "actualVersion";
+
+    public static final String DELIVERY_DATE = "deliveryDate";
+
+    public static final String DELIVERY_STATE = "deliveryState";
+
+    public static final String DELIVERY_NUMBER = "deliveryNumber";
+
+    public static final String DELIVERY_NAME = "deliveryName";
+
+    public static final String DELIVERY_CURRENCY = "deliveryCurrency";
+
+    public static final String SUPPLIER_NAME = "supplierName";
+
+    public static final String NEGOTIATION_NUMBER = "negotiationNumber";
+
+    public static final String DELIVERY_ACTIVE = "deliveryActive";
+
+    public static final String LOCATION_ID = "location_id";
 
 }

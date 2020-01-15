@@ -59,15 +59,17 @@
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"
                                       method="fillUnitFields"/>
-                            <listener
-                                    class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"
-                                    method="fillCurrencyFields"/>
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"
+                                      method="fillCurrencyFields"/>
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"
+                                      method="setBatchLookupProductFilterValue"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="3" width="2">
                         <component type="lookup" name="additionalCode" reference="additionalCode"
                                    field="#{form}.additionalCode">
-
                             <option type="searchable" value="code"/>
                             <option type="orderable" value="code"/>
 
@@ -89,8 +91,9 @@
                                     <option type="alignment" value="right"/>
                                     <option type="labelWidth" value="45"/>
 
-                                    <listener event="onInputChange" method="quantityChange"
-                                              class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"/>
+                                    <listener event="onInputChange"
+                                              class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"
+                                              method="quantityChange"/>
                                 </component>
                             </layoutElement>
                             <layoutElement column="4" row="1">
@@ -105,8 +108,9 @@
                                     <option type="alignment" value="right"/>
                                     <option type="labelWidth" value="45"/>
 
-                                    <listener event="onInputChange" method="additionalQuantityChange"
-                                              class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"/>
+                                    <listener event="onInputChange"
+                                              class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"
+                                              method="additionalQuantityChange"/>
                                 </component>
                             </layoutElement>
                             <layoutElement column="4" row="2">
@@ -121,8 +125,9 @@
                                     <option type="alignment" value="right"/>
                                     <option type="labelWidth" value="45"/>
 
-                                    <listener event="onInputChange" method="quantityChange"
-                                              class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"/>
+                                    <listener event="onInputChange"
+                                              class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"
+                                              method="quantityChange"/>
                                 </component>
                             </layoutElement>
                         </component>
@@ -141,8 +146,9 @@
                                                 <option type="alignment" value="right"/>
                                                 <option type="labelWidth" value="45"/>
 
-                                                <listener event="onInputChange" method="calculatePriceFromTotalPrice"
-                                                          class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"/>
+                                                <listener event="onInputChange"
+                                                          class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"
+                                                          method="calculatePriceFromTotalPrice"/>
                                             </component>
                                         </layoutElement>
                                         <layoutElement column="4" row="1">
@@ -163,8 +169,9 @@
                                                 <option type="alignment" value="right"/>
                                                 <option type="labelWidth" value="45"/>
 
-                                                <listener event="onInputChange" method="calculatePriceFromPricePerUnit"
-                                                          class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"/>
+                                                <listener event="onInputChange"
+                                                          class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"
+                                                          method="calculatePriceFromPricePerUnit"/>
                                             </component>
                                         </layoutElement>
                                         <layoutElement column="4" row="1">
@@ -190,6 +197,7 @@
                 <option type="expression" value="#name"/>
             </component>
         </windowTab>
+
         <windowTab name="reservationsTab">
             <component type="gridLayout" name="gridsLayout" columns="1" rows="5" hasBorders="false">
                 <layoutElement column="1" row="1" width="1" height="5">
@@ -205,13 +213,14 @@
 
                         <option type="order" column="number" direction="desc"/>
 
-                        <option type="correspondingView" value="deliveries/orderedProductReservationDetails"/>
-                        <option type="correspondingComponent" value="form"/>
-                        <option type="correspondingViewInModal" value="true"/>
                         <option type="orderable"
                                 value="number,name,orderedQuantity,additionalQuantityUnit,orderedQuantityUnit,additionalQuantity"/>
                         <option type="searchable"
                                 value="number,name,orderedQuantity,additionalQuantityUnit,orderedQuantityUnit,additionalQuantity"/>
+
+                        <option type="correspondingView" value="deliveries/orderedProductReservationDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="true"/>
 
                         <option type="paginable" value="false"/>
                         <option type="creatable" value="true"/>
@@ -222,11 +231,30 @@
                 </layoutElement>
             </component>
         </windowTab>
+
         <windowTab name="bachTab">
-            <component type="gridLayout" name="gridsLayout" columns="1" rows="1" hasBorders="false">
+            <component type="gridLayout" name="gridsLayout" columns="1" rows="2" hasBorders="false">
                 <layoutElement column="1" row="1">
-                    <component type="input" name="batch" field="#{form}.batch"
+                    <component type="input" name="batchNumber" field="#{form}.batchNumber"
+                               reference="batchNumber" hasDescription="true"/>
+                </layoutElement>
+                <layoutElement column="1" row="2">
+                    <component type="lookup" name="batch" field="#{form}.batch"
                                reference="batch">
+                        <option type="column" name="supplierName" fields="supplier"
+                                expression="#supplier.get('name')"/>
+
+                        <option type="searchable" value="number,supplierName"/>
+                        <option type="orderable" value="number,supplierName"/>
+
+                        <option type="expression" value="#number"/>
+                        <option type="fieldCode" value="number"/>
+
+                        <option type="required" value="true"/>
+
+                        <criteriaModifier
+                                class="com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier"
+                                method="filterByProduct"/>
                     </component>
                 </layoutElement>
             </component>
@@ -236,10 +264,7 @@
     <hooks>
         <beforeRender
                 class="com.qcadoo.mes.deliveries.hooks.OrderedProductDetailsHooks"
-                method="fillUnitFields"/>
-        <beforeRender
-                class="com.qcadoo.mes.deliveries.hooks.OrderedProductDetailsHooks"
-                method="fillCurrencyFields"/>
+                method="beforeRender"/>
     </hooks>
 
 </view>
