@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier;
-import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceCorrectionFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -17,9 +16,6 @@ import com.qcadoo.view.api.components.LookupComponent;
 public class ResourceCorrectionDetailsHooks {
 
     private static final String L_FORM = "form";
-
-    @Autowired
-    private CalculationQuantityService calculationQuantityService;
 
     @Autowired
     private BatchCriteriaModifier batchCriteriaModifier;
