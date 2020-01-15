@@ -1,17 +1,10 @@
 package com.qcadoo.mes.productionScheduling.listeners;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -36,6 +29,14 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class ScheduleDetailsListenersPS {
@@ -114,8 +115,11 @@ public class ScheduleDetailsListenersPS {
         schedulePosition.setField(OrdersConstants.MODEL_ORDER, order);
         schedulePosition.setField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
         Entity mainOutputProductComponent = technologyService.getMainOutputProductComponent(technologyOperationComponent);
-        schedulePosition.setField(SchedulePositionFields.PRODUCT,
-                mainOutputProductComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT));
+        Entity product = mainOutputProductComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
+        if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(product.getField(ProductFields.ENTITY_TYPE))) {
+            product = order.getBelongsToField(OrderFields.PRODUCT);
+        }
+        schedulePosition.setField(SchedulePositionFields.PRODUCT, product);
         OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = ordersOperationsQuantity
                 .get(order.getId());
         BigDecimal productComponentQuantity = operationProductComponentWithQuantityContainer.get(mainOutputProductComponent);
