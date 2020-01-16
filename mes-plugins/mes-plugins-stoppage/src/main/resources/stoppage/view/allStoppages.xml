@@ -31,21 +31,26 @@
 	
 		<component type="window" name="window">
 			<ribbon>
-				<group template="gridNewCopyAndRemoveAction" />
+				<template name="standardGridTemplate"/>
 			</ribbon>
 						
 			<component type="grid" name="stoppage" reference="grid">
-				<option type="column" name="order" fields="order" expression="#order['name']" link="true" width="65" />
-				<option type="column" name="duration" fields="duration" link="true" width="20" />
-				<option type="column" name="reason" fields="reason" link="true" />
+				<option type="column" name="order" fields="order" expression="#order['number']" link="true" width="65" />
+				<option type="column" name="productionTracking" fields="productionTracking" expression="#productionTracking['number']" link="true" width="80" />
+				<option type="column" name="productionTrackingState" fields="productionTracking" expression="#productionTracking['state']" link="true" width="65" />
+				<option type="column" name="duration" fields="duration" link="true" width="65" />
+				<option type="column" name="dateFrom" fields="dateFrom"/>
+				<option type="column" name="dateTo" fields="dateTo"/>
+				<option type="column" name="reason" fields="reason" expression="#reason['name']"/>
+				<option type="column" name="description" fields="description" width="100"/>
 
 				<option type="correspondingView" value="stoppage/allStoppagesForm" />
 				<option type="correspondingComponent" value="form" />
 				<option type="correspondingViewInModal" value="false" />
 					
 				<option type="order" column="duration" direction="desc" />
-				<option type="searchable" value="order,reason,duration" />
-				<option type="orderable" value="order,reason,duration" />
+				<option type="searchable" value="order,productionTracking,productionTrackingState,duration,dateFrom,dateTo,reason,description" />
+				<option type="orderable" value="order,productionTracking,productionTrackingState,duration,dateFrom,dateTo,reason,description" />
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />
 			</component>

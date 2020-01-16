@@ -30,8 +30,15 @@
 	<fields>
 		<belongsTo name="order" model="order" plugin="orders"
 			required="true" />
+		<belongsTo name="productionTracking" model="productionTracking" plugin="productionCounting"/>
+		<belongsTo name="reason" model="stoppageReason"
+				   required="true" />
+		<string name="description">
+			<validatesLength max="1024"/>
+		</string>
+		<datetime name="dateFrom"/>
+		<datetime name="dateTo"/>
 		<integer name="duration" required="true" />
-		<text name="reason" required="true" />
 	</fields>
 	<hooks />
 </model>

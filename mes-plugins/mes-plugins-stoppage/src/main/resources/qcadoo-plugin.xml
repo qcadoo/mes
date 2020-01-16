@@ -68,6 +68,11 @@
 				model="stoppage" joinField="order" cascade="delete" />
 		</model:model-field>
 
+		<model:model-field plugin="productionCounting" model="productionTracking">
+			<model:hasMany name="stoppages" plugin="stoppage"
+						   model="stoppage" joinField="productionTracking" cascade="delete" />
+		</model:model-field>
+
 		<menu:menu-item name="stoppages" category="ordersTracking"
 			view="allStoppages" defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING"/>
 
