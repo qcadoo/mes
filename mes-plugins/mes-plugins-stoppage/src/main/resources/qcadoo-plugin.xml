@@ -61,6 +61,7 @@
 		<localization:translation path="locales" />
 
 		<model:model model="stoppage" resource="model/stoppage.xml" />
+		<model:model model="stoppageReason" resource="model/stoppageReason.xml" />
 
 		<model:model-field plugin="orders" model="order">
 			<model:hasMany name="stoppages" plugin="stoppage"
@@ -70,10 +71,15 @@
 		<menu:menu-item name="stoppages" category="ordersTracking"
 			view="allStoppages" defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING"/>
 
+		<menu:menu-item name="stoppageReasonsList" category="basic"
+			view="stoppageReasonsList" defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING"/>
+
 		<view:view resource="view/allStoppages.xml" />
 		<view:view resource="view/allStoppagesForm.xml" />
 		<view:view resource="view/stoppage.xml" />
 		<view:view resource="view/stoppageForm.xml" />
+		<view:view resource="view/stoppageReasonsList.xml" />
+		<view:view resource="view/stoppageReasonDetails.xml" />
 
 		<view:view-ribbon-group
 			resource="view/ribbonExtension/ribbonExtensionDetails.xml" />
