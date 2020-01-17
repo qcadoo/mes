@@ -276,7 +276,8 @@ public class ProductionTrackingDetailsHooks {
 
         LookupComponent storageLocationLookup = (LookupComponent) view.getComponentByReference(L_STORAGE_LOCATION);
 
-        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.ORDER);
+        Entity order = orderLookup.getEntity();
         FilterValueHolder storageLocationFilterValueHolder = storageLocationLookup.getFilterValue();
 
         if (Objects.isNull(order)) {
@@ -296,7 +297,7 @@ public class ProductionTrackingDetailsHooks {
                 storageLocationFilterValueHolder.put(L_LOCATION_ID,
                         bpcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION).getId());
                 storageLocationFilterValueHolder.put(L_PRODUCT_ID, order.getBelongsToField(OrderFields.PRODUCT).getId());
-                if (view.isViewAfterRedirect()) {
+                if (Objects.isNull(storageLocationLookup.getEntity())) {
                     Optional<Entity> option = findStorageLocationForProduct(order.getBelongsToField(OrderFields.PRODUCT),
                             bpcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION));
                     if (option.isPresent()) {
@@ -304,8 +305,13 @@ public class ProductionTrackingDetailsHooks {
                         storageLocationLookup.setEnabled(false);
                         storageLocationLookup.requestComponentUpdateState();
                     }
-
+                } else {
+                    storageLocationLookup.setFieldValue(null);
+                    storageLocationLookup.setEnabled(true);
+                    storageLocationLookup.requestComponentUpdateState();
                 }
+            } else if (storageLocationFilterValueHolder.has(L_LOCATION_ID)) {
+                storageLocationFilterValueHolder.remove(L_LOCATION_ID);
             }
         }
 

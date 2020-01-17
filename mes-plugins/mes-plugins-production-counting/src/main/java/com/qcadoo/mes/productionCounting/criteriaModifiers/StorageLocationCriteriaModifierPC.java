@@ -11,12 +11,12 @@ public class StorageLocationCriteriaModifierPC {
 
     private static final String L_LOCATION_ID = "locationId";
 
-    private static final String L_PRODUCT_ID = "productId";
-
     public void filter(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
-        if (filterValue.has(L_LOCATION_ID) && filterValue.has(L_PRODUCT_ID)) {
+        if (filterValue.has(L_LOCATION_ID)) {
             Long location = filterValue.getLong(L_LOCATION_ID);
             scb.add(SearchRestrictions.eq("location.id", location));
+        } else {
+            scb.add(SearchRestrictions.eq("location.id", Long.valueOf("-1")));
         }
 
     }
