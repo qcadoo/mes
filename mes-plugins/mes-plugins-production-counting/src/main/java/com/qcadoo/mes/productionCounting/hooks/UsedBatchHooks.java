@@ -5,6 +5,7 @@ import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInCom
 import com.qcadoo.mes.productionCounting.constants.UsedBatchFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -20,6 +21,9 @@ public class UsedBatchHooks {
 
     @Autowired
     private ProductionTrackingService productionTrackingService;
+
+    @Autowired
+    private NumberService numberService;
 
     public void onSave(final DataDefinition usedBatchDD, final Entity usedBatch) {
 
@@ -43,6 +47,25 @@ public class UsedBatchHooks {
 
         Optional<BigDecimal> givenQuantity = productionTrackingService.calculateGivenQuantity(
                 trackingOperationProductInComponent, sumUsedBatchesQuantity);
+        givenQuantity.ifPresent(gq -> trackingOperationProductInComponent.setField(
+                TrackingOperationProductInComponentFields.GIVEN_QUANTITY, gq));
+        trackingOperationProductInComponent.getDataDefinition().save(trackingOperationProductInComponent);
+    }
+
+    public void onDelete(final DataDefinition usedBatchDD, final Entity usedBatch) {
+        Entity trackingOperationProductInComponent = usedBatch
+                .getBelongsToField(UsedBatchFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENT);
+
+        BigDecimal sumUsedBatchesQuantity = trackingOperationProductInComponent
+                .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
+
+        BigDecimal newUsedBatchesQuantity = sumUsedBatchesQuantity.subtract(usedBatch.getDecimalField(UsedBatchFields.QUANTITY),
+                numberService.getMathContext());
+        trackingOperationProductInComponent.setField(TrackingOperationProductInComponentFields.USED_QUANTITY,
+                newUsedBatchesQuantity);
+
+        Optional<BigDecimal> givenQuantity = productionTrackingService.calculateGivenQuantity(
+                trackingOperationProductInComponent, newUsedBatchesQuantity);
         givenQuantity.ifPresent(gq -> trackingOperationProductInComponent.setField(
                 TrackingOperationProductInComponentFields.GIVEN_QUANTITY, gq));
         trackingOperationProductInComponent.getDataDefinition().save(trackingOperationProductInComponent);

@@ -17,6 +17,9 @@
         <onSave
                 class="com.qcadoo.mes.productionCounting.hooks.UsedBatchHooks"
                 method="onSave"/>
+        <onDelete
+                class="com.qcadoo.mes.productionCounting.hooks.UsedBatchHooks"
+                method="onDelete"/>
     </hooks>
 
     <identifier expression="#quantity"/>
