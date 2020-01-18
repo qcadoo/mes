@@ -76,11 +76,14 @@
 						</component>
 					</layoutElement>
 		           	<layoutElement column="1" row="8">
-                		<component type="input" name="duration" field="duration" />
+						<component type="time" name="duration" reference="duration"
+								   field="duration">
+							<option type="noHours" value="3"/>
+						</component>
                 	</layoutElement>
                 </component>
 
-                <option type="expression" value="#reason['name'] + ' (' + #duration +' min)'" />
+                <option type="expression" value="#reason['name'] + ' (' + #duration +' s)'" />
                 <option type="header" value="true" />
             </component>
         </component>

@@ -35,22 +35,29 @@
 			</ribbon>
 						
 			<component type="grid" name="stoppage" reference="grid">
-				<option type="column" name="order" fields="order" expression="#order['number']" link="true" width="65" />
-				<option type="column" name="productionTracking" fields="productionTracking" expression="#productionTracking['number']" link="true" width="80" />
-				<option type="column" name="productionTrackingState" fields="productionTracking" expression="#productionTracking['state']" link="true" width="65" />
-				<option type="column" name="duration" fields="duration" link="true" width="65" />
+				<option type="column" name="order" fields="order" expression="#order['number']" link="true"/>
+				<option type="column" name="productionTracking" fields="productionTracking" expression="#productionTracking['number']" link="true"/>
+				<option type="column" name="productionTrackingState" fields="productionTracking" expression="'@productionCounting.productionTracking.state.value.' + #productionTracking['state']" link="true"/>
+				<option type="column" name="duration" fields="duration" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)" link="true"/>
 				<option type="column" name="dateFrom" fields="dateFrom"/>
 				<option type="column" name="dateTo" fields="dateTo"/>
 				<option type="column" name="reason" fields="reason" expression="#reason['name']"/>
-				<option type="column" name="description" fields="description" width="100"/>
+				<option type="column" name="description" fields="description"/>
+				<option type="column" name="division" fields="order" expression="(#order['division'] == null) ? '' : #order['division'].get('number')" />
+				<option type="column" name="productionLine" fields="order" expression="(#order['productionLine'] == null) ? '' : #order['productionLine'].get('number')" />
+				<option type="column" name="workstation" fields="productionTracking" expression="(#productionTracking == null || #productionTracking['workstation'] == null) ? '' : #productionTracking['workstation'].get('number')" />
+				<option type="column" name="staff" fields="productionTracking" expression="(#productionTracking == null || #productionTracking['staff'] == null) ? '' : #productionTracking['staff'].get('name') + ' ' + #productionTracking['staff'].get('surname')" />
 
 				<option type="correspondingView" value="stoppage/allStoppagesForm" />
 				<option type="correspondingComponent" value="form" />
 				<option type="correspondingViewInModal" value="false" />
 					
 				<option type="order" column="duration" direction="desc" />
-				<option type="searchable" value="order,productionTracking,productionTrackingState,duration,dateFrom,dateTo,reason,description" />
-				<option type="orderable" value="order,productionTracking,productionTrackingState,duration,dateFrom,dateTo,reason,description" />
+				<option type="searchable" value="order,productionTracking,productionTrackingState,duration,dateFrom,dateTo,reason,description,division,productionLine,workstation,staff" />
+				<option type="orderable" value="order,productionTracking,productionTrackingState,duration,dateFrom,dateTo,reason,description,division,productionLine,workstation,staff" />
+				<option type="footerRow" value="true"/>
+				<option type="columnsToSummaryTime" value="duration"/>
+
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />
 			</component>
