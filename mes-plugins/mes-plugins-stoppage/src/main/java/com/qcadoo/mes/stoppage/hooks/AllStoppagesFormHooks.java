@@ -1,7 +1,10 @@
 package com.qcadoo.mes.stoppage.hooks;
 
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+
+import java.util.Objects;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -10,14 +13,41 @@ import org.springframework.stereotype.Service;
 @Service
 public class AllStoppagesFormHooks {
 
+    private static final String L_ORDER = "order";
+
+    private static final String L_PRODUCTION_TRACKING = "productionTracking";
+
+    private static final String L_FORM = "form";
+
+    private static final String L_CONTEXT_KEY_PRODUCTION_TRACKING = "window.mainTab.form.productionTracking";
+
+    private static final String L_CONTEXT_KEY_ORDER = "window.mainTab.form.order";
+
     public final void onBeforeRender(final ViewDefinitionState view) throws JSONException {
-        JSONObject context = view.getJsonContext();
-        context.toString();
-        if(view.isViewAfterRedirect() && context.has("window.mainTab.form.order")) {
-            Long orderId = context.getLong("window.mainTab.form.order");
-            LookupComponent orderLookupComponent = (LookupComponent) view.getComponentByReference("order");
-            orderLookupComponent.setFieldValue(orderId);
-            orderLookupComponent.requestComponentUpdateState();
+        if(Objects.isNull(((FormComponent) view.getComponentByReference(L_FORM)).getEntityId())) {
+            JSONObject context = view.getJsonContext();
+
+            if (view.isViewAfterRedirect() && context.has(L_CONTEXT_KEY_PRODUCTION_TRACKING)) {
+                Long productionTrackingId = context.getLong(L_CONTEXT_KEY_PRODUCTION_TRACKING);
+                Long orderId = context.getLong(L_CONTEXT_KEY_ORDER);
+
+                LookupComponent orderLookupComponent = (LookupComponent) view.getComponentByReference(L_ORDER);
+                orderLookupComponent.setFieldValue(orderId);
+                orderLookupComponent.setEnabled(false);
+                orderLookupComponent.requestComponentUpdateState();
+
+                LookupComponent productionTrackingComponent = (LookupComponent) view.getComponentByReference(
+                        L_PRODUCTION_TRACKING);
+                productionTrackingComponent.setFieldValue(productionTrackingId);
+                productionTrackingComponent.setEnabled(false);
+                productionTrackingComponent.requestComponentUpdateState();
+            } else if (view.isViewAfterRedirect() && context.has(L_CONTEXT_KEY_ORDER)) {
+                Long orderId = context.getLong(L_CONTEXT_KEY_ORDER);
+                LookupComponent orderLookupComponent = (LookupComponent) view.getComponentByReference(L_ORDER);
+                orderLookupComponent.setFieldValue(orderId);
+                orderLookupComponent.setEnabled(false);
+                orderLookupComponent.requestComponentUpdateState();
+            }
         }
     }
 }

@@ -77,4 +77,6 @@ public final class ProductionTrackingFields {
 
     public static final String STATE_CHANGES = "stateChanges";
 
+    public static final String STOPPAGES = "stoppages";
+
 }
