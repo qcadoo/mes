@@ -37,7 +37,7 @@
             <component type="form" name="form" reference="form">
            		<component type="gridLayout" name="gridLayout" columns="3" rows="8" hasBorders="false">
            			<layoutElement column="1" row="1">
-		            	<component type="lookup" name="order" field="order">
+		            	<component type="lookup" name="order" field="order" reference="order">
 		            		<option type="column" name="name" fields="name" link="true"/>
 		            		<option type="searchable" value="name,number" />
 		            		<option type="orderable" value="name,number" />
@@ -87,4 +87,8 @@
                 <option type="header" value="true" />
             </component>
         </component>
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.stoppage.hooks.AllStoppagesFormHooks"
+					  method="onBeforeRender"/>
+	</hooks>
 </view>
