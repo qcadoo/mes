@@ -30,5 +30,6 @@
 		<aspect name="com.qcadoo.mes.technologies.states.aop.TechnologyStateChangeAspect" />
 		<aspect name="com.qcadoo.mes.technologies.states.aop.listener.TechnologyValidationAspect"/>
 		<aspect name="com.qcadoo.mes.technologies.states.aop.listener.TechnologyMasterUnmarkingAspect"/>
+		<aspect name="com.qcadoo.mes.technologies.states.aop.listener.TechnologyProductStructureDeletingAspect"/>
 	</aspects>
 </aspectj>
