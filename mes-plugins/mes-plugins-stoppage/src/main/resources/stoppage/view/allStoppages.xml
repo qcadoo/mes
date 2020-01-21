@@ -101,7 +101,7 @@
 				<option type="column" name="dateTo" fields="dateTo"/>
 				<option type="column" name="reason" fields="reason" expression="#reason['name']"/>
 				<option type="column" name="description" fields="description"/>
-				<option type="column" name="division" fields="order" expression="(#order['division'] == null) ? '' : #order['division'].get('number')" />
+				<option type="column" name="division" fields="order" expression="(#productionTracking == null || #productionTracking['division'] == null) ? ((#order['division'] == null) ? '' : #order['division'].get('number')) : #productionTracking['division'].get('number')" />
 				<option type="column" name="productionLine" fields="order" expression="(#order['productionLine'] == null) ? '' : #order['productionLine'].get('number')" />
 				<option type="column" name="workstation" fields="productionTracking" expression="(#productionTracking == null || #productionTracking['workstation'] == null) ? '' : #productionTracking['workstation'].get('number')" />
 				<option type="column" name="staff" fields="productionTracking" expression="(#productionTracking == null || #productionTracking['staff'] == null) ? '' : #productionTracking['staff'].get('name') + ' ' + #productionTracking['staff'].get('surname')" />

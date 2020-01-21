@@ -40,5 +40,10 @@
 		<datetime name="dateTo"/>
 		<integer name="duration" required="true" />
 	</fields>
-	<hooks />
+	<hooks>
+		<validatesWith class="com.qcadoo.mes.stoppage.hooks.StoppageHooks"
+					   method="validatesWith"/>
+		<onSave class="com.qcadoo.mes.stoppage.hooks.StoppageHooks"
+					   method="onSave"/>
+	</hooks>
 </model>
