@@ -96,7 +96,7 @@
 				<option type="column" name="order" fields="order" expression="#order['number']" link="true"/>
 				<option type="column" name="productionTracking" fields="productionTracking" expression="#productionTracking['number']" link="true"/>
 				<option type="column" name="productionTrackingState" fields="productionTracking" expression="'@productionCounting.productionTracking.state.value.' + #productionTracking['state']" link="true"/>
-				<option type="column" name="duration" fields="duration" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)"/>
+				<option type="column" name="duration" fields="duration" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)" link="true"/>
 				<option type="column" name="dateFrom" fields="dateFrom"/>
 				<option type="column" name="dateTo" fields="dateTo"/>
 				<option type="column" name="reason" fields="reason" expression="#reason['name']"/>

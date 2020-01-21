@@ -81,8 +81,7 @@
 
 		<view:view resource="view/allStoppages.xml" />
 		<view:view resource="view/allStoppagesForm.xml" />
-		<view:view resource="view/stoppage.xml" />
-		<view:view resource="view/stoppageForm.xml" />
+
 		<view:view resource="view/stoppageReasonsList.xml" />
 		<view:view resource="view/stoppageReasonDetails.xml" />
 
