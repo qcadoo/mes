@@ -24,7 +24,7 @@ public class AllStoppagesFormHooks {
     private static final String L_CONTEXT_KEY_ORDER = "window.mainTab.form.order";
 
     public final void onBeforeRender(final ViewDefinitionState view) throws JSONException {
-        if(Objects.isNull(((FormComponent) view.getComponentByReference(L_FORM)).getEntityId())) {
+        if (Objects.isNull(((FormComponent) view.getComponentByReference(L_FORM)).getEntityId())) {
             JSONObject context = view.getJsonContext();
 
             if (view.isViewAfterRedirect() && context.has(L_CONTEXT_KEY_PRODUCTION_TRACKING)) {
@@ -36,8 +36,8 @@ public class AllStoppagesFormHooks {
                 orderLookupComponent.setEnabled(false);
                 orderLookupComponent.requestComponentUpdateState();
 
-                LookupComponent productionTrackingComponent = (LookupComponent) view.getComponentByReference(
-                        L_PRODUCTION_TRACKING);
+                LookupComponent productionTrackingComponent = (LookupComponent) view
+                        .getComponentByReference(L_PRODUCTION_TRACKING);
                 productionTrackingComponent.setFieldValue(productionTrackingId);
                 productionTrackingComponent.setEnabled(false);
                 productionTrackingComponent.requestComponentUpdateState();
@@ -47,6 +47,15 @@ public class AllStoppagesFormHooks {
                 orderLookupComponent.setFieldValue(orderId);
                 orderLookupComponent.setEnabled(false);
                 orderLookupComponent.requestComponentUpdateState();
+            }
+        } else {
+            JSONObject context = view.getJsonContext();
+            if (Objects.nonNull(context) && context.has(L_CONTEXT_KEY_PRODUCTION_TRACKING)) {
+                LookupComponent orderLookupComponent = (LookupComponent) view.getComponentByReference(L_ORDER);
+                LookupComponent productionTrackingComponent = (LookupComponent) view
+                        .getComponentByReference(L_PRODUCTION_TRACKING);
+                orderLookupComponent.setEnabled(false);
+                productionTrackingComponent.setEnabled(false);
             }
         }
     }
