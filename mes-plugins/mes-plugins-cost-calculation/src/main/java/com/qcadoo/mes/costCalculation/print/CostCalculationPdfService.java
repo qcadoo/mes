@@ -23,20 +23,6 @@
  */
 package com.qcadoo.mes.costCalculation.print;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lowagie.text.Chunk;
@@ -83,6 +69,20 @@ import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.view.api.utils.TimeConverterService;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class CostCalculationPdfService extends PdfDocumentService {
@@ -237,15 +237,11 @@ public class CostCalculationPdfService extends PdfDocumentService {
                 .fillBasicComponents(operationComponents);
         List<ComponentsCalculationHolder> allOperations = costCalculationComponentsService.fillAllOperations(operationComponents);
 
-        Map<Long, ComponentsCalculationHolder> basicComponentsMap = basicComponents.stream().collect(
-                Collectors.toMap(x -> x.getToc().getId(), x -> x));
-        Map<Long, ComponentsCalculationHolder> allOperationsMap = allOperations.stream().collect(
-                Collectors.toMap(x -> x.getToc().getId(), x -> x));
-        costCalculationComponentsService.addMaterialOperationCost(costCalculation, allOperationsMap, materialQuantitiesByOPC);
+        costCalculationComponentsService.addMaterialOperationCost(costCalculation, allOperations, materialQuantitiesByOPC);
 
-        costCalculationComponentsService.addOperationCost(costCalculation, allOperationsMap);
+        costCalculationComponentsService.addOperationCost(costCalculation, allOperations);
 
-        costCalculationComponentsService.fillBasicComponentsCosts(operationComponents, basicComponentsMap, allOperationsMap,
+        costCalculationComponentsService.fillBasicComponentsCosts(operationComponents, basicComponents, allOperations,
                 quantity);
         List<String> componentsTableHeader = Lists.newArrayList();
         Map<String, HeaderAlignment> alignments = Maps.newHashMap();
@@ -289,7 +285,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
         DataDefinition ccDD = dataDefinitionService.get(CostCalculationConstants.PLUGIN_IDENTIFIER,
                 CostCalculationConstants.MODEL_COMPONENT_COST);
         List<Entity> componentsCost = Lists.newArrayList();
-        for (ComponentsCalculationHolder component : basicComponentsMap.values()) {
+        for (ComponentsCalculationHolder component : basicComponents) {
             componentsTable.addCell(new Phrase(component.getProduct().getStringField(ProductFields.NUMBER), FontUtils
                     .getDejavuRegular7Dark()));
             componentsTable.addCell(new Phrase(component.getProduct().getStringField(ProductFields.NAME), FontUtils
