@@ -61,35 +61,6 @@
 					</smallButton>
 					<bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{grid}.performRefresh;" accesskey="r" />
 				</group>
-
-				<group name="states" if="#view.getComponentByReference('grid').dataDefinition.activable">
-					<smallButton name="activate" icon="unactiveVisibleIcon.png" state="disabled" action="#{grid}.performActivate;">
-						<script><![CDATA[
-                #{grid}.addOnChangeListener({
-                	onChange: function(selectedArray) {
-                		if (selectedArray.length == 0) {
-                			this.disable();
-                		} else {
-                			this.enable();
-                		}
-                	}
-                });
-			]]></script>
-					</smallButton>
-					<smallButton name="deactivate" icon="unactiveNotVisibleIcon.png" state="disabled" action="#{grid}.performDeactivate;">
-						<script><![CDATA[
-                #{grid}.addOnChangeListener({
-                	onChange: function(selectedArray) {
-                		if (selectedArray.length == 0) {
-                			this.disable();
-                		} else {
-                			this.enable();
-                		}
-                	}
-                });
-			]]></script>
-					</smallButton>
-				</group>
 			</ribbon>
 						
 			<component type="grid" name="stoppage" reference="grid">
