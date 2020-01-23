@@ -27,6 +27,7 @@ import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.advancedGenealogy.constants.ProductFieldsAG;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
 import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
@@ -45,6 +46,7 @@ import com.qcadoo.mes.productionCounting.utils.OrderClosingHelper;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.StateChangeContextBuilder;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -119,6 +121,18 @@ public final class ProductionTrackingListenerService {
             productionTracking.addError(productionTracking.getDataDefinition().getField(ProductionTrackingFields.BATCH),
                     "qcadooView.validate.field.error.missing");
         }
+        List<Entity> productInComponents = productionTracking
+                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
+        productInComponents.forEach(pic -> {
+            Entity picProduct = pic.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
+            if (BigDecimalUtils.convertNullToZero(pic.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY))
+                    .compareTo(BigDecimal.ZERO) > 0
+                    && picProduct.getBooleanField(ProductFieldsAG.BATCH_EVIDENCE)
+                    && pic.getHasManyField(TrackingOperationProductInComponentFields.USED_BATCHES).isEmpty()) {
+                productionTracking.addGlobalError("productionCounting.productionTracking.error.batchEvidenceRequiredForProduct",
+                        picProduct.getStringField(ProductFields.NUMBER));
+            }
+        });
     }
 
     public void onLeavingDraft(final Entity productionTracking) {
