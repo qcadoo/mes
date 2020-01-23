@@ -23,6 +23,20 @@
  */
 package com.qcadoo.mes.productionPerShift.report;
 
+import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
+
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.LocalTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.commons.dateTime.TimeRange;
 import com.qcadoo.mes.basic.ShiftsService;
@@ -42,17 +56,6 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.UserService;
-import org.joda.time.DateTime;
-import org.joda.time.Days;
-import org.joda.time.LocalTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-
-import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
 
 @Service
 public class PPSReportXlsHelper {
@@ -114,16 +117,30 @@ public class PPSReportXlsHelper {
         dateTo = dateTo.withMinuteOfHour(endTime.getMinuteOfHour());
 
         Entity shiftEntity = shiftsService.getShiftFromDateWithTime(dateTo.toDate());
-        if (shiftEntity != null) {
-            dateTo = getShiftEndDate(new DateTime(dateTo), shiftEntity);
+
+        if (Objects.nonNull(shiftEntity)) {
+            Optional<DateTime> mayBeShiftEndDate = getShiftEndDate(new DateTime(dateTo), shiftEntity);
+
+            if (mayBeShiftEndDate.isPresent()) {
+                dateTo = mayBeShiftEndDate.get();
+            }
         }
+
         return dateTo.getMillis();
     }
 
-    private DateTime getShiftEndDate(DateTime day, Entity shiftEntity) {
+    private Optional<DateTime> getShiftEndDate(final DateTime day, final Entity shiftEntity) {
         Shift shift = new Shift(shiftEntity);
-        DateRange range = shift.findWorkTimeAt(day.toDate()).get();
-        return new DateTime(range.getTo());
+
+        com.google.common.base.Optional<DateRange> mayBeWorkTimeAt = shift.findWorkTimeAt(day.toDate());
+
+        if (mayBeWorkTimeAt.isPresent()) {
+            DateRange range = mayBeWorkTimeAt.get();
+
+            return Optional.of(new DateTime(range.getTo()));
+        }
+
+        return Optional.empty();
     }
 
     public List<Entity> getShifts() {
@@ -185,7 +202,7 @@ public class PPSReportXlsHelper {
                     .add(SearchRestrictions.eq(ProgressForDayFields.CORRECTED, true)).setMaxResults(1).uniqueResult();
         }
 
-        if (progressForDay == null) {
+        if (Objects.isNull(progressForDay)) {
             return null;
         } else {
             Entity dailyProgress = progressForDay.getHasManyField(ProgressForDayFields.DAILY_PROGRESS).find()
@@ -213,12 +230,15 @@ public class PPSReportXlsHelper {
 
     public Entity getChangeover(final Entity order) {
         Entity previousOrder = lineChangeoverNormsForOrdersService.getPreviousOrderFromDB(order);
-        if (previousOrder == null) {
+
+        if (Objects.isNull(previousOrder)) {
             return null;
         }
+
         Entity fromTechnology = previousOrder.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
         Entity toTechnology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
         Entity productionLine = order.getBelongsToField(PRODUCTION_LINE);
+
         return changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology, productionLine);
     }
 
