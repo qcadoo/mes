@@ -299,7 +299,7 @@ public class DeliveredProductAddMultiListeners {
         deliveredProduct.setField(DeliveredProductFields.IS_WASTE,
                 position.getBooleanField(DeliveredProductMultiPositionFields.IS_WASTE));
         deliveredProduct.setField(DeliveredProductFields.BATCH,
-                position.getStringField(DeliveredProductMultiPositionFields.BATCH));
+                position.getBelongsToField(DeliveredProductMultiPositionFields.BATCH));
         deliveredProduct.setField(DeliveredProductFields.ADDITIONAL_UNIT,
                 position.getStringField(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT));
         deliveredProduct.setField(DeliveredProductFields.ADDITIONAL_CODE,

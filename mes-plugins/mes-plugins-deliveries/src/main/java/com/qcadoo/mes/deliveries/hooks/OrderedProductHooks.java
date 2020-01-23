@@ -127,15 +127,12 @@ public class OrderedProductHooks {
     }
 
     private void createBatch(final Entity orderedProduct) {
-        if (Objects.isNull(orderedProduct.getId())) {
-            String batchNumber = orderedProduct.getStringField(OrderedProductFields.BATCH_NUMBER);
-            Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
-            Entity batch = orderedProduct.getBelongsToField(OrderedProductFields.BATCH);
+        String batchNumber = orderedProduct.getStringField(OrderedProductFields.BATCH_NUMBER);
+        Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
 
-            if (Objects.nonNull(batchNumber) && Objects.nonNull(product) && Objects.isNull(batch)) {
-                orderedProduct.setField(OrderedProductFields.BATCH,
-                        advancedGenealogyService.createOrGetBatch(batchNumber, product));
-            }
+        if (Objects.nonNull(batchNumber) && Objects.nonNull(product)) {
+            orderedProduct.setField(OrderedProductFields.BATCH_NUMBER, null);
+            orderedProduct.setField(OrderedProductFields.BATCH, advancedGenealogyService.createOrGetBatch(batchNumber, product));
         }
     }
 

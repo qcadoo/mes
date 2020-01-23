@@ -347,9 +347,9 @@ public class DeliveryDetailsListeners {
         deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.QUANTITY, quantity);
         deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY, additionalQuantity);
         deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_CODE,
-                orderedProduct.getField(OrderedProductFields.ADDITIONAL_CODE));
+                orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE));
         deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.BATCH,
-                orderedProduct.getField(OrderedProductFields.BATCH));
+                orderedProduct.getBelongsToField(OrderedProductFields.BATCH));
         deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.CONVERSION, conversion);
 
         if (PluginUtils.isEnabled("supplyNegotiations")) {

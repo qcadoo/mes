@@ -151,7 +151,7 @@
                                 <component type="lookup" name="oldBatch" field="oldBatch"
                                            reference="oldBatch" defaultEnabled="false">
                                     <option type="column" name="supplierName" fields="supplier"
-                                            expression="#supplier.get('name')"/>
+                                            expression="#supplier?.get('name')"/>
 
                                     <option type="searchable" value="number,supplierName"/>
                                     <option type="orderable" value="number,supplierName"/>
@@ -170,7 +170,7 @@
                                 <component type="lookup" name="newBatch" field="newBatch"
                                            reference="newBatch" defaultEnabled="false" hasLabel="false">
                                     <option type="column" name="supplierName" fields="supplier"
-                                            expression="#supplier.get('name')"/>
+                                            expression="#supplier?.get('name')"/>
 
                                     <option type="searchable" value="number,supplierName"/>
                                     <option type="orderable" value="number,supplierName"/>

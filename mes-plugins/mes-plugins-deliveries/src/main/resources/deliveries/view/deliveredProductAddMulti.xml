@@ -187,7 +187,7 @@
                                         <component type="lookup" name="batch" field="batch"
                                                    reference="batch">
                                             <option type="column" name="supplierName" fields="supplier"
-                                                    expression="#supplier.get('name')"/>
+                                                    expression="#supplier?.get('name')"/>
 
                                             <option type="searchable" value="number,supplierName"/>
                                             <option type="orderable" value="number,supplierName"/>

@@ -41,8 +41,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.advancedGenealogy.AdvancedGenealogyService;
-import com.qcadoo.mes.advancedGenealogy.constants.AdvancedGenealogyConstants;
-import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.ReservationService;
@@ -520,14 +518,13 @@ public class DeliveredProductHooks {
     }
 
     private void createBatch(final Entity deliveredProduct) {
-        if (Objects.isNull(deliveredProduct.getId())) {
-            String batchNumber = deliveredProduct.getStringField(OrderedProductFields.BATCH_NUMBER);
-            Entity product = deliveredProduct.getBelongsToField(OrderedProductFields.PRODUCT);
-            Entity batch = deliveredProduct.getBelongsToField(OrderedProductFields.BATCH);
+        String batchNumber = deliveredProduct.getStringField(DeliveredProductFields.BATCH_NUMBER);
+        Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
 
-            if (Objects.nonNull(batchNumber) && Objects.nonNull(product) && Objects.isNull(batch)) {
-                deliveredProduct.setField(OrderedProductFields.BATCH, advancedGenealogyService.createOrGetBatch(batchNumber, product));
-            }
+        if (Objects.nonNull(batchNumber) && Objects.nonNull(product)) {
+            deliveredProduct.setField(DeliveredProductFields.BATCH_NUMBER, null);
+            deliveredProduct.setField(DeliveredProductFields.BATCH,
+                    advancedGenealogyService.createOrGetBatch(batchNumber, product));
         }
     }
 
