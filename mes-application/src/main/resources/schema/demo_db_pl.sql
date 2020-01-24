@@ -8710,7 +8710,7 @@ CREATE TABLE basic_numberpatternelement (
     id bigint NOT NULL,
     numberpattern_id bigint,
     element character varying(255),
-    value character varying(1024),
+    value character varying(10),
     succession integer
 );
 
@@ -22755,9 +22755,12 @@ CREATE TABLE stoppage_stoppage (
     id bigint NOT NULL,
     order_id bigint,
     duration integer,
-    reason text,
-    active boolean DEFAULT true,
-    entityversion bigint DEFAULT 0
+    entityversion bigint DEFAULT 0,
+    productiontracking_id bigint,
+    reason_id bigint,
+    description character varying(1024),
+    datefrom timestamp without time zone,
+    dateto timestamp without time zone
 );
 
 
@@ -22778,6 +22781,36 @@ CREATE SEQUENCE stoppage_stoppage_id_seq
 --
 
 ALTER SEQUENCE stoppage_stoppage_id_seq OWNED BY stoppage_stoppage.id;
+
+
+--
+-- Name: stoppage_stoppagereason; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE stoppage_stoppagereason (
+    id bigint NOT NULL,
+    name character varying(255),
+    description character varying(1024)
+);
+
+
+--
+-- Name: stoppage_stoppagereason_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE stoppage_stoppagereason_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: stoppage_stoppagereason_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE stoppage_stoppagereason_id_seq OWNED BY stoppage_stoppagereason.id;
 
 
 --
@@ -28015,6 +28048,13 @@ ALTER TABLE ONLY states_message ALTER COLUMN id SET DEFAULT nextval('states_mess
 --
 
 ALTER TABLE ONLY stoppage_stoppage ALTER COLUMN id SET DEFAULT nextval('stoppage_stoppage_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY stoppage_stoppagereason ALTER COLUMN id SET DEFAULT nextval('stoppage_stoppagereason_id_seq'::regclass);
 
 
 --
@@ -36443,6 +36483,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 154	scheduleGantt	operationalTasksGantt	t	7	153	19	ROLE_PLANNING	0
 155	technologies	productsToProductGroupTechnology	t	5	154	7	ROLE_TECHNOLOGIES	0
 156	basic	numberPatternsList	t	1	155	16	ROLE_NUMBER_PATTERN	0
+157	stoppage	stoppageReasonsList	t	4	156	26	ROLE_PRODUCTION_COUNTING	0
 \.
 
 
@@ -36450,7 +36491,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 156, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 157, true);
 
 
 --
@@ -36608,6 +36649,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 153	scheduleGantt	operationalTasksGantt	\N	/operationalTasksGantt.html	0
 154	technologies	productsToProductGroupTechnologyList	productsToProductGroupTechnologyList	\N	0
 155	basic	numberPatternsList	numberPatternsList	\N	0
+156	stoppage	stoppageReasonsList	stoppageReasonsList	\N	0
 \.
 
 
@@ -36615,7 +36657,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 155, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 156, true);
 
 
 --
@@ -36771,7 +36813,7 @@ SELECT pg_catalog.setval('states_message_id_seq', 1, false);
 -- Data for Name: stoppage_stoppage; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY stoppage_stoppage (id, order_id, duration, reason, active, entityversion) FROM stdin;
+COPY stoppage_stoppage (id, order_id, duration, entityversion, productiontracking_id, reason_id, description, datefrom, dateto) FROM stdin;
 \.
 
 
@@ -36780,6 +36822,22 @@ COPY stoppage_stoppage (id, order_id, duration, reason, active, entityversion) F
 --
 
 SELECT pg_catalog.setval('stoppage_stoppage_id_seq', 1, false);
+
+
+--
+-- Data for Name: stoppage_stoppagereason; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY stoppage_stoppagereason (id, name, description) FROM stdin;
+1	Inna	\N
+\.
+
+
+--
+-- Name: stoppage_stoppagereason_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('stoppage_stoppagereason_id_seq', 1, true);
 
 
 --
@@ -41641,6 +41699,14 @@ ALTER TABLE ONLY states_message
 
 ALTER TABLE ONLY stoppage_stoppage
     ADD CONSTRAINT stoppage_stoppage_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: stoppage_stoppagereason_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY stoppage_stoppagereason
+    ADD CONSTRAINT stoppage_stoppagereason_pkey PRIMARY KEY (id);
 
 
 --
@@ -53151,6 +53217,22 @@ ALTER TABLE ONLY stoppage_stoppage
 
 ALTER TABLE ONLY arch_stoppage_stoppage
     ADD CONSTRAINT stoppage_order_fkey FOREIGN KEY (order_id) REFERENCES arch_orders_order(id) DEFERRABLE;
+
+
+--
+-- Name: stoppage_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY stoppage_stoppage
+    ADD CONSTRAINT stoppage_productiontracking_fkey FOREIGN KEY (productiontracking_id) REFERENCES productioncounting_productiontracking(id) DEFERRABLE;
+
+
+--
+-- Name: stoppage_reason_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY stoppage_stoppage
+    ADD CONSTRAINT stoppage_reason_fkey FOREIGN KEY (reason_id) REFERENCES stoppage_stoppagereason(id) DEFERRABLE;
 
 
 --

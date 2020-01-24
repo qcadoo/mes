@@ -23,21 +23,49 @@
  */
 package com.qcadoo.mes.stoppage;
 
-import org.springframework.stereotype.Service;
-
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
+
+import java.util.Map;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public class StoppageService {
 
-    public void showStoppage(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState, final String[] args) {
-        Long orderId = (Long) triggerState.getFieldValue();
+    private static final String L_GRID_OPTIONS = "grid.options";
 
-        if (orderId != null) {
-            String url = "../page/stoppage/stoppage.html?context={\"order.id\":\"" + orderId + "\"}";
-            viewDefinitionState.openModal(url);
-        }
+    private static final String L_FILTERS = "filters";
+
+    private static final String L_FORM = "form";
+
+    public void showStoppage(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState, final String[] args) {
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
+        Entity order = form.getEntity();
+        Map<String, String> filters = Maps.newHashMap();
+        filters.put("order", applyInOperator(order.getStringField(OrderFields.NUMBER)));
+
+        Map<String, Object> gridOptions = Maps.newHashMap();
+        gridOptions.put(L_FILTERS, filters);
+
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put(L_GRID_OPTIONS, gridOptions);
+        parameters.put("window.showBack", true);
+        parameters.put("grid.forOrder", order.getId());
+
+        String url = "../page/stoppage/allStoppages.html";
+
+        viewDefinitionState.openModal(url, parameters);
+
+    }
+
+    private String applyInOperator(final String value) {
+        StringBuilder builder = new StringBuilder();
+        return builder.append("[").append(value).append("]").toString();
     }
 
 }

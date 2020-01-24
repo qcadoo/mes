@@ -24,6 +24,8 @@
 package com.qcadoo.mes.orderSupplies.register;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
@@ -35,13 +37,9 @@ import com.qcadoo.mes.orderSupplies.constants.OrderFieldsOS;
 import com.qcadoo.mes.orderSupplies.constants.OrderSuppliesConstants;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
-import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
-import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
+import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
+import com.qcadoo.mes.technologies.constants.ProductToProductGroupFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
@@ -55,7 +53,6 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -71,16 +68,13 @@ public class RegisterService {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
-
-    @Autowired
     private NumberService numberService;
 
     public List<Entity> getOPICForTechnology(final Entity technology) {
-        String sql = "select opic as opic, product.id as productId, product.number as productNumber, operation.id as operationId, toc.id as tocId "
-                + "from  #technologies_operationProductInComponent opic "
-                + "left join opic.product as product " + "left join opic.operationComponent toc "
-                + "left join toc.operation operation " + "left join toc.technology tech  " + "where tech.id = :technologyId";
+        String sql = "select opic as opic, product.id as productId, product.number as productNumber, product.entityType as productEntityType, "
+                + "operation.id as operationId, toc.id as tocId from #technologies_operationProductInComponent opic "
+                + "left join opic.product as product left join opic.operationComponent toc "
+                + "left join toc.operation operation left join toc.technology tech where tech.id = :technologyId";
 
         return dataDefinitionService
                 .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
@@ -143,8 +137,18 @@ public class RegisterService {
         registerEntry.setField(
                 CoverageRegisterFields.OPERATION,
                 opic.getLongField("operationId"));
-        registerEntry.setField(CoverageRegisterFields.PRODUCT, opic.getLongField("productId"));
-        registerEntry.setField(CoverageRegisterFields.PRODUCT_NUMBER, opic.getStringField("productNumber"));
+        Long productId = opic.getLongField("productId");
+        String productNumber = opic.getStringField("productNumber");
+        if(ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(opic.getStringField("productEntityType"))){
+            Entity productToProductGroupTechnology = getProductToProductGroupTechnology(order.getBelongsToField(OrderFields.PRODUCT), productId);
+            if (productToProductGroupTechnology != null) {
+                Entity orderProduct = productToProductGroupTechnology.getBelongsToField(ProductToProductGroupFields.ORDER_PRODUCT);
+                productId = orderProduct.getId();
+                productNumber = orderProduct.getStringField(ProductFields.NUMBER);
+            }
+        }
+        registerEntry.setField(CoverageRegisterFields.PRODUCT, productId);
+        registerEntry.setField(CoverageRegisterFields.PRODUCT_NUMBER, productNumber);
         registerEntry.setField(CoverageRegisterFields.QUANTITY, quantity);
         registerEntry.setField(CoverageRegisterFields.PRODUCTION_COUNTING_QUANTITIES, quantity);
         registerEntry.setField(CoverageRegisterFields.EVENT_TYPE, eventType);
@@ -155,6 +159,15 @@ public class RegisterService {
             registerEntry.setField(CoverageRegisterFields.PRODUCT_TYPE, "01component");
         }
         entries.add(registerEntry);
+    }
+
+    private Entity getProductToProductGroupTechnology(Entity orderProduct, Long productId) {
+        return dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_PRODUCT_TO_PRODUCT_GROUP_TECHNOLOGY)
+                .find().add(SearchRestrictions.belongsTo(ProductToProductGroupFields.FINAL_PRODUCT, orderProduct))
+                .add(SearchRestrictions.belongsTo(ProductToProductGroupFields.PRODUCT_FAMILY, BasicConstants.PLUGIN_IDENTIFIER,
+                        BasicConstants.MODEL_PRODUCT, productId))
+                .uniqueResult();
     }
 
     public boolean isIntermediate(final Entity product) {

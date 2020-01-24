@@ -309,12 +309,6 @@
         </model:model-field>
 
         <model:model-hook plugin="technologies" model="technology">
-            <model:validatesWith
-                    class="com.qcadoo.mes.orders.OrdersTechnologyExtensionService"
-                    method="checkExistingOrders"/>
-        </model:model-hook>
-
-        <model:model-hook plugin="technologies" model="technology">
             <model:onDelete
                     class="com.qcadoo.mes.orders.hooks.TechnologyHooksO"
                     method="checkIfTechnologyIsPrototypeForOrders"/>

@@ -31,23 +31,68 @@
 	
 		<component type="window" name="window">
 			<ribbon>
-				<group template="gridNewCopyAndRemoveAction" />
+				<group name="actions">
+					<bigButton name="new" icon="newIcon24.png" state="enabled" action="#{grid}.fireEvent(addNew)"/>
+					<smallButton name="copy" icon="copyIcon16.png" state="disabled" action="#{grid}.performCopy;" accesskey="c">
+						<script><![CDATA[
+                #{grid}.addOnChangeListener({
+                	onChange: function(selectedArray) {
+                		if (selectedArray.length == 0) {
+                			this.disable();
+                		} else {
+                			this.enable();
+                		}
+                	}
+                });
+			]]></script>
+					</smallButton>
+					<smallButton name="delete" icon="deleteIcon16.png" state="disabled" action="#{grid}.performDelete;" accesskey="d">
+						<script><![CDATA[
+                #{grid}.addOnChangeListener({
+                	onChange: function(selectedArray) {
+                		if (selectedArray.length == 0) {
+                			this.disable();
+                		} else {
+                			this.enable();
+                		}
+                	}
+                });
+			]]></script>
+					</smallButton>
+					<bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{grid}.performRefresh;" accesskey="r" />
+				</group>
 			</ribbon>
 						
 			<component type="grid" name="stoppage" reference="grid">
-				<option type="column" name="order" fields="order" expression="#order['name']" link="true" width="65" />
-				<option type="column" name="duration" fields="duration" link="true" width="20" />
-				<option type="column" name="reason" fields="reason" link="true" />
+				<option type="column" name="order" fields="order" expression="#order['number']" link="true"/>
+				<option type="column" name="productionTracking" fields="productionTracking" expression="#productionTracking['number']" link="true"/>
+				<option type="column" name="productionTrackingState" fields="productionTracking" expression="'@productionCounting.productionTracking.state.value.' + #productionTracking['state']" link="true"/>
+				<option type="column" name="duration" fields="duration" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)" link="true"/>
+				<option type="column" name="dateFrom" fields="dateFrom"/>
+				<option type="column" name="dateTo" fields="dateTo"/>
+				<option type="column" name="reason" fields="reason" expression="#reason['name']"/>
+				<option type="column" name="description" fields="description"/>
+				<option type="column" name="division" fields="order" expression="(#productionTracking == null || #productionTracking['division'] == null) ? ((#order['division'] == null) ? '' : #order['division'].get('number')) : #productionTracking['division'].get('number')" />
+				<option type="column" name="productionLine" fields="order" expression="(#order['productionLine'] == null) ? '' : #order['productionLine'].get('number')" />
+				<option type="column" name="workstation" fields="productionTracking" expression="(#productionTracking == null || #productionTracking['workstation'] == null) ? '' : #productionTracking['workstation'].get('number')" />
+				<option type="column" name="staff" fields="productionTracking" expression="(#productionTracking == null || #productionTracking['staff'] == null) ? '' : #productionTracking['staff'].get('name') + ' ' + #productionTracking['staff'].get('surname')" />
 
 				<option type="correspondingView" value="stoppage/allStoppagesForm" />
 				<option type="correspondingComponent" value="form" />
 				<option type="correspondingViewInModal" value="false" />
 					
 				<option type="order" column="duration" direction="desc" />
-				<option type="searchable" value="order,reason,duration" />
-				<option type="orderable" value="order,reason,duration" />
+				<option type="searchable" value="order,productionTracking,productionTrackingState,duration,dateFrom,dateTo,reason,description,division,productionLine,workstation,staff" />
+				<option type="orderable" value="order,productionTracking,productionTrackingState,duration,dateFrom,dateTo,reason,description,division,productionLine,workstation,staff" />
+				<option type="footerRow" value="true"/>
+				<option type="columnsToSummaryTime" value="duration"/>
+
 				<option type="fullscreen" value="true" />
 				<option type="multiselect" value="true" />
+
+				<listener event="addNew"
+						  class="com.qcadoo.mes.stoppage.listeners.AllStoppagesListeners" method="addNew"/>
+
 			</component>
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />

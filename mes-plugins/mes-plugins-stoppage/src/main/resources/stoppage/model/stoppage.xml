@@ -24,14 +24,26 @@
     ***************************************************************************
 
 -->
-<model name="stoppage" activable="true" 
+<model name="stoppage"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<belongsTo name="order" model="order" plugin="orders"
 			required="true" />
+		<belongsTo name="productionTracking" model="productionTracking" plugin="productionCounting"/>
+		<belongsTo name="reason" model="stoppageReason"
+				   required="true" />
+		<string name="description">
+			<validatesLength max="1024"/>
+		</string>
+		<datetime name="dateFrom"/>
+		<datetime name="dateTo"/>
 		<integer name="duration" required="true" />
-		<text name="reason" required="true" />
 	</fields>
-	<hooks />
+	<hooks>
+		<validatesWith class="com.qcadoo.mes.stoppage.hooks.StoppageHooks"
+					   method="validatesWith"/>
+		<onSave class="com.qcadoo.mes.stoppage.hooks.StoppageHooks"
+					   method="onSave"/>
+	</hooks>
 </model>

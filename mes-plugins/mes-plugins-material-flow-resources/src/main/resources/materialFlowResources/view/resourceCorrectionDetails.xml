@@ -54,10 +54,8 @@
                     </layoutElement>
 
                     <layoutElement column="1" row="4">
-                        <component type="lookup" name="resource" field="resource"
-                                   reference="resource" defaultEnabled="false">
-                            <option type="expression" value="#number"/>
-                            <option type="fieldCode" value="number"/>
+                        <component type="input" name="resourceNumber" field="resourceNumber"
+                                   reference="resourceNumber" defaultEnabled="false">
                         </component>
                     </layoutElement>
 
