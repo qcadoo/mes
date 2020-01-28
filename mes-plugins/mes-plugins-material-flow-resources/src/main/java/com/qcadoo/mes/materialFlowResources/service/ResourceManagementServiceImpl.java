@@ -464,8 +464,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         position.setField(PositionFields.WASTE, newPosition.getField(PositionFields.WASTE));
         position.setField(PositionFields.QUANTITY, newPosition.getField(PositionFields.QUANTITY));
         position.setField(PositionFields.GIVEN_QUANTITY, newPosition.getField(PositionFields.GIVEN_QUANTITY));
-        if(position.getHasManyField(PositionFields.POSITION_ATTRIBUTE_VALUES).isEmpty()) {
-            position.setField(PositionFields.POSITION_ATTRIBUTE_VALUES, newPosition.getField(PositionFields.POSITION_ATTRIBUTE_VALUES));
+        if (position.getHasManyField(PositionFields.POSITION_ATTRIBUTE_VALUES).isEmpty()) {
+            position.setField(PositionFields.POSITION_ATTRIBUTE_VALUES,
+                    newPosition.getField(PositionFields.POSITION_ATTRIBUTE_VALUES));
         }
     }
 
@@ -804,6 +805,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     private List<Entity> getResourcesForLocationCommonCodeConversion(final Entity warehouse, final Entity product,
             final Entity additionalCode, final Entity position, final boolean resourceIrrespectiveOfConversion,
             final SearchOrder... searchOrders) {
+
         class SearchCriteriaHelper {
 
             private List<Entity> getAll() {
@@ -827,6 +829,10 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                     } else {
                         scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
                     }
+                }
+
+                if (Objects.nonNull(position.getBelongsToField(PositionFields.BATCH))) {
+                    scb.add(SearchRestrictions.belongsTo(ResourceFields.BATCH, position.getBelongsToField(PositionFields.BATCH)));
                 }
 
                 Optional.ofNullable(searchCriterion).ifPresent(scb::add);

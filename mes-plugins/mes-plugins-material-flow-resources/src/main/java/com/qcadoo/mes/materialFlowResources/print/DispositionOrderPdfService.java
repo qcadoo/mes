@@ -39,6 +39,7 @@ import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfPageEventHelper;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -73,6 +74,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -197,8 +199,11 @@ public class DispositionOrderPdfService extends PdfDocumentWithWriterService {
                     .setTypeOfPallet(PositionDataProvider.typeOfPallet(position))
                     .setAdditionalCode(PositionDataProvider.additionalCode(position)).setProductName(getDataForProduct(position))
                     .setQuantity(position.getDecimalField(PositionFields.QUANTITY)).setUnit(PositionDataProvider.unit(position))
-                    .setProduct(position.getBelongsToField(PositionFields.PRODUCT).getId())
-                    .setBatch(position.getStringField(PositionFields.BATCH));
+                    .setProduct(position.getBelongsToField(PositionFields.PRODUCT).getId());
+            if(Objects.nonNull(position.getBelongsToField(PositionFields.BATCH))) {
+                builder.setBatch(position.getBelongsToField(PositionFields.BATCH).getStringField(BatchFields.NUMBER));
+            }
+
             if (acceptanceOfDocumentBeforePrinting) {
                 builder.setTargetPallet(getDataForTargetPallet(position));
             }

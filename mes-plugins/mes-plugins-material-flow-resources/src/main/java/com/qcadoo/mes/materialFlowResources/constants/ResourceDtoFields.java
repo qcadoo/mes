@@ -1,0 +1,90 @@
+/**
+ * ***************************************************************************
+ * Copyright (c) 2010 Qcadoo Limited
+ * Project: Qcadoo MES
+ * Version: 1.4
+ * <p/>
+ * This file is part of Qcadoo.
+ * <p/>
+ * Qcadoo is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation; either version 3 of the License,
+ * or (at your option) any later version.
+ * <p/>
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ * <p/>
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+ * ***************************************************************************
+ */
+package com.qcadoo.mes.materialFlowResources.constants;
+
+public final class ResourceDtoFields {
+
+    private ResourceDtoFields() {
+
+    }
+
+    public static final String NUMBER = "number";
+
+    public static final String LOCATION_NUMBER = "locationNumber";
+
+    public static final String LOCATION_ID = "location_id";
+
+    public static final String PRODUCT_NUMBER = "productNumber";
+
+    public static final String PRODUCT_NAME = "productName";
+
+    public static final String QUANTITY = "quantity";
+
+    public static final String PRODUCT_UNIT = "productUnit";
+
+    public static final String QUANTITY_IN_ADDITIONAL_UNIT = "quantityInAdditionalUnit";
+
+    public static final String GIVEN_UNIT = "givenUnit";
+
+    public static final String CONVERSION = "conversion";
+
+    public static final String RESERVED_QUANTITY = "reservedQuantity";
+
+    public static final String AVAILABLE_QUANTITY = "availableQuantity";
+
+    public static final String PRICE = "price";
+
+    public static final String VALUE = "value";
+
+    public static final String TIME = "time";
+
+    public static final String PRODUCTION_DATE = "productionDate";
+
+    public static final String EXPIRATION_DATE = "expirationDate";
+
+    public static final String BATCH_NUMBER = "batchNumber";
+
+    public static final String STORAGE_LOCATION_NUMBER = "storageLocationNumber";
+
+    public static final String ADDITIONAL_CODE = "additionalCode";
+
+    public static final String PALLET_NUMBER = "palletNumber";
+
+    public static final String TYPE_OF_PALLET = "typeOfPallet";
+
+    public static final String USER_NAME = "userName";
+
+    public static final String IS_CORRECTED = "isCorrected";
+
+    public static final String WASTE = "waste";
+
+    public static final String DELIVERY_NUMBER = "deliveryNumber";
+
+    public static final String DOCUMENT_NUMBER = "documentNumber";
+
+    public static final String MERGED_PRODUCT_NUMBER_AND_ADDITIONAL_CODE = "mergedProductNumberAndAdditionalCode";
+
+    public static final String POSITION_ADD_MULTI_HELPER = "positionAddMultiHelper";
+
+}

@@ -326,7 +326,7 @@ public class DocumentPositionValidator {
             boolean find = false;
 
             DataResponse resourcesResponse = documentPositionService.getResourcesResponse(position.getDocument(), "",
-                    position.getProduct(), position.getConversion(), position.getAdditionalCode(), false);
+                    position.getProduct(), position.getConversion(), position.getAdditionalCode(), position.getBatch(), false);
 
             List<? extends AbstractDTO> resources = resourcesResponse.getEntities();
 
@@ -500,12 +500,30 @@ public class DocumentPositionValidator {
         params.put("productionDate", vo.getProductionDate());
         params.put("price", vo.getPrice());
         params.put("resource_id", tryGetResourceIdByNumber(vo.getResource(), errors));
-        params.put("batch", vo.getBatch().trim());
+        params.put("batch_id", tryGetBatchIdByNumber(vo.getBatch(), errors));
         params.put("waste", vo.isWaste());
         params.put("lastResource", vo.getLastResource());
         params.put("sellingPrice", vo.getSellingPrice());
 
         return params;
+    }
+
+    private Object tryGetBatchIdByNumber(final String batch, List<String> errors) {
+        if (Strings.isNullOrEmpty(batch)) {
+            return null;
+        }
+
+        try {
+            Long productId = jdbcTemplate.queryForObject(
+                    "SELECT _batch.id FROM advancedgenealogy_batch _batch WHERE _batch.number = :number",
+                    Collections.singletonMap("number", batch), Long.class);
+
+            return productId;
+        } catch (EmptyResultDataAccessException e) {
+            errors.add(String.format("Nie znaleziono takiej parti: '%s'.", batch));
+
+            return null;
+        }
     }
 
     private Long tryGetProductIdByNumber(final String productNumber, final List<String> errors) {

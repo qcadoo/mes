@@ -24,6 +24,7 @@
 package com.qcadoo.mes.deliveries.listeners;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,17 +48,19 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 @Service
 public class DeliveredProductDetailsListeners {
 
-    @Autowired
-    private DeliveriesService deliveriesService;
-
-    @Autowired
-    private DeliveredProductDetailsHooks deliveredProductDetailsHooks;
+    private static final String L_FORM = "form";
 
     @Autowired
     private NumberService numberService;
 
     @Autowired
     private CalculationQuantityService calculationQuantityService;
+
+    @Autowired
+    private DeliveriesService deliveriesService;
+
+    @Autowired
+    private DeliveredProductDetailsHooks deliveredProductDetailsHooks;
 
     public void onSelectedEntityChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(DeliveredProductFields.PRODUCT);
@@ -68,30 +71,33 @@ public class DeliveredProductDetailsListeners {
         LookupComponent storageLocationLookup = (LookupComponent) view
                 .getComponentByReference(DeliveredProductFields.STORAGE_LOCATION);
 
-        if (product != null) {
+        if (Objects.nonNull(product)) {
             filterByProduct(additionalCodeLookup, product.getId());
             filterByProduct(storageLocationLookup, product.getId());
         } else {
             clearAndDisable(additionalCodeLookup);
             clearAndDisable(storageLocationLookup);
         }
+
         fillConversion(view, state, args);
         quantityChange(view, state, args);
     }
 
-    private void filterByProduct(LookupComponent component, Long id) {
-        component.setFieldValue(null);
-        component.setEnabled(true);
-        FilterValueHolder filterValueHolder = component.getFilterValue();
+    private void filterByProduct(final LookupComponent lookupComponent, final Long id) {
+        lookupComponent.setFieldValue(null);
+        lookupComponent.setEnabled(true);
+
+        FilterValueHolder filterValueHolder = lookupComponent.getFilterValue();
         filterValueHolder.put(DeliveredProductFields.PRODUCT, id);
-        component.setFilterValue(filterValueHolder);
-        component.requestComponentUpdateState();
+
+        lookupComponent.setFilterValue(filterValueHolder);
+        lookupComponent.requestComponentUpdateState();
     }
 
-    private void clearAndDisable(LookupComponent component) {
-        component.setFieldValue(null);
-        component.setEnabled(false);
-        component.requestComponentUpdateState();
+    private void clearAndDisable(final LookupComponent lookupComponent) {
+        lookupComponent.setFieldValue(null);
+        lookupComponent.setEnabled(false);
+        lookupComponent.requestComponentUpdateState();
     }
 
     public void fillUnitFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -123,60 +129,87 @@ public class DeliveredProductDetailsListeners {
     }
 
     public void quantityChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
-        Entity deliveredProduct = form.getEntity();
+        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity deliveredProduct = deliveredProductForm.getEntity();
         Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
-        if (decimalFieldsInvalid(form) || product == null) {
+
+        if (decimalFieldsInvalid(deliveredProductForm) || Objects.isNull(product)) {
             return;
         }
+
         BigDecimal conversion = deliveredProduct.getDecimalField(DeliveredProductFields.CONVERSION);
         BigDecimal deliveredQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
-        if (conversion != null && deliveredQuantity != null) {
+
+        if (Objects.nonNull(conversion) && Objects.nonNull(deliveredQuantity)) {
             String additionalQuantityUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT))
                     .orElse(product.getStringField(ProductFields.UNIT));
-            FieldComponent additionalQuantity = (FieldComponent) view.getComponentByReference("additionalQuantity");
+
             BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(deliveredQuantity,
                     conversion, additionalQuantityUnit);
-            additionalQuantity.setFieldValue(numberService.formatWithMinimumFractionDigits(newAdditionalQuantity, 0));
-            additionalQuantity.requestComponentUpdateState();
-        }
 
+            FieldComponent additionalQuantityField = (FieldComponent) view
+                    .getComponentByReference(DeliveredProductFields.ADDITIONAL_QUANTITY);
+
+            additionalQuantityField.setFieldValue(numberService.formatWithMinimumFractionDigits(newAdditionalQuantity, 0));
+            additionalQuantityField.requestComponentUpdateState();
+        }
     }
 
-    private boolean decimalFieldsInvalid(FormComponent form) {
-        String[] names = { DeliveredProductFields.ADDITIONAL_QUANTITY, DeliveredProductFields.CONVERSION,
+    private boolean decimalFieldsInvalid(final FormComponent formComponent) {
+        String[] fieldNames = { DeliveredProductFields.ADDITIONAL_QUANTITY, DeliveredProductFields.CONVERSION,
                 DeliveredProductFields.DELIVERED_QUANTITY };
+
         boolean valid = false;
-        Entity entity = form.getEntity();
-        for (String fieldName : names) {
+
+        Entity entity = formComponent.getEntity();
+
+        for (String fieldName : fieldNames) {
             try {
                 entity.getDecimalField(fieldName);
             } catch (IllegalArgumentException e) {
-                form.findFieldComponentByName(fieldName).addMessage("qcadooView.validate.field.error.invalidNumericFormat",
-                        MessageType.FAILURE);
+                formComponent.findFieldComponentByName(fieldName)
+                        .addMessage("qcadooView.validate.field.error.invalidNumericFormat", MessageType.FAILURE);
+
                 valid = true;
             }
         }
+
         return valid;
     }
 
     public void additionalQuantityChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
-        Entity deliveredProduct = form.getEntity();
+        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity deliveredProduct = deliveredProductForm.getEntity();
         Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
-        if (decimalFieldsInvalid(form) || product == null) {
+
+        if (decimalFieldsInvalid(deliveredProductForm) || Objects.isNull(product)) {
             return;
         }
+
         BigDecimal conversion = deliveredProduct.getDecimalField(DeliveredProductFields.CONVERSION);
         BigDecimal additionalQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.ADDITIONAL_QUANTITY);
-        if (conversion != null && additionalQuantity != null) {
+
+        if (Objects.nonNull(conversion) && Objects.nonNull(additionalQuantity)) {
             String deliveredQuantityUnit = product.getStringField(ProductFields.UNIT);
-            FieldComponent deliveredQuantity = (FieldComponent) view.getComponentByReference("deliveredQuantity");
+
             BigDecimal newDeliveredQuantity = calculationQuantityService.calculateQuantity(additionalQuantity, conversion,
                     deliveredQuantityUnit);
-            deliveredQuantity.setFieldValue(numberService.formatWithMinimumFractionDigits(newDeliveredQuantity, 0));
-            deliveredQuantity.requestComponentUpdateState();
-        }
 
+            FieldComponent deliveredQuantityField = (FieldComponent) view
+                    .getComponentByReference(DeliveredProductFields.DELIVERED_QUANTITY);
+
+            deliveredQuantityField.setFieldValue(numberService.formatWithMinimumFractionDigits(newDeliveredQuantity, 0));
+            deliveredQuantityField.requestComponentUpdateState();
+        }
     }
+
+    public void setBatchLookupProductFilterValue(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Entity deliveredProduct = deliveredProductForm.getPersistedEntityWithIncludedFormValues();
+
+        deliveredProductDetailsHooks.setBatchLookupProductFilterValue(view, deliveredProduct);
+    }
+
 }

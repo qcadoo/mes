@@ -23,6 +23,12 @@
  */
 package com.qcadoo.mes.basic.imports.parsers;
 
+import com.google.common.base.Optional;
+import com.qcadoo.commons.functional.Either;
+import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.imports.helpers.CellErrorsAccessor;
+import com.qcadoo.mes.basic.imports.helpers.CellParser;
+
 import java.text.ParseException;
 import java.util.Date;
 import java.util.function.Consumer;
@@ -32,12 +38,6 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
-
-import com.google.common.base.Optional;
-import com.qcadoo.commons.functional.Either;
-import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.imports.helpers.CellErrorsAccessor;
-import com.qcadoo.mes.basic.imports.helpers.CellParser;
 
 @Component
 public class DateCellParser implements CellParser {
@@ -55,7 +55,7 @@ public class DateCellParser implements CellParser {
     private static final String[] SUPPORTED_PATTERNS = new String[] { "dd.MM.yyyy", "MM/dd/yy" };
 
     @Override
-    public void parse(final String cellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {
+    public void parse(final String cellValue, final String dependentCellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {
         if (validateDateFormat(cellValue, errorsAccessor)) {
             Either<? extends Exception, Optional<DateTime>> either = DateUtils.tryParse(cellValue);
 

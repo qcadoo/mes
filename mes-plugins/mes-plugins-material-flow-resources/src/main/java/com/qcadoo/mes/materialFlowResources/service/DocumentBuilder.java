@@ -23,6 +23,15 @@
  */
 package com.qcadoo.mes.materialFlowResources.service;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
+
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -36,15 +45,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.UserService;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Consumer;
-
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 public class DocumentBuilder {
 
@@ -85,21 +85,21 @@ public class DocumentBuilder {
         return this;
     }
 
-    public DocumentBuilder internalOutbound(Entity locationFrom) {
+    public DocumentBuilder internalOutbound(final Entity locationFrom) {
         document.setField(DocumentFields.LOCATION_FROM, locationFrom);
         document.setField(DocumentFields.TYPE, DocumentType.INTERNAL_OUTBOUND.getStringValue());
 
         return this;
     }
 
-    public DocumentBuilder internalInbound(Entity locationTo) {
+    public DocumentBuilder internalInbound(final Entity locationTo) {
         document.setField(DocumentFields.LOCATION_TO, locationTo);
         document.setField(DocumentFields.TYPE, DocumentType.INTERNAL_INBOUND.getStringValue());
 
         return this;
     }
 
-    public DocumentBuilder transfer(Entity locationTo, Entity locationFrom) {
+    public DocumentBuilder transfer(final Entity locationTo, final Entity locationFrom) {
         document.setField(DocumentFields.LOCATION_TO, locationTo);
         document.setField(DocumentFields.LOCATION_FROM, locationFrom);
         document.setField(DocumentFields.TYPE, DocumentType.TRANSFER.getStringValue());
@@ -107,7 +107,7 @@ public class DocumentBuilder {
         return this;
     }
 
-    public DocumentBuilder release(Entity locationFrom) {
+    public DocumentBuilder release(final Entity locationFrom) {
         document.setField(DocumentFields.LOCATION_FROM, locationFrom);
         document.setField(DocumentFields.TYPE, DocumentType.RELEASE.getStringValue());
 
@@ -150,12 +150,12 @@ public class DocumentBuilder {
      * @return DocumentBuilder.this
      */
     public DocumentBuilder addPosition(final Entity product, final BigDecimal quantity, final BigDecimal price,
-            final String batch, final Date productionDate, final Date expirationDate) {
+            final Entity batch, final Date productionDate, final Date expirationDate) {
         return addPosition(product, quantity, price, batch, productionDate, expirationDate, null);
     }
 
     public DocumentBuilder addPosition(final Entity product, final BigDecimal quantity, final BigDecimal price,
-            final String batch, final Date productionDate, final Date expirationDate, final Entity resource) {
+            final Entity batch, final Date productionDate, final Date expirationDate, final Entity resource) {
         Preconditions.checkArgument(product != null, "Product argument is required.");
         Preconditions.checkArgument(quantity != null, "Quantity argument is required.");
 
@@ -167,7 +167,7 @@ public class DocumentBuilder {
     }
 
     public DocumentBuilder addPosition(final Entity product, final BigDecimal quantity, final BigDecimal givenQuantity,
-            final String givenUnit, final BigDecimal conversion, final BigDecimal price, final String batch,
+            final String givenUnit, final BigDecimal conversion, final BigDecimal price, final Entity batch,
             final Date productionDate, final Date expirationDate, final Entity resource) {
         Preconditions.checkArgument(product != null, "Product argument is required.");
         Preconditions.checkArgument(quantity != null, "Quantity argument is required.");
@@ -181,7 +181,7 @@ public class DocumentBuilder {
     }
 
     public DocumentBuilder addPosition(final Entity product, final BigDecimal quantity, final BigDecimal givenQuantity,
-            final String givenUnit, final BigDecimal conversion, final BigDecimal price, final String batch,
+            final String givenUnit, final BigDecimal conversion, final BigDecimal price, final Entity batch,
             final Date productionDate, final Date expirationDate, final Entity resource, final Entity storageLocation,
             final Entity palletNumber, final String typeOfPallet, final Entity additionalCode, final boolean isWaste) {
         Preconditions.checkArgument(product != null, "Product argument is required.");
@@ -196,7 +196,7 @@ public class DocumentBuilder {
     }
 
     public DocumentBuilder addPosition(final Entity product, final BigDecimal quantity, final BigDecimal givenQuantity,
-            final String givenUnit, final BigDecimal conversion, final BigDecimal price, final String batch,
+            final String givenUnit, final BigDecimal conversion, final BigDecimal price, final Entity batch,
             final Date productionDate, final Date expirationDate, final Entity resource, final Entity storageLocation,
             final Entity palletNumber, final String typeOfPallet, final Entity additionalCode, final boolean isWaste,
             List<Entity> attributes) {
@@ -207,6 +207,7 @@ public class DocumentBuilder {
                 expirationDate, resource, storageLocation, palletNumber, typeOfPallet, additionalCode, isWaste);
 
         position.setField(PositionFields.POSITION_ATTRIBUTE_VALUES, attributes);
+
         positions.add(position);
 
         return this;
@@ -224,7 +225,7 @@ public class DocumentBuilder {
      * @param resource
      * @return Created position entity
      */
-    public Entity createPosition(final Entity product, final BigDecimal quantity, final BigDecimal price, final String batch,
+    public Entity createPosition(final Entity product, final BigDecimal quantity, final BigDecimal price, final Entity batch,
             final Date productionDate, final Date expirationDate, final Entity resource) {
         DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_POSITION);
@@ -259,7 +260,7 @@ public class DocumentBuilder {
      * @return Created position entity
      */
     public Entity createPosition(final Entity product, final BigDecimal quantity, final BigDecimal givenQuantity,
-            final String givenUnit, final BigDecimal conversion, final BigDecimal price, final String batch,
+            final String givenUnit, final BigDecimal conversion, final BigDecimal price, final Entity batch,
             final Date productionDate, final Date expirationDate, final Entity resource) {
         Entity position = createPosition(product, quantity, price, batch, productionDate, expirationDate, resource);
 
@@ -271,7 +272,7 @@ public class DocumentBuilder {
     }
 
     public Entity createPosition(final Entity product, final BigDecimal quantity, final BigDecimal givenQuantity,
-            final String givenUnit, final BigDecimal conversion, final BigDecimal price, final String batch,
+            final String givenUnit, final BigDecimal conversion, final BigDecimal price, final Entity batch,
             final Date productionDate, final Date expirationDate, final Entity resource, final Entity storageLocation,
             final Entity palletNumber, final String typeOfPallet, final Entity additionalCode, final boolean isWaste) {
         Entity position = createPosition(product, quantity, givenQuantity, givenUnit, conversion, price, batch, productionDate,
@@ -315,7 +316,7 @@ public class DocumentBuilder {
      *            field value
      * @return this builder
      */
-    public DocumentBuilder setField(String field, Object value) {
+    public DocumentBuilder setField(final String field, final Object value) {
         document.setField(field, value);
 
         return this;
@@ -328,7 +329,7 @@ public class DocumentBuilder {
         return DocumentType.parseString(document.getStringField(DocumentFields.TYPE));
     }
 
-    private Entity buildWithInvalidStrategy(Consumer<BuildContext> strategy) {
+    private Entity buildWithInvalidStrategy(final Consumer<BuildContext> strategy) {
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
 
@@ -365,7 +366,6 @@ public class DocumentBuilder {
         }
 
         return savedDocument;
-
     }
 
     /**
@@ -395,15 +395,19 @@ public class DocumentBuilder {
         }
     }
 
-    public Entity createDocument(UserService userService) {
+    public Entity createDocument(final UserService userService) {
         Entity newDocument = createDocument();
+
         newDocument.setField(DocumentFields.USER, userService.getCurrentUserEntity().getId());
+
         return newDocument;
     }
 
     private Entity createDocument(final Entity user) {
         Entity newDocument = createDocument();
+
         newDocument.setField(DocumentFields.USER, user.getId());
+
         return newDocument;
     }
 

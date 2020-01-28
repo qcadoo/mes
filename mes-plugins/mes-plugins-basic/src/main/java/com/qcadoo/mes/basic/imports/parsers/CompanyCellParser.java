@@ -47,7 +47,8 @@ public class CompanyCellParser implements CellParser {
     private DataDefinitionService dataDefinitionService;
 
     @Override
-    public void parse(final String cellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {
+    public void parse(final String cellValue, final String dependentCellValue, final CellErrorsAccessor errorsAccessor,
+            final Consumer<Object> valueConsumer) {
         Entity company = getCompanyByNumber(cellValue);
 
         if (Objects.isNull(company)) {

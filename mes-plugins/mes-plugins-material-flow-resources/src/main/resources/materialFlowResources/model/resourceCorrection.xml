@@ -41,8 +41,11 @@
         <belongsTo name="location" model="location" plugin="materialFlow"/>
         <datetime name="time"/>
 
-        <string name="oldBatch"/>
-        <string name="newBatch"/>
+        <string name="_oldBatch"/>
+        <string name="_newBatch"/>
+
+        <belongsTo name="oldBatch" model="batch" plugin="advancedGenealogy"/>
+        <belongsTo name="newBatch" model="batch" plugin="advancedGenealogy"/>
 
         <belongsTo name="resource" model="resource"/>
 

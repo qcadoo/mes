@@ -569,6 +569,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         product: getFieldValue('product', rowId),
                         conversion: getFieldValue('conversion', rowId),
                         ac: getFieldValue('additionalCode', rowId),
+                        batch : getFieldValue('batch', rowId),
                         context: getDocumentId()
                     }
                 } else {
@@ -576,6 +577,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         product: getFieldValue('product', rowId),
                         conversion: 1,
                         ac: getFieldValue('additionalCode', rowId),
+                        batch : getFieldValue('batch', rowId),
                         context: getDocumentId()
                     }
                 }
@@ -598,7 +600,9 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
         function fillWithAttributesFromResource(resource, rowId) {
             $.get('/rest/rest/documentPositions/resourceByNumber/' + getDocumentId() + '/' + Base64.encodeURI(resource) + ".html", function (resource) {
-                updateFieldValue('batch', resource['batch'], rowId);
+                if(resource !== '') {
+                    updateFieldValue('batch', resource['batch'], rowId);
+                }
                 updateFieldValue('productionDate', resource['productionDate'], rowId);
                 updateFieldValue('expirationDate', resource['expirationDate'], rowId);
                 updateFieldValue('storageLocation', resource['storageLocation'], rowId);
@@ -626,7 +630,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         }
 
         function clearResourceRelatedFields(rowId) {
-            var fieldnames = ['resource', 'batch', 'productionDate', 'expirationDate', 'storageLocation', 'palletNumber', 'price', 'typeOfPallet', 'waste', 'lastResource'];
+            var fieldnames = ['resource', 'productionDate', 'expirationDate', 'storageLocation', 'palletNumber', 'price', 'typeOfPallet', 'waste', 'lastResource'];
 
             for (var i in fieldnames) {
                 updateFieldValue(fieldnames[i], '', rowId);
@@ -959,6 +963,24 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 }
 
             });
+        }
+
+        function batchLookup_createElement(value, options) {
+            var lookup = createLookupElement('batch', value, '/rest/rest/documentPositions/batch.html', options, function () {
+                return  {
+                    product: getFieldValue('product', getRowIdFromElement($('input', lookup)))
+                };
+            });
+
+            $('input', lookup).bind('change keydown paste input', function () {
+                var t = $(this);
+                window.clearTimeout(t.data("timeout"));
+                $(this).data("timeout", setTimeout(function () {
+
+                }, 500));
+            });
+
+            return lookup;
         }
 
         function storageLocationLookup_createElement(value, options) {
@@ -1767,7 +1789,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     name: 'batch',
                     index: 'batch',
                     editable: true,
-                    required: true,
+                    edittype: 'custom',
+                    editoptions: {
+                        custom_element: batchLookup_createElement,
+                        custom_value: lookup_value
+                    },
                     formoptions: {
                         rowpos: 6,
                         colpos: 2
@@ -1924,7 +1950,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
             var readOnlyInType = function (outDocument, inBufferDocument, columnIndex) {
                 if (outDocument && (columnIndex === 'expirationDate' || columnIndex === 'productionDate' ||
-                        columnIndex === 'batch' || columnIndex === 'price' ||  columnIndex === 'waste' ||
+                        columnIndex === 'price' ||  columnIndex === 'waste' ||
                         columnIndex === 'palletNumber' || columnIndex === 'typeOfPallet' || columnIndex === 'storageLocation')) {
                     return true;
                 }

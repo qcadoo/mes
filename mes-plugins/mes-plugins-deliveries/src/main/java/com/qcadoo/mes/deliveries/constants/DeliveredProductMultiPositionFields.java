@@ -31,6 +31,8 @@ public final class DeliveredProductMultiPositionFields {
 
     public static final String DELIVERED_PRODUCT_MULTI = "deliveredProductMulti";
 
+    public static final String ORDINAL = "ordinal";
+
     public static final String PRODUCT = "product";
 
     public static final String QUANTITY = "quantity";

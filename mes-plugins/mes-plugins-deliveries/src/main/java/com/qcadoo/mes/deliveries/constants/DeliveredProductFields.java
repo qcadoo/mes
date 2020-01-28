@@ -29,17 +29,13 @@ public final class DeliveredProductFields {
 
     }
 
-    public static final String VALIDATE_PALLET = "validatePallet";
+    public static final String DELIVERY = "delivery";
 
     public static final String PRODUCT = "product";
 
-    public static final String DELIVERY = "delivery";
-
-    public static final String DAMAGED_QUANTITY = "damagedQuantity";
-
     public static final String DELIVERED_QUANTITY = "deliveredQuantity";
 
-    public static final String SUCCESSION = "succession";
+    public static final String DAMAGED_QUANTITY = "damagedQuantity";
 
     public static final String PRICE_PER_UNIT = "pricePerUnit";
 
@@ -53,8 +49,10 @@ public final class DeliveredProductFields {
 
     public static final String ADDITIONAL_CODE = "additionalCode";
 
-    public static final String BATCH = "batch";
+    public static final String BATCH_NUMBER = "batchNumber";
 
+    public static final String BATCH = "batch";
+    
     public static final String ADDITIONAL_QUANTITY = "additionalQuantity";
 
     public static final String CONVERSION = "conversion";
@@ -63,7 +61,16 @@ public final class DeliveredProductFields {
 
     public static final String ADDITIONAL_UNIT = "additionalUnit";
 
+    public static final String SUCCESSION = "succession";
+
     public static final String RESERVATIONS = "reservations";
 
+    public static final String DELIVERED_PRODUCT_IDS = "deliveredProductIds";
+    
+    public static final String VALIDATE_PALLET = "validatePallet";
+
+    public static final String DAMAGED = "damaged";
+
     public static final String DELIVERED_PRODUCT_ATTRIBUTE_VALS = "deliveredProductAttributeVals";
+
 }

@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +82,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         if (isTypeWarehouse(type)) {
             BigDecimal resourcesQuantity = getResourcesQuantityForLocationAndProduct(location, product);
 
-            return resourcesQuantity != null && (resourcesQuantity.compareTo(quantity) >= 0);
+            return Objects.nonNull(resourcesQuantity) && (resourcesQuantity.compareTo(quantity) >= 0);
         } else {
             return true;
         }
@@ -94,7 +95,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         if (isTypeWarehouse(type)) {
             List<Entity> resources = getResourcesForLocationAndProduct(location, product);
 
-            if (resources == null) {
+            if (Objects.isNull(resources)) {
                 return null;
             } else {
                 BigDecimal resourcesQuantity = BigDecimal.ZERO;
@@ -114,7 +115,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     @Transactional
     @Override
     public void manageResources(final Entity transfer) {
-        if (transfer == null) {
+        if (Objects.isNull(transfer)) {
             return;
         }
 
@@ -125,18 +126,18 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         Date time = (Date) transfer.getField(TransferFields.TIME);
         BigDecimal price = transfer.getDecimalField(TransferFieldsMFR.PRICE);
 
-        if ((locationFrom != null) && isTypeWarehouse(locationFrom.getStringField(LocationFields.TYPE)) && (locationTo != null)
-                && isTypeWarehouse(locationTo.getStringField(LocationFields.TYPE))) {
+        if (Objects.nonNull(locationFrom) && isTypeWarehouse(locationFrom.getStringField(LocationFields.TYPE))
+                && Objects.nonNull(locationTo) && isTypeWarehouse(locationTo.getStringField(LocationFields.TYPE))) {
             moveResource(locationFrom, locationTo, product, quantity, time, price);
-        } else if ((locationFrom != null) && isTypeWarehouse(locationFrom.getStringField(LocationFields.TYPE))) {
+        } else if (Objects.nonNull(locationFrom) && isTypeWarehouse(locationFrom.getStringField(LocationFields.TYPE))) {
             updateResource(locationFrom, product, quantity);
-        } else if ((locationTo != null) && isTypeWarehouse(locationTo.getStringField(LocationFields.TYPE))) {
+        } else if (Objects.nonNull(locationTo) && isTypeWarehouse(locationTo.getStringField(LocationFields.TYPE))) {
             addResource(locationTo, product, quantity, time, price);
         }
     }
 
     private boolean isTypeWarehouse(final String type) {
-        return ((type != null) && LocationType.WAREHOUSE.getStringValue().equals(type));
+        return (Objects.nonNull(type) && LocationType.WAREHOUSE.getStringValue().equals(type));
     }
 
     @Override
@@ -147,7 +148,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Override
     public void addResource(final Entity locationTo, final Entity product, final BigDecimal quantity, final Date time,
-            final BigDecimal price, final String batch) {
+            final BigDecimal price, final Entity batch) {
         Entity resource = getResourceDD().create();
 
         resource.setField(ResourceFields.LOCATION, locationTo);
@@ -155,7 +156,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         resource.setField(ResourceFields.QUANTITY, numberService.setScaleWithDefaultMathContext(quantity));
         resource.setField(ResourceFields.TIME, time);
         resource.setField(ResourceFields.BATCH, batch);
-        resource.setField(ResourceFields.PRICE, (price == null) ? null : numberService.setScaleWithDefaultMathContext(price));
+        resource.setField(ResourceFields.PRICE, Objects.isNull(price) ? null : numberService.setScaleWithDefaultMathContext(price));
 
         resource.getDataDefinition().save(resource);
     }
@@ -164,7 +165,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     public void updateResource(final Entity locationFrom, final Entity product, BigDecimal quantity) {
         List<Entity> resources = getResourcesForLocationAndProduct(locationFrom, product);
 
-        if (resources != null) {
+        if (Objects.nonNull(resources)) {
             for (Entity resource : resources) {
                 BigDecimal resourceQuantity = resource.getDecimalField(ResourceFields.QUANTITY);
 
@@ -194,11 +195,11 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             final Date time, final BigDecimal price) {
         List<Entity> resources = getResourcesForLocationAndProduct(locationFrom, product);
 
-        if (resources != null) {
+        if (Objects.nonNull(resources)) {
             for (Entity resource : resources) {
                 BigDecimal resourceQuantity = resource.getDecimalField(ResourceFields.QUANTITY);
-                BigDecimal resourcePrice = (price == null) ? resource.getDecimalField(ResourceFields.PRICE) : price;
-                String resourceBatch = (price == null) ? resource.getStringField(ResourceFields.BATCH) : null;
+                BigDecimal resourcePrice = Objects.isNull(price) ? resource.getDecimalField(ResourceFields.PRICE) : price;
+                Entity resourceBatch = Objects.isNull(price) ? resource.getBelongsToField(ResourceFields.BATCH) : null;
 
                 if (quantity.compareTo(resourceQuantity) >= 0) {
                     quantity = quantity.subtract(resourceQuantity, numberService.getMathContext());
@@ -275,7 +276,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
         List<Entity> resources = getResourcesForLocation(location);
 
-        if (resources != null) {
+        if (Objects.nonNull(resources)) {
             for (Entity resource : resources) {
                 Entity product = resource.getBelongsToField(ResourceFields.PRODUCT);
                 BigDecimal quantity = resource.getDecimalField(ResourceFields.QUANTITY);
@@ -302,10 +303,10 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Override
     public BigDecimal calculatePrice(final Entity location, final Entity product) {
-        if ((location != null) && (product != null)) {
+        if (Objects.nonNull(location) && Objects.nonNull(product)) {
             List<Entity> resources = getResourcesForLocationAndProduct(location, product);
 
-            if (resources != null) {
+            if (Objects.nonNull(resources)) {
                 BigDecimal avgPrice = BigDecimal.ZERO;
                 BigDecimal avgQuantity = BigDecimal.ZERO;
 
@@ -313,7 +314,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
                     BigDecimal quantity = resource.getDecimalField(ResourceFields.QUANTITY);
                     BigDecimal price = resource.getDecimalField(ResourceFields.PRICE);
 
-                    if (price != null) {
+                    if (Objects.nonNull(price)) {
                         avgPrice = avgPrice.add(quantity.multiply(price, numberService.getMathContext()),
                                 numberService.getMathContext());
                         avgQuantity = avgQuantity.add(quantity, numberService.getMathContext());
@@ -371,7 +372,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         Entity locationFrom = locationFromField.getEntity();
         Entity locationTo = locationToField.getEntity();
 
-        if (form.getEntityId() == null) {
+        if (Objects.isNull(form.getEntityId())) {
             if (areLocationsWarehouses(locationFrom, locationTo) && !canChangeDateWhenTransferToWarehouse()) {
                 String currentDate = DateFormat.getDateTimeInstance().format(new Date());
 
@@ -385,7 +386,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Override
     public boolean isLocationIsWarehouse(final Entity location) {
-        return ((location != null)
+        return (Objects.nonNull(location)
                 && LocationType.WAREHOUSE.getStringValue().equals(location.getStringField(LocationFields.TYPE)));
     }
 

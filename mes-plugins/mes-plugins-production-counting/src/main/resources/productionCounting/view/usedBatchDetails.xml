@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING_REGISTRATION" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="usedBatchDetails" modelName="usedBatch">
+
+    <component type="window" name="window">
+
+        <ribbon>
+            <template name="standardFormTemplate" excludeItems="actions.copy"/>
+        </ribbon>
+
+        <component type="form" name="usedBatchForm" reference="form">
+            <component type="gridLayout" name="gridLayout" columns="8"
+                       rows="2" hasBorders="false">
+                <layoutElement column="1" row="1">
+
+
+                </layoutElement>
+                <layoutElement column="1" row="1" width="7">
+                    <component type="lookup" name="batch" reference="batch"
+                               field="#{form}.batch">
+                        <option type="column" name="supplierName" fields="supplier"
+                                expression="#supplier['name']"/>
+                        <option type="column" name="createDate" fields="createDate"/>
+                        <option type="searchable" value="number,supplierName,createDate"/>
+                        <option type="orderable" value="number,supplierName,createDate"/>
+
+                        <option type="expression" value="#number"/>
+                        <option type="fieldCode" value="number"/>
+
+                        <criteriaModifier
+                                class="com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier"
+                                method="filterByProductAndActive"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2" width="7">
+                    <component type="input" name="quantity" field="#{form}.quantity"
+                               reference="quantity">
+                        <option type="alignment" value="right"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="8" row="2">
+                    <component type="input" name="unit" reference="unit"
+                               defaultEnabled="false" hasLabel="false">
+                        <option type="alignment" value="right"/>
+                        <option type="textRepresentationOnDisabled" value="true"/>
+                    </component>
+                </layoutElement>
+            </component>
+
+            <option type="header" value="true"/>
+            <option type="expression" value="#batch['number']"/>
+        </component>
+
+    </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.productionCounting.hooks.UsedBatchDetailsHooks"
+                      method="onBeforeRender"/>
+    </hooks>
+</view>

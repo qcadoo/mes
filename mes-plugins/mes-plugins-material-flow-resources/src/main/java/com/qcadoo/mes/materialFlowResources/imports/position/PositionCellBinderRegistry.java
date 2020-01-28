@@ -23,18 +23,17 @@
  */
 package com.qcadoo.mes.materialFlowResources.imports.position;
 
-import static com.qcadoo.mes.basic.imports.dtos.CellBinder.optional;
-import static com.qcadoo.mes.basic.imports.dtos.CellBinder.required;
+import com.qcadoo.mes.basic.imports.dtos.CellBinderRegistry;
+import com.qcadoo.mes.basic.imports.helpers.CellParser;
+import com.qcadoo.mes.basic.imports.parsers.DictionaryCellParsers;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.qcadoo.mes.basic.imports.dtos.CellBinderRegistry;
-import com.qcadoo.mes.basic.imports.helpers.CellParser;
-import com.qcadoo.mes.basic.imports.parsers.DictionaryCellParsers;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import static com.qcadoo.mes.basic.imports.dtos.CellBinder.optional;
+import static com.qcadoo.mes.basic.imports.dtos.CellBinder.required;
 
 @Component
 public class PositionCellBinderRegistry {
@@ -57,6 +56,9 @@ public class PositionCellBinderRegistry {
     private CellParser palletNumberCellParser;
 
     @Autowired
+    private CellParser batchCellParser;
+
+    @Autowired
     private DictionaryCellParsers dictionaryCellParsers;
 
     @PostConstruct
@@ -66,7 +68,7 @@ public class PositionCellBinderRegistry {
         cellBinderRegistry.setCellBinder(optional(PositionFields.GIVEN_QUANTITY, bigDecimalCellParser));
         cellBinderRegistry.setCellBinder(optional(PositionFields.CONVERSION, bigDecimalCellParser));
         cellBinderRegistry.setCellBinder(optional(PositionFields.PRICE, bigDecimalCellParser));
-        cellBinderRegistry.setCellBinder(optional(PositionFields.BATCH));
+        cellBinderRegistry.setCellBinder(optional(PositionFields.BATCH, PositionFields.PRODUCT, batchCellParser));
         cellBinderRegistry.setCellBinder(optional(PositionFields.PRODUCTION_DATE, dateCellParser));
         cellBinderRegistry.setCellBinder(optional(PositionFields.EXPIRATION_DATE, dateCellParser));
         cellBinderRegistry.setCellBinder(optional(PositionFields.STORAGE_LOCATION, storageLocationCellParser));
