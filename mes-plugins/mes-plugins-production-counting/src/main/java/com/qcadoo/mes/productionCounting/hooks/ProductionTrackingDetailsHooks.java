@@ -58,6 +58,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -93,8 +94,6 @@ public class ProductionTrackingDetailsHooks {
 
     private static final String L_PRODUCTS_TAB = "productsTab";
 
-
-
     private static final List<String> L_PRODUCTION_TRACKING_FIELD_NAMES = Lists.newArrayList(ProductionTrackingFields.ORDER,
             ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, ProductionTrackingFields.STAFF,
             ProductionTrackingFields.SHIFT, ProductionTrackingFields.WORKSTATION, ProductionTrackingFields.DIVISION,
@@ -103,7 +102,7 @@ public class ProductionTrackingDetailsHooks {
             ProductionTrackingFields.TIME_RANGE_TO, ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS,
             ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS, ProductionTrackingFields.SHIFT_START_DAY,
             ProductionTrackingFields.STAFF_WORK_TIMES, ProductionTrackingFields.BATCH, ProductionTrackingFields.EXPIRATION_DATE,
-            ProductionTrackingFields.STORAGE_LOCATION, ProductionTrackingFields.ADD_BATCH);
+            ProductionTrackingFields.ADD_BATCH, ProductionTrackingFields.STOPPAGES);
 
     private static final String L_ORDER_ID = "orderId";
 

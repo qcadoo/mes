@@ -23,6 +23,14 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.states;
 
+import java.math.BigDecimal;
+import java.util.*;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -37,12 +45,7 @@ import com.qcadoo.mes.costNormsForMaterials.CostNormsForMaterialsService;
 import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
 import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.domain.ProductWithQuantityAndCost;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.PositionAttributeValueFields;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -66,30 +69,13 @@ import com.qcadoo.mes.productionCounting.utils.ProductionTrackingDocumentsHelper
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.model.api.validators.ErrorMessage;
-
-import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 @Service
 public final class ProductionTrackingListenerServicePFTD {
@@ -140,23 +126,20 @@ public final class ProductionTrackingListenerServicePFTD {
 
     public void createWarehouseDocuments(final Entity productionTracking) {
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
         List<Entity> recordOutProducts = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
-        Multimap<Long, Entity> groupedRecordOutProducts = productionTrackingDocumentsHelper.groupRecordOutProductsByLocation(
-                recordOutProducts, technology);
+        Multimap<Long, Entity> groupedRecordOutProducts = productionTrackingDocumentsHelper
+                .groupRecordOutProductsByLocation(recordOutProducts, order);
 
         productionTrackingDocumentsHelper.fillFromBPCProductOut(groupedRecordOutProducts, recordOutProducts, order);
-        productionTrackingDocumentsHelper.fillProductsOutFromSet(groupedRecordOutProducts);
 
         List<Entity> recordInProducts = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
-        Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper.groupRecordInProductsByWarehouse(
-                recordInProducts, technology);
+        Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper
+                .groupRecordInProductsByWarehouse(recordInProducts, order);
 
         productionTrackingDocumentsHelper.fillFromBPCProductIn(groupedRecordInProducts, recordInProducts, order);
-        productionTrackingDocumentsHelper.fillProductsInFromSet(groupedRecordInProducts);
 
         if (!productionTrackingValidatorsPFTD.checkResources(productionTracking, groupedRecordInProducts, recordOutProducts)) {
             return;

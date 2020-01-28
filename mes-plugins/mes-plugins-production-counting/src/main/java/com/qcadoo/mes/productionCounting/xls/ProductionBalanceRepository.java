@@ -4,13 +4,7 @@ import com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode;
 import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
 import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
-import com.qcadoo.mes.productionCounting.xls.dto.LaborTime;
-import com.qcadoo.mes.productionCounting.xls.dto.LaborTimeDetails;
-import com.qcadoo.mes.productionCounting.xls.dto.MaterialCost;
-import com.qcadoo.mes.productionCounting.xls.dto.OrderBalance;
-import com.qcadoo.mes.productionCounting.xls.dto.PieceworkDetails;
-import com.qcadoo.mes.productionCounting.xls.dto.ProducedQuantity;
-import com.qcadoo.mes.productionCounting.xls.dto.ProductionCost;
+import com.qcadoo.mes.productionCounting.xls.dto.*;
 import com.qcadoo.model.api.Entity;
 
 import java.util.List;
@@ -1083,5 +1077,36 @@ class ProductionBalanceRepository {
         query.append("SUM(production_cost_margin_value) AS production_cost_margin_value, SUM(additional_overhead) AS additional_overhead,  ");
         query.append("SUM(direct_additional_cost) AS direct_additional_cost, SUM(total_costs) AS total_costs ");
         query.append("FROM component_balance GROUP BY product_id) ");
+    }
+
+    List<Stoppage> getStoppages(List<Long> ordersIds) {
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT ");
+        query.append("o.number AS orderNumber, ");
+        query.append("pt.number AS productionTrackingNumber, ");
+        query.append("pt.state AS productionTrackingState, ");
+        query.append("s.duration, ");
+        query.append("s.datefrom AS dateFrom, ");
+        query.append("s.dateto AS dateTo, ");
+        query.append("sr.name AS reason, ");
+        query.append("s.description, ");
+        query.append("COALESCE(ptd.number, od.number) AS division, ");
+        query.append("pl.number AS productionLine, ");
+        query.append("w.number AS workstation, ");
+        query.append("stf.name || ' ' || stf.surname AS worker ");
+        query.append("FROM stoppage_stoppage s ");
+        query.append("JOIN orders_order o ON o.id = s.order_id ");
+        query.append("LEFT JOIN productioncounting_productiontracking pt ON pt.id = s.productiontracking_id ");
+        query.append("JOIN stoppage_stoppagereason sr ON sr.id = s.reason_id ");
+        query.append("LEFT JOIN basic_division ptd ON ptd.id = pt.division_id ");
+        query.append("LEFT JOIN basic_division od ON od.id = o.division_id ");
+        query.append("LEFT JOIN productionlines_productionline pl ON pl.id = o.productionline_id ");
+        query.append("LEFT JOIN basic_workstation w ON w.id = pt.workstation_id ");
+        query.append("LEFT JOIN basic_staff stf ON pt.staff_id = stf.id ");
+        appendWhereClause(query);
+        query.append("ORDER BY orderNumber, productionTrackingNumber, dateFrom ");
+
+        return jdbcTemplate.query(query.toString(), new MapSqlParameterSource("ordersIds", ordersIds),
+                BeanPropertyRowMapper.newInstance(Stoppage.class));
     }
 }

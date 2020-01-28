@@ -734,6 +734,43 @@
                 </layoutElement>
             </component>
         </windowTab>
+
+        <windowTab name="stoppagesTab" reference="stoppagesTab">
+            <component type="grid" name="stoppages" reference="stoppages"
+                       source="#{form}.stoppages">
+                <script>
+                    <![CDATA[
+                                this.onNewButtonClicked = function () {
+                                    #{stoppages}.fireEvent(null,'addNew',[]);
+                                };
+                            ]]>
+                </script>
+                <option type="column" name="duration" fields="duration" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)" link="true"/>
+                <option type="column" name="dateFrom" fields="dateFrom" link="true"/>
+                <option type="column" name="dateTo" fields="dateTo" link="true"/>
+                <option type="column" name="reason" fields="reason" expression="#reason['name']" link="true"/>
+                <option type="column" name="description" fields="description" link="true"/>
+                <option type="order" column="duration" direction="asc"/>
+
+                <option type="correspondingView" value="stoppage/allStoppagesForm"/>
+                <option type="correspondingComponent" value="form"/>
+                <option type="correspondingViewInModal" value="true"/>
+
+                <option type="footerRow" value="true"/>
+                <option type="columnsToSummaryTime" value="duration"/>
+
+                <option type="creatable" value="true"/>
+                <option type="deletable" value="true"/>
+
+                <option type="searchable" value="duration,dateFrom,dateTo,reason,description"/>
+                <option type="orderable" value="duration,dateFrom,dateTo,reason,description"/>
+
+                <listener event="addNew"
+                          class="com.qcadoo.mes.stoppage.listeners.AllStoppagesListeners" method="addNewFromProductionTracking"/>
+
+            </component>
+        </windowTab>
+
         <windowTab name="historyTab">
             <component type="gridLayout" name="loggingsGridLayout"
                        columns="2" rows="1">
@@ -743,6 +780,7 @@
                         <option type="column" name="dateAndTime" fields="dateAndTime"/>
                         <option type="column" name="currentState" fields="targetState"/>
                         <option type="column" name="worker" fields="worker"/>
+
 
                         <option type="order" column="dateAndTime" direction="asc"/>
 

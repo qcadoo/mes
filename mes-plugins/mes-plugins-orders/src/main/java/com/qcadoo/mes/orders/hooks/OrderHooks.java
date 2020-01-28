@@ -23,18 +23,6 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.dateTime.DateRange;
@@ -45,11 +33,7 @@ import com.qcadoo.mes.orders.OperationalTasksService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.OrderStateChangeReasonService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
-import com.qcadoo.mes.orders.constants.OperationalTaskFields;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderType;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.orders.constants.ParameterFieldsO;
+import com.qcadoo.mes.orders.constants.*;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeDescriber;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
@@ -58,15 +42,21 @@ import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyType;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.FieldDefinition;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.utils.TimeConverterService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 @Service
 public class OrderHooks {
@@ -113,16 +103,15 @@ public class OrderHooks {
     private OperationalTasksService operationalTasksService;
 
     public boolean validatesWith(final DataDefinition orderDD, final Entity order) {
-        boolean isValid = true;
-
         Entity parameter = parameterService.getParameter();
 
-        isValid = isValid && checkOrderDates(orderDD, order);
+        boolean isValid = checkOrderDates(orderDD, order);
         isValid = isValid && checkOrderPlannedQuantity(orderDD, order);
         isValid = isValid && productService.checkIfProductIsNotRemoved(orderDD, order);
         isValid = isValid && checkReasonOfStartDateCorrection(parameter, order);
         isValid = isValid && checkReasonOfEndDateCorrection(parameter, order);
         isValid = isValid && checkEffectiveDeviation(parameter, order);
+        isValid = isValid && checkOperationalTasks(orderDD, order);
 
         return isValid;
     }
@@ -271,6 +260,21 @@ public class OrderHooks {
         stateChangeEntityBuilder.buildInitial(orderStateChangeDescriber, order, OrderState.PENDING);
     }
 
+    private boolean checkOperationalTasks(final DataDefinition orderDD, final Entity order) {
+        if (!order.getHasManyField(OrderFields.OPERATIONAL_TASKS).isEmpty()) {
+            Entity orderFromDB = orderService.getOrder(order.getId());
+            if (!order.getBelongsToField(OrderFields.PRODUCT).equals(orderFromDB.getBelongsToField(OrderFields.PRODUCT))) {
+                order.addError(orderDD.getField(OrderFields.PRODUCT), "orders.validate.global.error.operationalTasks.productChange");
+                return false;
+            }
+            if (!order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE).equals(orderFromDB.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE))) {
+                order.addError(orderDD.getField(OrderFields.TECHNOLOGY_PROTOTYPE), "orders.validate.global.error.operationalTasks.technologyChange");
+                return false;
+            }
+        }
+        return true;
+    }
+
     public boolean checkOrderDates(final DataDefinition orderDD, final Entity order) {
         DateRange orderDateRange = orderDatesService.getCalculatedDates(order);
         Date dateFrom = orderDateRange.getFrom();
@@ -346,8 +350,8 @@ public class OrderHooks {
     }
 
     private boolean checkEffectiveDeviation(final Entity parameter, final Entity order) {
-        Long differenceForDateFrom = orderStateChangeReasonService.getEffectiveDateFromDifference(parameter, order);
-        Long differenceForDateTo = orderStateChangeReasonService.getEffectiveDateToDifference(parameter, order);
+        long differenceForDateFrom = orderStateChangeReasonService.getEffectiveDateFromDifference(parameter, order);
+        long differenceForDateTo = orderStateChangeReasonService.getEffectiveDateToDifference(parameter, order);
         String orderState = order.getStringField(OrderFields.STATE);
         // EFFECTIVE_DATE_FROM
         if (OrderState.COMPLETED.getStringValue().equals(orderState) || OrderState.ABANDONED.getStringValue().equals(orderState)
