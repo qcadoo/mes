@@ -299,7 +299,7 @@
         </model:model-field>
 
         <model:model-field model="storageLocation" plugin="materialFlowResources">
-            <model:hasMany name="productionTrackings" model="productionTracking"
+            <model:hasMany name="trackingOperationProductOutComponents" model="trackingOperationProductOutComponent"
                            joinField="storageLocation" plugin="productionCounting"/>
         </model:model-field>
 

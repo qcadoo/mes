@@ -93,7 +93,6 @@
 		<boolean name="addBatch" default="false" persistent="false"/>
 		<string name="batchNumber" persistent="false"/>
 
-		<belongsTo name="storageLocation" model="storageLocation" plugin="materialFlowResources"/>
 		<date name="expirationDate"/>
 
 	</fields>
