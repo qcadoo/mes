@@ -45,7 +45,5 @@
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.stoppage.hooks.StoppageHooks"
 					   method="validatesWith"/>
-		<onSave class="com.qcadoo.mes.stoppage.hooks.StoppageHooks"
-					   method="onSave"/>
 	</hooks>
 </model>

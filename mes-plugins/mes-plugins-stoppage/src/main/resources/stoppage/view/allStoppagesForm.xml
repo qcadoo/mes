@@ -119,6 +119,9 @@
                                field="dateFrom">
                         <option type="alignment" value="left"/>
                         <option type="withTimePicker" value="true"/>
+                        <listener event="onChange"
+                                  class="com.qcadoo.mes.stoppage.listeners.AllStoppagesFormListeners"
+                                  method="calculateDuration"/>
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="7">
@@ -126,6 +129,9 @@
                                field="dateTo">
                         <option type="alignment" value="left"/>
                         <option type="withTimePicker" value="true"/>
+                        <listener event="onChange"
+                                  class="com.qcadoo.mes.stoppage.listeners.AllStoppagesFormListeners"
+                                  method="calculateDuration"/>
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="8">
