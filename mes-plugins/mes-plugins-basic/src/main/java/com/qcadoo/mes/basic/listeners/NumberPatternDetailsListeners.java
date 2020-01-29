@@ -34,7 +34,7 @@ public class NumberPatternDetailsListeners {
                 String value = translationService.translate(
                         "basic.numberPatternElement.element.value." + element.getStringField(NumberPatternElementFields.ELEMENT),
                         view.getLocale());
-                stringBuilder.append(value.substring(0, value.indexOf(" ")));
+                stringBuilder.append(value.substring(0, value.indexOf(' ')));
             }
         }
         numberPattern.setField(NumberPatternFields.PATTERN, stringBuilder.toString());

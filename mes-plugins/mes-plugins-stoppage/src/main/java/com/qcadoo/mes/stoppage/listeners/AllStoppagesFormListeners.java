@@ -2,7 +2,6 @@ package com.qcadoo.mes.stoppage.listeners;
 
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
 import org.springframework.stereotype.Service;
