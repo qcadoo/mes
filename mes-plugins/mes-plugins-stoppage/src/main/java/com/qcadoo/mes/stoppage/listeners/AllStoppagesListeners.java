@@ -18,7 +18,7 @@ public class AllStoppagesListeners {
 
     private static final String L_FORM = "form";
 
-    public static final String L_ORDER = "order";
+    private static final String L_ORDER = "order";
 
     public void addNew(final ViewDefinitionState view, final ComponentState state, final String[] args) throws JSONException {
         JSONObject context = view.getJsonContext();
@@ -26,8 +26,6 @@ public class AllStoppagesListeners {
         if (Objects.nonNull(context) && context.has("window.mainTab.stoppage.forOrder")) {
             Long orderId = context.getLong("window.mainTab.stoppage.forOrder");
             parameters.put("form.order", orderId);
-            context.remove("window.mainTab.stoppage.forOrder");
-            view.setJsonContext(context);
             view.openModal("../page/stoppage/allStoppagesForm.html", parameters);
         } else {
             view.redirectTo("../page/stoppage/allStoppagesForm.html", false, true, parameters);
