@@ -161,6 +161,12 @@
                     method="onDelete"/>
         </model:model-hook>
 
+        <model:model-hook plugin="basic" model="product">
+            <model:onDelete
+                    class="com.qcadoo.mes.technologies.hooks.ProductHooksT"
+                    method="onDelete"/>
+        </model:model-hook>
+
         <!--
             <model:model-field plugin="basic" model="workstationType">
                 <model:manyToMany name="operations" plugin="technologies"
