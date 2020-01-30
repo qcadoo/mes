@@ -47,4 +47,6 @@ public final class TrackingOperationProductOutComponentFields {
 
     public static final String PROD_OUT_RESOURCE_ATTR_VALS = "prodOutResourceAttrVals";
 
+    public static final String STORAGE_LOCATION = "storageLocation";
+
 }

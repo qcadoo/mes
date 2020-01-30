@@ -85,8 +85,6 @@ public final class ProductionTrackingFields {
 
     public static final String EXPIRATION_DATE = "expirationDate";
 
-    public static final String STORAGE_LOCATION = "storageLocation";
-
     public static final String STOPPAGES = "stoppages";
 
 }
