@@ -118,8 +118,9 @@ public class ProductionTrackingHooks {
         if (productionTracking.getBooleanField(ProductionTrackingFields.ADD_BATCH)
                 && StringUtils.isNoneEmpty(productionTracking.getStringField(ProductionTrackingFields.BATCH_NUMBER))) {
             Entity product = order.getBelongsToField(OrderFields.PRODUCT);
-            Entity batch = advancedGenealogyService.createBatch(
+            Entity batch = advancedGenealogyService.createOrGetBatch(
                     productionTracking.getStringField(ProductionTrackingFields.BATCH_NUMBER), product);
+
             if(!batch.isValid()) {
                 productionTracking.addError(
                         productionTrackingDD.getField(ProductionTrackingFields.BATCH_NUMBER),
