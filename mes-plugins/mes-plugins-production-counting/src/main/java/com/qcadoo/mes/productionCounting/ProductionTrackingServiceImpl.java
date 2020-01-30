@@ -31,6 +31,7 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.StaffWorkTimeFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
@@ -39,6 +40,8 @@ import com.qcadoo.mes.productionCounting.constants.UsedBatchFields;
 import com.qcadoo.mes.productionCounting.newstates.ProductionTrackingStateServiceMarker;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.mes.states.service.StateChangeContextBuilder;
+import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -54,8 +57,11 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,6 +102,9 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
     @Autowired
     private ProductUnitsConversionService productUnitsConversionService;
+
+    @Autowired
+    private TechnologyService technologyService;
 
     @Override
     public void setTimeAndPieceworkComponentsVisible(final ViewDefinitionState view, final Entity order) {
@@ -318,5 +327,48 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
         }
         return productUnitsConversionService.forProduct(product).fromPrimaryUnit().to(givenUnit).convertValue(usedQuantity);
 
+    }
+
+    @Override
+    public Optional<Date> findExpirationDate(final Entity productionTracking) {
+        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+
+        if (TypeOfProductionRecording.CUMULATED.getStringValue().equals(
+                order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
+
+            List<Entity> productionTracingsForOrder = dataDefinitionService
+                    .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_TRACKING)
+                    .find().add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order)).list().getEntities();
+
+            if (Objects.nonNull(productionTracking.getId())) {
+                productionTracingsForOrder = productionTracingsForOrder.stream()
+                        .filter(pt -> !pt.getId().equals(productionTracking.getId())).collect(Collectors.toList());
+            }
+
+            return productionTracingsForOrder.stream().map(pt -> pt.getDateField(ProductionTrackingFields.EXPIRATION_DATE))
+                    .findFirst();
+        } else {
+            
+            Entity toc = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+            Entity operationProductOutComponent = technologyService.getMainOutputProductComponent(toc);
+            if (operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId()
+                    .equals(order.getBelongsToField(OrderFields.PRODUCT).getId())) {
+                List<Entity> productionTracingsForOrder = dataDefinitionService
+                        .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_TRACKING)
+                        .find().add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
+                        .add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc)).list()
+                        .getEntities();
+
+                if (Objects.nonNull(productionTracking.getId())) {
+                    productionTracingsForOrder = productionTracingsForOrder.stream()
+                            .filter(pt -> !pt.getId().equals(productionTracking.getId())).collect(Collectors.toList());
+                }
+
+                return productionTracingsForOrder.stream().map(pt -> pt.getDateField(ProductionTrackingFields.EXPIRATION_DATE))
+                        .findFirst();
+            }
+        }
+
+        return Optional.empty();
     }
 }

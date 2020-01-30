@@ -28,6 +28,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.Optional;
 
 public interface ProductionTrackingService {
@@ -47,4 +48,6 @@ public interface ProductionTrackingService {
     void unCorrect(Entity productionTracking);
 
     Optional<BigDecimal> calculateGivenQuantity(Entity trackingOperationProductInComponent, BigDecimal usedQuantity);
+
+    Optional<Date> findExpirationDate(final Entity productionTracking);
 }
