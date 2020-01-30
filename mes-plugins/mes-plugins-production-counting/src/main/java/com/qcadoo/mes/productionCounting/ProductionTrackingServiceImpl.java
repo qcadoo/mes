@@ -348,7 +348,7 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
             return productionTracingsForOrder.stream().map(pt -> pt.getDateField(ProductionTrackingFields.EXPIRATION_DATE))
                     .findFirst();
         } else {
-            
+
             Entity toc = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
             Entity operationProductOutComponent = technologyService.getMainOutputProductComponent(toc);
             if (operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId()

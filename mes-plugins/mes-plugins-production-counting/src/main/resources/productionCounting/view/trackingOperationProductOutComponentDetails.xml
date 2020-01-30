@@ -32,7 +32,9 @@
     <component type="window" name="window">
 
         <ribbon>
-            <group template="navigation"/>
+            <group name="navigation">
+                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack" />
+            </group>
             <group template="formSaveAction"/>
         </ribbon>
 

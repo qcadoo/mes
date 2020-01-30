@@ -26,6 +26,7 @@ package com.qcadoo.mes.productionCounting.hooks;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -104,54 +105,71 @@ public class TrackingOperationProductOutComponentDetailsHooks {
     }
 
     private void fillStorageLocation(final ViewDefinitionState view) {
-        LookupComponent storageLocationLookup = (LookupComponent) view.getComponentByReference(L_STORAGE_LOCATION);
-
         FormComponent trackingOperationProductOutComponentForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         Entity trackingOperationProductOutComponent = trackingOperationProductOutComponentForm.getEntity();
 
-        Entity productionTracking = trackingOperationProductOutComponent
-                .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
-        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        if (view.isViewAfterRedirect()) {
+            LookupComponent storageLocationLookup = (LookupComponent) view.getComponentByReference(L_STORAGE_LOCATION);
 
-        FilterValueHolder storageLocationFilterValueHolder = storageLocationLookup.getFilterValue();
+            Entity productionTracking = trackingOperationProductOutComponent
+                    .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
+            Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+            Entity product = trackingOperationProductOutComponent
+                    .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
 
-        if (Objects.isNull(order)) {
-            if (storageLocationFilterValueHolder.has(L_LOCATION_ID)) {
-                storageLocationFilterValueHolder.remove(L_LOCATION_ID);
-            }
-        } else {
+            FilterValueHolder storageLocationFilterValueHolder = storageLocationLookup.getFilterValue();
+
             Entity bpcq = basicProductionCountingService
                     .getProductionCountingQuantityDD()
                     .find()
                     .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ORDER + L_ID, order.getId()))
                     .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
                             ProductionCountingQuantityRole.PRODUCED.getStringValue()))
-                    .add(SearchRestrictions.eq(ProductionCountingQuantityFields.PRODUCT + L_ID,
-                            order.getBelongsToField(OrderFields.PRODUCT).getId())).setMaxResults(1).uniqueResult();
-            if (Objects.nonNull(bpcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION))) {
-                storageLocationFilterValueHolder.put(L_LOCATION_ID,
-                        bpcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION).getId());
-                storageLocationFilterValueHolder.put(L_PRODUCT_ID, order.getBelongsToField(OrderFields.PRODUCT).getId());
-                if (Objects.isNull(storageLocationLookup.getEntity())) {
+                    .add(SearchRestrictions.eq(ProductionCountingQuantityFields.PRODUCT + L_ID, product.getId()))
+                    .setMaxResults(1).uniqueResult();
+
+            if (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(
+                    bpcq.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))) {
+                if (Objects.nonNull(bpcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION))) {
+                    storageLocationFilterValueHolder.put(L_LOCATION_ID,
+                            bpcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION).getId());
+                    storageLocationFilterValueHolder.put(L_PRODUCT_ID, order.getBelongsToField(OrderFields.PRODUCT).getId());
                     Optional<Entity> option = findStorageLocationForProduct(order.getBelongsToField(OrderFields.PRODUCT),
                             bpcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_INPUT_LOCATION));
                     if (option.isPresent()) {
-                        storageLocationLookup.setFieldValue(option.get().getId());
+                        if (Objects.isNull(storageLocationLookup.getEntity())) {
+                            storageLocationLookup.setFieldValue(option.get().getId());
+                            storageLocationLookup.requestComponentUpdateState();
+                        }
                         storageLocationLookup.setEnabled(false);
-                        storageLocationLookup.requestComponentUpdateState();
                     }
-                } else {
-                    storageLocationLookup.setFieldValue(null);
-                    storageLocationLookup.setEnabled(true);
-                    storageLocationLookup.requestComponentUpdateState();
-                }
-            } else if (storageLocationFilterValueHolder.has(L_LOCATION_ID)) {
-                storageLocationFilterValueHolder.remove(L_LOCATION_ID);
-            }
-        }
 
-        storageLocationLookup.setFilterValue(storageLocationFilterValueHolder);
+                } else if (storageLocationFilterValueHolder.has(L_LOCATION_ID)) {
+                    storageLocationFilterValueHolder.remove(L_LOCATION_ID);
+                }
+
+            } else {
+                if (Objects.nonNull(bpcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_FLOW_LOCATION))) {
+                    storageLocationFilterValueHolder.put(L_LOCATION_ID,
+                            bpcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_FLOW_LOCATION).getId());
+                    storageLocationFilterValueHolder.put(L_PRODUCT_ID, order.getBelongsToField(OrderFields.PRODUCT).getId());
+                        Optional<Entity> option = findStorageLocationForProduct(order.getBelongsToField(OrderFields.PRODUCT),
+                                bpcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_FLOW_LOCATION));
+                    if (option.isPresent()) {
+                        if (Objects.isNull(storageLocationLookup.getEntity())) {
+                            storageLocationLookup.setFieldValue(option.get().getId());
+                            storageLocationLookup.requestComponentUpdateState();
+                        }
+                        storageLocationLookup.setEnabled(false);
+                    }
+                } else if (storageLocationFilterValueHolder.has(L_LOCATION_ID)) {
+                    storageLocationFilterValueHolder.remove(L_LOCATION_ID);
+                }
+            }
+            storageLocationLookup.setFilterValue(storageLocationFilterValueHolder);
+
+        }
     }
 
     private DataDefinition getStorageLocationDD() {
