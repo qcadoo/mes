@@ -744,9 +744,9 @@
                         expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)"/>
                 <option type="column" name="confirmed" fields="confirmed"/>
                 <option type="searchable"
-                        value="workerName,workerSurname,action,startDate,finishDate,duration,confirmed"/>
+                        value="workerName,workerSurname,action,startDate,finishDate,confirmed"/>
                 <option type="orderable"
-                        value="workerName,workerSurname,action,startDate,finishDate,duration,confirmed"/>
+                        value="workerName,workerSurname,action,startDate,finishDate,confirmed"/>
 
                 <option type="order" column="startDate" direction="asc"/>
 

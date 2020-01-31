@@ -61,6 +61,7 @@
 		<localization:translation path="locales" />
 
 		<model:model model="stoppage" resource="model/stoppage.xml" />
+		<model:model model="stoppageDto" resource="model/stoppageDto.xml"/>
 		<model:model model="stoppageReason" resource="model/stoppageReason.xml" />
 
 		<model:model-field plugin="orders" model="order">
