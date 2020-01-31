@@ -13,4 +13,26 @@ public enum NumberPatternElement {
     public String getStringValue() {
         return value;
     }
+
+    public static NumberPatternElement parseString(final String numberPatternElement) {
+        if ("01dd".equals(numberPatternElement)) {
+            return DD;
+        } else if ("02mm".equals(numberPatternElement)) {
+            return MM;
+        } else if ("03rr".equals(numberPatternElement)) {
+            return RR;
+        } else if ("04rrrr".equals(numberPatternElement)) {
+            return RRRR;
+        } else if ("05999".equals(numberPatternElement)) {
+            return N999;
+        } else if ("069999".equals(numberPatternElement)) {
+            return N9999;
+        } else if ("0799999".equals(numberPatternElement)) {
+            return N99999;
+        } else if ("08xx".equals(numberPatternElement)) {
+            return XX;
+        }
+
+        throw new IllegalStateException("Unsupported NumberPatternElement: " + numberPatternElement);
+    }
 }
