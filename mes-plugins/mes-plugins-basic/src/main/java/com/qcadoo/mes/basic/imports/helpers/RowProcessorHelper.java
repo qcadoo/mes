@@ -23,6 +23,12 @@
  */
 package com.qcadoo.mes.basic.imports.helpers;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
+
+import org.apache.poi.ss.usermodel.Cell;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.imports.dtos.CellBinder;
 import com.qcadoo.mes.basic.imports.dtos.CellBinderRegistry;
@@ -31,12 +37,6 @@ import com.qcadoo.mes.basic.imports.dtos.ImportStatus;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.model.constants.VersionableConstants;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Function;
-
-import org.apache.poi.ss.usermodel.Cell;
 
 public class RowProcessorHelper {
 
@@ -87,9 +87,9 @@ public class RowProcessorHelper {
             empty = false;
         }
 
-        CellBinder binder = cellBinderRegistry.getCellBinder(index++);
-        binder.bind(cellValue, entity, errorCode -> rowErrors.add(new ImportError(currentRow, binder.getFieldName(), errorCode)));
+        final CellBinder binder = cellBinderRegistry.getCellBinder(index++);
 
+        binder.bind(cellValue, entity, errorCode -> rowErrors.add(new ImportError(currentRow, binder.getFieldName(), errorCode)));
     }
 
     public void append(Cell cell, Cell dependentCell) {
@@ -98,9 +98,11 @@ public class RowProcessorHelper {
         if (Objects.nonNull(cell)) {
             empty = false;
         }
+
         final CellBinder binder = cellBinderRegistry.getCellBinder(index++);
 
-        binder.bind(cell, dependentCell, entity, errorCode -> rowErrors.add(new ImportError(currentRow, binder.getFieldName(), errorCode)));
+        binder.bind(cell, dependentCell, entity,
+                errorCode -> rowErrors.add(new ImportError(currentRow, binder.getFieldName(), errorCode)));
     }
 
     public void update(final Entity entityToUpdate, final Function<Entity, Boolean> checkOnUpdate) {
@@ -170,4 +172,5 @@ public class RowProcessorHelper {
                     .addError(new ImportError(currentRow, null, errorMessage.getMessage(), errorMessage.getVars())));
         }
     }
+
 }
