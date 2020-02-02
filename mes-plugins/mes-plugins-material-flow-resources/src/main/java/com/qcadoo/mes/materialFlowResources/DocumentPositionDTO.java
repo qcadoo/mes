@@ -65,6 +65,8 @@ public class DocumentPositionDTO {
 
     private String batch;
 
+    private Long batchId;
+
     private String resource;
 
     @JsonDeserialize(using = BooleanDeserializer.class)
@@ -253,6 +255,14 @@ public class DocumentPositionDTO {
 
     public void setAttrs(Map<String, Object> attrs) {
         this.attrs = attrs;
+    }
+
+    public Long getBatchId() {
+        return batchId;
+    }
+
+    public void setBatchId(Long batchId) {
+        this.batchId = batchId;
     }
 
     @Override

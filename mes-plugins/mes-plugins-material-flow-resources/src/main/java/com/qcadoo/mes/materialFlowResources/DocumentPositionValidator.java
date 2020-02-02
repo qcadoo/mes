@@ -500,7 +500,7 @@ public class DocumentPositionValidator {
         params.put("productionDate", vo.getProductionDate());
         params.put("price", vo.getPrice());
         params.put("resource_id", tryGetResourceIdByNumber(vo.getResource(), errors));
-        params.put("batch_id", tryGetBatchIdByNumber(vo.getBatch(), errors));
+        params.put("batch_id", vo.getBatchId());
         params.put("waste", vo.isWaste());
         params.put("lastResource", vo.getLastResource());
         params.put("sellingPrice", vo.getSellingPrice());

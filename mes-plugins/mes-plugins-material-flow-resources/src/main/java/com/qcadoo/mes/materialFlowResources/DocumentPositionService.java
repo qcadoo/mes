@@ -79,7 +79,7 @@ public class DocumentPositionService {
 
         }
         String query = "SELECT %s FROM ( SELECT p.*, p.document_id AS document, product.number AS product, product.name AS productName, product.unit, additionalcode.code AS additionalcode, "
-                + "palletnumber.number AS palletnumber, location.number AS storagelocation, resource.number AS resource, batch.number as batch, \n"
+                + "palletnumber.number AS palletnumber, location.number AS storagelocation, resource.number AS resource, batch.number as batch, batch.id as batchId, \n"
                 + "(coalesce(r1.resourcesCount,0) < 2 AND p.quantity >= coalesce(resource.quantity,0)) AS lastResource "
                 + attrQueryPart.toString()
                 + "	FROM materialflowresources_position p\n"
@@ -143,6 +143,7 @@ public class DocumentPositionService {
             documentPositionDTO.setPrice(resultSet.getBigDecimal("price"));
             documentPositionDTO.setSellingPrice(resultSet.getBigDecimal("sellingPrice"));
             documentPositionDTO.setBatch(resultSet.getString("batch"));
+            documentPositionDTO.setBatchId(resultSet.getLong("batchId"));
             documentPositionDTO.setResource(resultSet.getString("resource"));
             documentPositionDTO.setWaste(resultSet.getBoolean("waste"));
             documentPositionDTO.setLastResource(resultSet.getBoolean("lastResource"));

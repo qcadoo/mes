@@ -424,6 +424,10 @@ function onSelectLookupRow(row, recordName) {
         recordName = recordName.replace('attribute/','');
         var rowId = $('#product').length ? null : jQuery('#grid').jqGrid('getGridParam', 'selrow');
         var field = updateFieldValue(recordName, code, rowId);
+        if(recordName == "batch") {
+            var fieldBatchId = updateFieldValue("batchId", row.id, rowId);
+            fieldBatchId.trigger('change');
+        }
         field.trigger('change');
     }
 
@@ -523,6 +527,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     // escape special characters
                     search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
                     var re = new RegExp("(" + search.split(' ').join('|') + ")", "gi");
+                            var rowId = $('#product').length ? null : jQuery('#grid').jqGrid('getGridParam', 'selrow');
+
+                            if(name == "batch") {
+                                var fieldBatchId = updateFieldValue("batchId", item.id, rowId);
+                                fieldBatchId.trigger('change');
+                            }
+
                     if (autoCompleteResult) {
                         return '<div class="autocomplete-suggestion" data-id="' + id + '" data-val="' + code + '">' + code.replace(re, "<b>$1</b>") + '</div>';
                     } else {
@@ -1800,6 +1811,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     },
                 },
                 {
+                    name: 'batchId',
+                    index: 'batchId',
+                    editable: true,
+                    hidden: true
+                },
+                {
                     name: 'palletNumber',
                     index: 'palletNumber',
                     editable: true,
@@ -1978,8 +1995,8 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 config.suggestResource = !response.data.inBufferDocument && response.data.suggestResource;
                 config.outDocument = response.data.outDocument;
 
-                var columns = [getColModelByIndex('id', config), getColModelByIndex('document', config)];
-                var colNames = ['ID', 'document'];
+                var columns = [getColModelByIndex('id', config), getColModelByIndex('document', config), getColModelByIndex('batchId', config)];
+                var colNames = ['ID', 'document', 'batchId'];
 
                 angular.forEach(response.data.columns, function (columnInGrid, key) {
                     var gridColModel = getColModelOrPrepareForAttribute(columnInGrid, config);
