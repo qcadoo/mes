@@ -23,11 +23,39 @@
  */
 package com.qcadoo.mes.basic.imports.staff;
 
+import java.util.Objects;
+
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.constants.StaffFields;
+import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.basic.imports.services.XlsxImportService;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
 
 @Service
 public class StaffXlsxImportService extends XlsxImportService {
+
+    private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM = "qcadooView.validate.field.error.custom";
+
+    @Override
+    public void validateEntity(final Entity staff, final DataDefinition staffDD) {
+        validateWorkstation(staff, staffDD);
+    }
+
+    private void validateWorkstation(final Entity staff, final DataDefinition staffDD) {
+        Entity workstation = staff.getBelongsToField(StaffFields.WORKSTATION);
+        Entity division = staff.getBelongsToField(StaffFields.DIVISION);
+
+        if (Objects.nonNull(workstation)) {
+            if (Objects.nonNull(division)) {
+                Entity workstationDivision = workstation.getBelongsToField(WorkstationFields.DIVISION);
+
+                if (!workstationDivision.getId().equals(division.getId())) {
+                    staff.addError(staffDD.getField(StaffFields.WORKSTATION), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM);
+                }
+            }
+        }
+    }
 
 }
