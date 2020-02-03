@@ -75,7 +75,7 @@ public class OperationXlsxImportService extends XlsxImportService {
     public void validateEntity(final Entity operation, final DataDefinition operationDD) {
         validateProductionLine(operation, operationDD);
         validateWorkstation(operation, operationDD);
-        validateProductionInOneCyccle(operation, operationDD);
+        validateProductionInOneCycle(operation, operationDD);
     }
 
     private void validateProductionLine(final Entity operation, final DataDefinition operationDD) {
@@ -121,7 +121,7 @@ public class OperationXlsxImportService extends XlsxImportService {
         }
     }
 
-    private void validateProductionInOneCyccle(final Entity operation, final DataDefinition operationDD) {
+    private void validateProductionInOneCycle(final Entity operation, final DataDefinition operationDD) {
         BigDecimal productionInOneCycle = operation.getDecimalField(L_PRODUCTION_IN_ONE_CYCLE);
         Entity product = operation.getBelongsToField(OperationFields.PRODUCT);
 

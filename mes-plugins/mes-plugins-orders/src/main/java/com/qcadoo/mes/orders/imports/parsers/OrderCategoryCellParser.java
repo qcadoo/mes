@@ -21,25 +21,18 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * **************************************************************************
  */
-package com.qcadoo.mes.basic.imports.parsers;
+package com.qcadoo.mes.orders.imports.parsers;
 
 import org.springframework.stereotype.Component;
 
 import com.qcadoo.mes.basic.imports.helpers.CellParser;
+import com.qcadoo.mes.basic.imports.parsers.DictionaryCellParser;
 
 @Component
-public class DictionaryCellParsers {
+public class OrderCategoryCellParser {
 
-    public CellParser productCategory() {
-        return new DictionaryCellParser("categories");
-    }
-
-    public CellParser units() {
-        return new DictionaryCellParser("units");
-    }
-
-    public CellParser typeOfPallet() {
-        return new DictionaryCellParser("typeOfPallet");
+    public CellParser orderCategory() {
+        return new DictionaryCellParser("orderCategory");
     }
 
 }
