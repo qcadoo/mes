@@ -153,8 +153,8 @@ public class TrackingOperationProductOutComponentDetailsHooks {
                 if (Objects.nonNull(bpcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_FLOW_LOCATION))) {
                     storageLocationFilterValueHolder.put(L_LOCATION_ID,
                             bpcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_FLOW_LOCATION).getId());
-                    storageLocationFilterValueHolder.put(L_PRODUCT_ID, order.getBelongsToField(OrderFields.PRODUCT).getId());
-                        Optional<Entity> option = findStorageLocationForProduct(order.getBelongsToField(OrderFields.PRODUCT),
+                    storageLocationFilterValueHolder.put(L_PRODUCT_ID, bpcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId());
+                        Optional<Entity> option = findStorageLocationForProduct(bpcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT),
                                 bpcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCTS_FLOW_LOCATION));
                     if (option.isPresent()) {
                         if (Objects.isNull(storageLocationLookup.getEntity())) {
