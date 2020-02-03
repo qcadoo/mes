@@ -42,12 +42,12 @@ public class OrderParametersListenersBPC {
             final String[] args) {
         CheckBoxComponent lockProductionProgressCheckBox = (CheckBoxComponent) componentState;
         CheckBoxComponent lockOrderPlannedQuantityCheckBox = (CheckBoxComponent) viewState
-                .getComponentByReference(ParameterFieldsO.BLOCK_ABILILITY_TO_CHANGE_APPROVAL_ORDER);
+                .getComponentByReference(ParameterFieldsO.BLOCK_ABILITY_TO_CHANGE_APPROVAL_ORDER);
 
         if (lockOrderPlannedQuantityCheckBox == null) {
             if (LOG.isErrorEnabled()) {
                 LOG.error(String.format("orderParameters view: can't find component with reference='%s'",
-                        ParameterFieldsO.BLOCK_ABILILITY_TO_CHANGE_APPROVAL_ORDER));
+                        ParameterFieldsO.BLOCK_ABILITY_TO_CHANGE_APPROVAL_ORDER));
             }
             return;
         }

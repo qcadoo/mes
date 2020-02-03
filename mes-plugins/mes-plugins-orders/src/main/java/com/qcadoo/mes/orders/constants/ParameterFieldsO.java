@@ -55,7 +55,7 @@ public final class ParameterFieldsO {
 
     public static final String EARLIER_EFFECTIVE_DATE_TO_TIME = "earlierEffectiveDateToTime";
 
-    public static final String BLOCK_ABILILITY_TO_CHANGE_APPROVAL_ORDER = "blockAbilityToChangeApprovalOrder";
+    public static final String BLOCK_ABILITY_TO_CHANGE_APPROVAL_ORDER = "blockAbilityToChangeApprovalOrder";
 
     public static final String LOCK_TECHNOLOGY_TREE = "lockTechnologyTree";
 
