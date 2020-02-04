@@ -11,14 +11,15 @@ import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInCom
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductionTrackingValidatorsPFTD {
@@ -55,7 +56,7 @@ public class ProductionTrackingValidatorsPFTD {
                                     .subtract(productsNotInStock.get(warehouseFrom).get(productNotInStock));
 
                             errorMessageHolder.addErrorEntry(
-                                    productNotInStock.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT),
+                                    productNotInStock.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT), null,
                                     quantity);
 
                             enoughResources = false;
@@ -71,7 +72,7 @@ public class ProductionTrackingValidatorsPFTD {
                                             .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY));
 
                             errorMessageHolder.addErrorEntry(
-                                    productNotInStock.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT),
+                                    productNotInStock.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT), null,
                                     quantity);
 
                             enoughResources = false;
@@ -89,7 +90,7 @@ public class ProductionTrackingValidatorsPFTD {
                             .subtract(productsNotInStock.get(warehouseFrom).get(productNotInStock));
 
                     errorMessageHolder.addErrorEntry(
-                            productNotInStock.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT), quantity);
+                            productNotInStock.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT), null ,quantity);
 
                     enoughResources = false;
                 }
