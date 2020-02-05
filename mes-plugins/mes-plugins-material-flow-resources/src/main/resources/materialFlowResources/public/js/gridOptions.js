@@ -581,6 +581,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         conversion: getFieldValue('conversion', rowId),
                         ac: getFieldValue('additionalCode', rowId),
                         batch : getFieldValue('batch', rowId),
+                        batchId : getFieldValue('batchId', rowId),
                         context: getDocumentId()
                     }
                 } else {
@@ -589,6 +590,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         conversion: 1,
                         ac: getFieldValue('additionalCode', rowId),
                         batch : getFieldValue('batch', rowId),
+                        batchId : getFieldValue('batchId', rowId),
                         context: getDocumentId()
                     }
                 }
