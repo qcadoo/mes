@@ -78,10 +78,12 @@ public class OrderedProductDetailsHooks {
 
     private void fillConversion(final ViewDefinitionState view) {
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderedProductFields.PRODUCT);
+
         Entity product = productLookup.getEntity();
 
         if (Objects.nonNull(product)) {
             String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
+
             FieldComponent conversionField = (FieldComponent) view.getComponentByReference(OrderedProductFields.CONVERSION);
 
             if (StringUtils.isEmpty(additionalUnit)) {
@@ -95,8 +97,8 @@ public class OrderedProductDetailsHooks {
     private void fillAdditionalCodesLookup(final ViewDefinitionState view) {
         LookupComponent additionalCodeLookup = (LookupComponent) view
                 .getComponentByReference(OrderedProductFields.ADDITIONAL_CODE);
-
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderedProductFields.PRODUCT);
+
         Entity product = productLookup.getEntity();
 
         if (Objects.nonNull(product)) {
@@ -113,11 +115,11 @@ public class OrderedProductDetailsHooks {
     }
 
     public void fillCurrencyFields(final ViewDefinitionState view) {
+        FormComponent orderedProductForm = (FormComponent) view.getComponentByReference(L_FORM);
+
         List<String> referenceNames = Lists.newArrayList("totalPriceCurrency", "pricePerUnitCurrency");
 
-        FormComponent orderedProductForm = (FormComponent) view.getComponentByReference(L_FORM);
         Entity orderedProduct = orderedProductForm.getEntity();
-
         Entity delivery = orderedProduct.getBelongsToField(OrderedProductFields.DELIVERY);
 
         deliveriesService.fillCurrencyFieldsForDelivery(view, referenceNames, delivery);

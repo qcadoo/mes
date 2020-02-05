@@ -139,7 +139,7 @@ public class OrderedProductDetailsListeners {
 
         Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
 
-        if (decimalFieldsInvalid(orderedProductForm) || Objects.nonNull(product)) {
+        if (decimalFieldsInvalid(orderedProductForm) || Objects.isNull(product)) {
             return;
         }
 

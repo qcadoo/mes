@@ -353,6 +353,10 @@
 
                         <option type="required" value="true"/>
 
+                        <listener event="onSelectedEntityChange"
+                                  class="com.qcadoo.mes.deliveries.listeners.DeliveredProductDetailsListeners"
+                                  method="fillOrderedQuantities"/>
+
                         <criteriaModifier
                                 class="com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier"
                                 method="filterByProduct"/>

@@ -31,8 +31,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.advancedGenealogy.AdvancedGenealogyService;
+import com.qcadoo.mes.advancedGenealogy.constants.BatchNumberUniqueness;
+import com.qcadoo.mes.advancedGenealogy.hooks.BatchModelValidators;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.ReservationService;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductReservationFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -51,16 +54,19 @@ public class OrderedProductHooks {
     private static final String L_OPERATION = "operation";
 
     @Autowired
-    private DeliveriesService deliveriesService;
+    private NumberService numberService;
 
     @Autowired
-    private NumberService numberService;
+    private DeliveriesService deliveriesService;
 
     @Autowired
     private ReservationService reservationService;
 
     @Autowired
     private AdvancedGenealogyService advancedGenealogyService;
+
+    @Autowired
+    private BatchModelValidators batchModelValidators;
 
     public void onSave(final DataDefinition orderedProductDD, final Entity orderedProduct) {
         calculateOrderedProductPricePerUnit(orderedProduct);
@@ -76,21 +82,8 @@ public class OrderedProductHooks {
     }
 
     public boolean checkIfOrderedProductAlreadyExists(final DataDefinition orderedProductDD, final Entity orderedProduct) {
-        SearchCriteriaBuilder searchCriteriaBuilder = orderedProductDD.find()
-                .add(SearchRestrictions.belongsTo(OrderedProductFields.DELIVERY,
-                        orderedProduct.getBelongsToField(OrderedProductFields.DELIVERY)))
-                .add(SearchRestrictions.belongsTo(OrderedProductFields.PRODUCT,
-                        orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT)))
-                .add(SearchRestrictions.belongsTo(OrderedProductFields.ADDITIONAL_CODE,
-                        orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE)));
-
-        if (PluginUtils.isEnabled("techSubcontrForDeliveries")) {
-            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OPERATION, orderedProduct.getBelongsToField(L_OPERATION)));
-        }
-
-        if (PluginUtils.isEnabled("supplyNegotiations")) {
-            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OFFER, orderedProduct.getBelongsToField(L_OFFER)));
-        }
+        SearchCriteriaBuilder searchCriteriaBuilder = getSearchCriteriaBuilderForOrderedProduct(orderedProductDD.find(),
+                orderedProduct);
 
         if (Objects.nonNull(orderedProduct.getId())) {
             searchCriteriaBuilder.add(SearchRestrictions.ne("id", orderedProduct.getId()));
@@ -106,6 +99,34 @@ public class OrderedProductHooks {
 
             return false;
         }
+    }
+
+    private SearchCriteriaBuilder getSearchCriteriaBuilderForOrderedProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final Entity orderedProduct) {
+        searchCriteriaBuilder
+                .add(SearchRestrictions.belongsTo(OrderedProductFields.DELIVERY,
+                        orderedProduct.getBelongsToField(OrderedProductFields.DELIVERY)))
+                .add(SearchRestrictions.belongsTo(OrderedProductFields.PRODUCT,
+                        orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT)))
+                .add(SearchRestrictions.belongsTo(OrderedProductFields.ADDITIONAL_CODE,
+                        orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE)));
+
+        if (Objects.isNull(orderedProduct.getField(OrderedProductFields.BATCH))) {
+            searchCriteriaBuilder.add(SearchRestrictions.isNull(OrderedProductFields.BATCH));
+        } else {
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(OrderedProductFields.BATCH,
+                    orderedProduct.getBelongsToField(OrderedProductFields.BATCH)));
+        }
+
+        if (PluginUtils.isEnabled("techSubcontrForDeliveries")) {
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OPERATION, orderedProduct.getBelongsToField(L_OPERATION)));
+        }
+
+        if (PluginUtils.isEnabled("supplyNegotiations")) {
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OFFER, orderedProduct.getBelongsToField(L_OFFER)));
+        }
+
+        return searchCriteriaBuilder;
     }
 
     private void calculateReservationQuantities(final Entity orderedProduct) {
@@ -129,10 +150,22 @@ public class OrderedProductHooks {
     private void createBatch(final Entity orderedProduct) {
         String batchNumber = orderedProduct.getStringField(OrderedProductFields.BATCH_NUMBER);
         Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
+        Entity delivery = orderedProduct.getBelongsToField(OrderedProductFields.DELIVERY);
 
         if (Objects.nonNull(batchNumber) && Objects.nonNull(product)) {
-            orderedProduct.setField(OrderedProductFields.BATCH_NUMBER, null);
-            orderedProduct.setField(OrderedProductFields.BATCH, advancedGenealogyService.createOrGetBatch(batchNumber, product));
+            Entity supplier = delivery.getBelongsToField(DeliveryFields.SUPPLIER);
+
+            Entity batch = advancedGenealogyService.createOrGetBatch(batchNumber, product, supplier);
+
+            if (batch.isValid()) {
+                orderedProduct.setField(OrderedProductFields.BATCH_NUMBER, null);
+                orderedProduct.setField(OrderedProductFields.BATCH, batch);
+            } else {
+                BatchNumberUniqueness batchNumberUniqueness = batchModelValidators.getBatchNumberUniqueness();
+                String errorMessage = batchModelValidators.getBatchNumberErrorMessage(batchNumberUniqueness);
+
+                orderedProduct.addGlobalError(errorMessage);
+            }
         }
     }
 
