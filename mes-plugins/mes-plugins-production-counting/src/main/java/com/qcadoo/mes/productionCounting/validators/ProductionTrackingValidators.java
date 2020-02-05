@@ -24,22 +24,25 @@
 package com.qcadoo.mes.productionCounting.validators;
 
 import com.google.common.collect.Sets;
+import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
+import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductionTrackingValidators {
@@ -49,6 +52,9 @@ public class ProductionTrackingValidators {
 
     @Autowired
     private ProductionCountingService productionCountingService;
+
+    @Autowired
+    private ProductionTrackingService productionTrackingService;
 
     public boolean validatesWith(final DataDefinition productionTrackingDD, final Entity productionTracking) {
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
@@ -60,8 +66,24 @@ public class ProductionTrackingValidators {
         isValid = isValid && checkIfOrderIsStarted(productionTrackingDD, productionTracking, order);
         isValid = isValid && checkTimeRange(productionTrackingDD, productionTracking);
         isValid = isValid && checkIfOperationIsSet(productionTrackingDD, productionTracking);
+        isValid = isValid && checkIfExpirationDateTheSameForOrder(productionTrackingDD, productionTracking);
 
         return isValid;
+    }
+
+    private boolean checkIfExpirationDateTheSameForOrder(final DataDefinition productionTrackingDD, final Entity productionTracking) {
+        Optional<Date> maybeExpirationDayFilled = productionTrackingService.findExpirationDate(productionTracking);
+        if(maybeExpirationDayFilled.isPresent()) {
+            Date alreadyDefinedExpirationDate = maybeExpirationDayFilled.get();
+            Date expirationDate = productionTracking.getDateField(ProductionTrackingFields.EXPIRATION_DATE);
+
+            if(Objects.isNull(expirationDate) || !alreadyDefinedExpirationDate.equals(expirationDate)) {
+                productionTracking.addError(productionTrackingDD.getField(ProductionTrackingFields.EXPIRATION_DATE),
+                        "productionCounting.productionTracking.messages.error.expirationDate", DateUtils.toDateString(alreadyDefinedExpirationDate));
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean checkIfOperationIsSet(final DataDefinition productionTrackingDD, final Entity productionTracking) {
