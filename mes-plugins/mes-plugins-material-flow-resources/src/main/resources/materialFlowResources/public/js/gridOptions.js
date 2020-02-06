@@ -425,8 +425,13 @@ function onSelectLookupRow(row, recordName) {
         var rowId = $('#product').length ? null : jQuery('#grid').jqGrid('getGridParam', 'selrow');
         var field = updateFieldValue(recordName, code, rowId);
         if(recordName == "batch") {
-            var fieldBatchId = updateFieldValue("batchId", row.id, rowId);
-            fieldBatchId.trigger('change');
+            if( row.id == 0) {
+                var fieldBatchId = updateFieldValue("batchId", null, rowId);
+                fieldBatchId.trigger('change');
+            } else {
+                var fieldBatchId = updateFieldValue("batchId", row.id, rowId);
+                fieldBatchId.trigger('change');
+            }
         }
         field.trigger('change');
     }
@@ -530,8 +535,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                             var rowId = $('#product').length ? null : jQuery('#grid').jqGrid('getGridParam', 'selrow');
 
                             if(name == "batch") {
-                                var fieldBatchId = updateFieldValue("batchId", item.id, rowId);
-                                fieldBatchId.trigger('change');
+                                if(item.id == 0) {
+                                    var fieldBatchId = updateFieldValue("batchId", null, rowId);
+                                    fieldBatchId.trigger('change');
+                                } else {
+                                    var fieldBatchId = updateFieldValue("batchId", item.id, rowId);
+                                    fieldBatchId.trigger('change');
+                                }
                             }
 
                     if (autoCompleteResult) {
