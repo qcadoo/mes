@@ -345,8 +345,9 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
                         .filter(pt -> !pt.getId().equals(productionTracking.getId())).collect(Collectors.toList());
             }
 
-            return productionTracingsForOrder.stream().map(pt -> pt.getDateField(ProductionTrackingFields.EXPIRATION_DATE))
-                    .findFirst();
+            return productionTracingsForOrder.stream()
+                    .filter(pt -> Objects.nonNull(pt.getDateField(ProductionTrackingFields.EXPIRATION_DATE)))
+                    .map(pt -> pt.getDateField(ProductionTrackingFields.EXPIRATION_DATE)).findFirst();
         } else {
 
             Entity toc = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
@@ -364,8 +365,9 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
                             .filter(pt -> !pt.getId().equals(productionTracking.getId())).collect(Collectors.toList());
                 }
 
-                return productionTracingsForOrder.stream().map(pt -> pt.getDateField(ProductionTrackingFields.EXPIRATION_DATE))
-                        .findFirst();
+                return productionTracingsForOrder.stream()
+                        .filter(pt -> Objects.nonNull(pt.getDateField(ProductionTrackingFields.EXPIRATION_DATE)))
+                        .map(pt -> pt.getDateField(ProductionTrackingFields.EXPIRATION_DATE)).findFirst();
             }
         }
 
