@@ -57,6 +57,9 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         String additionalCode = record.getAc();
         boolean useAdditionalCode = org.apache.commons.lang3.StringUtils.isNotEmpty(additionalCode);
         Long batch = record.getBatchId();
+        if(Objects.nonNull(batch) && batch == 0) {
+            batch = null;
+        }
         boolean useBatch = Objects.nonNull(batch);
         Map<String, Object> parameters = geParameters(context, record, useAdditionalCode, additionalCode, useBatch, batch);
 
@@ -135,6 +138,7 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         resourceDTO.setConversion(null);
         resourceDTO.setAc(null);
         resourceDTO.setBatch(null);
+        resourceDTO.setBatchId(null);
 
         return params;
     }

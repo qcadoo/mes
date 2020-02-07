@@ -11,7 +11,7 @@ public class DocumentPositionResourcesHelper {
 
     public String getResourceQuery(final Long document, boolean query, boolean useAdditionalCode, boolean useBatch) {
         StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append("select r.number, batch.number as batch, r.availablequantity from materialflowresources_resource r LEFT JOIN advancedgenealogy_batch batch ON batch.id = r.batch_id ");
+        queryBuilder.append("select r.number, batch.id as batchId, batch.number as batch, r.availablequantity from materialflowresources_resource r LEFT JOIN advancedgenealogy_batch batch ON batch.id = r.batch_id ");
         appendWhereClause(queryBuilder, query, useAdditionalCode, useBatch);
         queryBuilder.append(warehouseMethodOfDisposalService.getSqlOrderByForResource(document));
         return queryBuilder.toString();
@@ -37,7 +37,7 @@ public class DocumentPositionResourcesHelper {
         }
 
         if (useBatch) {
-            queryBuilder.append(" AND batch.number = :batch ");
+            queryBuilder.append(" AND batch.id = :batch ");
         }
     }
 }
