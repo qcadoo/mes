@@ -118,8 +118,8 @@ public final class ProductionTrackingListenerService {
         if (product.getBooleanField(ProductFieldsAG.BATCH_EVIDENCE)
                 && Objects.isNull(productionTracking.getBelongsToField(ProductionTrackingFields.BATCH))
                 && StringUtils.isEmpty(productionTracking.getStringField(ProductionTrackingFields.BATCH_NUMBER))) {
-            productionTracking.addError(productionTracking.getDataDefinition().getField(ProductionTrackingFields.BATCH),
-                    "qcadooView.validate.field.error.missing");
+            productionTracking.addGlobalError("productionCounting.productionTracking.error.batchEvidenceRequiredForFinalProduct",
+                    product.getStringField(ProductFields.NUMBER));
         }
         List<Entity> productInComponents = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
