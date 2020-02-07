@@ -332,13 +332,17 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
     @Override
     public Optional<Date> findExpirationDate(final Entity productionTracking) {
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        Entity batch = productionTracking.getBelongsToField(ProductionTrackingFields.BATCH);
 
         if (TypeOfProductionRecording.CUMULATED.getStringValue().equals(
                 order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
 
             List<Entity> productionTracingsForOrder = dataDefinitionService
                     .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_TRACKING)
-                    .find().add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order)).list().getEntities();
+                    .find()
+                    .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
+                    .add(SearchRestrictions.belongsTo(ProductionTrackingFields.BATCH, batch))
+                    .list().getEntities();
 
             if (Objects.nonNull(productionTracking.getId())) {
                 productionTracingsForOrder = productionTracingsForOrder.stream()
@@ -356,8 +360,11 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
                     .equals(order.getBelongsToField(OrderFields.PRODUCT).getId())) {
                 List<Entity> productionTracingsForOrder = dataDefinitionService
                         .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_TRACKING)
-                        .find().add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
-                        .add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc)).list()
+                        .find()
+                        .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
+                        .add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc))
+                        .add(SearchRestrictions.belongsTo(ProductionTrackingFields.BATCH, batch))
+                        .list()
                         .getEntities();
 
                 if (Objects.nonNull(productionTracking.getId())) {
