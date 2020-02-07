@@ -66,22 +66,22 @@ public class DeliveryStateValidationService {
         final List<String> fieldNames = Lists.newArrayList(DeliveryFields.DELIVERY_DATE, DeliveryFields.SUPPLIER);
 
         checkRequired(stateChangeContext, fieldNames);
-        checkOrderedQuantities(stateChangeContext);
+        checkOrderedProductsOrderedQuantities(stateChangeContext);
     }
 
     public void validationOnReceived(final StateChangeContext stateChangeContext) {
         final List<String> fieldNames = Lists.newArrayList(DeliveryFields.LOCATION);
 
         checkRequired(stateChangeContext, fieldNames);
-        checkDeliveredQuantities(stateChangeContext);
-        checkBatches(stateChangeContext);
+        checkDeliveredProductsDeliveredQuantities(stateChangeContext);
+        checkDeliveredProductsBatches(stateChangeContext);
 
         if (parameterService.getParameter().getBooleanField(ParameterFieldsD.POSITIVE_PURCHASE_PRICE)) {
-            checkPurchasePrices(stateChangeContext);
+            checkDeliveredProductsPricePerUnits(stateChangeContext);
         }
 
         if (pluginManager.isPluginEnabled("integration") && productSynchronizationService.shouldSynchronize(stateChangeContext)) {
-            checkDeliveredProductsSynchronizationStatus(stateChangeContext);
+            checkDeliveredProductsExternalNumbers(stateChangeContext);
 
             productSynchronizationService.synchronizeProducts(stateChangeContext, false);
         }
@@ -99,14 +99,13 @@ public class DeliveryStateValidationService {
         }
     }
 
-    private void checkOrderedQuantities(final StateChangeContext stateChangeContext) {
+    private void checkOrderedProductsOrderedQuantities(final StateChangeContext stateChangeContext) {
         checkArgument(Objects.nonNull(stateChangeContext), L_ENTITY_IS_NULL);
 
         final Entity stateChangeEntity = stateChangeContext.getOwner();
 
         Set<String> orderedProductsWithoutOrderedQuantities = stateChangeEntity.getHasManyField(DeliveryFields.ORDERED_PRODUCTS)
-                .stream().filter(orderedProduct -> checkOrderedQuantity(orderedProduct)).map(orderedProduct -> orderedProduct
-                        .getBelongsToField(OrderedProductFields.PRODUCT).getStringField(ProductFields.NUMBER))
+                .stream().filter(this::checkOrderedProductOrderedQuantity).map(this::getOrderedProductProductNumber)
                 .collect(Collectors.toSet());
 
         if (!orderedProductsWithoutOrderedQuantities.isEmpty()) {
@@ -115,14 +114,14 @@ public class DeliveryStateValidationService {
         }
     }
 
-    private boolean checkOrderedQuantity(final Entity orderedProduct) {
+    private boolean checkOrderedProductOrderedQuantity(final Entity orderedProduct) {
         BigDecimal orderedQuantity = BigDecimalUtils
                 .convertNullToZero(orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY));
 
         return (orderedQuantity.compareTo(BigDecimal.ZERO) <= 0);
     }
 
-    private void checkDeliveredQuantities(final StateChangeContext stateChangeContext) {
+    private void checkDeliveredProductsDeliveredQuantities(final StateChangeContext stateChangeContext) {
         checkArgument(Objects.nonNull(stateChangeContext), L_ENTITY_IS_NULL);
 
         final Entity stateChangeEntity = stateChangeContext.getOwner();
@@ -134,10 +133,8 @@ public class DeliveryStateValidationService {
         }
 
         Set<String> deliveredProductsWithoutDeliveredQuantities = stateChangeEntity
-                .getHasManyField(DeliveryFields.DELIVERED_PRODUCTS).stream()
-                .filter(deliveredProduct -> checkDeliveredQuantity(deliveredProduct)).map(deliveredProduct -> deliveredProduct
-                        .getBelongsToField(DeliveredProductFields.PRODUCT).getStringField(ProductFields.NUMBER))
-                .collect(Collectors.toSet());
+                .getHasManyField(DeliveryFields.DELIVERED_PRODUCTS).stream().filter(this::checkDeliveredProductDeliveredQuantity)
+                .map(this::getDeliveredProductProductNumber).collect(Collectors.toSet());
 
         if (!deliveredProductsWithoutDeliveredQuantities.isEmpty()) {
             stateChangeContext.addValidationError("deliveries.deliveredProducts.deliveredQuantity.isRequired", false,
@@ -145,20 +142,19 @@ public class DeliveryStateValidationService {
         }
     }
 
-    private boolean checkDeliveredQuantity(final Entity deliveredProduct) {
+    private boolean checkDeliveredProductDeliveredQuantity(final Entity deliveredProduct) {
         BigDecimal deliveredQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
 
         return Objects.isNull(deliveredQuantity);
     }
 
-    private void checkBatches(final StateChangeContext stateChangeContext) {
+    private void checkDeliveredProductsBatches(final StateChangeContext stateChangeContext) {
         checkArgument(Objects.nonNull(stateChangeContext), L_ENTITY_IS_NULL);
 
         final Entity stateChangeEntity = stateChangeContext.getOwner();
 
         Set<String> deliveredProductsWithoutBatches = stateChangeEntity.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS)
-                .stream().filter(deliveredProduct -> checkBatches(deliveredProduct)).map(deliveredProduct -> deliveredProduct
-                        .getBelongsToField(DeliveredProductFields.PRODUCT).getStringField(ProductFields.NUMBER))
+                .stream().filter(this::checkDeliveredProductBatch).map(this::getDeliveredProductProductNumber)
                 .collect(Collectors.toSet());
 
         if (!deliveredProductsWithoutBatches.isEmpty()) {
@@ -167,21 +163,20 @@ public class DeliveryStateValidationService {
         }
     }
 
-    private boolean checkBatches(final Entity deliveredProduct) {
+    private boolean checkDeliveredProductBatch(final Entity deliveredProduct) {
         Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
         Entity batch = deliveredProduct.getBelongsToField(DeliveredProductFields.BATCH);
 
         return (product.getBooleanField(ProductFieldsAG.BATCH_EVIDENCE) && Objects.isNull(batch));
     }
 
-    private void checkPurchasePrices(final StateChangeContext stateChangeContext) {
+    private void checkDeliveredProductsPricePerUnits(final StateChangeContext stateChangeContext) {
         checkArgument(Objects.nonNull(stateChangeContext), L_ENTITY_IS_NULL);
 
         final Entity stateChangeEntity = stateChangeContext.getOwner();
 
         Set<String> deliveredProductsWithoutPrices = stateChangeEntity.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS).stream()
-                .filter(deliveredProduct -> checkPricePerUnit(deliveredProduct)).map(deliveredProduct -> deliveredProduct
-                        .getBelongsToField(DeliveredProductFields.PRODUCT).getStringField(ProductFields.NUMBER))
+                .filter(this::checkDeliveredProductPurchasePrice).map(this::getDeliveredProductProductNumber)
                 .collect(Collectors.toSet());
 
         if (!deliveredProductsWithoutPrices.isEmpty()) {
@@ -190,26 +185,39 @@ public class DeliveryStateValidationService {
         }
     }
 
-    private boolean checkPricePerUnit(final Entity deliveredProduct) {
+    private boolean checkDeliveredProductPurchasePrice(final Entity deliveredProduct) {
         BigDecimal pricePerUnit = deliveredProduct.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT);
 
         return (Objects.isNull(pricePerUnit) || (pricePerUnit.compareTo(BigDecimal.ZERO) <= 0));
     }
 
-    private void checkDeliveredProductsSynchronizationStatus(final StateChangeContext stateChangeContext) {
+    private void checkDeliveredProductsExternalNumbers(final StateChangeContext stateChangeContext) {
         checkArgument(Objects.nonNull(stateChangeContext), L_ENTITY_IS_NULL);
 
         final Entity stateChangeEntity = stateChangeContext.getOwner();
 
         Set<String> deliveredProductsNotSynchronized = stateChangeEntity.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS)
-                .stream().map(deliveredProduct -> deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT))
-                .filter(product -> Objects.isNull(product.getStringField(ProductFields.EXTERNAL_NUMBER)))
-                .map(product -> product.getStringField(ProductFields.NUMBER)).collect(Collectors.toSet());
+                .stream().filter(this::checkDeliveredProductExternalNumber).map(this::getDeliveredProductProductNumber)
+                .collect(Collectors.toSet());
 
         if (!deliveredProductsNotSynchronized.isEmpty()) {
             stateChangeContext.addValidationError("deliveries.deliveredProducts.notSynchronized", false,
                     String.join(", ", deliveredProductsNotSynchronized));
         }
+    }
+
+    private boolean checkDeliveredProductExternalNumber(final Entity deliveredProduct) {
+        Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
+
+        return Objects.isNull(product.getStringField(ProductFields.EXTERNAL_NUMBER));
+    }
+
+    private String getOrderedProductProductNumber(final Entity orderedProduct) {
+        return orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT).getStringField(ProductFields.NUMBER);
+    }
+
+    private String getDeliveredProductProductNumber(final Entity deliveredProduct) {
+        return deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT).getStringField(ProductFields.NUMBER);
     }
 
 }

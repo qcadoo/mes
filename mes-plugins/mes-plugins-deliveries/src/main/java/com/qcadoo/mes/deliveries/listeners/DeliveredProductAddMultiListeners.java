@@ -37,8 +37,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
@@ -77,6 +75,22 @@ public class DeliveredProductAddMultiListeners {
 
     private static final String L_OFFER = "offer";
 
+    private static final String L_GENERATED = "generated";
+
+    private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING = "qcadooView.validate.field.error.missing";
+
+    private static final String L_DELIVERIES_DELIVERED_PRODUCT_MULTI_ERROR_INVALID = "deliveries.deliveredProductMulti.error.invalid";
+
+    private static final String L_DELIVERIES_DELIVERED_PRODUCT_MULTI_ERROR_EMPTY_POSITIONS = "deliveries.deliveredProductMulti.error.emptyPositions";
+
+    private static final String L_DELIVERIES_DELIVERED_PRODUCT_MULTI_SUCCESS = "deliveries.deliveredProductMulti.success";
+
+    private static final String L_DELIVERIES_DELIVERED_PRODUCT_MULTI_ERROR_PRODUCT_EXISTS = "deliveries.deliveredProductMulti.error.productExists";
+
+    private static final String L_DELIVERIES_DELIVERED_PRODUCT_MULTI_POSITION_ERROR_LOCATION_REQUIRED = "deliveries.deliveredProductMultiPosition.error.locationRequired";
+
+    private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_OUT_OF_RANGE_TO_SMALL = "qcadooView.validate.field.error.outOfRange.toSmall";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -100,14 +114,14 @@ public class DeliveredProductAddMultiListeners {
 
         Entity deliveredProductMulti = deliveredProductMultiForm.getPersistedEntityWithIncludedFormValues();
 
-        CheckBoxComponent generated = (CheckBoxComponent) view.getComponentByReference("generated");
+        CheckBoxComponent generatedCheckBox = (CheckBoxComponent) view.getComponentByReference(L_GENERATED);
 
         try {
-
             if (!validate(deliveredProductMulti)) {
                 deliveredProductMultiForm.setEntity(deliveredProductMulti);
-                view.addMessage("deliveries.deliveredProductMulti.error.invalid", MessageType.FAILURE);
-                generated.setChecked(false);
+
+                view.addMessage(L_DELIVERIES_DELIVERED_PRODUCT_MULTI_ERROR_INVALID, MessageType.FAILURE);
+                generatedCheckBox.setChecked(false);
 
                 return;
             }
@@ -116,8 +130,8 @@ public class DeliveredProductAddMultiListeners {
                     .getHasManyField(DeliveredProductMultiFields.DELIVERED_PRODUCT_MULTI_POSITIONS);
 
             if (deliveredProductMultiPositions.isEmpty()) {
-                view.addMessage("deliveries.deliveredProductMulti.error.emptyPositions", MessageType.FAILURE);
-                generated.setChecked(false);
+                view.addMessage(L_DELIVERIES_DELIVERED_PRODUCT_MULTI_ERROR_EMPTY_POSITIONS, MessageType.FAILURE);
+                generatedCheckBox.setChecked(false);
 
                 return;
             }
@@ -128,11 +142,11 @@ public class DeliveredProductAddMultiListeners {
             if (deliveredProductMulti.isValid()) {
                 state.performEvent(view, "save");
 
-                view.addMessage("deliveries.deliveredProductMulti.success", MessageType.SUCCESS);
-                generated.setChecked(true);
+                view.addMessage(L_DELIVERIES_DELIVERED_PRODUCT_MULTI_SUCCESS, MessageType.SUCCESS);
+                generatedCheckBox.setChecked(true);
             }
         } catch (Exception ex) {
-            generated.setChecked(false);
+            generatedCheckBox.setChecked(false);
             deliveredProductMultiForm.setEntity(deliveredProductMulti);
         }
     }
@@ -158,7 +172,7 @@ public class DeliveredProductAddMultiListeners {
                     }
                 }
 
-                deliveredProductMulti.addGlobalError("deliveries.deliveredProductMulti.error.invalid");
+                deliveredProductMulti.addGlobalError(L_DELIVERIES_DELIVERED_PRODUCT_MULTI_ERROR_INVALID);
 
                 throw new IllegalStateException("Undone saved delivered product");
             }
@@ -187,7 +201,7 @@ public class DeliveredProductAddMultiListeners {
                 DeliveredProductMultiFields.STORAGE_LOCATION).stream().forEach(fieldName -> {
                     if (Objects.isNull(deliveredProductMulti.getField(fieldName))) {
                         deliveredProductMulti.addError(deliveredProductMultiDD.getField(fieldName),
-                                "qcadooView.validate.field.error.missing");
+                                L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
                     }
                 });
 
@@ -197,8 +211,6 @@ public class DeliveredProductAddMultiListeners {
 
         List<Entity> deliveredProductMultiPositions = deliveredProductMulti
                 .getHasManyField(DeliveredProductMultiFields.DELIVERED_PRODUCT_MULTI_POSITIONS);
-
-        Multimap<Long, Date> positionsMap = ArrayListMultimap.create();
 
         DeliveredMultiProductContainer multiProductContainer = new DeliveredMultiProductContainer();
 
@@ -217,9 +229,9 @@ public class DeliveredProductAddMultiListeners {
                 Date expirationDate = position.getDateField(DeliveredProductMultiPositionFields.EXPIRATION_DATE);
 
                 if (multiProductContainer
-                        .checkIfExsists(new DeliveredMultiProduct(mapToId(product), mapToId(additionalCode), expirationDate))) {
+                        .checkIfExists(new DeliveredMultiProduct(mapToId(product), mapToId(additionalCode), expirationDate))) {
                     position.addError(deliveredProductMultiPositionDD.getField(DeliveredProductMultiPositionFields.PRODUCT),
-                            "deliveries.deliveredProductMulti.error.productExists");
+                            L_DELIVERIES_DELIVERED_PRODUCT_MULTI_ERROR_PRODUCT_EXISTS);
                 } else {
                     DeliveredMultiProduct deliveredMultiProduct = new DeliveredMultiProduct(mapToId(product),
                             mapToId(additionalCode), expirationDate);
@@ -239,7 +251,7 @@ public class DeliveredProductAddMultiListeners {
         Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
 
         if (Objects.isNull(location)) {
-            deliveredProductMulti.addGlobalError("deliveries.deliveredProductMultiPosition.error.locationRequired");
+            deliveredProductMulti.addGlobalError(L_DELIVERIES_DELIVERED_PRODUCT_MULTI_POSITION_ERROR_LOCATION_REQUIRED);
 
             return false;
         }
@@ -257,15 +269,16 @@ public class DeliveredProductAddMultiListeners {
 
     private void checkMissing(final Entity position, final String fieldName, final DataDefinition positionDataDefinition) {
         if (Objects.isNull(position.getField(fieldName))) {
-            position.addError(positionDataDefinition.getField(fieldName), "qcadooView.validate.field.error.missing");
+            position.addError(positionDataDefinition.getField(fieldName), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
         }
     }
 
     private void checkMissingOrZero(final Entity position, final String fieldName, final DataDefinition positionDataDefinition) {
         if (Objects.isNull(position.getField(fieldName))) {
-            position.addError(positionDataDefinition.getField(fieldName), "qcadooView.validate.field.error.missing");
+            position.addError(positionDataDefinition.getField(fieldName), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
         } else if (BigDecimal.ZERO.compareTo(position.getDecimalField(fieldName)) >= 0) {
-            position.addError(positionDataDefinition.getField(fieldName), "qcadooView.validate.field.error.outOfRange.toSmall");
+            position.addError(positionDataDefinition.getField(fieldName),
+                    L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_OUT_OF_RANGE_TO_SMALL);
         }
     }
 
@@ -280,7 +293,7 @@ public class DeliveredProductAddMultiListeners {
             boolean requireExpirationDate = location.getBooleanField(LocationFieldsMFR.REQUIRE_EXPIRATION_DATE);
 
             if (requireExpirationDate && Objects.isNull(expirationDate)) {
-                position.addError(positionDataDefinition.getField(fieldname), "qcadooView.validate.field.error.missing");
+                position.addError(positionDataDefinition.getField(fieldname), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
             }
         }
     }
@@ -438,7 +451,7 @@ public class DeliveredProductAddMultiListeners {
 
             BigDecimal quantity = orderedQuantity.subtract(alreadyAssignedQuantity, numberService.getMathContext());
 
-            if (BigDecimal.ZERO.compareTo(quantity) == 1) {
+            if (BigDecimal.ZERO.compareTo(quantity) > 0) {
                 quantity = BigDecimal.ZERO;
             }
 

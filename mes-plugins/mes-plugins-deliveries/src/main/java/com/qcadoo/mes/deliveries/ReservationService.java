@@ -153,9 +153,7 @@ public class ReservationService {
 
             countReservations += reservations.size();
 
-            reservations.stream().forEach(reservation -> {
-                reservation.getDataDefinition().delete(reservation.getId());
-            });
+            reservations.stream().forEach(reservation -> reservation.getDataDefinition().delete(reservation.getId()));
         }
 
         return countReservations > 0;
@@ -188,9 +186,7 @@ public class ReservationService {
             findOrderedProduct.add(SearchRestrictions.belongsTo(OPERATION, deliveredProduct.getBelongsToField(OPERATION)));
         }
 
-        Entity orderedProductForProduct = findOrderedProduct.setMaxResults(1).uniqueResult();
-
-        return orderedProductForProduct;
+        return findOrderedProduct.setMaxResults(1).uniqueResult();
     }
 
     private List<Entity> findPresentDeliveredProductForProductReservations(final Entity deliveredProduct) {
@@ -218,9 +214,8 @@ public class ReservationService {
         }
         List<Entity> deliveredProducts = findDeliveredProducts.list().getEntities();
 
-        List<Entity> allReservationsFromDeliveredProducts = deliveredProducts.stream().flatMap(p -> {
-            return p.getHasManyField(DeliveredProductFields.RESERVATIONS).stream();
-        }).collect(Collectors.toList());
+        List<Entity> allReservationsFromDeliveredProducts = deliveredProducts.stream()
+                .flatMap(p -> p.getHasManyField(DeliveredProductFields.RESERVATIONS).stream()).collect(Collectors.toList());
 
         return allReservationsFromDeliveredProducts;
     }
@@ -236,9 +231,8 @@ public class ReservationService {
     }
 
     private BigDecimal sumQuantityFromReservations(final List<Entity> reservationsFromLocation, final String fieldName) {
-        BigDecimal quantity = reservationsFromLocation.stream().map(r -> {
-            return r.getDecimalField(fieldName);
-        }).reduce(BigDecimal.ZERO, (r1, r2) -> r1.add(r2));
+        BigDecimal quantity = reservationsFromLocation.stream().map(r -> r.getDecimalField(fieldName)).reduce(BigDecimal.ZERO,
+                (r1, r2) -> r1.add(r2));
 
         return quantity;
     }

@@ -271,8 +271,8 @@ public class DeliveredProductHooks {
         Entity deliveredProductBatch = deliveredProduct.getBelongsToField(DeliveredProductFields.BATCH);
 
         if (Objects.isNull(deliveredProductDBBatch) != Objects.isNull(deliveredProductBatch)
-                || (Objects.nonNull(deliveredProductDBBatch) && Objects.nonNull(deliveredProductBatch)
-                        && !deliveredProductDBBatch.getId().equals(deliveredProductBatch.getId()))) {
+                || Objects.nonNull(deliveredProductDBBatch)
+                        && !deliveredProductDBBatch.getId().equals(deliveredProductBatch.getId())) {
             return true;
         }
 
@@ -280,8 +280,8 @@ public class DeliveredProductHooks {
         Entity deliveredProductAdditionalCode = deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
 
         if (Objects.isNull(deliveredProductDBAdditionalCode) != Objects.isNull(deliveredProductAdditionalCode)
-                || (Objects.nonNull(deliveredProductDBAdditionalCode) && Objects.nonNull(deliveredProductAdditionalCode)
-                        && !deliveredProductDBAdditionalCode.getId().equals(deliveredProductAdditionalCode.getId()))) {
+                || Objects.nonNull(deliveredProductDBAdditionalCode)
+                        && !deliveredProductDBAdditionalCode.getId().equals(deliveredProductAdditionalCode.getId())) {
             return true;
         }
 
@@ -289,8 +289,8 @@ public class DeliveredProductHooks {
         Entity deliveredProductOffer = deliveredProduct.getBelongsToField(L_OFFER);
 
         if (Objects.isNull(deliveredProductDBOffer) != Objects.isNull(deliveredProductOffer)
-                || (Objects.nonNull(deliveredProductDBOffer) && Objects.nonNull(deliveredProductOffer)
-                        && !deliveredProductDBOffer.getId().equals(deliveredProductOffer.getId()))) {
+                || Objects.nonNull(deliveredProductDBOffer)
+                        && !deliveredProductDBOffer.getId().equals(deliveredProductOffer.getId())) {
             return true;
         }
 
@@ -393,7 +393,7 @@ public class DeliveredProductHooks {
         BigDecimal deliveredQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
 
         if (Objects.nonNull(damagedQuantity) && Objects.nonNull(deliveredQuantity)
-                && (damagedQuantity.compareTo(deliveredQuantity) == 1)) {
+                && (damagedQuantity.compareTo(deliveredQuantity) > 0)) {
             deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.DAMAGED_QUANTITY),
                     "deliveries.deliveredProduct.error.damagedQuantity.deliveredQuantityIsTooMuch");
             deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.DELIVERED_QUANTITY),
@@ -479,7 +479,6 @@ public class DeliveredProductHooks {
             Entity palletNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
 
             if (Objects.nonNull(palletNumber)) {
-
                 String query = "SELECT count(DISTINCT palletsInStorageLocation.palletnumber_id) AS palletsCount     "
                         + "   FROM (SELECT                                                                          "
                         + "           resource.palletnumber_id,                                                     "

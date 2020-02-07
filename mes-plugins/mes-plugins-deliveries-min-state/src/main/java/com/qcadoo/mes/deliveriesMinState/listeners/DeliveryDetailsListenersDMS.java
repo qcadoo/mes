@@ -25,12 +25,14 @@ package com.qcadoo.mes.deliveriesMinState.listeners;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -42,28 +44,39 @@ import com.qcadoo.view.api.components.GridComponent;
 @Service
 public class DeliveryDetailsListenersDMS {
 
+    private static final String L_ORDERED_PRODUCTS_CUMULATED_TOTAL_PRICE = "orderedProductsCumulatedTotalPrice";
+
     @Autowired
-    NumberService numberService;
+    private NumberService numberService;
 
     @Autowired
     private DeliveriesService deliveriesService;
 
     public void fillPrices(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        GridComponent orderedProductsGrid = (GridComponent) view.getComponentByReference(DeliveriesService.L_ORDERED_PRODUCTS);
+        GridComponent orderedProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
+
         List<Entity> orderedProducts = deliveriesService.getSelectedOrderedProducts(orderedProductsGrid);
-        orderedProducts.forEach(op -> {
-            Entity product = op.getBelongsToField(OrderedProductFields.PRODUCT);
+
+        orderedProducts.forEach(orderedProduct -> {
+            Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
             BigDecimal lastPurchaseCost = product.getDecimalField(ProductFieldsCNFP.LAST_PURCHASE_COST);
-            op.setField(OrderedProductFields.PRICE_PER_UNIT, lastPurchaseCost);
-            op.getDataDefinition().save(op);
+
+            orderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT, lastPurchaseCost);
+            orderedProduct.getDataDefinition().save(orderedProduct);
         });
+
         orderedProductsGrid.reloadEntities();
 
         BigDecimal totalPrice = orderedProducts.stream()
-                .filter(op -> op.getDecimalField(OrderedProductFields.TOTAL_PRICE) != null)
-                .map(op -> op.getDecimalField(OrderedProductFields.TOTAL_PRICE)).reduce(BigDecimal.ZERO, BigDecimal::add);
-        FieldComponent totalPriceComponent = (FieldComponent) view.getComponentByReference("orderedProductsCumulatedTotalPrice");
+                .filter(orderedProduct -> Objects.nonNull(orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE)))
+                .map(orderedProduct -> orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        FieldComponent totalPriceComponent = (FieldComponent) view
+                .getComponentByReference(L_ORDERED_PRODUCTS_CUMULATED_TOTAL_PRICE);
+
         totalPriceComponent.setFieldValue(numberService.formatWithMinimumFractionDigits(totalPrice, 0));
         totalPriceComponent.requestComponentUpdateState();
     }
+
 }

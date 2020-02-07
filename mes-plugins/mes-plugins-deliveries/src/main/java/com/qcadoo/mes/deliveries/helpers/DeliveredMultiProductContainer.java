@@ -1,8 +1,8 @@
 package com.qcadoo.mes.deliveries.helpers;
 
-import com.google.common.collect.Lists;
-
 import java.util.List;
+
+import com.google.common.collect.Lists;
 
 public class DeliveredMultiProductContainer {
 
@@ -12,14 +12,11 @@ public class DeliveredMultiProductContainer {
         deliveredMultiProducts = Lists.newArrayList();
     }
 
-    public boolean checkIfExsists(DeliveredMultiProduct deliveredMultiProduct) {
-        if (deliveredMultiProducts.contains(deliveredMultiProduct)) {
-            return true;
-        }
-        return false;
+    public boolean checkIfExists(final DeliveredMultiProduct deliveredMultiProduct) {
+        return deliveredMultiProducts.contains(deliveredMultiProduct);
     }
 
-    public DeliveredMultiProductContainer(List<DeliveredMultiProduct> deliveredMultiProducts) {
+    public DeliveredMultiProductContainer(final List<DeliveredMultiProduct> deliveredMultiProducts) {
         this.deliveredMultiProducts = deliveredMultiProducts;
     }
 
@@ -27,11 +24,12 @@ public class DeliveredMultiProductContainer {
         return deliveredMultiProducts;
     }
 
-    public void setDeliveredMultiProducts(List<DeliveredMultiProduct> deliveredMultiProducts) {
+    public void setDeliveredMultiProducts(final List<DeliveredMultiProduct> deliveredMultiProducts) {
         this.deliveredMultiProducts = deliveredMultiProducts;
     }
 
-    public void addProduct(DeliveredMultiProduct deliveredMultiProduct) {
+    public void addProduct(final DeliveredMultiProduct deliveredMultiProduct) {
         deliveredMultiProducts.add(deliveredMultiProduct);
     }
+
 }

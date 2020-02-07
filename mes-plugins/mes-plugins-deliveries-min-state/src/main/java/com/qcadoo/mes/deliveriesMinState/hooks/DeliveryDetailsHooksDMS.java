@@ -25,49 +25,55 @@ package com.qcadoo.mes.deliveriesMinState.hooks;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
-import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 @Service
 public class DeliveryDetailsHooksDMS {
 
+    private static final String L_WINDOW = "window";
+
+    private static final String L_FILL = "fill";
+
+    private static final String L_FILL_PRICES = "fillPrices";
+
     public void disabledButtonWhenEmptyOrders(final ViewDefinitionState view) {
-        FieldComponent deliveryState = (FieldComponent) view.getComponentByReference("state");
+        FieldComponent deliveryState = (FieldComponent) view.getComponentByReference(DeliveryFields.STATE);
         RibbonActionItem fillPricesButton = getFillPricesButton(view);
+
         if (DeliveryState.DRAFT.getStringValue().equals(deliveryState.getFieldValue())
                 || DeliveryState.DURING_CORRECTION.getStringValue().equals(deliveryState.getFieldValue())) {
 
-            GridComponent orderedProductsGrid = (GridComponent) view
-                    .getComponentByReference(DeliveriesService.L_ORDERED_PRODUCTS);
+            GridComponent orderedProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
 
-            if (orderedProductsGrid.getEntities().isEmpty()) {
-                fillPricesButton.setEnabled(false);
-            } else {
-                fillPricesButton.setEnabled(true);
-            }
+            boolean isEnabled = !orderedProductsGrid.getEntities().isEmpty();
+
+            fillPricesButton.setEnabled(isEnabled);
         } else {
             fillPricesButton.setEnabled(false);
         }
+
         fillPricesButton.requestUpdate(true);
     }
 
     private RibbonActionItem getFillPricesButton(final ViewDefinitionState view) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-        Ribbon ribbon = window.getRibbon();
-        RibbonGroup ribbonGroup = ribbon.getGroupByName("fill");
-        return ribbonGroup.getItemByName("fillPrices");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        RibbonGroup ribbonGroup = window.getRibbon().getGroupByName(L_FILL);
+
+        return ribbonGroup.getItemByName(L_FILL_PRICES);
     }
 
     public void addTooltip(final ViewDefinitionState view) {
         RibbonActionItem fillPricesButton = getFillPricesButton(view);
+
         fillPricesButton.setMessage("deliveries.deliveryDetails.window.ribbon.fill.fillPrices.description");
         fillPricesButton.requestUpdate(true);
     }
+
 }

@@ -23,12 +23,16 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
+import java.math.BigDecimal;
+import java.util.Objects;
+
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductReservationFields;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import org.springframework.stereotype.Service;
-
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
@@ -39,21 +43,24 @@ import com.qcadoo.model.api.search.SearchProjection;
 import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
-import java.math.BigDecimal;
 
 @Service
 public class DeliveredProductReservationHooks {
 
+    private static final String L_SUM_OF_QUANTITY = "sumOfQuantity";
+
     public void onView(final DataDefinition deliveredProductReservationDD, final Entity deliveredProductReservation) {
-        Entity deliveredProduct = deliveredProductReservation.getBelongsToField(DeliveredProductReservationFields.DELIVERED_PRODUCT);
-        if (deliveredProduct != null) {
+        Entity deliveredProduct = deliveredProductReservation
+                .getBelongsToField(DeliveredProductReservationFields.DELIVERED_PRODUCT);
+
+        if (Objects.nonNull(deliveredProduct)) {
             Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
 
-            if (product != null) {
+            if (Objects.nonNull(product)) {
                 String unit = product.getStringField(ProductFields.UNIT);
                 String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
 
-                if (additionalUnit == null) {
+                if (Objects.isNull(additionalUnit)) {
                     additionalUnit = unit;
                 }
 
@@ -64,48 +71,61 @@ public class DeliveredProductReservationHooks {
     }
 
     public boolean validate(final DataDefinition deliveredProductReservationDD, final Entity deliveredProductReservation) {
-        return locationUniqueToDelivery(deliveredProductReservation) && locationUnique(deliveredProductReservation) && sumIsNotExceeded(deliveredProductReservation);
+        return locationUniqueToDelivery(deliveredProductReservation) && locationUnique(deliveredProductReservation)
+                && sumIsNotExceeded(deliveredProductReservation);
     }
 
-    private boolean locationUniqueToDelivery(Entity deliveredProductReservation) {
-        Entity deliveredProduct = deliveredProductReservation.getBelongsToField(DeliveredProductReservationFields.DELIVERED_PRODUCT);
+    private boolean locationUniqueToDelivery(final Entity deliveredProductReservation) {
+        Entity deliveredProduct = deliveredProductReservation
+                .getBelongsToField(DeliveredProductReservationFields.DELIVERED_PRODUCT);
         Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
         Entity deliveryLocation = delivery.getBelongsToField(DeliveryFields.LOCATION);
 
         Entity reservationLocation = deliveredProductReservation.getBelongsToField(DeliveredProductReservationFields.LOCATION);
 
-        boolean locationOtherThenDelivery = deliveryLocation == null || !deliveryLocation.getId().equals(reservationLocation.getId());
+        boolean locationOtherThenDelivery = Objects.isNull(deliveryLocation)
+                || !deliveryLocation.getId().equals(reservationLocation.getId());
 
         if (!locationOtherThenDelivery) {
-            FieldDefinition locationField = deliveredProductReservation.getDataDefinition().getField(DeliveredProductReservationFields.LOCATION);
-            deliveredProductReservation.addError(locationField, "deliveries.deliveredProductReservation.error.locationNotUniqueToDelivery");
+            FieldDefinition locationField = deliveredProductReservation.getDataDefinition()
+                    .getField(DeliveredProductReservationFields.LOCATION);
+            deliveredProductReservation.addError(locationField,
+                    "deliveries.deliveredProductReservation.error.locationNotUniqueToDelivery");
         }
 
         return locationOtherThenDelivery;
     }
 
-    private boolean locationUnique(Entity deliveredProductReservation) {
+    private boolean locationUnique(final Entity deliveredProductReservation) {
         Entity location = deliveredProductReservation.getBelongsToField(DeliveredProductReservationFields.LOCATION);
-        Entity deliveredProduct = deliveredProductReservation.getBelongsToField(DeliveredProductReservationFields.DELIVERED_PRODUCT);
-        if (location != null) {
+        Entity deliveredProduct = deliveredProductReservation
+                .getBelongsToField(DeliveredProductReservationFields.DELIVERED_PRODUCT);
+
+        if (Objects.nonNull(location)) {
             SearchCriterion criterion;
 
-            SearchCriterion criterionLocation = SearchRestrictions.belongsTo(DeliveredProductReservationFields.LOCATION, location);
-            SearchCriterion criterionDeliveredProduct = SearchRestrictions.belongsTo(DeliveredProductReservationFields.DELIVERED_PRODUCT, deliveredProduct);
+            SearchCriterion criterionLocation = SearchRestrictions.belongsTo(DeliveredProductReservationFields.LOCATION,
+                    location);
+            SearchCriterion criterionDeliveredProduct = SearchRestrictions
+                    .belongsTo(DeliveredProductReservationFields.DELIVERED_PRODUCT, deliveredProduct);
 
-            if (deliveredProductReservation.getId() == null) {
+            Long deliveredProductReservationId = deliveredProductReservation.getId();
+
+            if (Objects.isNull(deliveredProductReservationId)) {
                 criterion = SearchRestrictions.and(criterionLocation, criterionDeliveredProduct);
-
             } else {
-                SearchCriterion criterionId = SearchRestrictions.idNe(deliveredProductReservation.getId());
+                SearchCriterion criterionId = SearchRestrictions.idNe(deliveredProductReservationId);
+
                 criterion = SearchRestrictions.and(criterionLocation, criterionDeliveredProduct, criterionId);
             }
 
             boolean locationUnique = deliveredProductReservation.getDataDefinition().count(criterion) == 0;
 
             if (!locationUnique) {
-                FieldDefinition locationField = deliveredProductReservation.getDataDefinition().getField(DeliveredProductReservationFields.LOCATION);
-                deliveredProductReservation.addError(locationField, "deliveries.deliveredProductReservation.error.locationNotUnique");
+                FieldDefinition locationField = deliveredProductReservation.getDataDefinition()
+                        .getField(DeliveredProductReservationFields.LOCATION);
+                deliveredProductReservation.addError(locationField,
+                        "deliveries.deliveredProductReservation.error.locationNotUnique");
             }
 
             return locationUnique;
@@ -114,47 +134,63 @@ public class DeliveredProductReservationHooks {
         return true;
     }
 
-    private boolean sumIsNotExceeded(Entity deliveredProductReservation) {
-        Entity deliveredProduct = deliveredProductReservation.getBelongsToField(DeliveredProductReservationFields.DELIVERED_PRODUCT);
+    private boolean sumIsNotExceeded(final Entity deliveredProductReservation) {
+        Entity deliveredProduct = deliveredProductReservation
+                .getBelongsToField(DeliveredProductReservationFields.DELIVERED_PRODUCT);
         BigDecimal productDeliveredQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
-        if (productDeliveredQuantity == null) {
+
+        if (Objects.isNull(productDeliveredQuantity)) {
             return true;
         }
-        BigDecimal reservationDeliveredQuantity = deliveredProductReservation.getDecimalField(DeliveredProductReservationFields.DELIVERED_QUANTITY);
+
+        BigDecimal reservationDeliveredQuantity = deliveredProductReservation
+                .getDecimalField(DeliveredProductReservationFields.DELIVERED_QUANTITY);
 
         SearchCriteriaBuilder searchCriteriaBuilder = deliveredProductReservation.getDataDefinition().find();
-        SearchProjection sumOfQuantityProjection = SearchProjections.alias(SearchProjections.sum(DeliveredProductReservationFields.DELIVERED_QUANTITY), "sumOfQuantity");
-        searchCriteriaBuilder.setProjection(SearchProjections.list().add(sumOfQuantityProjection).add(SearchProjections.rowCount()));
+        SearchProjection sumOfQuantityProjection = SearchProjections
+                .alias(SearchProjections.sum(DeliveredProductReservationFields.DELIVERED_QUANTITY), L_SUM_OF_QUANTITY);
+        searchCriteriaBuilder
+                .setProjection(SearchProjections.list().add(sumOfQuantityProjection).add(SearchProjections.rowCount()));
 
         SearchCriterion criterion;
-        SearchCriterion criterionDeliveredProduct = SearchRestrictions.belongsTo(DeliveredProductReservationFields.DELIVERED_PRODUCT, deliveredProduct);
+        SearchCriterion criterionDeliveredProduct = SearchRestrictions
+                .belongsTo(DeliveredProductReservationFields.DELIVERED_PRODUCT, deliveredProduct);
 
-        if (deliveredProductReservation.getId() == null) {
+        Long deliveredProductReservationId = deliveredProductReservation.getId();
+
+        if (Objects.isNull(deliveredProductReservationId)) {
             criterion = criterionDeliveredProduct;
-
         } else {
-            SearchCriterion criterionId = SearchRestrictions.idNe(deliveredProductReservation.getId());
+            SearchCriterion criterionId = SearchRestrictions.idNe(deliveredProductReservationId);
+
             criterion = SearchRestrictions.and(criterionDeliveredProduct, criterionId);
         }
+
         searchCriteriaBuilder.add(criterion);
-        searchCriteriaBuilder.addOrder(SearchOrders.asc("sumOfQuantity"));
+        searchCriteriaBuilder.addOrder(SearchOrders.asc(L_SUM_OF_QUANTITY));
 
         SearchResult resList = searchCriteriaBuilder.setMaxResults(1).list();
 
-        BigDecimal sumOfQuantity = resList.getTotalNumberOfEntities() == 0 ? BigDecimal.ZERO : resList.getEntities().get(0).getDecimalField("sumOfQuantity");
-        sumOfQuantity = sumOfQuantity == null ? BigDecimal.ZERO : sumOfQuantity;
+        BigDecimal sumOfQuantity = (resList.getTotalNumberOfEntities() == 0) ? BigDecimal.ZERO
+                : resList.getEntities().get(0).getDecimalField(L_SUM_OF_QUANTITY);
+        sumOfQuantity = BigDecimalUtils.convertNullToZero(sumOfQuantity);
 
         BigDecimal damagedQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.DAMAGED_QUANTITY);
-        damagedQuantity = damagedQuantity == null ? BigDecimal.ZERO : damagedQuantity;
+        damagedQuantity = BigDecimalUtils.convertNullToZero(damagedQuantity);
+
         productDeliveredQuantity = productDeliveredQuantity.subtract(damagedQuantity);
-                
+
         boolean sumIsNotExceeded = productDeliveredQuantity.compareTo(reservationDeliveredQuantity.add(sumOfQuantity)) >= 0;
 
         if (!sumIsNotExceeded) {
-            FieldDefinition deliveredQuantityField = deliveredProductReservation.getDataDefinition().getField(DeliveredProductReservationFields.DELIVERED_QUANTITY);
-            deliveredProductReservation.addError(deliveredQuantityField, "deliveries.deliveredProductReservation.error.sumIsExceeded");
+            FieldDefinition deliveredQuantityField = deliveredProductReservation.getDataDefinition()
+                    .getField(DeliveredProductReservationFields.DELIVERED_QUANTITY);
+
+            deliveredProductReservation.addError(deliveredQuantityField,
+                    "deliveries.deliveredProductReservation.error.sumIsExceeded");
         }
 
         return sumIsNotExceeded;
     }
+
 }
