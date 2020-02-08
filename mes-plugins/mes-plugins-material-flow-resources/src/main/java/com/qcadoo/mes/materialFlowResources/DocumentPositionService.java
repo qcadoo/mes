@@ -189,6 +189,10 @@ public class DocumentPositionService {
     }
 
     public void create(final DocumentPositionDTO documentPositionVO) {
+        Long batchId = documentPositionVO.getBatchId();
+        if(Objects.nonNull(batchId) && batchId == 0) {
+            documentPositionVO.setBatchId(null);
+        }
         Map<String, Object> params = validator.validateAndTryMapBeforeCreate(documentPositionVO);
 
         if (params.get("id") == null || Long.valueOf(params.get("id").toString()) == 0) {
@@ -217,6 +221,10 @@ public class DocumentPositionService {
     }
 
     public void update(final Long id, final DocumentPositionDTO documentPositionVO) {
+        Long batchId = documentPositionVO.getBatchId();
+        if(Objects.nonNull(batchId) && batchId == 0) {
+            documentPositionVO.setBatchId(null);
+        }
         Map<String, Object> params = validator.validateAndTryMapBeforeUpdate(documentPositionVO);
 
         String set = params.keySet().stream().map(key -> {
