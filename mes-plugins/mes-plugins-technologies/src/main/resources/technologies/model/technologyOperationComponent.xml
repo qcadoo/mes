@@ -82,5 +82,6 @@
         <onCreate class="com.qcadoo.mes.technologies.hooks.TechnologyOperationComponentHooks"
                   method="onCreate"/>
         <onSave class="com.qcadoo.mes.technologies.hooks.TechnologyOperationComponentHooks" method="onSave"/>
+        <onDelete class="com.qcadoo.mes.technologies.hooks.TechnologyOperationComponentHooks" method="onDelete"/>
     </hooks>
 </model>

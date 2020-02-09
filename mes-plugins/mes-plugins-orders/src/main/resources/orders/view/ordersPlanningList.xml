@@ -116,7 +116,12 @@
                 <bigButton name="setCategory" icon="genealogyIcon24.png" state="disabled"
                            action="#{grid}.fireEvent(setCategory)"/>
             </group>
+            <group name="import">
+                <bigButton name="openOrdersImportPage" state="enabled" icon="xlsIcon24.png"
+                           action="#{window}.fireEvent(openOrdersImportPage);"/>
+            </group>
         </ribbon>
+
         <component type="grid" name="orders" reference="grid">
             <script>
                 <![CDATA[
@@ -243,6 +248,7 @@
 					this.addOnChangeListener(listener);
 				]]>
             </script>
+
             <option type="column" name="number" fields="number" link="true" width="60"/>
             <option type="column" name="name" fields="name" link="true" width="80"/>
             <option type="column" name="description" fields="description" link="true" width="80"/>
@@ -261,22 +267,15 @@
             <option type="column" name="percentageOfExecutionCellColor" fields="percentageOfExecutionCellColor" hidden="true"/>
             <option type="column" name="flagPercentageOfExecutionWithColor" fields="flagPercentageOfExecutionWithColor"
                     hidden="true"/>
-
             <option type="column" name="plannedQuantityForAdditionalUnit" fields="plannedQuantityForAdditionalUnit" width="35"/>
             <option type="column" name="unitForAdditionalUnit" fields="unitForAdditionalUnit" width="15"/>
             <option type="column" name="externalNumber" fields="externalNumber" hidden="true"/>
             <option type="column" name="externalSynchronized" fields="externalSynchronized"
                     expression="#externalSynchronized?'1':'0'" hidden="true"/>
-
             <option type="column" name="productionLineNumber" fields="productionLineNumber" width="40"/>
             <option type="column" name="orderCategory" fields="orderCategory" width="40"/>
-
-
             <option type="column" name="company" fields="company"
                     width="40"/>
-
-            <option type="correspondingView" value="orders/orderDetails"/>
-            <option type="correspondingComponent" value="form"/>
 
             <option type="order" column="dateFrom" direction="desc"/>
 
@@ -286,6 +285,9 @@
                     value="doneInPercentage,name,number,description,state,productNumber,dateFrom,dateTo,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company"/>
             <option type="orderable"
                     value="doneInPercentage,name,number,description,state,productNumber,dateFrom,dateTo,plannedQuantity,plannedQuantityForAdditionalUnit,unit,unitForAdditionalUnit,productionLineNumber,productionLinePlace,productionLine,orderCategory,amountOfProductProduced,wastesQuantity,remainingAmountOfProductToProduce,company"/>
+
+            <option type="correspondingView" value="orders/orderDetails"/>
+            <option type="correspondingComponent" value="form"/>
 
             <option type="footerRow" value="true"/>
             <option type="columnsToSummary"
@@ -332,17 +334,24 @@
             <option type="suppressSelectEvent" value="true"/>
 
             <listener event="changeState"
-                      class="com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient" method="changeState"/>
-
+                      class="com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient"
+                      method="changeState"/>
             <listener event="changeDates"
-                      class="com.qcadoo.mes.orders.listeners.OrdersPlanningListListeners" method="changeDates"/>
+                      class="com.qcadoo.mes.orders.listeners.OrdersPlanningListListeners"
+                      method="changeDates"/>
             <listener event="setCategory"
-                      class="com.qcadoo.mes.orders.listeners.OrdersPlanningListListeners" method="setCategory"/>
-
+                      class="com.qcadoo.mes.orders.listeners.OrdersPlanningListListeners"
+                      method="setCategory"/>
         </component>
+
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
+
+        <listener event="openOrdersImportPage"
+                  class="com.qcadoo.mes.orders.listeners.OrdersPlanningListListeners"
+                  method="openOrdersImportPage"/>
     </component>
+
     <hooks>
         <beforeRender class="com.qcadoo.mes.orders.hooks.OrdersPlanningListHooks" method="addDiscriminatorRestrictionToGrid"/>
     </hooks>

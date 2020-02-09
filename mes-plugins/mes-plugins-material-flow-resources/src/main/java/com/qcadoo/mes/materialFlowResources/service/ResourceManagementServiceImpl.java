@@ -422,7 +422,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                         addPositionErrors(document, saved);
                     }
                 } else {
-                    copyPositionValues(position, generatedPositions.get(0));
+                    copyPositionValues(position, generatedPositions.get(0), true);
 
                     Entity saved = position.getDataDefinition().save(position);
                     addPositionErrors(document, saved);
@@ -448,10 +448,12 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         }
     }
 
-    private void copyPositionValues(final Entity position, final Entity newPosition) {
+    private void copyPositionValues(final Entity position, final Entity newPosition, boolean copyBatch) {
         position.setField(PositionFields.PRICE, newPosition.getField(PositionFields.PRICE));
         position.setField(PositionFields.SELLING_PRICE, newPosition.getField(PositionFields.SELLING_PRICE));
-        position.setField(PositionFields.BATCH, newPosition.getField(PositionFields.BATCH));
+        if (copyBatch) {
+            position.setField(PositionFields.BATCH, newPosition.getField(PositionFields.BATCH));
+        }
         position.setField(PositionFields.PRODUCTION_DATE, newPosition.getField(PositionFields.PRODUCTION_DATE));
         position.setField(PositionFields.EXPIRATION_DATE, newPosition.getField(PositionFields.EXPIRATION_DATE));
         position.setField(PositionFields.RESOURCE, newPosition.getField(PositionFields.RESOURCE));
@@ -464,8 +466,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         position.setField(PositionFields.WASTE, newPosition.getField(PositionFields.WASTE));
         position.setField(PositionFields.QUANTITY, newPosition.getField(PositionFields.QUANTITY));
         position.setField(PositionFields.GIVEN_QUANTITY, newPosition.getField(PositionFields.GIVEN_QUANTITY));
-        if(position.getHasManyField(PositionFields.POSITION_ATTRIBUTE_VALUES).isEmpty()) {
-            position.setField(PositionFields.POSITION_ATTRIBUTE_VALUES, newPosition.getField(PositionFields.POSITION_ATTRIBUTE_VALUES));
+        if (position.getHasManyField(PositionFields.POSITION_ATTRIBUTE_VALUES).isEmpty()) {
+            position.setField(PositionFields.POSITION_ATTRIBUTE_VALUES,
+                    newPosition.getField(PositionFields.POSITION_ATTRIBUTE_VALUES));
         }
     }
 
@@ -615,7 +618,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                         addPositionErrors(document, saved);
                     }
                 } else {
-                    copyPositionValues(position, generatedPositions.get(0));
+                    copyPositionValues(position, generatedPositions.get(0), true);
                     copyPositionErrors(position, generatedPositions.get(0));
 
                     Entity saved = position.getDataDefinition().save(position);
@@ -804,6 +807,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
     private List<Entity> getResourcesForLocationCommonCodeConversion(final Entity warehouse, final Entity product,
             final Entity additionalCode, final Entity position, final boolean resourceIrrespectiveOfConversion,
             final SearchOrder... searchOrders) {
+
         class SearchCriteriaHelper {
 
             private List<Entity> getAll() {
@@ -827,6 +831,10 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                     } else {
                         scb.add(SearchRestrictions.eq(ResourceFields.CONVERSION, BigDecimal.ONE));
                     }
+                }
+
+                if (Objects.nonNull(position.getBelongsToField(PositionFields.BATCH))) {
+                    scb.add(SearchRestrictions.belongsTo(ResourceFields.BATCH, position.getBelongsToField(PositionFields.BATCH)));
                 }
 
                 Optional.ofNullable(searchCriterion).ifPresent(scb::add);
@@ -932,13 +940,15 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                         for (Entity newPosition : newPositions) {
                             newPosition.setField(PositionFields.DOCUMENT, document);
-
+                            if (Objects.nonNull(position.getBelongsToField(PositionFields.BATCH))) {
+                                newPosition.setField(PositionFields.BATCH, position.getBelongsToField(PositionFields.BATCH));
+                            }
                             Entity saved = newPosition.getDataDefinition().save(newPosition);
                             valid = valid && saved.isValid();
                             addPositionErrors(view, saved);
                         }
                     } else {
-                        copyPositionValues(position, newPositions.get(0));
+                        copyPositionValues(position, newPositions.get(0), false);
 
                         Entity saved = position.getDataDefinition().save(position);
                         valid = valid && saved.isValid();

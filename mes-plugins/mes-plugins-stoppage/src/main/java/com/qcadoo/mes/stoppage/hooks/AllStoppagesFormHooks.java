@@ -1,11 +1,14 @@
 package com.qcadoo.mes.stoppage.hooks;
 
+import com.qcadoo.mes.stoppage.constants.StoppageFields;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 
 import java.util.Objects;
 
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -49,13 +52,21 @@ public class AllStoppagesFormHooks {
                 orderLookupComponent.requestComponentUpdateState();
             }
         } else {
+            LookupComponent orderLookupComponent = (LookupComponent) view.getComponentByReference(L_ORDER);
+            LookupComponent productionTrackingComponent = (LookupComponent) view.getComponentByReference(L_PRODUCTION_TRACKING);
             JSONObject context = view.getJsonContext();
             if (Objects.nonNull(context) && context.has(L_CONTEXT_KEY_PRODUCTION_TRACKING)) {
-                LookupComponent orderLookupComponent = (LookupComponent) view.getComponentByReference(L_ORDER);
-                LookupComponent productionTrackingComponent = (LookupComponent) view
-                        .getComponentByReference(L_PRODUCTION_TRACKING);
                 orderLookupComponent.setEnabled(false);
                 productionTrackingComponent.setEnabled(false);
+            }
+            Entity order = orderLookupComponent.getEntity();
+
+            if (order != null) {
+                FilterValueHolder holder = productionTrackingComponent.getFilterValue();
+
+                holder.put(StoppageFields.ORDER, order.getId());
+
+                productionTrackingComponent.setFilterValue(holder);
             }
         }
     }

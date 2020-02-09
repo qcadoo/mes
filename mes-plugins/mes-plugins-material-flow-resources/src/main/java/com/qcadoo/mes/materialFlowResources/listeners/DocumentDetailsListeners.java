@@ -308,12 +308,20 @@ public class DocumentDetailsListeners {
             } catch (InvalidResourceException ire) {
                 document.setNotValid();
 
-                String resourceNumber = ire.getEntity().getStringField(ResourceFields.NUMBER);
-                String productNumber = ire.getEntity().getBelongsToField(ResourceFields.PRODUCT)
-                        .getStringField(ProductFields.NUMBER);
+                if ("materialFlow.error.position.batch.required".equals(ire.getEntity().getError(ResourceFields.BATCH)
+                        .getMessage())) {
+                    String productNumber = ire.getEntity().getBelongsToField(ResourceFields.PRODUCT)
+                            .getStringField(ProductFields.NUMBER);
+                    documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource.batchRequired", MessageType.FAILURE,
+                            false, productNumber);
+                } else {
+                    String resourceNumber = ire.getEntity().getStringField(ResourceFields.NUMBER);
+                    String productNumber = ire.getEntity().getBelongsToField(ResourceFields.PRODUCT)
+                            .getStringField(ProductFields.NUMBER);
 
-                documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource", MessageType.FAILURE,
-                        false, resourceNumber, productNumber);
+                    documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource", MessageType.FAILURE,
+                            false, resourceNumber, productNumber);
+                }
             }
         } else {
             document.setNotValid();

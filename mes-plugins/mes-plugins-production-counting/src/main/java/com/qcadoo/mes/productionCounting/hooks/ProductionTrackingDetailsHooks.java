@@ -25,6 +25,8 @@ package com.qcadoo.mes.productionCounting.hooks;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
@@ -40,6 +42,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
@@ -50,9 +53,12 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+
 import org.springframework.stereotype.Service;
 
 @Service
@@ -95,7 +101,14 @@ public class ProductionTrackingDetailsHooks {
             ProductionTrackingFields.EXECUTED_OPERATION_CYCLES, ProductionTrackingFields.TIME_RANGE_FROM,
             ProductionTrackingFields.TIME_RANGE_TO, ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS,
             ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS, ProductionTrackingFields.SHIFT_START_DAY,
-            ProductionTrackingFields.STAFF_WORK_TIMES, ProductionTrackingFields.STOPPAGES);
+            ProductionTrackingFields.STAFF_WORK_TIMES, ProductionTrackingFields.BATCH, ProductionTrackingFields.EXPIRATION_DATE,
+            ProductionTrackingFields.ADD_BATCH, ProductionTrackingFields.STOPPAGES);
+
+    private static final String L_ORDER_ID = "orderId";
+
+    private static final String L_ORDER = "order";
+
+    private static final String L_BATCH_ORDERED_PRODUCT_LABEL = "batchOrderedProductLabel";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -109,12 +122,21 @@ public class ProductionTrackingDetailsHooks {
     @Autowired
     private ProductionTrackingDetailsListeners productionTrackingDetailsListeners;
 
+
+    @Autowired
+    private TranslationService translationService;
+
     public void onBeforeRender(final ViewDefinitionState view) {
         FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         setCriteriaModifierParameters(view);
 
         productionTrackingService.fillProductionLineLookup(view);
+        if ((view.isViewAfterRedirect() || view.isViewAfterReload())
+                && !((CheckBoxComponent) view.getComponentByReference(ProductionTrackingFields.ADD_BATCH)).isChecked()) {
+            FieldComponent batchNumber = (FieldComponent) view.getComponentByReference(ProductionTrackingFields.BATCH_NUMBER);
+            batchNumber.setEnabled(false);
+        }
 
         if (productionTrackingForm.getEntityId() == null) {
             setStateFieldValueToDraft(view);
@@ -128,6 +150,24 @@ public class ProductionTrackingDetailsHooks {
             toggleCorrectButton(view, productionTracking);
             toggleCorrectionFields(view, productionTracking);
             fetchNumberFromDatabase(view, productionTracking);
+        }
+
+        fillBatchOrderedProductLabel(view);
+    }
+
+    private void fillBatchOrderedProductLabel(final ViewDefinitionState view) {
+        LookupComponent orderLookupComponent = (LookupComponent) view.getComponentByReference(L_ORDER);
+        if (!orderLookupComponent.isEmpty()) {
+            Entity order = orderLookupComponent.getEntity();
+            if (Objects.nonNull(order)) {
+                FieldComponent batchOrderedProductLabel = (FieldComponent) view
+                        .getComponentByReference(L_BATCH_ORDERED_PRODUCT_LABEL);
+                batchOrderedProductLabel.setFieldValue(translationService.translate(
+                        "productionCounting.productionTrackingDetails.window.batchOrderedProduct.batchOrderedProductLabel.label",
+                        LocaleContextHolder.getLocale())
+                        + " " + order.getBelongsToField(OrderFields.PRODUCT).getStringField(ProductFields.NUMBER));
+                batchOrderedProductLabel.requestComponentUpdateState();
+            }
         }
     }
 
@@ -169,8 +209,8 @@ public class ProductionTrackingDetailsHooks {
             view.getComponentByReference(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT).setEnabled(false);
 
             view.getComponentByReference(L_CORRECTS).setVisible(true);
-            view.getComponentByReference(L_CORRECTS)
-                    .setFieldValue(correctedProductionTracking.getStringField(ProductionTrackingFields.NUMBER));
+            view.getComponentByReference(L_CORRECTS).setFieldValue(
+                    correctedProductionTracking.getStringField(ProductionTrackingFields.NUMBER));
         }
     }
 
@@ -198,7 +238,20 @@ public class ProductionTrackingDetailsHooks {
                 technologyOperationComponentLookup.setFilterValue(filterValueHolder);
             }
         }
+        LookupComponent batchLookup = (LookupComponent) view.getComponentByReference("batch");
+        FilterValueHolder batchFilterValueHolder = batchLookup.getFilterValue();
+        if (Objects.isNull(order)) {
+            if (batchFilterValueHolder.has(L_ORDER_ID)) {
+                batchFilterValueHolder.remove(L_ORDER_ID);
+            }
+        } else {
+            batchFilterValueHolder.put(L_ORDER_ID, order.getId());
+        }
+
+        batchLookup.setFilterValue(batchFilterValueHolder);
+
     }
+
 
     private void setStateFieldValueToDraft(final ViewDefinitionState view) {
         FieldComponent stateField = (FieldComponent) view.getComponentByReference(L_STATE);
@@ -208,9 +261,8 @@ public class ProductionTrackingDetailsHooks {
     }
 
     private Entity getProductionTrackingFromDB(final Long productionTrackingId) {
-        return dataDefinitionService
-                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_TRACKING)
-                .get(productionTrackingId);
+        return dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                ProductionCountingConstants.MODEL_PRODUCTION_TRACKING).get(productionTrackingId);
     }
 
     public void initializeProductionTrackingDetailsView(final ViewDefinitionState view) {
@@ -237,8 +289,7 @@ public class ProductionTrackingDetailsHooks {
     }
 
     private void changeProductsTabVisible(final ViewDefinitionState view, final Entity productionTracking, final Entity order) {
-        view.getComponentByReference(L_PRODUCTS_TAB)
-                .setVisible(checkIfShouldProductTabBeVisible(productionTracking, order));
+        view.getComponentByReference(L_PRODUCTS_TAB).setVisible(checkIfShouldProductTabBeVisible(productionTracking, order));
     }
 
     public boolean checkIfShouldProductTabBeVisible(final Entity productionTracking, final Entity order) {
@@ -256,8 +307,7 @@ public class ProductionTrackingDetailsHooks {
         return (registerQuantityInProduct || registerQuantityOutProduct);
     }
 
-    private void showLastStateChangeFailNotification(final FormComponent productionTrackingForm,
-            final Entity productionTracking) {
+    private void showLastStateChangeFailNotification(final FormComponent productionTrackingForm, final Entity productionTracking) {
         boolean lastStateChangeFails = productionTracking.getBooleanField(ProductionTrackingFields.LAST_STATE_CHANGE_FAILS);
 
         if (lastStateChangeFails) {
@@ -346,10 +396,10 @@ public class ProductionTrackingDetailsHooks {
         boolean registerQuantityOutProduct = order.getBooleanField(OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT);
 
         copyRibbonActionItem.setEnabled(isInProgress);
-        copyPlannedQuantityToUsedQuantityRibbonActionItem
-                .setEnabled(isDraft && (registerQuantityInProduct || registerQuantityOutProduct));
-        productionCountingQuantitiesRibbonActionItem
-                .setEnabled(isDraft && (registerQuantityInProduct || registerQuantityOutProduct));
+        copyPlannedQuantityToUsedQuantityRibbonActionItem.setEnabled(isDraft
+                && (registerQuantityInProduct || registerQuantityOutProduct));
+        productionCountingQuantitiesRibbonActionItem.setEnabled(isDraft
+                && (registerQuantityInProduct || registerQuantityOutProduct));
         addToAnomaliesListRibbonActionItem.setEnabled(isDraft && (registerQuantityInProduct || registerQuantityOutProduct));
 
         copyRibbonActionItem.requestUpdate(true);

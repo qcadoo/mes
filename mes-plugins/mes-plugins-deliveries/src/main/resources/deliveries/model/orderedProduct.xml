@@ -27,48 +27,51 @@
 <model name="orderedProduct" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
-        <belongsTo name="delivery" model="delivery" required="true" />
+        <belongsTo name="delivery" model="delivery" required="true"/>
         <belongsTo name="product" model="product" plugin="basic"
-                           required="true" />
-        <decimal name="orderedQuantity" required="true" >
-            <validatesRange from="0" exclusively="false" />
+                   required="true"/>
+        <decimal name="orderedQuantity" required="true">
+            <validatesRange from="0" exclusively="false"/>
         </decimal>
-        <decimal name="additionalQuantity" required="true" >
-            <validatesRange from="0" exclusively="false" />
+        <decimal name="additionalQuantity" required="true">
+            <validatesRange from="0" exclusively="false"/>
         </decimal>
-        <decimal name="conversion" required="true" >
-            <validatesRange from="0" exclusively="false" />
+        <decimal name="conversion" required="true">
+            <validatesRange from="0" exclusively="false"/>
         </decimal>
         <decimal name="pricePerUnit">
-            <validatesRange from="0" />
+            <validatesRange from="0"/>
         </decimal>
-        <decimal name="totalPrice" >
-            <validatesRange from="0" />
+        <decimal name="totalPrice">
+            <validatesRange from="0"/>
         </decimal>
 
         <decimal name="deliveredQuantity" copyable="false">
-            <validatesRange from="0" exclusively="false" />
+            <validatesRange from="0" exclusively="false"/>
         </decimal>
         <decimal name="additionalDeliveredQuantity" copyable="false">
-            <validatesRange from="0" exclusively="false" />
+            <validatesRange from="0" exclusively="false"/>
         </decimal>
 
         <string name="description">
-            <validatesLength max="2048" />
+            <validatesLength max="2048"/>
         </string>
         <belongsTo name="additionalCode" model="additionalCode" plugin="basic"/>
         <hasMany name="reservations" joinField="orderedProduct" cascade="delete"
-                 model="orderedProductReservation" plugin="deliveries" copyable="true" />
+                 model="orderedProductReservation" plugin="deliveries" copyable="true"/>
 
-        <priority name="succession" scope="delivery" />
+        <priority name="succession" scope="delivery"/>
 
-        <string name="batch"/>
-
+        <string name="batchNumber"/>
+        <belongsTo name="batch" model="batch" plugin="advancedGenealogy"/>
     </fields>
+
     <hooks>
-        <onSave class="com.qcadoo.mes.deliveries.hooks.OrderedProductHooks" method="onSave"/>
+        <onSave class="com.qcadoo.mes.deliveries.hooks.OrderedProductHooks"
+                method="onSave"/>
         <validatesWith class="com.qcadoo.mes.deliveries.hooks.OrderedProductHooks"
-                               method="checkIfOrderedProductAlreadyExists" />
+                       method="checkIfOrderedProductAlreadyExists"/>
     </hooks>
 </model>

@@ -3,13 +3,7 @@ package com.qcadoo.mes.productionCounting.xls;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
-import com.qcadoo.mes.productionCounting.xls.dto.LaborTime;
-import com.qcadoo.mes.productionCounting.xls.dto.LaborTimeDetails;
-import com.qcadoo.mes.productionCounting.xls.dto.MaterialCost;
-import com.qcadoo.mes.productionCounting.xls.dto.OrderBalance;
-import com.qcadoo.mes.productionCounting.xls.dto.PieceworkDetails;
-import com.qcadoo.mes.productionCounting.xls.dto.ProducedQuantity;
-import com.qcadoo.mes.productionCounting.xls.dto.ProductionCost;
+import com.qcadoo.mes.productionCounting.xls.dto.*;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.xls.XlsDocumentService;
@@ -90,6 +84,10 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
                 translationService.translate("productionCounting.productionBalance.report.xls.sheet.laborTimeDetails", locale)),
                 locale);
         createPieceworkSheet(createSheet(workbook, translationService.translate(PieceworkSheetConstants.SHEET_TITLE, locale)),
+                ordersIds, locale);
+        createStoppagesSheet(
+                createSheet(workbook,
+                        translationService.translate("productionCounting.productionBalance.report.xls.sheet.stoppages", locale)),
                 ordersIds, locale);
         List<ProductionCost> productionCosts = productionBalanceRepository.getProductionCosts(entity, ordersIds);
         createProductionCostsSheet(productionCosts, createSheet(workbook,
@@ -245,6 +243,80 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
             rowCounter++;
         }
         for (int i = 0; i <= 2; i++) {
+            sheet.autoSizeColumn(i, false);
+        }
+    }
+
+    private void createStoppagesSheet(HSSFSheet sheet, List<Long> ordersIds, Locale locale) {
+        final FontsContainer fontsContainer = new FontsContainer(sheet.getWorkbook());
+        final StylesContainer stylesContainer = new StylesContainer(sheet.getWorkbook(), fontsContainer);
+        final int rowOffset = 1;
+        HSSFRow row = sheet.createRow(0);
+        createHeaderCell(
+                stylesContainer, row, translationService
+                        .translate("productionCounting.productionBalance.report.xls.sheet.stoppages.orderNumber", locale),
+                0, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.stoppages.productionTrackingNumber", locale),
+                1, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate(
+                        "productionCounting.productionBalance.report.xls.sheet.stoppages.productionTrackingState", locale),
+                2, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate("productionCounting.productionBalance.report.xls.sheet.stoppages.duration", locale),
+                3, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate("productionCounting.productionBalance.report.xls.sheet.stoppages.dateFrom", locale),
+                4, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate("productionCounting.productionBalance.report.xls.sheet.stoppages.dateTo", locale), 5,
+                CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate("productionCounting.productionBalance.report.xls.sheet.stoppages.reason", locale), 6,
+                CellStyle.ALIGN_LEFT);
+        createHeaderCell(
+                stylesContainer, row, translationService
+                        .translate("productionCounting.productionBalance.report.xls.sheet.stoppages.description", locale),
+                7, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate("productionCounting.productionBalance.report.xls.sheet.stoppages.division", locale),
+                8, CellStyle.ALIGN_LEFT);
+        createHeaderCell(
+                stylesContainer, row, translationService
+                        .translate("productionCounting.productionBalance.report.xls.sheet.stoppages.productionLine", locale),
+                9, CellStyle.ALIGN_LEFT);
+        createHeaderCell(
+                stylesContainer, row, translationService
+                        .translate("productionCounting.productionBalance.report.xls.sheet.stoppages.workstation", locale),
+                10, CellStyle.ALIGN_LEFT);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate("productionCounting.productionBalance.report.xls.sheet.stoppages.worker", locale),
+                11, CellStyle.ALIGN_LEFT);
+
+        List<Stoppage> stoppages = productionBalanceRepository.getStoppages(ordersIds);
+        int rowCounter = 0;
+        for (Stoppage stoppage : stoppages) {
+            row = sheet.createRow(rowOffset + rowCounter);
+            createRegularCell(stylesContainer, row, 0, stoppage.getOrderNumber());
+            createRegularCell(stylesContainer, row, 1, stoppage.getProductionTrackingNumber());
+            createRegularCell(stylesContainer, row, 2,
+                    stoppage.getProductionTrackingState() != null ? translationService.translate(
+                            "productionCounting.productionTracking.state.value." + stoppage.getProductionTrackingState(), locale)
+                            : null);
+            createTimeCell(stylesContainer, row, 3, stoppage.getDuration(), false);
+            createDateTimeCell(stylesContainer, row, 4, stoppage.getDateFrom());
+            createDateTimeCell(stylesContainer, row, 5, stoppage.getDateTo());
+            createRegularCell(stylesContainer, row, 6, stoppage.getReason());
+            createRegularCell(stylesContainer, row, 7, stoppage.getDescription());
+            createRegularCell(stylesContainer, row, 8, stoppage.getDivision());
+            createRegularCell(stylesContainer, row, 9, stoppage.getProductionLine());
+            createRegularCell(stylesContainer, row, 10, stoppage.getWorkstation());
+            createRegularCell(stylesContainer, row, 11, stoppage.getWorker());
+            rowCounter++;
+        }
+        for (int i = 0; i <= 11; i++) {
             sheet.autoSizeColumn(i, false);
         }
     }

@@ -27,10 +27,12 @@ import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
 import static com.qcadoo.mes.materialFlowResources.constants.ResourceFields.LOCATION;
 
 import java.util.Date;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.advancedGenealogy.constants.ProductFieldsAG;
 import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
@@ -42,38 +44,28 @@ import com.qcadoo.model.api.Entity;
 public class ResourceModelValidators {
 
     @Autowired
+    private PalletValidatorService palletValidatorService;
+
+    @Autowired
     private PositionValidators positionValidators;
 
     public boolean validatesWith(final DataDefinition resourceDD, final Entity resource) {
-        return checkIfLocationIsWarehouse(resourceDD, resource) && checkQuantities(resourceDD, resource)
-                && checkPallet(resourceDD, resource) && checkProductionAndExpirationDate(resourceDD, resource)
-                && validateRequiredAttributes(resourceDD, resource);
-    }
+        boolean isValid = true;
 
-    private boolean checkProductionAndExpirationDate(final DataDefinition resourceDD, final Entity resource) {
-        Date productionDate = resource.getDateField(ResourceFields.PRODUCTION_DATE);
-        Date expirationDate = resource.getDateField(ResourceFields.EXPIRATION_DATE);
-        boolean isValid = expirationDate == null || productionDate == null || productionDate.before(expirationDate);
-        if (!isValid) {
-            resource.addError(resourceDD.getField(ResourceFields.EXPIRATION_DATE),
-                    "materialFlowResources.resource.validate.error.expirationBeforeProduction");
-        }
+        isValid = isValid && checkIfLocationIsWarehouse(resourceDD, resource);
+        isValid = isValid && checkQuantities(resourceDD, resource);
+        isValid = isValid && checkPallet(resourceDD, resource);
+        isValid = isValid && checkProductionAndExpirationDate(resourceDD, resource);
+        isValid = isValid && validateRequiredAttributes(resourceDD, resource);
+        isValid = isValid && checBatchEvidence(resourceDD, resource);
+
         return isValid;
     }
 
-    private boolean validateRequiredAttributes(final DataDefinition resourceDD, final Entity resource) {
-        Entity warehouse = resource.getBelongsToField(ResourceFields.LOCATION);
-        return positionValidators.validatePositionAttributes(resourceDD, resource,
-                warehouse.getBooleanField(LocationFieldsMFR.REQUIRE_PRICE),
-                warehouse.getBooleanField(LocationFieldsMFR.REQUIRE_BATCH),
-                warehouse.getBooleanField(LocationFieldsMFR.REQUIRE_PRODUCTION_DATE),
-                warehouse.getBooleanField(LocationFieldsMFR.REQUIRE_EXPIRATION_DATE));
-    }
-
-    public boolean checkIfLocationIsWarehouse(final DataDefinition resourceDD, final Entity resource) {
+    private boolean checkIfLocationIsWarehouse(final DataDefinition resourceDD, final Entity resource) {
         Entity location = resource.getBelongsToField(LOCATION);
 
-        if (location != null) {
+        if (Objects.nonNull(location)) {
             String type = location.getStringField(TYPE);
 
             if (!"02warehouse".equals(type)) {
@@ -87,7 +79,7 @@ public class ResourceModelValidators {
         return true;
     }
 
-    public boolean checkQuantities(final DataDefinition resourceDD, final Entity resource) {
+    private boolean checkQuantities(final DataDefinition resourceDD, final Entity resource) {
         // BigDecimal quantity = resource.getDecimalField(ResourceFields.QUANTITY);
         // BigDecimal reservedQuantity = resource.getDecimalField(ResourceFields.RESERVED_QUANTITY);
         // BigDecimal availableQuantity = resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
@@ -102,14 +94,57 @@ public class ResourceModelValidators {
         return true;
     }
 
-    @Autowired
-    private PalletValidatorService palletValidatorService;
-
-    private boolean checkPallet(DataDefinition resourceDD, Entity resource) {
-        if (resource.getField(ResourceFields.VALIDATE_PALLET) == null || resource.getBooleanField(ResourceFields.VALIDATE_PALLET)) {
+    private boolean checkPallet(final DataDefinition resourceDD, final Entity resource) {
+        if (resource.getField(ResourceFields.VALIDATE_PALLET) == null
+                || resource.getBooleanField(ResourceFields.VALIDATE_PALLET)) {
             return palletValidatorService.validatePalletForResource(resource);
         }
+
         return true;
+    }
+
+    private boolean checkProductionAndExpirationDate(final DataDefinition resourceDD, final Entity resource) {
+        Date productionDate = resource.getDateField(ResourceFields.PRODUCTION_DATE);
+        Date expirationDate = resource.getDateField(ResourceFields.EXPIRATION_DATE);
+
+        boolean isValid = Objects.isNull(expirationDate) || Objects.isNull(productionDate)
+                || productionDate.before(expirationDate);
+
+        if (!isValid) {
+            resource.addError(resourceDD.getField(ResourceFields.EXPIRATION_DATE),
+                    "materialFlowResources.resource.validate.error.expirationBeforeProduction");
+        }
+
+        return isValid;
+    }
+
+    private boolean validateRequiredAttributes(final DataDefinition resourceDD, final Entity resource) {
+        Entity warehouse = resource.getBelongsToField(ResourceFields.LOCATION);
+
+        return positionValidators.validatePositionAttributes(resourceDD, resource,
+                warehouse.getBooleanField(LocationFieldsMFR.REQUIRE_PRICE),
+                warehouse.getBooleanField(LocationFieldsMFR.REQUIRE_BATCH),
+                warehouse.getBooleanField(LocationFieldsMFR.REQUIRE_PRODUCTION_DATE),
+                warehouse.getBooleanField(LocationFieldsMFR.REQUIRE_EXPIRATION_DATE));
+    }
+
+    private boolean checBatchEvidence(final DataDefinition resourceDD, final Entity resource) {
+        boolean isValid = true;
+
+        Entity product = resource.getBelongsToField(ResourceFields.PRODUCT);
+        Entity batch = resource.getBelongsToField(ResourceFields.BATCH);
+
+        if (Objects.nonNull(product)) {
+            boolean batchEvidence = product.getBooleanField(ProductFieldsAG.BATCH_EVIDENCE);
+
+            if (batchEvidence && Objects.isNull(batch)) {
+                resource.addError(resourceDD.getField(ResourceFields.BATCH), "materialFlow.error.position.batch.required");
+
+                isValid = false;
+            }
+        }
+
+        return isValid;
     }
 
 }

@@ -127,6 +127,8 @@
 
         <model:model model="prodOutResourceAttrVal" resource="model/prodOutResourceAttrVal.xml"/>
 
+        <model:model model="usedBatch" resource="model/usedBatch.xml"/>
+
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="productionTracking"/>
 
         <model:model-field model="parameter" plugin="basic">
@@ -291,6 +293,16 @@
                            joinField="division" plugin="productionCounting"/>
         </model:model-field>
 
+        <model:model-field model="batch" plugin="advancedGenealogy">
+            <model:hasMany name="productionTrackings" model="productionTracking"
+                           joinField="batch" plugin="productionCounting"/>
+        </model:model-field>
+
+        <model:model-field model="storageLocation" plugin="materialFlowResources">
+            <model:hasMany name="trackingOperationProductOutComponents" model="trackingOperationProductOutComponent"
+                           joinField="storageLocation" plugin="productionCounting"/>
+        </model:model-field>
+
         <model:model-field model="message" plugin="states">
             <model:belongsTo name="productionTrackingStateChange"
                              plugin="productionCounting" model="productionTrackingStateChange"/>
@@ -330,6 +342,7 @@
             <model:hasMany name="productionTrackings" model="productionTracking"
                            joinField="order" plugin="productionCounting" cascade="delete"/>
         </model:model-field>
+
         <model:model-field model="order" plugin="orders">
             <model:hasMany name="productionTrackingReports" model="productionTrackingReport"
                            joinField="order" plugin="productionCounting" cascade="delete"/>
@@ -490,6 +503,9 @@
 
         <view:view resource="view/prodOutResourceAttrValDetails.xml"/>
         <view:view resource="view/prodOutResourceAttrValList.xml"/>
+
+        <view:view resource="view/usedBatchDetails.xml"/>
+
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>

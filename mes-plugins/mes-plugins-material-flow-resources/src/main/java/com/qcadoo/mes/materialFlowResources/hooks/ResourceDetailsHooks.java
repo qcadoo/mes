@@ -1,7 +1,14 @@
 package com.qcadoo.mes.materialFlowResources.hooks;
 
+import java.math.BigDecimal;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Optional;
 import com.qcadoo.commons.functional.Either;
+import com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier;
 import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
@@ -15,15 +22,15 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
 
 @Service
 public class ResourceDetailsHooks {
 
-    public static final String L_FORM = "form";
+    private static final String L_FORM = "form";
+
+    private static final String L_PRICE_CURRENCY = "priceCurrency";
+
+    private static final String L_ROLE_RESOURCE_PRICE = "ROLE_RESOURCE_PRICE";
 
     @Autowired
     private NumberService numberService;
@@ -34,30 +41,78 @@ public class ResourceDetailsHooks {
     @Autowired
     private CalculationQuantityService calculationQuantityService;
 
+    @Autowired
+    private BatchCriteriaModifier batchCriteriaModifier;
+
     public void onBeforeRender(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity resource = form.getPersistedEntityWithIncludedFormValues();
-        LookupComponent storageLocationLookup = (LookupComponent) view.getComponentByReference(ResourceFields.STORAGE_LOCATION);
-        FilterValueHolder filter = storageLocationLookup.getFilterValue();
-        Entity product = resource.getBelongsToField(ResourceFields.PRODUCT);
-        Entity warehouse = resource.getBelongsToField(ResourceFields.LOCATION);
-        filter.put("product", product.getId());
-        filter.put("location", warehouse.getId());
-        storageLocationLookup.setFilterValue(filter);
+        FormComponent resourceForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Entity resource = resourceForm.getPersistedEntityWithIncludedFormValues();
 
         fillUnitField(view, resource);
-        togglePriceFields(view, resource);
+        togglePriceFields(view);
+
+        setStorageLocationLookupFilterValue(view, resource);
+        setBatchLookupProductFilterValue(view, resource);
     }
 
-    public void onConversionChange(final ViewDefinitionState viewDefinitionState, final ComponentState state, final String[] args) {
+    private void fillUnitField(final ViewDefinitionState view, final Entity resource) {
+        FieldComponent givenUnitField = (FieldComponent) view.getComponentByReference(ResourceFields.GIVEN_UNIT);
+
+        String givenUnit = resource.getStringField(ResourceFields.GIVEN_UNIT);
+
+        givenUnitField.setFieldValue(givenUnit);
+        givenUnitField.requestComponentUpdateState();
+    }
+
+    private void togglePriceFields(final ViewDefinitionState view) {
+        FieldComponent priceField = (FieldComponent) view.getComponentByReference(ResourceFields.PRICE);
+        FieldComponent priceCurrencyField = (FieldComponent) view.getComponentByReference(L_PRICE_CURRENCY);
+
+        boolean hasCurrentUserRole = securityService.hasCurrentUserRole(L_ROLE_RESOURCE_PRICE);
+
+        priceField.setVisible(hasCurrentUserRole);
+        priceCurrencyField.setVisible(hasCurrentUserRole);
+    }
+
+    private void setStorageLocationLookupFilterValue(final ViewDefinitionState view, final Entity resource) {
+        LookupComponent storageLocationLookup = (LookupComponent) view.getComponentByReference(ResourceFields.STORAGE_LOCATION);
+
+        FilterValueHolder filter = storageLocationLookup.getFilterValue();
+
+        Entity product = resource.getBelongsToField(ResourceFields.PRODUCT);
+        Entity warehouse = resource.getBelongsToField(ResourceFields.LOCATION);
+
+        if (Objects.nonNull(product)) {
+            filter.put(ResourceFields.PRODUCT, product.getId());
+        }
+        if (Objects.nonNull(warehouse)) {
+            filter.put(ResourceFields.LOCATION, warehouse.getId());
+        }
+
+        storageLocationLookup.setFilterValue(filter);
+    }
+
+    private void setBatchLookupProductFilterValue(final ViewDefinitionState view, final Entity resource) {
+        LookupComponent batchLookup = (LookupComponent) view.getComponentByReference(ResourceFields.BATCH);
+
+        Entity product = resource.getBelongsToField(ResourceFields.PRODUCT);
+
+        if (Objects.nonNull(product)) {
+            batchCriteriaModifier.putProductFilterValue(batchLookup, product);
+        }
+    }
+
+    public void onConversionChange(final ViewDefinitionState viewDefinitionState, final ComponentState state,
+            final String[] args) {
         FieldComponent conversionField = (FieldComponent) viewDefinitionState.getComponentByReference(ResourceFields.CONVERSION);
         FieldComponent quantityInAdditionalUnitField = (FieldComponent) viewDefinitionState
                 .getComponentByReference(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT);
         FieldComponent additionalUnitField = (FieldComponent) viewDefinitionState
                 .getComponentByReference(ResourceFields.GIVEN_UNIT);
 
-        Either<Exception, Optional<BigDecimal>> maybeConversion = BigDecimalUtils.tryParseAndIgnoreSeparator(
-                (String) conversionField.getFieldValue(), viewDefinitionState.getLocale());
+        Either<Exception, Optional<BigDecimal>> maybeConversion = BigDecimalUtils
+                .tryParseAndIgnoreSeparator((String) conversionField.getFieldValue(), viewDefinitionState.getLocale());
         if (maybeConversion.isRight() && maybeConversion.getRight().isPresent()) {
             FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
             Entity resource = form.getPersistedEntityWithIncludedFormValues();
@@ -81,14 +136,15 @@ public class ResourceDetailsHooks {
         FieldComponent additionalUnitField = (FieldComponent) viewDefinitionState
                 .getComponentByReference(ResourceFields.GIVEN_UNIT);
 
-        Either<Exception, Optional<BigDecimal>> maybeQuantity = BigDecimalUtils.tryParseAndIgnoreSeparator(
-                (String) quantityField.getFieldValue(), viewDefinitionState.getLocale());
+        Either<Exception, Optional<BigDecimal>> maybeQuantity = BigDecimalUtils
+                .tryParseAndIgnoreSeparator((String) quantityField.getFieldValue(), viewDefinitionState.getLocale());
         if (maybeQuantity.isRight() && maybeQuantity.getRight().isPresent()) {
             FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
             Entity resource = form.getEntity();
 
-            BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(maybeQuantity.getRight()
-                    .get(), resource.getDecimalField(ResourceFields.CONVERSION), (String) additionalUnitField.getFieldValue());
+            BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(
+                    maybeQuantity.getRight().get(), resource.getDecimalField(ResourceFields.CONVERSION),
+                    (String) additionalUnitField.getFieldValue());
 
             String quantityInAdditionalUnitFormatted = numberService.format(newAdditionalQuantity);
             quantityInAdditionalUnitField.setFieldValue(quantityInAdditionalUnitFormatted);
@@ -123,17 +179,4 @@ public class ResourceDetailsHooks {
         }
     }
 
-    private void fillUnitField(ViewDefinitionState view, Entity resource) {
-        FieldComponent givenUnitField = (FieldComponent) view.getComponentByReference(ResourceFields.GIVEN_UNIT);
-        givenUnitField.setFieldValue(resource.getStringField(ResourceFields.GIVEN_UNIT));
-        givenUnitField.requestComponentUpdateState();
-    }
-
-    private void togglePriceFields(ViewDefinitionState view, Entity resource) {
-        boolean hasCurrentUserRole = securityService.hasCurrentUserRole("ROLE_RESOURCE_PRICE");
-        FieldComponent priceField = (FieldComponent) view.getComponentByReference("price");
-        priceField.setVisible(hasCurrentUserRole);
-        FieldComponent priceCurrencyField = (FieldComponent) view.getComponentByReference("priceCurrency");
-        priceCurrencyField.setVisible(hasCurrentUserRole);
-    }
 }

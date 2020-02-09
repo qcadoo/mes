@@ -63,6 +63,11 @@
             <plugin>costNormsForProduct</plugin>
             <version>[1.4.0</version>
         </dependency>
+
+        <dependency>
+            <plugin>advancedGenealogy</plugin>
+            <version>[1.4.0</version>
+        </dependency>
     </dependencies>
 
     <modules>
@@ -117,6 +122,11 @@
         <model:model-field plugin="basic" model="parameter">
             <model:belongsTo name="documentPositionParameters" model="documentPositionParameters"
                              plugin="materialFlowResources"/>
+        </model:model-field>
+
+        <model:model-field plugin="advancedGenealogy" model="batch">
+            <model:hasMany name="positions" model="position"
+                           plugin="materialFlowResources" joinField="batch" cascade="nullify"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">
@@ -250,6 +260,21 @@
         <model:model-field plugin="materialFlow" model="location">
             <model:hasMany name="costNormsLocations" plugin="materialFlowResources" model="costNormsLocation"
                            joinField="location" cascade="delete" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="advancedGenealogy" model="batch">
+            <model:hasMany name="resources" model="resource"
+                           plugin="materialFlowResources" joinField="batch" cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="advancedGenealogy" model="batch">
+            <model:hasMany name="oldResourceCorrections" model="resourceCorrection"
+                           plugin="materialFlowResources" joinField="oldBatch" cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="advancedGenealogy" model="batch">
+            <model:hasMany name="newResourceCorrections" model="resourceCorrection"
+                           plugin="materialFlowResources" joinField="newBatch" cascade="nullify"/>
         </model:model-field>
 
         <model:model-hook plugin="materialFlow" model="location">

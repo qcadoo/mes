@@ -87,9 +87,22 @@ public class RowProcessorHelper {
             empty = false;
         }
 
-        CellBinder binder = cellBinderRegistry.getCellBinder(index++);
+        final CellBinder binder = cellBinderRegistry.getCellBinder(index++);
 
         binder.bind(cellValue, entity, errorCode -> rowErrors.add(new ImportError(currentRow, binder.getFieldName(), errorCode)));
+    }
+
+    public void append(Cell cell, Cell dependentCell) {
+        assureNotProcessedYet();
+
+        if (Objects.nonNull(cell)) {
+            empty = false;
+        }
+
+        final CellBinder binder = cellBinderRegistry.getCellBinder(index++);
+
+        binder.bind(cell, dependentCell, entity,
+                errorCode -> rowErrors.add(new ImportError(currentRow, binder.getFieldName(), errorCode)));
     }
 
     public void update(final Entity entityToUpdate, final Function<Entity, Boolean> checkOnUpdate) {

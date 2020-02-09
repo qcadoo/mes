@@ -47,7 +47,8 @@ public class ProductionLineCellParser implements CellParser {
     private DataDefinitionService dataDefinitionService;
 
     @Override
-    public void parse(final String cellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {
+    public void parse(final String cellValue, final String dependentCellValue, final CellErrorsAccessor errorsAccessor,
+            final Consumer<Object> valueConsumer) {
         Entity productionLine = getProductionLineByNumber(cellValue);
 
         if (Objects.isNull(productionLine)) {

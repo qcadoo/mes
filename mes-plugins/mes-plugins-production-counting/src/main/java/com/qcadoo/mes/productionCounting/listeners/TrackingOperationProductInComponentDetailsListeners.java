@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.listeners;
 
-import static com.qcadoo.model.api.BigDecimalUtils.convertNullToZero;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
 import com.qcadoo.model.api.Entity;
@@ -42,6 +32,15 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import static com.qcadoo.model.api.BigDecimalUtils.convertNullToZero;
 
 @Service
 public class TrackingOperationProductInComponentDetailsListeners {
@@ -140,6 +139,11 @@ public class TrackingOperationProductInComponentDetailsListeners {
                 }
             }
         }
+    }
+
+    public void onRemoveUsedBatch(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        form.performEvent(view, "reset");
     }
 
 }

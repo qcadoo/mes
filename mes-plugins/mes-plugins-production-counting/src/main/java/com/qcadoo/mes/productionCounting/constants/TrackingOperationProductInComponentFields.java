@@ -51,4 +51,6 @@ public final class TrackingOperationProductInComponentFields {
 
     public static final String REPLACEMENT_TO = "replacementTo";
 
+    public static final String USED_BATCHES = "usedBatches";
+
 }

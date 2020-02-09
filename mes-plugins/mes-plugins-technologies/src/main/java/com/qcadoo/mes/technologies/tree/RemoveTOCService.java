@@ -14,11 +14,7 @@ import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.mes.technologies.constants.OperationFields;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -42,6 +38,20 @@ public class RemoveTOCService {
 
     @Transactional
     public boolean removeOnlySelectedOperation(final Entity tocToDelete, final ViewDefinitionState view) {
+        List<Entity> usageInProductStructureTree = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_PRODUCT_STRUCTURE_TREE_NODE).find()
+                .add(SearchRestrictions.belongsTo(ProductStructureTreeNodeFields.OPERATION, tocToDelete)).list().getEntities();
+        if (!usageInProductStructureTree.isEmpty()) {
+            view.addMessage(
+                    "technologies.technologyDetails.window.treeTab.technologyTree.error.cannotDeleteOperationUsedInProductStructureTree",
+                    ComponentState.MessageType.FAILURE, false,
+                    usageInProductStructureTree.stream()
+                            .map(e -> e.getBelongsToField(ProductStructureTreeNodeFields.MAIN_TECHNOLOGY)
+                                    .getStringField(TechnologyFields.NUMBER))
+                            .distinct().collect(Collectors.joining(", ")));
+            return false;
+        }
+
         final Entity parent = tocToDelete.getBelongsToField(TechnologyOperationComponentFields.PARENT);
         final List<Entity> operationsToRewrite = tocToDelete.getHasManyField(TechnologyOperationComponentFields.CHILDREN);
 

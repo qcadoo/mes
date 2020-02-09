@@ -23,8 +23,6 @@
  */
 package com.qcadoo.mes.advancedGenealogy.criteriaModifier;
 
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.Entity;
@@ -32,6 +30,8 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public class BatchCriteriaModifier {
@@ -46,6 +46,18 @@ public class BatchCriteriaModifier {
                 searchCriteriaBuilder.add(SearchRestrictions.belongsTo(BatchFields.PRODUCT, BasicConstants.PLUGIN_IDENTIFIER,
                         BasicConstants.MODEL_PRODUCT, productId));
             }
+        }
+    }
+
+    public void filterByProductAndActive(final SearchCriteriaBuilder searchCriteriaBuilder, final FilterValueHolder filterValueHolder) {
+        if (filterValueHolder.has(PRODUCT_ID_FILTER_VAL_KEY)) {
+            Long productId = filterValueHolder.getLong(PRODUCT_ID_FILTER_VAL_KEY);
+
+            if (productId != null) {
+                searchCriteriaBuilder.add(SearchRestrictions.belongsTo(BatchFields.PRODUCT, BasicConstants.PLUGIN_IDENTIFIER,
+                        BasicConstants.MODEL_PRODUCT, productId));
+            }
+            searchCriteriaBuilder.add(SearchRestrictions.eq("active", true));
         }
     }
 

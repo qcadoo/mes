@@ -1,9 +1,18 @@
 package com.qcadoo.mes.materialFlowResources.batch;
 
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.BasicLookupController;
+import com.qcadoo.mes.basic.GridResponse;
+import com.qcadoo.mes.basic.LookupUtils;
+import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
+import com.qcadoo.mes.materialFlowResources.ResourceDTO;
+import com.qcadoo.mes.materialFlowResources.WarehouseMethodOfDisposalService;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,14 +23,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.BasicLookupController;
-import com.qcadoo.mes.basic.GridResponse;
-import com.qcadoo.mes.basic.LookupUtils;
-import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
-import com.qcadoo.mes.materialFlowResources.ResourceDTO;
-import com.qcadoo.mes.materialFlowResources.WarehouseMethodOfDisposalService;
 
 @Controller
 @RequestMapping(value = "resource")
@@ -55,7 +56,12 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
             Long context) {
         String additionalCode = record.getAc();
         boolean useAdditionalCode = org.apache.commons.lang3.StringUtils.isNotEmpty(additionalCode);
-        Map<String, Object> parameters = geParameters(context, record, useAdditionalCode, additionalCode);
+        Long batch = record.getBatchId();
+        if(Objects.nonNull(batch) && batch == 0) {
+            batch = null;
+        }
+        boolean useBatch = Objects.nonNull(batch);
+        Map<String, Object> parameters = geParameters(context, record, useAdditionalCode, additionalCode, useBatch, batch);
 
         boolean properFilter = prepareWasteFilter(record);
         if ("wasteString".equals(sidx)) {
@@ -65,13 +71,14 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         if ("lastResourceString".equals(sidx)) {
             sidx = "lastResource";
         }
-        String query = getQuery(context, useAdditionalCode, !properFilter, !properFilterLastResource);
+
+        String query = getQuery(context, useAdditionalCode, useBatch, !properFilter, !properFilterLastResource);
 
         GridResponse<ResourceDTO> response = lookupUtils.getGridResponse(query, sidx, sord, page, perPage, record, parameters);
 
         if (response.getRows().isEmpty() && useAdditionalCode) {
-            parameters = geParameters(context, record, false, additionalCode);
-            query = getQuery(context, false, !properFilter, !properFilterLastResource);
+            parameters = geParameters(context, record, false, additionalCode, useBatch, batch);
+            query = getQuery(context, false, useBatch, !properFilter, !properFilterLastResource);
             response = lookupUtils.getGridResponse(query, sidx, sord, page, perPage, record, parameters);
         }
         setTranslatedWasteFlag(response);
@@ -79,11 +86,11 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         return response;
     }
 
-    protected String getQuery(final Long context, boolean useAdditionalCode, boolean wasteFilterIsWrong,
+    protected String getQuery(final Long context, boolean useAdditionalCode, boolean useBatch, boolean wasteFilterIsWrong,
             boolean lastResourceFilterIsWrong) {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder
-                .append("select %s from (select r.*, sl.number as storageLocation, pn.number as palletNumber, ac.code as additionalCode, bp.unit as unit, ");
+                .append("select %s from (select r.*, sl.number as storageLocation, batch.id as batchId, batch.number as batch, pn.number as palletNumber, ac.code as additionalCode, bp.unit as unit, ");
         queryBuilder.append("coalesce(r1.resourcesCount,0) < 2 AS lastResource ");
         queryBuilder.append("FROM materialflowresources_resource r ");
         queryBuilder
@@ -91,6 +98,7 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         queryBuilder.append("LEFT JOIN materialflowresources_storagelocation sl on sl.id = storageLocation_id ");
         queryBuilder.append("LEFT JOIN basic_additionalcode ac on ac.id = additionalcode_id ");
         queryBuilder.append("LEFT JOIN basic_product bp on bp.number = :product ");
+        queryBuilder.append("LEFT JOIN advancedgenealogy_batch batch on batch.id = r.batch_id ");
         queryBuilder.append("LEFT JOIN basic_palletnumber pn on pn.id = r.palletnumber_id WHERE r.product_id = bp.id ");
         queryBuilder
                 .append(" AND r.location_id in (SELECT DISTINCT COALESCE(locationfrom_id, locationto_id) as location from materialflowresources_document WHERE id = :context)");
@@ -104,13 +112,16 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         if (useAdditionalCode) {
             // queryBuilder.append(" AND additionalcode_id = (SELECT id FROM basic_additionalcode WHERE code = :add_code) ");
         }
+        if (useBatch) {
+             queryBuilder.append(" AND batch.id = :batch ");
+        }
         queryBuilder.append(warehouseMethodOfDisposalService.getSqlOrderByForResource(context));
         queryBuilder.append(") as resources");
         return queryBuilder.toString();
     }
 
     protected Map<String, Object> geParameters(Long context, ResourceDTO resourceDTO, boolean useAdditionalCode,
-            String additionalCode) {
+            String additionalCode, boolean useBatch, Long batch) {
         Map<String, Object> params = new HashMap<>();
         params.put("product", resourceDTO.getProduct());
         params.put("conversion", resourceDTO.getConversion());
@@ -120,17 +131,22 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
             params.put("add_code", additionalCode);
         }
 
+        if(useBatch) {
+            params.put("batch", batch);
+        }
         resourceDTO.setProduct(null);
         resourceDTO.setConversion(null);
         resourceDTO.setAc(null);
+        resourceDTO.setBatch(null);
+        resourceDTO.setBatchId(null);
 
         return params;
     }
 
     @Override
     protected List<String> getGridFields() {
-        return Arrays.asList(new String[] { "number", "quantity", "unit", "quantityInAdditionalUnit", "givenUnit",
-                "reservedQuantity", "availableQuantity", "expirationDate", "storageLocation", "batch", "palletNumber",
+        return Arrays.asList(new String[] { "number", "quantity", "unit", "quantityInAdditionalUnit", "givenUnit", "batch",
+                "reservedQuantity", "availableQuantity", "expirationDate", "storageLocation", "palletNumber",
                 "additionalCode", "wasteString", "lastResourceString" });
     }
 

@@ -42,7 +42,8 @@
         <decimal name="price" default="0"/>
 
         <decimal name="value" persistent="false"/>
-        <string name="batch"/>
+        <string name="_batch"/>
+        <belongsTo name="batch" model="batch" plugin="advancedGenealogy"/>
         <datetime name="time" required="true"/>
         <date name="productionDate"/>
         <date name="expirationDate"/>

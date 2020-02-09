@@ -23,6 +23,20 @@
  */
 package com.qcadoo.mes.deliveries;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.basic.ParameterService;
@@ -41,6 +55,7 @@ import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
+import com.qcadoo.mes.deliveries.constants.ParameterDeliveryOrderColumnFields;
 import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
 import com.qcadoo.mes.deliveries.print.DeliveryProduct;
 import com.qcadoo.model.api.DataDefinition;
@@ -60,20 +75,6 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
 
 @Service
 public class DeliveriesServiceImpl implements DeliveriesService {
@@ -89,6 +90,8 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     private static final String L_PRICE_PER_UNIT = "pricePerUnit";
 
     private static final String L_TOTAL_PRICE = "totalPrice";
+
+    private static final String L_CURRENCY = "currency";
 
     @Autowired
     private ParameterService parameterService;
@@ -135,34 +138,42 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     @Override
     public List<Entity> getColumnsForDeliveries() {
-        List<Entity> columnsForDeliveries = getColumnForDeliveriesDD().find()
+        List<Entity> columnsForDeliveries = Lists.newArrayList();
+
+        List<Entity> sortedColumnsForDeliveries = getColumnForDeliveriesDD().find()
                 .addOrder(SearchOrders.asc(ColumnForDeliveriesFields.SUCCESSION)).list().getEntities();
-        List<Entity> deliveriesColumn = new ArrayList<Entity>();
+
         Entity successionColumn = getColumnForDeliveriesDD().find()
-                .add(SearchRestrictions.eq(ColumnForDeliveriesFields.IDENTIFIER, "succession")).uniqueResult();
-        deliveriesColumn.add(successionColumn);
-        for (Entity entity : columnsForDeliveries) {
-            if (!entity.getStringField(ColumnForDeliveriesFields.IDENTIFIER).equals(
-                    successionColumn.getStringField(ColumnForDeliveriesFields.IDENTIFIER))) {
-                deliveriesColumn.add(entity);
+                .add(SearchRestrictions.eq(ColumnForDeliveriesFields.IDENTIFIER, ColumnForDeliveriesFields.SUCCESSION))
+                .setMaxResults(1).uniqueResult();
+
+        columnsForDeliveries.add(successionColumn);
+
+        for (Entity columnForDeliveries : sortedColumnsForDeliveries) {
+            if (!columnForDeliveries.getStringField(ColumnForDeliveriesFields.IDENTIFIER)
+                    .equals(successionColumn.getStringField(ColumnForDeliveriesFields.IDENTIFIER))) {
+                columnsForDeliveries.add(columnForDeliveries);
             }
         }
-        return deliveriesColumn;
+
+        return columnsForDeliveries;
     }
 
     @Override
     public List<Entity> getColumnsForOrders() {
-        List<Entity> columns = new LinkedList<Entity>();
-        List<Entity> columnComponents = getColumnForOrdersDD().find()
+        List<Entity> columnsForOrders = Lists.newArrayList();
+
+        List<Entity> sortedParameterDeliveryOrderColumns = getParameterDeliveryOrderColumnDD().find()
                 .addOrder(SearchOrders.asc(ColumnForOrdersFields.SUCCESSION)).list().getEntities();
 
-        for (Entity columnComponent : columnComponents) {
-            Entity columnDefinition = columnComponent.getBelongsToField("columnForOrders");
+        for (Entity parameterDeliveryOrderColumn : sortedParameterDeliveryOrderColumns) {
+            Entity columnDefinition = parameterDeliveryOrderColumn
+                    .getBelongsToField(ParameterDeliveryOrderColumnFields.COLUMN_FOR_ORDERS);
 
-            columns.add(columnDefinition);
+            columnsForOrders.add(columnDefinition);
         }
 
-        return columns;
+        return columnsForOrders;
     }
 
     @Override
@@ -191,8 +202,8 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     @Override
     public DataDefinition getCompanyProductsFamilyDD() {
-        return dataDefinitionService
-                .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COMPANY_PRODUCTS_FAMILY);
+        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                DeliveriesConstants.MODEL_COMPANY_PRODUCTS_FAMILY);
     }
 
     @Override
@@ -201,14 +212,14 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     @Override
-    public DataDefinition getColumnForOrdersDD() {
+    public DataDefinition getParameterDeliveryOrderColumnDD() {
         return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
                 DeliveriesConstants.MODEL_PARAMETER_DELIVERY_ORDER_COLUMN);
     }
 
     @Override
     public Entity getProduct(final DeliveryProduct deliveryProduct) {
-        if (deliveryProduct.getOrderedProductId() == null) {
+        if (Objects.isNull(deliveryProduct.getOrderedProductId())) {
             return getDeliveredProduct(deliveryProduct.getDeliveredProductId()).getBelongsToField(DeliveredProductFields.PRODUCT);
         } else {
             return getOrderedProduct(deliveryProduct.getOrderedProductId()).getBelongsToField(OrderedProductFields.PRODUCT);
@@ -237,7 +248,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     public String generateAddressFromCompany(final Entity company) {
         StringBuilder address = new StringBuilder();
 
-        if (company != null) {
+        if (Objects.nonNull(company)) {
             String street = company.getStringField(CompanyFields.STREET);
             String house = company.getStringField(CompanyFields.HOUSE);
             String flat = company.getStringField(CompanyFields.FLAT);
@@ -249,6 +260,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
                 if (StringUtils.isNotEmpty(house)) {
                     address.append(" ");
                     address.append(house);
+
                     if (StringUtils.isNotEmpty(flat)) {
                         address.append("/");
                         address.append(flat);
@@ -273,21 +285,18 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     @Override
     public void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames) {
         Entity product = getProductEntityByComponentName(view, productName);
+
         fillUnitFields(view, product, referenceNames);
     }
 
     public void fillUnitFields(final ViewDefinitionState view, final Entity product, final List<String> referenceNames) {
         String unit = "";
 
-        if (product != null) {
+        if (Objects.nonNull(product)) {
             unit = product.getStringField(ProductFields.UNIT);
         }
 
-        for (String referenceName : referenceNames) {
-            FieldComponent field = (FieldComponent) view.getComponentByReference(referenceName);
-            field.setFieldValue(unit);
-            field.requestComponentUpdateState();
-        }
+        setFieldValues(view, referenceNames, unit);
     }
 
     @Override
@@ -296,18 +305,15 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         fillUnitFields(view, product, referenceNames);
         String additionalUnit = "";
 
-        if (product != null) {
+        if (Objects.nonNull(product)) {
             additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
-            if (additionalUnit == null) {
+
+            if (Objects.isNull(additionalUnit)) {
                 additionalUnit = product.getStringField(ProductFields.UNIT);
             }
         }
 
-        for (String additionalUnitName : additionalUnitNames) {
-            FieldComponent field = (FieldComponent) view.getComponentByReference(additionalUnitName);
-            field.setFieldValue(additionalUnit);
-            field.requestComponentUpdateState();
-        }
+        setFieldValues(view, additionalUnitNames, additionalUnit);
     }
 
     @Override
@@ -326,11 +332,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
             return;
         }
 
-        for (String reference : referenceNames) {
-            FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
-            field.setFieldValue(currency);
-            field.requestComponentUpdateState();
-        }
+        setFieldValues(view, referenceNames, currency);
     }
 
     @Override
@@ -338,26 +340,31 @@ public class DeliveriesServiceImpl implements DeliveriesService {
             final Entity delivery) {
         String currency = getCurrency(delivery);
 
-        if (currency == null) {
+        if (Objects.isNull(currency)) {
             return;
         }
 
+        setFieldValues(view, referenceNames, currency);
+    }
+
+    private void setFieldValues(final ViewDefinitionState view, final List<String> referenceNames, final String value) {
         for (String reference : referenceNames) {
-            FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
-            field.setFieldValue(currency);
-            field.requestComponentUpdateState();
+            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(reference);
+
+            fieldComponent.setFieldValue(value);
+            fieldComponent.requestComponentUpdateState();
         }
     }
 
     @Override
     public String getCurrency(final Entity delivery) {
-        if (delivery == null) {
+        if (Objects.isNull(delivery)) {
             return "";
         }
 
         Entity currency = delivery.getBelongsToField(DeliveryFields.CURRENCY);
 
-        if (currency == null) {
+        if (Objects.isNull(currency)) {
             return currencyService.getCurrencyAlphabeticCode();
         } else {
             return currency.getDataDefinition().get(currency.getId()).getStringField(CurrencyFields.ALPHABETIC_CODE);
@@ -379,16 +386,16 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         }
     }
 
-    private void calculatePriceUsingTotalCost(final ViewDefinitionState view, FieldComponent quantityField,
-            FieldComponent totalPriceField) {
+    private void calculatePriceUsingTotalCost(final ViewDefinitionState view, final FieldComponent quantityField,
+            final FieldComponent totalPriceField) {
         FieldComponent pricePerUnitField = (FieldComponent) view.getComponentByReference(L_PRICE_PER_UNIT);
 
         Locale locale = view.getLocale();
 
         BigDecimal quantity = getBigDecimalFromField(quantityField, locale);
         BigDecimal totalPrice = getBigDecimalFromField(totalPriceField, locale);
-
-        BigDecimal pricePerUnit = numberService.setScaleWithDefaultMathContext(totalPrice.divide(quantity, numberService.getMathContext()));
+        BigDecimal pricePerUnit = numberService
+                .setScaleWithDefaultMathContext(totalPrice.divide(quantity, numberService.getMathContext()));
 
         pricePerUnitField.setFieldValue(numberService.format(pricePerUnit));
         pricePerUnitField.requestComponentUpdateState();
@@ -409,16 +416,16 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         }
     }
 
-    private void calculatePriceUsingPricePerUnit(final ViewDefinitionState view, FieldComponent quantityField,
-            FieldComponent pricePerUnitField) {
+    private void calculatePriceUsingPricePerUnit(final ViewDefinitionState view, final FieldComponent quantityField,
+            final FieldComponent pricePerUnitField) {
         FieldComponent totalPriceField = (FieldComponent) view.getComponentByReference(L_TOTAL_PRICE);
 
         Locale locale = view.getLocale();
 
         BigDecimal pricePerUnit = getBigDecimalFromField(pricePerUnitField, locale);
         BigDecimal quantity = getBigDecimalFromField(quantityField, locale);
-
-        BigDecimal totalPrice = numberService.setScaleWithDefaultMathContext(pricePerUnit.multiply(quantity, numberService.getMathContext()));
+        BigDecimal totalPrice = numberService
+                .setScaleWithDefaultMathContext(pricePerUnit.multiply(quantity, numberService.getMathContext()));
 
         totalPriceField.setFieldValue(numberService.format(totalPrice));
         totalPriceField.requestComponentUpdateState();
@@ -451,24 +458,26 @@ public class DeliveriesServiceImpl implements DeliveriesService {
             DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(locale);
             format.setParseBigDecimal(true);
 
-            return new BigDecimal(format.parse(value.toString()).doubleValue());
+            return BigDecimal.valueOf(format.parse(value.toString()).doubleValue());
         } catch (ParseException e) {
             return null;
         }
     }
 
-    private boolean isValidDecimalField(final ViewDefinitionState view, final List<String> fileds) {
+    private boolean isValidDecimalField(final ViewDefinitionState view, final List<String> fieldNames) {
         boolean isValid = true;
 
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+
         Entity entity = form.getEntity();
 
-        for (String field : fileds) {
+        for (String fieldName : fieldNames) {
             try {
-                entity.getDecimalField(field);
+                entity.getDecimalField(fieldName);
             } catch (IllegalArgumentException e) {
-                form.findFieldComponentByName(field).addMessage("qcadooView.validate.field.error.invalidNumericFormat",
+                form.findFieldComponentByName(fieldName).addMessage("qcadooView.validate.field.error.invalidNumericFormat",
                         MessageType.FAILURE);
+
                 isValid = false;
             }
         }
@@ -484,11 +493,11 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
         boolean save = true;
 
-        if ((pricePerUnit != null && changedFieldValue(entity, pricePerUnit, OrderedProductFields.PRICE_PER_UNIT))
-                || (pricePerUnit != null && totalPrice == null)) {
+        if ((Objects.nonNull(pricePerUnit) && changedFieldValue(entity, pricePerUnit, OrderedProductFields.PRICE_PER_UNIT))
+                || (Objects.nonNull(pricePerUnit) && Objects.isNull(totalPrice))) {
             totalPrice = numberService.setScaleWithDefaultMathContext(calculateTotalPrice(quantity, pricePerUnit));
-        } else if ((totalPrice != null && changedFieldValue(entity, totalPrice, OrderedProductFields.TOTAL_PRICE))
-                || (totalPrice != null && pricePerUnit == null)) {
+        } else if ((Objects.nonNull(totalPrice) && changedFieldValue(entity, totalPrice, OrderedProductFields.TOTAL_PRICE))
+                || (Objects.nonNull(totalPrice) && Objects.isNull(pricePerUnit))) {
             pricePerUnit = numberService.setScaleWithDefaultMathContext(calculatePricePerUnit(quantity, totalPrice));
         } else {
             save = false;
@@ -501,20 +510,20 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     private boolean changedFieldValue(final Entity entity, final BigDecimal fieldValue, final String reference) {
-        if (entity.getId() == null) {
+        if (Objects.isNull(entity.getId())) {
             return true;
         }
 
         Entity entityFromDB = entity.getDataDefinition().get(entity.getId());
 
-        return entityFromDB.getDecimalField(reference) == null
-                || !(fieldValue.compareTo(entityFromDB.getDecimalField(reference)) == 0);
+        return Objects.isNull(entityFromDB.getDecimalField(reference))
+                || (fieldValue.compareTo(entityFromDB.getDecimalField(reference)) != 0);
     }
 
     private BigDecimal calculatePricePerUnit(final BigDecimal quantity, final BigDecimal totalPrice) {
-        BigDecimal pricePerUnit = BigDecimal.ZERO;
+        BigDecimal pricePerUnit;
 
-        if ((quantity == null) || (BigDecimal.ZERO.compareTo(quantity) == 0)) {
+        if (Objects.isNull(quantity) || (BigDecimal.ZERO.compareTo(quantity) == 0)) {
             pricePerUnit = null;
         } else {
             pricePerUnit = totalPrice.divide(quantity, numberService.getMathContext());
@@ -524,9 +533,9 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     private BigDecimal calculateTotalPrice(final BigDecimal quantity, final BigDecimal pricePerUnit) {
-        BigDecimal totalPrice = BigDecimal.ZERO;
+        BigDecimal totalPrice;
 
-        if ((quantity == null) || (BigDecimal.ZERO.compareTo(quantity) == 0)) {
+        if (Objects.isNull(quantity) || (BigDecimal.ZERO.compareTo(quantity) == 0)) {
             totalPrice = BigDecimal.ZERO;
         } else {
             totalPrice = pricePerUnit.multiply(quantity, numberService.getMathContext());
@@ -545,7 +554,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
             for (Entity column : columns) {
                 String identifier = column.getStringField(ColumnForOrdersFields.IDENTIFIER);
 
-                if (!"currency".equals(identifier)) {
+                if (!L_CURRENCY.equals(identifier)) {
                     filteredCurrencyColumn.add(column);
                 }
             }
@@ -574,25 +583,25 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         GridComponent deliveredProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.DELIVERED_PRODUCTS);
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
-        RibbonGroup product = (RibbonGroup) window.getRibbon().getGroupByName(L_PRODUCT);
-        RibbonActionItem showProduct = (RibbonActionItem) product.getItemByName(L_SHOW_PRODUCT);
+        RibbonGroup product = window.getRibbon().getGroupByName(L_PRODUCT);
+        RibbonActionItem showProduct = product.getItemByName(L_SHOW_PRODUCT);
 
         int sizeOfSelectedEntitiesOrderedGrid = orderedProductGrid.getSelectedEntities().size();
-        int sizeOfSelectedEntitiesDelivereGrid = deliveredProductsGrid.getSelectedEntities().size();
-        if ((sizeOfSelectedEntitiesOrderedGrid == 1 && sizeOfSelectedEntitiesDelivereGrid == 0)
-                || (sizeOfSelectedEntitiesOrderedGrid == 0 && sizeOfSelectedEntitiesDelivereGrid == 1)) {
-            showProduct.setEnabled(true);
-        } else {
-            showProduct.setEnabled(false);
-        }
+        int sizeOfSelectedEntitiesDeliveredGrid = deliveredProductsGrid.getSelectedEntities().size();
 
+        boolean isEnabled = ((sizeOfSelectedEntitiesOrderedGrid == 1) && (sizeOfSelectedEntitiesDeliveredGrid == 0))
+                || ((sizeOfSelectedEntitiesOrderedGrid == 0) && (sizeOfSelectedEntitiesDeliveredGrid == 1));
+
+        showProduct.setEnabled(isEnabled);
         showProduct.requestUpdate(true);
         window.requestRibbonRender();
     }
 
     private Entity getProductEntityByComponentName(final ViewDefinitionState view, final String productName) {
         ComponentState productComponentState = view.getComponentByReference(productName);
+
         Entity product = null;
+
         if (productComponentState instanceof LookupComponent) {
             product = ((LookupComponent) productComponentState).getEntity();
         }
@@ -600,34 +609,38 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         return product;
     }
 
-    public Optional<Entity> getDefaultSupplier(Long productId) {
-        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
+    public Optional<Entity> getDefaultSupplier(final Long productId) {
+        Entity product = getProductDD().get(productId);
 
-        if (product != null
-                && ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(
-                        product.getStringField(ProductFields.ENTITY_TYPE))) {
+        if (Objects.nonNull(product) && ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()
+                .equals(product.getStringField(ProductFields.ENTITY_TYPE))) {
+
             Entity defaultSupplier = getDefaultSupplierForProductsFamily(productId);
-            if (defaultSupplier != null) {
+
+            if (Objects.nonNull(defaultSupplier)) {
                 return Optional.of(defaultSupplier);
             } else {
                 return Optional.ofNullable(getDefaultSupplierForParticularProduct(productId));
             }
         }
+
         return Optional.empty();
     }
 
-    public Optional<Entity> getDefaultSupplierWithIntegration(Long productId) {
-        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
+    public Optional<Entity> getDefaultSupplierWithIntegration(final Long productId) {
+        Entity product = getProductDD().get(productId);
 
-        if (product != null
-                && ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(
-                        product.getStringField(ProductFields.ENTITY_TYPE))) {
+        if (Objects.nonNull(product) && ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()
+                .equals(product.getStringField(ProductFields.ENTITY_TYPE))) {
+
             Entity defaultSupplier = getDefaultSupplierForParticularProduct(productId);
-            if (defaultSupplier != null) {
+
+            if (Objects.nonNull(defaultSupplier)) {
                 return Optional.of(defaultSupplier.getBelongsToField(CompanyProductFields.COMPANY));
             } else {
                 defaultSupplier = getDefaultSupplierForProductsFamily(productId);
-                if (defaultSupplier != null) {
+
+                if (Objects.nonNull(defaultSupplier)) {
                     return Optional.of(defaultSupplier.getBelongsToField(CompanyProductFields.COMPANY));
                 }
             }
@@ -636,54 +649,66 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         return getIntegrationDefaultSupplier();
     }
 
-    public List<Entity> getSuppliersWithIntegration(Long productId) {
+    public List<Entity> getSuppliersWithIntegration(final Long productId) {
         List<Entity> suppliers = getSuppliersForProductsFamily(productId);
+
         suppliers.addAll(getSuppliersForParticularProduct(productId));
+
         getIntegrationDefaultSupplier().ifPresent(suppliers::add);
+
         return suppliers;
     }
 
-    private Entity getDefaultSupplierForProductsFamily(Long productId) {
+    private Entity getDefaultSupplierForProductsFamily(final Long productId) {
         Entity product = getProductDD().get(productId);
 
         Entity productFamily = product.getBelongsToField(ProductFields.PARENT);
-        if (productFamily != null) {
+
+        if (Objects.nonNull(productFamily)) {
             Entity companyProduct = getDefaultCompanyProductFamilyEntity(productFamily.getId());
-            if (companyProduct == null) {
+
+            if (Objects.isNull(companyProduct)) {
                 boolean notFind = true;
+
                 while (notFind) {
                     productFamily = productFamily.getBelongsToField(ProductFields.PARENT);
-                    if (productFamily == null) {
+
+                    if (Objects.isNull(productFamily)) {
                         return null;
                     }
+
                     companyProduct = getDefaultCompanyProductFamilyEntity(productFamily.getId());
-                    if (companyProduct != null) {
+
+                    if (Objects.nonNull(companyProduct)) {
                         return companyProduct;
                     }
                 }
             }
-            return companyProduct;
 
+            return companyProduct;
         } else {
             return null;
         }
     }
 
-    private Entity getDefaultCompanyProductFamilyEntity(Long productId) {
+    private Entity getDefaultCompanyProductFamilyEntity(final Long productId) {
         String query = "select company from #deliveries_companyProductsFamily company WHERE company.product.id = :id"
                 + " and company.isDefault = true";
+
         return getCompanyProductDD().find(query).setParameter("id", productId).setMaxResults(1).uniqueResult();
     }
 
-    private Entity getDefaultCompanyProductEntity(Long productId) {
+    private Entity getDefaultCompanyProductEntity(final Long productId) {
         String query = "select company from #deliveries_companyProductsFamily company, #basic_product product where product.parent.id = company.product.id and product.id = :id"
                 + " and company.isDefault = true";
+
         return getCompanyProductDD().find(query).setParameter("id", productId).setMaxResults(1).uniqueResult();
     }
 
-    private Entity getDefaultSupplierForParticularProduct(Long productId) {
+    private Entity getDefaultSupplierForParticularProduct(final Long productId) {
         String query = "select company from #deliveries_companyProduct company where company.product.id = :id"
                 + " and company.isDefault = true";
+
         return getCompanyProductDD().find(query).setParameter("id", productId).setMaxResults(1).uniqueResult();
     }
 
@@ -691,24 +716,32 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         return Optional.ofNullable(parameterService.getParameter().getBelongsToField("companyName"));
     }
 
-    private List<Entity> getSuppliersForProductsFamily(Long productId) {
+    private List<Entity> getSuppliersForProductsFamily(final Long productId) {
         String query = "select company.company from #deliveries_companyProductsFamily company, #basic_product product where product.parent.id = company.product.id and product.id = :id";
+
         return getCompanyProductDD().find(query).setParameter("id", productId).list().getEntities();
     }
 
-    private List<Entity> getSuppliersForParticularProduct(Long productId) {
+    private List<Entity> getSuppliersForParticularProduct(final Long productId) {
         String query = "select company.company from #deliveries_companyProduct company where company.product.id = :id";
+
         return getCompanyProductDD().find(query).setParameter("id", productId).list().getEntities();
     }
 
     public List<Entity> getSelectedOrderedProducts(final GridComponent orderedProductGrid) {
         List<Entity> result = Lists.newArrayList();
+
         Set<Long> ids = orderedProductGrid.getSelectedEntitiesIds();
-        if (ids != null && !ids.isEmpty()) {
+
+        if (Objects.nonNull(ids) && !ids.isEmpty()) {
             final SearchCriteriaBuilder searchCriteria = getOrderedProductDD().find();
+
             searchCriteria.add(SearchRestrictions.in("id", ids));
+
             result = searchCriteria.list().getEntities();
         }
+
         return result;
     }
+
 }

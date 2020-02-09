@@ -26,27 +26,18 @@ package com.qcadoo.mes.technologies.hooks;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.mes.technologies.constants.AssignedToOperation;
-import com.qcadoo.mes.technologies.constants.OperationFields;
-import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.EntityTreeNode;
+import com.qcadoo.mes.technologies.constants.*;
+import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import java.util.stream.Collectors;
 
 @Service
 public class TechnologyOperationComponentHooks {
@@ -243,5 +234,22 @@ public class TechnologyOperationComponentHooks {
         if (AssignedToOperation.WORKSTATIONS_TYPE.getStringValue().equals(assignedToOperation)) {
             technologyOperationComponent.setField(TechnologyOperationComponentFields.WORKSTATIONS, null);
         }
+    }
+
+    public boolean onDelete(final DataDefinition dataDefinition, final Entity entity) {
+        List<Entity> usageInProductStructureTree = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_PRODUCT_STRUCTURE_TREE_NODE).find()
+                .add(SearchRestrictions.belongsTo(ProductStructureTreeNodeFields.OPERATION, entity)).list().getEntities();
+        if (!usageInProductStructureTree.isEmpty()) {
+            entity.addGlobalError(
+                    "technologies.technologyDetails.window.treeTab.technologyTree.error.cannotDeleteOperationUsedInProductStructureTree",
+                    false,
+                    usageInProductStructureTree.stream()
+                            .map(e -> e.getBelongsToField(ProductStructureTreeNodeFields.MAIN_TECHNOLOGY)
+                                    .getStringField(TechnologyFields.NUMBER))
+                            .distinct().collect(Collectors.joining(", ")));
+            return false;
+        }
+        return true;
     }
 }

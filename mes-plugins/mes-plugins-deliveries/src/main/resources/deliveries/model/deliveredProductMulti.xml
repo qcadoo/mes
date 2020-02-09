@@ -37,7 +37,6 @@
 		<belongsTo name="storageLocation" model="storageLocation" plugin="materialFlowResources"/>
 	</fields>
 
-	<hooks>
-	</hooks>
+	<hooks/>
 
 </model>

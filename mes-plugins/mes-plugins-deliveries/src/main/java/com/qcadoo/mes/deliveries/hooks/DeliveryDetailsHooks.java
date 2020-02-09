@@ -23,6 +23,16 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
@@ -41,22 +51,22 @@ import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
-import java.util.*;
 
 @Service
 public class DeliveryDetailsHooks {
 
     private static final String L_FORM = "form";
+
+    private static final String L_LOGGINGS_GRID = "loggingsGrid";
 
     private static final String L_WINDOW = "window";
 
@@ -71,6 +81,10 @@ public class DeliveryDetailsHooks {
     private static final String L_COPY_PRODUCTS_WITHOUT_QUANTITY = "copyProductsWithoutQuantityAndPrice";
 
     private static final String L_COPY_PRODUCTS_WITH_QUANTITY = "copyProductsWithQuantityAndPrice";
+
+    private static final String L_DELIVERY_POSITIONS = "deliveryPositions";
+
+    private static final String L_CHANGE_STORAGE_LOCATIONS = "changeStorageLocations";
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -106,7 +120,7 @@ public class DeliveryDetailsHooks {
 
         Entity supplier = supplierLookup.getEntity();
 
-        if (supplier == null) {
+        if (Objects.isNull(supplier)) {
             deliveryDateBufferField.setFieldValue(null);
             paymentFormField.setFieldValue(null);
         } else {
@@ -124,7 +138,7 @@ public class DeliveryDetailsHooks {
         FieldComponent stateField = (FieldComponent) view.getComponentByReference(DeliveryFields.STATE);
         String state = stateField.getFieldValue().toString();
 
-        if (deliveryForm.getEntityId() == null) {
+        if (Objects.isNull(deliveryForm.getEntityId())) {
             changeFieldsEnabled(view, true, false, false);
         } else {
             if (DeliveryState.PREPARED.getStringValue().equals(state) || DeliveryState.APPROVED.getStringValue().equals(state)) {
@@ -152,8 +166,9 @@ public class DeliveryDetailsHooks {
     }
 
     public void fillDeliveryAddressDefaultValue(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        if (form.getEntityId() != null) {
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        if (Objects.nonNull(deliveryForm.getEntityId())) {
             return;
         }
 
@@ -168,7 +183,7 @@ public class DeliveryDetailsHooks {
     public void fillDescriptionDefaultValue(final ViewDefinitionState view) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
 
-        if (deliveryForm.getEntityId() != null) {
+        if (Objects.nonNull(deliveryForm.getEntityId())) {
             return;
         }
 
@@ -181,9 +196,10 @@ public class DeliveryDetailsHooks {
     }
 
     public void filterStateChangeHistory(final ViewDefinitionState view) {
-        final GridComponent historyGrid = (GridComponent) view.getComponentByReference("loggingsGrid");
+        final GridComponent historyGrid = (GridComponent) view.getComponentByReference(L_LOGGINGS_GRID);
         final CustomRestriction onlySuccessfulRestriction = stateChangeHistoryService.buildStatusRestriction(
                 DeliveryStateChangeFields.STATUS, Lists.newArrayList(StateChangeStatus.SUCCESSFUL.getStringValue()));
+
         historyGrid.setCustomRestriction(onlySuccessfulRestriction);
     }
 
@@ -192,12 +208,12 @@ public class DeliveryDetailsHooks {
         Long deliveryId = deliveryForm.getEntityId();
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
-        RibbonGroup reports = (RibbonGroup) window.getRibbon().getGroupByName(L_RELATED_DELIVERY);
+        RibbonGroup reports = window.getRibbon().getGroupByName(L_RELATED_DELIVERY);
 
-        RibbonActionItem createRelatedDelivery = (RibbonActionItem) reports.getItemByName(L_CREATE_RELATED_DELIVERY);
-        RibbonActionItem showRelatedDelivery = (RibbonActionItem) reports.getItemByName(L_SHOW_RELATED_DELIVERIES);
+        RibbonActionItem createRelatedDelivery = reports.getItemByName(L_CREATE_RELATED_DELIVERY);
+        RibbonActionItem showRelatedDelivery = reports.getItemByName(L_SHOW_RELATED_DELIVERIES);
 
-        if (deliveryId == null) {
+        if (Objects.isNull(deliveryId)) {
             return;
         }
 
@@ -205,9 +221,9 @@ public class DeliveryDetailsHooks {
         List<Entity> relatedDeliveries = delivery.getHasManyField(DeliveryFields.RELATED_DELIVERIES);
 
         boolean received = DeliveryState.RECEIVED.getStringValue().equals(delivery.getStringField(DeliveryFields.STATE));
-        boolean receiveConfirmWaiting = DeliveryState.RECEIVE_CONFIRM_WAITING.getStringValue().equals(
-                delivery.getStringField(DeliveryFields.STATE));
-        boolean created = ((relatedDeliveries != null) && !relatedDeliveries.isEmpty());
+        boolean receiveConfirmWaiting = DeliveryState.RECEIVE_CONFIRM_WAITING.getStringValue()
+                .equals(delivery.getStringField(DeliveryFields.STATE));
+        boolean created = (Objects.nonNull(relatedDeliveries) && !relatedDeliveries.isEmpty());
 
         updateButtonState(createRelatedDelivery, (received || receiveConfirmWaiting) && !created);
         updateButtonState(showRelatedDelivery, (received || receiveConfirmWaiting) && created);
@@ -219,19 +235,23 @@ public class DeliveryDetailsHooks {
     }
 
     public void fillCurrencyFields(final ViewDefinitionState view) {
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+
         List<String> referenceNames = Lists.newArrayList("deliveredProductsCumulatedTotalPriceCurrency",
                 "orderedProductsCumulatedTotalPriceCurrency");
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity delivery = form.getEntity();
+
+        Entity delivery = deliveryForm.getEntity();
+
         deliveriesService.fillCurrencyFieldsForDelivery(view, referenceNames, delivery);
 
-        LookupComponent currency = (LookupComponent) view.getComponentByReference(DeliveryFields.CURRENCY);
-        if (currency.getFieldValue() == null && form.getEntityId() == null) {
-            Entity currencyEntity = currencyService.getCurrentCurrency();
-            currency.setFieldValue(currencyEntity.getId());
-            currency.requestComponentUpdateState();
-        }
+        LookupComponent currencyLookup = (LookupComponent) view.getComponentByReference(DeliveryFields.CURRENCY);
 
+        if (Objects.isNull(currencyLookup.getFieldValue()) && Objects.isNull(deliveryForm.getEntityId())) {
+            Entity currencyEntity = currencyService.getCurrentCurrency();
+
+            currencyLookup.setFieldValue(currencyEntity.getId());
+            currencyLookup.requestComponentUpdateState();
+        }
     }
 
     public void disableShowProductButton(final ViewDefinitionState view) {
@@ -241,21 +261,22 @@ public class DeliveryDetailsHooks {
     public void fillLocationDefaultValue(final ViewDefinitionState view) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
 
-        if (deliveryForm.getEntityId() != null) {
+        if (Objects.nonNull(deliveryForm.getEntityId())) {
             return;
         }
 
         LookupComponent locationField = (LookupComponent) view.getComponentByReference(DeliveryFields.LOCATION);
         Entity location = locationField.getEntity();
 
-        if (location == null && !view.isViewAfterReload()) {
+        if (Objects.isNull(location) && !view.isViewAfterReload()) {
             Entity defaultLocation = parameterService.getParameter().getBelongsToField(DeliveryFields.LOCATION);
 
-            if (defaultLocation == null) {
+            if (Objects.isNull(defaultLocation)) {
                 locationField.setFieldValue(null);
             } else {
                 locationField.setFieldValue(defaultLocation.getId());
             }
+
             locationField.requestComponentUpdateState();
         }
     }
@@ -265,11 +286,12 @@ public class DeliveryDetailsHooks {
 
         LookupComponent locationField = (LookupComponent) view.getComponentByReference(DeliveryFields.LOCATION);
 
-        if (deliveryForm.getEntityId() == null) {
+        if (Objects.isNull(deliveryForm.getEntityId())) {
             locationField.setEnabled(true);
         } else {
             FieldComponent stateField = (FieldComponent) view.getComponentByReference(DeliveryFields.STATE);
             String state = stateField.getFieldValue().toString();
+
             if (DeliveryState.DECLINED.getStringValue().equals(state) || DeliveryState.RECEIVED.getStringValue().equals(state)
                     || DeliveryState.RECEIVE_CONFIRM_WAITING.getStringValue().equals(state)) {
                 locationField.setEnabled(false);
@@ -284,30 +306,31 @@ public class DeliveryDetailsHooks {
         Long deliveryId = deliveryForm.getEntityId();
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
-        RibbonGroup reports = (RibbonGroup) window.getRibbon().getGroupByName(L_COPY_ORDERED_PRODUCTS_TO_DELIVERY);
+        RibbonGroup reports = window.getRibbon().getGroupByName(L_COPY_ORDERED_PRODUCTS_TO_DELIVERY);
 
-        RibbonActionItem copyWithout = (RibbonActionItem) reports.getItemByName(L_COPY_PRODUCTS_WITHOUT_QUANTITY);
-        RibbonActionItem copyWith = (RibbonActionItem) reports.getItemByName(L_COPY_PRODUCTS_WITH_QUANTITY);
+        RibbonActionItem copyWithout = reports.getItemByName(L_COPY_PRODUCTS_WITHOUT_QUANTITY);
+        RibbonActionItem copyWith = reports.getItemByName(L_COPY_PRODUCTS_WITH_QUANTITY);
 
-        if (deliveryId == null) {
+        if (Objects.isNull(deliveryId)) {
             return;
         }
 
         Entity delivery = deliveriesService.getDelivery(deliveryId);
-        boolean hasOrderedProducts = !delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS).isEmpty();
 
+        boolean hasOrderedProducts = !delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS).isEmpty();
         String state = delivery.getStringField(DeliveryFields.STATE);
         boolean isFinished = DeliveryState.RECEIVED.getStringValue().equals(state)
                 || DeliveryState.DECLINED.getStringValue().equals(state);
+
         copyWith.setEnabled(hasOrderedProducts && !isFinished);
         copyWithout.setEnabled(hasOrderedProducts && !isFinished);
         copyWith.requestUpdate(true);
         copyWithout.requestUpdate(true);
-
     }
 
     public void processRoles(final ViewDefinitionState view) {
         Entity currentUser = userService.getCurrentUserEntity();
+
         for (DeliveryRole role : DeliveryRole.values()) {
             if (!securityService.hasRole(currentUser, role.toString())) {
                 role.processRole(view);
@@ -316,59 +339,72 @@ public class DeliveryDetailsHooks {
     }
 
     public void onBeforeRender(final ViewDefinitionState view) {
-
         orderGridByProductNumber(view);
-
         updateChangeStorageLocationButton(view);
     }
 
     public void updateChangeStorageLocationButton(final ViewDefinitionState view) {
-
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-        Ribbon ribbon = window.getRibbon();
-        RibbonGroup group = ribbon.getGroupByName("deliveryPositions");
-        RibbonActionItem changeStorageLocations = group.getItemByName("changeStorageLocations");
-        GridComponent deliveredProductsGrid = (GridComponent) view.getComponentByReference("deliveredProducts");
-        List<Entity> selectedProducts = deliveredProductsGrid.getSelectedEntities();
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+        GridComponent deliveredProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.DELIVERED_PRODUCTS);
+
+        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        Ribbon ribbon = window.getRibbon();
+        RibbonGroup group = ribbon.getGroupByName(L_DELIVERY_POSITIONS);
+        RibbonActionItem changeStorageLocations = group.getItemByName(L_CHANGE_STORAGE_LOCATIONS);
+
+        List<Entity> selectedProducts = deliveredProductsGrid.getSelectedEntities();
+
         Long deliveryId = deliveryForm.getEntityId();
+
         boolean enabled = false;
+
         if (Objects.nonNull(deliveryId)) {
             Entity delivery = deliveriesService.getDelivery(deliveryId);
 
             String state = delivery.getStringField(DeliveryFields.STATE);
             boolean isFinished = DeliveryState.RECEIVED.getStringValue().equals(state)
                     || DeliveryState.DECLINED.getStringValue().equals(state);
+
             enabled = !selectedProducts.isEmpty() && !isFinished;
+
             if (enabled) {
                 String baseStorageLocation = Optional.ofNullable(selectedProducts.get(0).getStringField("storageLocationNumber"))
                         .orElse(StringUtils.EMPTY);
+
                 for (Entity deliveredProduct : selectedProducts) {
                     String storageLocation = Optional.ofNullable(deliveredProduct.getStringField("storageLocationNumber"))
                             .orElse(StringUtils.EMPTY);
+
                     if (!baseStorageLocation.equals(storageLocation)) {
                         enabled = false;
                     }
                 }
             }
         }
+
         changeStorageLocations.setEnabled(enabled);
         changeStorageLocations.requestUpdate(true);
     }
 
     private void orderGridByProductNumber(ViewDefinitionState view) {
-        GridComponent gridComponent = (GridComponent) view.getComponentByReference("orderedProducts");
+        GridComponent gridComponent = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
+
         String productNumberFilter = gridComponent.getFilters().get("productNumber");
+
         if (!Strings.isNullOrEmpty(productNumberFilter) && productNumberFilter.startsWith("[")
                 && productNumberFilter.endsWith("]")) {
+
             List<Entity> orderedProductsEntities = gridComponent.getEntities();
-            List<Entity> sortedEntities = new ArrayList<>();
-            for (String f : getSortedItemsFromFilter(productNumberFilter)) {
-                for (Iterator<Entity> iter = orderedProductsEntities.listIterator(); iter.hasNext();) {
-                    Entity entity = iter.next();
-                    if (f.equals(entity.getStringField("productNumber"))) {
+            List<Entity> sortedEntities = Lists.newArrayList();
+
+            for (String filter : getSortedItemsFromFilter(productNumberFilter)) {
+                for (Iterator<Entity> orderedProduct = orderedProductsEntities.listIterator(); orderedProduct.hasNext();) {
+                    Entity entity = orderedProduct.next();
+
+                    if (filter.equals(entity.getStringField("productNumber"))) {
                         sortedEntities.add(entity);
-                        iter.remove();
+                        orderedProduct.remove();
+
                         break;
                     }
                 }
@@ -390,14 +426,15 @@ public class DeliveryDetailsHooks {
         FieldComponent deliveryIdForMultiUpload = (FieldComponent) view.getComponentByReference("deliveryIdForMultiUpload");
         FieldComponent deliveryMultiUploadLocale = (FieldComponent) view.getComponentByReference("deliveryMultiUploadLocale");
 
-        if (deliveryForm.getEntityId() != null) {
+        if (Objects.nonNull(deliveryForm.getEntityId())) {
             deliveryIdForMultiUpload.setFieldValue(deliveryForm.getEntityId());
-            deliveryIdForMultiUpload.requestComponentUpdateState();
         } else {
             deliveryIdForMultiUpload.setFieldValue("");
-            deliveryIdForMultiUpload.requestComponentUpdateState();
         }
+
+        deliveryIdForMultiUpload.requestComponentUpdateState();
         deliveryMultiUploadLocale.setFieldValue(LocaleContextHolder.getLocale());
         deliveryMultiUploadLocale.requestComponentUpdateState();
     }
+
 }

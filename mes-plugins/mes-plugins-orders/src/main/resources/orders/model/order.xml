@@ -182,7 +182,6 @@
         <hasMany name="technologyOperationComponentsMergeProductOut" plugin="technologies"
                        model="technologyOperationComponentMergeProductOut"
                        joinField="order" cascade="delete"/>
-
     </fields>
 
     <hooks>
@@ -197,7 +196,6 @@
 
         <onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks"
                 method="onCopy"/>
-
     </hooks>
 
     <identifier expression="#number + ' - ' + #name"/>

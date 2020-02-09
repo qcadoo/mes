@@ -27,7 +27,7 @@
 <view defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xmlns="http://schema.qcadoo.org/view"
     	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-		name="allStoppages" modelName="stoppage" modelPlugin="stoppage">
+		name="allStoppages" modelName="stoppageDto" modelPlugin="stoppage">
 	
 		<component type="window" name="window">
 			<ribbon>
@@ -64,26 +64,26 @@
 			</ribbon>
 						
 			<component type="grid" name="stoppage" reference="grid">
-				<option type="column" name="order" fields="order" expression="#order['number']" link="true"/>
-				<option type="column" name="productionTracking" fields="productionTracking" expression="#productionTracking['number']" link="true"/>
-				<option type="column" name="productionTrackingState" fields="productionTracking" expression="'@productionCounting.productionTracking.state.value.' + #productionTracking['state']" link="true"/>
+				<option type="column" name="orderNumber" fields="orderNumber" link="true"/>
+				<option type="column" name="productionTrackingNumber" fields="productionTrackingNumber" link="true"/>
+				<option type="column" name="productionTrackingState" fields="productionTrackingState" link="true"/>
 				<option type="column" name="duration" fields="duration" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)" link="true"/>
 				<option type="column" name="dateFrom" fields="dateFrom"/>
 				<option type="column" name="dateTo" fields="dateTo"/>
-				<option type="column" name="reason" fields="reason" expression="#reason['name']"/>
+				<option type="column" name="reasonName" fields="reasonName"/>
 				<option type="column" name="description" fields="description"/>
-				<option type="column" name="division" fields="order" expression="(#productionTracking == null || #productionTracking['division'] == null) ? ((#order['division'] == null) ? '' : #order['division'].get('number')) : #productionTracking['division'].get('number')" />
-				<option type="column" name="productionLine" fields="order" expression="(#order['productionLine'] == null) ? '' : #order['productionLine'].get('number')" />
-				<option type="column" name="workstation" fields="productionTracking" expression="(#productionTracking == null || #productionTracking['workstation'] == null) ? '' : #productionTracking['workstation'].get('number')" />
-				<option type="column" name="staff" fields="productionTracking" expression="(#productionTracking == null || #productionTracking['staff'] == null) ? '' : #productionTracking['staff'].get('name') + ' ' + #productionTracking['staff'].get('surname')" />
+				<option type="column" name="divisionNumber" fields="divisionNumber"/>
+				<option type="column" name="productionLineNumber" fields="productionLineNumber"/>
+				<option type="column" name="workstationNumber" fields="workstationNumber"/>
+				<option type="column" name="staffName" fields="staffName"/>
 
 				<option type="correspondingView" value="stoppage/allStoppagesForm" />
 				<option type="correspondingComponent" value="form" />
 				<option type="correspondingViewInModal" value="false" />
 					
-				<option type="order" column="duration" direction="desc" />
-				<option type="searchable" value="order,productionTracking,productionTrackingState,duration,dateFrom,dateTo,reason,description,division,productionLine,workstation,staff" />
-				<option type="orderable" value="order,productionTracking,productionTrackingState,duration,dateFrom,dateTo,reason,description,division,productionLine,workstation,staff" />
+				<option type="order" column="orderNumber" direction="desc" />
+				<option type="searchable" value="orderNumber,productionTrackingNumber,productionTrackingState,dateFrom,dateTo,reasonName,description,divisionNumber,productionLineNumber,workstationNumber,staffName" />
+				<option type="orderable" value="orderNumber,productionTrackingNumber,productionTrackingState,dateFrom,dateTo,reasonName,description,divisionNumber,productionLineNumber,workstationNumber,staffName" />
 				<option type="footerRow" value="true"/>
 				<option type="columnsToSummaryTime" value="duration"/>
 

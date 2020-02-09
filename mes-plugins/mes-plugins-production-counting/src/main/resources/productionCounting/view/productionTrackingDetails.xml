@@ -686,6 +686,54 @@
                 </layoutElement>
             </component>
         </windowTab>
+        <windowTab name="batchOrderedProduct">
+            <component type="gridLayout" name="batchOrderedGridLayout"
+                       columns="3" rows="5">
+                <layoutElement column="1" row="1" width="3">
+                    <component type="input" name="batchOrderedProductLabel"
+                               reference="batchOrderedProductLabel"
+                               defaultEnabled="false" hasLabel="false">
+                        <option type="textRepresentationOnDisabled" value="true"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2">
+                    <component type="lookup" name="batch" reference="batch"
+                               field="#{form}.batch">
+                        <option type="column" name="supplierName" fields="supplier"
+                                expression="#supplier?.get('name')"/>
+
+                        <option type="searchable" value="number,supplierName"/>
+                        <option type="orderable" value="number,supplierName"/>
+
+                        <option type="expression" value="#number"/>
+                        <option type="fieldCode" value="number"/>
+
+                        <criteriaModifier
+                                class="com.qcadoo.mes.productionCounting.criteriaModifiers.BatchCriteriaModifierPC"
+                                method="filterByOrder"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="3">
+                    <component type="checkbox" name="addBatch" field="#{form}.addBatch"
+                               reference="addBatch">
+                        <listener event="onChange"
+                                  class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
+                                  method="onAddBatchChange"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="4">
+                    <component type="input" name="batchNumber"
+                               reference="batchNumber" field="#{form}.batchNumber">
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="5">
+                    <component type="calendar" name="expirationDate"
+                               field="#{form}.expirationDate" reference="expirationDate"
+                               defaultEnabled="true">
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
 
         <windowTab name="stoppagesTab" reference="stoppagesTab">
             <component type="grid" name="stoppages" reference="stoppages"

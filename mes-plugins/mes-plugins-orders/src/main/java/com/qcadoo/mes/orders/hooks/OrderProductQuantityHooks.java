@@ -24,7 +24,7 @@
 package com.qcadoo.mes.orders.hooks;
 
 import static com.qcadoo.mes.orders.constants.OrderFields.*;
-import static com.qcadoo.mes.orders.constants.ParameterFieldsO.BLOCK_ABILILITY_TO_CHANGE_APPROVAL_ORDER;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.BLOCK_ABILITY_TO_CHANGE_APPROVAL_ORDER;
 
 import java.util.Arrays;
 import java.util.List;
@@ -97,7 +97,7 @@ public class OrderProductQuantityHooks {
     }
 
     public boolean blockAbilityToChangeApprovalOrder() {
-        return parameterService.getParameter().getBooleanField(BLOCK_ABILILITY_TO_CHANGE_APPROVAL_ORDER);
+        return parameterService.getParameter().getBooleanField(BLOCK_ABILITY_TO_CHANGE_APPROVAL_ORDER);
     }
 
     public void fillProductUnit(final ViewDefinitionState state) {

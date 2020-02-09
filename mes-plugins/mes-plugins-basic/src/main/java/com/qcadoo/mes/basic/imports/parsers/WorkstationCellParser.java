@@ -47,7 +47,8 @@ public class WorkstationCellParser implements CellParser {
     private DataDefinitionService dataDefinitionService;
 
     @Override
-    public void parse(final String cellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {
+    public void parse(final String cellValue, final String dependentCellValue, final CellErrorsAccessor errorsAccessor,
+            final Consumer<Object> valueConsumer) {
         Entity workstation = getWorkstationByNumber(cellValue);
 
         if (Objects.isNull(workstation)) {

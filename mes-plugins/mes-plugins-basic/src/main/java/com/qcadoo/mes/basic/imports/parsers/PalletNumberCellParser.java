@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.basic.imports.parsers;
 
-import java.util.Objects;
-import java.util.function.Consumer;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.imports.helpers.CellErrorsAccessor;
@@ -37,6 +31,12 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
+
+import java.util.Objects;
+import java.util.function.Consumer;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class PalletNumberCellParser implements CellParser {
@@ -47,7 +47,7 @@ public class PalletNumberCellParser implements CellParser {
     private DataDefinitionService dataDefinitionService;
 
     @Override
-    public void parse(final String cellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {
+    public void parse(final String cellValue, final String dependentCellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {
         Entity palletNumber = getPalletNumberByNumber(cellValue);
 
         if (Objects.isNull(palletNumber)) {

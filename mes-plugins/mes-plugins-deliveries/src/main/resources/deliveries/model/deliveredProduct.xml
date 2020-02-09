@@ -27,6 +27,7 @@
 <model name="deliveredProduct" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
         <belongsTo name="delivery" model="delivery" required="true"/>
         <belongsTo name="product" model="product" plugin="basic"
@@ -48,7 +49,8 @@
         <dictionary name="palletType" dictionary="typeOfPallet"/>
         <belongsTo name="storageLocation" model="storageLocation" plugin="materialFlowResources"/>
         <belongsTo name="additionalCode" model="additionalCode" plugin="basic"/>
-        <string name="batch"/>
+        <string name="batchNumber"/>
+        <belongsTo name="batch" model="batch" plugin="advancedGenealogy"/>
 
         <decimal name="additionalQuantity">
             <validatesRange from="0"/>
@@ -67,16 +69,19 @@
         <string name="deliveredProductIds" persistent="false"/>
         <boolean name="validatePallet" default="true" persistent="false"/>
         <boolean name="damaged" default="false"/>
-        <hasMany name="deliveredProductAttributeVals" joinField="deliveredProduct" model="deliveredProductAttributeVal" cascade="delete"/>
-
+        <hasMany name="deliveredProductAttributeVals" joinField="deliveredProduct" model="deliveredProductAttributeVal"
+                 cascade="delete"/>
     </fields>
 
     <hooks>
         <onSave class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"
                 method="calculateDeliveredProductPricePerUnit"/>
-        <onCreate class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks" method="onCreate"/>
-        <onSave class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks" method="onSave"/>
-        <onDelete class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks" method="onDelete"/>
+        <onCreate class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"
+                  method="onCreate"/>
+        <onSave class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"
+                method="onSave"/>
+        <onDelete class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"
+                  method="onDelete"/>
         <validatesWith class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"
                        method="validatesWith"/>
     </hooks>

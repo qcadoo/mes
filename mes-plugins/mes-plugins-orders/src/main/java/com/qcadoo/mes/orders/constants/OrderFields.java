@@ -29,13 +29,9 @@ public final class OrderFields {
 
     }
 
-    public static final String ADDRESS = "address";
-
     public static final String NUMBER = "number";
 
     public static final String NAME = "name";
-
-    public static final String WASTES_QUANTITY = "wastesQuantity";
 
     public static final String DESCRIPTION = "description";
 
@@ -73,17 +69,21 @@ public final class OrderFields {
 
     public static final String STATE = "state";
 
+    public static final String ORDER_TYPE = "orderType";
+
     public static final String COMPANY = "company";
 
     public static final String PRODUCT = "product";
 
     public static final String TECHNOLOGY = "technology";
 
+    public static final String TECHNOLOGY_PROTOTYPE = "technologyPrototype";
+
     public static final String PRODUCTION_LINE = "productionLine";
 
-    public static final String DIVISION = "division";
-
     public static final String PLANNED_QUANTITY = "plannedQuantity";
+
+    public static final String PLANED_QUANTITY_FOR_ADDITIONAL_UNIT = "plannedQuantityForAdditionalUnit";
 
     public static final String DONE_QUANTITY = "doneQuantity";
 
@@ -97,6 +97,8 @@ public final class OrderFields {
 
     public static final String AMOUNT_OF_PRODUCT_PRODUCED = "amountOfProductProduced";
 
+    public static final String WASTES_QUANTITY = "wastesQuantity";
+
     public static final String REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE = "remainingAmountOfProductToProduce";
 
     public static final String TYPE_OF_CORRECTION_CAUSES = "typeOfCorrectionCauses";
@@ -108,12 +110,6 @@ public final class OrderFields {
     public static final String REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START = "reasonTypesDeviationsOfEffectiveStart";
 
     public static final String REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END = "reasonTypesDeviationsOfEffectiveEnd";
-
-    public static final String ORDER_TYPE = "orderType";
-
-    public static final String TECHNOLOGY_PROTOTYPE = "technologyPrototype";
-
-    public static final String ACTIVE = "active";
 
     public static final String DATES_CHANGED = "datesChanged";
 
@@ -129,12 +125,28 @@ public final class OrderFields {
 
     public static final String ORDER_CATEGORY = "orderCategory";
 
+    public static final String ADDRESS = "address";
+
     public static final String FINAL_PRODUCTION_TRACKING = "finalProductionTracking";
 
-    public static final String PLANED_QUANTITY_FOR_ADDITIONAL_UNIT = "plannedQuantityForAdditionalUnit";
+    public static final String GENERATE_PPS = "generatePPS";
+
+    public static final String BARCODE_OPERATION_COMPONENTS = "barcodeOperationComponents";
+
+    public static final String SCHEDULES = "schedules";
+
+    public static final String SCHEDULE_POSITIONS = "schedulePositions";
+
+    public static final String DIVISION = "division";
+
+    public static final String OPERATIONAL_TASKS = "operationalTasks";
+
+    public static final String TECHNOLOGY_OPERATION_COMPONENTS_MERGE_PRODUCT_IN = "technologyOperationComponentsMergeProductIn";
+
+    public static final String TECHNOLOGY_OPERATION_COMPONENTS_MERGE_PRODUCT_OUT = "technologyOperationComponentsMergeProductOut";
 
     public static final String UNIT_FOR_ADDITIONAL_UNIT = "unitForAdditionalUnit";
 
-    public static final String OPERATIONAL_TASKS = "operationalTasks";
+    public static final String ACTIVE = "active";
 
 }

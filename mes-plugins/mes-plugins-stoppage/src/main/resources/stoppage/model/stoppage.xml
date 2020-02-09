@@ -38,12 +38,12 @@
 		</string>
 		<datetime name="dateFrom"/>
 		<datetime name="dateTo"/>
-		<integer name="duration" required="true" />
+		<integer name="duration" required="true">
+			<validatesRange from="0" exclusively="true"/>
+		</integer>
 	</fields>
 	<hooks>
 		<validatesWith class="com.qcadoo.mes.stoppage.hooks.StoppageHooks"
 					   method="validatesWith"/>
-		<onSave class="com.qcadoo.mes.stoppage.hooks.StoppageHooks"
-					   method="onSave"/>
 	</hooks>
 </model>

@@ -44,15 +44,28 @@ public abstract class CellBinder {
 
     private final String fieldName;
 
+    private final String dependentFieldName;
+
     private final CellParser cellParser;
 
     public CellBinder(final String fieldName, final CellParser cellParser) {
         this.fieldName = fieldName;
         this.cellParser = cellParser;
+        this.dependentFieldName = null;
+    }
+
+    public CellBinder(final String fieldName, final String dependentFieldName, final CellParser cellParser) {
+        this.fieldName = fieldName;
+        this.dependentFieldName = dependentFieldName;
+        this.cellParser = cellParser;
     }
 
     public String getFieldName() {
         return fieldName;
+    }
+
+    public String getDependentFieldName() {
+        return dependentFieldName;
     }
 
     public CellParser getCellParser() {
@@ -67,6 +80,10 @@ public abstract class CellBinder {
         return new RequiredCellBinder(fieldName, cellParser);
     }
 
+    public static CellBinder required(final String fieldName, final String dependentFieldName, final CellParser cellParser) {
+        return new RequiredCellBinder(fieldName, dependentFieldName, cellParser);
+    }
+
     public static CellBinder optional(final String fieldName) {
         return new OptionalCellBinder(fieldName);
     }
@@ -75,7 +92,14 @@ public abstract class CellBinder {
         return new OptionalCellBinder(fieldName, cellParser);
     }
 
+    public static CellBinder optional(final String fieldName, final String dependentFieldName, final CellParser cellParser) {
+        return new OptionalCellBinder(fieldName, dependentFieldName, cellParser);
+    }
+
     public abstract void bind(final Cell cell, final Entity entity, final CellErrorsAccessor errorsAccessor);
+
+    public abstract void bind(final Cell cell, final Cell dependentCell, final Entity entity,
+            final CellErrorsAccessor errorsAccessor);
 
     public abstract void bind(final String cellValue, final Entity entity, final CellErrorsAccessor errorsAccessor);
 
@@ -99,7 +123,8 @@ public abstract class CellBinder {
     private static class DefaultCellParser implements CellParser {
 
         @Override
-        public void parse(final String cellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {
+        public void parse(final String cellValue, final String dependentCellValue, final CellErrorsAccessor errorsAccessor,
+                final Consumer<Object> valueConsumer) {
             valueConsumer.accept(cellValue);
         }
     }
@@ -114,12 +139,24 @@ public abstract class CellBinder {
             super(fieldName, cellParser);
         }
 
+        RequiredCellBinder(final String fieldName, final String dependentFieldName, final CellParser cellParser) {
+            super(fieldName, dependentFieldName, cellParser);
+        }
+
         @Override
-        public void bind(Cell cell, Entity entity, CellErrorsAccessor errorsAccessor) {
-            if (Objects.isNull(cell)) {
-                errorsAccessor.addError(L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
-            } else {
-                getCellParser().parse(formatCell(cell), errorsAccessor, o -> entity.setField(getFieldName(), o));
+        public void bind(final Cell cell, final Entity entity, final CellErrorsAccessor errorsAccessor) {
+            if (Objects.nonNull(cell)) {
+                getCellParser().parse(formatCell(cell), null, errorsAccessor,
+                        fieldValue -> entity.setField(getFieldName(), fieldValue));
+            }
+        }
+
+        @Override
+        public void bind(final Cell cell, final Cell dependentCell, final Entity entity,
+                final CellErrorsAccessor errorsAccessor) {
+            if (Objects.nonNull(cell)) {
+                getCellParser().parse(formatCell(cell), formatCell(dependentCell), errorsAccessor,
+                        fieldValue -> entity.setField(getFieldName(), fieldValue));
             }
         }
 
@@ -128,7 +165,7 @@ public abstract class CellBinder {
             if (StringUtils.isEmpty(cellValue)) {
                 errorsAccessor.addError(L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
             } else {
-                getCellParser().parse(formatCell(cellValue), errorsAccessor,
+                getCellParser().parse(formatCell(cellValue), null, errorsAccessor,
                         fieldValue -> entity.setField(getFieldName(), fieldValue));
             }
         }
@@ -144,22 +181,46 @@ public abstract class CellBinder {
             super(fieldName, cellParser);
         }
 
+        OptionalCellBinder(final String fieldName, final String dependentFieldName, final CellParser cellParser) {
+            super(fieldName, dependentFieldName, cellParser);
+        }
+
         @Override
         public void bind(final Cell cell, final Entity entity, final CellErrorsAccessor errorsAccessor) {
             if (Objects.nonNull(cell)) {
-                getCellParser().parse(formatCell(cell), errorsAccessor, o -> entity.setField(getFieldName(), o));
+                getCellParser().parse(formatCell(cell), null, errorsAccessor,
+                        fieldValue -> entity.setField(getFieldName(), fieldValue));
+            } else {
+                setDefaultValue(entity, errorsAccessor);
+            }
+        }
+
+        @Override
+        public void bind(final Cell cell, final Cell dependentCell, final Entity entity,
+                final CellErrorsAccessor errorsAccessor) {
+            if (Objects.nonNull(cell)) {
+                getCellParser().parse(formatCell(cell), formatCell(dependentCell), errorsAccessor,
+                        fieldValue -> entity.setField(getFieldName(), fieldValue));
+            } else {
+                setDefaultValue(entity, errorsAccessor);
             }
         }
 
         @Override
         public void bind(final String cellValue, final Entity entity, final CellErrorsAccessor errorsAccessor) {
             if (StringUtils.isNotEmpty(cellValue)) {
-                getCellParser().parse(formatCell(cellValue), errorsAccessor,
+                getCellParser().parse(formatCell(cellValue), null, errorsAccessor,
                         fieldValue -> entity.setField(getFieldName(), fieldValue));
             } else {
-                if (getCellParser() instanceof BooleanCellParser) {
-                    getCellParser().parse("false", errorsAccessor, fieldValue -> entity.setField(getFieldName(), fieldValue));
-                }
+                setDefaultValue(entity, errorsAccessor);
+            }
+        }
+
+        private void setDefaultValue(final Entity entity, final CellErrorsAccessor errorsAccessor) {
+            if (getCellParser() instanceof BooleanCellParser) {
+                entity.setField(getFieldName(), false);
+            } else {
+                entity.setField(getFieldName(), null);
             }
         }
     }

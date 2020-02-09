@@ -31,9 +31,10 @@ public class NumberPatternDetailsListeners {
             if (NumberPatternElement.XX.getStringValue().equals(element.getStringField(NumberPatternElementFields.ELEMENT))) {
                 stringBuilder.append(element.getStringField(NumberPatternElementFields.VALUE));
             } else {
-                stringBuilder.append(translationService.translate(
+                String value = translationService.translate(
                         "basic.numberPatternElement.element.value." + element.getStringField(NumberPatternElementFields.ELEMENT),
-                        view.getLocale()));
+                        view.getLocale());
+                stringBuilder.append(value.substring(0, value.indexOf(' ')));
             }
         }
         numberPattern.setField(NumberPatternFields.PATTERN, stringBuilder.toString());

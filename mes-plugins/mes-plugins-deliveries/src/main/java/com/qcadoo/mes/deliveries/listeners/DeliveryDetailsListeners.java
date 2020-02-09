@@ -23,6 +23,27 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.field;
+
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.CalculationQuantityService;
@@ -37,6 +58,7 @@ import com.qcadoo.mes.deliveries.DeliveredProductMultiPositionService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.ReservationService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiFields;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiPositionFields;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductReservationFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
@@ -69,31 +91,10 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
-import java.io.File;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.field;
-
 @Component
 public class DeliveryDetailsListeners {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeliveryDetailsListeners.class);
-
-    private static final Integer REPORT_WIDTH_A4 = 515;
 
     private static final String L_FORM = "form";
 
@@ -105,7 +106,9 @@ public class DeliveryDetailsListeners {
 
     private static final String L_PRODUCT_ATTACHMENTS = "productAttachments";
 
-    public static final String OFFER = "offer";
+    private static final String L_OFFER = "offer";
+
+    private static final Integer REPORT_WIDTH_A4 = 515;
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -172,114 +175,145 @@ public class DeliveryDetailsListeners {
     public final void copyProductsWithoutQuantityAndPrice(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
         copyOrderedProductToDelivered(view, false);
-        state.performEvent(view, "reset");
 
+        state.performEvent(view, "reset");
     }
 
     public final void copyProductsWithQuantityAndPrice(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
         copyOrderedProductToDelivered(view, true);
+
         state.performEvent(view, "reset");
     }
 
     public final void recalculateReservations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        Long deliveryId = form.getEntityId();
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+
+        Long deliveryId = deliveryForm.getEntityId();
+
         reservationService.recalculateReservationsForDelivery(deliveryId);
+
         view.addMessage("deliveries.delivery.recalculateReservations", MessageType.SUCCESS);
     }
 
     public final void changeStorageLocations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent grid = (GridComponent) view.getComponentByReference("deliveredProducts");
-        List<Entity> selectedProducts = grid.getSelectedEntities();
-        Set<Long> selectedProductsIds = grid.getSelectedEntitiesIds();
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity delivery = form.getPersistedEntityWithIncludedFormValues();
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+        GridComponent deliveredProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.DELIVERED_PRODUCTS);
+
+        List<Entity> selectedProducts = deliveredProductsGrid.getSelectedEntities();
+        Set<Long> selectedProductsIds = deliveredProductsGrid.getSelectedEntitiesIds();
+
+        Entity delivery = deliveryForm.getPersistedEntityWithIncludedFormValues();
         List<Entity> deliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
+
         for (Entity selectedProduct : selectedProducts) {
             String palletNumber = selectedProduct.getStringField(DeliveredProductFields.PALLET_NUMBER);
-            if (palletNumber != null) {
-                List<Long> notSelectedMatchingProducts = deliveredProducts
-                        .stream()
-                        .filter(deliveredProduct -> deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER) != null
+
+            if (Objects.nonNull(palletNumber)) {
+                List<Long> notSelectedMatchingProducts = deliveredProducts.stream()
+                        .filter(deliveredProduct -> Objects
+                                .nonNull(deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER))
                                 && deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER)
                                         .getStringField(PalletNumberFields.NUMBER).equals(palletNumber))
-                        .map(deliveredProduct -> deliveredProduct.getId())
-                        .filter(deliveredProduct -> !selectedProductsIds.contains(deliveredProduct)).collect(Collectors.toList());
+                        .map(Entity::getId).filter(deliveredProduct -> !selectedProductsIds.contains(deliveredProduct))
+                        .collect(Collectors.toList());
+
                 selectedProductsIds.addAll(notSelectedMatchingProducts);
             }
         }
+
         String url = "../page/deliveries/changeStorageLocationHelper.html?context={\"form.deliveredProductIds\":\""
-                + selectedProductsIds.stream().map(product -> product.toString()).collect(Collectors.joining(",")) + "\","
+                + selectedProductsIds.stream().map(Object::toString).collect(Collectors.joining(",")) + "\","
                 + "\"form.delivery\":\"" + delivery.getId() + "\"}";
         view.openModal(url);
     }
 
     public final void assignStorageLocations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+
         deleteOldEntries();
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity delivery = form.getPersistedEntityWithIncludedFormValues();
+
+        Entity delivery = deliveryForm.getPersistedEntityWithIncludedFormValues();
         Entity deliveredProductMultiEntity = createDeliveredProductMultiEntity(delivery, view);
+
         deliveredProductMultiEntity.getDataDefinition().save(deliveredProductMultiEntity);
+
         String url = "../page/deliveries/deliveredProductAddMulti.html?context={\"form.id\":\""
                 + deliveredProductMultiEntity.getId() + "\"}";
         view.openModal(url);
     }
 
     private void deleteOldEntries() {
-        DataDefinition deliveredProductMulti = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
-                DeliveriesConstants.MODEL_DELIVERED_PRODUCT_MULTI);
         Calendar cal = Calendar.getInstance();
         cal.add(Calendar.DATE, -1);
-        List<Entity> oldEntries = deliveredProductMulti.find().add(SearchRestrictions.lt("updateDate", cal.getTime())).list()
-                .getEntities();
+
+        List<Entity> oldEntries = getDeliveredProductMultiDD().find().add(SearchRestrictions.lt("updateDate", cal.getTime()))
+                .list().getEntities();
+
         oldEntries.stream().forEach(e -> e.getDataDefinition().delete(e.getId()));
     }
 
-    private Entity createDeliveredProductMultiEntity(Entity delivery, ViewDefinitionState view) {
-        Entity deliveredProductMulti = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
-                DeliveriesConstants.MODEL_DELIVERED_PRODUCT_MULTI).create();
-        deliveredProductMulti.setField("delivery", delivery);
+    private Entity createDeliveredProductMultiEntity(final Entity delivery, final ViewDefinitionState view) {
+        Entity deliveredProductMulti = getDeliveredProductMultiDD().create();
+
+        deliveredProductMulti.setField(DeliveredProductMultiFields.DELIVERY, delivery);
+
         List<Entity> orderedProducts = getSelectedProducts(view);
         List<Entity> deliveredProducts = delivery.getHasManyField(DeliveryFields.DELIVERED_PRODUCTS);
         List<Entity> deliveredProductMultiPositions = Lists.newArrayList();
-        DataDefinition deliveredProductMultiPositionDD = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
-                "deliveredProductMultiPosition");
+
+        DataDefinition deliveredProductMultiPositionDD = getDeliveredProductMultiPositionDD();
+
         for (Entity orderedProduct : orderedProducts) {
             Entity deliveredProductMultiPosition = createDeliveredProductMultiPosition(orderedProduct,
                     deliveredProductMultiPositionDD, deliveredProducts);
-            deliveredProductMultiPosition.setField("deliveredProductMulti", deliveredProductMulti);
+
+            deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.DELIVERED_PRODUCT_MULTI,
+                    deliveredProductMulti);
+
             deliveredProductMultiPosition = deliveredProductMultiPositionDD.save(deliveredProductMultiPosition);
+
             deliveredProductMultiPositions.add(deliveredProductMultiPosition);
         }
-        deliveredProductMulti.setField("deliveredProductMultiPositions", deliveredProductMultiPositions);
+
+        deliveredProductMulti.setField(DeliveredProductMultiFields.DELIVERED_PRODUCT_MULTI_POSITIONS,
+                deliveredProductMultiPositions);
+
         return deliveredProductMulti.getDataDefinition().save(deliveredProductMulti);
     }
 
-    private List<Entity> getSelectedProducts(ViewDefinitionState view) {
-        GridComponent orderdProductGrid = (GridComponent) view.getComponentByReference(DeliveriesService.L_ORDERED_PRODUCTS);
+    private List<Entity> getSelectedProducts(final ViewDefinitionState view) {
+        GridComponent orderedProductGrid = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
 
         List<Entity> result = Lists.newArrayList();
-        Set<Long> ids = orderdProductGrid.getSelectedEntitiesIds();
-        if (ids != null && !ids.isEmpty()) {
+        Set<Long> ids = orderedProductGrid.getSelectedEntitiesIds();
+
+        if (Objects.nonNull(ids) && !ids.isEmpty()) {
             final SearchCriteriaBuilder searchCriteria = deliveriesService.getOrderedProductDD().find();
+
             searchCriteria.add(SearchRestrictions.in("id", ids));
+
             result = searchCriteria.list().getEntities();
 
             if (!result.isEmpty()) {
-                String numbersFilter = orderdProductGrid.getFilters().get("productNumber");
-                String numberAndAdditionalCodeFilter = orderdProductGrid.getFilters().get("mergedProductNumberAndAdditionalCode");
+                String numbersFilter = orderedProductGrid.getFilters().get("productNumber");
+                String numberAndAdditionalCodeFilter = orderedProductGrid.getFilters()
+                        .get("mergedProductNumberAndAdditionalCode");
+
                 if (StringUtils.isNotBlank(numbersFilter) && numbersFilter.startsWith("[") && numbersFilter.endsWith("]")) {
                     List<String> numbersOrder = Lists.newArrayList(numbersFilter.replace("[", "").replace("]", "").split(","));
+
                     result.sort((o1, o2) -> {
                         String number1 = o1.getBelongsToField(OrderedProductFields.PRODUCT).getStringField(ProductFields.NUMBER);
                         String number2 = o2.getBelongsToField(OrderedProductFields.PRODUCT).getStringField(ProductFields.NUMBER);
-                        return new Integer(numbersOrder.indexOf(number1)).compareTo(numbersOrder.indexOf(number2));
+
+                        return Integer.valueOf(numbersOrder.indexOf(number1)).compareTo(numbersOrder.indexOf(number2));
                     });
                 } else if (StringUtils.isNotBlank(numberAndAdditionalCodeFilter) && numberAndAdditionalCodeFilter.startsWith("[")
                         && numberAndAdditionalCodeFilter.endsWith("]")) {
                     List<String> numbersOrder = Lists
                             .newArrayList(numberAndAdditionalCodeFilter.replace("[", "").replace("]", "").split(","));
+
                     result.sort((o1, o2) -> {
                         String number1 = Optional.ofNullable(o1.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE))
                                 .map(ac -> ac.getStringField(AdditionalCodeFields.CODE))
@@ -287,56 +321,66 @@ public class DeliveryDetailsListeners {
                         String number2 = Optional.ofNullable(o2.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE))
                                 .map(ac -> ac.getStringField(AdditionalCodeFields.CODE))
                                 .orElse(o2.getBelongsToField(OrderedProductFields.PRODUCT).getStringField(ProductFields.NUMBER));
-                        return new Integer(numbersOrder.indexOf(number1)).compareTo(numbersOrder.indexOf(number2));
+
+                        return Integer.valueOf(numbersOrder.indexOf(number1)).compareTo(numbersOrder.indexOf(number2));
                     });
                 }
             }
         }
+
         return result;
     }
 
-    private Entity createDeliveredProductMultiPosition(Entity orderedProduct, DataDefinition deliveredProductMultiPositionDD,
-            List<Entity> deliveredProducts) {
-        Entity deliveredProductMuliPosition = deliveredProductMultiPositionDD.create();
+    private Entity createDeliveredProductMultiPosition(final Entity orderedProduct,
+            final DataDefinition deliveredProductMultiPositionDD, final List<Entity> deliveredProducts) {
+        Entity deliveredProductMultiPosition = deliveredProductMultiPositionDD.create();
+
         Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
         String unit = product.getStringField(ProductFields.UNIT);
         String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
-        if (additionalUnit == null) {
+
+        if (Objects.isNull(additionalUnit)) {
             additionalUnit = unit;
         }
+
         Entity additionalCode = orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE);
         BigDecimal alreadyAssignedQuantity = deliveredProductMultiPositionService.countAlreadyAssignedQuantity(orderedProduct,
-                additionalCode, orderedProduct.getBelongsToField(OFFER), deliveredProducts);
-        BigDecimal quantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY).subtract(
-                alreadyAssignedQuantity);
+                additionalCode, orderedProduct.getBelongsToField(L_OFFER), deliveredProducts);
+        BigDecimal quantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY)
+                .subtract(alreadyAssignedQuantity);
+
         if (BigDecimal.ZERO.compareTo(quantity) >= 0) {
             quantity = BigDecimal.ZERO;
         }
+
         BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
         BigDecimal additionalQuantity = calculationQuantityService.calculateAdditionalQuantity(quantity, conversion,
                 additionalUnit);
 
-        deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.PRODUCT, product);
-        deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.UNIT, unit);
-        deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT, additionalUnit);
-        deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.QUANTITY, quantity);
-        deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY, additionalQuantity);
-        deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_CODE,
-                orderedProduct.getField(OrderedProductFields.ADDITIONAL_CODE));
-        deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.BATCH,
-                orderedProduct.getField(OrderedProductFields.BATCH));
-        deliveredProductMuliPosition.setField(DeliveredProductMultiPositionFields.CONVERSION, conversion);
+        deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.PRODUCT, product);
+        deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.UNIT, unit);
+        deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT, additionalUnit);
+        deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.QUANTITY, quantity);
+        deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY, additionalQuantity);
+        deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_CODE,
+                orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE));
+        deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.BATCH,
+                orderedProduct.getBelongsToField(OrderedProductFields.BATCH));
+        deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.CONVERSION, conversion);
+
         if (PluginUtils.isEnabled("supplyNegotiations")) {
-            deliveredProductMuliPosition.setField(OFFER, orderedProduct.getBelongsToField(OFFER));
+            deliveredProductMultiPosition.setField(L_OFFER, orderedProduct.getBelongsToField(L_OFFER));
         }
-        return deliveredProductMuliPosition;
+
+        return deliveredProductMultiPosition;
     }
 
     private void copyOrderedProductToDelivered(final ViewDefinitionState view, boolean copyQuantityAndPrice) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+
         Long deliveryId = deliveryForm.getEntityId();
 
-        if (deliveryId == null) {
+        if (Objects.isNull(deliveryId)) {
             return;
         }
 
@@ -346,15 +390,12 @@ public class DeliveryDetailsListeners {
     }
 
     private Entity copyOrderedProductToDelivered(final Entity delivery, final boolean copyQuantityAndPrice) {
-        // ALBR deliveredProduct has a validation so we have to delete all
-        // entities before save HM field in delivery
         delivery.setField(DeliveryFields.DELIVERED_PRODUCTS, Lists.newArrayList());
         delivery.getDataDefinition().save(delivery);
-        delivery.setField(
-                DeliveryFields.DELIVERED_PRODUCTS,
-                createDeliveredProducts(delivery, delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS), copyQuantityAndPrice));
+        delivery.setField(DeliveryFields.DELIVERED_PRODUCTS, createDeliveredProducts(delivery,
+                delivery.getHasManyField(DeliveryFields.ORDERED_PRODUCTS), copyQuantityAndPrice));
+
         return delivery;
-        // delivery.getDataDefinition().save(delivery);
     }
 
     private List<Entity> createDeliveredProducts(final Entity delivery, final List<Entity> orderedProducts,
@@ -368,32 +409,38 @@ public class DeliveryDetailsListeners {
         return deliveredProducts;
     }
 
-    private Entity createDeliveredProduct(final Entity delivery, final Entity orderedProduct, final boolean copyQuantityAndPrice) {
+    private Entity createDeliveredProduct(final Entity delivery, final Entity orderedProduct,
+            final boolean copyQuantityAndPrice) {
         Entity deliveredProduct = deliveriesService.getDeliveredProductDD().create();
+
         Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
 
         deliveredProduct.setField(DeliveredProductFields.PRODUCT, product);
         deliveredProduct.setField(DeliveredProductFields.ADDITIONAL_CODE,
                 orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE));
-        deliveredProduct.setField(DeliveredProductFields.BATCH,
-                orderedProduct.getStringField(OrderedProductFields.BATCH));
+        deliveredProduct.setField(DeliveredProductFields.BATCH, orderedProduct.getBelongsToField(OrderedProductFields.BATCH));
         BigDecimal conversion = orderedProduct.getDecimalField(OrderedProductFields.CONVERSION);
         deliveredProduct.setField(DeliveredProductFields.CONVERSION, conversion);
         deliveredProduct.setField(DeliveredProductFields.IS_WASTE, false);
         deliveredProduct.setField(DeliveredProductFields.DELIVERY, delivery);
+
         if (copyQuantityAndPrice) {
-            BigDecimal deliverdQuantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
-            deliveredProduct.setField(DeliveredProductFields.DELIVERED_QUANTITY, numberService.setScaleWithDefaultMathContext(deliverdQuantity));
+            BigDecimal deliveredQuantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
+
+            deliveredProduct.setField(DeliveredProductFields.DELIVERED_QUANTITY,
+                    numberService.setScaleWithDefaultMathContext(deliveredQuantity));
             deliveredProduct.setField(DeliveredProductFields.ADDITIONAL_QUANTITY,
-                    numberService.setScaleWithDefaultMathContext(deliverdQuantity.multiply(conversion)));
-            deliveredProduct.setField(DeliveredProductFields.PRICE_PER_UNIT,
-                    numberService.setScaleWithDefaultMathContext(orderedProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT)));
-            deliveredProduct.setField(DeliveredProductFields.TOTAL_PRICE,
-                    numberService.setScaleWithDefaultMathContext(orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE)));
+                    numberService.setScaleWithDefaultMathContext(deliveredQuantity.multiply(conversion)));
+            deliveredProduct.setField(DeliveredProductFields.PRICE_PER_UNIT, numberService
+                    .setScaleWithDefaultMathContext(orderedProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT)));
+            deliveredProduct.setField(DeliveredProductFields.TOTAL_PRICE, numberService
+                    .setScaleWithDefaultMathContext(orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE)));
         }
+
         if (PluginUtils.isEnabled("supplyNegotiations")) {
-            Entity offer = orderedProduct.getBelongsToField(OFFER);
-            deliveredProduct.setField(OFFER, offer);
+            Entity offer = orderedProduct.getBelongsToField(L_OFFER);
+
+            deliveredProduct.setField(L_OFFER, offer);
         }
 
         deliveredProduct = deliveredProduct.getDataDefinition().save(deliveredProduct);
@@ -403,9 +450,10 @@ public class DeliveryDetailsListeners {
 
     public final void createRelatedDelivery(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+
         Long deliveryId = deliveryForm.getEntityId();
 
-        if (deliveryId == null) {
+        if (Objects.isNull(deliveryId)) {
             return;
         }
 
@@ -415,7 +463,7 @@ public class DeliveryDetailsListeners {
                 || DeliveryStateStringValues.RECEIVE_CONFIRM_WAITING.equals(delivery.getStringField(DeliveryFields.STATE))) {
             Entity relatedDelivery = createRelatedDelivery(delivery);
 
-            if (relatedDelivery == null) {
+            if (Objects.isNull(relatedDelivery)) {
                 deliveryForm.addMessage("deliveries.delivery.relatedDelivery.thereAreNoLacksToCover", MessageType.INFO);
 
                 return;
@@ -423,13 +471,15 @@ public class DeliveryDetailsListeners {
 
             Long relatedDeliveryId = relatedDelivery.getId();
 
-            if (relatedDeliveryId == null) {
+            if (Objects.isNull(relatedDeliveryId)) {
                 deliveryForm.addMessage("deliveries.delivery.relatedDelivery.invalidDelivery", MessageType.FAILURE);
+
                 return;
             }
-            Map<String, Object> parameters = Maps.newHashMap();
-            parameters.put("form.id", relatedDeliveryId);
 
+            Map<String, Object> parameters = Maps.newHashMap();
+
+            parameters.put("form.id", relatedDeliveryId);
             parameters.put(L_WINDOW_ACTIVE_MENU, "requirements.deliveries");
 
             String url = "../page/deliveries/deliveryDetails.html";
@@ -445,8 +495,8 @@ public class DeliveryDetailsListeners {
         if (!orderedProducts.isEmpty()) {
             relatedDelivery = deliveriesService.getDeliveryDD().create();
 
-            relatedDelivery.setField(DeliveryFields.NUMBER, numberGeneratorService.generateNumber(
-                    DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY));
+            relatedDelivery.setField(DeliveryFields.NUMBER, numberGeneratorService
+                    .generateNumber(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY));
             relatedDelivery.setField(DeliveryFields.SUPPLIER, delivery.getBelongsToField(DeliveryFields.SUPPLIER));
             relatedDelivery.setField(DeliveryFields.DELIVERY_DATE, new Date());
             relatedDelivery.setField(DeliveryFields.RELATED_DELIVERY, delivery);
@@ -470,7 +520,7 @@ public class DeliveryDetailsListeners {
         for (Entity orderedProduct : orderedProducts) {
             Entity deliveredProduct = getDeliveredProduct(deliveredProducts, orderedProduct);
 
-            if (deliveredProduct == null) {
+            if (Objects.isNull(deliveredProduct)) {
                 BigDecimal orderedQuantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
 
                 newOrderedProducts.add(createOrderedProduct(orderedProduct, orderedQuantity, null));
@@ -499,13 +549,15 @@ public class DeliveryDetailsListeners {
     private boolean checkIfProductsAreSame(final Entity orderedProduct, final Entity deliveredProduct) {
         Entity orderedAdditionalCode = orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE);
         Entity deliveredAdditionalCode = deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
-        boolean additionalCodesMatching = orderedAdditionalCode == null && deliveredAdditionalCode == null;
-        if (orderedAdditionalCode != null && deliveredAdditionalCode != null) {
+
+        boolean additionalCodesMatching = Objects.isNull(orderedAdditionalCode) && Objects.isNull(deliveredAdditionalCode);
+
+        if (Objects.nonNull(orderedAdditionalCode) && Objects.nonNull(deliveredAdditionalCode)) {
             additionalCodesMatching = orderedAdditionalCode.getId().equals(deliveredAdditionalCode.getId());
         }
-        return (orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT).getId().equals(deliveredProduct.getBelongsToField(
-                DeliveredProductFields.PRODUCT).getId()))
-                && additionalCodesMatching;
+
+        return (orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT).getId()
+                .equals(deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT).getId())) && additionalCodesMatching;
     }
 
     private Entity createOrderedProduct(final Entity orderedProduct, final BigDecimal orderedQuantity,
@@ -518,19 +570,21 @@ public class DeliveryDetailsListeners {
         newOrderedProduct.setField(OrderedProductFields.PRODUCT, product);
         newOrderedProduct.setField(OrderedProductFields.ADDITIONAL_CODE,
                 orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE));
-        newOrderedProduct.setField(OrderedProductFields.ORDERED_QUANTITY, numberService.setScaleWithDefaultMathContext(orderedQuantity));
+        newOrderedProduct.setField(OrderedProductFields.ORDERED_QUANTITY,
+                numberService.setScaleWithDefaultMathContext(orderedQuantity));
         newOrderedProduct.setField(OrderedProductFields.TOTAL_PRICE,
                 orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE));
         newOrderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT,
                 orderedProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT));
         newOrderedProduct.setField(OrderedProductFields.CONVERSION, conversion);
-        newOrderedProduct.setField(OrderedProductFields.ADDITIONAL_QUANTITY, BigDecimalUtils.convertNullToZero(orderedQuantity)
-                .multiply(conversion, numberService.getMathContext()));
+        newOrderedProduct.setField(OrderedProductFields.ADDITIONAL_QUANTITY,
+                BigDecimalUtils.convertNullToZero(orderedQuantity).multiply(conversion, numberService.getMathContext()));
 
         newOrderedProduct.setField(OrderedProductFields.RESERVATIONS,
                 copyReservations(orderedProduct, newOrderedProduct, deliveredProduct));
 
-        newOrderedProduct.setField(OFFER, orderedProduct.getBelongsToField(OFFER));
+        newOrderedProduct.setField(L_OFFER, orderedProduct.getBelongsToField(L_OFFER));
+
         return newOrderedProduct;
     }
 
@@ -539,22 +593,27 @@ public class DeliveryDetailsListeners {
         List<Entity> newReservations = Lists.newArrayList();
         List<Entity> oldReservations = orderedProduct.getHasManyField(OrderedProductFields.RESERVATIONS);
         BigDecimal availableQuantity = newOrderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
+
         for (Entity oldReservation : oldReservations) {
             Entity location = oldReservation.getBelongsToField(OrderedProductReservationFields.LOCATION);
             BigDecimal deliveredReservedQuantity = getDeliveredReservedQuantity(deliveredProduct, location);
 
-            BigDecimal quantity = BigDecimalUtils.convertNullToZero(oldReservation
-                    .getDecimalField(OrderedProductReservationFields.ORDERED_QUANTITY));
+            BigDecimal quantity = BigDecimalUtils
+                    .convertNullToZero(oldReservation.getDecimalField(OrderedProductReservationFields.ORDERED_QUANTITY));
 
             if (availableQuantity.compareTo(quantity) < 0) {
                 quantity = availableQuantity;
             }
-            quantity = quantity.subtract(deliveredReservedQuantity);
-            if (quantity.compareTo(BigDecimal.ZERO) > 0) {
 
-                Entity newReservation = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
-                        DeliveriesConstants.MODEL_ORDERED_PRODUCT_RESERVATION).create();
+            quantity = quantity.subtract(deliveredReservedQuantity);
+
+            if (quantity.compareTo(BigDecimal.ZERO) > 0) {
+                Entity newReservation = dataDefinitionService
+                        .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_ORDERED_PRODUCT_RESERVATION)
+                        .create();
+
                 BigDecimal conversion = getConversion(orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT));
+
                 newReservation.setField(OrderedProductReservationFields.LOCATION,
                         oldReservation.getBelongsToField(OrderedProductReservationFields.LOCATION));
                 newReservation.setField(OrderedProductReservationFields.ORDERED_PRODUCT,
@@ -567,36 +626,44 @@ public class DeliveryDetailsListeners {
                 newReservation.setField(OrderedProductReservationFields.ADDITIONAL_QUANTITY_UNIT,
                         oldReservation.getStringField(OrderedProductReservationFields.ADDITIONAL_QUANTITY_UNIT));
                 newReservation.setField(OrderedProductReservationFields.ORDERED_PRODUCT, newOrderedProduct);
+
                 newReservations.add(newReservation);
+
                 availableQuantity = availableQuantity.subtract(quantity);
             }
         }
+
         return newReservations;
     }
 
     private BigDecimal getDeliveredReservedQuantity(final Entity deliveredProduct, final Entity location) {
         BigDecimal quantity = BigDecimal.ZERO;
-        if (deliveredProduct != null) {
+
+        if (Objects.nonNull(deliveredProduct)) {
             List<Entity> reservations = deliveredProduct.getHasManyField(DeliveredProductFields.RESERVATIONS);
-            quantity = reservations
-                    .stream()
+
+            quantity = reservations.stream()
                     .filter(reservation -> reservation.getBelongsToField(DeliveredProductReservationFields.LOCATION).getId()
                             .equals(location.getId()))
                     .map(reservation -> reservation.getDecimalField(DeliveredProductReservationFields.DELIVERED_QUANTITY))
                     .reduce(BigDecimal.ZERO, BigDecimal::add);
         }
+
         return quantity;
     }
 
-    public BigDecimal getConversion(Entity product) {
+    public BigDecimal getConversion(final Entity product) {
         String unit = product.getStringField(ProductFields.UNIT);
         String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
-        if (additionalUnit == null) {
+
+        if (Objects.isNull(additionalUnit)) {
             return BigDecimal.ONE;
         }
+
         PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-                searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
-                        UnitConversionItemFieldsB.PRODUCT, product)));
+                searchCriteriaBuilder -> searchCriteriaBuilder
+                        .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+
         if (unitConversions.isDefinedFor(additionalUnit)) {
             return unitConversions.asUnitToConversionMap().get(additionalUnit);
         } else {
@@ -609,7 +676,7 @@ public class DeliveryDetailsListeners {
         BigDecimal deliveredQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
         BigDecimal damagedQuantity = deliveredProduct.getDecimalField(DeliveredProductFields.DAMAGED_QUANTITY);
 
-        if (damagedQuantity == null) {
+        if (Objects.isNull(damagedQuantity)) {
             return orderedQuantity.subtract(deliveredQuantity, numberService.getMathContext());
         } else {
             return orderedQuantity.subtract(deliveredQuantity, numberService.getMathContext()).add(damagedQuantity,
@@ -619,15 +686,16 @@ public class DeliveryDetailsListeners {
 
     public final void showRelatedDeliveries(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+
         Long deliveryId = deliveryForm.getEntityId();
 
-        if (deliveryId == null) {
+        if (Objects.isNull(deliveryId)) {
             return;
         }
 
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("delivery.id", deliveryId);
 
+        parameters.put("delivery.id", deliveryId);
         parameters.put(L_WINDOW_ACTIVE_MENU, "requirements.deliveries");
 
         String url = "../page/deliveries/deliveriesList.html";
@@ -639,6 +707,7 @@ public class DeliveryDetailsListeners {
         GridComponent deliveredProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.DELIVERED_PRODUCTS);
 
         List<Entity> selectedEntities = orderedProductGrid.getSelectedEntities();
+
         if (selectedEntities.isEmpty()) {
             selectedEntities = deliveredProductsGrid.getSelectedEntities();
         }
@@ -650,7 +719,6 @@ public class DeliveryDetailsListeners {
         Map<String, Object> parameters = Maps.newHashMap();
 
         parameters.put("form.id", product.getId());
-
         parameters.put(L_WINDOW_ACTIVE_MENU, "basic.products");
 
         String url = "../page/basic/productDetails.html";
@@ -661,14 +729,17 @@ public class DeliveryDetailsListeners {
         deliveriesService.disableShowProductButton(view);
     }
 
-    public void updateChangeStorageLocationButton(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void updateChangeStorageLocationButton(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
         deliveryDetailsHooks.updateChangeStorageLocationButton(view);
     }
 
     public void validateColumnsWidthForOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Long deliveryId = ((FormComponent) view.getComponentByReference(L_FORM)).getEntity().getId();
+
         Entity delivery = deliveriesService.getDelivery(deliveryId);
         List<String> columnNames = orderReportPdf.getUsedColumnsInOrderReport(delivery);
+
         if (!pdfHelper.validateReportColumnWidths(REPORT_WIDTH_A4, parameterService.getReportColumnWidths(), columnNames)) {
             state.addMessage("deliveries.delivery.printOrderReport.columnsWidthIsGreaterThenMax", MessageType.INFO, false);
         }
@@ -676,41 +747,42 @@ public class DeliveryDetailsListeners {
 
     public void validateColumnsWidthForDelivery(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Long deliveryId = ((FormComponent) view.getComponentByReference(L_FORM)).getEntity().getId();
+
         Entity delivery = deliveriesService.getDelivery(deliveryId);
         List<String> columnNames = deliveryReportPdf.getUsedColumnsInDeliveryReport(delivery);
+
         if (!pdfHelper.validateReportColumnWidths(REPORT_WIDTH_A4, parameterService.getReportColumnWidths(), columnNames)) {
             state.addMessage("deliveries.delivery.printOrderReport.columnsWidthIsGreaterThenMax", MessageType.INFO, false);
         }
     }
 
-    public void downloadAtachment(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent grid = (GridComponent) view.getComponentByReference(DeliveryFields.ATTACHMENTS);
+    public void downloadAttachment(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent attachmentsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.ATTACHMENTS);
 
-        if (grid.getSelectedEntitiesIds() == null || grid.getSelectedEntitiesIds().size() == 0) {
+        if (Objects.isNull(attachmentsGrid.getSelectedEntitiesIds()) || attachmentsGrid.getSelectedEntitiesIds().isEmpty()) {
             state.addMessage("deliveries.deliveryDetails.window.ribbon.atachments.nonSelectedAtachment",
                     ComponentState.MessageType.INFO);
 
             return;
         }
 
-        DataDefinition deliveryAttachmentDD = getDeliveryAttachmentDD();
+        List<File> attachments = Lists.newArrayList();
 
-        List<File> attachements = Lists.newArrayList();
-
-        for (Long deliveryAttachmentId : grid.getSelectedEntitiesIds()) {
-            Entity deliveryAttachment = deliveryAttachmentDD.get(deliveryAttachmentId);
+        for (Long deliveryAttachmentId : attachmentsGrid.getSelectedEntitiesIds()) {
+            Entity deliveryAttachment = getDeliveryAttachmentDD().get(deliveryAttachmentId);
 
             File attachment = new File(deliveryAttachment.getStringField(DeliveryAttachmentFields.ATTACHMENT));
 
-            attachements.add(attachment);
+            attachments.add(attachment);
         }
 
         File zipFile = null;
 
         try {
-            zipFile = fileService.compressToZipFile(attachements, false);
+            zipFile = fileService.compressToZipFile(attachments, false);
         } catch (IOException e) {
             LOG.error("Unable to compress documents to zip file.", e);
+
             return;
         }
 
@@ -718,21 +790,25 @@ public class DeliveryDetailsListeners {
     }
 
     public void downloadProductAttachment(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        GridComponent orderedProductsGrid = (GridComponent) view.getComponentByReference(DeliveriesService.L_ORDERED_PRODUCTS);
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+        GridComponent orderedProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
+
         Set<Long> ids = orderedProductsGrid.getSelectedEntitiesIds();
+
         SearchCriteriaBuilder searchCriteria = deliveriesService.getOrderedProductDD().find()
                 .createAlias(BasicConstants.MODEL_PRODUCT, BasicConstants.MODEL_PRODUCT, JoinType.INNER)
                 .createAlias(BasicConstants.MODEL_PRODUCT + L_DOT + L_PRODUCT_ATTACHMENTS, L_PRODUCT_ATTACHMENTS, JoinType.INNER)
                 .setProjection(SearchProjections.list()
                         .add(alias(field(L_PRODUCT_ATTACHMENTS + L_DOT + ProductAttachmentFields.ATTACHMENT),
                                 ProductAttachmentFields.ATTACHMENT)));
+
         if (ids.isEmpty()) {
             searchCriteria.createAlias(DeliveriesConstants.MODEL_DELIVERY, DeliveriesConstants.MODEL_DELIVERY, JoinType.INNER)
-                    .add(SearchRestrictions.in(DeliveriesConstants.MODEL_DELIVERY + L_DOT + "id", form.getEntityId()));
+                    .add(SearchRestrictions.in(DeliveriesConstants.MODEL_DELIVERY + L_DOT + "id", deliveryForm.getEntityId()));
         } else {
             searchCriteria.add(SearchRestrictions.in("id", ids));
         }
+
         List<Entity> result = searchCriteria.list().getEntities();
 
         if (result.isEmpty()) {
@@ -749,10 +825,21 @@ public class DeliveryDetailsListeners {
             zipFile = fileService.compressToZipFile(attachments, false);
         } catch (IOException e) {
             LOG.error("Unable to compress documents to zip file.", e);
+
             return;
         }
 
         view.redirectTo(fileService.getUrl(zipFile.getAbsolutePath()) + "?clean", true, false);
+    }
+
+    private DataDefinition getDeliveredProductMultiPositionDD() {
+        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                DeliveriesConstants.MODEL_DELIVERED_PRODUCT_MULTI_POSITION);
+    }
+
+    private DataDefinition getDeliveredProductMultiDD() {
+        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                DeliveriesConstants.MODEL_DELIVERED_PRODUCT_MULTI);
     }
 
     private DataDefinition getDeliveryAttachmentDD() {

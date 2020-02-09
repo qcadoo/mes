@@ -62,7 +62,6 @@
         <module>mes-plugins-cmms-machine-parts</module>
         <module>mes-plugins-warehouse-minimal-state</module>
         <module>mes-plugins-advanced-genealogy</module>
-        <module>mes-plugins-advanced-genealogy-for-orders</module>
         <module>mes-plugins-supply-negotiations</module>
         <module>mes-plugins-cat-numbers-in-negot</module>
         <module>mes-plugins-product-flow-thru-division</module>
@@ -80,7 +79,6 @@
         <module>mes-plugins-technologies-generator</module>
         <module>mes-plugins-email-notifications</module>
         <module>mes-plugins-deliveries-min-state</module>
-
     </modules>
 
 </project>
