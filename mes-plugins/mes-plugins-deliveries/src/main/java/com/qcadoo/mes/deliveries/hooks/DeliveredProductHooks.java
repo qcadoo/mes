@@ -34,6 +34,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.advancedGenealogy.AdvancedGenealogyService;
+import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchNumberUniqueness;
 import com.qcadoo.mes.advancedGenealogy.hooks.BatchModelValidators;
 import com.qcadoo.mes.basic.ParameterService;
@@ -52,6 +53,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginUtils;
@@ -99,7 +101,7 @@ public class DeliveredProductHooks {
     public void onSave(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
         reservationService.deleteReservationsForDeliveredProductIfChanged(deliveredProduct);
 
-        updateDeliveredQuantityInOrderedProduct(deliveredProductDD, deliveredProduct);
+        updateDeliveredAndAdditionalQuantityInOrderedProduct(deliveredProductDD, deliveredProduct);
         tryFillStorageLocation(deliveredProduct);
 
         createBatch(deliveredProduct);
@@ -122,141 +124,47 @@ public class DeliveredProductHooks {
     }
 
     public boolean onDelete(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
-        SearchCriteriaBuilder searchCriteriaBuilder = getSearchCriteriaBuilderForOrderedProduct(getOrderedProductDD().find(),
-                deliveredProduct);
+        BigDecimal deliveredQuantity = BigDecimal.ZERO;
+        BigDecimal additionalQuantity = BigDecimal.ZERO;
 
-        Optional<Entity> maybeOrderedProduct = Optional.ofNullable(searchCriteriaBuilder.setMaxResults(1).uniqueResult());
-
-        maybeOrderedProduct.ifPresent(orderedProduct -> {
-            BigDecimal deliveredQuantity = BigDecimal.ZERO;
-            BigDecimal additionalQuantity = BigDecimal.ZERO;
-
-            List<Entity> deliveredProducts = getSearchCriteriaBuilderForDeliveredProductByGroup(deliveredProductDD.find(),
-                    deliveredProduct).list().getEntities();
-
-            if (!deliveredProducts.isEmpty()) {
-                BigDecimal deliveredQuantityRest = deliveredProducts.stream()
-                        .map(dp -> dp.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY))
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
-                deliveredQuantity = deliveredQuantity.add(deliveredQuantityRest, numberService.getMathContext());
-
-                BigDecimal additionalQuantityRest = deliveredProducts.stream()
-                        .map(dp -> dp.getDecimalField(DeliveredProductFields.ADDITIONAL_QUANTITY))
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
-                additionalQuantity = additionalQuantity.add(additionalQuantityRest, numberService.getMathContext());
-            }
-
-            orderedProduct.setField(OrderedProductFields.DELIVERED_QUANTITY,
-                    numberService.setScaleWithDefaultMathContext(deliveredQuantity));
-            orderedProduct.setField(OrderedProductFields.ADDITIONAL_DELIVERED_QUANTITY,
-                    numberService.setScaleWithDefaultMathContext(additionalQuantity));
-
-            orderedProduct = orderedProduct.getDataDefinition().save(orderedProduct);
-        });
+        updateDeliveredAndAdditionalQuantityInOrderedProduct(deliveredProductDD, deliveredProduct, deliveredQuantity,
+                additionalQuantity);
 
         return true;
     }
 
-    private SearchCriteriaBuilder getSearchCriteriaBuilderForOrderedProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
-            final Entity deliveredProduct) {
-        searchCriteriaBuilder
-                .add(SearchRestrictions.belongsTo(OrderedProductFields.DELIVERY,
-                        deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY)))
-                .add(SearchRestrictions.belongsTo(OrderedProductFields.PRODUCT,
-                        deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT)))
-                .add(SearchRestrictions.belongsTo(OrderedProductFields.ADDITIONAL_CODE,
-                        deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE)));
+    private Optional<Entity> getOrderedProductForDeliveredProduct(final Entity deliveredProduct, final boolean checkBatch) {
+        SearchCriteriaBuilder searchCriteriaBuilder = getSearchCriteriaBuilderForOrderedProduct(getOrderedProductDD().find(),
+                deliveredProduct, checkBatch);
 
-        if (Objects.nonNull(deliveredProduct.getField(DeliveredProductFields.BATCH))) {
-            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(DeliveredProductFields.BATCH,
-                    deliveredProduct.getBelongsToField(DeliveredProductFields.BATCH)));
-        } else {
-            searchCriteriaBuilder.add(SearchRestrictions.isNull(DeliveredProductFields.BATCH));
-        }
+        Entity orderedProduct = searchCriteriaBuilder.setMaxResults(1).uniqueResult();
 
-        if (PluginUtils.isEnabled("supplyNegotiations")) {
-            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OFFER, deliveredProduct.getBelongsToField(L_OFFER)));
-        }
-
-        if (PluginUtils.isEnabled("techSubcontrForDeliveries")) {
-            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OPERATION, deliveredProduct.getBelongsToField(L_OPERATION)));
-        }
-
-        return searchCriteriaBuilder;
+        return Optional.ofNullable(orderedProduct);
     }
 
-    private void updateDeliveredQuantityInOrderedProduct(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
+    private void updateDeliveredAndAdditionalQuantityInOrderedProduct(final DataDefinition deliveredProductDD,
+            final Entity deliveredProduct) {
         if (Objects.nonNull(deliveredProduct.getId())) {
             Entity deliveredProductDB = deliveredProduct.getDataDefinition().get(deliveredProduct.getId());
 
             boolean isDeliveredProductChange = checkIfDeliveredProductChange(deliveredProductDB, deliveredProduct);
 
             if (isDeliveredProductChange) {
-                SearchCriteriaBuilder searchCriteriaBuilder = getSearchCriteriaBuilderForOrderedProduct(
-                        getOrderedProductDD().find(), deliveredProductDB);
+                BigDecimal deliveredQuantity = BigDecimal.ZERO;
+                BigDecimal additionalQuantity = BigDecimal.ZERO;
 
-                Optional<Entity> maybeOrderedProduct = Optional.ofNullable(searchCriteriaBuilder.setMaxResults(1).uniqueResult());
-
-                maybeOrderedProduct.ifPresent(orderedProduct -> {
-                    BigDecimal deliveredQuantity = BigDecimal.ZERO;
-                    BigDecimal additionalQuantity = BigDecimal.ZERO;
-
-                    List<Entity> deliveredProductsDB = getSearchCriteriaBuilderForDeliveredProductByGroup(
-                            deliveredProductDD.find(), deliveredProductDB).list().getEntities();
-
-                    if (!deliveredProductsDB.isEmpty()) {
-                        BigDecimal deliveredQuantityRest = deliveredProductsDB.stream()
-                                .map(dp -> dp.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY))
-                                .reduce(BigDecimal.ZERO, BigDecimal::add);
-                        deliveredQuantity = deliveredQuantity.add(deliveredQuantityRest, numberService.getMathContext());
-                        BigDecimal additionalQuantityRest = deliveredProductsDB.stream()
-                                .map(dp -> dp.getDecimalField(DeliveredProductFields.ADDITIONAL_QUANTITY))
-                                .reduce(BigDecimal.ZERO, BigDecimal::add);
-                        additionalQuantity = additionalQuantity.add(additionalQuantityRest, numberService.getMathContext());
-                    }
-
-                    orderedProduct.setField(OrderedProductFields.DELIVERED_QUANTITY,
-                            numberService.setScaleWithDefaultMathContext(deliveredQuantity));
-                    orderedProduct.setField(OrderedProductFields.ADDITIONAL_DELIVERED_QUANTITY,
-                            numberService.setScaleWithDefaultMathContext(additionalQuantity));
-
-                    orderedProduct = orderedProduct.getDataDefinition().save(orderedProduct);
-                });
+                updateDeliveredAndAdditionalQuantityInOrderedProduct(deliveredProductDD, deliveredProduct, deliveredQuantity,
+                        additionalQuantity);
             }
-        }
 
-        SearchCriteriaBuilder searchCriteriaBuilder = getSearchCriteriaBuilderForOrderedProduct(getOrderedProductDD().find(),
-                deliveredProduct);
-
-        Optional<Entity> maybeOrderedProduct = Optional.ofNullable(searchCriteriaBuilder.setMaxResults(1).uniqueResult());
-
-        maybeOrderedProduct.ifPresent(orderedProduct -> {
             BigDecimal deliveredQuantity = BigDecimalUtils
                     .convertNullToZero(deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY));
             BigDecimal additionalQuantity = BigDecimalUtils
                     .convertNullToZero(deliveredProduct.getDecimalField(DeliveredProductFields.ADDITIONAL_QUANTITY));
 
-            List<Entity> deliveredProducts = getSearchCriteriaBuilderForDeliveredProductByGroup(deliveredProductDD.find(),
-                    deliveredProduct).list().getEntities();
-
-            if (!deliveredProducts.isEmpty()) {
-                BigDecimal deliveredQuantityRest = deliveredProducts.stream()
-                        .map(dp -> dp.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY))
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
-                deliveredQuantity = deliveredQuantity.add(deliveredQuantityRest, numberService.getMathContext());
-                BigDecimal additionalQuantityRest = deliveredProducts.stream()
-                        .map(dp -> dp.getDecimalField(DeliveredProductFields.ADDITIONAL_QUANTITY))
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
-                additionalQuantity = additionalQuantity.add(additionalQuantityRest, numberService.getMathContext());
-            }
-
-            orderedProduct.setField(OrderedProductFields.DELIVERED_QUANTITY,
-                    numberService.setScaleWithDefaultMathContext(deliveredQuantity));
-            orderedProduct.setField(OrderedProductFields.ADDITIONAL_DELIVERED_QUANTITY,
-                    numberService.setScaleWithDefaultMathContext(additionalQuantity));
-
-            orderedProduct = orderedProduct.getDataDefinition().save(orderedProduct);
-        });
+            updateDeliveredAndAdditionalQuantityInOrderedProduct(deliveredProductDD, deliveredProduct, deliveredQuantity,
+                    additionalQuantity);
+        }
     }
 
     private boolean checkIfDeliveredProductChange(final Entity deliveredProductDB, final Entity deliveredProduct) {
@@ -297,42 +205,51 @@ public class DeliveredProductHooks {
         return false;
     }
 
-    private void getSearchCriteriaBuilderForDeliveredProductBasic(final SearchCriteriaBuilder searchCriteriaBuilder,
-            final Entity deliveredProduct) {
-        searchCriteriaBuilder
-                .add(SearchRestrictions.belongsTo(DeliveredProductFields.DELIVERY,
-                        deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY)))
-                .add(SearchRestrictions.belongsTo(DeliveredProductFields.PRODUCT,
-                        deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT)));
+    private void updateDeliveredAndAdditionalQuantityInOrderedProduct(final DataDefinition deliveredProductDD,
+            final Entity deliveredProduct, BigDecimal deliveredQuantity, BigDecimal additionalQuantity) {
+        Optional<Entity> maybeOrderedProduct = getOrderedProductForDeliveredProduct(deliveredProduct, true);
 
-        if (Objects.nonNull(deliveredProduct.getBelongsToField(DeliveredProductFields.BATCH))) {
-            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(DeliveredProductFields.BATCH,
-                    deliveredProduct.getBelongsToField(DeliveredProductFields.BATCH)));
+        if (maybeOrderedProduct.isPresent()) {
+            Entity orderedProduct = maybeOrderedProduct.get();
+
+            updateDeliveredAndAdditionalQuantityInOrderedProduct(deliveredProductDD, deliveredProduct, deliveredQuantity,
+                    additionalQuantity, orderedProduct, true);
         } else {
-            searchCriteriaBuilder.add(SearchRestrictions.isNull(DeliveredProductFields.BATCH));
-        }
+            maybeOrderedProduct = getOrderedProductForDeliveredProduct(deliveredProduct, false);
 
-        if (PluginUtils.isEnabled("supplyNegotiations")) {
-            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OFFER, deliveredProduct.getBelongsToField(L_OFFER)));
+            if (maybeOrderedProduct.isPresent()) {
+                Entity orderedProduct = maybeOrderedProduct.get();
+
+                updateDeliveredAndAdditionalQuantityInOrderedProduct(deliveredProductDD, deliveredProduct, deliveredQuantity,
+                        additionalQuantity, orderedProduct, false);
+            }
         }
     }
 
-    private SearchCriteriaBuilder getSearchCriteriaBuilderForDeliveredProductByGroup(
-            final SearchCriteriaBuilder searchCriteriaBuilder, final Entity deliveredProduct) {
-        getSearchCriteriaBuilderForDeliveredProductBasic(searchCriteriaBuilder, deliveredProduct);
+    private void updateDeliveredAndAdditionalQuantityInOrderedProduct(final DataDefinition deliveredProductDD,
+            final Entity deliveredProduct, BigDecimal deliveredQuantity, BigDecimal additionalQuantity, Entity orderedProduct,
+            final boolean checkBatch) {
+        List<Entity> deliveredProducts = getSearchCriteriaBuilderForDeliveredProductOther(deliveredProductDD.find(),
+                deliveredProduct, checkBatch).list().getEntities();
 
-        searchCriteriaBuilder.add(SearchRestrictions.belongsTo(DeliveredProductFields.ADDITIONAL_CODE,
-                deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE)));
+        if (!deliveredProducts.isEmpty()) {
+            BigDecimal deliveredQuantityRest = deliveredProducts.stream()
+                    .map(dp -> dp.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY))
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            deliveredQuantity = deliveredQuantity.add(deliveredQuantityRest, numberService.getMathContext());
 
-        if (PluginUtils.isEnabled("techSubcontrForDeliveries")) {
-            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OPERATION, deliveredProduct.getBelongsToField(L_OPERATION)));
+            BigDecimal additionalQuantityRest = deliveredProducts.stream()
+                    .map(dp -> dp.getDecimalField(DeliveredProductFields.ADDITIONAL_QUANTITY))
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            additionalQuantity = additionalQuantity.add(additionalQuantityRest, numberService.getMathContext());
         }
 
-        if (Objects.nonNull(deliveredProduct.getId())) {
-            searchCriteriaBuilder.add(SearchRestrictions.ne("id", deliveredProduct.getId()));
-        }
+        orderedProduct.setField(OrderedProductFields.DELIVERED_QUANTITY,
+                numberService.setScaleWithDefaultMathContext(deliveredQuantity));
+        orderedProduct.setField(OrderedProductFields.ADDITIONAL_DELIVERED_QUANTITY,
+                numberService.setScaleWithDefaultMathContext(additionalQuantity));
 
-        return searchCriteriaBuilder;
+        orderedProduct = orderedProduct.getDataDefinition().save(orderedProduct);
     }
 
     public void calculateDeliveredProductPricePerUnit(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
@@ -368,20 +285,71 @@ public class DeliveredProductHooks {
 
     private SearchCriteriaBuilder getSearchCriteriaBuilderForDeliveredProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
             final Entity deliveredProduct) {
-        getSearchCriteriaBuilderForDeliveredProductBasic(searchCriteriaBuilder, deliveredProduct);
+        getSearchCriteriaBuilderForDeliveredProductBasic(searchCriteriaBuilder, deliveredProduct, true);
 
         if (PluginUtils.isEnabled("deliveriesToMaterialFlow")) {
-            searchCriteriaBuilder
-                    .add(SearchRestrictions.belongsTo(DeliveredProductFields.PALLET_NUMBER,
-                            deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER)))
-                    .add(SearchRestrictions.belongsTo(DeliveredProductFields.ADDITIONAL_CODE,
-                            deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE)));
+            Entity palletNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
+
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(DeliveredProductFields.PALLET_NUMBER, palletNumber));
 
             if (Objects.nonNull(deliveredProduct.getField(L_EXPIRATION_DATE))) {
                 searchCriteriaBuilder.add(SearchRestrictions.eq(L_EXPIRATION_DATE, deliveredProduct.getField(L_EXPIRATION_DATE)));
             } else {
                 searchCriteriaBuilder.add(SearchRestrictions.isNull(L_EXPIRATION_DATE));
             }
+        }
+
+        return searchCriteriaBuilder;
+    }
+
+    private void getSearchCriteriaBuilderForDeliveredProductBasic(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final Entity deliveredProduct, final boolean checkBatch) {
+        Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
+        Entity supplier = delivery.getBelongsToField(DeliveryFields.SUPPLIER);
+        Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
+        String batchNumber = deliveredProduct.getStringField(DeliveredProductFields.BATCH_NUMBER);
+        Entity batch = deliveredProduct.getBelongsToField(DeliveredProductFields.BATCH);
+        Entity additionalCode = deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
+
+        searchCriteriaBuilder.add(SearchRestrictions.belongsTo(DeliveredProductFields.DELIVERY, delivery))
+                .add(SearchRestrictions.belongsTo(DeliveredProductFields.PRODUCT, product))
+                .add(SearchRestrictions.belongsTo(DeliveredProductFields.ADDITIONAL_CODE, additionalCode));
+
+        if (checkBatch) {
+            if (Objects.nonNull(batchNumber)) {
+                searchCriteriaBuilder.createAlias(DeliveredProductFields.BATCH, DeliveredProductFields.BATCH, JoinType.LEFT)
+                        .add(SearchRestrictions.eq(DeliveredProductFields.BATCH + "." + BatchFields.NUMBER, batchNumber))
+                        .add(SearchRestrictions.belongsTo(DeliveredProductFields.BATCH + "." + BatchFields.PRODUCT, product));
+
+                if (Objects.nonNull(supplier)) {
+                    searchCriteriaBuilder.add(
+                            SearchRestrictions.belongsTo(DeliveredProductFields.BATCH + "." + BatchFields.SUPPLIER, supplier));
+                }
+            } else {
+                if (Objects.nonNull(batch)) {
+                    searchCriteriaBuilder.add(SearchRestrictions.belongsTo(DeliveredProductFields.BATCH, batch));
+                } else {
+                    searchCriteriaBuilder.add(SearchRestrictions.isNull(DeliveredProductFields.BATCH));
+                }
+            }
+        }
+
+        if (PluginUtils.isEnabled("techSubcontrForDeliveries")) {
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OPERATION, deliveredProduct.getBelongsToField(L_OPERATION)));
+        }
+
+        if (PluginUtils.isEnabled("supplyNegotiations")) {
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OFFER, deliveredProduct.getBelongsToField(L_OFFER)));
+        }
+    }
+
+    private SearchCriteriaBuilder getSearchCriteriaBuilderForDeliveredProductOther(
+            final SearchCriteriaBuilder searchCriteriaBuilder, final Entity deliveredProduct, final boolean checkBatch) {
+
+        getSearchCriteriaBuilderForDeliveredProductBasic(searchCriteriaBuilder, deliveredProduct, checkBatch);
+
+        if (Objects.nonNull(deliveredProduct.getId())) {
+            searchCriteriaBuilder.add(SearchRestrictions.ne("id", deliveredProduct.getId()));
         }
 
         return searchCriteriaBuilder;
@@ -414,26 +382,20 @@ public class DeliveredProductHooks {
         BigDecimal deliveredQuantity = BigDecimalUtils
                 .convertNullToZero(deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY));
 
-        SearchCriteriaBuilder searchCriteriaBuilder = getSearchCriteriaBuilderForOrderedProduct(getOrderedProductDD().find(),
-                deliveredProduct);
-
-        Optional<Entity> maybeOrderedProduct = Optional.ofNullable(searchCriteriaBuilder.setMaxResults(1).uniqueResult());
+        Optional<Entity> maybeOrderedProduct = getOrderedProductForDeliveredProduct(deliveredProduct, true);
 
         if (maybeOrderedProduct.isPresent()) {
-            List<Entity> deliveredProducts = getSearchCriteriaBuilderForDeliveredProductByGroup(deliveredProductDD.find(),
-                    deliveredProduct).list().getEntities();
+            deliveredQuantity = getDeliveredQuantity(deliveredProductDD, deliveredProduct, deliveredQuantity, true);
+        } else {
+            maybeOrderedProduct = getOrderedProductForDeliveredProduct(deliveredProduct, false);
 
-            if (!deliveredProducts.isEmpty()) {
-                BigDecimal deliveredQuantityRest = deliveredProducts.stream()
-                        .map(dp -> dp.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY))
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
-                deliveredQuantity = deliveredQuantity.add(deliveredQuantityRest, numberService.getMathContext());
+            if (maybeOrderedProduct.isPresent()) {
+                deliveredQuantity = getDeliveredQuantity(deliveredProductDD, deliveredProduct, deliveredQuantity, false);
             }
         }
 
-        Optional<Entity> orderedProduct = getOrderedProductForDeliveredProduct(deliveredProduct);
-        BigDecimal orderedQuantity = orderedProduct.isPresent()
-                ? orderedProduct.get().getDecimalField(OrderedProductFields.ORDERED_QUANTITY)
+        BigDecimal orderedQuantity = maybeOrderedProduct.isPresent()
+                ? maybeOrderedProduct.get().getDecimalField(OrderedProductFields.ORDERED_QUANTITY)
                 : BigDecimal.ZERO;
 
         if (Objects.nonNull(deliveredQuantity) && deliveredQuantity.compareTo(orderedQuantity) > 0) {
@@ -446,13 +408,63 @@ public class DeliveredProductHooks {
         return true;
     }
 
-    private Optional<Entity> getOrderedProductForDeliveredProduct(final Entity deliveredProduct) {
-        SearchCriteriaBuilder searchCriteriaBuilder = getSearchCriteriaBuilderForOrderedProduct(getOrderedProductDD().find(),
-                deliveredProduct);
+    private BigDecimal getDeliveredQuantity(final DataDefinition deliveredProductDD, final Entity deliveredProduct,
+            BigDecimal deliveredQuantity, final boolean checkBatch) {
+        List<Entity> deliveredProducts = getSearchCriteriaBuilderForDeliveredProductOther(deliveredProductDD.find(),
+                deliveredProduct, checkBatch).list().getEntities();
 
-        Entity orderedProduct = searchCriteriaBuilder.setMaxResults(1).uniqueResult();
+        if (!deliveredProducts.isEmpty()) {
+            BigDecimal deliveredQuantityRest = deliveredProducts.stream()
+                    .map(dp -> dp.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY))
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        return Optional.ofNullable(orderedProduct);
+            deliveredQuantity = deliveredQuantity.add(deliveredQuantityRest, numberService.getMathContext());
+        }
+
+        return deliveredQuantity;
+    }
+
+    private SearchCriteriaBuilder getSearchCriteriaBuilderForOrderedProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final Entity deliveredProduct, final boolean checkBatch) {
+        Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
+        Entity supplier = delivery.getBelongsToField(DeliveryFields.SUPPLIER);
+        Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
+        String batchNumber = deliveredProduct.getStringField(OrderedProductFields.BATCH_NUMBER);
+        Entity batch = deliveredProduct.getBelongsToField(DeliveredProductFields.BATCH);
+        Entity additionalCode = deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
+
+        searchCriteriaBuilder.add(SearchRestrictions.belongsTo(OrderedProductFields.DELIVERY, delivery))
+                .add(SearchRestrictions.belongsTo(OrderedProductFields.PRODUCT, product))
+                .add(SearchRestrictions.belongsTo(OrderedProductFields.ADDITIONAL_CODE, additionalCode));
+
+        if (checkBatch) {
+            if (Objects.nonNull(batchNumber)) {
+                searchCriteriaBuilder.createAlias(OrderedProductFields.BATCH, OrderedProductFields.BATCH, JoinType.LEFT)
+                        .add(SearchRestrictions.eq(OrderedProductFields.BATCH + "." + BatchFields.NUMBER, batchNumber))
+                        .add(SearchRestrictions.belongsTo(OrderedProductFields.BATCH + "." + BatchFields.PRODUCT, product));
+
+                if (Objects.nonNull(supplier)) {
+                    searchCriteriaBuilder
+                            .add(SearchRestrictions.belongsTo(OrderedProductFields.BATCH + "." + BatchFields.SUPPLIER, supplier));
+                }
+            } else {
+                if (Objects.nonNull(batch)) {
+                    searchCriteriaBuilder.add(SearchRestrictions.belongsTo(OrderedProductFields.BATCH, batch));
+                } else {
+                    searchCriteriaBuilder.add(SearchRestrictions.isNull(OrderedProductFields.BATCH));
+                }
+            }
+        }
+
+        if (PluginUtils.isEnabled("supplyNegotiations")) {
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OFFER, deliveredProduct.getBelongsToField(L_OFFER)));
+        }
+
+        if (PluginUtils.isEnabled("techSubcontrForDeliveries")) {
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OPERATION, deliveredProduct.getBelongsToField(L_OPERATION)));
+        }
+
+        return searchCriteriaBuilder;
     }
 
     private boolean isBiggerDeliveredQuantityAllowed() {
