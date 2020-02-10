@@ -381,11 +381,21 @@ public class DeliveredProductHooks {
 
         BigDecimal deliveredQuantity = BigDecimalUtils
                 .convertNullToZero(deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY));
+        String batchNumber = deliveredProduct.getStringField(DeliveredProductFields.BATCH_NUMBER);
+        Entity batch = deliveredProduct.getBelongsToField(DeliveredProductFields.BATCH);
 
         Optional<Entity> maybeOrderedProduct = getOrderedProductForDeliveredProduct(deliveredProduct, true);
 
-        if (maybeOrderedProduct.isPresent()) {
-            deliveredQuantity = getDeliveredQuantity(deliveredProductDD, deliveredProduct, deliveredQuantity, true);
+        if (Objects.nonNull(batchNumber) || Objects.nonNull(batch)) {
+            if (maybeOrderedProduct.isPresent()) {
+                deliveredQuantity = getDeliveredQuantity(deliveredProductDD, deliveredProduct, deliveredQuantity, true);
+            } else {
+                maybeOrderedProduct = getOrderedProductForDeliveredProduct(deliveredProduct, false);
+
+                if (maybeOrderedProduct.isPresent()) {
+                    deliveredQuantity = getDeliveredQuantity(deliveredProductDD, deliveredProduct, deliveredQuantity, false);
+                }
+            }
         } else {
             maybeOrderedProduct = getOrderedProductForDeliveredProduct(deliveredProduct, false);
 
