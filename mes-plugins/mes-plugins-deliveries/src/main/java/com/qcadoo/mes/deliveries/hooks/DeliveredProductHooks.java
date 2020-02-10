@@ -156,15 +156,15 @@ public class DeliveredProductHooks {
                 updateDeliveredAndAdditionalQuantityInOrderedProduct(deliveredProductDD, deliveredProduct, deliveredQuantity,
                         additionalQuantity);
             }
-
-            BigDecimal deliveredQuantity = BigDecimalUtils
-                    .convertNullToZero(deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY));
-            BigDecimal additionalQuantity = BigDecimalUtils
-                    .convertNullToZero(deliveredProduct.getDecimalField(DeliveredProductFields.ADDITIONAL_QUANTITY));
-
-            updateDeliveredAndAdditionalQuantityInOrderedProduct(deliveredProductDD, deliveredProduct, deliveredQuantity,
-                    additionalQuantity);
         }
+
+        BigDecimal deliveredQuantity = BigDecimalUtils
+                .convertNullToZero(deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY));
+        BigDecimal additionalQuantity = BigDecimalUtils
+                .convertNullToZero(deliveredProduct.getDecimalField(DeliveredProductFields.ADDITIONAL_QUANTITY));
+
+        updateDeliveredAndAdditionalQuantityInOrderedProduct(deliveredProductDD, deliveredProduct, deliveredQuantity,
+                additionalQuantity);
     }
 
     private boolean checkIfDeliveredProductChange(final Entity deliveredProductDB, final Entity deliveredProduct) {
