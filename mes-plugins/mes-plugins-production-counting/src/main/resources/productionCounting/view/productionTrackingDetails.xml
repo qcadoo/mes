@@ -698,7 +698,7 @@
                 </layoutElement>
                 <layoutElement column="1" row="2">
                     <component type="lookup" name="batch" reference="batch"
-                               field="#{form}.batch">
+                               field="#{form}.batch" hasDescription="true">
                         <option type="column" name="supplierName" fields="supplier"
                                 expression="#supplier?.get('name')"/>
 
