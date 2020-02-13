@@ -88,9 +88,9 @@
 		</model:model-hook>
 
 
-		<menu:menu-item name="wageGroups" category="basic"
+		<menu:menu-item name="wageGroups" category="staff"
 			view="wageGroupsList" defaultAuthorizationRole="ROLE_STAFF_WAGES"/>
-		<menu:menu-item name="wages" category="basic" view="wagesList" defaultAuthorizationRole="ROLE_STAFF_WAGES"/>
+		<menu:menu-item name="wages" category="staff" view="wagesList" defaultAuthorizationRole="ROLE_STAFF_WAGES"/>
 
 		<view:view resource="view/wageGroupsList.xml" />
 		<view:view resource="view/wageGroupsDetails.xml" />
