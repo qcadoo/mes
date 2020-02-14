@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.orders;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OperationalTaskType;
@@ -37,7 +32,12 @@ import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class OperationalTasksServiceImpl implements OperationalTasksService {
@@ -78,4 +78,20 @@ public class OperationalTasksServiceImpl implements OperationalTasksService {
                 .setMaxResults(1).uniqueResult();
     }
 
+    @Override
+    public List<Entity> getChildren(Entity technologyOperationComponent, Entity order) {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK).find()
+                .createAlias(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT, "toc", JoinType.INNER)
+                .add(SearchRestrictions.belongsTo("toc." + TechnologyOperationComponentFields.PARENT,
+                        technologyOperationComponent))
+                .add(SearchRestrictions.belongsTo(OperationalTaskFields.ORDER, order)).list().getEntities();
+    }
+
+    @Override
+    public Entity getParent(Entity technologyOperationComponent, Entity order) {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK).find()
+                .add(SearchRestrictions.belongsTo(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT,
+                        technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.PARENT)))
+                .add(SearchRestrictions.belongsTo(OperationalTaskFields.ORDER, order)).uniqueResult();
+    }
 }

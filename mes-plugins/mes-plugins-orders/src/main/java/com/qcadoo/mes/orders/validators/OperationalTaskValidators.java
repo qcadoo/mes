@@ -23,17 +23,6 @@
  */
 package com.qcadoo.mes.orders.validators;
 
-import static com.qcadoo.model.api.search.SearchOrders.asc;
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.rowCount;
-
-import java.util.Date;
-import java.util.Objects;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.orders.OperationalTasksService;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
@@ -46,6 +35,17 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+
+import static com.qcadoo.model.api.search.SearchOrders.asc;
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.rowCount;
 
 @Service
 public class OperationalTaskValidators {
@@ -65,6 +65,7 @@ public class OperationalTaskValidators {
     public boolean onValidate(final DataDefinition operationalTaskDD, final Entity operationalTask) {
         boolean isValid = hasName(operationalTaskDD, operationalTask);
         isValid = datesAreInCorrectOrder(operationalTaskDD, operationalTask) && isValid;
+        isValid = datesAreCorrect(operationalTaskDD, operationalTask) && isValid;
         isValid = checkIfOrderHasTechnology(operationalTaskDD, operationalTask) && isValid;
         isValid = checkIfFieldSet(operationalTaskDD, operationalTask) && isValid;
         isValid = checkIfAlreadyExists(operationalTaskDD, operationalTask) && isValid;
@@ -133,6 +134,43 @@ public class OperationalTaskValidators {
             return false;
         }
 
+        return true;
+    }
+
+    private boolean datesAreCorrect(DataDefinition operationalTaskDD, Entity operationalTask) {
+        Entity technologyOperationComponent = operationalTask
+                .getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
+        if (technologyOperationComponent != null) {
+            Date startDate = operationalTask.getDateField(OperationalTaskFields.START_DATE);
+            Date finishDate = operationalTask.getDateField(OperationalTaskFields.FINISH_DATE);
+            Entity order = operationalTask.getBelongsToField(OperationalTaskFields.ORDER);
+            Entity parent = operationalTasksService.getParent(technologyOperationComponent, order);
+            if (parent != null) {
+                if (parent.getDateField(OperationalTaskFields.START_DATE).before(startDate)) {
+                    operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.START_DATE),
+                            "orders.operationalTask.error.inappropriateStartDateNext");
+                    return false;
+                }
+                if (parent.getDateField(OperationalTaskFields.FINISH_DATE).before(finishDate)) {
+                    operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.FINISH_DATE),
+                            "orders.operationalTask.error.inappropriateFinishDateNext");
+                    return false;
+                }
+            }
+            List<Entity> children = operationalTasksService.getChildren(technologyOperationComponent, order);
+            for (Entity child : children) {
+                if (child.getDateField(OperationalTaskFields.START_DATE).after(startDate)) {
+                    operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.START_DATE),
+                            "orders.operationalTask.error.inappropriateStartDatePrevious");
+                    return false;
+                }
+                if (child.getDateField(OperationalTaskFields.FINISH_DATE).after(finishDate)) {
+                    operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.FINISH_DATE),
+                            "orders.operationalTask.error.inappropriateFinishDatePrevious");
+                    return false;
+                }
+            }
+        }
         return true;
     }
 
