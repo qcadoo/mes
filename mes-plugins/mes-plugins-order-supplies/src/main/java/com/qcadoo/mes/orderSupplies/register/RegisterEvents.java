@@ -23,8 +23,18 @@
  */
 package com.qcadoo.mes.orderSupplies.register;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
@@ -38,6 +48,7 @@ import com.qcadoo.mes.orders.hooks.OrderHooks;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.constants.ProductToProductGroupFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
@@ -45,14 +56,6 @@ import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 public class RegisterEvents {
@@ -363,7 +366,20 @@ public class RegisterEvents {
 
         List<Entity> entries = Lists.newArrayList();
 
-        List<Long> productIds = opics.stream().map(en -> en.getLongField("productId")).collect(Collectors.toList());
+        List<Long> productIds = new ArrayList<>();
+        for (Entity opic : opics) {
+            Long productId = opic.getLongField("productId");
+            if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(opic.getStringField("productEntityType"))) {
+                Entity productToProductGroupTechnology = registerService
+                        .getProductToProductGroupTechnology(order.getBelongsToField(OrderFields.PRODUCT), productId);
+                if (productToProductGroupTechnology != null) {
+                    Entity orderProduct = productToProductGroupTechnology
+                            .getBelongsToField(ProductToProductGroupFields.ORDER_PRODUCT);
+                    productId = orderProduct.getId();
+                }
+            }
+            productIds.add(productId);
+        }
         List<Long> intermediateProducts = registerService.getIntermediateProducts(productIds);
         for (Entity opic : opics) {
             BigDecimal quantity = operationProductComponentWithQuantityContainerIn.get(opic.getBelongsToField("opic"));
