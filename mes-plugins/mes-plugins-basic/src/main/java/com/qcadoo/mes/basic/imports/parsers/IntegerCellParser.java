@@ -41,7 +41,7 @@ public class IntegerCellParser implements CellParser {
 
     private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM = "qcadooView.validate.field.error.custom";
 
-    private static final String L_INTEGER_PATTERN = "^-?\\d+(\\.\\d+)?$";
+    private static final String L_INTEGER_PATTERN = "^-?\\d+$";
 
     @Override
     public void parse(final String cellValue, final String dependentCellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {

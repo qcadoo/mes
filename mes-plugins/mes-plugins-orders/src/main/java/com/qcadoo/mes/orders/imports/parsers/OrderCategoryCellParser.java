@@ -23,16 +23,21 @@
  */
 package com.qcadoo.mes.orders.imports.parsers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.qcadoo.mes.basic.imports.helpers.CellParser;
 import com.qcadoo.mes.basic.imports.parsers.DictionaryCellParser;
+import com.qcadoo.model.api.DataDefinitionService;
 
 @Component
 public class OrderCategoryCellParser {
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     public CellParser orderCategory() {
-        return new DictionaryCellParser("orderCategory");
+        return new DictionaryCellParser(dataDefinitionService, "orderCategory");
     }
 
 }
