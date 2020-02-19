@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo MES
+ * Project: Qcadoo Framework
  * Version: 1.4
  *
  * This file is part of Qcadoo.
@@ -23,26 +23,23 @@
  */
 package com.qcadoo.mes.productionPerShift.constants;
 
-public final class ProductionPerShiftConstants {
+public final class BalanceContextFields {
 
-    public static final String MODEL_PPS_REPORT = "ppsReport";
-
-    private ProductionPerShiftConstants() {
-
+    private BalanceContextFields() {
     }
 
-    public static final String PLUGIN_IDENTIFIER = "productionPerShift";
+    public static final String FROM_DATE = "fromDate";
 
-    public static final String MODEL_PRODUCTION_PER_SHIFT = "productionPerShift";
+    public static final String TO_DATE = "toDate";
 
-    public static final String MODEL_PROGRESS_FOR_DAY = "progressForDay";
+    public static final String PLANNED_QUANTITY_REQUIRED = "plannedQuantityRequired";
 
-    public static final String MODEL_DAILY_PROGRESS = "dailyProgress";
+    public static final String DEVIATION_REQUIRED = "deviationRequired";
 
-    public static final String MODEL_REASON_TYPE_OF_CORRECTION_PLAN = "reasonTypeOfCorrectionPlan";
+    public static final String DEVIATION_THRESHOLD = "deviationThreshold";
 
-    public static final String MODEL_BALANCE_CONTEXT = "balanceContext";
+    public static final String VIEW_IS_INITIALIZED = "viewIsInitialized";
 
-    public static final String MODEL_BALANCE = "balance";
+    public static final String BALANCES = "balances";
 
 }

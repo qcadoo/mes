@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo MES
+ * Project: Qcadoo Framework
  * Version: 1.4
  *
  * This file is part of Qcadoo.
@@ -21,28 +21,15 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionPerShift.constants;
+package com.qcadoo.mes.productionPerShift.dataProvider;
 
-public final class ProductionPerShiftConstants {
+import java.util.Collection;
 
-    public static final String MODEL_PPS_REPORT = "ppsReport";
+import com.qcadoo.mes.productionPerShift.domain.ProductionProgress;
+import org.joda.time.Interval;
 
-    private ProductionPerShiftConstants() {
+public interface ProductionProgressDataProvider {
 
-    }
-
-    public static final String PLUGIN_IDENTIFIER = "productionPerShift";
-
-    public static final String MODEL_PRODUCTION_PER_SHIFT = "productionPerShift";
-
-    public static final String MODEL_PROGRESS_FOR_DAY = "progressForDay";
-
-    public static final String MODEL_DAILY_PROGRESS = "dailyProgress";
-
-    public static final String MODEL_REASON_TYPE_OF_CORRECTION_PLAN = "reasonTypeOfCorrectionPlan";
-
-    public static final String MODEL_BALANCE_CONTEXT = "balanceContext";
-
-    public static final String MODEL_BALANCE = "balance";
+    Collection<ProductionProgress> find(final Interval searchInterval);
 
 }

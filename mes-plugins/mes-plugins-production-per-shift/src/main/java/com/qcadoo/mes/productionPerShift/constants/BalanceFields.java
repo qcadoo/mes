@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo MES
+ * Project: Qcadoo Framework
  * Version: 1.4
  *
  * This file is part of Qcadoo.
@@ -23,26 +23,31 @@
  */
 package com.qcadoo.mes.productionPerShift.constants;
 
-public final class ProductionPerShiftConstants {
+public final class BalanceFields {
 
-    public static final String MODEL_PPS_REPORT = "ppsReport";
-
-    private ProductionPerShiftConstants() {
-
+    private BalanceFields() {
     }
 
-    public static final String PLUGIN_IDENTIFIER = "productionPerShift";
+    public static final String CONTEXT = "context";
 
-    public static final String MODEL_PRODUCTION_PER_SHIFT = "productionPerShift";
+    public static final String DAY = "day";
 
-    public static final String MODEL_PROGRESS_FOR_DAY = "progressForDay";
+    public static final String SHIFT_NAME = "shiftName";
 
-    public static final String MODEL_DAILY_PROGRESS = "dailyProgress";
+    public static final String ORDER_NUMBER = "orderNumber";
 
-    public static final String MODEL_REASON_TYPE_OF_CORRECTION_PLAN = "reasonTypeOfCorrectionPlan";
+    public static final String OPERATION_NUMBER = "operationNumber";
 
-    public static final String MODEL_BALANCE_CONTEXT = "balanceContext";
+    public static final String PRODUCT_NUMBER = "productNumber";
 
-    public static final String MODEL_BALANCE = "balance";
+    public static final String PRODUCT_UNIT = "productUnit";
+
+    public static final String REGISTERED_QUANTITY = "registeredQuantity";
+
+    public static final String PLANNED_QUANTITY = "plannedQuantity";
+
+    public static final String DIFFERENCE = "difference";
+
+    public static final String PERCENTAGE_DEVIATION = "percentageDeviation";
 
 }
