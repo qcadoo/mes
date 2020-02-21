@@ -153,7 +153,7 @@ public class RegisterService {
         registerEntry.setField(CoverageRegisterFields.PRODUCTION_COUNTING_QUANTITIES, quantity);
         registerEntry.setField(CoverageRegisterFields.EVENT_TYPE, eventType);
         registerEntry.setField(CoverageRegisterFields.TECHNOLOGY_OPERATION_COMPONENT, opic.getLongField("tocId"));
-        if (intermediateProducts.contains( opic.getLongField("productId"))) {
+        if (intermediateProducts.contains(productId)) {
             registerEntry.setField(CoverageRegisterFields.PRODUCT_TYPE, "02intermediate");
         } else {
             registerEntry.setField(CoverageRegisterFields.PRODUCT_TYPE, "01component");
@@ -161,7 +161,7 @@ public class RegisterService {
         entries.add(registerEntry);
     }
 
-    private Entity getProductToProductGroupTechnology(Entity orderProduct, Long productId) {
+    public Entity getProductToProductGroupTechnology(Entity orderProduct, Long productId) {
         return dataDefinitionService
                 .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_PRODUCT_TO_PRODUCT_GROUP_TECHNOLOGY)
                 .find().add(SearchRestrictions.belongsTo(ProductToProductGroupFields.FINAL_PRODUCT, orderProduct))

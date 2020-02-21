@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.orders;
 
-import java.util.List;
-
 import com.qcadoo.model.api.Entity;
+
+import java.util.List;
 
 public interface OperationalTasksService {
 
@@ -68,4 +68,8 @@ public interface OperationalTasksService {
     boolean isOperationalTaskTypeExecutionOperationInOrder(final String type);
 
     Entity findOperationalTasks(Entity order, Entity toc);
+
+    List<Entity> getChildren(Entity technologyOperationComponent, Entity order);
+
+    Entity getParent(Entity technologyOperationComponent, Entity order);
 }

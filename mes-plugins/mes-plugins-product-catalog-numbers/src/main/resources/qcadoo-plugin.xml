@@ -64,7 +64,7 @@
 
 		<model:model model="productCatalogNumbers" resource="model/productCatalogNumbers.xml" />
 
-		<menu:menu-item name="productCatalogNumbers" category="basic"
+		<menu:menu-item name="productCatalogNumbers" category="products"
 			view="productCatalogNumbersList" defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY"/>
 
 		<view:view resource="view/productCatalogNumbersList.xml" />

@@ -23,23 +23,28 @@
  */
 package com.qcadoo.mes.basic.imports.parsers;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.qcadoo.mes.basic.imports.helpers.CellParser;
+import com.qcadoo.model.api.DataDefinitionService;
 
 @Component
 public class DictionaryCellParsers {
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     public CellParser productCategory() {
-        return new DictionaryCellParser("categories");
+        return new DictionaryCellParser(dataDefinitionService, "categories");
     }
 
     public CellParser units() {
-        return new DictionaryCellParser("units");
+        return new DictionaryCellParser(dataDefinitionService, "units");
     }
 
     public CellParser typeOfPallet() {
-        return new DictionaryCellParser("typeOfPallet");
+        return new DictionaryCellParser(dataDefinitionService, "typeOfPallet");
     }
 
 }

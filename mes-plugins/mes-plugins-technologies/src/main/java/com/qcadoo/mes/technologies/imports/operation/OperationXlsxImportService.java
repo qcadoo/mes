@@ -112,7 +112,7 @@ public class OperationXlsxImportService extends XlsxImportService {
                 Entity workstationProductionLine = workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE);
 
                 if (!workstationProductionLine.getId().equals(productionLine.getId())) {
-                    operation.addError(operationDD.getField(OperationFields.PRODUCTION_LINE),
+                    operation.addError(operationDD.getField(OperationFields.WORKSTATION),
                             L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM);
                 }
             }
