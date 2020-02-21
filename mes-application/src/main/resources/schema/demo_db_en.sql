@@ -20141,81 +20141,6 @@ ALTER SEQUENCE productflowthrudivision_warehouseissuestatechange_id_seq OWNED BY
 
 
 --
--- Name: productionbalancepershift_balance; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE productionbalancepershift_balance (
-    id bigint NOT NULL,
-    context_id bigint,
-    day date,
-    shiftname character varying(255),
-    ordernumber character varying(255),
-    operationnumber character varying(255),
-    productnumber character varying(255),
-    productunit character varying(255),
-    registeredquantity numeric(14,5),
-    plannedquantity numeric(12,5),
-    difference numeric(14,5),
-    percentagedeviation numeric(16,5),
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: productionbalancepershift_balance_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE productionbalancepershift_balance_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: productionbalancepershift_balance_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE productionbalancepershift_balance_id_seq OWNED BY productionbalancepershift_balance.id;
-
-
---
--- Name: productionbalancepershift_balancecontext; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE productionbalancepershift_balancecontext (
-    id bigint NOT NULL,
-    fromdate date,
-    todate date,
-    viewisinitialized boolean,
-    plannedquantityrequired boolean,
-    deviationrequired boolean,
-    deviationthreshold numeric(16,5),
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: productionbalancepershift_balancecontext_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE productionbalancepershift_balancecontext_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: productionbalancepershift_balancecontext_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE productionbalancepershift_balancecontext_id_seq OWNED BY productionbalancepershift_balancecontext.id;
-
-
---
 -- Name: productioncounting_anomaly; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -21798,6 +21723,81 @@ ALTER SEQUENCE productionlines_workstationtypecomponent_id_seq OWNED BY producti
 
 
 --
+-- Name: productionpershift_balance; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE productionpershift_balance (
+    id bigint NOT NULL,
+    context_id bigint,
+    day date,
+    shiftname character varying(255),
+    ordernumber character varying(255),
+    operationnumber character varying(255),
+    productnumber character varying(255),
+    productunit character varying(255),
+    registeredquantity numeric(14,5),
+    plannedquantity numeric(12,5),
+    difference numeric(14,5),
+    percentagedeviation numeric(16,5),
+    entityversion bigint DEFAULT 0
+);
+
+
+--
+-- Name: productionpershift_balance_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE productionpershift_balance_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: productionpershift_balance_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE productionpershift_balance_id_seq OWNED BY productionpershift_balance.id;
+
+
+--
+-- Name: productionpershift_balancecontext; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE productionpershift_balancecontext (
+    id bigint NOT NULL,
+    fromdate date,
+    todate date,
+    viewisinitialized boolean,
+    plannedquantityrequired boolean,
+    deviationrequired boolean,
+    deviationthreshold numeric(16,5),
+    entityversion bigint DEFAULT 0
+);
+
+
+--
+-- Name: productionpershift_balancecontext_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE productionpershift_balancecontext_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: productionpershift_balancecontext_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE productionpershift_balancecontext_id_seq OWNED BY productionpershift_balancecontext.id;
+
+
+--
 -- Name: productionpershift_dailyprogress; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -22543,8 +22543,10 @@ CREATE VIEW repairs_repairorderdto AS
     product.name AS productname,
     product.unit AS productunit,
     (productiontrackingdto.id)::integer AS productiontracking_id,
-    productiontrackingdto.number AS productiontrackingnumber
-   FROM (((((repairs_repairorder repairorder
+    productiontrackingdto.number AS productiontrackingnumber,
+    ft.name AS faulttype
+   FROM ((((((repairs_repairorder repairorder
+     JOIN basic_faulttype ft ON ((ft.id = repairorder.faulttype_id)))
      LEFT JOIN orders_orderdto orderdto ON ((orderdto.id = repairorder.order_id)))
      LEFT JOIN basic_division division ON ((division.id = repairorder.division_id)))
      LEFT JOIN basic_shift shift ON ((shift.id = repairorder.shift_id)))
@@ -27779,20 +27781,6 @@ ALTER TABLE ONLY productflowthrudivision_warehouseissuestatechange ALTER COLUMN 
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY productionbalancepershift_balance ALTER COLUMN id SET DEFAULT nextval('productionbalancepershift_balance_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY productionbalancepershift_balancecontext ALTER COLUMN id SET DEFAULT nextval('productionbalancepershift_balancecontext_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY productioncounting_anomaly ALTER COLUMN id SET DEFAULT nextval('productioncounting_anomaly_id_seq'::regclass);
 
 
@@ -27920,6 +27908,20 @@ ALTER TABLE ONLY productionlines_productionline ALTER COLUMN id SET DEFAULT next
 --
 
 ALTER TABLE ONLY productionlines_workstationtypecomponent ALTER COLUMN id SET DEFAULT nextval('productionlines_workstationtypecomponent_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productionpershift_balance ALTER COLUMN id SET DEFAULT nextval('productionpershift_balance_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productionpershift_balancecontext ALTER COLUMN id SET DEFAULT nextval('productionpershift_balancecontext_id_seq'::regclass);
 
 
 --
@@ -35374,36 +35376,6 @@ SELECT pg_catalog.setval('productflowthrudivision_warehouseissuestatechange_id_s
 
 
 --
--- Data for Name: productionbalancepershift_balance; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY productionbalancepershift_balance (id, context_id, day, shiftname, ordernumber, operationnumber, productnumber, productunit, registeredquantity, plannedquantity, difference, percentagedeviation, entityversion) FROM stdin;
-\.
-
-
---
--- Name: productionbalancepershift_balance_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('productionbalancepershift_balance_id_seq', 1, false);
-
-
---
--- Data for Name: productionbalancepershift_balancecontext; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY productionbalancepershift_balancecontext (id, fromdate, todate, viewisinitialized, plannedquantityrequired, deviationrequired, deviationthreshold, entityversion) FROM stdin;
-\.
-
-
---
--- Name: productionbalancepershift_balancecontext_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('productionbalancepershift_balancecontext_id_seq', 1, false);
-
-
---
 -- Data for Name: productioncounting_anomaly; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -35809,6 +35781,36 @@ SELECT pg_catalog.setval('productionlines_workstationtypecomponent_id_seq', 1, f
 
 
 --
+-- Data for Name: productionpershift_balance; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY productionpershift_balance (id, context_id, day, shiftname, ordernumber, operationnumber, productnumber, productunit, registeredquantity, plannedquantity, difference, percentagedeviation, entityversion) FROM stdin;
+\.
+
+
+--
+-- Name: productionpershift_balance_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('productionpershift_balance_id_seq', 1, false);
+
+
+--
+-- Data for Name: productionpershift_balancecontext; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY productionpershift_balancecontext (id, fromdate, todate, viewisinitialized, plannedquantityrequired, deviationrequired, deviationthreshold, entityversion) FROM stdin;
+\.
+
+
+--
+-- Name: productionpershift_balancecontext_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('productionpershift_balancecontext_id_seq', 1, false);
+
+
+--
 -- Data for Name: productionpershift_dailyprogress; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -36179,7 +36181,6 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 121	advancedGenealogy	1.5.0	ENABLED	f	0	genealogy	AGPL
 131	deliveriesMinState	1.5.0	ENABLED	f	0	deliveries	AGPL
 134	techSubcontrForNegot	1.5.0	ENABLED	f	0	supplies	AGPL
-140	productionBalancePerShift	1.5.0	ENABLED	f	0	other	AGPL
 141	productFlowThruDivision	1.5.0	ENABLED	f	0	other	AGPL
 142	materialRequirementCoverageForOrder	1.5.0	ENABLED	f	0	other	AGPL
 144	negotForOrderSuppliesWithTechSubcontr	1.5.0	ENABLED	f	0	supplies	AGPL
@@ -36422,6 +36423,9 @@ COPY qcadooview_category (id, pluginidentifier, name, succession, authrole, enti
 15	productionCounting	analysis	15	ROLE_ANALYSIS_VIEWER	0
 16	arch	archives	16	\N	0
 7	orders	orders	7	\N	0
+17	basic	calendars	17	ROLE_SHIFTS	0
+18	basic	staff	18	\N	0
+19	basic	products	19	\N	0
 \.
 
 
@@ -36429,7 +36433,7 @@ COPY qcadooview_category (id, pluginidentifier, name, succession, authrole, enti
 -- Name: qcadooview_category_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_category_id_seq', 16, true);
+SELECT pg_catalog.setval('qcadooview_category_id_seq', 19, true);
 
 
 --
@@ -36456,12 +36460,6 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 17	basic	faultTypes	t	4	17	1	ROLE_FAULT_TYPES	0
 18	basic	palletNumberHelpers	t	4	18	2	ROLE_PALLET_NUMBERS	0
 19	basic	palletNumbers	t	4	19	3	ROLE_PALLET_NUMBERS	0
-20	basic	assortments	t	4	20	4	ROLE_PRODUCTS	0
-21	basic	productsFamilies	t	4	21	5	ROLE_PRODUCT_FAMILIES	0
-22	basic	products	t	4	22	6	ROLE_PRODUCTS	0
-23	basic	shifts	t	4	23	7	ROLE_SHIFTS	0
-24	basic	crews	t	4	24	8	ROLE_CREW	0
-25	basic	staff	t	4	25	9	ROLE_STAFF_WAGES	0
 26	basic	countries	t	1	26	12	ROLE_COUNTRIES	0
 27	basic	companies	t	4	27	10	ROLE_COMPANY	0
 28	basic	conversion	t	4	28	11	ROLE_BASE_FUNCTIONALITY	0
@@ -36469,9 +36467,6 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 30	basic	dictionariesInBasic	t	4	30	12	ROLE_DICTIONARY_VIEW	0
 31	basic	home	t	2	31	1	\N	0
 32	productionLines	productionLines	t	3	32	6	ROLE_COMPANY_STRUCTURE	0
-33	wageGroups	wages	t	4	33	13	ROLE_STAFF_WAGES	0
-34	wageGroups	wageGroups	t	4	34	14	ROLE_STAFF_WAGES	0
-35	productCatalogNumbers	productCatalogNumbers	t	4	35	15	ROLE_BASE_FUNCTIONALITY	0
 36	technologies	technologyGroups	t	5	36	1	ROLE_TECHNOLOGIES	0
 37	technologies	operationGroups	t	5	37	2	ROLE_TECHNOLOGIES	0
 38	technologies	operations	t	5	38	3	ROLE_TECHNOLOGIES	0
@@ -36504,10 +36499,8 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 70	materialFlowResources	storageLocations	t	6	70	8	ROLE_MATERIAL_FLOW	0
 71	materialFlowResources	documentPositions	t	6	71	9	ROLE_DOCUMENT_POSITIONS	0
 72	materialFlowResources	warehouseStock	t	6	72	10	ROLE_WAREHOUSE_STATES	0
-104	advancedGenealogyForOrders	trackingRecords	t	8	104	7	ROLE_PRODUCTION_COUNTING	0
 105	advancedGenealogyForOrders	trackingRecordsForOrders	t	11	104	5	ROLE_BATCHES	0
 106	deviationCausesReporting	deviationsReport	t	7	105	12	ROLE_PLANNING	0
-107	productionBalancePerShift	balancePerShift	t	8	106	8	\N	0
 73	materialFlowResources	documents	t	6	73	11	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
 74	materialFlowResources	resourceCorrections	t	6	74	12	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
 75	materialFlowResources	resources	t	6	75	13	ROLE_MATERIAL_FLOW	0
@@ -36561,7 +36554,6 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 129	productFlowThruDivision	issueList	t	9	128	12	ROLE_REQUIREMENTS	0
 130	materialFlowResources	stocktaking	t	6	129	19	ROLE_MATERIAL_FLOW	0
 131	materialFlowResources	warehouseStockReports	t	6	130	20	ROLE_MATERIAL_FLOW	0
-132	basic	exceptionsForLineList	t	4	131	20	ROLE_SHIFTS	0
 133	qcadooView	attachmentViewer	f	1	132	14	\N	0
 134	basic	attachmentsList	t	4	133	21	ROLE_BASIC	0
 135	goodFood	extrusionMixesList	t	\N	134	1	ROLE_TERMINAL_EXTRUSION_USER	0
@@ -36577,18 +36569,29 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 145	arch	archDocumentsList	t	16	144	6	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
 146	integrationBarTender	printersList	t	1	145	15	ROLE_PRINTERS	0
 147	integrationBarTender	printedCartonLabelsList	t	8	146	22	ROLE_TERMINAL_CARTON_LABELS	0
-148	basic	skillsList	t	4	147	23	ROLE_SKILLS	0
 149	orders	schedulesList	t	7	148	18	ROLE_PLANNING	0
 46	orders	operationalTasks	t	7	46	1	ROLE_PLANNING	0
 150	basic	attributesList	t	4	149	24	ROLE_PRODUCTS	0
 96	productionCounting	productionTracking	t	8	96	6	ROLE_PRODUCTION_TRACKING_REGISTRATION	0
-151	basic	productsAttributes	t	4	150	25	ROLE_PRODUCTS	0
 152	materialFlowResources	resourcesAttributes	t	6	151	21	ROLE_MATERIAL_FLOW	0
 153	materialFlowResources	documentPositionsAttributes	t	6	152	22	ROLE_DOCUMENT_POSITIONS	0
 154	scheduleGantt	operationalTasksGantt	t	7	153	19	ROLE_PLANNING	0
 155	technologies	productsToProductGroupTechnology	t	5	154	7	ROLE_TECHNOLOGIES	0
 156	basic	numberPatternsList	t	1	155	16	ROLE_NUMBER_PATTERN	0
 157	stoppage	stoppageReasonsList	t	4	156	26	ROLE_PRODUCTION_COUNTING	0
+23	basic	shifts	t	17	23	7	ROLE_SHIFTS	0
+132	basic	exceptionsForLineList	t	17	131	20	ROLE_SHIFTS	0
+22	basic	products	t	19	22	6	ROLE_PRODUCTS	0
+21	basic	productsFamilies	t	19	21	5	ROLE_PRODUCT_FAMILIES	0
+20	basic	assortments	t	19	20	4	ROLE_PRODUCTS	0
+151	basic	productsAttributes	t	19	150	25	ROLE_PRODUCTS	0
+35	productCatalogNumbers	productCatalogNumbers	t	19	35	15	ROLE_BASE_FUNCTIONALITY	0
+25	basic	staff	t	18	25	9	ROLE_STAFF_WAGES	0
+24	basic	crews	t	18	24	8	ROLE_CREW	0
+148	basic	skillsList	t	18	147	23	ROLE_SKILLS	0
+34	wageGroups	wageGroups	t	18	34	14	ROLE_STAFF_WAGES	0
+33	wageGroups	wages	t	18	33	13	ROLE_STAFF_WAGES	0
+107	productionPerShift	balancePerShift	t	8	106	8	\N	0
 \.
 
 
@@ -36704,7 +36707,6 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 103	cmmsScheduler	cmmsScheduler	cmmsScheduler	\N	0
 104	advancedGenealogyForOrders	trackingRecordsForOrdersList	trackingRecordsForOrdersList	\N	0
 105	deviationCausesReporting	deviationsReportGenerator	deviationsReportGenerator	\N	0
-106	productionBalancePerShift	generateBalance	generateBalance	\N	0
 107	productFlowThruDivision	productsToIssueList	productsToIssueList	\N	0
 108	productFlowThruDivision	warehouseIssueList	warehouseIssueList	\N	0
 109	subcontractorPortal	subOrdersList	subOrdersList	\N	0
@@ -36755,6 +36757,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 154	technologies	productsToProductGroupTechnologyList	productsToProductGroupTechnologyList	\N	0
 155	basic	numberPatternsList	numberPatternsList	\N	0
 156	stoppage	stoppageReasonsList	stoppageReasonsList	\N	0
+106	productionPerShift	generateBalance	generateBalance	\N	0
 \.
 
 
@@ -41382,22 +41385,6 @@ ALTER TABLE ONLY productflowthrudivision_warehouseissuestatechange
 
 
 --
--- Name: productionbalancepershift_balance_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY productionbalancepershift_balance
-    ADD CONSTRAINT productionbalancepershift_balance_pkey PRIMARY KEY (id);
-
-
---
--- Name: productionbalancepershift_balancecontext_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY productionbalancepershift_balancecontext
-    ADD CONSTRAINT productionbalancepershift_balancecontext_pkey PRIMARY KEY (id);
-
-
---
 -- Name: productioncounting_anomaly_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -41555,6 +41542,22 @@ ALTER TABLE ONLY productionlines_productionline
 
 ALTER TABLE ONLY productionlines_workstationtypecomponent
     ADD CONSTRAINT productionlines_workstationtypecomponent_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: productionpershift_balance_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productionpershift_balance
+    ADD CONSTRAINT productionpershift_balance_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: productionpershift_balancecontext_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY productionpershift_balancecontext
+    ADD CONSTRAINT productionpershift_balancecontext_pkey PRIMARY KEY (id);
 
 
 --
@@ -44974,8 +44977,8 @@ ALTER TABLE ONLY arch_avglaborcostcalcfororder_assignmentworkertoshift
 -- Name: balance_context_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY productionbalancepershift_balance
-    ADD CONSTRAINT balance_context_fkey FOREIGN KEY (context_id) REFERENCES productionbalancepershift_balancecontext(id) DEFERRABLE;
+ALTER TABLE ONLY productionpershift_balance
+    ADD CONSTRAINT balance_context_fkey FOREIGN KEY (context_id) REFERENCES productionpershift_balancecontext(id) DEFERRABLE;
 
 
 --
