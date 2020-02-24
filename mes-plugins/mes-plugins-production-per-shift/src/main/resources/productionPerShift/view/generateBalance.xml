@@ -126,7 +126,6 @@
                         <option type="column" name="day" fields="day" />
                         <option type="column" name="shiftName" fields="shiftName" />
                         <option type="column" name="orderNumber" fields="orderNumber" />
-                        <option type="column" name="operationNumber" fields="operationNumber" />
                         <option type="column" name="productNumber" fields="productNumber" />
                         <option type="column" name="registeredQuantity" fields="registeredQuantity" />
                         <option type="column" name="plannedQuantity" fields="plannedQuantity" />
@@ -135,9 +134,9 @@
                         <option type="column" name="percentageDeviation" fields="percentageDeviation" />
 
                         <option type="searchable"
-                                value="day,shiftName,orderNumber,operationNumber,productNumber,registeredQuantity,plannedQuantity,difference,productUnit,percentageDeviation" />
+                                value="day,shiftName,orderNumber,productNumber,registeredQuantity,plannedQuantity,difference,productUnit,percentageDeviation" />
                         <option type="orderable"
-                                value="day,shiftName,orderNumber,operationNumber,productNumber,registeredQuantity,plannedQuantity,difference,productUnit,percentageDeviation" />
+                                value="day,shiftName,orderNumber,productNumber,registeredQuantity,plannedQuantity,difference,productUnit,percentageDeviation" />
 
                         <option type="order" column="day"
                                 direction="asc" />

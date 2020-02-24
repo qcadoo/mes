@@ -38,8 +38,6 @@ public final class BalanceContextFields {
 
     public static final String DEVIATION_THRESHOLD = "deviationThreshold";
 
-    public static final String VIEW_IS_INITIALIZED = "viewIsInitialized";
-
     public static final String BALANCES = "balances";
 
 }

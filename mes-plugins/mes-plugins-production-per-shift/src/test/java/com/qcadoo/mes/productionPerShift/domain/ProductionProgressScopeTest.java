@@ -35,26 +35,25 @@ public class ProductionProgressScopeTest {
         // given
         LocalDate someDay = LocalDate.now();
         Order someOrder = new Order(1L, "ord-1");
-        Operation someOperation = new Operation(1L, "op1", "1.A.2.");
         Shift someShift = new Shift(3L, "Zmiana 3");
         Product someProduct = new Product(1L, "prod-1", "kg");
 
         try {
-            new ProductionProgressScope(someDay, someOrder, someOperation, someShift, someProduct);
+            new ProductionProgressScope(someDay, someOrder, someShift, someProduct);
         } catch (IllegalArgumentException ignored) {
             Assert.fail("Preconditions shouldn't invalidate not null arguments");
         }
-        performConstructorArgumentsMandatoryCheck(null, someOrder, someOperation, someShift, someProduct);
-        performConstructorArgumentsMandatoryCheck(someDay, null, someOperation, someShift, someProduct);
-        performConstructorArgumentsMandatoryCheck(someDay, someOrder, null, someShift, someProduct);
-        performConstructorArgumentsMandatoryCheck(someDay, someOrder, someOperation, null, someProduct);
-        performConstructorArgumentsMandatoryCheck(someDay, someOrder, someOperation, someShift, null);
+        performConstructorArgumentsMandatoryCheck(null, someOrder, someShift, someProduct);
+        performConstructorArgumentsMandatoryCheck(someDay, null, someShift, someProduct);
+        performConstructorArgumentsMandatoryCheck(someDay, someOrder, someShift, someProduct);
+        performConstructorArgumentsMandatoryCheck(someDay, someOrder, null, someProduct);
+        performConstructorArgumentsMandatoryCheck(someDay, someOrder, someShift, null);
     }
 
-    private void performConstructorArgumentsMandatoryCheck(final LocalDate day, final Order order, final Operation operation,
+    private void performConstructorArgumentsMandatoryCheck(final LocalDate day, final Order order,
             final Shift shift, final Product product) {
         try {
-            new ProductionProgressScope(day, order, operation, shift, product);
+            new ProductionProgressScope(day, order, shift, product);
             Assert.fail();
         } catch (IllegalArgumentException ignored) {
             // Success

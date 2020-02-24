@@ -33,8 +33,6 @@ import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutCo
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.mes.productionPerShift.domain.ProductionProgress;
 import com.qcadoo.mes.productionPerShift.factory.ProductionProgressDTOFactory;
-import com.qcadoo.mes.technologies.constants.OperationFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -55,10 +53,6 @@ import static com.qcadoo.model.api.search.SearchRestrictions.*;
 public class RegisteredProgressDataProvider implements ProductionProgressDataProvider {
 
     private static final String RECORD_ALIAS = "pr";
-
-    private static final String TOC_ALIAS = "toc";
-
-    private static final String OPERATION_ALIAS = "op";
 
     private static final String ORDER_ALIAS = "ord";
 
@@ -96,9 +90,7 @@ public class RegisteredProgressDataProvider implements ProductionProgressDataPro
     private void createAliases(final SearchCriteriaBuilder scb) {
         scb.createAlias(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING, RECORD_ALIAS, JoinType.INNER);
         scb.createAlias(RECORD_ALIAS + DOT + ProductionTrackingFields.SHIFT, SHIFT_ALIAS, JoinType.INNER);
-        scb.createAlias(RECORD_ALIAS + DOT + ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, TOC_ALIAS, JoinType.LEFT);
         scb.createAlias(TrackingOperationProductOutComponentFields.PRODUCT, PRODUCT_ALIAS, JoinType.INNER);
-        scb.createAlias(TOC_ALIAS + DOT + TechnologyOperationComponentFields.OPERATION, OPERATION_ALIAS, JoinType.LEFT);
         scb.createAlias(RECORD_ALIAS + DOT + ProductionTrackingFields.ORDER, ORDER_ALIAS, JoinType.INNER);
     }
 
@@ -118,15 +110,9 @@ public class RegisteredProgressDataProvider implements ProductionProgressDataPro
         projection.add(alias(field(ORDER_ALIAS + DOT_ID), ORDER_ID_ALIAS));
         projection.add(alias(field(ORDER_ALIAS + DOT + OrderFields.NUMBER), ORDER_NUMBER_ALIAS));
 
-        projection.add(alias(field(OPERATION_ALIAS + DOT_ID), OPERATION_ID_ALIAS));
-        projection.add(alias(field(OPERATION_ALIAS + DOT + OperationFields.NUMBER), OPERATION_NUMBER_ALIAS));
-
         projection.add(alias(field(PRODUCT_ALIAS + DOT_ID), PRODUCT_ID_ALIAS));
         projection.add(alias(field(PRODUCT_ALIAS + DOT + ProductFields.NUMBER), PRODUCT_NUMBER_ALIAS));
         projection.add(alias(field(PRODUCT_ALIAS + DOT + ProductFields.UNIT), PRODUCT_UNIT_ALIAS));
-
-        projection
-                .add(alias(field(TOC_ALIAS + DOT + TechnologyOperationComponentFields.NODE_NUMBER), OPERATION_NODE_NUMBER_ALIAS));
 
         projection.add(alias(field(SHIFT_ALIAS + DOT_ID), SHIFT_ID_ALIAS));
         projection.add(alias(field(SHIFT_ALIAS + DOT + ShiftFields.NAME), SHIFT_NAME_ALIAS));

@@ -57,7 +57,6 @@ public class DefaultBalanceEntityFactory implements BalanceEntityFactory {
         Entity balanceEntity = getDataDefinition().create();
         MathContext mathContext = numberService.getMathContext();
         balanceEntity.setField(BalanceFields.SHIFT_NAME, scope.getShift().getName());
-        balanceEntity.setField(BalanceFields.OPERATION_NUMBER, scope.getOperation().getNumber());
         balanceEntity.setField(BalanceFields.ORDER_NUMBER, scope.getOrder().getNumber());
         balanceEntity.setField(BalanceFields.PRODUCT_NUMBER, scope.getProduct().getNumber());
         balanceEntity.setField(BalanceFields.PRODUCT_UNIT, scope.getProduct().getUnit());

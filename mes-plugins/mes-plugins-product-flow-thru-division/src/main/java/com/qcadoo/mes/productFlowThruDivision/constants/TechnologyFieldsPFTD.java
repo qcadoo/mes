@@ -41,8 +41,6 @@ public final class TechnologyFieldsPFTD {
 
     public static final String PRODUCTION_FLOW = "productionFlow";
 
-    public static final String IS_DIVISION_LOCATION = "isDivisionLocation";
-
     public static final String IS_DIVISION_OUTPUT_LOCATION = "isDivisionOutputLocation";
 
     public static final String IS_DIVISION_INPUT_LOCATION = "isDivisionInputLocation";

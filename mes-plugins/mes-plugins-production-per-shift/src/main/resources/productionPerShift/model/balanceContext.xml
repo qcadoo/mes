@@ -42,7 +42,7 @@
 
         <boolean name="viewIsInitialized" copyable="false"/>
 
-        <hasMany name="balances" model="balance" joinField="context" cascade="delete" copyable="false"/>
+        <hasMany name="balances" model="balance" joinField="context" cascade="delete"/>
 
     </fields>
     <hooks>
