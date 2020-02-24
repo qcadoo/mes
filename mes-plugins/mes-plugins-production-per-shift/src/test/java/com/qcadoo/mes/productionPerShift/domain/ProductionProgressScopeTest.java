@@ -45,7 +45,6 @@ public class ProductionProgressScopeTest {
         }
         performConstructorArgumentsMandatoryCheck(null, someOrder, someShift, someProduct);
         performConstructorArgumentsMandatoryCheck(someDay, null, someShift, someProduct);
-        performConstructorArgumentsMandatoryCheck(someDay, someOrder, someShift, someProduct);
         performConstructorArgumentsMandatoryCheck(someDay, someOrder, null, someProduct);
         performConstructorArgumentsMandatoryCheck(someDay, someOrder, someShift, null);
     }

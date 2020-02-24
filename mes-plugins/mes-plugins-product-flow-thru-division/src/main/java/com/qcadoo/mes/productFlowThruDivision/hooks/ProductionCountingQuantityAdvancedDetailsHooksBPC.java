@@ -99,7 +99,9 @@ public class ProductionCountingQuantityAdvancedDetailsHooksBPC {
             componentsOutputLocationLookup.requestComponentUpdateState();
             productsInputLocationLookup.setFieldValue(null);
             productsInputLocationLookup.requestComponentUpdateState();
-            select.setFieldValue(null);
+            if (!ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(type)) {
+                select.setFieldValue(null);
+            }
             select.requestComponentUpdateState();
             productsFlowLocationLookup.setFieldValue(null);
             productsFlowLocationLookup.requestComponentUpdateState();
@@ -127,7 +129,8 @@ public class ProductionCountingQuantityAdvancedDetailsHooksBPC {
                     }
                 }
 
-                if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(type)) {
+                if ("".equals(select.getFieldValue())
+                        && ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(type)) {
                     select.setFieldValue(technology.getField(TechnologyFieldsPFTD.PRODUCTION_FLOW));
                     select.requestComponentUpdateState();
                 }
@@ -166,7 +169,8 @@ public class ProductionCountingQuantityAdvancedDetailsHooksBPC {
                             }
                         }
 
-                        if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(type)) {
+                        if ("".equals(select.getFieldValue())
+                                && ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(type)) {
                             select.setFieldValue(division.getField(DivisionFieldsPFTD.PRODUCTION_FLOW));
                             select.requestComponentUpdateState();
                         }
