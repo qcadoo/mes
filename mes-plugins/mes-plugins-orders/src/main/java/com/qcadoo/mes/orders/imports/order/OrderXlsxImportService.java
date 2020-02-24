@@ -23,13 +23,18 @@
  */
 package com.qcadoo.mes.orders.imports.order;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.imports.services.XlsxImportService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
@@ -37,6 +42,7 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
+import com.qcadoo.mes.orders.util.AdditionalUnitService;
 import com.qcadoo.mes.productionLines.constants.ParameterFieldsPL;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
@@ -59,17 +65,31 @@ public class OrderXlsxImportService extends XlsxImportService {
 
     private static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
 
-    @Autowired
-    private ParameterService parameterService;
+    private static final String L_REGISTER_QUANTITY_IN_PRODUCT = "registerQuantityInProduct";
+
+    private static final String L_REGISTER_QUANTITY_OUT_PRODUCT = "registerQuantityOutProduct";
+
+    private static final String L_REGISTER_PRODUCTION_TIME = "registerProductionTime";
+
+    private static final String L_REGISTER_PIECEWORK = "registerPiecework";
+
+    private static final Set<String> L_PRODUCTION_TRACKING_FIELDS = Sets.newHashSet(L_TYPE_OF_PRODUCTION_RECORDING,
+            L_REGISTER_QUANTITY_IN_PRODUCT, L_REGISTER_QUANTITY_OUT_PRODUCT, L_REGISTER_PRODUCTION_TIME, L_REGISTER_PIECEWORK);
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     @Autowired
     private OrderService orderService;
 
     @Autowired
     private TechnologyServiceO technologyServiceO;
+
+    @Autowired
+    private AdditionalUnitService additionalUnitService;
 
     @Override
     public Entity createEntity(final String pluginIdentifier, final String modelName) {
@@ -87,13 +107,32 @@ public class OrderXlsxImportService extends XlsxImportService {
 
     @Override
     public void validateEntity(final Entity order, final DataDefinition orderDD) {
+        validatePlannedQuantity(order, orderDD);
         validateNumber(order, orderDD);
         validateTechnology(order, orderDD);
         validateName(order, orderDD);
         validateDescription(order, orderDD);
+        validateDates(order, orderDD);
         validateDivision(order, orderDD);
         validateProductionLine(order, orderDD);
-        validateTypeOfProductionRecording(order, orderDD);
+        validateProductionTrackingFields(order, orderDD);
+    }
+
+    private void validatePlannedQuantity(final Entity order, final DataDefinition orderDD) {
+        BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
+        Entity product = order.getBelongsToField(OrderFields.PRODUCT);
+
+        BigDecimal plannedQuantityForAdditionalUnit = plannedQuantity;
+
+        if (Objects.nonNull(plannedQuantity) && Objects.nonNull(product)) {
+            String unit = product.getStringField(ProductFields.UNIT);
+            String additionalUnit = additionalUnitService.getAdditionalUnit(product);
+
+            plannedQuantityForAdditionalUnit = additionalUnitService.getQuantityAfterConversion(order, additionalUnit,
+                    plannedQuantity, unit);
+        }
+
+        order.setField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT, plannedQuantityForAdditionalUnit);
     }
 
     private void validateNumber(final Entity order, final DataDefinition orderDD) {
@@ -120,7 +159,7 @@ public class OrderXlsxImportService extends XlsxImportService {
                 Entity technologyProduct = technology.getBelongsToField(TechnologyFields.PRODUCT);
 
                 if (!TechnologyStateStringValues.ACCEPTED.equals(technologyState)
-                        && !technologyProduct.getId().equals(product.getId())) {
+                        || !technologyProduct.getId().equals(product.getId())) {
                     order.addError(orderDD.getField(OrderFields.TECHNOLOGY), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM);
                 }
             }
@@ -152,6 +191,25 @@ public class OrderXlsxImportService extends XlsxImportService {
             description = technology.getStringField(TechnologyFields.DESCRIPTION);
 
             order.setField(OrderFields.DESCRIPTION, description);
+        }
+    }
+
+    private void validateDates(final Entity order, final DataDefinition orderDD) {
+        Date startDate = order.getDateField(OrderFields.START_DATE);
+        Date finishDate = order.getDateField(OrderFields.FINISH_DATE);
+
+        if (Objects.isNull(startDate) || Objects.isNull(finishDate)) {
+            if (Objects.isNull(startDate)) {
+                order.setField(OrderFields.DATE_FROM, startDate);
+            }
+
+            if (Objects.isNull(finishDate)) {
+                order.setField(OrderFields.DATE_TO, finishDate);
+            }
+        } else {
+            if (startDate.after(finishDate)) {
+                order.addError(orderDD.getField(OrderFields.FINISH_DATE), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM);
+            }
         }
     }
 
@@ -189,21 +247,20 @@ public class OrderXlsxImportService extends XlsxImportService {
         }
     }
 
-    private void validateTypeOfProductionRecording(final Entity order, final DataDefinition orderDD) {
-        String typeOfProductionRecording;
+    private void validateProductionTrackingFields(final Entity order, final DataDefinition orderDD) {
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
         if (Objects.isNull(technology)) {
-            typeOfProductionRecording = parameterService.getParameter().getStringField(L_TYPE_OF_PRODUCTION_RECORDING);
+            setProductionTrackingFields(order, parameterService.getParameter());
         } else {
-            typeOfProductionRecording = technology.getStringField(L_TYPE_OF_PRODUCTION_RECORDING);
-
-            if (Objects.isNull(typeOfProductionRecording)) {
-                typeOfProductionRecording = parameterService.getParameter().getStringField(L_TYPE_OF_PRODUCTION_RECORDING);
-            }
+            setProductionTrackingFields(order, technology);
         }
+    }
 
-        order.setField(L_TYPE_OF_PRODUCTION_RECORDING, typeOfProductionRecording);
+    private void setProductionTrackingFields(final Entity order, final Entity technologyOrParameter) {
+        L_PRODUCTION_TRACKING_FIELDS.forEach(fieldName -> {
+            order.setField(fieldName, technologyOrParameter.getField(fieldName));
+        });
     }
 
 }
