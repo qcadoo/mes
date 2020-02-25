@@ -77,7 +77,7 @@ public class PlannedProgressDataProvider implements ProductionProgressDataProvid
         placeholderValues.put("PRODUCT_NUMBER_ALIAS", PRODUCT_NUMBER_ALIAS);
         placeholderValues.put("PRODUCT_UNIT_ALIAS", PRODUCT_UNIT_ALIAS);
         StrSubstitutor substitutor = new StrSubstitutor(placeholderValues, "${", "}");
-        return substitutor.replace(RAW_HQL_QUERY).toString();
+        return substitutor.replace(RAW_HQL_QUERY);
     }
 
     public Collection<ProductionProgress> find(final Interval searchInterval) {
