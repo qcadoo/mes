@@ -193,6 +193,9 @@ public class ProductionCountingQuantityAdvancedDetailsHooksBPC {
                     }
                 }
             }
+        } else if (!ProductionFlowComponent.WAREHOUSE.getStringValue().equals(select.getFieldValue())) {
+            productsFlowLocationLookup.setFieldValue(null);
+            productsFlowLocationLookup.requestComponentUpdateState();
         }
         productsFlowLocationLookup.setEnabled(ProductionFlowComponent.WAREHOUSE.getStringValue().equals(select.getFieldValue()));
     }
