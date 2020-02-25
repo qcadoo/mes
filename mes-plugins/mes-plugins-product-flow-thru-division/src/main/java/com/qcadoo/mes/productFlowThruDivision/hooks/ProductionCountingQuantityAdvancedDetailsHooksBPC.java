@@ -101,8 +101,8 @@ public class ProductionCountingQuantityAdvancedDetailsHooksBPC {
             productsInputLocationLookup.requestComponentUpdateState();
             if (!ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(type)) {
                 select.setFieldValue(null);
+                select.requestComponentUpdateState();
             }
-            select.requestComponentUpdateState();
             productsFlowLocationLookup.setFieldValue(null);
             productsFlowLocationLookup.requestComponentUpdateState();
             Entity order = ent.getBelongsToField(ProductionCountingQuantityFields.ORDER);
