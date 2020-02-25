@@ -31,7 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.advancedGenealogy.AdvancedGenealogyService;
-import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchNumberUniqueness;
 import com.qcadoo.mes.advancedGenealogy.hooks.BatchModelValidators;
 import com.qcadoo.mes.deliveries.DeliveriesService;
@@ -43,17 +42,11 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.plugin.api.PluginUtils;
 
 @Service
 public class OrderedProductHooks {
-
-    private static final String L_OFFER = "offer";
-
-    private static final String L_OPERATION = "operation";
 
     @Autowired
     private NumberService numberService;
@@ -71,77 +64,12 @@ public class OrderedProductHooks {
     private BatchModelValidators batchModelValidators;
 
     public void onSave(final DataDefinition orderedProductDD, final Entity orderedProduct) {
-        calculateOrderedProductPricePerUnit(orderedProduct);
-        calculateReservationQuantities(orderedProduct);
+        deliveriesService.calculatePricePerUnit(orderedProduct, OrderedProductFields.ORDERED_QUANTITY);
 
+        calculateReservationQuantities(orderedProduct);
         reservationService.deleteReservationsForOrderedProductIfChanged(orderedProduct);
 
         createBatch(orderedProduct);
-    }
-
-    public void calculateOrderedProductPricePerUnit(final Entity orderedProduct) {
-        deliveriesService.calculatePricePerUnit(orderedProduct, OrderedProductFields.ORDERED_QUANTITY);
-    }
-
-    public boolean checkIfOrderedProductAlreadyExists(final DataDefinition orderedProductDD, final Entity orderedProduct) {
-        SearchCriteriaBuilder searchCriteriaBuilder = getSearchCriteriaBuilderForOrderedProduct(orderedProductDD.find(),
-                orderedProduct);
-
-        if (Objects.nonNull(orderedProduct.getId())) {
-            searchCriteriaBuilder.add(SearchRestrictions.ne("id", orderedProduct.getId()));
-        }
-
-        Entity orderedProductFromDB = searchCriteriaBuilder.setMaxResults(1).uniqueResult();
-
-        if (Objects.isNull(orderedProductFromDB)) {
-            return true;
-        } else {
-            orderedProduct.addError(orderedProductDD.getField(OrderedProductFields.PRODUCT),
-                    "deliveries.orderedProduct.error.productAlreadyExists");
-
-            return false;
-        }
-    }
-
-    private SearchCriteriaBuilder getSearchCriteriaBuilderForOrderedProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
-            final Entity orderedProduct) {
-        Entity delivery = orderedProduct.getBelongsToField(OrderedProductFields.DELIVERY);
-        Entity supplier = delivery.getBelongsToField(DeliveryFields.SUPPLIER);
-        Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
-        String batchNumber = orderedProduct.getStringField(OrderedProductFields.BATCH_NUMBER);
-        Entity batch = orderedProduct.getBelongsToField(OrderedProductFields.BATCH);
-        Entity additionalCode = orderedProduct.getBelongsToField(OrderedProductFields.ADDITIONAL_CODE);
-
-        searchCriteriaBuilder.add(SearchRestrictions.belongsTo(OrderedProductFields.DELIVERY, delivery))
-                .add(SearchRestrictions.belongsTo(OrderedProductFields.PRODUCT, product))
-                .add(SearchRestrictions.belongsTo(OrderedProductFields.ADDITIONAL_CODE, additionalCode));
-
-        if (Objects.nonNull(batchNumber)) {
-            searchCriteriaBuilder.createAlias(OrderedProductFields.BATCH, OrderedProductFields.BATCH, JoinType.LEFT)
-                    .add(SearchRestrictions.eq(OrderedProductFields.BATCH + "." + BatchFields.NUMBER, batchNumber))
-                    .add(SearchRestrictions.belongsTo(OrderedProductFields.BATCH + "." + BatchFields.PRODUCT, product));
-
-            if (Objects.nonNull(supplier)) {
-                searchCriteriaBuilder
-                        .add(SearchRestrictions.belongsTo(OrderedProductFields.BATCH + "." + BatchFields.SUPPLIER, supplier));
-            }
-        } else {
-            if (Objects.nonNull(batch)) {
-                searchCriteriaBuilder.add(SearchRestrictions.belongsTo(OrderedProductFields.BATCH, batch));
-            } else {
-                searchCriteriaBuilder.add(SearchRestrictions.isNull(OrderedProductFields.BATCH));
-            }
-        }
-
-        if (PluginUtils.isEnabled("techSubcontrForDeliveries")) {
-            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OPERATION, orderedProduct.getBelongsToField(L_OPERATION)));
-        }
-
-        if (PluginUtils.isEnabled("supplyNegotiations")) {
-            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OFFER, orderedProduct.getBelongsToField(L_OFFER)));
-        }
-
-        return searchCriteriaBuilder;
     }
 
     private void calculateReservationQuantities(final Entity orderedProduct) {
@@ -181,6 +109,32 @@ public class OrderedProductHooks {
 
                 orderedProduct.addGlobalError(errorMessage);
             }
+        }
+    }
+
+    public boolean validatesWith(final DataDefinition orderedProductDD, final Entity orderedProduct) {
+        return checkIfOrderedProductAlreadyExists(orderedProductDD, orderedProduct);
+    }
+
+    public boolean checkIfOrderedProductAlreadyExists(final DataDefinition orderedProductDD, final Entity orderedProduct) {
+        SearchCriteriaBuilder searchCriteriaBuilder = deliveriesService
+                .getSearchCriteriaBuilderForOrderedProduct(orderedProductDD.find(), orderedProduct);
+
+        Long orderedProductId = orderedProduct.getId();
+
+        if (Objects.nonNull(orderedProductId)) {
+            searchCriteriaBuilder.add(SearchRestrictions.ne("id", orderedProductId));
+        }
+
+        Entity orderedProductFromDB = searchCriteriaBuilder.setMaxResults(1).uniqueResult();
+
+        if (Objects.isNull(orderedProductFromDB)) {
+            return true;
+        } else {
+            orderedProduct.addError(orderedProductDD.getField(OrderedProductFields.PRODUCT),
+                    "deliveries.orderedProduct.error.productAlreadyExists");
+
+            return false;
         }
     }
 

@@ -31,6 +31,8 @@ import java.util.Optional;
 import com.qcadoo.mes.deliveries.print.DeliveryProduct;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.GridComponent;
@@ -323,5 +325,22 @@ public interface DeliveriesService {
     List<Entity> getSuppliersWithIntegration(final Long productId);
 
     List<Entity> getSelectedOrderedProducts(final GridComponent orderedProductsGrid);
+
+    Optional<Entity> getOrderedProductForDeliveredProduct(final Entity deliveredProduct);
+
+    Optional<Entity> getOrderedProductForDeliveredProduct(final Entity deliveredProduct,
+            final SearchCriterion batchCustomSearchCriterion);
+
+    SearchCriteriaBuilder getSearchCriteriaBuilderForOrderedProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final Entity deliveredProduct);
+
+    SearchCriteriaBuilder getSearchCriteriaBuilderForOrderedProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final Entity deliveredProduct, final SearchCriterion batchCustomSearchCriterion);
+
+    SearchCriteriaBuilder getSearchCriteriaBuilderForDeliveredProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final Entity deliveredProduct);
+
+    SearchCriteriaBuilder getSearchCriteriaBuilderForDeliveredProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final Entity deliveredProduct, final SearchCriterion batchCustomSearchCriterion);
 
 }
