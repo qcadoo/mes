@@ -75,7 +75,6 @@
         <localization:translation-group name="documentGrid" prefix="documentGrid"/>
         <localization:translation-group name="documentPositionsAttributes"
                                         prefix="materialFlowResources.validate.global.error.documentPositionsAttributes"/>
-        <model:dictionary name="storageLocations"/>
 
         <model:model model="resource" resource="model/resource.xml"/>
         <model:model model="resourceDto" resource="model/resourceDto.xml"/>
