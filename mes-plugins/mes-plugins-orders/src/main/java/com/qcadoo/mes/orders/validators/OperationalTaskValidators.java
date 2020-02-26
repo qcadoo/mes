@@ -140,12 +140,13 @@ public class OperationalTaskValidators {
     private boolean datesAreCorrect(DataDefinition operationalTaskDD, Entity operationalTask) {
         Entity technologyOperationComponent = operationalTask
                 .getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
-        if (technologyOperationComponent != null) {
+        if (technologyOperationComponent != null
+                && operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION) != null) {
             Date startDate = operationalTask.getDateField(OperationalTaskFields.START_DATE);
             Date finishDate = operationalTask.getDateField(OperationalTaskFields.FINISH_DATE);
             Entity order = operationalTask.getBelongsToField(OperationalTaskFields.ORDER);
             Entity parent = operationalTasksService.getParent(technologyOperationComponent, order);
-            if (parent != null) {
+            if (parent != null && parent.getBelongsToField(OperationalTaskFields.WORKSTATION) != null) {
                 if (parent.getDateField(OperationalTaskFields.START_DATE).before(startDate)) {
                     operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.START_DATE),
                             "orders.operationalTask.error.inappropriateStartDateNext");
@@ -159,15 +160,17 @@ public class OperationalTaskValidators {
             }
             List<Entity> children = operationalTasksService.getChildren(technologyOperationComponent, order);
             for (Entity child : children) {
-                if (child.getDateField(OperationalTaskFields.START_DATE).after(startDate)) {
-                    operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.START_DATE),
-                            "orders.operationalTask.error.inappropriateStartDatePrevious");
-                    return false;
-                }
-                if (child.getDateField(OperationalTaskFields.FINISH_DATE).after(finishDate)) {
-                    operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.FINISH_DATE),
-                            "orders.operationalTask.error.inappropriateFinishDatePrevious");
-                    return false;
+                if (child.getBelongsToField(OperationalTaskFields.WORKSTATION) != null) {
+                    if (child.getDateField(OperationalTaskFields.START_DATE).after(startDate)) {
+                        operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.START_DATE),
+                                "orders.operationalTask.error.inappropriateStartDatePrevious");
+                        return false;
+                    }
+                    if (child.getDateField(OperationalTaskFields.FINISH_DATE).after(finishDate)) {
+                        operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.FINISH_DATE),
+                                "orders.operationalTask.error.inappropriateFinishDatePrevious");
+                        return false;
+                    }
                 }
             }
         }
