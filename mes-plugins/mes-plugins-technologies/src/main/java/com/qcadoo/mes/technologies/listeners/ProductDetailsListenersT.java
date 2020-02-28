@@ -24,6 +24,7 @@
 package com.qcadoo.mes.technologies.listeners;
 
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -124,6 +125,37 @@ public class ProductDetailsListenersT {
         view.redirectTo(url, false, true, parameters);
     }
 
+    public final void showProductGroupTechnologies(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
+        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity product = productForm.getEntity();
+
+        if (product.getId() == null) {
+            return;
+        }
+
+        Entity parent = product.getBelongsToField(ProductFields.PARENT);
+        if (parent == null) {
+            return;
+        }
+
+        String productNumber = parent.getStringField(NUMBER);
+
+        Map<String, String> filters = Maps.newHashMap();
+        filters.put("productNumber", applyInOperator(productNumber));
+
+        Map<String, Object> gridOptions = Maps.newHashMap();
+        gridOptions.put(L_FILTERS, filters);
+
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put(L_GRID_OPTIONS, gridOptions);
+
+        parameters.put(L_WINDOW_ACTIVE_MENU, "technology.technologies");
+
+        String url = "../page/technologies/technologiesList.html";
+        view.redirectTo(url, false, true, parameters);
+    }
+    
     public final void showTechnologiesWithUsingProduct(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
         FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);

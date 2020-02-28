@@ -69,6 +69,19 @@
 				]]>
 			</script>
 		</bigButton>
+        <bigButton name="showProductGroupTechnologies" icon="genealogyIcon24.png">
+            <script>
+                <![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							if(window.canClose()) {
+								#{form}.performEvent('showProductGroupTechnologies', []);
+							}
+						}
+					});
+				]]>
+            </script>
+        </bigButton>
 	</group>
 
 </ribbonExtension>

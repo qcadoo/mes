@@ -275,6 +275,11 @@
                             class="com.qcadoo.mes.technologies.listeners.ProductDetailsListenersT"
                             method="showTechnologiesWithUsingProduct"/>
 
+        <view:view-listener plugin="basic" view="productDetails"
+                            component="form" event="showProductGroupTechnologies"
+                            class="com.qcadoo.mes.technologies.listeners.ProductDetailsListenersT"
+                            method="showProductGroupTechnologies"/>
+
         <view:view-hook plugin="basic" view="productDetails"
                         type="beforeRender"
                         class="com.qcadoo.mes.technologies.hooks.ProductDetailsViewHooksT"

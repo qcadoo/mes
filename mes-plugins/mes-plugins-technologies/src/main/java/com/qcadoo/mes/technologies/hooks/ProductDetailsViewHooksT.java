@@ -60,30 +60,27 @@ public class ProductDetailsViewHooksT {
         Entity product = productForm.getEntity();
 
         WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-        RibbonGroup technologies = (RibbonGroup) window.getRibbon().getGroupByName("technologies");
+        RibbonGroup technologies = window.getRibbon().getGroupByName("technologies");
 
-        RibbonActionItem showTechnologiesWithTechnologyGroup = (RibbonActionItem) technologies
+        RibbonActionItem showTechnologiesWithTechnologyGroup = technologies
                 .getItemByName("showTechnologiesWithTechnologyGroup");
-        RibbonActionItem showTechnologiesWithProduct = (RibbonActionItem) technologies
+        RibbonActionItem showTechnologiesWithProduct = technologies
                 .getItemByName("showTechnologiesWithProduct");
+        RibbonActionItem showProductGroupTechnologies = technologies
+                .getItemByName("showProductGroupTechnologies");
 
         if (product.getId() != null) {
-
             Entity technologyGroup = product.getBelongsToField("technologyGroup");
 
-            if (technologyGroup == null) {
-                updateButtonState(showTechnologiesWithTechnologyGroup, false);
-            } else {
-                updateButtonState(showTechnologiesWithTechnologyGroup, true);
-            }
-
+            updateButtonState(showTechnologiesWithTechnologyGroup, technologyGroup != null);
             updateButtonState(showTechnologiesWithProduct, true);
+            updateButtonState(showProductGroupTechnologies, true);
 
-            return;
+        } else {
+            updateButtonState(showTechnologiesWithTechnologyGroup, false);
+            updateButtonState(showTechnologiesWithProduct, false);
+            updateButtonState(showProductGroupTechnologies, false);
         }
-
-        updateButtonState(showTechnologiesWithTechnologyGroup, false);
-        updateButtonState(showTechnologiesWithProduct, false);
     }
 
     private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {
