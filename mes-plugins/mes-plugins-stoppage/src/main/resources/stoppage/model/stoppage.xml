@@ -38,7 +38,7 @@
 		</string>
 		<datetime name="dateFrom"/>
 		<datetime name="dateTo"/>
-		<integer name="duration" required="true">
+		<integer name="duration">
 			<validatesRange from="0" exclusively="true"/>
 		</integer>
 	</fields>
