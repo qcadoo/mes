@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.states.aop.listeners;
 
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
 import com.qcadoo.mes.productFlowThruDivision.states.TechnologyStateValidationServicePFTD;
 import com.qcadoo.mes.states.StateChangeContext;
@@ -30,6 +31,7 @@ import com.qcadoo.mes.states.annotation.RunForStateTransition;
 import com.qcadoo.mes.states.annotation.RunForStateTransitions;
 import com.qcadoo.mes.states.annotation.RunInPhase;
 import com.qcadoo.mes.states.aop.AbstractStateListenerAspect;
+import com.qcadoo.mes.technologies.constants.ParameterFieldsT;
 import com.qcadoo.mes.technologies.states.aop.TechnologyStateChangeAspect;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangePhase;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
@@ -48,6 +50,9 @@ public class TechnologyStateValidationAspectPFTD extends AbstractStateListenerAs
     @Autowired
     private TechnologyStateValidationServicePFTD technologyStateValidationServicePFTD;
 
+    @Autowired
+    private ParameterService parameterService;
+
     @Pointcut(TechnologyStateChangeAspect.SELECTOR_POINTCUT)
     protected void targetServicePointcut() {
 
@@ -58,6 +63,9 @@ public class TechnologyStateValidationAspectPFTD extends AbstractStateListenerAs
             @RunForStateTransition(targetState = TechnologyStateStringValues.CHECKED) })
     @Before(PHASE_EXECUTION_POINTCUT)
     public void preValidationOnAccept(final StateChangeContext stateChangeContext, final int phase) {
+        if(parameterService.getParameter().getBooleanField(ParameterFieldsT.COMPLETE_WAREHOUSES_FLOW_WHILE_CHECKING)) {
+            technologyStateValidationServicePFTD.beforeValidationOnAccepted(stateChangeContext);
+        }
         technologyStateValidationServicePFTD.validationOnAccepted(stateChangeContext);
     }
 

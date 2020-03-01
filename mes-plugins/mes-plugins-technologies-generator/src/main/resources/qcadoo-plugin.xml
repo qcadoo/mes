@@ -108,17 +108,6 @@
         <model:model-field plugin="basic" model="product">
             <model:boolean name="fromGenerator" default="false"/>
         </model:model-field>
-                
-                
-        <view:view-ribbon-group resource="view/ribbonExtensions/technologyParameters.xml" />
-        <view:view resource="view/technologiesGeneratorParameters.xml"/>        
-        <model:model-field model="parameter" plugin="basic">
-            <model:boolean name="technologiesGeneratorCopyProductSize" default="false"/>
-        </model:model-field>
-        <view:view-listener plugin="basic" view="parameters"
-            component="form" event="redirectToTechnologyParameters"
-            class="com.qcadoo.mes.technologiesGenerator.listeners.ParameterListenersTG"
-            method="redirectToTechnologyParameters" />
 
         <view:view-grid-column view="technologiesList" component="grid" plugin="technologies">
             <view:column name="generatorName" fields="generatorName" orderable="true" searchable="true" width="55"/>

@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.technologiesGenerator.listeners;
+package com.qcadoo.mes.technologies.listeners;
 
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -29,13 +29,13 @@ import org.springframework.stereotype.Service;
 
 
 @Service
-public class ParameterListenersTG {
+public class ParameterListenersT {
 
     public void redirectToTechnologyParameters(final ViewDefinitionState view, final ComponentState eventPerformer, final String[] args) {
         Long parameterId = (Long) eventPerformer.getFieldValue();
 
         if (parameterId != null) {
-            String url = "../page/technologiesGenerator/technologiesGeneratorParameters.html?context={\"form.id\":\"" + parameterId
+            String url = "../page/technologies/technologiesParameters.html?context={\"form.id\":\"" + parameterId
                     + "\"}";
             view.redirectTo(url, false, true);
         }
