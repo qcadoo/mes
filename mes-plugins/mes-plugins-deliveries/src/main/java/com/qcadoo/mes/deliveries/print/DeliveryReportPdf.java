@@ -305,11 +305,12 @@ public class DeliveryReportPdf extends ReportPdfView {
     private List<Entity> getDeliveryReportColumns(final List<Entity> columnsForDeliveries,
             final List<DeliveryProduct> deliveryProducts,
             final Map<DeliveryProduct, Map<String, String>> deliveryProductsColumnValues) {
-        return deliveriesService.getColumnsWithFilteredCurrencies(filterEmptyColumns(columnsForDeliveries, deliveryProducts,
-                deliveryProductsColumnValues));
+        return deliveriesService.getColumnsWithFilteredCurrencies(
+                filterEmptyColumns(columnsForDeliveries, deliveryProducts, deliveryProductsColumnValues));
     }
 
-    private void addTotalRow(final PdfPTable productsTable, final Locale locale, final List<String> columnsName, Entity delivery) {
+    private void addTotalRow(final PdfPTable productsTable, final Locale locale, final List<String> columnsName,
+            Entity delivery) {
         DeliveryPricesAndQuantities deliveryPricesAndQuantities = new DeliveryPricesAndQuantities(delivery, numberService);
 
         PdfPCell total = new PdfPCell(new Phrase(translationService.translate("deliveries.delivery.report.totalCost", locale),
@@ -334,9 +335,9 @@ public class DeliveryReportPdf extends ReportPdfView {
             } else if (columnsName.contains(DeliveredProductFields.DELIVERED_QUANTITY)
                     && columnsName.indexOf(DeliveredProductFields.DELIVERED_QUANTITY) == i) {
                 productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-                productsTable.addCell(new Phrase(
-                        numberService.format(deliveryPricesAndQuantities.getDeliveredCumulatedQuantity()), FontUtils
-                                .getDejavuRegular7Dark()));
+                productsTable
+                        .addCell(new Phrase(numberService.format(deliveryPricesAndQuantities.getDeliveredCumulatedQuantity()),
+                                FontUtils.getDejavuRegular7Dark()));
             } else if (columnsName.contains(DeliveredProductFields.TOTAL_PRICE)
                     && columnsName.indexOf(DeliveredProductFields.TOTAL_PRICE) == i) {
                 productsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);

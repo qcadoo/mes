@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TimeZone;
 import javax.servlet.http.HttpServletRequest;
 
@@ -121,16 +122,22 @@ public class DocumentPositionsController {
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "resource")
     public ResourceDTO getResourceForProduct(@RequestParam("context") Long document, @RequestParam("product") String product,
-            @RequestParam("conversion") BigDecimal conversion, @RequestParam("ac") String additionalCode, @RequestParam("batch") String batch) {
-        return documentPositionService.getResource(document, product, conversion, additionalCode, batch);
+            @RequestParam("conversion") BigDecimal conversion, @RequestParam("ac") String additionalCode, @RequestParam("batchId") Long batchId) {
+        if(Objects.nonNull(batchId) && batchId == 0) {
+            batchId = null;
+        }
+        return documentPositionService.getResource(document, product, conversion, additionalCode, batchId);
     }
 
     @ResponseBody
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE, value = "resources")
     public DataResponse getResources(@RequestParam("query") String query, @RequestParam("product") String product,
             @RequestParam("conversion") BigDecimal conversion, @RequestParam("context") Long document,
-            @RequestParam("ac") String additionalCode, @RequestParam("batch") String batch) {
-        return documentPositionService.getResourcesResponse(document, query, product, conversion, additionalCode, batch,true);
+            @RequestParam("ac") String additionalCode, @RequestParam("batchId") Long batchId) {
+        if(Objects.nonNull(batchId) && batchId == 0) {
+            batchId = null;
+        }
+        return documentPositionService.getResourcesResponse(document, query, product, conversion, additionalCode, batchId,true);
     }
 
     @ResponseBody

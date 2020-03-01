@@ -69,9 +69,9 @@ import com.qcadoo.report.api.xls.XlsDocumentService;
 @Service
 public class PPSReportXlsService extends XlsDocumentService {
 
-    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", LocaleContextHolder.getLocale());
+    private DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", LocaleContextHolder.getLocale());
 
-    private static final DateFormat UPDATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", LocaleContextHolder.getLocale());
+    private DateFormat UPDATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd", LocaleContextHolder.getLocale());
 
     @Autowired
     private TranslationService translationService;

@@ -74,14 +74,18 @@
         <model:model model="progressForDay" resource="model/progressForDay.xml"/>
         <model:model model="reasonTypeOfCorrectionPlan" resource="model/reasonTypeOfCorrectionPlan.xml"/>
         <model:model model="ppsReport" resource="model/ppsReport.xml"/>
-
+        <model:model model="balanceContext" resource="model/balanceContext.xml"/>
+        <model:model model="balance" resource="model/balance.xml"/>
 
         <menu:menu-item name="ppsReports" category="orders"
                         view="ppsReportsList" defaultAuthorizationRole="ROLE_PLANNING"/>
+        <menu:menu-item name="balancePerShift" category="ordersTracking"
+                        view="generateBalance"/>
 
         <view:view resource="view/productionPerShiftDetails.xml"/>
         <view:view resource="view/ppsReportsList.xml"/>
         <view:view resource="view/ppsReportDetails.xml"/>
+        <view:view resource="view/generateBalance.xml"/>
 
         <view:view-tab resource="view/tabExtensions/ordersParameters.xml"/>
 

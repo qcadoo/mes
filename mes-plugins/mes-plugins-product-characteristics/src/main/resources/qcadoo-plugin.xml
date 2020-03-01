@@ -74,9 +74,6 @@
         <view:view resource="view/formsList.xml"/>
         <view:view resource="view/formDetails.xml"/>
 
-        <model:dictionary name="shelves"/>
-        <model:dictionary name="forms"/>
-
         <model:model-field plugin="basic"
                            model="product">
             <model:belongsTo name="upForm" plugin="productCharacteristics"

@@ -31,13 +31,13 @@ import java.util.Optional;
 import com.qcadoo.mes.deliveries.print.DeliveryProduct;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.GridComponent;
 
 public interface DeliveriesService {
-
-    String L_ORDERED_PRODUCTS = "orderedProducts";
 
     /**
      * Gets delivery
@@ -145,7 +145,7 @@ public interface DeliveriesService {
      *
      * @return column for orders data definition
      */
-    DataDefinition getColumnForOrdersDD();
+    DataDefinition getParameterDeliveryOrderColumnDD();
 
     /**
      * Gets product for given delivery product
@@ -171,7 +171,8 @@ public interface DeliveriesService {
     /**
      * Gets address from company
      *
-     * @param company company
+     * @param company
+     *            company
      *
      * @return adresss
      */
@@ -180,18 +181,24 @@ public interface DeliveriesService {
     /**
      * Fills unit fields
      *
-     * @param view view
-     * @param productName product lookup reference name
-     * @param referenceNames reference names to unit fields
+     * @param view
+     *            view
+     * @param productName
+     *            product lookup reference name
+     * @param referenceNames
+     *            reference names to unit fields
      */
     void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames);
 
     /**
      * Fills unit fields
      *
-     * @param view view
-     * @param product product entity
-     * @param referenceNames reference names to unit fields
+     * @param view
+     *            view
+     * @param product
+     *            product entity
+     * @param referenceNames
+     *            reference names to unit fields
      * @param additionalUnitNames
      */
     void fillUnitFields(final ViewDefinitionState view, final Entity product, final List<String> referenceNames,
@@ -200,10 +207,14 @@ public interface DeliveriesService {
     /**
      * Fills unit fields
      *
-     * @param view view
-     * @param productName product lookup reference name
-     * @param referenceNames reference names to unit fields
-     * @param additionalUnitNames reference names to additional unit fields
+     * @param view
+     *            view
+     * @param productName
+     *            product lookup reference name
+     * @param referenceNames
+     *            reference names to unit fields
+     * @param additionalUnitNames
+     *            reference names to additional unit fields
      */
     void fillUnitFields(final ViewDefinitionState view, final String productName, final List<String> referenceNames,
             final List<String> additionalUnitNames);
@@ -211,24 +222,28 @@ public interface DeliveriesService {
     /**
      * Fills currency fields
      *
-     * @param view view
-     * @param referenceNames reference names to unit fields
-     * @param delivery entity need to get currency
+     * @param view
+     *            view
+     * @param referenceNames
+     *            reference names to unit fields
      */
     void fillCurrencyFields(final ViewDefinitionState view, final List<String> referenceNames);
 
     /**
      * Fills currency fields
      *
-     * @param view view
-     * @param referenceNames reference names to unit fields
+     * @param view
+     *            view
+     * @param referenceNames
+     *            reference names to unit fields
      */
     void fillCurrencyFieldsForDelivery(final ViewDefinitionState view, final List<String> referenceNames, final Entity delivery);
 
     /**
      * Gets currency for delivery
      *
-     * @param delivery delivery entity
+     * @param delivery
+     *            delivery entity
      *
      * @return selected or default currency
      */
@@ -237,32 +252,40 @@ public interface DeliveriesService {
     /**
      * Recalculate price form total price
      *
-     * @param view view
-     * @param quantityFieldReference quantity field reference
+     * @param view
+     *            view
+     * @param quantityFieldReference
+     *            quantity field reference
      */
     void recalculatePriceFromTotalPrice(final ViewDefinitionState view, final String quantityFieldReference);
 
     /**
      * Recalculate price from price per unit
      *
-     * @param view view
-     * @param quantityFieldReference quantity field reference
+     * @param view
+     *            view
+     * @param quantityFieldReference
+     *            quantity field reference
      */
     void recalculatePriceFromPricePerUnit(final ViewDefinitionState view, final String quantityFieldReference);
 
     /**
      * Recalculate price
      *
-     * @param view view
-     * @param quantityFieldReference quantity field reference
+     * @param view
+     *            view
+     * @param quantityFieldReference
+     *            quantity field reference
      */
     void recalculatePrice(final ViewDefinitionState view, final String quantityFieldReference);
 
     /**
      * Gets big decimal from field
      *
-     * @param fieldComponent field component
-     * @param locale locale
+     * @param fieldComponent
+     *            field component
+     * @param locale
+     *            locale
      *
      * @return BigDecimal
      */
@@ -271,15 +294,18 @@ public interface DeliveriesService {
     /**
      * Calculate price per unit
      *
-     * @param entity entity
-     * @param quantityFieldName quantity field name
+     * @param entity
+     *            entity
+     * @param quantityFieldName
+     *            quantity field name
      */
     void calculatePricePerUnit(final Entity entity, final String quantityFieldName);
 
     /**
      * Filters currency column
      *
-     * @param columns columnsForOrders, columnsForDeliveries
+     * @param columns
+     *            columnsForOrders, columnsForDeliveries
      *
      * @return list of filtered columns
      */
@@ -292,11 +318,29 @@ public interface DeliveriesService {
      */
     void disableShowProductButton(final ViewDefinitionState view);
 
-    Optional<Entity> getDefaultSupplier(Long productId);
+    Optional<Entity> getDefaultSupplier(final Long productId);
 
-    Optional<Entity> getDefaultSupplierWithIntegration(Long productId);
+    Optional<Entity> getDefaultSupplierWithIntegration(final Long productId);
 
-    List<Entity> getSuppliersWithIntegration(Long productId);
+    List<Entity> getSuppliersWithIntegration(final Long productId);
 
-    List<Entity> getSelectedOrderedProducts(GridComponent orderedProductsGrid);
+    List<Entity> getSelectedOrderedProducts(final GridComponent orderedProductsGrid);
+
+    Optional<Entity> getOrderedProductForDeliveredProduct(final Entity deliveredProduct);
+
+    Optional<Entity> getOrderedProductForDeliveredProduct(final Entity deliveredProduct,
+            final SearchCriterion batchCustomSearchCriterion);
+
+    SearchCriteriaBuilder getSearchCriteriaBuilderForOrderedProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final Entity deliveredProduct);
+
+    SearchCriteriaBuilder getSearchCriteriaBuilderForOrderedProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final Entity deliveredProduct, final SearchCriterion batchCustomSearchCriterion);
+
+    SearchCriteriaBuilder getSearchCriteriaBuilderForDeliveredProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final Entity deliveredProduct);
+
+    SearchCriteriaBuilder getSearchCriteriaBuilderForDeliveredProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final Entity deliveredProduct, final SearchCriterion batchCustomSearchCriterion);
+
 }

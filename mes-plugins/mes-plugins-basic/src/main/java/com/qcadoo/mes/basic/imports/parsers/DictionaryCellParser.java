@@ -7,8 +7,6 @@ import static com.qcadoo.model.api.search.SearchRestrictions.eq;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.qcadoo.mes.basic.imports.helpers.CellErrorsAccessor;
 import com.qcadoo.mes.basic.imports.helpers.CellParser;
 import com.qcadoo.model.api.DataDefinition;
@@ -24,16 +22,17 @@ public class DictionaryCellParser implements CellParser {
 
     private static final String L_BASIC_IMPORT_ERROR_FIELD_INACTIVE_DICTIONARY_ITEM = "basic.import.error.field.inactiveDictionaryItem";
 
-    private final String dictionaryName;
+    private String dictionaryName;
 
-    @Autowired
     private DataDefinitionService dataDefinitionService;
 
     private DictionaryCellParser() {
+        this.dataDefinitionService = null;
         this.dictionaryName = null;
     }
 
-    public DictionaryCellParser(final String dictionaryName) {
+    public DictionaryCellParser(final DataDefinitionService dataDefinitionService, final String dictionaryName) {
+        this.dataDefinitionService = dataDefinitionService;
         this.dictionaryName = dictionaryName;
     }
 

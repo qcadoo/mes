@@ -26,6 +26,7 @@ package com.qcadoo.mes.deliveries.hooks;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,11 +42,9 @@ import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
-import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -59,10 +58,6 @@ public class DeliveredProductDetailsHooks {
     private static final String L_FORM = "form";
 
     private static final String L_DELIVERED_PRODUCT_RESERVATIONS = "deliveredProductReservations";
-
-    private static final String L_OPERATION = "operation";
-
-    private static final String L_OFFER = "offer";
 
     private static final String L_LOCATION = "location";
 
@@ -99,10 +94,13 @@ public class DeliveredProductDetailsHooks {
 
     private void disableReservationsForWaste(final ViewDefinitionState view) {
         FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(L_FORM);
+        GridComponent reservationsGrid = (GridComponent) view.getComponentByReference(L_DELIVERED_PRODUCT_RESERVATIONS);
+
         Entity deliveredProduct = deliveredProductForm.getEntity();
-        GridComponent reservations = (GridComponent) view.getComponentByReference(L_DELIVERED_PRODUCT_RESERVATIONS);
+
         boolean isWaste = !deliveredProduct.getBooleanField(DeliveredProductFields.IS_WASTE);
-        reservations.setEnabled(isWaste);
+
+        reservationsGrid.setEnabled(isWaste);
     }
 
     public void fillUnitFields(final ViewDefinitionState view) {
@@ -113,9 +111,10 @@ public class DeliveredProductDetailsHooks {
     }
 
     public void fillCurrencyFields(final ViewDefinitionState view) {
+        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(L_FORM);
+
         List<String> referenceNames = Lists.newArrayList("totalPriceCurrency", "pricePerUnitCurrency");
 
-        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(L_FORM);
         Entity deliveredProduct = deliveredProductForm.getEntity();
         Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
 
@@ -124,12 +123,11 @@ public class DeliveredProductDetailsHooks {
 
     public void fillOrderedQuantities(final ViewDefinitionState view) {
         FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity deliveredProduct = deliveredProductForm.getEntity();
-
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(DeliveredProductFields.PRODUCT);
-        Entity product = productLookup.getEntity();
-
         FieldComponent orderedQuantity = (FieldComponent) view.getComponentByReference(OrderedProductFields.ORDERED_QUANTITY);
+
+        Entity deliveredProduct = deliveredProductForm.getEntity();
+        Entity product = productLookup.getEntity();
 
         if (Objects.isNull(product)) {
             orderedQuantity.setFieldValue(null);
@@ -142,11 +140,13 @@ public class DeliveredProductDetailsHooks {
 
     public void fillConversion(final ViewDefinitionState view) {
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(DeliveredProductFields.PRODUCT);
+
         Entity product = productLookup.getEntity();
 
         if (Objects.nonNull(product)) {
             String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
             String unit = product.getStringField(ProductFields.UNIT);
+
             FieldComponent conversionField = (FieldComponent) view.getComponentByReference(DeliveredProductFields.CONVERSION);
 
             if (StringUtils.isEmpty(additionalUnit)) {
@@ -190,27 +190,23 @@ public class DeliveredProductDetailsHooks {
     }
 
     private BigDecimal getOrderedProductQuantity(final Entity deliveredProduct) {
-        Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
-        Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
-
         BigDecimal orderedQuantity = null;
 
-        SearchCriteriaBuilder searchCriteriaBuilder = deliveriesService.getOrderedProductDD().find()
-                .add(SearchRestrictions.belongsTo(OrderedProductFields.DELIVERY, delivery))
-                .add(SearchRestrictions.belongsTo(OrderedProductFields.PRODUCT, product));
+        Optional<Entity> maybeOrderedProduct = deliveriesService.getOrderedProductForDeliveredProduct(deliveredProduct);
 
-        if (PluginUtils.isEnabled("techSubcontrForDeliveries")) {
-            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OPERATION, deliveredProduct.getBelongsToField(L_OPERATION)));
-        }
+        if (maybeOrderedProduct.isPresent()) {
+            Entity orderedProduct = maybeOrderedProduct.get();
 
-        if (PluginUtils.isEnabled("supplyNegotiations")) {
-            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OFFER, deliveredProduct.getBelongsToField(L_OFFER)));
-        }
-
-        Entity orderedProduct = searchCriteriaBuilder.setMaxResults(1).uniqueResult();
-
-        if (orderedProduct != null) {
             orderedQuantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
+        } else {
+            maybeOrderedProduct = deliveriesService.getOrderedProductForDeliveredProduct(deliveredProduct,
+                    SearchRestrictions.isNull(OrderedProductFields.BATCH));
+
+            if (maybeOrderedProduct.isPresent()) {
+                Entity orderedProduct = maybeOrderedProduct.get();
+
+                orderedQuantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
+            }
         }
 
         return orderedQuantity;
@@ -219,6 +215,7 @@ public class DeliveredProductDetailsHooks {
     public void setDeliveredQuantityFieldRequired(final ViewDefinitionState view) {
         FieldComponent deliveredQuantityField = (FieldComponent) view
                 .getComponentByReference(DeliveredProductFields.DELIVERED_QUANTITY);
+
         deliveredQuantityField.setRequired(true);
         deliveredQuantityField.requestComponentUpdateState();
     }
@@ -226,6 +223,7 @@ public class DeliveredProductDetailsHooks {
     public void setAdditionalQuantityFieldRequired(final ViewDefinitionState view) {
         FieldComponent additionalQuantityField = (FieldComponent) view
                 .getComponentByReference(DeliveredProductFields.ADDITIONAL_QUANTITY);
+
         additionalQuantityField.setRequired(true);
         additionalQuantityField.requestComponentUpdateState();
     }
@@ -242,17 +240,16 @@ public class DeliveredProductDetailsHooks {
     private void setFilters(final ViewDefinitionState view) {
         FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(L_FORM);
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(DeliveredProductFields.PRODUCT);
-        Entity product = productLookup.getEntity();
-
-        Entity deliveredProductEntity = deliveredProductForm.getEntity();
-
-        Entity delivery = deliveredProductEntity.getBelongsToField(DeliveredProductFields.DELIVERY);
-        Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
-
         LookupComponent storageLocationsLookup = (LookupComponent) view
                 .getComponentByReference(DeliveredProductFields.STORAGE_LOCATION);
         LookupComponent additionalCodeLookup = (LookupComponent) view
                 .getComponentByReference(DeliveredProductFields.ADDITIONAL_CODE);
+
+        Entity deliveredProductEntity = deliveredProductForm.getEntity();
+        Entity product = productLookup.getEntity();
+
+        Entity delivery = deliveredProductEntity.getBelongsToField(DeliveredProductFields.DELIVERY);
+        Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);
 
         if (Objects.nonNull(product)) {
             filterBy(additionalCodeLookup, DeliveredProductFields.PRODUCT, product.getId());

@@ -23,17 +23,18 @@
  */
 package com.qcadoo.mes.advancedGenealogy;
 
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.advancedGenealogy.constants.AdvancedGenealogyConstants;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
-
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class AdvancedGenealogyService {
@@ -41,34 +42,64 @@ public class AdvancedGenealogyService {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public final Entity getTrackingRecord(final Long trackingRecordId) {
-        return getDataDefinitionForTrackingRecord().get(trackingRecordId);
-    }
-
-    public final DataDefinition getDataDefinitionForTrackingRecord() {
-        return dataDefinitionService.get(AdvancedGenealogyConstants.PLUGIN_IDENTIFIER,
-                AdvancedGenealogyConstants.MODEL_TRACKING_RECORD);
-    }
-
-    public Entity createOrGetBatch(String number, Entity product) {
+    public Entity createOrGetBatch(final String number, final Entity product) {
         Entity batch = getBatch(number, product);
 
         if (Objects.isNull(batch)) {
             return createBatch(number, product);
         }
+
         return batch;
     }
 
-    public Entity createBatch(String number, Entity product) {
+    public Entity createOrGetBatch(final String number, final Entity product, final Entity supplier) {
+        Entity batch = getBatch(number, product, supplier);
+
+        if (Objects.isNull(batch)) {
+            return createBatch(number, product, supplier);
+        }
+
+        return batch;
+    }
+
+    public Entity createBatch(final String number, final Entity product) {
+        return createBatch(number, product, null);
+    }
+
+    public Entity createBatch(final String number, final Entity product, final Entity supplier) {
         Entity batch = getBatchDD().create();
+
         batch.setField(BatchFields.NUMBER, number);
-        batch.setField(BatchFields.PRODUCT, product.getId());
+
+        if (Objects.nonNull(product)) {
+            batch.setField(BatchFields.PRODUCT, product.getId());
+        }
+        if (Objects.nonNull(supplier)) {
+            batch.setField(BatchFields.SUPPLIER, supplier.getId());
+        }
+
         return batch.getDataDefinition().save(batch);
     }
 
     private Entity getBatch(final String number, final Entity product) {
-        return getBatchDD().find().add(SearchRestrictions.eq(BatchFields.NUMBER, number))
-                .add(SearchRestrictions.belongsTo(BatchFields.PRODUCT, product)).setMaxResults(1).uniqueResult();
+        return getBatch(number, product, null);
+    }
+
+    private Entity getBatch(final String number, final Entity product, final Entity supplier) {
+        SearchCriteriaBuilder searchCriteriaBuilder = getBatchDD().find().add(SearchRestrictions.eq(BatchFields.NUMBER, number));
+
+        if (Objects.nonNull(product)) {
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(BatchFields.PRODUCT, product));
+        }
+        if (Objects.nonNull(supplier)) {
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(BatchFields.SUPPLIER, supplier));
+        }
+
+        return searchCriteriaBuilder.setMaxResults(1).uniqueResult();
+    }
+
+    public final Entity getTrackingRecord(final Long trackingRecordId) {
+        return getTrackingRecordDD().get(trackingRecordId);
     }
 
     private DataDefinition getBatchDD() {
@@ -76,6 +107,8 @@ public class AdvancedGenealogyService {
     }
 
     public DataDefinition getTrackingRecordDD() {
-        return dataDefinitionService.get(AdvancedGenealogyConstants.PLUGIN_IDENTIFIER, AdvancedGenealogyConstants.MODEL_TRACKING_RECORD);
+        return dataDefinitionService.get(AdvancedGenealogyConstants.PLUGIN_IDENTIFIER,
+                AdvancedGenealogyConstants.MODEL_TRACKING_RECORD);
     }
+
 }

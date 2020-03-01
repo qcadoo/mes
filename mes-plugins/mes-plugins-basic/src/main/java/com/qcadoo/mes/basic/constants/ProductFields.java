@@ -43,8 +43,6 @@ public final class ProductFields {
 
     public static final String UNIT = "unit";
 
-    public static final String SUBSTITUTES = "substitutes";
-
     public static final String SUBSTITUTE_COMPONENTS = "substituteComponents";
 
     public static final String EXTERNAL_NUMBER = "externalNumber";
@@ -54,8 +52,6 @@ public final class ProductFields {
     public static final String CONVERSION_ITEMS = "conversionItems";
 
     public static final String PARENT = "parent";
-
-    public static final String CHILD = "child";
 
     public static final String PRODUCT_FAMILY_CHILDRENS = "productFamilyChildrens";
 

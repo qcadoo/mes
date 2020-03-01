@@ -290,7 +290,6 @@
 		<model:model model="numberPatternElement" resource="model/numberPatternElement.xml"/>
 
         <model:dictionary name="categories"/>
-        <model:dictionary name="posts"/>
         <model:dictionary name="reasonTypeOfChangingOrderState"/>
 
         <model:dictionary name="typeOfSubassembly"/>
@@ -303,6 +302,9 @@
         <model:dictionary name="color"/>
 
         <menu:menu-category name="basic"/>
+        <menu:menu-category name="calendars" defaultAuthorizationRole="ROLE_SHIFTS"/>
+        <menu:menu-category name="staff"/>
+        <menu:menu-category name="products"/>
         <menu:menu-category name="companyStructure" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE"/>
 
         <menu:menu-item-url name="home" category="home"
@@ -314,18 +316,24 @@
         <menu:menu-item name="countries" category="administration"
                         view="countriesList" defaultAuthorizationRole="ROLE_COUNTRIES"/>
 
-        <menu:menu-item name="staff" category="basic" view="staffsList" defaultAuthorizationRole="ROLE_STAFF_WAGES"/>
-        <menu:menu-item name="crews" category="basic" view="crewsList" defaultAuthorizationRole="ROLE_CREW"/>
-        <menu:menu-item name="shifts" category="basic" view="shiftsList" defaultAuthorizationRole="ROLE_SHIFTS"/>
-        <menu:menu-item name="products" category="basic" view="productsList" defaultAuthorizationRole="ROLE_PRODUCTS"/>
-        <menu:menu-item name="attributesList" category="basic" view="attributesList" defaultAuthorizationRole="ROLE_PRODUCTS"/>
-        <menu:menu-item-url name="productsAttributes" category="basic" url="/productsAttributes.html"
-                            defaultAuthorizationRole="ROLE_PRODUCTS"/>
-        <menu:menu-item name="productsFamilies" category="basic"
-                        view="productsFamilies" defaultAuthorizationRole="ROLE_PRODUCT_FAMILIES"/>
+        <menu:menu-item name="staff" category="staff" view="staffsList" defaultAuthorizationRole="ROLE_STAFF_WAGES"/>
+        <menu:menu-item name="crews" category="staff" view="crewsList" defaultAuthorizationRole="ROLE_CREW"/>
+        <menu:menu-item name="skillsList" category="staff"
+                        view="skillsList" defaultAuthorizationRole="ROLE_SKILLS"/>
 
-        <menu:menu-item name="assortments" category="basic" view="assortmentsList"
+        <menu:menu-item name="shifts" category="calendars" view="shiftsList" defaultAuthorizationRole="ROLE_SHIFTS"/>
+        <menu:menu-item name="exceptionsForLineList" category="calendars" view="exceptionsForLineList"
+                        defaultAuthorizationRole="ROLE_SHIFTS"/>
+
+        <menu:menu-item name="products" category="products" view="productsList" defaultAuthorizationRole="ROLE_PRODUCTS"/>
+        <menu:menu-item name="productsFamilies" category="products"
+                        view="productsFamilies" defaultAuthorizationRole="ROLE_PRODUCT_FAMILIES"/>
+        <menu:menu-item name="assortments" category="products" view="assortmentsList"
                         defaultAuthorizationRole="ROLE_PRODUCTS"/>
+        <menu:menu-item-url name="productsAttributes" category="products" url="/productsAttributes.html"
+                            defaultAuthorizationRole="ROLE_PRODUCTS"/>
+
+        <menu:menu-item name="attributesList" category="basic" view="attributesList" defaultAuthorizationRole="ROLE_PRODUCTS"/>
 
         <menu:menu-item name="palletNumbers" category="basic" view="palletNumbersList"
                         defaultAuthorizationRole="ROLE_PALLET_NUMBERS"/>
@@ -334,10 +342,6 @@
 
         <menu:menu-item name="faultTypes" category="basic" view="faultTypesList"
                         defaultAuthorizationRole="ROLE_FAULT_TYPES"/>
-
-
-        <menu:menu-item name="exceptionsForLineList" category="basic" view="exceptionsForLineList"
-                        defaultAuthorizationRole="ROLE_SHIFTS"/>
 
         <menu:menu-item-url name="dictionariesInBasic"
                             category="basic" url="/page/qcadooDictionaries/dictionariesList.html"
@@ -370,9 +374,6 @@
 
         <menu:menu-item name="attachmentsList" category="basic"
                         view="attachmentsList" defaultAuthorizationRole="ROLE_BASIC"/>
-
-		<menu:menu-item name="skillsList" category="basic"
-						view="skillsList" defaultAuthorizationRole="ROLE_SKILLS"/>
 
         <menu:menu-item name="numberPatternsList" category="administration"
                         view="numberPatternsList" defaultAuthorizationRole="ROLE_NUMBER_PATTERN"/>

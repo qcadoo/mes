@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -188,6 +189,10 @@ public class DocumentPositionService {
     }
 
     public void create(final DocumentPositionDTO documentPositionVO) {
+        Long batchId = documentPositionVO.getBatchId();
+        if(Objects.nonNull(batchId) && batchId == 0) {
+            documentPositionVO.setBatchId(null);
+        }
         Map<String, Object> params = validator.validateAndTryMapBeforeCreate(documentPositionVO);
 
         if (params.get("id") == null || Long.valueOf(params.get("id").toString()) == 0) {
@@ -216,6 +221,10 @@ public class DocumentPositionService {
     }
 
     public void update(final Long id, final DocumentPositionDTO documentPositionVO) {
+        Long batchId = documentPositionVO.getBatchId();
+        if(Objects.nonNull(batchId) && batchId == 0) {
+            documentPositionVO.setBatchId(null);
+        }
         Map<String, Object> params = validator.validateAndTryMapBeforeUpdate(documentPositionVO);
 
         String set = params.keySet().stream().map(key -> {
@@ -519,9 +528,9 @@ public class DocumentPositionService {
     }
 
     public ResourceDTO getResource(final Long document, final String product, final BigDecimal conversion,
-            final String additionalCode, String batch) {
+            final String additionalCode, Long batchId) {
         boolean useAdditionalCode = org.apache.commons.lang3.StringUtils.isNotEmpty(additionalCode);
-        boolean useBatch = org.apache.commons.lang3.StringUtils.isNotEmpty(batch);
+        boolean useBatch = Objects.nonNull(batchId);
 
         Map<String, Object> filter = Maps.newHashMap();
 
@@ -534,7 +543,7 @@ public class DocumentPositionService {
         }
 
         if (useBatch) {
-            filter.put("batch", batch);
+            filter.put("batch", batchId);
         }
 
         String query = positionResourcesHelper.getResourceQuery(document, false, useAdditionalCode, useBatch);
@@ -557,7 +566,7 @@ public class DocumentPositionService {
     }
 
     public List<AbstractDTO> getResources(final Long document, final String q, final String product, final BigDecimal conversion,
-            boolean useAdditionalCode, final String additionalCode, boolean useBatch, String batch) {
+            boolean useAdditionalCode, final String additionalCode, boolean useBatch, Long batchId) {
         if (Strings.isNullOrEmpty(q) || Strings.isNullOrEmpty(product)) {
             return Lists.newArrayList();
         } else {
@@ -573,7 +582,7 @@ public class DocumentPositionService {
             }
 
             if(useBatch) {
-                paramMap.put("batch", batch);
+                paramMap.put("batch", batchId);
             }
 
             String query = positionResourcesHelper.getResourceQuery(document, true, useAdditionalCode, useBatch);
@@ -583,23 +592,23 @@ public class DocumentPositionService {
     }
 
     public DataResponse getResourcesResponse(final Long document, final String q, final String product,
-            final BigDecimal conversion, final String additionalCode, String batch, boolean shouldCheckMaxResults) {
+            final BigDecimal conversion, final String additionalCode, Long batchId, boolean shouldCheckMaxResults) {
         if (Strings.isNullOrEmpty(product)) {
             return new DataResponse(Lists.newArrayList(), 0);
         }
 
         boolean useAdditionalCode = org.apache.commons.lang3.StringUtils.isNotEmpty(additionalCode);
-        boolean useBatch = org.apache.commons.lang3.StringUtils.isNotEmpty(batch);
+        boolean useBatch = Objects.nonNull(batchId);
 
         String ilikeValue = "%" + q + "%";
         ilikeValue = ilikeValue.replace("*", "%");
         ilikeValue = ilikeValue.replace("%%", "%");
-        List<AbstractDTO> entities = getResources(document, ilikeValue, product, conversion, useAdditionalCode, additionalCode, useBatch, batch);
+        List<AbstractDTO> entities = getResources(document, ilikeValue, product, conversion, useAdditionalCode, additionalCode, useBatch, batchId);
 
         if (entities.isEmpty() && useAdditionalCode) {
             useAdditionalCode = false;
 
-            entities = getResources(document, ilikeValue, product, conversion, false, additionalCode, useBatch, batch);
+            entities = getResources(document, ilikeValue, product, conversion, false, additionalCode, useBatch, batchId);
         }
 
         Map<String, Object> paramMap = Maps.newHashMap();
@@ -613,7 +622,7 @@ public class DocumentPositionService {
         }
 
         if (useBatch) {
-            paramMap.put("batch", batch);
+            paramMap.put("batch", batchId);
         }
 
         String preparedQuery = positionResourcesHelper.getResourceQuery(document, true, useAdditionalCode, useBatch);

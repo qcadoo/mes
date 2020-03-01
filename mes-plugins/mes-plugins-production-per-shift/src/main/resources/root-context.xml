@@ -35,4 +35,14 @@
 	
 	<context:component-scan base-package="com.qcadoo.mes.productionPerShift" />
 
+	<bean id="cleanUpBalanceContextsTrigger" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="cleanUpBalanceContexts" />
+		<property name="cronExpression" value="0 0 4 * * ?" /><!-- every day at 4:00:00 am -->
+	</bean>
+
+	<bean id="cleanUpBalanceContexts"
+		  class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="balanceContextsCleanUpService" />
+		<property name="targetMethod" value="cleanUp" />
+	</bean>
 </beans>

@@ -56,7 +56,8 @@ public class BatchModelValidators {
         SearchCriterion criterion = batchNumberUniqueness.buildCriterionFor(batch);
 
         if (existsAnyBatchMatchingCriterion(batchDD, criterion)) {
-            String errorMessage = String.format(ERROR_MESSAGE_TEMPLATE, batchNumberUniqueness.getStringValue());
+            String errorMessage = getBatchNumberErrorMessage(batchNumberUniqueness);
+
             batch.addError(batchDD.getField(BatchFields.NUMBER), errorMessage);
 
             return false;
@@ -74,9 +75,13 @@ public class BatchModelValidators {
         return scb.setMaxResults(1).uniqueResult() != null;
     }
 
-    private BatchNumberUniqueness getBatchNumberUniqueness() {
+    public String getBatchNumberErrorMessage(final BatchNumberUniqueness batchNumberUniqueness) {
+        return String.format(ERROR_MESSAGE_TEMPLATE, batchNumberUniqueness.getStringValue());
+    }
+
+    public BatchNumberUniqueness getBatchNumberUniqueness() {
         Entity parameter = parameterService.getParameter();
-        
+
         String batchNumberUniquenessValue = parameter.getStringField(ParameterFieldsAG.BATCH_NUMBER_UNIQUENESS);
 
         return BatchNumberUniqueness.parseString(batchNumberUniquenessValue);

@@ -425,8 +425,13 @@ function onSelectLookupRow(row, recordName) {
         var rowId = $('#product').length ? null : jQuery('#grid').jqGrid('getGridParam', 'selrow');
         var field = updateFieldValue(recordName, code, rowId);
         if(recordName == "batch") {
-            var fieldBatchId = updateFieldValue("batchId", row.id, rowId);
-            fieldBatchId.trigger('change');
+            if( row.id == 0) {
+                var fieldBatchId = updateFieldValue("batchId", null, rowId);
+                fieldBatchId.trigger('change');
+            } else {
+                var fieldBatchId = updateFieldValue("batchId", row.id, rowId);
+                fieldBatchId.trigger('change');
+            }
         }
         field.trigger('change');
     }
@@ -530,8 +535,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                             var rowId = $('#product').length ? null : jQuery('#grid').jqGrid('getGridParam', 'selrow');
 
                             if(name == "batch") {
-                                var fieldBatchId = updateFieldValue("batchId", item.id, rowId);
-                                fieldBatchId.trigger('change');
+                                if(item.id == 0) {
+                                    var fieldBatchId = updateFieldValue("batchId", null, rowId);
+                                    fieldBatchId.trigger('change');
+                                } else {
+                                    var fieldBatchId = updateFieldValue("batchId", item.id, rowId);
+                                    fieldBatchId.trigger('change');
+                                }
                             }
 
                     if (autoCompleteResult) {
@@ -581,6 +591,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         conversion: getFieldValue('conversion', rowId),
                         ac: getFieldValue('additionalCode', rowId),
                         batch : getFieldValue('batch', rowId),
+                        batchId : getFieldValue('batchId', rowId),
                         context: getDocumentId()
                     }
                 } else {
@@ -589,6 +600,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         conversion: 1,
                         ac: getFieldValue('additionalCode', rowId),
                         batch : getFieldValue('batch', rowId),
+                        batchId : getFieldValue('batchId', rowId),
                         context: getDocumentId()
                     }
                 }
@@ -819,21 +831,25 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             });
         }
 
-        function updateResource(productNumber, conversion, ac) {
+        function updateResource(productNumber, conversion, ac, batch, batchId) {
             var params;
             if (hasAdditionalUnit) {
                 params = {
                     context: getDocumentId(),
                     product: productNumber,
                     ac: ac,
-                    conversion: conversion
+                    conversion: conversion,
+                    batch : batch,
+                    batchId : batchId
                 }
             } else {
                 params = {
                     context: getDocumentId(),
                     product: productNumber,
                     ac: ac,
-                    conversion: 1
+                    conversion: 1,
+                    batch : batch,
+                    batchId : batchId
                 }
 
             }
@@ -890,9 +906,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         if (!$scope.config.outDocument) {
                             updateStorageLocations(t.val(), getDocumentId());
                         } else if ($scope.config.suggestResource) {
-                            var conversion = getFieldValue('conversion', getRowIdFromElement(t))
-                            var ac = getFieldValue('additionalCode', getRowIdFromElement(t))
-                            updateResource(t.val(), conversion, ac);
+                            var conversion = getFieldValue('conversion', getRowIdFromElement(t));
+                            var ac = getFieldValue('additionalCode', getRowIdFromElement(t));
+                            var batch = getFieldValue('batch', getRowIdFromElement(t));
+                            var batchId = getFieldValue('batchId', getRowIdFromElement(t));
+                            updateResource(t.val(), conversion, ac, batch, batchId);
                         }
                     } else {
                         updateFieldValue('storageLocation', '', getRowIdFromElement(t));
@@ -1136,11 +1154,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     if (!firstLoad || getFieldValue('conversion', rowId) === '') {
                         updateFieldValue('conversion', conversion, rowId);
                         if ($scope.config.outDocument && $scope.config.suggestResource) {
-                            var product = getFieldValue('product', rowId)
-                            var ac = getFieldValue('additionalCode', rowId)
-                            var resource = getFieldValue('resource', rowId)
+                            var product = getFieldValue('product', rowId);
+                            var ac = getFieldValue('additionalCode', rowId);
+                            var resource = getFieldValue('resource', rowId);
+                            var batch = getFieldValue('batch', rowId);
+                            var batchId = getFieldValue('batchId', rowId);
                             if (!resource) {
-                                updateResource(product, conversion, ac);
+                                updateResource(product, conversion, ac, batch, batchId);
                             }
                         }
                     }
@@ -1357,9 +1377,11 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
 
                         updateFieldValue('givenquantity', newGivenQuantity, rowId);
                         if ($scope.config.outDocument && $scope.config.suggestResource) {
-                            var product = getFieldValue('product', getRowIdFromElement(t))
-                            var ac = getFieldValue('additionalCode', getRowIdFromElement(t))
-                            updateResource(product, t.val(), ac);
+                            var product = getFieldValue('product', getRowIdFromElement(t));
+                            var ac = getFieldValue('additionalCode', getRowIdFromElement(t));
+                            var batch = getFieldValue('batch', getRowIdFromElement(t));
+                            var batchId = getFieldValue('batchId', getRowIdFromElement(t));
+                            updateResource(product, t.val(), ac, batch, batchId);
                         }
                     }, 500)));
                 }

@@ -25,6 +25,7 @@ package com.qcadoo.mes.supplyNegotiations.listeners;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,8 +46,10 @@ import com.qcadoo.view.api.components.GridComponent;
 @Service
 public class DeliveryDetailsListenersSN {
 
+    private static final String L_ORDERED_PRODUCTS_CUMULATED_TOTAL_PRICE = "orderedProductsCumulatedTotalPrice";
+
     @Autowired
-    NumberService numberService;
+    private NumberService numberService;
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -55,29 +58,41 @@ public class DeliveryDetailsListenersSN {
     private SupplyNegotiationsService supplyNegotiationsService;
 
     public void fillPrices(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        GridComponent orderedProductsGrid = (GridComponent) view.getComponentByReference(DeliveriesService.L_ORDERED_PRODUCTS);
+        GridComponent orderedProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
+
         List<Entity> orderedProducts = deliveriesService.getSelectedOrderedProducts(orderedProductsGrid);
-        orderedProducts.forEach(op -> {
-            Entity product = op.getBelongsToField(OrderedProductFields.PRODUCT);
-            Entity supplier = op.getBelongsToField(OrderedProductFields.DELIVERY).getBelongsToField(DeliveryFields.SUPPLIER);
-            if (supplier == null) {
+
+        orderedProducts.forEach(orderedProduct -> {
+            Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
+            Entity supplier = orderedProduct.getBelongsToField(OrderedProductFields.DELIVERY)
+                    .getBelongsToField(DeliveryFields.SUPPLIER);
+
+            if (Objects.isNull(supplier)) {
                 return;
             }
 
             Entity offerProduct = supplyNegotiationsService.getLastOfferProduct(supplier, product);
-            if (offerProduct != null) {
-                op.setField(OrderedProductFields.PRICE_PER_UNIT, offerProduct.getDecimalField(OfferProductFields.PRICE_PER_UNIT));
-                op.setField(OrderedProductFieldsSN.OFFER, offerProduct.getBelongsToField(OfferProductFields.OFFER));
-                op.getDataDefinition().save(op);
+
+            if (Objects.nonNull(offerProduct)) {
+                orderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT,
+                        offerProduct.getDecimalField(OfferProductFields.PRICE_PER_UNIT));
+                orderedProduct.setField(OrderedProductFieldsSN.OFFER, offerProduct.getBelongsToField(OfferProductFields.OFFER));
+                orderedProduct.getDataDefinition().save(orderedProduct);
             }
         });
+
         orderedProductsGrid.reloadEntities();
 
         BigDecimal totalPrice = orderedProducts.stream()
-                .filter(op -> op.getDecimalField(OrderedProductFields.TOTAL_PRICE) != null)
-                .map(op -> op.getDecimalField(OrderedProductFields.TOTAL_PRICE)).reduce(BigDecimal.ZERO, BigDecimal::add);
-        FieldComponent totalPriceComponent = (FieldComponent) view.getComponentByReference("orderedProductsCumulatedTotalPrice");
+                .filter(orderedProduct -> Objects.nonNull(orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE)))
+                .map(orderedProduct -> orderedProduct.getDecimalField(OrderedProductFields.TOTAL_PRICE))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        FieldComponent totalPriceComponent = (FieldComponent) view
+                .getComponentByReference(L_ORDERED_PRODUCTS_CUMULATED_TOTAL_PRICE);
+
         totalPriceComponent.setFieldValue(numberService.formatWithMinimumFractionDigits(totalPrice, 0));
         totalPriceComponent.requestComponentUpdateState();
     }
+
 }

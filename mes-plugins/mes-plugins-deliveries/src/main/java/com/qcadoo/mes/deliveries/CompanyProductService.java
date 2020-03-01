@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.deliveries;
 
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 public interface CompanyProductService {
@@ -33,9 +32,6 @@ public interface CompanyProductService {
      * 
      * @param companyProduct
      *            company product
-     * 
-     * @param companyName
-     *            belongs to product name - product
      * 
      * @param belongsToCompanyName
      *            belongs to company name - company
@@ -64,4 +60,5 @@ public interface CompanyProductService {
      * @return
      */
     String checkIfDefaultExistsForProductsInFamily(final Entity companyProduct);
+
 }

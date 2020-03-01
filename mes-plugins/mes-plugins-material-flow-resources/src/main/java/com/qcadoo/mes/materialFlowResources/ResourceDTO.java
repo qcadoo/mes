@@ -20,6 +20,8 @@ public class ResourceDTO implements AbstractDTO {
 
     private String batch;
 
+    private Long batchId;
+
     private BigDecimal quantity;
 
     private BigDecimal quantityInAdditionalUnit;
@@ -252,5 +254,13 @@ public class ResourceDTO implements AbstractDTO {
 
     public void setAttrs(Map<String, Object> attrs) {
         this.attrs = attrs;
+    }
+
+    public Long getBatchId() {
+        return batchId;
+    }
+
+    public void setBatchId(Long batchId) {
+        this.batchId = batchId;
     }
 }

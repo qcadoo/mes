@@ -23,12 +23,13 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import static com.qcadoo.mes.deliveries.constants.CompanyFieldsD.BUFFER;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.CompanyService;
+import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -57,29 +58,25 @@ public class CompanyDetailsHooksD {
 
     public void disableBufferWhenCompanyIsOwner(final ViewDefinitionState view) {
         FormComponent companyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FieldComponent bufferField = (FieldComponent) view.getComponentByReference(CompanyFieldsD.BUFFER);
+
         Boolean isOwner = companyService.isCompanyOwner(companyForm.getEntity());
 
-        FieldComponent buffer = (FieldComponent) view.getComponentByReference(BUFFER);
-
-        buffer.setEnabled(!isOwner);
+        bufferField.setEnabled(!isOwner);
     }
 
     public void updateRibbonState(final ViewDefinitionState view) {
         FormComponent companyForm = (FormComponent) view.getComponentByReference(L_FORM);
 
-        Entity company = companyForm.getEntity();
-
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
-
         RibbonGroup suppliers = window.getRibbon().getGroupByName(L_SUPPLIERS);
-
         RibbonActionItem redirectToFilteredDeliveriesList = suppliers.getItemByName(L_REDIRECT_TO_FILTERED_DELIVERIES_LIST);
 
-        if (company.getId() == null) {
-            updateButtonState(redirectToFilteredDeliveriesList, false);
-        } else {
-            updateButtonState(redirectToFilteredDeliveriesList, true);
-        }
+        Entity company = companyForm.getEntity();
+
+        boolean isEnabled = Objects.nonNull(company.getId());
+
+        updateButtonState(redirectToFilteredDeliveriesList, isEnabled);
     }
 
     private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {

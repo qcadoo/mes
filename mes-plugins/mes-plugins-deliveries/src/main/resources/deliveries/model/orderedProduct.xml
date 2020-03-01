@@ -72,6 +72,6 @@
         <onSave class="com.qcadoo.mes.deliveries.hooks.OrderedProductHooks"
                 method="onSave"/>
         <validatesWith class="com.qcadoo.mes.deliveries.hooks.OrderedProductHooks"
-                       method="checkIfOrderedProductAlreadyExists"/>
+                       method="validatesWith"/>
     </hooks>
 </model>

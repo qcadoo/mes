@@ -65,6 +65,7 @@
 						
 			<component type="grid" name="stoppage" reference="grid">
 				<option type="column" name="orderNumber" fields="orderNumber" link="true"/>
+				<option type="column" name="orderState" fields="orderState" link="true"/>
 				<option type="column" name="productionTrackingNumber" fields="productionTrackingNumber" link="true"/>
 				<option type="column" name="productionTrackingState" fields="productionTrackingState" link="true"/>
 				<option type="column" name="duration" fields="duration" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)" link="true"/>
@@ -82,8 +83,8 @@
 				<option type="correspondingViewInModal" value="false" />
 					
 				<option type="order" column="orderNumber" direction="desc" />
-				<option type="searchable" value="orderNumber,productionTrackingNumber,productionTrackingState,dateFrom,dateTo,reasonName,description,divisionNumber,productionLineNumber,workstationNumber,staffName" />
-				<option type="orderable" value="orderNumber,productionTrackingNumber,productionTrackingState,dateFrom,dateTo,reasonName,description,divisionNumber,productionLineNumber,workstationNumber,staffName" />
+				<option type="searchable" value="orderNumber,orderState,productionTrackingNumber,productionTrackingState,dateFrom,dateTo,reasonName,description,divisionNumber,productionLineNumber,workstationNumber,staffName" />
+				<option type="orderable" value="orderNumber,orderState,productionTrackingNumber,productionTrackingState,dateFrom,dateTo,reasonName,description,divisionNumber,productionLineNumber,workstationNumber,staffName" />
 				<option type="footerRow" value="true"/>
 				<option type="columnsToSummaryTime" value="duration"/>
 

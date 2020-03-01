@@ -33,14 +33,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import com.google.common.base.Strings;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.technologies.constants.ProductComponentFields;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.lowagie.text.Chunk;
@@ -77,7 +75,8 @@ import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
 
-@Component(value = "orderReportPdf") public class OrderReportPdf extends ReportPdfView {
+@Component(value = "orderReportPdf")
+public class OrderReportPdf extends ReportPdfView {
 
     private static final Integer REPORT_WIDTH = 515;
 
@@ -85,26 +84,35 @@ import com.qcadoo.report.api.pdf.ReportPdfView;
 
     private static final String L_IDENTIFIER_PRODUCT_NAME = "productName";
 
-    @Autowired private DeliveriesService deliveriesService;
+    @Autowired
+    private DeliveriesService deliveriesService;
 
-    @Autowired private OrderColumnFetcher orderColumnFetcher;
+    @Autowired
+    private OrderColumnFetcher orderColumnFetcher;
 
-    @Autowired private ColumnExtensionService columnExtensionService;
+    @Autowired
+    private ColumnExtensionService columnExtensionService;
 
-    @Autowired private TranslationService translationService;
+    @Autowired
+    private TranslationService translationService;
 
-    @Autowired private PdfHelper pdfHelper;
+    @Autowired
+    private PdfHelper pdfHelper;
 
-    @Autowired private ParameterService parameterService;
+    @Autowired
+    private ParameterService parameterService;
 
-    @Autowired private CompanyService companyService;
+    @Autowired
+    private CompanyService companyService;
 
-    @Autowired private NumberService numberService;
+    @Autowired
+    private NumberService numberService;
 
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateUtils.L_DATE_TIME_FORMAT,
             LocaleContextHolder.getLocale());
 
-    @Override protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
+    @Override
+    protected String addContent(final Document document, final Map<String, Object> model, final Locale locale,
             final PdfWriter writer) throws DocumentException, IOException {
         checkState(model.get("id") != null, "Unable to generate report for unsaved delivery! (missing id)");
 
@@ -120,9 +128,8 @@ import com.qcadoo.report.api.pdf.ReportPdfView;
         createHeaderTable(document, delivery, locale);
         createProductsTable(document, delivery, locale);
 
-        return translationService
-                .translate("deliveries.order.report.fileName", locale, delivery.getStringField(DeliveryFields.NUMBER),
-                        getStringFromDate(delivery.getDateField("updateDate")));
+        return translationService.translate("deliveries.order.report.fileName", locale,
+                delivery.getStringField(DeliveryFields.NUMBER), getStringFromDate(delivery.getDateField("updateDate")));
     }
 
     private void createHeaderTable(final Document document, final Entity delivery, final Locale locale) throws DocumentException {
@@ -143,9 +150,8 @@ import com.qcadoo.report.api.pdf.ReportPdfView;
         Map<String, Object> secondColumn = createSecondColumn(delivery);
         Map<String, Object> thirdColumn = createThirdColumn(delivery);
 
-        int maxSize = pdfHelper.getMaxSizeOfColumnsRows(
-                Lists.newArrayList(Integer.valueOf(firstColumn.values().size()), Integer.valueOf(secondColumn.values().size()),
-                        Integer.valueOf(thirdColumn.values().size())));
+        int maxSize = pdfHelper.getMaxSizeOfColumnsRows(Lists.newArrayList(Integer.valueOf(firstColumn.values().size()),
+                Integer.valueOf(secondColumn.values().size()), Integer.valueOf(thirdColumn.values().size())));
 
         for (int i = 0; i < maxSize; i++) {
             firstColumnHeaderTable = pdfHelper.addDynamicHeaderTableCell(firstColumnHeaderTable, firstColumn, locale);
@@ -274,13 +280,15 @@ import com.qcadoo.report.api.pdf.ReportPdfView;
                         String value = orderedProductsColumnValues.get(orderedProduct).get(identifier);
 
                         if (showDrawingNumber && L_IDENTIFIER_PRODUCT_NAME.equals(identifier)) {
-                            PdfPCell cell = productsTable.getRow(0).getCells()[
-                                    ((int) columnForOrders.getField(ColumnForDeliveriesFields.SUCCESSION)) - 1];
-                            cell.setPhrase(new Phrase(
-                                    translationService.translate("deliveries.order.report.columnHeader.number", locale) + "\n"
-                                            + translationService
-                                            .translate("deliveries.order.report.columnHeader.drawingNumber", locale),
-                                    FontUtils.getDejavuBold7Dark()));
+                            PdfPCell cell = productsTable.getRow(0)
+                                    .getCells()[((int) columnForOrders.getField(ColumnForDeliveriesFields.SUCCESSION)) - 1];
+                            cell.setPhrase(
+                                    new Phrase(
+                                            translationService.translate("deliveries.order.report.columnHeader.number", locale)
+                                                    + "\n"
+                                                    + translationService.translate(
+                                                            "deliveries.order.report.columnHeader.drawingNumber", locale),
+                                            FontUtils.getDejavuBold7Dark()));
                             value += "\n" + Strings.nullToEmpty(orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT)
                                     .getStringField("drawingNumber"));
                         }
@@ -385,7 +393,8 @@ import com.qcadoo.report.api.pdf.ReportPdfView;
         }
     }
 
-    @Override protected final void addTitle(final Document document, final Locale locale) {
+    @Override
+    protected final void addTitle(final Document document, final Locale locale) {
         document.addTitle(translationService.translate("deliveries.order.report.title", locale));
     }
 

@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,8 +56,11 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
             Long context) {
         String additionalCode = record.getAc();
         boolean useAdditionalCode = org.apache.commons.lang3.StringUtils.isNotEmpty(additionalCode);
-        String batch = record.getBatch();
-        boolean useBatch = org.apache.commons.lang3.StringUtils.isNotEmpty(batch);
+        Long batch = record.getBatchId();
+        if(Objects.nonNull(batch) && batch == 0) {
+            batch = null;
+        }
+        boolean useBatch = Objects.nonNull(batch);
         Map<String, Object> parameters = geParameters(context, record, useAdditionalCode, additionalCode, useBatch, batch);
 
         boolean properFilter = prepareWasteFilter(record);
@@ -86,7 +90,7 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
             boolean lastResourceFilterIsWrong) {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder
-                .append("select %s from (select r.*, sl.number as storageLocation, batch.number as batch, pn.number as palletNumber, ac.code as additionalCode, bp.unit as unit, ");
+                .append("select %s from (select r.*, sl.number as storageLocation, batch.id as batchId, batch.number as batch, pn.number as palletNumber, ac.code as additionalCode, bp.unit as unit, ");
         queryBuilder.append("coalesce(r1.resourcesCount,0) < 2 AS lastResource ");
         queryBuilder.append("FROM materialflowresources_resource r ");
         queryBuilder
@@ -109,7 +113,7 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
             // queryBuilder.append(" AND additionalcode_id = (SELECT id FROM basic_additionalcode WHERE code = :add_code) ");
         }
         if (useBatch) {
-             queryBuilder.append(" AND batch.number = :batch ");
+             queryBuilder.append(" AND batch.id = :batch ");
         }
         queryBuilder.append(warehouseMethodOfDisposalService.getSqlOrderByForResource(context));
         queryBuilder.append(") as resources");
@@ -117,7 +121,7 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
     }
 
     protected Map<String, Object> geParameters(Long context, ResourceDTO resourceDTO, boolean useAdditionalCode,
-            String additionalCode, boolean useBatch, String batch) {
+            String additionalCode, boolean useBatch, Long batch) {
         Map<String, Object> params = new HashMap<>();
         params.put("product", resourceDTO.getProduct());
         params.put("conversion", resourceDTO.getConversion());
@@ -134,6 +138,7 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         resourceDTO.setConversion(null);
         resourceDTO.setAc(null);
         resourceDTO.setBatch(null);
+        resourceDTO.setBatchId(null);
 
         return params;
     }

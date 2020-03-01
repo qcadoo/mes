@@ -41,4 +41,8 @@ public final class ProductionPerShiftConstants {
 
     public static final String MODEL_REASON_TYPE_OF_CORRECTION_PLAN = "reasonTypeOfCorrectionPlan";
 
+    public static final String MODEL_BALANCE_CONTEXT = "balanceContext";
+
+    public static final String MODEL_BALANCE = "balance";
+
 }
