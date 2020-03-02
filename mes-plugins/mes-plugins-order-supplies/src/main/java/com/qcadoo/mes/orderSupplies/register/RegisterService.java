@@ -24,7 +24,6 @@
 package com.qcadoo.mes.orderSupplies.register;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
@@ -39,6 +38,7 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.ProductToProductGroupFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
@@ -69,6 +69,9 @@ public class RegisterService {
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private TechnologyService technologyService;
 
     public List<Entity> getOPICForTechnology(final Entity technology) {
         String sql = "select opic as opic, product.id as productId, product.number as productNumber, product.entityType as productEntityType, "
@@ -139,10 +142,12 @@ public class RegisterService {
                 opic.getLongField("operationId"));
         Long productId = opic.getLongField("productId");
         String productNumber = opic.getStringField("productNumber");
-        if(ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(opic.getStringField("productEntityType"))){
-            Entity productToProductGroupTechnology = getProductToProductGroupTechnology(order.getBelongsToField(OrderFields.PRODUCT), productId);
+        if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(opic.getStringField("productEntityType"))) {
+            Entity productToProductGroupTechnology = technologyService
+                    .getProductToProductGroupTechnology(order.getBelongsToField(OrderFields.PRODUCT), productId);
             if (productToProductGroupTechnology != null) {
-                Entity orderProduct = productToProductGroupTechnology.getBelongsToField(ProductToProductGroupFields.ORDER_PRODUCT);
+                Entity orderProduct = productToProductGroupTechnology
+                        .getBelongsToField(ProductToProductGroupFields.ORDER_PRODUCT);
                 productId = orderProduct.getId();
                 productNumber = orderProduct.getStringField(ProductFields.NUMBER);
             }
@@ -161,15 +166,6 @@ public class RegisterService {
         entries.add(registerEntry);
     }
 
-    public Entity getProductToProductGroupTechnology(Entity orderProduct, Long productId) {
-        return dataDefinitionService
-                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_PRODUCT_TO_PRODUCT_GROUP_TECHNOLOGY)
-                .find().add(SearchRestrictions.belongsTo(ProductToProductGroupFields.FINAL_PRODUCT, orderProduct))
-                .add(SearchRestrictions.belongsTo(ProductToProductGroupFields.PRODUCT_FAMILY, BasicConstants.PLUGIN_IDENTIFIER,
-                        BasicConstants.MODEL_PRODUCT, productId))
-                .uniqueResult();
-    }
-
     public boolean isIntermediate(final Entity product) {
         SearchCriteriaBuilder scb = dataDefinitionService
                 .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).find()
@@ -178,10 +174,7 @@ public class RegisterService {
                 .add(SearchRestrictions.eq(TechnologyFields.STATE, TechnologyState.ACCEPTED.getStringValue()))
                 .add(SearchRestrictions.eq(TechnologyFields.MASTER, true));
 
-        if (scb.setMaxResults(1).uniqueResult() != null) {
-            return true;
-        }
-        return false;
+        return scb.setMaxResults(1).uniqueResult() != null;
     }
 
     public void saveRegistryEntries(List<Entity> entries) {

@@ -23,25 +23,10 @@
  */
 package com.qcadoo.mes.technologies;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.technologies.constants.OperationFields;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -56,6 +41,16 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Service
 public class TechnologyService {
@@ -90,9 +85,6 @@ public class TechnologyService {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
-
-    @Autowired
-    private ProductQuantitiesService productQuantitiesService;
 
     @Autowired
     private PluginAccessor pluginAccessor;
@@ -432,18 +424,25 @@ public class TechnologyService {
     }
 
     public List<Entity> findComponentsForTechnology(final Long technologyId) {
-        String query = "select DISTINCT opic.id as opicId, " + "opic.product as product, " + "(select count(*) from "
-                + "#technologies_operationProductOutComponent opoc " + "left join opoc.operationComponent oc  "
-                + "left join oc.technology as tech " + "left join oc.parent par  " + "where "
+        String query = "select DISTINCT opic.id as opicId, opic.product as product, (select count(*) from "
+                + "#technologies_operationProductOutComponent opoc left join opoc.operationComponent oc  "
+                + "left join oc.technology as tech left join oc.parent par where "
                 + "opoc.product = inputProd and par.id = toc.id ) as isIntermediate "
-                + "from #technologies_operationProductInComponent opic " + "left join opic.product as inputProd "
-                + "left join opic.operationComponent toc " + "left join toc.technology tech " + "where tech.id = :technologyId ";
-        List<Entity> allProducts = dataDefinitionService
+                + "from #technologies_operationProductInComponent opic left join opic.product as inputProd "
+                + "left join opic.operationComponent toc left join toc.technology tech where tech.id = :technologyId ";
+        return dataDefinitionService
                 .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
-                .find(query).setLong("technologyId", technologyId).list().getEntities();
+                .find(query).setLong("technologyId", technologyId).list().getEntities().stream()
+                .filter(p -> (Long) p.getField("isIntermediate") == 0L).map(cmp -> cmp.getBelongsToField("product"))
+                .collect(Collectors.toList());
+    }
 
-        List<Entity> components = allProducts.stream().filter(p -> (Long) p.getField("isIntermediate") == 0l)
-                .map(cmp -> cmp.getBelongsToField("product")).collect(Collectors.toList());
-        return components;
+    public Entity getProductToProductGroupTechnology(Entity orderProduct, Long productId) {
+        return dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_PRODUCT_TO_PRODUCT_GROUP_TECHNOLOGY)
+                .find().add(SearchRestrictions.belongsTo(ProductToProductGroupFields.FINAL_PRODUCT, orderProduct))
+                .add(SearchRestrictions.belongsTo(ProductToProductGroupFields.PRODUCT_FAMILY, BasicConstants.PLUGIN_IDENTIFIER,
+                        BasicConstants.MODEL_PRODUCT, productId))
+                .uniqueResult();
     }
 }

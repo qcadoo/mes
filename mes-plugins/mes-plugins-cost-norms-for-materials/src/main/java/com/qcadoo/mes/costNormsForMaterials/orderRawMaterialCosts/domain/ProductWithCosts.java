@@ -23,24 +23,17 @@
  */
 package com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.domain;
 
-import java.math.BigDecimal;
-
+import com.google.common.base.Function;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import com.google.common.base.Function;
+import java.math.BigDecimal;
 
 public class ProductWithCosts {
 
-    public static final Function<ProductWithCosts, Long> EXTRACT_ID = new Function<ProductWithCosts, Long>() {
+    public static final Function<ProductWithCosts, Long> EXTRACT_ID = productWithCosts -> productWithCosts.getProductId();
 
-        @Override
-        public Long apply(final ProductWithCosts productWithCosts) {
-            return productWithCosts.getProductId();
-        }
-    };
-
-    private final Long productId;
+    private Long productId;
 
     private final BigDecimal costForNumber;
 
@@ -50,17 +43,24 @@ public class ProductWithCosts {
 
     private final BigDecimal averageCost;
 
+    private final String entityType;
+
     public ProductWithCosts(final Long productId, final BigDecimal costForNumber, final BigDecimal nominalCost,
-            final BigDecimal lastPurchaseCost, final BigDecimal averageCost) {
+            final BigDecimal lastPurchaseCost, final BigDecimal averageCost, final String entityType) {
         this.productId = productId;
         this.costForNumber = costForNumber;
         this.nominalCost = nominalCost;
         this.lastPurchaseCost = lastPurchaseCost;
         this.averageCost = averageCost;
+        this.entityType = entityType;
     }
 
     public Long getProductId() {
         return productId;
+    }
+
+    public void setProductId(Long productId) {
+        this.productId = productId;
     }
 
     public BigDecimal getCostForNumber() {
@@ -93,12 +93,16 @@ public class ProductWithCosts {
         ProductWithCosts rhs = (ProductWithCosts) obj;
         return new EqualsBuilder().append(this.productId, rhs.productId).append(this.costForNumber, rhs.costForNumber)
                 .append(this.nominalCost, rhs.nominalCost).append(this.lastPurchaseCost, rhs.lastPurchaseCost)
-                .append(this.averageCost, rhs.averageCost).isEquals();
+                .append(this.averageCost, rhs.averageCost).append(this.entityType, rhs.entityType).isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(productId).append(costForNumber).append(nominalCost).append(lastPurchaseCost)
-                .append(averageCost).toHashCode();
+                .append(averageCost).append(entityType).toHashCode();
+    }
+
+    public String getEntityType() {
+        return entityType;
     }
 }

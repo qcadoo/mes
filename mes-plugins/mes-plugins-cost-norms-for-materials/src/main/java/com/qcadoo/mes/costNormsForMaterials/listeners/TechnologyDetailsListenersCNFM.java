@@ -23,29 +23,24 @@
  */
 package com.qcadoo.mes.costNormsForMaterials.listeners;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
 import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class TechnologyDetailsListenersCNFM {
 
     private static final String L_FORM = "form";
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private TechnologyService technologyService;
@@ -87,5 +82,4 @@ public class TechnologyDetailsListenersCNFM {
             }
         }
     }
-
 }
