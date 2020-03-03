@@ -36,8 +36,7 @@ import static com.qcadoo.model.api.search.SearchProjections.*;
 
 public final class ProductWithCostsBuilder {
 
-    public static final Function<Entity, ProductWithCosts> BUILD_FROM_PROJECTION = projection -> ProductWithCostsBuilder
-            .from(projection);
+    public static final Function<Entity, ProductWithCosts> BUILD_FROM_PROJECTION = ProductWithCostsBuilder::from;
 
     private static final String PRODUCT_ID = "id";
 

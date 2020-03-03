@@ -433,7 +433,7 @@ public class TechnologyService {
         return dataDefinitionService
                 .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
                 .find(query).setLong("technologyId", technologyId).list().getEntities().stream()
-                .filter(p -> (Long) p.getField("isIntermediate") == 0L).map(cmp -> cmp.getBelongsToField("product"))
+                .filter(p -> (Long) p.getField("isIntermediate") == 0L).map(cmp -> cmp.getBelongsToField(L_PRODUCT))
                 .collect(Collectors.toList());
     }
 

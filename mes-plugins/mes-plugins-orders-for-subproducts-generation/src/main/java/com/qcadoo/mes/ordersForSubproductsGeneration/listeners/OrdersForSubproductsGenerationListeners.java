@@ -23,17 +23,6 @@
  */
 package com.qcadoo.mes.ordersForSubproductsGeneration.listeners;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.MaterialRequirementCoverageForOrderService;
@@ -58,6 +47,16 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class OrdersForSubproductsGenerationListeners {
@@ -103,7 +102,7 @@ public class OrdersForSubproductsGenerationListeners {
         }
     }
 
-    private final void simpleGenerate(final ViewDefinitionState view, final ComponentState state, final Entity subOrders) {
+    private void simpleGenerate(final ViewDefinitionState view, final ComponentState state, final Entity subOrders) {
         LOG.info(String.format("Start generation orders for components. Sub orders: %d", subOrders.getId()));
 
         Integer generatedOrders = 0;
@@ -242,7 +241,7 @@ public class OrdersForSubproductsGenerationListeners {
         List<Entity> entities = searchCriteriaBuilder.list().getEntities();
 
         if (entities.isEmpty()) {
-            return Optional.absent();
+            return Optional.empty();
         } else {
             return Optional.of(entities.get(0));
         }
@@ -261,24 +260,20 @@ public class OrdersForSubproductsGenerationListeners {
                             OrdersConstants.MODEL_ORDER, order.getId()))
                     .add(SearchRestrictions.isNotNull(OrderFieldsOFSPG.PARENT)).list().getEntities();
 
-            if (!entities.isEmpty()) {
-                return true;
-            }
+            return !entities.isEmpty();
         } else if (!coverageOrders.isEmpty()) {
-            List<Long> ids = coverageOrders.stream().map(co -> co.getId()).collect(Collectors.toList());
+            List<Long> ids = coverageOrders.stream().map(Entity::getId).collect(Collectors.toList());
             List<Entity> entities = orderDD().find().createAlias(OrderFieldsOFSPG.ROOT, OrderFieldsOFSPG.ROOT, JoinType.LEFT)
                     .add(SearchRestrictions.in(OrderFieldsOFSPG.ROOT + ".id", Lists.newArrayList(ids)))
                     .add(SearchRestrictions.isNotNull(OrderFieldsOFSPG.PARENT)).list().getEntities();
 
-            if (!entities.isEmpty()) {
-                return true;
-            }
+            return !entities.isEmpty();
         }
 
         return false;
     }
 
-    private final void generate(final ViewDefinitionState view, final ComponentState state, final Entity materialRequirementCoverage) {
+    private void generate(final ViewDefinitionState view, final ComponentState state, final Entity materialRequirementCoverage) {
         LOG.info(String.format("Start generation orders for components. Material requirement coverage: %d",
 				materialRequirementCoverage.getId()));
 

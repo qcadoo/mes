@@ -87,7 +87,6 @@ public class RegisterService {
     public void removeEntriesForOrder(final Entity order, final boolean all) {
         if (all) {
             order.setField(OrderFieldsOS.COVERAGE_REGISTERS, Lists.newArrayList());
-            List<Entity> entries = order.getHasManyField(OrderFieldsOS.COVERAGE_REGISTERS);
         } else {
             List<Entity> entries = order.getHasManyField(OrderFieldsOS.COVERAGE_REGISTERS);
             List<Entity> filtered = entries.stream()
@@ -108,7 +107,7 @@ public class RegisterService {
         List<Entity> oldTechnologyEntries = oldEntries.stream()
                 .filter(o -> !o.getBooleanField(CoverageRegisterFields.FROM_PRODUCTION_COUNTING_QUANTITY))
                 .collect(Collectors.toList());
-        List<RegisterEntry> mappedEntries = oldTechnologyEntries.stream().map(entity -> mapToEntry(entity))
+        List<RegisterEntry> mappedEntries = oldTechnologyEntries.stream().map(this::mapToEntry)
                 .collect(Collectors.toList());
         for (Entity entity : Lists.newArrayList(entriesOrder)) {
             if (!mappedEntries.contains(new RegisterEntry(entity))) {
@@ -199,14 +198,16 @@ public class RegisterService {
     }
 
     public List<Entity> findComponentRegistryEntries(final Entity order) {
-        StringBuilder query = new StringBuilder();
-        query.append("select registry from #orderSupplies_coverageRegister as registry, ");
-        query.append("#technologies_operationProductInComponent as operationProductInComponent ");
-        query.append("where registry.order.id = :orderId and eventType in ('04orderInput','03operationInput') ");
-        query.append("and productType = '02intermediate' ");
-        query.append("and operationProductInComponent.operationComponent = registry.technologyOperationComponent ");
-        query.append("and operationProductInComponent.product = registry.product order by operationProductInComponent.priority ");
-        return dataDefinitionService.get(OrderSuppliesConstants.PLUGIN_IDENTIFIER, "coverageRegister").find(query.toString())
+        String query = "select registry from #orderSupplies_coverageRegister as registry, "
+                + "#technologies_operationProductInComponent as operationProductInComponent "
+                + "where registry.order.id = :orderId and eventType in ('04orderInput','03operationInput') "
+                + "and productType = '02intermediate' "
+                + "and operationProductInComponent.operationComponent = registry.technologyOperationComponent "
+                + "and (operationProductInComponent.product = registry.product or operationProductInComponent.product = "
+                + "(select productFamily from #technologies_productToProductGroupTechnology as productToProductGroupTechnology "
+                + "where productToProductGroupTechnology.finalProduct = registry.order.product and "
+                + "productToProductGroupTechnology.orderProduct = registry.product)) order by operationProductInComponent.priority ";
+        return dataDefinitionService.get(OrderSuppliesConstants.PLUGIN_IDENTIFIER, "coverageRegister").find(query)
                 .setParameter("orderId", order.getId()).list().getEntities();
     }
 
@@ -255,7 +256,6 @@ public class RegisterService {
 
     public List<Entity> findTrackingOperationProductInComponents(Entity order, Entity toc, Entity product,
             boolean forEachOperation) {
-        List<Entity> trackingProducts = Lists.newArrayList();
 
         SearchCriteriaBuilder scb = dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
@@ -271,14 +271,11 @@ public class RegisterService {
             scb.add(SearchRestrictions.belongsTo("pTracking." + ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc));
         }
 
-        trackingProducts = scb.list().getEntities();
-
-        return trackingProducts;
+        return scb.list().getEntities();
     }
 
     public List<Entity> findTrackingOperationProductOutComponents(Entity order, Entity toc, Entity product,
             boolean forEachOperation) {
-        List<Entity> trackingProducts = Lists.newArrayList();
 
         SearchCriteriaBuilder scb = dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
@@ -294,9 +291,7 @@ public class RegisterService {
             scb.add(SearchRestrictions.belongsTo("pTracking." + ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc));
         }
 
-        trackingProducts = scb.list().getEntities();
-
-        return trackingProducts;
+        return scb.list().getEntities();
     }
 
     public BigDecimal getTrackedQuantity(Entity trackingOperationProductInComponent,
@@ -477,7 +472,7 @@ public class RegisterService {
     }
 
     public List<Long> getRegisterOrderProductsIds(final List<Entity> order) {
-        List<Long> orderIds = order.stream().map(o -> o.getId()).collect(Collectors.toList());
+        List<Long> orderIds = order.stream().map(Entity::getId).collect(Collectors.toList());
         List<Entity> entries = dataDefinitionService
                 .get(OrderSuppliesConstants.PLUGIN_IDENTIFIER, OrderSuppliesConstants.MODEL_COVERAGE_REGISTER).find()
                 .createAlias(CoverageRegisterFields.ORDER, "ord", JoinType.LEFT)
