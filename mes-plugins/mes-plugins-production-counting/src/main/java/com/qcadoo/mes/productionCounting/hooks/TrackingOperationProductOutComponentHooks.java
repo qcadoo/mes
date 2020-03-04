@@ -23,7 +23,9 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
@@ -35,6 +37,7 @@ import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInCom
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentDtoFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
+import com.qcadoo.mes.productionCounting.constants.UsedBatchFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -52,6 +55,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TrackingOperationProductOutComponentHooks {
+
+    public static final int L_ONE_BATCH = 1;
 
     @Autowired
     private NumberService numberService;
@@ -97,10 +102,29 @@ public class TrackingOperationProductOutComponentHooks {
                         .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
 
                 trackingOperationProductInComponents.forEach(trackingOperationProductInComponent -> {
-                    fillQuantities(trackingOperationProductInComponent, ratio);
+                    int usedBatches = trackingOperationProductInComponent.getHasManyField(
+                            TrackingOperationProductInComponentFields.USED_BATCHES).size();
+
+                    if (usedBatches > L_ONE_BATCH) {
+                        clearUsedBatches(trackingOperationProductInComponent, trackingOperationProductOutComponent);
+                    } else if (usedBatches == L_ONE_BATCH) {
+                        fillQuantitiesInBatch(trackingOperationProductInComponent, ratio);
+                    } else {
+                        fillQuantities(trackingOperationProductInComponent, ratio);
+                    }
                 });
             }
         }
+    }
+
+    private void clearUsedBatches(final Entity trackingOperationProductInComponent, Entity trackingOperationProductOutComponent) {
+        trackingOperationProductInComponent
+                .setField(TrackingOperationProductInComponentFields.USED_BATCHES, Lists.newArrayList());
+        trackingOperationProductInComponent.getDataDefinition().save(trackingOperationProductInComponent);
+        trackingOperationProductOutComponent.addGlobalMessage(
+                "technologies.operationProductInComponent.info.consumptionOfRawMaterialsBasedOnStandards.typeBatch",
+                trackingOperationProductInComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT)
+                        .getStringField(ProductFields.NUMBER));
     }
 
     private boolean checkIfShouldfillTrackingOperationProductInComponentsQuantities(Entity trackingOperationProductOutComponent,
@@ -136,7 +160,8 @@ public class TrackingOperationProductOutComponentHooks {
                 .getDecimalField(TrackingOperationProductInComponentDtoFields.PLANNED_QUANTITY);
         BigDecimal usedQuantity = plannedQuantity.multiply(ratio, numberService.getMathContext());
 
-        Optional<BigDecimal> givenQuantity = productionTrackingService.calculateGivenQuantity(trackingOperationProductInComponent, usedQuantity);
+        Optional<BigDecimal> givenQuantity = productionTrackingService.calculateGivenQuantity(
+                trackingOperationProductInComponent, usedQuantity);
 
         if (!givenQuantity.isPresent()) {
             trackingOperationProductInComponent.addError(
@@ -151,6 +176,33 @@ public class TrackingOperationProductOutComponentHooks {
                 numberService.setScaleWithDefaultMathContext(givenQuantity.orElse(usedQuantity)));
 
         trackingOperationProductInComponent.getDataDefinition().save(trackingOperationProductInComponent);
+    }
+
+    private void fillQuantitiesInBatch(final Entity trackingOperationProductInComponent, final BigDecimal ratio) {
+        Optional<Entity> isBatch = trackingOperationProductInComponent
+                .getHasManyField(TrackingOperationProductInComponentFields.USED_BATCHES).stream().findFirst();
+        if (isBatch.isPresent()) {
+            Entity batch = isBatch.get();
+            Entity trackingOperationProductInComponentDto = dataDefinitionService.get(
+                    ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                    ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT_DTO).get(
+                    trackingOperationProductInComponent.getId());
+            BigDecimal plannedQuantity = trackingOperationProductInComponentDto
+                    .getDecimalField(TrackingOperationProductInComponentDtoFields.PLANNED_QUANTITY);
+            BigDecimal usedQuantity = plannedQuantity.multiply(ratio, numberService.getMathContext());
+
+            Optional<BigDecimal> givenQuantity = productionTrackingService.calculateGivenQuantity(
+                    trackingOperationProductInComponent, usedQuantity);
+
+            if (!givenQuantity.isPresent()) {
+                trackingOperationProductInComponent.addError(
+                        trackingOperationProductInComponent.getDataDefinition().getField(
+                                TrackingOperationProductInComponentFields.GIVEN_QUANTITY),
+                        "technologies.operationProductInComponent.validate.error.missingUnitConversion");
+            }
+            batch.setField(UsedBatchFields.QUANTITY, numberService.setScaleWithDefaultMathContext(usedQuantity));
+            batch.getDataDefinition().save(batch);
+        }
     }
 
 }
