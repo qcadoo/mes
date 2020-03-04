@@ -30,6 +30,7 @@ import com.qcadoo.mes.basicProductionCounting.constants.*;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
@@ -81,6 +82,9 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
 
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
+
+    @Autowired
+    private TechnologyService technologyService;
 
     @Override
     public void updateProductionCountingQuantitiesAndOperationRuns(final Entity order) {
@@ -152,7 +156,8 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
                         .get(product.getBelongsToField(ProductFields.PARENT).getId());
             } else if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue()
                     .equals(product.getField(ProductFields.ENTITY_TYPE))) {
-                Entity productToProductGroupTechnology = getProductToProductGroupTechnology(orderProduct, product);
+                Entity productToProductGroupTechnology = technologyService.getProductToProductGroupTechnology(orderProduct,
+                        product.getId());
                 if (productToProductGroupTechnology != null) {
                     product = productToProductGroupTechnology.getBelongsToField(ProductToProductGroupFields.ORDER_PRODUCT);
                 } else {
@@ -170,13 +175,6 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             }
         }
         return productToProductGroupTechnologyDoesntExists;
-    }
-
-    private Entity getProductToProductGroupTechnology(Entity orderProduct, Entity product) {
-        return dataDefinitionService
-                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_PRODUCT_TO_PRODUCT_GROUP_TECHNOLOGY)
-                .find().add(SearchRestrictions.belongsTo(ProductToProductGroupFields.FINAL_PRODUCT, orderProduct))
-                .add(SearchRestrictions.belongsTo(ProductToProductGroupFields.PRODUCT_FAMILY, product)).uniqueResult();
     }
 
     private void prepareBasicProductionCounting(final Entity order, final List<Entity> productionCountingQuantities,

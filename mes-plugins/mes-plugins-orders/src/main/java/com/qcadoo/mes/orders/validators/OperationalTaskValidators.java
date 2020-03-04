@@ -30,6 +30,7 @@ import com.qcadoo.mes.orders.constants.OperationalTaskType;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -69,6 +70,7 @@ public class OperationalTaskValidators {
         isValid = checkIfOrderHasTechnology(operationalTaskDD, operationalTask) && isValid;
         isValid = checkIfFieldSet(operationalTaskDD, operationalTask) && isValid;
         isValid = checkIfAlreadyExists(operationalTaskDD, operationalTask) && isValid;
+        isValid = checkWorkstationIsCorrect(operationalTaskDD, operationalTask) && isValid;
 
         return isValid;
     }
@@ -218,4 +220,20 @@ public class OperationalTaskValidators {
         return true;
     }
 
+    private boolean checkWorkstationIsCorrect(DataDefinition operationalTaskDD, Entity operationalTask) {
+        Entity technologyOperationComponent = operationalTask
+                .getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
+        Entity workstation = operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION);
+        if (technologyOperationComponent != null && workstation != null) {
+            List<Entity> workstations = technologyOperationComponent
+                    .getBelongsToField(TechnologyOperationComponentFields.OPERATION)
+                    .getHasManyField(TechnologyOperationComponentFields.WORKSTATIONS);
+            if (!workstations.isEmpty() && workstations.stream().noneMatch(w -> w.getId().equals(workstation.getId()))) {
+                operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.WORKSTATION),
+                        "orders.error.inappropriateWorkstationForOperation");
+                return false;
+            }
+        }
+        return true;
+    }
 }

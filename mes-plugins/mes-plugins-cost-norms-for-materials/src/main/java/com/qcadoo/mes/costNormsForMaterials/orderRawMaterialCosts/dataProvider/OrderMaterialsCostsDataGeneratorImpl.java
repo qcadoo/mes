@@ -24,6 +24,8 @@
 package com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.dataProvider;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields;
@@ -32,12 +34,15 @@ import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.domain.Product
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.technologies.constants.ProductToProductGroupFields;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.tree.dataProvider.TechnologyRawInputProductComponentsCriteria;
 import com.qcadoo.mes.technologies.tree.dataProvider.TechnologyRawInputProductComponentsDataProvider;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchProjection;
 import com.qcadoo.model.api.utils.EntityUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -45,8 +50,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import static com.qcadoo.model.api.search.SearchRestrictions.in;
 
 @Service
@@ -70,19 +73,15 @@ final class OrderMaterialsCostsDataGeneratorImpl implements OrderMaterialsCostDa
     @Autowired
     private TechnologyService technologyService;
 
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
-
     @Override
     public List<Entity> generateUpdatedMaterialsListFor(final Entity order) {
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         if (technology == null || technology.getId() == null) {
             return Lists.newArrayList();
         }
-        Long technologyId = technology.getId();
         List<Entity> existingOrderMaterialCosts;
         if (OrderState.PENDING.getStringValue().equals(order.getStringField(OrderFields.STATE))) {
-            List<ProductWithCosts> allTechnologyRawProductsWithCosts = findRawInputProductsFor(technologyId);
+            List<ProductWithCosts> allTechnologyRawProductsWithCosts = findRawInputProductsFor(order);
             final Set<Long> technologyRawProductIds = allTechnologyRawProductsWithCosts.stream()
                     .map(ProductWithCosts.EXTRACT_ID::apply).collect(Collectors.toSet());
             existingOrderMaterialCosts = findExistingOrderMaterialCosts(order, technologyRawProductIds);
@@ -100,20 +99,30 @@ final class OrderMaterialsCostsDataGeneratorImpl implements OrderMaterialsCostDa
         final Set<Long> existingMaterialCostIds = existingOrderMaterialCosts.stream()
                 .map(EntityUtils.getBelongsToFieldExtractor(TechnologyInstOperProductInCompFields.PRODUCT)::apply)
                 .map(EntityUtils.getIdExtractor()::apply).collect(Collectors.toSet());
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        List<Entity> components = technologyService.findComponentsForTechnology(technology.getId());
         List<Entity> allOrderMaterialCosts = allTechnologyRawProductsWithCosts.stream()
                 .filter(productWithCosts -> !existingMaterialCostIds.contains(productWithCosts.getProductId()))
                 .map(productWithCosts -> orderMaterialCostsEntityBuilder.create(order, productWithCosts))
                 .collect(Collectors.toList());
         allOrderMaterialCosts.addAll(existingOrderMaterialCosts);
-        allOrderMaterialCosts = allOrderMaterialCosts
-                .stream()
+        List<Entity> technologyComponents = technologyService
+                .findComponentsForTechnology(order.getBelongsToField(OrderFields.TECHNOLOGY).getId());
+        List<Entity> components = Lists.newArrayList();
+        for (Entity component : technologyComponents) {
+            if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue()
+                    .equals(component.getStringField(ProductFields.ENTITY_TYPE))) {
+                Entity productToProductGroupTechnology = technologyService
+                        .getProductToProductGroupTechnology(order.getBelongsToField(TechnologyFields.PRODUCT), component.getId());
+                if (productToProductGroupTechnology != null) {
+                    component = productToProductGroupTechnology.getBelongsToField(ProductToProductGroupFields.ORDER_PRODUCT);
+                }
+            }
+            components.add(component);
+        }
+        allOrderMaterialCosts = allOrderMaterialCosts.stream()
                 .filter(materialCost -> isComponent(components,
                         materialCost.getBelongsToField(TechnologyInstOperProductInCompFields.PRODUCT)))
                 .collect(Collectors.toList());
         return allOrderMaterialCosts;
-
     }
 
     private List<Entity> createMissingOrderMaterialCostsEntities(final Entity order, final List<Entity> existingOrderMaterialCosts) {
@@ -155,11 +164,23 @@ final class OrderMaterialsCostsDataGeneratorImpl implements OrderMaterialsCostDa
         return orderMaterialCostsDataProvider.findAll(criteria);
     }
 
-    private List<ProductWithCosts> findRawInputProductsFor(final Long technologyId) {
+    private List<ProductWithCosts> findRawInputProductsFor(final Entity order) {
         TechnologyRawInputProductComponentsCriteria criteria = TechnologyRawInputProductComponentsCriteria
-                .forTechnology(technologyId);
+                .forTechnology(order.getBelongsToField(OrderFields.TECHNOLOGY).getId());
         criteria.setSearchProjection(PRODUCT_WITH_COSTS_PROJECTION);
-        return asProductsWithCosts(technologyRawInputProductComponentsDataProvider.findAll(criteria));
+        List<ProductWithCosts> productsWithCosts = asProductsWithCosts(
+                technologyRawInputProductComponentsDataProvider.findAll(criteria));
+        for (ProductWithCosts productWithCosts : productsWithCosts) {
+            if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(productWithCosts.getEntityType())) {
+                Entity productToProductGroupTechnology = technologyService.getProductToProductGroupTechnology(
+                        order.getBelongsToField(TechnologyFields.PRODUCT), productWithCosts.getProductId());
+                if (productToProductGroupTechnology != null) {
+                    productWithCosts.setProductId(
+                            productToProductGroupTechnology.getBelongsToField(ProductToProductGroupFields.ORDER_PRODUCT).getId());
+                }
+            }
+        }
+        return productsWithCosts;
     }
 
     private List<ProductWithCosts> asProductsWithCosts(final List<Entity> projectionResults) {

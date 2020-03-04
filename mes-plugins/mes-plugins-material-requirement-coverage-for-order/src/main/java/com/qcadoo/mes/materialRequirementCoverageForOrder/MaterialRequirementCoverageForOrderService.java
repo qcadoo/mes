@@ -23,11 +23,11 @@
  */
 package com.qcadoo.mes.materialRequirementCoverageForOrder;
 
-import com.google.common.base.Optional;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MaterialRequirementCoverageForOrderService {
 
