@@ -357,8 +357,7 @@
 
         <model:model-field plugin="basicProductionCounting"
                            model="productionCountingQuantity">
-            <model:enum name="productionFlow" values="01warehouse,02withinTheProcess"
-                        default="02withinTheProcess"/>
+            <model:enum name="productionFlow" values="01warehouse,02withinTheProcess"/>
         </model:model-field>
 
         <model:model-field plugin="basicProductionCounting"
@@ -699,7 +698,7 @@
         <view:view-listener plugin="basicProductionCounting" view="productionCountingQuantityAdvancedDetails"
                             component="technologyOperationComponent" event="onSelectedEntityChange"
                             class="com.qcadoo.mes.productFlowThruDivision.listeners.ProductionCountingQuantityAdvancedDetailsListenersPFTD"
-                            method="onChangeTOC"/>
+                            method="setFlowTabState"/>
 
         <view:view resource="view/operationComponentDetails.xml"/>
 

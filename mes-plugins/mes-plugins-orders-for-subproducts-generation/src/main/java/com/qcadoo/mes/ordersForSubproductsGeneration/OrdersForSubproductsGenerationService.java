@@ -23,21 +23,6 @@
  */
 package com.qcadoo.mes.ordersForSubproductsGeneration;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -45,11 +30,7 @@ import com.qcadoo.mes.materialRequirementCoverageForOrder.MaterialRequirementCov
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageProductFields;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageProductState;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.MaterialRequirementCoverageForOrderConstans;
-import com.qcadoo.mes.orderSupplies.constants.CoverageProductLoggingFields;
-import com.qcadoo.mes.orderSupplies.constants.CoverageRegisterFields;
-import com.qcadoo.mes.orderSupplies.constants.MaterialRequirementCoverageFields;
-import com.qcadoo.mes.orderSupplies.constants.OrderSuppliesConstants;
-import com.qcadoo.mes.orderSupplies.constants.ProductType;
+import com.qcadoo.mes.orderSupplies.constants.*;
 import com.qcadoo.mes.orderSupplies.coverage.MaterialRequirementCoverageService;
 import com.qcadoo.mes.orderSupplies.register.RegisterService;
 import com.qcadoo.mes.orders.OrderService;
@@ -63,24 +44,25 @@ import com.qcadoo.mes.productFlowThruDivision.constants.OrderFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.ProductStructureTreeNodeFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.JoinType;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchDisjunction;
-import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchProjections;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.*;
 import com.qcadoo.view.api.ViewDefinitionState;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class OrdersForSubproductsGenerationService {
@@ -145,8 +127,6 @@ public class OrdersForSubproductsGenerationService {
     }
 
     public List<Entity> getCoveragProductsForTOC(final Entity toc, final Entity materialRequirementCoverage) {
-        List<Entity> inputProducts = toc.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
-
         SearchCriteriaBuilder scb = dataDefinitionService.get(MaterialRequirementCoverageForOrderConstans.PLUGIN_IDENTIFIER,
                 MaterialRequirementCoverageForOrderConstans.MODEL_COVERAGE_PRODUCT).find();
 
@@ -194,7 +174,7 @@ public class OrdersForSubproductsGenerationService {
             order.setField(OrderFieldsOFSPG.ROOT, parentOrder.getBelongsToField(OrderFieldsOFSPG.ROOT));
             order.setField(OrderFieldsOFSPG.LEVEL, parentOrder.getIntegerField(OrderFieldsOFSPG.LEVEL) + 1);
         }
-        order.setField(OrderFields.NUMBER, generateOrderNumber(parentOrder, order, index));
+        order.setField(OrderFields.NUMBER, generatePostfixForNumber(parentOrder, order, index));
         order.setField(OrderFields.NAME, orderService.makeDefaultName(product, technology, locale));
         order.setField(OrderFields.PRODUCT, product);
 
@@ -248,7 +228,7 @@ public class OrdersForSubproductsGenerationService {
             order.setField(OrderFieldsOFSPG.ROOT, parentOrder.getBelongsToField(OrderFieldsOFSPG.ROOT));
             order.setField(OrderFieldsOFSPG.LEVEL, parentOrder.getIntegerField(OrderFieldsOFSPG.LEVEL) + 1);
         }
-        order.setField(OrderFields.NUMBER, generateOrderNumber(parentOrder, order, index));
+        order.setField(OrderFields.NUMBER, generatePostfixForNumber(parentOrder, order, index));
         order.setField(OrderFields.NAME, orderService.makeDefaultName(product, technology, locale));
         order.setField(OrderFields.PRODUCT, product);
 
@@ -290,14 +270,12 @@ public class OrdersForSubproductsGenerationService {
                 List<Entity> divisions = productionLine.getManyToManyField(ProductionLineFields.DIVISIONS);
                 if (divisions.size() == 1) {
                     order.setField(OrderFields.DIVISION, division);
-
                 }
             }
         }
     }
 
     private Entity findForOrder(Entity parentOrder, Entity coverageProduct) {
-
         return coverageProduct
                 .getHasManyField(CoverageProductFields.COVERAGE_PRODUCT_LOGGINGS)
                 .stream()
@@ -312,31 +290,20 @@ public class OrdersForSubproductsGenerationService {
         }
     }
 
-    private String generateOrderNumber(final Entity parentOrder, final Entity order, final int index) {
-        StringBuffer number = new StringBuffer();
-
-        number.append(generatePostfixForNumber(parentOrder, order, index));
-
-        return number.toString();
-    }
-
     private String generatePostfixForNumber(final Entity parentOrder, final Entity order, final int index) {
-        String postfix = "";
+        String postfix;
         if (parentOrder.getBelongsToField(OrderFieldsOFSPG.PARENT) == null) {
             postfix = parentOrder.getStringField(OrderFields.NUMBER) + "-"
                     + order.getIntegerField(OrderFieldsOFSPG.LEVEL).toString() + "." + index;
-
         } else {
             String parentOrderNumber = parentOrder.getStringField(OrderFields.NUMBER);
             postfix = parentOrderNumber + "." + index;
-
         }
 
         return postfix;
     }
 
     public List<Entity> getCoverageProductsForOrder(final Entity coverage, final Entity subOrder) {
-
         String sql = "select product from #orderSupplies_coverageProduct product, #orderSupplies_materialRequirementCoverage coverage "
                 + "where product.materialRequirementCoverage.id = coverage.id and coverage.order.id =:orderId "
                 + "and  coverage.id=:coverageId and  product.productType is not null "
@@ -348,18 +315,14 @@ public class OrdersForSubproductsGenerationService {
     }
 
     public List<Entity> getComponentProducts(final Entity coverage, final Entity order) {
-        List<Entity> components = Lists.newArrayList();
-
-        StringBuilder _query = new StringBuilder();
-        _query.append("select product from #orderSupplies_coverageProduct product, ");
-        _query.append("#orderSupplies_materialRequirementCoverage coverage ");
-        _query.append("where product.materialRequirementCoverage.id = coverage.id ");
-        _query.append("and coverage.id=:coverageId and product.productType is not null ");
-        _query.append("and product.productType='02intermediate' and product.state='03lack'");
-
-        components = dataDefinitionService
+        String _query = "select product from #orderSupplies_coverageProduct product, " +
+                "#orderSupplies_materialRequirementCoverage coverage " +
+                "where product.materialRequirementCoverage.id = coverage.id " +
+                "and coverage.id=:coverageId and product.productType is not null " +
+                "and product.productType='02intermediate' and product.state='03lack'";
+        List<Entity> components = dataDefinitionService
                 .get(OrderSuppliesConstants.PLUGIN_IDENTIFIER, OrderSuppliesConstants.MODEL_COVERAGE_PRODUCT)
-                .find(_query.toString()).setParameter("coverageId", coverage.getId()).list().getEntities();
+                .find(_query).setParameter("coverageId", coverage.getId()).list().getEntities();
 
         return getComponentProductsForOrder(components, order);
     }
@@ -374,7 +337,7 @@ public class OrdersForSubproductsGenerationService {
                         entity.getBelongsToField(CoverageRegisterFields.PRODUCT));
             }
         }
-        components.stream().forEach(c -> addComponent(c, componentsForOrder, entriesProductMap));
+        components.forEach(c -> addComponent(c, componentsForOrder, entriesProductMap));
         return componentsForOrder;
     }
 
@@ -428,14 +391,13 @@ public class OrdersForSubproductsGenerationService {
 
     @Transactional
     public void generateOrdersByCoverage(Entity order) {
-        com.google.common.base.Optional<Entity> coverage = materialRequirementCoverageForOrderService.createMRCFO(order);
+        Optional<Entity> coverage = materialRequirementCoverageForOrderService.createMRCFO(order);
         if (coverage.isPresent()) {
             Entity materialRequirementEntity = coverage.get();
             materialRequirementCoverageService.estimateProductCoverageInTime(coverage.get());
             Long materialRequirementCoverageId = materialRequirementEntity.getId();
             LOG.info(String.format("Start generation orders for components. Material requirement coverage : %d",
                     materialRequirementCoverageId));
-            Integer generatedOrders = 0;
             if (materialRequirementCoverageId != null) {
                 Entity materialRequirementEntityDB = materialRequirementEntity.getDataDefinition().get(
                         materialRequirementEntity.getId());
@@ -447,7 +409,6 @@ public class OrdersForSubproductsGenerationService {
                     for (Entity coverageProduct : products) {
                         generateOrderForSubProduct(coverageProduct, orderEntity, LocaleContextHolder.getLocale(), index);
                         ++index;
-                        ++generatedOrders;
                     }
                     if (!products.isEmpty()) {
                         materialRequirementEntity.setField(CoverageForOrderFieldsOFSPG.GENERATED_ORDERS, true);
@@ -455,7 +416,7 @@ public class OrdersForSubproductsGenerationService {
                     }
                     index = 1;
                     boolean generateSubOrdersForTree = true;
-                    List<Entity> subOrdersForActualLevel = Lists.newArrayList();
+                    List<Entity> subOrdersForActualLevel;
                     while (generateSubOrdersForTree) {
                         subOrdersForActualLevel = getSubOrdersForRootAndLevel(orderEntity, index);
                         if (subOrdersForActualLevel.isEmpty()) {
@@ -474,7 +435,6 @@ public class OrdersForSubproductsGenerationService {
                                 for (Entity coverageProduct : productss) {
                                     generateOrderForSubProduct(coverageProduct, sorder, LocaleContextHolder.getLocale(), in);
                                     ++in;
-                                    ++generatedOrders;
                                 }
 
                             } else {
@@ -495,8 +455,7 @@ public class OrdersForSubproductsGenerationService {
 
     @Transactional
     public void generateOrders(Entity order) {
-        LOG.info(String.format("Start generation orders for components"));
-        Integer generatedOrders = 0;
+        LOG.info("Start generation orders for components");
         List<Entity> orders = Lists.newArrayList(order);
         for (Entity orderEntity : orders) {
             List<Entity> registryEntries = registerService.findComponentRegistryEntries(orderEntity);
@@ -505,13 +464,12 @@ public class OrdersForSubproductsGenerationService {
             for (Entity registryEntry : registryEntries) {
                 generateSimpleOrderForSubProduct(registryEntry, orderEntity, LocaleContextHolder.getLocale(), index);
                 ++index;
-                ++generatedOrders;
             }
 
             index = 1;
             boolean generateSubOrdersForTree = true;
 
-            List<Entity> subOrdersForActualLevel = Lists.newArrayList();
+            List<Entity> subOrdersForActualLevel;
 
             while (generateSubOrdersForTree) {
 
@@ -528,12 +486,11 @@ public class OrdersForSubproductsGenerationService {
                     for (Entity _entry : entries) {
                         generateSimpleOrderForSubProduct(_entry, sorder, LocaleContextHolder.getLocale(), in);
                         ++in;
-                        ++generatedOrders;
                     }
                 }
                 ++index;
             }
         }
-        LOG.info(String.format("Finish generation orders for components."));
+        LOG.info("Finish generation orders for components.");
     }
 }

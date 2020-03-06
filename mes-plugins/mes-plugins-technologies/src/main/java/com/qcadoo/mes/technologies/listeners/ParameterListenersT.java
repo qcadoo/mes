@@ -21,19 +21,23 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productFlowThruDivision.constants;
+package com.qcadoo.mes.technologies.listeners;
 
-public enum FlowTypeOutComponent {
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import org.springframework.stereotype.Service;
 
-    WIRHIN_THE_PROCESS("01withinTheProcess"), ACCEPT_THE_PLACE("02acceptThePlace");
 
-    private final String state;
+@Service
+public class ParameterListenersT {
 
-    private FlowTypeOutComponent(final String state) {
-        this.state = state;
-    }
+    public void redirectToTechnologyParameters(final ViewDefinitionState view, final ComponentState eventPerformer, final String[] args) {
+        Long parameterId = (Long) eventPerformer.getFieldValue();
 
-    public String getStringValue() {
-        return state;
+        if (parameterId != null) {
+            String url = "../page/technologies/technologiesParameters.html?context={\"form.id\":\"" + parameterId
+                    + "\"}";
+            view.redirectTo(url, false, true);
+        }
     }
 }

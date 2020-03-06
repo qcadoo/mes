@@ -74,8 +74,6 @@
     </fields>
 
     <hooks>
-        <onSave class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"
-                method="calculateDeliveredProductPricePerUnit"/>
         <onCreate class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"
                   method="onCreate"/>
         <onSave class="com.qcadoo.mes.deliveries.hooks.DeliveredProductHooks"

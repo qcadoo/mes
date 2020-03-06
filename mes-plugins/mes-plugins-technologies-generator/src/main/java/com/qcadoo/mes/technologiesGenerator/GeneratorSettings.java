@@ -27,7 +27,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.qcadoo.mes.technologiesGenerator.constants.GeneratorContextFields;
-import com.qcadoo.mes.technologiesGenerator.constants.ParameterFieldsTG;
+import com.qcadoo.mes.technologies.constants.ParameterFieldsT;
 import com.qcadoo.model.api.Entity;
 
 public class GeneratorSettings {
@@ -93,7 +93,7 @@ public class GeneratorSettings {
                 .getBooleanField(GeneratorContextFields.FETCH_TECHNOLOGIES_FOR_COMPONENTS);
 
         return new GeneratorSettings(fetchTechForComponents, createAndSwitchProd,
-                parameters.getBooleanField(ParameterFieldsTG.COPY_PRODUCT_SIZE),
+                parameters.getBooleanField(ParameterFieldsT.COPY_PRODUCT_SIZE),
                 generationContextEntity);
     }
 }

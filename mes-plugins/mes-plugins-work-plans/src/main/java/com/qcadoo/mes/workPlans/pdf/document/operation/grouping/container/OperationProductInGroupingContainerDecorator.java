@@ -217,15 +217,11 @@ public class OperationProductInGroupingContainerDecorator implements GroupingCon
 
     private boolean sameProductsIn(Map<String, Entity> existingProductNumberToOperationProductInComponent,
             Map<String, Entity> productNumberToOperationProductInComponent) {
-        return containsAll(existingProductNumberToOperationProductInComponent, productNumberToOperationProductInComponent);
-    }
-
-    private boolean containsAll(Map<String, Entity> map1, Map<String, Entity> map2) {
-        return map1.keySet().containsAll(map2.keySet());
+        return existingProductNumberToOperationProductInComponent.keySet().equals(productNumberToOperationProductInComponent.keySet());
     }
 
     private Map<String, Entity> productNumberToOperationProductComponent(List<Entity> list) {
-        Map<String, Entity> productNumberToOperationProductIn = new HashMap<String, Entity>();
+        Map<String, Entity> productNumberToOperationProductIn = new HashMap<>();
         for (Entity entity : list) {
             productNumberToOperationProductIn.put(productNumber(entity), entity);
         }

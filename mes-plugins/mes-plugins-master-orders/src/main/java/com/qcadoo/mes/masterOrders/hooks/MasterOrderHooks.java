@@ -116,7 +116,7 @@ public class MasterOrderHooks {
         if (masterOrder.getId() == null || isNotLeavingType(masterOrder, MasterOrderType.MANY_PRODUCTS)) {
             return;
         }
-        // remove master order's products when leaving 'many products' mode
+        // remove sales order's products when leaving 'many products' mode
         masterOrderProductsDataService.deleteExistingMasterOrderProducts(masterOrder);
     }
 

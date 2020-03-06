@@ -30,6 +30,7 @@ import com.qcadoo.mes.orders.constants.OperationalTaskType;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -69,6 +70,7 @@ public class OperationalTaskValidators {
         isValid = checkIfOrderHasTechnology(operationalTaskDD, operationalTask) && isValid;
         isValid = checkIfFieldSet(operationalTaskDD, operationalTask) && isValid;
         isValid = checkIfAlreadyExists(operationalTaskDD, operationalTask) && isValid;
+        isValid = checkWorkstationIsCorrect(operationalTaskDD, operationalTask) && isValid;
 
         return isValid;
     }
@@ -140,12 +142,13 @@ public class OperationalTaskValidators {
     private boolean datesAreCorrect(DataDefinition operationalTaskDD, Entity operationalTask) {
         Entity technologyOperationComponent = operationalTask
                 .getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
-        if (technologyOperationComponent != null) {
+        if (technologyOperationComponent != null
+                && operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION) != null) {
             Date startDate = operationalTask.getDateField(OperationalTaskFields.START_DATE);
             Date finishDate = operationalTask.getDateField(OperationalTaskFields.FINISH_DATE);
             Entity order = operationalTask.getBelongsToField(OperationalTaskFields.ORDER);
             Entity parent = operationalTasksService.getParent(technologyOperationComponent, order);
-            if (parent != null) {
+            if (parent != null && parent.getBelongsToField(OperationalTaskFields.WORKSTATION) != null) {
                 if (parent.getDateField(OperationalTaskFields.START_DATE).before(startDate)) {
                     operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.START_DATE),
                             "orders.operationalTask.error.inappropriateStartDateNext");
@@ -159,15 +162,17 @@ public class OperationalTaskValidators {
             }
             List<Entity> children = operationalTasksService.getChildren(technologyOperationComponent, order);
             for (Entity child : children) {
-                if (child.getDateField(OperationalTaskFields.START_DATE).after(startDate)) {
-                    operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.START_DATE),
-                            "orders.operationalTask.error.inappropriateStartDatePrevious");
-                    return false;
-                }
-                if (child.getDateField(OperationalTaskFields.FINISH_DATE).after(finishDate)) {
-                    operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.FINISH_DATE),
-                            "orders.operationalTask.error.inappropriateFinishDatePrevious");
-                    return false;
+                if (child.getBelongsToField(OperationalTaskFields.WORKSTATION) != null) {
+                    if (child.getDateField(OperationalTaskFields.START_DATE).after(startDate)) {
+                        operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.START_DATE),
+                                "orders.operationalTask.error.inappropriateStartDatePrevious");
+                        return false;
+                    }
+                    if (child.getDateField(OperationalTaskFields.FINISH_DATE).after(finishDate)) {
+                        operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.FINISH_DATE),
+                                "orders.operationalTask.error.inappropriateFinishDatePrevious");
+                        return false;
+                    }
                 }
             }
         }
@@ -215,4 +220,20 @@ public class OperationalTaskValidators {
         return true;
     }
 
+    private boolean checkWorkstationIsCorrect(DataDefinition operationalTaskDD, Entity operationalTask) {
+        Entity technologyOperationComponent = operationalTask
+                .getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
+        Entity workstation = operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION);
+        if (technologyOperationComponent != null && workstation != null) {
+            List<Entity> workstations = technologyOperationComponent
+                    .getBelongsToField(TechnologyOperationComponentFields.OPERATION)
+                    .getHasManyField(TechnologyOperationComponentFields.WORKSTATIONS);
+            if (!workstations.isEmpty() && workstations.stream().noneMatch(w -> w.getId().equals(workstation.getId()))) {
+                operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.WORKSTATION),
+                        "orders.error.inappropriateWorkstationForOperation");
+                return false;
+            }
+        }
+        return true;
+    }
 }

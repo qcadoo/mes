@@ -13,7 +13,7 @@
 	<groupId>com.qcadoo.mes</groupId>
 	<packaging>qcadoo-plugin</packaging>
 
-	<name>Qcadoo MES :: Plugins :: Master orders</name>
+	<name>Qcadoo MES :: Plugins :: Sales orders</name>
 	<version>1.5-SNAPSHOT</version>
 
 	<dependencies>

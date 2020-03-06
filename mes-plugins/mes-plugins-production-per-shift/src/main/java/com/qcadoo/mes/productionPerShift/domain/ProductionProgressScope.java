@@ -33,36 +33,27 @@ public class ProductionProgressScope {
 
     private final Order order;
 
-    private final Operation operation;
-
     private final Shift shift;
 
     private final Product product;
 
     private final LocalDate day;
 
-    public ProductionProgressScope(final LocalDate day, final Order order, final Operation operation, final Shift shift,
-            final Product product) {
+    public ProductionProgressScope(final LocalDate day, final Order order, final Shift shift, final Product product) {
 
         Preconditions.checkArgument(day != null, "day must be not null");
         Preconditions.checkArgument(order != null, "order must be not null");
-        Preconditions.checkArgument(operation != null, "operation must be not null");
         Preconditions.checkArgument(shift != null, "shift must be not null");
         Preconditions.checkArgument(product != null, "product must be not null");
 
         this.day = day;
         this.order = order;
-        this.operation = operation;
         this.shift = shift;
         this.product = product;
     }
 
     public Order getOrder() {
         return order;
-    }
-
-    public Operation getOperation() {
-        return operation;
     }
 
     public Shift getShift() {
@@ -87,17 +78,17 @@ public class ProductionProgressScope {
         }
 
         ProductionProgressScope that = (ProductionProgressScope) o;
-        return new EqualsBuilder().append(order, that.order).append(operation, that.operation).append(shift, that.shift)
-                .append(day, that.day).append(product, that.product).isEquals();
+        return new EqualsBuilder().append(order, that.order).append(shift, that.shift).append(day, that.day)
+                .append(product, that.product).isEquals();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(order).append(operation).append(shift).append(day).toHashCode();
+        return new HashCodeBuilder().append(order).append(shift).append(day).toHashCode();
     }
 
     @Override
     public String toString() {
-        return "ProdProgressScope{" + "order=" + order + ", operation=" + operation + ", shift=" + shift + ", day=" + day + '}';
+        return "ProdProgressScope{" + "order=" + order + ", shift=" + shift + ", day=" + day + '}';
     }
 }

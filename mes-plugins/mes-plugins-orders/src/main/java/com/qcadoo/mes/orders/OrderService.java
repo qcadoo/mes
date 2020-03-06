@@ -122,7 +122,7 @@ public interface OrderService {
      * Build order description, based on masterOrder poNumber and direction,and technology description
      *
      * @param masterOrder
-     *            master order entity
+     *            sales order entity
      *
      * @param technology
      *            technology entity

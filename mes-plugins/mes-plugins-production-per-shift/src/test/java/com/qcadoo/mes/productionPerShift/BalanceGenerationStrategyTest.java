@@ -54,11 +54,10 @@ public class BalanceGenerationStrategyTest {
         LocalDate localDate = SEARCH_INTERVAL.getStart().plusHours(id.intValue()).toLocalDate();
 
         Order order = new Order(id, "ord-" + id);
-        Operation operation = new Operation(id, "op-" + id, id + ".");
         Shift shift = new Shift(id, "Shift " + id);
         Product product = new Product(id, "prod-" + id, "kg");
 
-        return new ProductionProgressScope(localDate, order, operation, shift, product);
+        return new ProductionProgressScope(localDate, order, shift, product);
     }
 
     private QuantitiesBalance buildBalance(final BigDecimal planned, final BigDecimal registered) {

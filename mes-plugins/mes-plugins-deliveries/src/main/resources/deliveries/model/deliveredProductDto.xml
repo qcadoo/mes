@@ -53,6 +53,7 @@
         <string name="operationNumber"/>
         <boolean name="isWaste"/>
         <boolean name="damaged"/>
+        <boolean name="hasReservations"/>
     </fields>
 
     <masterModel plugin="deliveries" model="deliveredProduct"/>

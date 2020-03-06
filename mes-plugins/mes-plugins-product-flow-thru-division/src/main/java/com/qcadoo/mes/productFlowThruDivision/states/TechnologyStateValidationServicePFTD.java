@@ -28,6 +28,7 @@ import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductInCompon
 import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductOutComponentFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.Range;
 import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
+import com.qcadoo.mes.productFlowThruDivision.listeners.TechnologyDetailsListenersPFTD;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.technologies.TechnologyService;
@@ -56,6 +57,14 @@ public class TechnologyStateValidationServicePFTD {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private TechnologyDetailsListenersPFTD technologyDetailsListenersPFTD;
+
+
+    public void beforeValidationOnAccepted(final StateChangeContext stateChangeContext) {
+        technologyDetailsListenersPFTD.fillLocationsInComponents(stateChangeContext.getOwner());
+    }
 
     public void validationOnAccepted(final StateChangeContext stateChangeContext) {
         final Entity technology = stateChangeContext.getOwner();
@@ -157,4 +166,5 @@ public class TechnologyStateValidationServicePFTD {
             }
         }
     }
+
 }

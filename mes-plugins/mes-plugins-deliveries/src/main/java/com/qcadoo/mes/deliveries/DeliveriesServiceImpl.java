@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.ProductService;
@@ -62,9 +63,12 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -93,11 +97,11 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     private static final String L_CURRENCY = "currency";
 
-    @Autowired
-    private ParameterService parameterService;
+    private static final String L_OPERATION = "operation";
 
-    @Autowired
-    private CompanyService companyService;
+    private static final String L_OFFER = "offer";
+
+    private static final String L_EXPIRATION_DATE = "expirationDate";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -106,7 +110,13 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     private NumberService numberService;
 
     @Autowired
+    private ParameterService parameterService;
+
+    @Autowired
     private CurrencyService currencyService;
+
+    @Autowired
+    private CompanyService companyService;
 
     @Autowired
     private ProductService productService;
@@ -742,6 +752,151 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         }
 
         return result;
+    }
+
+    public Optional<Entity> getOrderedProductForDeliveredProduct(final Entity deliveredProduct) {
+        return getOrderedProductForDeliveredProduct(deliveredProduct, true, null);
+    }
+
+    public Optional<Entity> getOrderedProductForDeliveredProduct(final Entity deliveredProduct,
+            final SearchCriterion batchCustomSearchCriterion) {
+        return getOrderedProductForDeliveredProduct(deliveredProduct, false, batchCustomSearchCriterion);
+    }
+
+    private Optional<Entity> getOrderedProductForDeliveredProduct(final Entity deliveredProduct, final boolean checkBatch,
+            final SearchCriterion batchCustomSearchCriterion) {
+        SearchCriteriaBuilder searchCriteriaBuilder = getSearchCriteriaBuilderForOrderedProduct(getOrderedProductDD().find(),
+                deliveredProduct, checkBatch, batchCustomSearchCriterion);
+
+        Entity orderedProduct = searchCriteriaBuilder.setMaxResults(1).uniqueResult();
+
+        return Optional.ofNullable(orderedProduct);
+    }
+
+    public SearchCriteriaBuilder getSearchCriteriaBuilderForOrderedProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final Entity deliveredProduct) {
+        return getSearchCriteriaBuilderForOrderedProduct(searchCriteriaBuilder, deliveredProduct, true, null);
+    }
+
+    public SearchCriteriaBuilder getSearchCriteriaBuilderForOrderedProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final Entity deliveredProduct, final SearchCriterion batchCustomSearchCriterion) {
+        return getSearchCriteriaBuilderForOrderedProduct(searchCriteriaBuilder, deliveredProduct, false,
+                batchCustomSearchCriterion);
+    }
+
+    private SearchCriteriaBuilder getSearchCriteriaBuilderForOrderedProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final Entity deliveredProduct, final boolean checkBatch, final SearchCriterion batchCustomSearchCriterion) {
+        Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
+        Entity supplier = delivery.getBelongsToField(DeliveryFields.SUPPLIER);
+        Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
+        String batchNumber = deliveredProduct.getStringField(OrderedProductFields.BATCH_NUMBER);
+        Entity batch = deliveredProduct.getBelongsToField(DeliveredProductFields.BATCH);
+        Entity additionalCode = deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
+
+        searchCriteriaBuilder.add(SearchRestrictions.belongsTo(OrderedProductFields.DELIVERY, delivery))
+                .add(SearchRestrictions.belongsTo(OrderedProductFields.PRODUCT, product))
+                .add(SearchRestrictions.belongsTo(OrderedProductFields.ADDITIONAL_CODE, additionalCode));
+
+        if (checkBatch) {
+            if (StringUtils.isNoneEmpty(batchNumber)) {
+                searchCriteriaBuilder.createAlias(OrderedProductFields.BATCH, OrderedProductFields.BATCH, JoinType.LEFT)
+                        .add(SearchRestrictions.eq(OrderedProductFields.BATCH + "." + BatchFields.NUMBER, batchNumber))
+                        .add(SearchRestrictions.belongsTo(OrderedProductFields.BATCH + "." + BatchFields.PRODUCT, product));
+
+                if (Objects.nonNull(supplier)) {
+                    searchCriteriaBuilder
+                            .add(SearchRestrictions.belongsTo(OrderedProductFields.BATCH + "." + BatchFields.SUPPLIER, supplier));
+                }
+            } else {
+                if (Objects.nonNull(batch)) {
+                    searchCriteriaBuilder.add(SearchRestrictions.belongsTo(OrderedProductFields.BATCH, batch));
+                } else {
+                    searchCriteriaBuilder.add(SearchRestrictions.isNull(OrderedProductFields.BATCH));
+                }
+            }
+        } else {
+            searchCriteriaBuilder.createAlias(DeliveredProductFields.BATCH, OrderedProductFields.BATCH, JoinType.LEFT)
+                    .add(batchCustomSearchCriterion);
+        }
+
+        if (PluginUtils.isEnabled("supplyNegotiations")) {
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OFFER, deliveredProduct.getBelongsToField(L_OFFER)));
+        }
+
+        if (PluginUtils.isEnabled("techSubcontrForDeliveries")) {
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OPERATION, deliveredProduct.getBelongsToField(L_OPERATION)));
+        }
+
+        return searchCriteriaBuilder;
+    }
+
+    public SearchCriteriaBuilder getSearchCriteriaBuilderForDeliveredProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final Entity deliveredProduct) {
+        return getSearchCriteriaBuilderForDeliveredProduct(searchCriteriaBuilder, deliveredProduct, true, null);
+    }
+
+    public SearchCriteriaBuilder getSearchCriteriaBuilderForDeliveredProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final Entity deliveredProduct, final SearchCriterion batchCustomSearchCriterion) {
+        return getSearchCriteriaBuilderForDeliveredProduct(searchCriteriaBuilder, deliveredProduct, false,
+                batchCustomSearchCriterion);
+    }
+
+    private SearchCriteriaBuilder getSearchCriteriaBuilderForDeliveredProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
+            final Entity deliveredProduct, final boolean checkBatch, final SearchCriterion batchCustomSearchCriterion) {
+        Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
+        Entity supplier = delivery.getBelongsToField(DeliveryFields.SUPPLIER);
+        Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
+        String batchNumber = deliveredProduct.getStringField(DeliveredProductFields.BATCH_NUMBER);
+        Entity batch = deliveredProduct.getBelongsToField(DeliveredProductFields.BATCH);
+        Entity additionalCode = deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
+
+        searchCriteriaBuilder.add(SearchRestrictions.belongsTo(DeliveredProductFields.DELIVERY, delivery))
+                .add(SearchRestrictions.belongsTo(DeliveredProductFields.PRODUCT, product))
+                .add(SearchRestrictions.belongsTo(DeliveredProductFields.ADDITIONAL_CODE, additionalCode));
+
+        if (checkBatch) {
+            if (StringUtils.isNoneEmpty(batchNumber)) {
+                searchCriteriaBuilder.createAlias(DeliveredProductFields.BATCH, DeliveredProductFields.BATCH, JoinType.LEFT)
+                        .add(SearchRestrictions.eq(DeliveredProductFields.BATCH + "." + BatchFields.NUMBER, batchNumber))
+                        .add(SearchRestrictions.belongsTo(DeliveredProductFields.BATCH + "." + BatchFields.PRODUCT, product));
+
+                if (Objects.nonNull(supplier)) {
+                    searchCriteriaBuilder.add(
+                            SearchRestrictions.belongsTo(DeliveredProductFields.BATCH + "." + BatchFields.SUPPLIER, supplier));
+                }
+            } else {
+                if (Objects.nonNull(batch)) {
+                    searchCriteriaBuilder.add(SearchRestrictions.belongsTo(DeliveredProductFields.BATCH, batch));
+                } else {
+                    searchCriteriaBuilder.add(SearchRestrictions.isNull(DeliveredProductFields.BATCH));
+                }
+            }
+        } else {
+            searchCriteriaBuilder.createAlias(DeliveredProductFields.BATCH, DeliveredProductFields.BATCH, JoinType.LEFT)
+                    .add(batchCustomSearchCriterion);
+        }
+
+        if (PluginUtils.isEnabled("techSubcontrForDeliveries")) {
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OPERATION, deliveredProduct.getBelongsToField(L_OPERATION)));
+        }
+
+        if (PluginUtils.isEnabled("supplyNegotiations")) {
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OFFER, deliveredProduct.getBelongsToField(L_OFFER)));
+        }
+
+        if (PluginUtils.isEnabled("deliveriesToMaterialFlow")) {
+            Entity palletNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
+
+            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(DeliveredProductFields.PALLET_NUMBER, palletNumber));
+
+            if (Objects.nonNull(deliveredProduct.getField(L_EXPIRATION_DATE))) {
+                searchCriteriaBuilder.add(SearchRestrictions.eq(L_EXPIRATION_DATE, deliveredProduct.getField(L_EXPIRATION_DATE)));
+            } else {
+                searchCriteriaBuilder.add(SearchRestrictions.isNull(L_EXPIRATION_DATE));
+            }
+        }
+
+        return searchCriteriaBuilder;
     }
 
 }

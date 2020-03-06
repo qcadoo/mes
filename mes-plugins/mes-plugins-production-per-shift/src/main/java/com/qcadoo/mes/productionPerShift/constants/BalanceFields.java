@@ -28,15 +28,11 @@ public final class BalanceFields {
     private BalanceFields() {
     }
 
-    public static final String CONTEXT = "context";
-
     public static final String DAY = "day";
 
     public static final String SHIFT_NAME = "shiftName";
 
     public static final String ORDER_NUMBER = "orderNumber";
-
-    public static final String OPERATION_NUMBER = "operationNumber";
 
     public static final String PRODUCT_NUMBER = "productNumber";
 

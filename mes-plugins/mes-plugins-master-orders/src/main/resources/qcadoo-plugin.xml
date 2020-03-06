@@ -41,12 +41,12 @@
        http://schema.qcadoo.org/modules/menu.xsd">
 
     <information>
-        <name>Qcadoo MES :: Plugins :: Master orders</name>
+        <name>Qcadoo MES :: Plugins :: Sales orders</name>
         <vendor>
             <name>Qcadoo Limited</name>
             <url>http://www.qcadoo.com/</url>
         </vendor>
-        <description>Higher level order which many production orders must fulfill. Master orders often represent actual
+        <description>Higher level order which many production orders must fulfill. Sales orders often represent actual
             orders for
             clients for many products.
         </description>

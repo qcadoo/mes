@@ -290,7 +290,6 @@
 		<model:model model="numberPatternElement" resource="model/numberPatternElement.xml"/>
 
         <model:dictionary name="categories"/>
-        <model:dictionary name="posts"/>
         <model:dictionary name="reasonTypeOfChangingOrderState"/>
 
         <model:dictionary name="typeOfSubassembly"/>

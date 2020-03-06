@@ -24,10 +24,10 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_PARAMETERS" name="technologiesGeneratorParameters" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<view defaultAuthorizationRole="ROLE_PARAMETERS" name="technologiesParameters" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-      modelName="parameter" modelPlugin="basic" menuAccessible="false">
+      modelName="parameter" modelPlugin="basic">
 
     <component type="window" name="window">
 
@@ -37,11 +37,16 @@
             </group>
         </ribbon>
 
-        <windowTab name="generatorTab" reference="generatorTab">
+        <windowTab name="main" reference="main">
             <component type="form" name="technologiesGeneratorParameters" reference="form">
                 <component type="gridLayout" name="generatorTabGridLayout"  columns="3" rows="3">
                     <layoutElement column="1" row="1">
-                        <component type="checkbox" name="technologiesGeneratorCopyProductSize" field="#{form}.technologiesGeneratorCopyProductSize"  reference="technologiesGeneratorCopyProductSize">
+                        <component type="checkbox" name="completeWarehousesFlowWhileChecking" field="#{form}.completeWarehousesFlowWhileChecking" reference="completeWarehousesFlowWhileChecking" hasDescription="true">
+                            <option type="labelWidth" value="40"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="checkbox" name="technologiesGeneratorCopyProductSize" field="#{form}.technologiesGeneratorCopyProductSize" reference="technologiesGeneratorCopyProductSize">
                             <option type="labelWidth" value="40"/>
                         </component>
                     </layoutElement>

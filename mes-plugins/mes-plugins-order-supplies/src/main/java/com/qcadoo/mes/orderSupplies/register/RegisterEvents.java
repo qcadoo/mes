@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.orderSupplies.register;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
@@ -48,6 +39,7 @@ import com.qcadoo.mes.orders.hooks.OrderHooks;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.ProductToProductGroupFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
@@ -56,6 +48,14 @@ import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class RegisterEvents {
@@ -77,6 +77,9 @@ public class RegisterEvents {
 
     @Autowired
     private OrderHooks orderHooks;
+
+    @Autowired
+    private TechnologyService technologyService;
 
     public void onSaveOrder(final DataDefinition orderDD, final Entity order) {
 
@@ -370,12 +373,11 @@ public class RegisterEvents {
         for (Entity opic : opics) {
             Long productId = opic.getLongField("productId");
             if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(opic.getStringField("productEntityType"))) {
-                Entity productToProductGroupTechnology = registerService
+                Entity productToProductGroupTechnology = technologyService
                         .getProductToProductGroupTechnology(order.getBelongsToField(OrderFields.PRODUCT), productId);
                 if (productToProductGroupTechnology != null) {
-                    Entity orderProduct = productToProductGroupTechnology
-                            .getBelongsToField(ProductToProductGroupFields.ORDER_PRODUCT);
-                    productId = orderProduct.getId();
+                    productId = productToProductGroupTechnology.getBelongsToField(ProductToProductGroupFields.ORDER_PRODUCT)
+                            .getId();
                 }
             }
             productIds.add(productId);

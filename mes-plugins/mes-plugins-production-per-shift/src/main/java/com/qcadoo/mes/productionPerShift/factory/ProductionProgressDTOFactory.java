@@ -23,24 +23,17 @@
  */
 package com.qcadoo.mes.productionPerShift.factory;
 
-import java.math.BigDecimal;
-
-import org.joda.time.LocalDate;
-
 import com.qcadoo.mes.productionPerShift.domain.*;
 import com.qcadoo.model.api.Entity;
+import org.joda.time.LocalDate;
+
+import java.math.BigDecimal;
 
 public class ProductionProgressDTOFactory {
 
     public static final String ORDER_ID_ALIAS = "orderId";
 
     public static final String ORDER_NUMBER_ALIAS = "orderNumber";
-
-    public static final String OPERATION_ID_ALIAS = "operationId";
-
-    public static final String OPERATION_NUMBER_ALIAS = "operationNumber";
-
-    public static final String OPERATION_NODE_NUMBER_ALIAS = "operationNodeNumber";
 
     public static final String PRODUCT_ID_ALIAS = "productId";
 
@@ -65,13 +58,6 @@ public class ProductionProgressDTOFactory {
         return new Order(orderId, orderNumber);
     }
 
-    private static Operation operationFrom(final Entity projection) {
-        Long operationId = (Long) projection.getField(OPERATION_ID_ALIAS);
-        String operationNumber = projection.getStringField(OPERATION_NUMBER_ALIAS);
-        String operationNodeNumber = projection.getStringField(OPERATION_NODE_NUMBER_ALIAS);
-        return new Operation(operationId, operationNumber, operationNodeNumber);
-    }
-
     private static Shift shiftFrom(final Entity projection) {
         Long shiftId = (Long) projection.getField(SHIFT_ID_ALIAS);
         String shiftName = projection.getStringField(SHIFT_NAME_ALIAS);
@@ -87,7 +73,7 @@ public class ProductionProgressDTOFactory {
 
     private static ProductionProgressScope scopeFrom(final Entity projection) {
         LocalDate day = LocalDate.fromDateFields(projection.getDateField(SHIFT_START_DAY_ALIAS));
-        return new ProductionProgressScope(day, orderFrom(projection), operationFrom(projection), shiftFrom(projection),
+        return new ProductionProgressScope(day, orderFrom(projection), shiftFrom(projection),
                 productFrom(projection));
     }
 

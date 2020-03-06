@@ -23,25 +23,24 @@
  */
 package com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.dataProvider;
 
-import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-
-import java.math.BigDecimal;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.test.util.ReflectionTestUtils;
-
 import com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMaterialsConstants;
 import com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields;
 import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.domain.ProductWithCosts;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.math.BigDecimal;
+
+import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 public class OrderMaterialCostsEntityBuilderImplTest {
 
@@ -73,7 +72,7 @@ public class OrderMaterialCostsEntityBuilderImplTest {
         // given
         Entity order = mockEntity();
         ProductWithCosts productWithCosts = new ProductWithCosts(1L, BigDecimal.valueOf(2L), BigDecimal.valueOf(3L),
-                BigDecimal.valueOf(4L), BigDecimal.valueOf(5L));
+                BigDecimal.valueOf(4L), BigDecimal.valueOf(5L), "01particularProduct");
 
         // when
         orderMaterialCostsEntityBuilder.create(order, productWithCosts);

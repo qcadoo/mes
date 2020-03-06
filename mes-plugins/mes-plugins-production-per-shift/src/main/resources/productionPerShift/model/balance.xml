@@ -28,12 +28,11 @@
        xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
-        <belongsTo name="context" model="balanceContext" lazy="true"/>
+        <belongsTo name="context" model="balanceContext"/>
 
         <date name="day" />
         <string name="shiftName"/>
         <string name="orderNumber"/>
-        <string name="operationNumber"/>
         <string name="productNumber"/>
         <string name="productUnit"/>
 
