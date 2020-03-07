@@ -515,8 +515,10 @@ public class ProductionTrackingDetailsListeners {
     }
 
     public void onAddBatchChange(final ViewDefinitionState view, final ComponentState component, final String[] args) {
-        FieldComponent batchNumber = (FieldComponent) view.getComponentByReference(ProductionTrackingFields.BATCH_NUMBER);
-        batchNumber.setEnabled(true);
+        if (!parameterService.getParameter().getBooleanField(ParameterFieldsPC.GENERATE_BATCH_FOR_ORDERED_PRODUCT)) {
+            FieldComponent batchNumber = (FieldComponent) view.getComponentByReference(ProductionTrackingFields.BATCH_NUMBER);
+            batchNumber.setEnabled(true);
+        }
     }
 
     public void correct(final ViewDefinitionState view, final ComponentState component, final String[] args) {
