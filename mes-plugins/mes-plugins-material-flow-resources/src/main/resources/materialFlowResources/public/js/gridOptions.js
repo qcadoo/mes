@@ -498,6 +498,15 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
         function createLookupElement(name, value, url, options, getParametersFunction) {
             var $ac = $('<input class="eac-square" rowId="' + options.rowId + '" />');
             $ac.val(value);
+            $ac.keyup(function() {
+                if (!this.value) {
+                    if(name == "batch") {
+                        var rowId = $('#product').length ? null : jQuery('#grid').jqGrid('getGridParam', 'selrow');
+                        var fieldBatchId = updateFieldValue("batchId", null, rowId);
+                        fieldBatchId.trigger('change');
+                    }
+                }
+            });
             $ac.autoComplete({
                 minChars: 0,
                 autoCompleteResult: false,
@@ -532,17 +541,6 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     // escape special characters
                     search = search.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
                     var re = new RegExp("(" + search.split(' ').join('|') + ")", "gi");
-                            var rowId = $('#product').length ? null : jQuery('#grid').jqGrid('getGridParam', 'selrow');
-
-                            if(name == "batch") {
-                                if(item.id == 0) {
-                                    var fieldBatchId = updateFieldValue("batchId", null, rowId);
-                                    fieldBatchId.trigger('change');
-                                } else {
-                                    var fieldBatchId = updateFieldValue("batchId", item.id, rowId);
-                                    fieldBatchId.trigger('change');
-                                }
-                            }
 
                     if (autoCompleteResult) {
                         return '<div class="autocomplete-suggestion" data-id="' + id + '" data-val="' + code + '">' + code.replace(re, "<b>$1</b>") + '</div>';
@@ -552,6 +550,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 },
                 onSelect: function (e, term, item, that) {
                     if (autoCompleteResult) {
+                        if(name == "batch") {
+                            var rowId = $('#product').length ? null : jQuery('#grid').jqGrid('getGridParam', 'selrow');
+
+                            var fieldBatchId = updateFieldValue("batchId", item.context.dataset.id, rowId);
+                            fieldBatchId.trigger('change');
+                        }
                         $(that).trigger('change');
                     }
                 }
