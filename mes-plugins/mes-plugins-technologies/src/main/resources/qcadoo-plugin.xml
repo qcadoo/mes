@@ -104,6 +104,8 @@
 
         <model:model model="operationSkill" resource="model/operationSkill.xml"/>
 
+        <model:model model="qualityCard" resource="model/qualityCard.xml"/>
+
         <model:model-field plugin="states" model="message">
             <model:belongsTo name="technologyStateChange" plugin="technologies" model="technologyStateChange"/>
         </model:model-field>

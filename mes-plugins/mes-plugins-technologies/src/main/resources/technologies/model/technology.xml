@@ -79,6 +79,7 @@
 
         <boolean name="additionalActions" default="false"/>
 
+        <belongsTo name="qualityCard" model="qualityCard"/>
     </fields>
     <hooks>
         <validatesWith

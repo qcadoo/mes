@@ -284,6 +284,21 @@
                             <option type="labelWidth" value="40"/>
                         </component>
                     </layoutElement>
+                    <layoutElement column="3" row="3">
+                        <component type="lookup" name="qualityCard" field="qualityCard"
+                                   reference="qualityCard">
+                            <option type="column" name="name" fields="name" link="true"
+                                    width="200"/>
+
+                            <option type="searchable" value="name"/>
+                            <option type="orderable" value="name"/>
+
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                            <option type="labelWidth" value="40"/>
+                        </component>
+                    </layoutElement>
                 </component>
 
                 <component type="select" name="state" field="state"
