@@ -48,11 +48,12 @@
             <option type="column" name="valueType" fields="valueType" width="100"/>
             <option type="column" name="forProduct" fields="forProduct" width="100"/>
             <option type="column" name="forResource" fields="forResource" width="100"/>
+            <option type="column" name="forQualityControl" fields="forQualityControl" width="100"/>
 
             <option type="order" column="number" direction="asc"/>
 
-            <option type="searchable" value="number,name,dataType,valueType,forProduct,forResource"/>
-            <option type="orderable" value="number,name,dataType,valueType,forProduct,forResource"/>
+            <option type="searchable" value="number,name,dataType,valueType,forProduct,forResource,forQualityControl"/>
+            <option type="orderable" value="number,name,dataType,valueType,forProduct,forResource,forQualityControl"/>
 
             <option type="correspondingView" value="basic/attributeDetails"/>
             <option type="correspondingComponent" value="form"/>

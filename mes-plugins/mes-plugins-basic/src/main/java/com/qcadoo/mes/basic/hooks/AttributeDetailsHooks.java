@@ -11,12 +11,11 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-
-import java.util.Objects;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class AttributeDetailsHooks {
@@ -73,12 +72,15 @@ public class AttributeDetailsHooks {
         FieldComponent unit = (FieldComponent) view.getComponentByReference(AttributeFields.UNIT);
         CheckBoxComponent forProduct = (CheckBoxComponent) view.getComponentByReference(AttributeFields.FOR_PRODUCT);
         CheckBoxComponent forResource = (CheckBoxComponent) view.getComponentByReference(AttributeFields.FOR_RESOURCE);
+        CheckBoxComponent forQualityControl = (CheckBoxComponent) view
+                .getComponentByReference(AttributeFields.FOR_QUALITY_CONTROL);
         dataType.setEnabled(true);
         valueType.setEnabled(true);
         precision.setEnabled(true);
         unit.setEnabled(true);
         forProduct.setEnabled(true);
         forResource.setEnabled(true);
+        forQualityControl.setEnabled(true);
         if (Objects.nonNull(form.getEntityId())) {
             Entity attribute = form.getEntity().getDataDefinition().get(form.getEntity().getId());
             if (!attribute.getHasManyField(AttributeFields.PRODUCT_ATTRIBUTE_VALUES).isEmpty()) {
@@ -97,12 +99,19 @@ public class AttributeDetailsHooks {
                 forResource.setEnabled(false);
             }
 
+            if (!attribute.getHasManyField(AttributeFields.QUALITY_CONTROL_ATTRIBUTE_VALUES).isEmpty()) {
+                dataType.setEnabled(false);
+                valueType.setEnabled(false);
+                precision.setEnabled(false);
+                unit.setEnabled(false);
+                forQualityControl.setEnabled(false);
+            }
+
             if (!attribute.getHasManyField(AttributeFields.ATTRIBUTE_VALUES).isEmpty()) {
                 dataType.setEnabled(false);
                 valueType.setEnabled(false);
                 precision.setEnabled(false);
             }
         }
-
     }
 }

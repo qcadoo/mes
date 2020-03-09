@@ -38,7 +38,7 @@
         <windowTab name="mainTab">
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="mainTabGridLayout"
-                           columns="3" rows="9" hasBorders="false">
+                           columns="3" rows="10" hasBorders="false">
                     <layoutElement column="1" row="1">
                         <component type="input" name="number" field="number"
                                    reference="number">
@@ -80,7 +80,11 @@
                         <component type="checkbox" name="forResource" field="forResource"
                                    reference="forResource"/>
                     </layoutElement>
-                    <layoutElement column="2" row="1" width="2" height="9">
+                    <layoutElement column="1" row="10">
+                        <component type="checkbox" name="forQualityControl" field="forQualityControl"
+                                   reference="forQualityControl"/>
+                    </layoutElement>
+                    <layoutElement column="2" row="1" width="2" height="10">
                         <component type="grid" name="attributeValues" reference="attributeValues"
                                    source="#{form}.attributeValues">
                             <option type="column" name="value" fields="value" link="true" width="50"/>

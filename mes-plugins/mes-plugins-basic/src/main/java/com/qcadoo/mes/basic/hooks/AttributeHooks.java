@@ -6,10 +6,9 @@ import com.qcadoo.mes.basic.constants.AttributeFields;
 import com.qcadoo.mes.basic.constants.AttributeValueType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.stereotype.Service;
 
 import java.util.Objects;
-
-import org.springframework.stereotype.Service;
 
 @Service
 public class AttributeHooks {
@@ -18,7 +17,8 @@ public class AttributeHooks {
 
     public boolean validate(final DataDefinition attributeDD, final Entity attribute) {
 
-        if (!attribute.getBooleanField(AttributeFields.FOR_PRODUCT) && !attribute.getBooleanField(AttributeFields.FOR_RESOURCE)) {
+        if (!attribute.getBooleanField(AttributeFields.FOR_PRODUCT) && !attribute.getBooleanField(AttributeFields.FOR_RESOURCE)
+                && !attribute.getBooleanField(AttributeFields.FOR_QUALITY_CONTROL)) {
             attribute.addGlobalError("basic.attribute.error.attributeFlagNotFilled");
             return false;
         }
