@@ -168,8 +168,6 @@ public class TechnologyHooksPFTD {
                 technology.setField("productsInputLocation", null);
                 technology.setField("productionFlow", null);
                 technology.setField("productsFlowLocation", null);
-                technology.setField("automaticMoveForFinal", false);
-                technology.setField("automaticMoveForIntermediate", false);
             }
         }
     }
@@ -217,7 +215,6 @@ public class TechnologyHooksPFTD {
         op.setField(OperationProductInComponentFieldsPFTD.COMPONENTS_LOCATION, null);
         op.setField(OperationProductInComponentFieldsPFTD.COMPONENTS_OUTPUT_LOCATION, null);
         op.setField(OperationProductInComponentFieldsPFTD.PRODUCTS_INPUT_LOCATION, null);
-        op.setField("automaticMove", false);
         op.getDataDefinition().fastSave(op);
     }
 

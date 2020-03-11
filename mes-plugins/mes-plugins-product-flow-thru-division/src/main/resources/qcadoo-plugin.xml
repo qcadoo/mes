@@ -82,14 +82,6 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="division">
-            <model:boolean name="automaticMoveForIntermediate" default="false"/>
-        </model:model-field>
-
-        <model:model-field plugin="basic" model="division">
-            <model:boolean name="automaticMoveForFinal" default="false"/>
-        </model:model-field>
-
-        <model:model-field plugin="basic" model="division">
             <model:belongsTo name="componentsLocation" model="location"
                              plugin="materialFlow"/>
         </model:model-field>
@@ -714,16 +706,6 @@
         </model:model-field>
 
         <model:model-field plugin="technologies"
-                           model="technology">
-            <model:boolean name="automaticMoveForIntermediate" default="false"/>
-        </model:model-field>
-
-        <model:model-field plugin="technologies"
-                           model="technology">
-            <model:boolean name="automaticMoveForFinal" default="false"/>
-        </model:model-field>
-
-        <model:model-field plugin="technologies"
                            model="operationProductInComponent">
             <model:belongsTo name="productsFlowLocation" model="location"
                              plugin="materialFlow"/>
@@ -731,11 +713,6 @@
         <model:model-field plugin="technologies"
                            model="operationProductOutComponent">
             <model:belongsTo name="productsFlowLocation" model="location"
-                             plugin="materialFlow"/>
-        </model:model-field>
-        <model:model-field plugin="technologies"
-                           model="operationProductOutComponent">
-            <model:belongsTo name="productsShiftingLocation" model="location"
                              plugin="materialFlow"/>
         </model:model-field>
 
@@ -749,10 +726,6 @@
                            model="operationProductOutComponent">
             <model:enum name="productionFlow" values="01warehouse,02withinTheProcess"
                         default="02withinTheProcess"/>
-        </model:model-field>
-
-        <model:model-field plugin="technologies" model="operationProductOutComponent">
-            <model:boolean name="automaticMove" default="false"/>
         </model:model-field>
 
         <model:model-field plugin="technologies" model="technologyOperationComponent">

@@ -237,15 +237,6 @@ public class TechnologyDetailsHooksPFTD {
         FieldComponent productionFlow = (FieldComponent) view.getComponentByReference(TechnologyFieldsPFTD.PRODUCTION_FLOW);
         productionFlow.setFieldValue(division.getStringField("productionFlow"));
         productionFlow.requestComponentUpdateState();
-
-        CheckBoxComponent automaticMoveForIntermediate = (CheckBoxComponent) view
-                .getComponentByReference("automaticMoveForIntermediate");
-        automaticMoveForIntermediate.setChecked(division.getBooleanField("automaticMoveForIntermediate"));
-        automaticMoveForIntermediate.requestComponentUpdateState();
-        CheckBoxComponent automaticMoveForFinal = (CheckBoxComponent) view
-                .getComponentByReference("automaticMoveForFinal");
-        automaticMoveForFinal.setChecked(division.getBooleanField("automaticMoveForFinal"));
-        automaticMoveForFinal.requestComponentUpdateState();
     }
 
     private void disableTab(final ViewDefinitionState view) {
@@ -281,17 +272,9 @@ public class TechnologyDetailsHooksPFTD {
                 FieldComponent productionFlowFieldComponent = (FieldComponent) view
                         .getComponentByReference(TechnologyFieldsPFTD.PRODUCTION_FLOW);
                 productionFlowFieldComponent.setEnabled(false);
-                CheckBoxComponent automaticMoveForIntermediate = (CheckBoxComponent) view
-                        .getComponentByReference("automaticMoveForIntermediate");
-                automaticMoveForIntermediate.setEnabled(false);
-                CheckBoxComponent automaticMoveForFinal = (CheckBoxComponent) view
-                        .getComponentByReference("automaticMoveForFinal");
-                automaticMoveForFinal.setEnabled(false);
                 disableProductsComponentGrid(view);
             }
-
         }
-
     }
 
     private void enableTab(final ViewDefinitionState view) {
@@ -327,12 +310,6 @@ public class TechnologyDetailsHooksPFTD {
                 FieldComponent productionFlowFieldComponent = (FieldComponent) view
                         .getComponentByReference(TechnologyFieldsPFTD.PRODUCTION_FLOW);
                 productionFlowFieldComponent.setEnabled(false);
-                CheckBoxComponent automaticMoveForIntermediate = (CheckBoxComponent) view
-                        .getComponentByReference("automaticMoveForIntermediate");
-                automaticMoveForIntermediate.setEnabled(true);
-                CheckBoxComponent automaticMoveForFinal = (CheckBoxComponent) view
-                        .getComponentByReference("automaticMoveForFinal");
-                automaticMoveForFinal.setEnabled(true);
             }
         }
     }
@@ -420,23 +397,11 @@ public class TechnologyDetailsHooksPFTD {
         productsInputLocationLookup.setEnabled(b);
         productionFlow.setEnabled(b);
 
-        CheckBoxComponent automaticMoveForIntermediate = (CheckBoxComponent) view
-                .getComponentByReference("automaticMoveForIntermediate");
-        automaticMoveForIntermediate.setEnabled(b);
-        CheckBoxComponent automaticMoveForFinal = (CheckBoxComponent) view
-                .getComponentByReference("automaticMoveForFinal");
-        automaticMoveForFinal.setEnabled(b);
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity technology = form.getPersistedEntityWithIncludedFormValues();
         if (Range.ONE_DIVISION.getStringValue().equals(technology.getStringField(TechnologyFieldsPFTD.RANGE)) && b) {
-            if (ProductionFlowComponent.WAREHOUSE.getStringValue().equals(
-                    technology.getField(TechnologyFieldsPFTD.PRODUCTION_FLOW))) {
-                productsFlowLocationLookup.setEnabled(true);
-                automaticMoveForIntermediate.setEnabled(true);
-            } else {
-                productsFlowLocationLookup.setEnabled(false);
-                automaticMoveForIntermediate.setEnabled(false);
-            }
+            productsFlowLocationLookup.setEnabled(ProductionFlowComponent.WAREHOUSE.getStringValue().equals(
+                    technology.getField(TechnologyFieldsPFTD.PRODUCTION_FLOW)));
         }
     }
 
