@@ -26,12 +26,13 @@ package com.qcadoo.mes.productFlowThruDivision.hooks;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.materialFlowResources.constants.DivisionFieldsMFR;
-import com.qcadoo.mes.productFlowThruDivision.OperationComponentDataProvider;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductionFlowComponent;
 import com.qcadoo.mes.productFlowThruDivision.constants.Range;
 import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.criteriaModifiers.ProductionLineCriteriaModifiersPFTD;
 import com.qcadoo.mes.productFlowThruDivision.criteriaModifiers.ProductsFlowInCriteriaModifiers;
+import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
@@ -40,22 +41,16 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.CheckBoxComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class TechnologyDetailsHooksPFTD {
@@ -72,16 +67,11 @@ public class TechnologyDetailsHooksPFTD {
 
     private static final String L_PRODUCTS_FINAL = "productsFinal";
 
-    private static final String L_ONE_DIVISION_FLOW_LAYOUT = "oneDivisionFlowLayout";
-
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    @Autowired
-    private OperationComponentDataProvider operationComponentDataProvider;
-
     public void onBeforeRender(final ViewDefinitionState view) {
-        enableeTab(view);
+        enableTab(view);
         // range
         setFieldsRequiredOnRangeTab(view);
         showHideDivisionField(view);
@@ -93,12 +83,29 @@ public class TechnologyDetailsHooksPFTD {
         fillFieldsForOneDivisionRange(view, false);
         changeRibbonState(view);
         hideFlowTableForManyDivision(view);
+        fillFlowLocationForCumulatedProductionRecording(view);
         disableTab(view);
+    }
 
+    private void fillFlowLocationForCumulatedProductionRecording(ViewDefinitionState view) {
+        FieldComponent typeOfProductionRecordingFieldComponent = (FieldComponent) view
+                .getComponentByReference(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
+        if (typeOfProductionRecordingFieldComponent != null && TypeOfProductionRecording.CUMULATED.getStringValue()
+                .equals(typeOfProductionRecordingFieldComponent.getFieldValue())) {
+            FieldComponent productionFlowFieldComponent = (FieldComponent) view
+                    .getComponentByReference(TechnologyFieldsPFTD.PRODUCTION_FLOW);
+            productionFlowFieldComponent.setFieldValue(ProductionFlowComponent.WITHIN_THE_PROCESS.getStringValue());
+            productionFlowFieldComponent.setEnabled(false);
+            productionFlowFieldComponent.requestComponentUpdateState();
+            LookupComponent productsFlowLocationLookup = (LookupComponent) view
+                    .getComponentByReference(TechnologyFieldsPFTD.PRODUCTS_FLOW_LOCATION);
+            productsFlowLocationLookup.setFieldValue(null);
+            productsFlowLocationLookup.setEnabled(false);
+            productsFlowLocationLookup.requestComponentUpdateState();
+        }
     }
 
     public void setWorkstationsLookup(ViewDefinitionState view) {
-
     }
 
     private void hideFlowTableForManyDivision(final ViewDefinitionState view) {
@@ -106,17 +113,10 @@ public class TechnologyDetailsHooksPFTD {
 
         String range = (String) rangeField.getFieldValue();
 
-        if (Range.ONE_DIVISION.getStringValue().equals(range)) {
-
-            enableFlowGrids(view, false, true);
-        } else {
-            enableFlowGrids(view, true, true);
-
-        }
+        enableFlowGrids(view, !Range.ONE_DIVISION.getStringValue().equals(range), true);
     }
 
     private void enableFlowGrids(final ViewDefinitionState view, final boolean enable, final boolean editable) {
-
         GridComponent gridProductsComponent = (GridComponent) view.getComponentByReference(L_PRODUCTS_COMPONENT);
         GridComponent gridProductsIntermidiateIn = (GridComponent) view.getComponentByReference(L_PRODUCTS_FLOW_INTERMIDIATE_IN);
         GridComponent gridProductsIntermidiateOut = (GridComponent) view
@@ -131,7 +131,6 @@ public class TechnologyDetailsHooksPFTD {
         gridProductsIntermidiateIn.setEditable(editable);
         gridProductsIntermidiateOut.setEditable(editable);
         gridProductsFinal.setEditable(editable);
-
     }
 
 
@@ -139,7 +138,6 @@ public class TechnologyDetailsHooksPFTD {
         GridComponent gridProductsComponent = (GridComponent) view.getComponentByReference(L_PRODUCTS_COMPONENT);
         gridProductsComponent.setEnabled(false);
         gridProductsComponent.setEditable(true);
-
     }
 
 
@@ -164,18 +162,13 @@ public class TechnologyDetailsHooksPFTD {
 
         Entity technology = technologyForm.getPersistedEntityWithIncludedFormValues();
         WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
-        RibbonGroup flow = (RibbonGroup) window.getRibbon().getGroupByName("productsFlow");
+        RibbonGroup flow = window.getRibbon().getGroupByName("productsFlow");
 
-        RibbonActionItem fillLocationsInComponents = (RibbonActionItem) flow.getItemByName("fillLocationsInComponents");
+        RibbonActionItem fillLocationsInComponents = flow.getItemByName("fillLocationsInComponents");
 
-        if (TechnologyState.DRAFT.getStringValue().equals(technology.getStringField(TechnologyFields.STATE))) {
-            fillLocationsInComponents.setEnabled(true);
-        } else {
-            fillLocationsInComponents.setEnabled(false);
-        }
+        fillLocationsInComponents.setEnabled(TechnologyState.DRAFT.getStringValue().equals(technology.getStringField(TechnologyFields.STATE)));
         fillLocationsInComponents.requestUpdate(true);
         window.requestRibbonRender();
-
     }
 
     public void fillFieldsForOneDivisionRange(final ViewDefinitionState view, boolean isDivisonChange) {
@@ -241,7 +234,7 @@ public class TechnologyDetailsHooksPFTD {
         }
         productsFlowLocationLookup.requestComponentUpdateState();
 
-        FieldComponent productionFlow = (FieldComponent) view.getComponentByReference("productionFlow");
+        FieldComponent productionFlow = (FieldComponent) view.getComponentByReference(TechnologyFieldsPFTD.PRODUCTION_FLOW);
         productionFlow.setFieldValue(division.getStringField("productionFlow"));
         productionFlow.requestComponentUpdateState();
 
@@ -253,7 +246,6 @@ public class TechnologyDetailsHooksPFTD {
                 .getComponentByReference("automaticMoveForFinal");
         automaticMoveForFinal.setChecked(division.getBooleanField("automaticMoveForFinal"));
         automaticMoveForFinal.requestComponentUpdateState();
-
     }
 
     private void disableTab(final ViewDefinitionState view) {
@@ -302,7 +294,7 @@ public class TechnologyDetailsHooksPFTD {
 
     }
 
-    private void enableeTab(final ViewDefinitionState view) {
+    private void enableTab(final ViewDefinitionState view) {
         FormComponent technology = (FormComponent) view.getComponentByReference(L_FORM);
         if (technology.getEntityId() != null) {
             Entity entity = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
@@ -313,7 +305,6 @@ public class TechnologyDetailsHooksPFTD {
             String state = entity.getStringField(TechnologyFields.STATE);
 
             if (TechnologyState.DRAFT.getStringValue().equals(state)) {
-
                 enableFlowGrids(view, true, true);
                 enableRangeGrids(view, true, true);
                 LookupComponent componentsLocationLookup = (LookupComponent) view
@@ -343,9 +334,7 @@ public class TechnologyDetailsHooksPFTD {
                         .getComponentByReference("automaticMoveForFinal");
                 automaticMoveForFinal.setEnabled(true);
             }
-
         }
-
     }
 
     private void setCriteriaModifierParameters(final ViewDefinitionState view) {
@@ -412,12 +401,7 @@ public class TechnologyDetailsHooksPFTD {
         FieldComponent rangeField = (FieldComponent) view.getComponentByReference(TechnologyFieldsPFTD.RANGE);
         String range = (String) rangeField.getFieldValue();
 
-        if (Range.ONE_DIVISION.getStringValue().equals(range)) {
-            enableSection(view, true);
-        } else {
-            enableSection(view, false);
-        }
-
+        enableSection(view, Range.ONE_DIVISION.getStringValue().equals(range));
     }
 
     private void enableSection(final ViewDefinitionState view, final boolean b) {
@@ -453,9 +437,7 @@ public class TechnologyDetailsHooksPFTD {
                 productsFlowLocationLookup.setEnabled(false);
                 automaticMoveForIntermediate.setEnabled(false);
             }
-
         }
-
     }
 
     public void disbaleRangeIfOperationsAreFromDifferentDivisions(final ViewDefinitionState view) {

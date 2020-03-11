@@ -211,11 +211,11 @@
 
             <layoutElement column="1" row="3" width="2">
                 <component type="select" name="productionFlow"
-                           field="#{form}.productionFlow" reference="productionFlow">
+                           field="#{form}.productionFlow" reference="productionFlow"
+                           hasDescription="true">
                     <listener event="onSelectedEntityChange"
                               class="com.qcadoo.mes.productFlowThruDivision.listeners.TechnologyDetailsListenersPFTD"
                               method="onProductionFlowComponentChange"/>
-
                 </component>
             </layoutElement>
 
