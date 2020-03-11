@@ -164,18 +164,6 @@
                              plugin="materialFlow"/>
         </model:model-field>
 
-        <model:model-field plugin="technologies" model="technology">
-            <model:boolean name="isDivisionLocation"/>
-        </model:model-field>
-
-        <model:model-field plugin="technologies" model="technology">
-            <model:boolean name="isDivisionOutputLocation"/>
-        </model:model-field>
-
-        <model:model-field plugin="technologies" model="technology">
-            <model:boolean name="isDivisionInputLocation"/>
-        </model:model-field>
-
         <!-- operationProductInComponent -->
 
         <model:model-field plugin="technologies"
@@ -186,34 +174,8 @@
 
         <model:model-field plugin="technologies"
                            model="operationProductInComponent">
-            <model:boolean name="isDivisionLocation"/>
-        </model:model-field>
-
-        <model:model-field plugin="technologies"
-                           model="operationProductInComponent">
-            <model:boolean name="isDivisionLocationModified"/>
-        </model:model-field>
-
-        <model:model-field plugin="technologies"
-                           model="operationProductInComponent">
             <model:belongsTo name="componentsOutputLocation"
                              model="location" plugin="materialFlow"/>
-        </model:model-field>
-
-        <model:model-field plugin="technologies"
-                           model="operationProductInComponent">
-            <model:boolean name="isDivisionOutputLocation"/>
-        </model:model-field>
-
-        <model:model-field plugin="technologies"
-                           model="operationProductInComponent">
-            <model:boolean name="isDivisionOutputLocationModified"/>
-        </model:model-field>
-
-        <model:model-field plugin="technologies"
-                           model="operationProductInComponent">
-            <model:enum name="flowTypeInComponent" values="01withinTheProcess,02getFromThePlace"
-                        default="01withinTheProcess"/>
         </model:model-field>
 
         <!-- operationProductOutComponent -->
@@ -222,47 +184,6 @@
                            model="operationProductOutComponent">
             <model:belongsTo name="productsInputLocation" model="location"
                              plugin="materialFlow"/>
-        </model:model-field>
-
-        <model:model-field plugin="technologies"
-                           model="operationProductOutComponent">
-            <model:boolean name="isDivisionInputLocation"/>
-        </model:model-field>
-
-        <model:model-field plugin="technologies"
-                           model="operationProductOutComponent">
-            <model:boolean name="isDivisionInputLocationModified"/>
-        </model:model-field>
-
-        <model:model-field plugin="technologies"
-                           model="operationProductOutComponent">
-            <model:enum name="flowTypeOutComponent" values="01withinTheProcess,02acceptThePlace"
-                        default="01withinTheProcess"/>
-        </model:model-field>
-
-        <model:model-field plugin="technologies" model="operationProductInComponent">
-            <model:boolean name="isDivisionLocationChangeOPIC"
-                           persistent="false"/>
-        </model:model-field>
-
-        <model:model-field plugin="technologies" model="operationProductOutComponent">
-            <model:boolean name="isDivisionLocationChangeOPOC"
-                           persistent="false"/>
-        </model:model-field>
-
-        <model:model-field plugin="technologies" model="technology">
-            <model:boolean name="isDivisionLocationChange"
-                           persistent="false"/>
-        </model:model-field>
-
-        <model:model-field plugin="technologies" model="technology">
-            <model:boolean name="isDivisionInputLocationChange"
-                           persistent="false"/>
-        </model:model-field>
-
-        <model:model-field plugin="technologies" model="technology">
-            <model:boolean name="isDivisionOutputLocationChange"
-                           persistent="false"/>
         </model:model-field>
 
         <model:model-field plugin="materialFlowResources" model="document">
@@ -366,34 +287,8 @@
 
         <model:model-field plugin="basicProductionCounting"
                            model="productionCountingQuantity">
-            <model:boolean name="isDivisionLocation"/>
-        </model:model-field>
-
-        <model:model-field plugin="basicProductionCounting"
-                           model="productionCountingQuantity">
-            <model:boolean name="isDivisionLocationModified"/>
-        </model:model-field>
-
-        <model:model-field plugin="basicProductionCounting"
-                           model="productionCountingQuantity">
             <model:belongsTo name="componentsOutputLocation"
                              model="location" plugin="materialFlow"/>
-        </model:model-field>
-
-        <model:model-field plugin="basicProductionCounting"
-                           model="productionCountingQuantity">
-            <model:boolean name="isDivisionOutputLocation"/>
-        </model:model-field>
-
-        <model:model-field plugin="basicProductionCounting"
-                           model="productionCountingQuantity">
-            <model:boolean name="isDivisionOutputLocationModified"/>
-        </model:model-field>
-
-        <model:model-field plugin="basicProductionCounting"
-                           model="productionCountingQuantity">
-            <model:enum name="flowTypeInComponent" values="01withinTheProcess,02getFromThePlace"
-                        default="01withinTheProcess"/>
         </model:model-field>
 
         <!-- productionCountingQuantity out -->
@@ -402,33 +297,6 @@
                            model="productionCountingQuantity">
             <model:belongsTo name="productsInputLocation" model="location"
                              plugin="materialFlow"/>
-        </model:model-field>
-
-        <model:model-field plugin="basicProductionCounting"
-                           model="productionCountingQuantity">
-            <model:boolean name="isDivisionInputLocation"/>
-        </model:model-field>
-
-        <model:model-field plugin="basicProductionCounting"
-                           model="productionCountingQuantity">
-            <model:boolean name="isDivisionInputLocationModified"/>
-        </model:model-field>
-
-        <model:model-field plugin="basicProductionCounting"
-                           model="productionCountingQuantity">
-            <model:enum name="flowTypeOutComponent" values="01withinTheProcess,02acceptThePlace"
-                        default="01withinTheProcess"/>
-        </model:model-field>
-        <model:model-field plugin="basicProductionCounting"
-                           model="productionCountingQuantity">
-            <model:boolean name="isDivisionLocationChangeOPIC"
-                           persistent="false"/>
-        </model:model-field>
-
-        <model:model-field plugin="basicProductionCounting"
-                           model="productionCountingQuantity">
-            <model:boolean name="isDivisionLocationChangeOPOC"
-                           persistent="false"/>
         </model:model-field>
 
         <!-- hooks -->
