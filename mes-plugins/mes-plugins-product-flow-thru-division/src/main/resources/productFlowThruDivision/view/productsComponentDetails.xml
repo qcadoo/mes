@@ -74,8 +74,6 @@
                                     class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
                                     method="showWarehousesOnly"/>
                         </component>
-
-
                     </layoutElement>
 
                 </component>

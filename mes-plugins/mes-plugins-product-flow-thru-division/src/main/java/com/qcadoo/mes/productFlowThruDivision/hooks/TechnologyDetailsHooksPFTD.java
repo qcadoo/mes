@@ -49,6 +49,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -466,7 +467,7 @@ public class TechnologyDetailsHooksPFTD {
     }
 
     private void setFieldsRequiredOnRangeTab(final ViewDefinitionState view) {
-        List<String> references = Arrays.asList(TechnologyFieldsPFTD.RANGE);
+        List<String> references = Collections.singletonList(TechnologyFieldsPFTD.RANGE);
 
         setFieldsRequired(view, references);
     }

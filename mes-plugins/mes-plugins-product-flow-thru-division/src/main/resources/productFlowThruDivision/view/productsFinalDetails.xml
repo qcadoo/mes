@@ -41,8 +41,7 @@
 
                     <layoutElement column="1" row="1">
                         <component type="lookup" name="productsInputLocation"
-                                   field="#{form}.productsInputLocation" reference="productsInputLocation"
-                                   required="true">
+                                   field="#{form}.productsInputLocation" reference="productsInputLocation">
                             <option type="column" name="name" fields="name"/>
                             <option type="column" name="type" fields="type"/>
 
@@ -67,5 +66,9 @@
         </windowTab>
     </component>
 
-
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.productFlowThruDivision.hooks.ProductsFinalDetailsHooks"
+                method="onBeforeRender"/>
+    </hooks>
 </view>

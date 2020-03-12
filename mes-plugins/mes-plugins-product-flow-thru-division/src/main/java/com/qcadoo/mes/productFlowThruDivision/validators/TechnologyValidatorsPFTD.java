@@ -52,11 +52,16 @@ public class TechnologyValidatorsPFTD {
 
             return false;
         }
-        return checkIfWarehousesAreDifferent(dataDefinition, technology);
+        Entity productsFlowLocation = technology.getBelongsToField(TechnologyFieldsPFTD.PRODUCTS_FLOW_LOCATION);
+        if (ProductionFlowComponent.WAREHOUSE.getStringValue().equals(productionFlow) && productsFlowLocation == null) {
+            technology.addError(dataDefinition.getField(TechnologyFieldsPFTD.PRODUCTS_FLOW_LOCATION),
+                    L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
+            return false;
+        }
+        return checkIfWarehousesAreDifferent(technology);
     }
 
-    private boolean checkIfWarehousesAreDifferent(final DataDefinition dataDefinition, final Entity technology) {
-
+    private boolean checkIfWarehousesAreDifferent(final Entity technology) {
         Entity componentsLocation = technology.getBelongsToField(TechnologyFieldsPFTD.COMPONENTS_LOCATION);
         Entity componentsOutLocation = technology.getBelongsToField(TechnologyFieldsPFTD.COMPONENTS_OUTPUT_LOCATION);
 
