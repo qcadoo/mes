@@ -30,7 +30,6 @@ import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
-import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.costNormsForMaterials.CostNormsForMaterialsService;
 import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
 import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.domain.ProductWithQuantityAndCost;
@@ -41,17 +40,11 @@ import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productFlowThruDivision.constants.DocumentFieldsPFTD;
-import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductInComponentFieldsPFTD;
-import com.qcadoo.mes.productFlowThruDivision.constants.ProductionCountingQuantityFieldsPFTD;
-import com.qcadoo.mes.productFlowThruDivision.constants.ProductionFlowComponent;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.productionCounting.utils.OrderClosingHelper;
 import com.qcadoo.mes.productionCounting.utils.ProductionTrackingDocumentsHelper;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -116,17 +109,14 @@ public final class ProductionTrackingListenerServicePFTD {
 
         List<Entity> recordOutProducts = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
-        Multimap<Long, Entity> groupedRecordOutProducts = productionTrackingDocumentsHelper.groupRecordOutProductsByLocation(
-                recordOutProducts, order);
-
-        productionTrackingDocumentsHelper.fillFromBPCProductOut(groupedRecordOutProducts, recordOutProducts, order);
+        Multimap<Long, Entity> groupedRecordOutProducts = productionTrackingDocumentsHelper
+                .fillFromBPCProductOut(recordOutProducts, order, true);
 
         List<Entity> recordInProducts = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
-        Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper.groupRecordInProductsByWarehouse(
-                recordInProducts, order);
 
-        productionTrackingDocumentsHelper.fillFromBPCProductIn(groupedRecordInProducts, recordInProducts, order);
+        Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper.fillFromBPCProductIn(recordInProducts,
+                order, true);
 
         for (Long warehouseId : groupedRecordOutProducts.keySet()) {
             Entity locationTo = getLocationDD().get(warehouseId);
@@ -614,53 +604,6 @@ public final class ProductionTrackingListenerServicePFTD {
         order.setField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS, updatedCosts);
     }
 
-    public boolean isOperationProductComponentToRegister(OperationProductComponentHolder operationProductComponentHolder,
-            Entity product, Entity toc) {
-        if (operationProductComponentHolder.isEntityTypeSame(TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)) {
-            Entity opic = getOperationComponentForProductAndToc(product, toc,
-                    TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
-
-            if (Objects.nonNull(opic)
-                    && opic.getStringField(OperationProductInComponentFieldsPFTD.PRODUCTION_FLOW).equals(
-                            ProductionFlowComponent.WITHIN_THE_PROCESS.getStringValue())) {
-                return false;
-            } else if (Objects.isNull(opic) && flowWithinTheProcess(operationProductComponentHolder)) {
-                return false;
-            }
-        } else if (operationProductComponentHolder.isEntityTypeSame(TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT)) {
-            Entity opoc = getOperationComponentForProductAndToc(product, toc,
-                    TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
-
-            if (Objects.nonNull(opoc)
-                    && opoc.getStringField(OperationProductInComponentFieldsPFTD.PRODUCTION_FLOW).equals(
-                            ProductionFlowComponent.WITHIN_THE_PROCESS.getStringValue())) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private boolean flowWithinTheProcess(OperationProductComponentHolder operationProductComponentHolder) {
-        Long productionCountingQuantityId = operationProductComponentHolder.getProductionCountingQuantityId();
-
-        if (Objects.nonNull(productionCountingQuantityId)) {
-            Entity entity = getProductionCountingQuantityDD().get(productionCountingQuantityId);
-
-            if (entity.getStringField(ProductionCountingQuantityFieldsPFTD.PRODUCTION_FLOW).equals(
-                    ProductionFlowComponent.WITHIN_THE_PROCESS.getStringValue())) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private Entity getOperationComponentForProductAndToc(final Entity product, final Entity toc, final String hasManyName) {
-        return toc.getHasManyField(hasManyName).find().add(SearchRestrictions.belongsTo("product", product)).setMaxResults(1)
-                .uniqueResult();
-    }
-
     private DataDefinition getDocumentDD() {
         return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
@@ -674,10 +617,4 @@ public final class ProductionTrackingListenerServicePFTD {
     private DataDefinition getLocationDD() {
         return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_LOCATION);
     }
-
-    private DataDefinition getProductionCountingQuantityDD() {
-        return dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY);
-    }
-
 }

@@ -23,33 +23,27 @@
  */
 package com.qcadoo.mes.productionCounting.hooks.helpers;
 
-import static java.util.Arrays.asList;
+import com.google.common.base.Function;
+import com.google.common.collect.*;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentEntityType;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
+import com.qcadoo.mes.technologies.grouping.OperationMergeService;
+import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.google.common.base.Function;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
-import com.google.common.collect.Sets;
-import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
-import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
-import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
-import com.qcadoo.mes.technologies.ProductQuantitiesService;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentEntityType;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
-import com.qcadoo.mes.technologies.grouping.OperationMergeService;
-import com.qcadoo.model.api.Entity;
 
 @Service
 public class OperationProductsExtractor {
@@ -157,6 +151,11 @@ public class OperationProductsExtractor {
             Map<OperationProductComponentEntityType, Set<Entity>> entityTypeWithAlreadyAddedProducts,
             String typeOfProductionRecording) {
 
+        if (cumulated(typeOfProductionRecording) && operationProductComponentHolder.getProductMaterialType().getStringValue()
+                .equals(TechnologyService.L_02_INTERMEDIATE)) {
+            return true;
+        }
+
         OperationProductComponentEntityType entityType = operationProductComponentHolder.getEntityType();
         Entity product = operationProductComponentHolder.getProduct();
 
@@ -168,10 +167,6 @@ public class OperationProductsExtractor {
         Entity trackingOperationProductComponent = trackingOperationComponentBuilder
                 .fromOperationProductComponent(operationComponent);
         trackingOperationProductComponents.add(trackingOperationProductComponent);
-    }
-
-    private boolean isMerged(Entity technologyOperationComponent) {
-        return operationMergeService.findMergedByOperationComponent(technologyOperationComponent) != null;
     }
 
     private boolean cumulated(String typeOfProductionRecording) {
@@ -203,12 +198,6 @@ public class OperationProductsExtractor {
         }
     }
 
-    private static final Function<Entity, String> EXTRACT_MODEL_NAME = new Function<Entity, String>() {
-
-        @Override
-        public String apply(final Entity from) {
-            return from.getDataDefinition().getName();
-        }
-    };
+    private static final Function<Entity, String> EXTRACT_MODEL_NAME = from -> from.getDataDefinition().getName();
 
 }

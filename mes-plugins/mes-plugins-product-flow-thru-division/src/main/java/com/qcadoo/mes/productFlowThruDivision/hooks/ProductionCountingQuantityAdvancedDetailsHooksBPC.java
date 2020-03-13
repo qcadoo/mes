@@ -76,10 +76,13 @@ public class ProductionCountingQuantityAdvancedDetailsHooksBPC {
         productsFlowLocationLookup.setEnabled(false);
         productsFlowLocationLookup.requestComponentUpdateState();
         if (ProductionCountingQuantityRole.PRODUCED.getStringValue().equals(role)
-                && (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(type)
-                        || ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue().equals(type))) {
+                && (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(type))) {
             productsInputLocationLookup.setEnabled(true);
             productsInputLocationLookup.setRequired(true);
+            productsInputLocationLookup.requestComponentUpdateState();
+        } else if (ProductionCountingQuantityRole.PRODUCED.getStringValue().equals(role)
+                && (ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue().equals(type))) {
+            productsInputLocationLookup.setEnabled(true);
             productsInputLocationLookup.requestComponentUpdateState();
         } else if (ProductionCountingQuantityRole.USED.getStringValue().equals(role)
                 && ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue().equals(type)) {
