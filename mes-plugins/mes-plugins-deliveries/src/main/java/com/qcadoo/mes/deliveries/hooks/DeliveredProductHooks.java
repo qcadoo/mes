@@ -27,8 +27,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -60,9 +58,9 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 @Service
 public class DeliveredProductHooks {
 
-    private static final String L_ID = "id";
-
     private static final String L_OFFER = "offer";
+
+    private static final String L_OPERATION = "operation";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -116,8 +114,10 @@ public class DeliveredProductHooks {
                 BigDecimal deliveredQuantity = BigDecimal.ZERO;
                 BigDecimal additionalQuantity = BigDecimal.ZERO;
 
-                updateDeliveredAndAdditionalQuantityInOrderedProduct(deliveredProductDD, deliveredProductDB, deliveredQuantity,
-                        additionalQuantity);
+                Entity orderedProduct = deliveredProduct.getBelongsToField(DeliveredProductFields.ORDERED_PRODUCT);
+
+                updateDeliveredAndAdditionalQuantityInOrderedProduct(deliveredProductDB, deliveredQuantity, additionalQuantity,
+                        orderedProduct);
             }
         }
 
@@ -138,21 +138,21 @@ public class DeliveredProductHooks {
             return true;
         }
 
-        Entity deliveredProductDBBatch = deliveredProductDB.getBelongsToField(DeliveredProductFields.BATCH);
-        Entity deliveredProductBatch = deliveredProduct.getBelongsToField(DeliveredProductFields.BATCH);
-
-        if (Objects.isNull(deliveredProductDBBatch) != Objects.isNull(deliveredProductBatch)
-                || Objects.nonNull(deliveredProductDBBatch)
-                        && !deliveredProductDBBatch.getId().equals(deliveredProductBatch.getId())) {
-            return true;
-        }
-
         Entity deliveredProductDBAdditionalCode = deliveredProductDB.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
         Entity deliveredProductAdditionalCode = deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
 
         if (Objects.isNull(deliveredProductDBAdditionalCode) != Objects.isNull(deliveredProductAdditionalCode)
                 || Objects.nonNull(deliveredProductDBAdditionalCode)
                         && !deliveredProductDBAdditionalCode.getId().equals(deliveredProductAdditionalCode.getId())) {
+            return true;
+        }
+
+        Entity deliveredProductDBBatch = deliveredProductDB.getBelongsToField(DeliveredProductFields.BATCH);
+        Entity deliveredProductBatch = deliveredProduct.getBelongsToField(DeliveredProductFields.BATCH);
+
+        if (Objects.isNull(deliveredProductDBBatch) != Objects.isNull(deliveredProductBatch)
+                || Objects.nonNull(deliveredProductDBBatch)
+                        && !deliveredProductDBBatch.getId().equals(deliveredProductBatch.getId())) {
             return true;
         }
 
@@ -175,25 +175,29 @@ public class DeliveredProductHooks {
         if (maybeOrderedProduct.isPresent()) {
             Entity orderedProduct = maybeOrderedProduct.get();
 
-            updateDeliveredAndAdditionalQuantityInOrderedProduct(deliveredProductDD, deliveredProduct, deliveredQuantity,
-                    additionalQuantity, orderedProduct, true);
+            deliveredProduct.setField(DeliveredProductFields.ORDERED_PRODUCT, orderedProduct);
+
+            updateDeliveredAndAdditionalQuantityInOrderedProduct(deliveredProduct, deliveredQuantity, additionalQuantity,
+                    orderedProduct);
         } else {
-            maybeOrderedProduct = deliveriesService.getOrderedProductForDeliveredProduct(deliveredProduct,
-                    SearchRestrictions.isNull(OrderedProductFields.BATCH));
+            maybeOrderedProduct = deliveriesService.getSuitableOrderedProductForDeliveredProduct(deliveredProduct);
 
             if (maybeOrderedProduct.isPresent()) {
                 Entity orderedProduct = maybeOrderedProduct.get();
 
-                updateDeliveredAndAdditionalQuantityInOrderedProduct(deliveredProductDD, deliveredProduct, deliveredQuantity,
-                        additionalQuantity, orderedProduct, false);
+                deliveredProduct.setField(DeliveredProductFields.ORDERED_PRODUCT, orderedProduct);
+
+                updateDeliveredAndAdditionalQuantityInOrderedProduct(deliveredProduct, deliveredQuantity, additionalQuantity,
+                        orderedProduct);
             }
         }
     }
 
-    private void updateDeliveredAndAdditionalQuantityInOrderedProduct(final DataDefinition deliveredProductDD,
-            final Entity deliveredProduct, BigDecimal deliveredQuantity, BigDecimal additionalQuantity, Entity orderedProduct,
-            final boolean checkBatch) {
-        List<Entity> deliveredProducts = getOtherDeliveredProducts(deliveredProductDD, deliveredProduct, checkBatch);
+
+
+    private void updateDeliveredAndAdditionalQuantityInOrderedProduct(final Entity deliveredProduct, BigDecimal deliveredQuantity,
+            BigDecimal additionalQuantity, Entity orderedProduct) {
+        List<Entity> deliveredProducts = getOtherDeliveredProducts(deliveredProduct, orderedProduct);
 
         if (!deliveredProducts.isEmpty()) {
             BigDecimal deliveredQuantityRest = deliveredProducts.stream()
@@ -215,41 +219,15 @@ public class DeliveredProductHooks {
         orderedProduct = orderedProduct.getDataDefinition().save(orderedProduct);
     }
 
-    private List<Entity> getOtherDeliveredProducts(final DataDefinition deliveredProductDD, final Entity deliveredProduct,
-            final boolean checkBatch) {
-        SearchCriteriaBuilder searchCriteriaBuilder;
-
-        if (checkBatch) {
-            searchCriteriaBuilder = deliveriesService.getSearchCriteriaBuilderForDeliveredProduct(deliveredProductDD.find(),
-                    deliveredProduct);
-        } else {
-            searchCriteriaBuilder = deliveriesService.getSearchCriteriaBuilderForDeliveredProduct(deliveredProductDD.find(),
-                    deliveredProduct, getBatchCustomSearchCriterion(deliveredProduct));
-        }
+    private List<Entity> getOtherDeliveredProducts(final Entity deliveredProduct, final Entity orderedProduct) {
+        SearchCriteriaBuilder searchCriteriaBuilder = orderedProduct.getHasManyField(OrderedProductFields.DELIVERED_PRODUCTS)
+                .find();
 
         if (Objects.nonNull(deliveredProduct.getId())) {
             searchCriteriaBuilder.add(SearchRestrictions.ne("id", deliveredProduct.getId()));
         }
 
         return searchCriteriaBuilder.list().getEntities();
-    }
-
-    private SearchCriterion getBatchCustomSearchCriterion(final Entity deliveredProduct) {
-        List<Entity> orderedProducts = deliveriesService
-                .getSearchCriteriaBuilderForOrderedProduct(deliveriesService.getOrderedProductDD().find(), deliveredProduct,
-                        SearchRestrictions.isNotNull(OrderedProductFields.BATCH))
-                .list().getEntities();
-
-        if (orderedProducts.isEmpty()) {
-            return SearchRestrictions.isNull(DeliveredProductFields.BATCH);
-        } else {
-            Set<Long> batchIds = orderedProducts.stream()
-                    .map(orderedProduct -> orderedProduct.getBelongsToField(OrderedProductFields.BATCH)).map(Entity::getId)
-                    .collect(Collectors.toSet());
-
-            return SearchRestrictions.or(SearchRestrictions.isNull(DeliveredProductFields.BATCH),
-                    SearchRestrictions.not(SearchRestrictions.in(DeliveredProductFields.BATCH + "." + L_ID, batchIds)));
-        }
     }
 
     private void tryFillStorageLocation(final Entity deliveredProduct) {

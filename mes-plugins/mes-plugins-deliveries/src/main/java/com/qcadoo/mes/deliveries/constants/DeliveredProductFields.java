@@ -73,4 +73,6 @@ public final class DeliveredProductFields {
 
     public static final String DELIVERED_PRODUCT_ATTRIBUTE_VALS = "deliveredProductAttributeVals";
 
+    public static final String ORDERED_PRODUCT = "orderedProduct";
+
 }

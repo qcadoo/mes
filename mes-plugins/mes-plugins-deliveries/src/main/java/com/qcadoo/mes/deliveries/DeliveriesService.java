@@ -328,19 +328,30 @@ public interface DeliveriesService {
 
     Optional<Entity> getOrderedProductForDeliveredProduct(final Entity deliveredProduct);
 
+    Optional<Entity> getSuitableOrderedProductForDeliveredProduct(final Entity deliveredProduct);
+
     Optional<Entity> getOrderedProductForDeliveredProduct(final Entity deliveredProduct,
-            final SearchCriterion batchCustomSearchCriterion);
+            final SearchCriterion batchCustomSearchCriterion, final SearchCriterion offerCustomSearchCriterion,
+            final SearchCriterion operationCustomSearchCriterion);
 
     SearchCriteriaBuilder getSearchCriteriaBuilderForOrderedProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
             final Entity deliveredProduct);
 
     SearchCriteriaBuilder getSearchCriteriaBuilderForOrderedProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
-            final Entity deliveredProduct, final SearchCriterion batchCustomSearchCriterion);
+            final Entity deliveredProduct, final SearchCriterion batchCustomSearchCriterion,
+            final SearchCriterion offerCustomSearchCriterion, final SearchCriterion operationCustomSearchCriterion);
 
     SearchCriteriaBuilder getSearchCriteriaBuilderForDeliveredProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
             final Entity deliveredProduct);
 
     SearchCriteriaBuilder getSearchCriteriaBuilderForDeliveredProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
-            final Entity deliveredProduct, final SearchCriterion batchCustomSearchCriterion);
+            final Entity deliveredProduct, final boolean checkOther, final SearchCriterion batchCustomSearchCriterion,
+            final SearchCriterion offerCustomSearchCriterion, final SearchCriterion operationCustomSearchCriterion);
+
+    SearchCriterion getBatchCustomSearchCriterion(final Entity deliveredProduct);
+
+    SearchCriterion getOfferCustomSearchCriterion(final Entity deliveredProduct);
+
+    SearchCriterion getOperationCustomSearchCriterion(final Entity deliveredProduct);
 
 }
