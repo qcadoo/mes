@@ -24,12 +24,7 @@
 package com.qcadoo.mes.productFlowThruDivision.listeners;
 
 import com.qcadoo.mes.productFlowThruDivision.OperationComponentDataProvider;
-import com.qcadoo.mes.productFlowThruDivision.constants.DivisionFieldsPFTD;
-import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductInComponentFieldsPFTD;
-import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductOutComponentFieldsPFTD;
-import com.qcadoo.mes.productFlowThruDivision.constants.ProductionFlowComponent;
-import com.qcadoo.mes.productFlowThruDivision.constants.Range;
-import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
+import com.qcadoo.mes.productFlowThruDivision.constants.*;
 import com.qcadoo.mes.productFlowThruDivision.hooks.TechnologyDetailsHooksPFTD;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
@@ -40,18 +35,13 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.CheckBoxComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
-
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 public class TechnologyDetailsListenersPFTD {
@@ -165,16 +155,10 @@ public class TechnologyDetailsListenersPFTD {
                     .getBelongsToField("division");
 
             if (division != null) {
-                Boolean automaticMove = division.getBooleanField("automaticMoveForFinal");
-
                 Entity productsInputLocation = division.getBelongsToField(DivisionFieldsPFTD.PRODUCTS_INPUT_LOCATION);
                 op.setField(OperationProductOutComponentFieldsPFTD.PRODUCTS_INPUT_LOCATION, productsInputLocation);
-                op.setField("automaticMove", automaticMove);
-
             } else {
                 op.setField(OperationProductOutComponentFieldsPFTD.PRODUCTS_INPUT_LOCATION, null);
-                op.setField("automaticMove", false);
-
             }
             op.getDataDefinition().fastSave(op);
         }
@@ -200,17 +184,11 @@ public class TechnologyDetailsListenersPFTD {
                 Entity productsFlowLocation = division
                         .getBelongsToField(OperationProductOutComponentFieldsPFTD.PRODUCTS_FLOW_LOCATION);
 
-                Boolean automaticMove = division.getBooleanField("automaticMoveForIntermediate");
-
                 op.setField(OperationProductOutComponentFieldsPFTD.PRODUCTION_FLOW, productionFlow);
                 op.setField(OperationProductOutComponentFieldsPFTD.PRODUCTS_FLOW_LOCATION, productsFlowLocation);
-                op.setField("automaticMove", automaticMove);
-
             } else {
                 op.setField(OperationProductOutComponentFieldsPFTD.PRODUCTION_FLOW, null);
                 op.setField(OperationProductOutComponentFieldsPFTD.PRODUCTS_FLOW_LOCATION, null);
-                op.setField("automaticMove", false);
-
             }
             op.getDataDefinition().fastSave(op);
 
@@ -252,13 +230,10 @@ public class TechnologyDetailsListenersPFTD {
 
         Entity productsInputLocation = technology
                 .getBelongsToField(OperationProductOutComponentFieldsPFTD.PRODUCTS_INPUT_LOCATION);
-        Boolean automaticMove = technology.getBooleanField("automaticMoveForFinal");
-
         for (Entity op : opocs) {
             cleanOperationProduct(op);
 
             op.setField(OperationProductOutComponentFieldsPFTD.PRODUCTS_INPUT_LOCATION, productsInputLocation);
-            op.setField("automaticMove", automaticMove);
 
             op.getDataDefinition().fastSave(op);
         }
@@ -277,13 +252,10 @@ public class TechnologyDetailsListenersPFTD {
 
         Entity productsFlowLocation = technology.getBelongsToField(OperationProductOutComponentFieldsPFTD.PRODUCTS_FLOW_LOCATION);
 
-        Boolean automaticMove = technology.getBooleanField("automaticMoveForIntermediate");
         for (Entity op : opocs) {
             cleanOperationProduct(op);
             op.setField(OperationProductOutComponentFieldsPFTD.PRODUCTION_FLOW, productionFlow);
             op.setField(OperationProductOutComponentFieldsPFTD.PRODUCTS_FLOW_LOCATION, productsFlowLocation);
-            op.setField("automaticMove", automaticMove);
-
             op.getDataDefinition().fastSave(op);
         }
     }
@@ -328,8 +300,6 @@ public class TechnologyDetailsListenersPFTD {
             final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity technology = form.getPersistedEntityWithIncludedFormValues();
-        CheckBoxComponent automaticMoveForIntermediate = (CheckBoxComponent) view
-                .getComponentByReference("automaticMoveForIntermediate");
 
         if (Range.ONE_DIVISION.getStringValue().equals(technology.getStringField(TechnologyFieldsPFTD.RANGE))) {
             LookupComponent productsFlowLocationLookup = (LookupComponent) view
@@ -337,19 +307,14 @@ public class TechnologyDetailsListenersPFTD {
             if (ProductionFlowComponent.WAREHOUSE.getStringValue()
                     .equals(technology.getField(TechnologyFieldsPFTD.PRODUCTION_FLOW))) {
                 productsFlowLocationLookup.setEnabled(true);
-                automaticMoveForIntermediate.setEnabled(true);
-
             } else {
                 productsFlowLocationLookup.setEnabled(false);
                 productsFlowLocationLookup.setFieldValue(null);
-                automaticMoveForIntermediate.setEnabled(false);
-
             }
         }
     }
 
     public void onDivisionChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-
         technologyDetailsHooksPFTD.fillFieldsForOneDivisionRange(view, true);
     }
 
@@ -367,6 +332,5 @@ public class TechnologyDetailsListenersPFTD {
         op.setField(OperationProductInComponentFieldsPFTD.COMPONENTS_LOCATION, null);
         op.setField(OperationProductInComponentFieldsPFTD.COMPONENTS_OUTPUT_LOCATION, null);
         op.setField(OperationProductInComponentFieldsPFTD.PRODUCTS_INPUT_LOCATION, null);
-        op.setField("automaticMove", false);
     }
 }

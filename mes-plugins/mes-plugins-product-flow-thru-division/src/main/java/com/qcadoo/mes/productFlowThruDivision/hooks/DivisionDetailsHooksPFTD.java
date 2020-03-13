@@ -28,7 +28,6 @@ import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import org.springframework.stereotype.Service;
@@ -50,19 +49,10 @@ public class DivisionDetailsHooksPFTD {
     private void setComponentsState(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity opic = form.getPersistedEntityWithIncludedFormValues();
-        CheckBoxComponent automaticMoveForIntermediate = (CheckBoxComponent) view
-                .getComponentByReference("automaticMoveForIntermediate");
 
         LookupComponent productsFlowLocationLookup = (LookupComponent) view
                 .getComponentByReference(TechnologyFieldsPFTD.PRODUCTS_FLOW_LOCATION);
-        if (ProductionFlowComponent.WAREHOUSE.getStringValue().equals(
-                opic.getField(TechnologyFieldsPFTD.PRODUCTION_FLOW))) {
-            productsFlowLocationLookup.setEnabled(true);
-            automaticMoveForIntermediate.setEnabled(true);
-        } else {
-            productsFlowLocationLookup.setEnabled(false);
-            automaticMoveForIntermediate.setEnabled(false);
-        }
+        productsFlowLocationLookup.setEnabled(ProductionFlowComponent.WAREHOUSE.getStringValue().equals(
+                opic.getField(TechnologyFieldsPFTD.PRODUCTION_FLOW)));
     }
-
 }

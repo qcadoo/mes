@@ -27,7 +27,6 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductInComponentFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductionFlowComponent;
-import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
@@ -37,28 +36,29 @@ public class OperationProductComponentsHooksPFTD {
     private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING = "qcadooView.validate.field.error.missing";
 
     public void fillProductionFlow(final DataDefinition technologyDD, final Entity operationProductComponent) {
-
         if (operationProductComponent.getField(OperationProductInComponentFieldsPFTD.PRODUCTION_FLOW) == null) {
             operationProductComponent.setField(OperationProductInComponentFieldsPFTD.PRODUCTION_FLOW,
                     ProductionFlowComponent.WITHIN_THE_PROCESS.getStringValue());
         }
-
     }
 
     public boolean checkRequiredFields(final DataDefinition dataDefinition, final Entity operationProductComponent) {
-
         String productionFlow = operationProductComponent.getStringField(OperationProductInComponentFieldsPFTD.PRODUCTION_FLOW);
         if (operationProductComponent.getId() == null
                 && !ProductionFlowComponent.WAREHOUSE.getStringValue().equals(productionFlow)
                 && !ProductionFlowComponent.WITHIN_THE_PROCESS.getStringValue().equals(productionFlow)) {
             operationProductComponent.addError(dataDefinition.getField(OperationProductInComponentFieldsPFTD.PRODUCTION_FLOW),
                     L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
-
+            return false;
+        }
+        Entity productsFlowLocation = operationProductComponent
+                .getBelongsToField(OperationProductInComponentFieldsPFTD.PRODUCTS_FLOW_LOCATION);
+        if (ProductionFlowComponent.WAREHOUSE.getStringValue().equals(productionFlow) && productsFlowLocation == null) {
+            operationProductComponent.addError(
+                    dataDefinition.getField(OperationProductInComponentFieldsPFTD.PRODUCTS_FLOW_LOCATION),
+                    L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
             return false;
         }
         return true;
     }
-
-
-
 }

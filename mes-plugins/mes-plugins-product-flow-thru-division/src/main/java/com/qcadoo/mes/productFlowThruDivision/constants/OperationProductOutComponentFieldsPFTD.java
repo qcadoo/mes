@@ -31,12 +31,6 @@ public final class OperationProductOutComponentFieldsPFTD {
 
     public static final String PRODUCTS_INPUT_LOCATION = "productsInputLocation";
 
-    public static final String IS_DIVISION_INPUT_LOCATION = "isDivisionInputLocation";
-
-    public static final String IS_DIVISION_INPUT_LOCATION_MODIFIED = "isDivisionInputLocationModified";
-
-    public static final String FLOW_TYPE_OUT_COMPONENT = "flowTypeOutComponent";
-
     public static final String COMPONENTS_LOCATION = "componentsLocation";
 
     public static final String COMPONENTS_OUTPUT_LOCATION = "componentsOutputLocation";

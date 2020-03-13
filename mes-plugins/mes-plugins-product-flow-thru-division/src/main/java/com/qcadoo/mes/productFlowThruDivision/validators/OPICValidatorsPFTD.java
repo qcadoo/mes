@@ -23,31 +23,14 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.validators;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductInComponentFieldsPFTD;
-import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class OPICValidatorsPFTD {
-
-    @Autowired
-    private TechnologyService technologyService;
-
-    public boolean checkRequiredFields(final DataDefinition dataDefinition, final Entity opic) {
-
-        boolean isValid = true;
-
-        if (!technologyService.isIntermediateProduct(opic)) {
-            Entity location = opic.getBelongsToField(OperationProductInComponentFieldsPFTD.COMPONENTS_LOCATION);
-
-        }
-
-        return isValid;
-    }
 
     public boolean checkComponentsWarehouses(final DataDefinition dataDefinition, final Entity opic) {
         Entity componentsLocation = opic.getBelongsToField(OperationProductInComponentFieldsPFTD.COMPONENTS_LOCATION);
