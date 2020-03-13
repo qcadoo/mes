@@ -199,8 +199,7 @@ public class DeliveredProductDetailsHooks {
 
             orderedQuantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
         } else {
-            maybeOrderedProduct = deliveriesService.getOrderedProductForDeliveredProduct(deliveredProduct,
-                    SearchRestrictions.isNull(OrderedProductFields.BATCH));
+            maybeOrderedProduct = deliveriesService.getSuitableOrderedProductForDeliveredProduct(deliveredProduct);
 
             if (maybeOrderedProduct.isPresent()) {
                 Entity orderedProduct = maybeOrderedProduct.get();

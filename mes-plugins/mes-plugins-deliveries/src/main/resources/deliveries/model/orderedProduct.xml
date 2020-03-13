@@ -66,6 +66,9 @@
 
         <string name="batchNumber"/>
         <belongsTo name="batch" model="batch" plugin="advancedGenealogy"/>
+
+        <hasMany name="deliveredProducts" joinField="orderedProduct" cascade="nullify"
+                 model="deliveredProduct" plugin="deliveries"/>
     </fields>
 
     <hooks>

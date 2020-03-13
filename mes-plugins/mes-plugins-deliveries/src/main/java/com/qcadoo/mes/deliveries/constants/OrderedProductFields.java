@@ -59,4 +59,6 @@ public final class OrderedProductFields {
 
     public static final String BATCH = "batch";
 
+    public static final String DELIVERED_PRODUCTS = "deliveredProducts";
+
 }

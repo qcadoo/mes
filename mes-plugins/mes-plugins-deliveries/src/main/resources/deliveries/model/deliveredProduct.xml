@@ -71,6 +71,8 @@
         <boolean name="damaged" default="false"/>
         <hasMany name="deliveredProductAttributeVals" joinField="deliveredProduct" model="deliveredProductAttributeVal"
                  cascade="delete"/>
+
+        <belongsTo name="orderedProduct" model="orderedProduct"/>
     </fields>
 
     <hooks>

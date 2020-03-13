@@ -32,6 +32,7 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,6 +103,8 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     private static final String L_OFFER = "offer";
 
     private static final String L_EXPIRATION_DATE = "expirationDate";
+
+    private static final String L_ID = "id";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -755,49 +758,187 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     }
 
     public Optional<Entity> getOrderedProductForDeliveredProduct(final Entity deliveredProduct) {
-        return getOrderedProductForDeliveredProduct(deliveredProduct, true, null);
+        return getOrderedProductForDeliveredProduct(deliveredProduct, null, null, null);
     }
 
     public Optional<Entity> getOrderedProductForDeliveredProduct(final Entity deliveredProduct,
-            final SearchCriterion batchCustomSearchCriterion) {
-        return getOrderedProductForDeliveredProduct(deliveredProduct, false, batchCustomSearchCriterion);
-    }
-
-    private Optional<Entity> getOrderedProductForDeliveredProduct(final Entity deliveredProduct, final boolean checkBatch,
-            final SearchCriterion batchCustomSearchCriterion) {
+            final SearchCriterion batchCustomSearchCriterion, final SearchCriterion offerCustomSearchCriterion,
+            final SearchCriterion operationCustomSearchCriterion) {
         SearchCriteriaBuilder searchCriteriaBuilder = getSearchCriteriaBuilderForOrderedProduct(getOrderedProductDD().find(),
-                deliveredProduct, checkBatch, batchCustomSearchCriterion);
+                deliveredProduct, batchCustomSearchCriterion, offerCustomSearchCriterion, operationCustomSearchCriterion);
 
         Entity orderedProduct = searchCriteriaBuilder.setMaxResults(1).uniqueResult();
 
         return Optional.ofNullable(orderedProduct);
     }
 
+    public Optional<Entity> getSuitableOrderedProductForDeliveredProduct(final Entity deliveredProduct) {
+        Entity batch = deliveredProduct.getBelongsToField(DeliveredProductFields.BATCH);
+        Entity offer = deliveredProduct.getBelongsToField(L_OFFER);
+        Entity operation = deliveredProduct.getBelongsToField(L_OPERATION);
+
+        if (Objects.nonNull(batch) && Objects.nonNull(offer) && Objects.nonNull(operation)) {
+            return gerOrderedProductForDeliveredProductWhenAllNotNull(deliveredProduct);
+        } else if (Objects.nonNull(batch) && Objects.nonNull(offer)) {
+            return getOrderedProductForDeliveredProductWhenOperationIsNull(deliveredProduct);
+        } else if (Objects.nonNull(batch) && Objects.nonNull(operation)) {
+            return getOrderedProductForDeliveredProductWhenOfferIsNull(deliveredProduct);
+        } else if (Objects.nonNull(offer) && Objects.nonNull(operation)) {
+            return getOrderedProductForDeliveredProductWhenBatchIsNull(deliveredProduct);
+        }
+
+        return getOrderedProductForDeliveredProductWithAllNull(deliveredProduct);
+    }
+
+    private Optional<Entity> gerOrderedProductForDeliveredProductWhenAllNotNull(final Entity deliveredProduct) {
+        Optional<Entity> mayBeOrderedProduct;
+
+        mayBeOrderedProduct = getOrderedProductForDeliveredProductWithBatchAndOffer(deliveredProduct);
+
+        if (mayBeOrderedProduct.isPresent()) {
+            return mayBeOrderedProduct;
+        }
+
+        mayBeOrderedProduct = getOrderedProductForDeliveredProductWithBatchAndOperation(deliveredProduct);
+
+        if (mayBeOrderedProduct.isPresent()) {
+            return mayBeOrderedProduct;
+        }
+
+        mayBeOrderedProduct = getOrderedProductForDeliveredProductWithOfferAndOperation(deliveredProduct);
+
+        if (mayBeOrderedProduct.isPresent()) {
+            return mayBeOrderedProduct;
+        }
+
+        mayBeOrderedProduct = getOrderedProductForDeliveredProductWithBatch(deliveredProduct);
+
+        if (mayBeOrderedProduct.isPresent()) {
+            return mayBeOrderedProduct;
+        }
+
+        return getOrderedProductForDeliveredProductWhenBatchIsNull(deliveredProduct);
+    }
+
+    private Optional<Entity> getOrderedProductForDeliveredProductWhenBatchIsNull(final Entity deliveredProduct) {
+        Optional<Entity> mayBeOrderedProduct;
+
+        mayBeOrderedProduct = getOrderedProductForDeliveredProductWithOffer(deliveredProduct);
+
+        if (mayBeOrderedProduct.isPresent()) {
+            return mayBeOrderedProduct;
+        }
+
+        mayBeOrderedProduct = getOrderedProductForDeliveredProductWithOperation(deliveredProduct);
+
+        if (mayBeOrderedProduct.isPresent()) {
+            return mayBeOrderedProduct;
+        }
+
+        return getOrderedProductForDeliveredProductWithAllNull(deliveredProduct);
+    }
+
+    private Optional<Entity> getOrderedProductForDeliveredProductWhenOfferIsNull(final Entity deliveredProduct) {
+        Optional<Entity> mayBeOrderedProduct;
+
+        mayBeOrderedProduct = getOrderedProductForDeliveredProductWithBatch(deliveredProduct);
+
+        if (mayBeOrderedProduct.isPresent()) {
+            return mayBeOrderedProduct;
+        }
+
+        mayBeOrderedProduct = getOrderedProductForDeliveredProductWithOperation(deliveredProduct);
+
+        if (mayBeOrderedProduct.isPresent()) {
+            return mayBeOrderedProduct;
+        }
+
+        return getOrderedProductForDeliveredProductWithAllNull(deliveredProduct);
+    }
+
+    private Optional<Entity> getOrderedProductForDeliveredProductWhenOperationIsNull(final Entity deliveredProduct) {
+        Optional<Entity> mayBeOrderedProduct;
+
+        mayBeOrderedProduct = getOrderedProductForDeliveredProductWithBatch(deliveredProduct);
+
+        if (mayBeOrderedProduct.isPresent()) {
+            return mayBeOrderedProduct;
+        }
+
+        mayBeOrderedProduct = getOrderedProductForDeliveredProductWithOffer(deliveredProduct);
+
+        if (mayBeOrderedProduct.isPresent()) {
+            return mayBeOrderedProduct;
+        }
+
+        return getOrderedProductForDeliveredProductWithAllNull(deliveredProduct);
+    }
+
+    private Optional<Entity> getOrderedProductForDeliveredProductWithBatchAndOffer(final Entity deliveredProduct) {
+        return getOrderedProductForDeliveredProduct(deliveredProduct, null, null, SearchRestrictions.isNull(L_OPERATION));
+    }
+
+    private Optional<Entity> getOrderedProductForDeliveredProductWithBatchAndOperation(final Entity deliveredProduct) {
+        return getOrderedProductForDeliveredProduct(deliveredProduct, null, SearchRestrictions.isNull(L_OFFER), null);
+    }
+
+    private Optional<Entity> getOrderedProductForDeliveredProductWithOfferAndOperation(final Entity deliveredProduct) {
+        return getOrderedProductForDeliveredProduct(deliveredProduct, SearchRestrictions.isNull(OrderedProductFields.BATCH), null,
+                null);
+    }
+
+    private Optional<Entity> getOrderedProductForDeliveredProductWithBatch(final Entity deliveredProduct) {
+        return getOrderedProductForDeliveredProduct(deliveredProduct, null, SearchRestrictions.isNull(L_OFFER),
+                SearchRestrictions.isNull(L_OPERATION));
+    }
+
+    private Optional<Entity> getOrderedProductForDeliveredProductWithOffer(final Entity deliveredProduct) {
+        return getOrderedProductForDeliveredProduct(deliveredProduct, SearchRestrictions.isNull(OrderedProductFields.BATCH), null,
+                SearchRestrictions.isNull(L_OPERATION));
+    }
+
+    private Optional<Entity> getOrderedProductForDeliveredProductWithOperation(final Entity deliveredProduct) {
+        return getOrderedProductForDeliveredProduct(deliveredProduct, SearchRestrictions.isNull(OrderedProductFields.BATCH),
+                SearchRestrictions.isNull(L_OFFER), null);
+    }
+
+    private Optional<Entity> getOrderedProductForDeliveredProductWithAllNull(final Entity deliveredProduct) {
+        Optional<Entity> mayBeOrderedProduct = getOrderedProductForDeliveredProduct(deliveredProduct,
+                SearchRestrictions.isNull(OrderedProductFields.BATCH), SearchRestrictions.isNull(L_OFFER),
+                SearchRestrictions.isNull(L_OPERATION));
+
+        if (mayBeOrderedProduct.isPresent()) {
+            return mayBeOrderedProduct;
+        }
+
+        return Optional.empty();
+    }
+
     public SearchCriteriaBuilder getSearchCriteriaBuilderForOrderedProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
             final Entity deliveredProduct) {
-        return getSearchCriteriaBuilderForOrderedProduct(searchCriteriaBuilder, deliveredProduct, true, null);
+        return getSearchCriteriaBuilderForOrderedProduct(searchCriteriaBuilder, deliveredProduct, null, null, null);
     }
 
     public SearchCriteriaBuilder getSearchCriteriaBuilderForOrderedProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
-            final Entity deliveredProduct, final SearchCriterion batchCustomSearchCriterion) {
-        return getSearchCriteriaBuilderForOrderedProduct(searchCriteriaBuilder, deliveredProduct, false,
-                batchCustomSearchCriterion);
-    }
-
-    private SearchCriteriaBuilder getSearchCriteriaBuilderForOrderedProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
-            final Entity deliveredProduct, final boolean checkBatch, final SearchCriterion batchCustomSearchCriterion) {
+            final Entity deliveredProduct, final SearchCriterion batchCustomSearchCriterion,
+            final SearchCriterion offerCustomSearchCriterion, final SearchCriterion operationCustomSearchCriterion) {
         Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
         Entity supplier = delivery.getBelongsToField(DeliveryFields.SUPPLIER);
         Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
         String batchNumber = deliveredProduct.getStringField(OrderedProductFields.BATCH_NUMBER);
         Entity batch = deliveredProduct.getBelongsToField(DeliveredProductFields.BATCH);
         Entity additionalCode = deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
+        Entity offer = deliveredProduct.getBelongsToField(L_OFFER);
+        Entity operation = deliveredProduct.getBelongsToField(L_OPERATION);
 
         searchCriteriaBuilder.add(SearchRestrictions.belongsTo(OrderedProductFields.DELIVERY, delivery))
                 .add(SearchRestrictions.belongsTo(OrderedProductFields.PRODUCT, product))
                 .add(SearchRestrictions.belongsTo(OrderedProductFields.ADDITIONAL_CODE, additionalCode));
 
-        if (checkBatch) {
+        if (Objects.nonNull(batchCustomSearchCriterion)) {
+            searchCriteriaBuilder.createAlias(DeliveredProductFields.BATCH, OrderedProductFields.BATCH, JoinType.LEFT)
+                    .add(batchCustomSearchCriterion);
+        } else {
             if (StringUtils.isNoneEmpty(batchNumber)) {
                 searchCriteriaBuilder.createAlias(OrderedProductFields.BATCH, OrderedProductFields.BATCH, JoinType.LEFT)
                         .add(SearchRestrictions.eq(OrderedProductFields.BATCH + "." + BatchFields.NUMBER, batchNumber))
@@ -814,17 +955,30 @@ public class DeliveriesServiceImpl implements DeliveriesService {
                     searchCriteriaBuilder.add(SearchRestrictions.isNull(OrderedProductFields.BATCH));
                 }
             }
-        } else {
-            searchCriteriaBuilder.createAlias(DeliveredProductFields.BATCH, OrderedProductFields.BATCH, JoinType.LEFT)
-                    .add(batchCustomSearchCriterion);
         }
 
         if (PluginUtils.isEnabled("supplyNegotiations")) {
-            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OFFER, deliveredProduct.getBelongsToField(L_OFFER)));
+            if (Objects.nonNull(offerCustomSearchCriterion)) {
+                searchCriteriaBuilder.createAlias(L_OFFER, L_OFFER, JoinType.LEFT).add(offerCustomSearchCriterion);
+            } else {
+                if (Objects.nonNull(offer)) {
+                    searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OFFER, offer));
+                } else {
+                    searchCriteriaBuilder.add(SearchRestrictions.isNull(L_OFFER));
+                }
+            }
         }
 
         if (PluginUtils.isEnabled("techSubcontrForDeliveries")) {
-            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OPERATION, deliveredProduct.getBelongsToField(L_OPERATION)));
+            if (Objects.nonNull(operationCustomSearchCriterion)) {
+                searchCriteriaBuilder.createAlias(L_OPERATION, L_OPERATION, JoinType.LEFT).add(operationCustomSearchCriterion);
+            } else {
+                if (Objects.nonNull(operation)) {
+                    searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OPERATION, operation));
+                } else {
+                    searchCriteriaBuilder.add(SearchRestrictions.isNull(L_OPERATION));
+                }
+            }
         }
 
         return searchCriteriaBuilder;
@@ -832,29 +986,29 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     public SearchCriteriaBuilder getSearchCriteriaBuilderForDeliveredProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
             final Entity deliveredProduct) {
-        return getSearchCriteriaBuilderForDeliveredProduct(searchCriteriaBuilder, deliveredProduct, true, null);
+        return getSearchCriteriaBuilderForDeliveredProduct(searchCriteriaBuilder, deliveredProduct, true, null, null, null);
     }
 
     public SearchCriteriaBuilder getSearchCriteriaBuilderForDeliveredProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
-            final Entity deliveredProduct, final SearchCriterion batchCustomSearchCriterion) {
-        return getSearchCriteriaBuilderForDeliveredProduct(searchCriteriaBuilder, deliveredProduct, false,
-                batchCustomSearchCriterion);
-    }
-
-    private SearchCriteriaBuilder getSearchCriteriaBuilderForDeliveredProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
-            final Entity deliveredProduct, final boolean checkBatch, final SearchCriterion batchCustomSearchCriterion) {
+            final Entity deliveredProduct, final boolean checkOther, final SearchCriterion batchCustomSearchCriterion,
+            final SearchCriterion offerCustomSearchCriterion, final SearchCriterion operationCustomSearchCriterion) {
         Entity delivery = deliveredProduct.getBelongsToField(DeliveredProductFields.DELIVERY);
         Entity supplier = delivery.getBelongsToField(DeliveryFields.SUPPLIER);
         Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
         String batchNumber = deliveredProduct.getStringField(DeliveredProductFields.BATCH_NUMBER);
         Entity batch = deliveredProduct.getBelongsToField(DeliveredProductFields.BATCH);
         Entity additionalCode = deliveredProduct.getBelongsToField(DeliveredProductFields.ADDITIONAL_CODE);
+        Entity offer = deliveredProduct.getBelongsToField(L_OFFER);
+        Entity operation = deliveredProduct.getBelongsToField(L_OPERATION);
 
         searchCriteriaBuilder.add(SearchRestrictions.belongsTo(DeliveredProductFields.DELIVERY, delivery))
                 .add(SearchRestrictions.belongsTo(DeliveredProductFields.PRODUCT, product))
                 .add(SearchRestrictions.belongsTo(DeliveredProductFields.ADDITIONAL_CODE, additionalCode));
 
-        if (checkBatch) {
+        if (Objects.nonNull(batchCustomSearchCriterion)) {
+            searchCriteriaBuilder.createAlias(DeliveredProductFields.BATCH, DeliveredProductFields.BATCH, JoinType.LEFT)
+                    .add(batchCustomSearchCriterion);
+        } else {
             if (StringUtils.isNoneEmpty(batchNumber)) {
                 searchCriteriaBuilder.createAlias(DeliveredProductFields.BATCH, DeliveredProductFields.BATCH, JoinType.LEFT)
                         .add(SearchRestrictions.eq(DeliveredProductFields.BATCH + "." + BatchFields.NUMBER, batchNumber))
@@ -871,32 +1025,94 @@ public class DeliveriesServiceImpl implements DeliveriesService {
                     searchCriteriaBuilder.add(SearchRestrictions.isNull(DeliveredProductFields.BATCH));
                 }
             }
-        } else {
-            searchCriteriaBuilder.createAlias(DeliveredProductFields.BATCH, DeliveredProductFields.BATCH, JoinType.LEFT)
-                    .add(batchCustomSearchCriterion);
-        }
-
-        if (PluginUtils.isEnabled("techSubcontrForDeliveries")) {
-            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OPERATION, deliveredProduct.getBelongsToField(L_OPERATION)));
         }
 
         if (PluginUtils.isEnabled("supplyNegotiations")) {
-            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OFFER, deliveredProduct.getBelongsToField(L_OFFER)));
+            if (Objects.nonNull(offerCustomSearchCriterion)) {
+                searchCriteriaBuilder.createAlias(L_OFFER, L_OFFER, JoinType.LEFT).add(offerCustomSearchCriterion);
+            } else {
+                if (Objects.nonNull(offer)) {
+                    searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OFFER, offer));
+                } else {
+                    searchCriteriaBuilder.add(SearchRestrictions.isNull(L_OFFER));
+                }
+            }
         }
 
-        if (PluginUtils.isEnabled("deliveriesToMaterialFlow")) {
-            Entity palletNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
-
-            searchCriteriaBuilder.add(SearchRestrictions.belongsTo(DeliveredProductFields.PALLET_NUMBER, palletNumber));
-
-            if (Objects.nonNull(deliveredProduct.getField(L_EXPIRATION_DATE))) {
-                searchCriteriaBuilder.add(SearchRestrictions.eq(L_EXPIRATION_DATE, deliveredProduct.getField(L_EXPIRATION_DATE)));
+        if (PluginUtils.isEnabled("techSubcontrForDeliveries")) {
+            if (Objects.nonNull(operationCustomSearchCriterion)) {
+                searchCriteriaBuilder.createAlias(L_OPERATION, L_OPERATION, JoinType.LEFT).add(operationCustomSearchCriterion);
             } else {
-                searchCriteriaBuilder.add(SearchRestrictions.isNull(L_EXPIRATION_DATE));
+                if (Objects.nonNull(operation)) {
+                    searchCriteriaBuilder.add(SearchRestrictions.belongsTo(L_OPERATION, operation));
+                } else {
+                    searchCriteriaBuilder.add(SearchRestrictions.isNull(L_OPERATION));
+                }
+            }
+        }
+
+        if (checkOther) {
+            if (PluginUtils.isEnabled("deliveriesToMaterialFlow")) {
+                Entity palletNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
+
+                searchCriteriaBuilder.add(SearchRestrictions.belongsTo(DeliveredProductFields.PALLET_NUMBER, palletNumber));
+
+                if (Objects.nonNull(deliveredProduct.getField(L_EXPIRATION_DATE))) {
+                    searchCriteriaBuilder
+                            .add(SearchRestrictions.eq(L_EXPIRATION_DATE, deliveredProduct.getField(L_EXPIRATION_DATE)));
+                } else {
+                    searchCriteriaBuilder.add(SearchRestrictions.isNull(L_EXPIRATION_DATE));
+                }
             }
         }
 
         return searchCriteriaBuilder;
+    }
+
+    public SearchCriterion getBatchCustomSearchCriterion(final Entity deliveredProduct) {
+        List<Entity> orderedProducts = getSearchCriteriaBuilderForOrderedProduct(getOrderedProductDD().find(), deliveredProduct,
+                SearchRestrictions.isNotNull(OrderedProductFields.BATCH), null, null).list().getEntities();
+
+        if (orderedProducts.isEmpty()) {
+            return SearchRestrictions.isNull(DeliveredProductFields.BATCH);
+        } else {
+            Set<Long> batchIds = orderedProducts.stream()
+                    .map(orderedProduct -> orderedProduct.getBelongsToField(OrderedProductFields.BATCH)).map(Entity::getId)
+                    .collect(Collectors.toSet());
+
+            return SearchRestrictions.or(SearchRestrictions.isNull(DeliveredProductFields.BATCH),
+                    SearchRestrictions.not(SearchRestrictions.in(DeliveredProductFields.BATCH + "." + L_ID, batchIds)));
+        }
+    }
+
+    public SearchCriterion getOfferCustomSearchCriterion(final Entity deliveredProduct) {
+        List<Entity> orderedProducts = getSearchCriteriaBuilderForOrderedProduct(getOrderedProductDD().find(), deliveredProduct,
+                null, SearchRestrictions.isNotNull(L_OFFER), null).list().getEntities();
+
+        if (orderedProducts.isEmpty()) {
+            return SearchRestrictions.isNull(L_OFFER);
+        } else {
+            Set<Long> offerIds = orderedProducts.stream().map(orderedProduct -> orderedProduct.getBelongsToField(L_OFFER))
+                    .map(Entity::getId).collect(Collectors.toSet());
+
+            return SearchRestrictions.or(SearchRestrictions.isNull(L_OFFER),
+                    SearchRestrictions.not(SearchRestrictions.in(L_OFFER + "." + L_ID, offerIds)));
+        }
+    }
+
+    public SearchCriterion getOperationCustomSearchCriterion(final Entity deliveredProduct) {
+        List<Entity> orderedProducts = getSearchCriteriaBuilderForOrderedProduct(getOrderedProductDD().find(), deliveredProduct,
+                null, null, SearchRestrictions.isNotNull(L_OPERATION)).list().getEntities();
+
+        if (orderedProducts.isEmpty()) {
+            return SearchRestrictions.isNull(L_OPERATION);
+        } else {
+            Set<Long> operationIds = orderedProducts.stream().map(orderedProduct -> orderedProduct.getBelongsToField(L_OPERATION))
+                    .map(Entity::getId).collect(Collectors.toSet());
+
+            return SearchRestrictions.or(SearchRestrictions.isNull(L_OPERATION),
+                    SearchRestrictions.not(SearchRestrictions.in(L_OPERATION + "." + L_ID, operationIds)));
+        }
     }
 
 }
