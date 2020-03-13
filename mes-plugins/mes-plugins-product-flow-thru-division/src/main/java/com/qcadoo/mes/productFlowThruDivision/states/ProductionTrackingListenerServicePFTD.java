@@ -35,12 +35,7 @@ import com.qcadoo.mes.costNormsForMaterials.CostNormsForMaterialsService;
 import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
 import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.domain.ProductWithQuantityAndCost;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.PositionAttributeValueFields;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -50,43 +45,27 @@ import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductInCompon
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductionCountingQuantityFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductionFlowComponent;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
-import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.PriceBasedOn;
-import com.qcadoo.mes.productionCounting.constants.ProdOutResourceAttrValFields;
-import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
-import com.qcadoo.mes.productionCounting.constants.UsedBatchFields;
+import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.productionCounting.utils.OrderClosingHelper;
 import com.qcadoo.mes.productionCounting.utils.ProductionTrackingDocumentsHelper;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.model.api.validators.ErrorMessage;
-
-import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.math.BigDecimal;
+import java.util.*;
 
 @Service
 public final class ProductionTrackingListenerServicePFTD {
@@ -298,8 +277,8 @@ public final class ProductionTrackingListenerServicePFTD {
     private Entity createOrUpdateInternalInboundDocumentForFinalProducts(final Entity locationTo, final Entity order,
             final Collection<Entity> outProductsRecords, final Entity user) {
         String priceBasedOn = parameterService.getParameter().getStringField(ParameterFieldsPC.PRICE_BASED_ON);
-        boolean isNominalProductCost = Objects.nonNull(priceBasedOn) ? priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST
-                .getStringValue()) : false;
+        boolean isNominalProductCost = Objects.nonNull(priceBasedOn) && priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST
+                .getStringValue());
 
         List<Entity> finalProductRecord = null;
         Collection<Entity> intermediateRecords = Lists.newArrayList();

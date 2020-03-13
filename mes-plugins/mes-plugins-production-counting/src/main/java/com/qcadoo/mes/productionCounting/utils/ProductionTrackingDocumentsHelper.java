@@ -1,7 +1,9 @@
 package com.qcadoo.mes.productionCounting.utils;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.*;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
@@ -24,8 +26,6 @@ import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,13 +33,10 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class ProductionTrackingDocumentsHelper {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProductionTrackingDocumentsHelper.class);
 
     private static final String PRODUCTS_INPUT_LOCATION = "productsInputLocation";
 
@@ -70,15 +67,10 @@ public class ProductionTrackingDocumentsHelper {
         for (Entity entity : entities) {
             Entity warehouse = entity.getBelongsToField(COMPONENTS_LOCATION);
 
-            if (warehouse == null) {
-                continue;
-            }
-
             Entity product = entity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
             Entity productionRecord = findProductionRecordByProduct(recordInProducts, product);
 
             if (productionRecord != null && !groupedRecordInProducts.containsEntry(warehouse.getId(), productionRecord)) {
-
                 groupedRecordInProducts.put(warehouse.getId(), productionRecord);
             }
         }
@@ -111,18 +103,13 @@ public class ProductionTrackingDocumentsHelper {
     }
 
     public Entity findProductionRecordByProduct(final List<Entity> productionRecords, final Entity product) {
-        return Iterables.find(productionRecords, new Predicate<Entity>() {
+        return productionRecords.stream().filter(productionRecord -> {
+            BigDecimal usedQuantity = productionRecord.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
 
-            @Override
-            public boolean apply(Entity productionRecord) {
-                BigDecimal usedQuantity = productionRecord
-                        .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
-
-                return product.getId()
-                        .equals(productionRecord.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId())
-                        && usedQuantity != null && BigDecimal.ZERO.compareTo(usedQuantity) < 0;
-            }
-        }, null);
+            return product.getId()
+                    .equals(productionRecord.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId())
+                    && usedQuantity != null && BigDecimal.ZERO.compareTo(usedQuantity) < 0;
+        }).findFirst().orElse(null);
     }
 
     public Multimap<Long, Entity> groupRecordOutProductsByLocation(final List<Entity> recordProducts, final Entity order) {
@@ -136,36 +123,19 @@ public class ProductionTrackingDocumentsHelper {
         Multimap<Long, Entity> groupedProductionRecords = ArrayListMultimap.create();
 
         for (Entity operationProductOutComponent : searchResult.getEntities()) {
-            Optional<Entity> warehouse = Optional.empty();
+            Entity warehouse;
 
-            if (!technologyService.isFinalProduct(operationProductOutComponent)) {
-                Entity productionCountingQuantity = findProductionCountingQuantity(operationProductOutComponent, order);
-
-                if (productionCountingQuantity == null) {
-                    continue;
-                }
-
+            Entity productionCountingQuantity = findProductionCountingQuantity(operationProductOutComponent, order);
+            if (technologyService.isFinalProduct(operationProductOutComponent)) {
+                warehouse = productionCountingQuantity.getBelongsToField(PRODUCTS_INPUT_LOCATION);
+            } else {
                 String productionFlow = productionCountingQuantity.getStringField(PRODUCTION_FLOW);
 
                 if (WITHIN_THE_PROCESS.equals(productionFlow)) {
                     continue;
                 }
 
-                warehouse = Optional.ofNullable(productionCountingQuantity.getBelongsToField(PRODUCTS_FLOW_LOCATION));
-
-                if (!warehouse.isPresent()) {
-                    continue;
-                }
-            }
-
-            if (!warehouse.isPresent()) {
-                warehouse = Optional.ofNullable(operationProductOutComponent.getBelongsToField(PRODUCTS_INPUT_LOCATION));
-            }
-
-            if (!warehouse.isPresent()) {
-                LOGGER.warn("Warehouse should not be empty in OPOC entity when plugin productFlowThruDivision is enabled.");
-
-                continue;
+                warehouse = productionCountingQuantity.getBelongsToField(PRODUCTS_FLOW_LOCATION);
             }
 
             Entity product = operationProductOutComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
@@ -175,7 +145,7 @@ public class ProductionTrackingDocumentsHelper {
             Entity productionRecord = findProductionRecordByProduct(recordProducts, product);
 
             if (productionRecord != null) {
-                groupedProductionRecords.put(warehouse.get().getId(), productionRecord);
+                groupedProductionRecords.put(warehouse.getId(), productionRecord);
             }
         }
 
@@ -195,30 +165,19 @@ public class ProductionTrackingDocumentsHelper {
         for (Entity operationProductInComponent : searchResult.getEntities()) {
             Entity productionCountingQuantity = findProductionCountingQuantity(operationProductInComponent, order);
 
-            if (productionCountingQuantity == null) {
-                continue;
-            }
-
             String productionFlow = productionCountingQuantity.getStringField(PRODUCTION_FLOW);
 
             if (WITHIN_THE_PROCESS.equals(productionFlow)) {
                 continue;
             }
 
-            Optional<Entity> warehouse = Optional
-                    .ofNullable(productionCountingQuantity.getBelongsToField(PRODUCTS_FLOW_LOCATION));
-
-            if (!warehouse.isPresent()) {
-                LOGGER.warn("Warehouse should not be empty in OPIC entity when plugin productFlowThruDivision is enabled.");
-
-                continue;
-            }
+            Entity warehouse = productionCountingQuantity.getBelongsToField(PRODUCTS_FLOW_LOCATION);
 
             Entity product = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
             Entity productionRecord = findProductionRecordByProduct(recordProducts, product);
 
             if (productionRecord != null) {
-                groupedProductionRecords.put(warehouse.get().getId(), productionRecord);
+                groupedProductionRecords.put(warehouse.getId(), productionRecord);
             }
         }
 
@@ -306,24 +265,21 @@ public class ProductionTrackingDocumentsHelper {
         Map<Long, BigDecimal> quantities = Maps.newHashMap();
 
         if (products.size() > 0) {
-            StringBuilder hql = new StringBuilder();
-
-            hql.append("SELECT p.id AS product, sum(r.quantity) AS quantity ");
-            hql.append("FROM #materialFlowResources_resource as r ");
-            hql.append("JOIN r.product AS p ");
-            hql.append("JOIN r.location AS l ");
-            hql.append("GROUP BY p.id, l.id ");
-            hql.append("HAVING p.id IN (:productIds) ");
-            hql.append("AND l.id = :locationId ");
-
-            SearchQueryBuilder sqb = getResourceDD().find(hql.toString());
+            String hql = "SELECT p.id AS product, sum(r.quantity) AS quantity " +
+                    "FROM #materialFlowResources_resource as r " +
+                    "JOIN r.product AS p " +
+                    "JOIN r.location AS l " +
+                    "GROUP BY p.id, l.id " +
+                    "HAVING p.id IN (:productIds) " +
+                    "AND l.id = :locationId ";
+            SearchQueryBuilder sqb = getResourceDD().find(hql);
 
             sqb.setParameter("locationId", location.getId());
-            sqb.setParameterList("productIds", products.stream().map(product -> product.getId()).collect(Collectors.toList()));
+            sqb.setParameterList("productIds", products.stream().map(Entity::getId).collect(Collectors.toList()));
 
             List<Entity> productsAndQuantities = sqb.list().getEntities();
 
-            productsAndQuantities.stream().forEach(productAndQuantity -> quantities
+            productsAndQuantities.forEach(productAndQuantity -> quantities
                     .put((Long) productAndQuantity.getField("product"), productAndQuantity.getDecimalField("quantity")));
         }
 
