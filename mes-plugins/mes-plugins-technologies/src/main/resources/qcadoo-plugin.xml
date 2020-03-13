@@ -105,6 +105,7 @@
         <model:model model="operationSkill" resource="model/operationSkill.xml"/>
 
         <model:model model="qualityCard" resource="model/qualityCard.xml"/>
+        <model:model model="qualityCardStateChange" resource="model/qualityCardStateChange.xml"/>
 
         <model:model-field plugin="states" model="message">
             <model:belongsTo name="technologyStateChange" plugin="technologies" model="technologyStateChange"/>
@@ -211,6 +212,11 @@
 
         <model:model-field model="parameter" plugin="basic">
             <model:boolean name="completeWarehousesFlowWhileChecking" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:manyToMany name="qualityCards" plugin="technologies" model="qualityCard" joinField="products"
+                              cascade="nullify"/>
         </model:model-field>
 
         <model:model-hook model="division" plugin="basic">

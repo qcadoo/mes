@@ -24,30 +24,27 @@
     ***************************************************************************
 
 -->
-<model name="qualityCard"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+<model name="qualityCardStateChange"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+	   xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
 	<fields>
-		<string name="number" required="true" unique="true">
-			<validatesLength max="255" />
-		</string>
-		<string name="name" required="true">
-			<validatesLength max="2048" />
-		</string>
-		<string name="description">
-			<validatesLength max="2048"/>
-		</string>
-		<enum name="state" values="01new,02accepted,03rejected" default="01new" required="true"/>
-
-		<manyToMany name="products" model="product" plugin="basic"
-					joinField="qualityCards" cascade="nullify"/>
-		<hasMany name="stateChanges" model="qualityCardStateChange" joinField="qualityCard" cascade="delete"/>
-
-		<hasMany name="technologies" model="technology"
-				 joinField="qualityCard"/>
+		<!-- generic state change fields -->
+		<datetime name="dateAndTime"/>
+		<enum name="sourceState"
+			  values="01new,02accepted,03rejected"/>
+		<enum name="targetState"
+			  values="01new,02accepted,03rejected"
+			  required="true"/>
+		<enum name="status"
+			  values="01inProgress,02paused,03successful,04failure,05canceled"
+			  required="true"/>
+		<integer name="phase"/>
+		<string name="worker"/>
+		<belongsTo name="qualityCard" model="qualityCard" plugin="technologies"/>
+		<belongsTo name="shift" model="shift" plugin="basic"/>
 	</fields>
-	<hooks>
-		
-	</hooks>
-	<identifier expression="#number + ' - ' + #name" />
+
+	<hooks/>
+
 </model>
