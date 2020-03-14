@@ -26,6 +26,9 @@ package com.qcadoo.mes.productionCounting;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.util.ProductUnitsConversionService;
+import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -41,7 +44,6 @@ import com.qcadoo.mes.productionCounting.newstates.ProductionTrackingStateServic
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.mes.states.service.StateChangeContextBuilder;
 import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -88,6 +90,8 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
     private static final String USER_CHANGE_STATE = "user";
 
+    private static final String L_ID = ".id";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -105,6 +109,9 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
     @Autowired
     private TechnologyService technologyService;
+
+    @Autowired
+    private BasicProductionCountingService basicProductionCountingService;
 
     @Override
     public void setTimeAndPieceworkComponentsVisible(final ViewDefinitionState view, final Entity order) {
@@ -353,10 +360,17 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
                     .filter(pt -> Objects.nonNull(pt.getDateField(ProductionTrackingFields.EXPIRATION_DATE)))
                     .map(pt -> pt.getDateField(ProductionTrackingFields.EXPIRATION_DATE)).findFirst();
         } else {
-
             Entity toc = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
-            Entity operationProductOutComponent = technologyService.getMainOutputProductComponent(toc);
-            if (operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId()
+            Entity bpcq = basicProductionCountingService
+                    .getProductionCountingQuantityDD()
+                    .find()
+                    .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ORDER + L_ID, order.getId()))
+                    .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
+                            ProductionCountingQuantityRole.PRODUCED.getStringValue()))
+                    .add(SearchRestrictions.eq(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT + L_ID, toc.getId()))
+                    .setMaxResults(1).uniqueResult();
+
+            if (Objects.nonNull(bpcq) && bpcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId()
                     .equals(order.getBelongsToField(OrderFields.PRODUCT).getId())) {
                 List<Entity> productionTracingsForOrder = dataDefinitionService
                         .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_TRACKING)
