@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="stoppageForOrderForm" modelName="stoppage">
+
+    <component type="window" name="window">
+        <ribbon>
+            <group template="navigation"/>
+            <group name="actions">
+                <bigButton name="save" icon="saveIcon24.png" state="enabled" action="#{form}.performSave;" accesskey="s"/>
+                <smallButton name="saveBack" icon="saveBackIcon16.png" state="enabled"
+                             action="#{form}.performSave; #{window}.performBack;"/>
+                <smallButton name="copy" icon="copyIcon16.png" state="disabled" action="#{form}.performCopy;" accesskey="c">
+                    <script><![CDATA[
+				#{form}.addOnChangeListener({
+					onSetValue: function(value) {
+						if (!value || !value.content)
+							return;
+						if (value.content.entityId) {
+							this.enable();
+						} else {
+							this.disable();
+						}
+					}
+				});
+			]]></script>
+                </smallButton>
+                <smallButton name="delete" icon="deleteIcon16.png" state="disabled" action="#{form}.performDelete;" accesskey="d">
+                    <script><![CDATA[
+                #{form}.addOnChangeListener({
+					onSetValue: function(value) {
+						if (!value || !value.content)
+							return;
+						if (value.content.entityId) {
+							this.enable();
+						} else {
+							this.disable();
+						}
+					}
+				});
+			]]></script>
+                </smallButton>
+                <smallButton name="cancel" icon="cancelIcon16.png" state="enabled" action="#{form}.performCancel;" accesskey="x"/>
+                <smallButton name="refresh" icon="updateIcon16.png" state="enabled" action="#{form}.performRefresh;"
+                             accesskey="r"/>
+            </group>
+        </ribbon>
+
+        <component type="form" name="form" reference="form">
+            <component type="gridLayout" name="gridLayout" columns="3" rows="8" hasBorders="false">
+                <layoutElement column="1" row="1">
+                    <component type="lookup" name="order" field="order" reference="order">
+                        <option type="column" name="name" fields="name" link="true"/>
+                        <option type="searchable" value="name,number"/>
+                        <option type="orderable" value="name,number"/>
+                        <option type="fullScreen" value="true"/>
+                        <option type="expression" value="#number + ' - ' + #name"/>
+                        <option type="fieldCode" value="number"/>
+                        <criteriaModifier
+                                class="com.qcadoo.mes.stoppage.criteriaModifiers.StoppageOrdersCriteriaModifiers"
+                                method="showNotRejected"/>
+
+                        <listener event="onSelectedEntityChange"
+                                  class="com.qcadoo.mes.stoppage.listeners.AllStoppagesFormListeners"
+                                  method="changeOrder"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2">
+                    <component type="lookup" name="productionTracking" field="productionTracking" reference="productionTracking">
+                        <option type="column" name="shift" fields="shift" expression="#shift['name']" link="true"/>
+                        <option type="column" name="shiftStartDay" fields="shiftStartDay" link="true"/>
+                        <option type="column" name="staff" fields="staff" expression="#staff['name'] + ' ' + #staff['surname']" link="true"/>
+                        <option type="searchable" value="number,shift,shiftStartDay"/>
+                        <option type="orderable" value="number,shift,shiftStartDay"/>
+                        <option type="expression" value="#number"/>
+                        <option type="fieldCode" value="number"/>
+                        <criteriaModifier
+                                class="com.qcadoo.mes.stoppage.criteriaModifiers.ProductionTrackingsCriteriaModifiers"
+                                method="showForOrder"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="3">
+                    <component type="lookup" name="reason" field="reason">
+                        <option type="expression" value="#name"/>
+                        <option type="fieldCode" value="name"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="4" height="2">
+                    <component type="textarea" name="description" field="description"/>
+                </layoutElement>
+                <layoutElement column="1" row="6">
+                    <component type="calendar" name="dateFrom" reference="dateFrom"
+                               field="dateFrom">
+                        <option type="alignment" value="left"/>
+                        <option type="withTimePicker" value="true"/>
+                        <listener event="onChange"
+                                  class="com.qcadoo.mes.stoppage.listeners.AllStoppagesFormListeners"
+                                  method="calculateDuration"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="7">
+                    <component type="calendar" name="dateTo" reference="dateTo"
+                               field="dateTo">
+                        <option type="alignment" value="left"/>
+                        <option type="withTimePicker" value="true"/>
+                        <listener event="onChange"
+                                  class="com.qcadoo.mes.stoppage.listeners.AllStoppagesFormListeners"
+                                  method="calculateDuration"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="8">
+                    <component type="time" name="duration" reference="duration"
+                               field="duration">
+                        <option type="noHours" value="3"/>
+                    </component>
+                </layoutElement>
+            </component>
+
+            <option type="expression" value="#reason['name'] + ' (' + T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration) +')'"/>
+            <option type="header" value="true"/>
+        </component>
+    </component>
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.stoppage.hooks.StoppageForOrderFormHooks"
+                      method="onBeforeRender"/>
+    </hooks>
+</view>

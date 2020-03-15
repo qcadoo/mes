@@ -81,6 +81,8 @@
 			view="stoppageReasonsList" defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING"/>
 
 		<view:view resource="view/allStoppages.xml" />
+		<view:view resource="view/stoppagesForOrderList.xml" />
+		<view:view resource="view/stoppageForOrderForm.xml" />
 		<view:view resource="view/allStoppagesForm.xml" />
 
 		<view:view resource="view/stoppageReasonsList.xml" />

@@ -47,7 +47,7 @@ public class StoppageService {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
         Entity order = form.getEntity();
         Map<String, String> filters = Maps.newHashMap();
-        filters.put("order", applyInOperator(order.getStringField(OrderFields.NUMBER)));
+        filters.put("orderNumber", applyInOperator(order.getStringField(OrderFields.NUMBER)));
 
         Map<String, Object> gridOptions = Maps.newHashMap();
         gridOptions.put(L_FILTERS, filters);
@@ -57,7 +57,7 @@ public class StoppageService {
         parameters.put("window.showBack", true);
         parameters.put("grid.forOrder", order.getId());
 
-        String url = "../page/stoppage/allStoppages.html";
+        String url = "../page/stoppage/stoppagesForOrderList.html";
 
         viewDefinitionState.openModal(url, parameters);
 
