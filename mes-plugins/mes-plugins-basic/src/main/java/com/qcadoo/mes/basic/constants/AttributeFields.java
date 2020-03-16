@@ -18,6 +18,6 @@ public class AttributeFields {
     public static final String ATTRIBUTE_VALUES = "attributeValues";
     public static final String PRODUCT_ATTRIBUTE_VALUES = "productAttributeValues";
     public static final String RESOURCE_ATTRIBUTE_VALUES = "resourceAttributeValues";
-    public static final String QUALITY_CONTROL_ATTRIBUTE_VALUES = "qualityControlAttributeValues";
+    public static final String QUALITY_CONTROL_ATTRIBUTE = "qualityControlAttributes";
 
 }

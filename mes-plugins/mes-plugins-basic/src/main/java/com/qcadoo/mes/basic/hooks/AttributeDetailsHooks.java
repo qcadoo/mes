@@ -11,11 +11,12 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+
+import java.util.Objects;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Objects;
 
 @Service
 public class AttributeDetailsHooks {
@@ -99,7 +100,7 @@ public class AttributeDetailsHooks {
                 forResource.setEnabled(false);
             }
 
-            if (!attribute.getHasManyField(AttributeFields.QUALITY_CONTROL_ATTRIBUTE_VALUES).isEmpty()) {
+            if (!attribute.getHasManyField(AttributeFields.QUALITY_CONTROL_ATTRIBUTE).isEmpty()) {
                 dataType.setEnabled(false);
                 valueType.setEnabled(false);
                 precision.setEnabled(false);
