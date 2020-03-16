@@ -147,7 +147,8 @@ public class TrackingOperationProductOutComponentHooks {
                 ParameterFieldsPC.ALLOW_CHANGES_TO_USED_QUANTITY_ON_TERMINAL));
 
         return (parameterService.getParameter()
-                .getBooleanField(ParameterFieldsPC.CONSUMPTION_OF_RAW_MATERIALS_BASED_ON_STANDARDS) && (TypeOfProductionRecording.FOR_EACH
+                .getBooleanField(ParameterFieldsPC.CONSUMPTION_OF_RAW_MATERIALS_BASED_ON_STANDARDS)
+                && !(enteredFromTerminal && allowToOverrideQuantitiesFromTerminal) && (TypeOfProductionRecording.FOR_EACH
                 .getStringValue().equals(typeOfProductionRecording) || (TypeOfProductionRecording.CUMULATED.getStringValue()
                 .equals(typeOfProductionRecording) && product.getId().equals(orderProduct.getId()))));
     }
