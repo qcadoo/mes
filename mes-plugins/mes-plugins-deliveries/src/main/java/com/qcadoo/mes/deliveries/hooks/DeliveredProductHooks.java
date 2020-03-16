@@ -197,26 +197,28 @@ public class DeliveredProductHooks {
 
     private void updateDeliveredAndAdditionalQuantityInOrderedProduct(final Entity deliveredProduct, BigDecimal deliveredQuantity,
             BigDecimal additionalQuantity, Entity orderedProduct) {
-        List<Entity> deliveredProducts = getOtherDeliveredProducts(deliveredProduct, orderedProduct);
+        if (Objects.nonNull(orderedProduct)) {
+            List<Entity> deliveredProducts = getOtherDeliveredProducts(deliveredProduct, orderedProduct);
 
-        if (!deliveredProducts.isEmpty()) {
-            BigDecimal deliveredQuantityRest = deliveredProducts.stream()
-                    .map(dp -> dp.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY))
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-            deliveredQuantity = deliveredQuantity.add(deliveredQuantityRest, numberService.getMathContext());
+            if (!deliveredProducts.isEmpty()) {
+                BigDecimal deliveredQuantityRest = deliveredProducts.stream()
+                        .map(dp -> dp.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                deliveredQuantity = deliveredQuantity.add(deliveredQuantityRest, numberService.getMathContext());
 
-            BigDecimal additionalQuantityRest = deliveredProducts.stream()
-                    .map(dp -> dp.getDecimalField(DeliveredProductFields.ADDITIONAL_QUANTITY))
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-            additionalQuantity = additionalQuantity.add(additionalQuantityRest, numberService.getMathContext());
+                BigDecimal additionalQuantityRest = deliveredProducts.stream()
+                        .map(dp -> dp.getDecimalField(DeliveredProductFields.ADDITIONAL_QUANTITY))
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
+                additionalQuantity = additionalQuantity.add(additionalQuantityRest, numberService.getMathContext());
+            }
+
+            orderedProduct.setField(OrderedProductFields.DELIVERED_QUANTITY,
+                    numberService.setScaleWithDefaultMathContext(deliveredQuantity));
+            orderedProduct.setField(OrderedProductFields.ADDITIONAL_DELIVERED_QUANTITY,
+                    numberService.setScaleWithDefaultMathContext(additionalQuantity));
+
+            orderedProduct = orderedProduct.getDataDefinition().save(orderedProduct);
         }
-
-        orderedProduct.setField(OrderedProductFields.DELIVERED_QUANTITY,
-                numberService.setScaleWithDefaultMathContext(deliveredQuantity));
-        orderedProduct.setField(OrderedProductFields.ADDITIONAL_DELIVERED_QUANTITY,
-                numberService.setScaleWithDefaultMathContext(additionalQuantity));
-
-        orderedProduct = orderedProduct.getDataDefinition().save(orderedProduct);
     }
 
     private List<Entity> getOtherDeliveredProducts(final Entity deliveredProduct, final Entity orderedProduct) {
