@@ -297,6 +297,10 @@
                                     value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                             <option type="fieldCode" value="number"/>
                             <option type="labelWidth" value="40"/>
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.technologies.criteriaModifiers.QualityCardCriteriaModifiers"
+                                    method="showQualityCardsForProduct"/>
                         </component>
                     </layoutElement>
                 </component>

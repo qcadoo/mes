@@ -43,8 +43,7 @@
 					joinField="qualityCards" cascade="nullify"/>
 		<hasMany name="stateChanges" model="qualityCardStateChange" joinField="qualityCard" cascade="delete"/>
 
-		<hasMany name="technologies" model="technology"
-				 joinField="qualityCard"/>
+		<hasMany name="technologies" model="technology" joinField="qualityCard"/>
 	</fields>
 	<hooks>
 		
