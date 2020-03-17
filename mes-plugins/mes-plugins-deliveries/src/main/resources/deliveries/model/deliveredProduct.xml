@@ -63,14 +63,16 @@
         <dictionary name="additionalUnit" dictionary="units"/>
 
         <priority name="succession" scope="delivery"/>
-        <hasMany name="reservations" joinField="deliveredProduct" cascade="delete"
-                 model="deliveredProductReservation" plugin="deliveries" copyable="true"/>
+        <hasMany name="reservations" model="deliveredProductReservation"
+                 joinField="deliveredProduct" cascade="delete" copyable="true"/>
 
         <string name="deliveredProductIds" persistent="false"/>
         <boolean name="validatePallet" default="true" persistent="false"/>
         <boolean name="damaged" default="false"/>
-        <hasMany name="deliveredProductAttributeVals" joinField="deliveredProduct" model="deliveredProductAttributeVal"
-                 cascade="delete"/>
+        <hasMany name="deliveredProductAttributeVals" model="deliveredProductAttributeVal"
+                 joinField="deliveredProduct" cascade="delete"/>
+
+        <belongsTo name="orderedProduct" model="orderedProduct"/>
     </fields>
 
     <hooks>

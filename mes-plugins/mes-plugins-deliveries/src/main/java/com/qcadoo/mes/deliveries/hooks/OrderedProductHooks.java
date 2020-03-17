@@ -25,11 +25,16 @@ package com.qcadoo.mes.deliveries.hooks;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.advancedGenealogy.AdvancedGenealogyService;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchNumberUniqueness;
 import com.qcadoo.mes.advancedGenealogy.hooks.BatchModelValidators;
@@ -47,6 +52,9 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class OrderedProductHooks {
+
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
     private NumberService numberService;
@@ -110,6 +118,23 @@ public class OrderedProductHooks {
                 orderedProduct.addGlobalError(errorMessage);
             }
         }
+    }
+
+    public void onDelete(final DataDefinition orderedProductDD, final Entity orderedProduct) {
+        nullifyDeliveredProducts(orderedProduct);
+    }
+
+    private void nullifyDeliveredProducts(final Entity orderedProduct) {
+        String sql = "UPDATE deliveries_deliveredproduct SET orderedproduct_id = null"
+                + " WHERE orderedproduct_id = :orderedProductId";
+
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        parameters.put("orderedProductId", orderedProduct.getId());
+
+        SqlParameterSource namedParameters = new MapSqlParameterSource(parameters);
+
+        jdbcTemplate.update(sql, namedParameters);
     }
 
     public boolean validatesWith(final DataDefinition orderedProductDD, final Entity orderedProduct) {
