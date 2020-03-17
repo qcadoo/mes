@@ -15,9 +15,8 @@ public class QualityCardCriteriaModifiers {
 
     public void showQualityCardsForProduct(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
         if (filterValue.has(L_PRODUCT_ID)) {
-            Long productId = filterValue.getLong(L_PRODUCT_ID);
             scb.createAlias(QualityCardFields.PRODUCTS, QualityCardFields.PRODUCTS, JoinType.INNER)
-                    .add(SearchRestrictions.eq(QualityCardFields.PRODUCTS + ".id", productId))
+                    .add(SearchRestrictions.eq(QualityCardFields.PRODUCTS + ".id", filterValue.getLong(L_PRODUCT_ID)))
                     .add(SearchRestrictions.eq(QualityCardFields.STATE, "02accepted"));
         }
     }
