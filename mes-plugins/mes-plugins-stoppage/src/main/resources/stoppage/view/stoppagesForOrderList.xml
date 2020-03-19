@@ -29,7 +29,7 @@
     	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 		name="stoppagesForOrderList" modelName="stoppageDto" modelPlugin="stoppage">
 	
-		<component type="window" name="window">
+		<component type="window" name="window" reference="window">
 			<ribbon>
 				<group name="actions">
 					<bigButton name="new" icon="newIcon24.png" state="enabled" action="#{grid}.fireEvent(addNew)"/>
@@ -98,5 +98,8 @@
 			<option type="fixedHeight" value="true" />
 			<option type="header" value="false" />
 		</component>
-
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.stoppage.hooks.StoppageForOrderFormHooks"
+					  method="onRibbonBeforeRender"/>
+	</hooks>
 </view>
