@@ -2498,16 +2498,8 @@ CREATE TABLE arch_basicproductioncounting_productioncountingquantity (
     basicproductioncounting_id bigint,
     typeofmaterial character varying(255) DEFAULT '01component'::character varying,
     role character varying(255) DEFAULT '01used'::character varying,
-    flowtypeincomponent character varying(255) DEFAULT '01withinTheProcess'::character varying,
-    isdivisionlocation boolean,
     componentsoutputlocation_id bigint,
-    flowtypeoutcomponent character varying(255) DEFAULT '01withinTheProcess'::character varying,
-    isdivisioninputlocationmodified boolean,
     componentslocation_id bigint,
-    isdivisionoutputlocation boolean,
-    isdivisionlocationmodified boolean,
-    isdivisionoutputlocationmodified boolean,
-    isdivisioninputlocation boolean,
     productsinputlocation_id bigint,
     productionflow character varying(255) DEFAULT '02withinTheProcess'::character varying,
     productsflowlocation_id bigint,
@@ -5232,8 +5224,6 @@ CREATE TABLE basic_division (
     productionline_id bigint,
     productsflowlocation_id bigint,
     productionflow character varying(255) DEFAULT '02withinTheProcess'::character varying,
-    automaticmoveforintermediate boolean DEFAULT false,
-    automaticmoveforfinal boolean DEFAULT false,
     factory_id bigint,
     active boolean DEFAULT true,
     comment character varying(2048),
@@ -5297,16 +5287,11 @@ CREATE TABLE technologies_technology (
     componentslocation_id bigint,
     componentsoutputlocation_id bigint,
     productsinputlocation_id bigint,
-    isdivisionlocation boolean,
-    isdivisioninputlocation boolean,
-    isdivisionoutputlocation boolean,
     technologytype character varying(255),
     technologyprototype_id bigint,
     productionline_id bigint,
     productionflow character varying(255) DEFAULT '02withinTheProcess'::character varying,
     productsflowlocation_id bigint,
-    automaticmoveforintermediate boolean DEFAULT false,
-    automaticmoveforfinal boolean DEFAULT false,
     graphicsaccepted boolean,
     constructionandtechnologyaccepted boolean,
     typeofproductionrecording character varying(255),
@@ -5321,7 +5306,8 @@ CREATE TABLE technologies_technology (
     standardperformancetechnology numeric(12,5),
     template boolean DEFAULT false,
     additionalactions boolean DEFAULT false,
-    generatorcontext_id bigint
+    generatorcontext_id bigint,
+    qualitycard_id bigint
 );
 
 
@@ -5723,7 +5709,8 @@ CREATE TABLE technologies_technologyoperationcomponent (
     productdatanumber numeric(12,5) DEFAULT (0)::numeric,
     productionlinechange boolean DEFAULT false,
     productionline_id bigint,
-    entityversion bigint DEFAULT 0
+    entityversion bigint DEFAULT 0,
+    qualityrating boolean DEFAULT false
 );
 
 
@@ -8375,7 +8362,8 @@ CREATE TABLE basic_attribute (
     "precision" integer,
     unit character varying(255),
     forproduct boolean DEFAULT false,
-    forresource boolean DEFAULT false
+    forresource boolean DEFAULT false,
+    forqualitycontrol boolean DEFAULT false
 );
 
 
@@ -9711,16 +9699,8 @@ CREATE TABLE basicproductioncounting_productioncountingquantity (
     basicproductioncounting_id bigint,
     typeofmaterial character varying(255) DEFAULT '01component'::character varying,
     role character varying(255) DEFAULT '01used'::character varying,
-    flowtypeincomponent character varying(255) DEFAULT '01withinTheProcess'::character varying,
-    isdivisionlocation boolean,
     componentsoutputlocation_id bigint,
-    flowtypeoutcomponent character varying(255) DEFAULT '01withinTheProcess'::character varying,
-    isdivisioninputlocationmodified boolean,
     componentslocation_id bigint,
-    isdivisionoutputlocation boolean,
-    isdivisionlocationmodified boolean,
-    isdivisionoutputlocationmodified boolean,
-    isdivisioninputlocation boolean,
     productsinputlocation_id bigint,
     productionflow character varying(255),
     productsflowlocation_id bigint,
@@ -9916,7 +9896,8 @@ CREATE TABLE productioncounting_productiontracking (
     planforordercompleted boolean DEFAULT false,
     workstation_id bigint,
     batch_id bigint,
-    expirationdate date
+    expirationdate date,
+    qualityrating character varying(255)
 );
 
 
@@ -11513,7 +11494,8 @@ CREATE TABLE deliveries_deliveredproduct (
     iswaste boolean,
     additionalunit character varying(255),
     damaged boolean DEFAULT false,
-    batch_id bigint
+    batch_id bigint,
+    orderedproduct_id bigint
 );
 
 
@@ -12009,14 +11991,14 @@ CREATE VIEW deliveries_orderedproductdto AS
     ( SELECT productcatalognumbers_productcatalognumbers.catalognumber
            FROM productcatalognumbers_productcatalognumbers
           WHERE ((productcatalognumbers_productcatalognumbers.product_id = product.id) AND (productcatalognumbers_productcatalognumbers.company_id = delivery.supplier_id))) AS productcatalognumber,
-    orderedproduct.deliveredquantity,
-    orderedproduct.additionaldeliveredquantity,
+    COALESCE(orderedproduct.deliveredquantity, (0)::numeric) AS deliveredquantity,
+    COALESCE(orderedproduct.additionaldeliveredquantity, (0)::numeric) AS additionaldeliveredquantity,
         CASE
-            WHEN ((orderedproduct.orderedquantity - orderedproduct.deliveredquantity) > (0)::numeric) THEN (orderedproduct.orderedquantity - orderedproduct.deliveredquantity)
+            WHEN ((orderedproduct.orderedquantity - COALESCE(orderedproduct.deliveredquantity, (0)::numeric)) > (0)::numeric) THEN (orderedproduct.orderedquantity - COALESCE(orderedproduct.deliveredquantity, (0)::numeric))
             ELSE (0)::numeric
         END AS lefttoreceivequantity,
         CASE
-            WHEN ((orderedproduct.additionalquantity - orderedproduct.additionaldeliveredquantity) > (0)::numeric) THEN (orderedproduct.additionalquantity - orderedproduct.additionaldeliveredquantity)
+            WHEN ((orderedproduct.additionalquantity - COALESCE(orderedproduct.additionaldeliveredquantity, (0)::numeric)) > (0)::numeric) THEN (orderedproduct.additionalquantity - COALESCE(orderedproduct.additionaldeliveredquantity, (0)::numeric))
             ELSE (0)::numeric
         END AS additionallefttoreceivequantity,
     attachments.hasattachments,
@@ -14611,6 +14593,16 @@ CREATE TABLE jointable_plannedevent_staff (
 
 
 --
+-- Name: jointable_product_qualitycard; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE jointable_product_qualitycard (
+    product_id bigint NOT NULL,
+    qualitycard_id bigint NOT NULL
+);
+
+
+--
 -- Name: jointable_product_scale; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -14667,6 +14659,16 @@ CREATE TABLE jointable_productionline_technology (
 CREATE TABLE jointable_productionline_technologygroup (
     technologygroup_id bigint NOT NULL,
     productionline_id bigint NOT NULL
+);
+
+
+--
+-- Name: jointable_qualitycontrolattribute_technologyoperationcomponent; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE jointable_qualitycontrolattribute_technologyoperationcomponent (
+    technologyoperationcomponent_id bigint NOT NULL,
+    qualitycontrolattribute_id bigint NOT NULL
 );
 
 
@@ -22498,6 +22500,139 @@ ALTER SEQUENCE qcadooview_viewedalert_id_seq OWNED BY qcadooview_viewedalert.id;
 
 
 --
+-- Name: qualitycontrol_qualitycontrol; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE qualitycontrol_qualitycontrol (
+    id bigint NOT NULL,
+    number character varying(255),
+    product_id bigint,
+    qualitycard_id bigint,
+    controltype character varying(255) DEFAULT '01final'::character varying,
+    batch_id bigint,
+    date date,
+    staff_id bigint,
+    order_id bigint,
+    qualityrating character varying(255)
+);
+
+
+--
+-- Name: qualitycontrol_qualitycontrol_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE qualitycontrol_qualitycontrol_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: qualitycontrol_qualitycontrol_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE qualitycontrol_qualitycontrol_id_seq OWNED BY qualitycontrol_qualitycontrol.id;
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattribute; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE qualitycontrol_qualitycontrolattribute (
+    id bigint NOT NULL,
+    qualitycard_id bigint,
+    attribute_id bigint,
+    priority integer
+);
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattribute_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE qualitycontrol_qualitycontrolattribute_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattribute_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE qualitycontrol_qualitycontrolattribute_id_seq OWNED BY qualitycontrol_qualitycontrolattribute.id;
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattributeprodtracking; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE qualitycontrol_qualitycontrolattributeprodtracking (
+    id bigint NOT NULL,
+    productiontracking_id bigint,
+    attribute_id bigint,
+    attributevalue_id bigint,
+    value character varying(255),
+    fromtechnology boolean DEFAULT false
+);
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattributeprodtracking_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE qualitycontrol_qualitycontrolattributeprodtracking_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattributeprodtracking_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE qualitycontrol_qualitycontrolattributeprodtracking_id_seq OWNED BY qualitycontrol_qualitycontrolattributeprodtracking.id;
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattributevalue; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE qualitycontrol_qualitycontrolattributevalue (
+    id bigint NOT NULL,
+    qualitycontrol_id bigint,
+    attribute_id bigint,
+    attributevalue_id bigint,
+    value character varying(255)
+);
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattributevalue_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE qualitycontrol_qualitycontrolattributevalue_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattributevalue_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE qualitycontrol_qualitycontrolattributevalue_id_seq OWNED BY qualitycontrol_qualitycontrolattributevalue.id;
+
+
+--
 -- Name: repairs_repairorder_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -23964,11 +24099,6 @@ CREATE TABLE technologies_operationproductincomponent (
     itemnumberintheexplodedview character varying(255),
     componentslocation_id bigint,
     componentsoutputlocation_id bigint,
-    isdivisionlocation boolean,
-    isdivisionoutputlocation boolean,
-    isdivisionoutputlocationmodified boolean,
-    isdivisionlocationmodified boolean,
-    flowtypeincomponent character varying(255) DEFAULT '01withinTheProcess'::character varying,
     priority integer,
     showinproductdata boolean,
     productdatanumber numeric(12,5) DEFAULT (0)::numeric,
@@ -24061,11 +24191,7 @@ CREATE TABLE technologies_operationproductoutcomponent (
     product_id bigint,
     quantity numeric(14,5),
     productsinputlocation_id bigint,
-    isdivisioninputlocation boolean,
-    isdivisioninputlocationmodified boolean,
-    flowtypeoutcomponent character varying(255) DEFAULT '01withinTheProcess'::character varying,
     productsflowlocation_id bigint,
-    productsshiftinglocation_id bigint,
     productionflow character varying(255) DEFAULT '02withinTheProcess'::character varying,
     automaticmove boolean DEFAULT false,
     entityversion bigint DEFAULT 0
@@ -24224,6 +24350,74 @@ CREATE SEQUENCE technologies_producttoproductgrouptechnology_id_seq
 --
 
 ALTER SEQUENCE technologies_producttoproductgrouptechnology_id_seq OWNED BY technologies_producttoproductgrouptechnology.id;
+
+
+--
+-- Name: technologies_qualitycard; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE technologies_qualitycard (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(2048),
+    description character varying(2048),
+    state character varying(255) DEFAULT '01new'::character varying
+);
+
+
+--
+-- Name: technologies_qualitycard_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE technologies_qualitycard_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: technologies_qualitycard_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE technologies_qualitycard_id_seq OWNED BY technologies_qualitycard.id;
+
+
+--
+-- Name: technologies_qualitycardstatechange; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE technologies_qualitycardstatechange (
+    id bigint NOT NULL,
+    dateandtime timestamp without time zone,
+    sourcestate character varying(255),
+    targetstate character varying(255),
+    status character varying(255),
+    phase integer,
+    worker character varying(255),
+    qualitycard_id bigint,
+    shift_id bigint
+);
+
+
+--
+-- Name: technologies_qualitycardstatechange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE technologies_qualitycardstatechange_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: technologies_qualitycardstatechange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE technologies_qualitycardstatechange_id_seq OWNED BY technologies_qualitycardstatechange.id;
 
 
 --
@@ -28094,6 +28288,34 @@ ALTER TABLE ONLY qcadooview_viewedalert ALTER COLUMN id SET DEFAULT nextval('qca
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY qualitycontrol_qualitycontrol ALTER COLUMN id SET DEFAULT nextval('qualitycontrol_qualitycontrol_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattribute ALTER COLUMN id SET DEFAULT nextval('qualitycontrol_qualitycontrolattribute_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattributeprodtracking ALTER COLUMN id SET DEFAULT nextval('qualitycontrol_qualitycontrolattributeprodtracking_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattributevalue ALTER COLUMN id SET DEFAULT nextval('qualitycontrol_qualitycontrolattributevalue_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY repairs_repairorder ALTER COLUMN id SET DEFAULT nextval('repairs_repairorder_id_seq'::regclass);
 
 
@@ -28403,6 +28625,20 @@ ALTER TABLE ONLY technologies_productstructuretreenode ALTER COLUMN id SET DEFAU
 --
 
 ALTER TABLE ONLY technologies_producttoproductgrouptechnology ALTER COLUMN id SET DEFAULT nextval('technologies_producttoproductgrouptechnology_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_qualitycard ALTER COLUMN id SET DEFAULT nextval('technologies_qualitycard_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_qualitycardstatechange ALTER COLUMN id SET DEFAULT nextval('technologies_qualitycardstatechange_id_seq'::regclass);
 
 
 --
@@ -28932,7 +29168,7 @@ SELECT pg_catalog.setval('arch_basicproductioncounting_productioncountingoperati
 -- Data for Name: arch_basicproductioncounting_productioncountingquantity; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY arch_basicproductioncounting_productioncountingquantity (id, order_id, product_id, plannedquantity, isnoncomponent, technologyoperationcomponent_id, basicproductioncounting_id, typeofmaterial, role, flowtypeincomponent, isdivisionlocation, componentsoutputlocation_id, flowtypeoutcomponent, isdivisioninputlocationmodified, componentslocation_id, isdivisionoutputlocation, isdivisionlocationmodified, isdivisionoutputlocationmodified, isdivisioninputlocation, productsinputlocation_id, productionflow, productsflowlocation_id, entityversion, set, archived) FROM stdin;
+COPY arch_basicproductioncounting_productioncountingquantity (id, order_id, product_id, plannedquantity, isnoncomponent, technologyoperationcomponent_id, basicproductioncounting_id, typeofmaterial, role, componentsoutputlocation_id, componentslocation_id, productsinputlocation_id, productionflow, productsflowlocation_id, entityversion, set, archived) FROM stdin;
 \.
 
 
@@ -30571,7 +30807,7 @@ SELECT pg_catalog.setval('basic_attachmentdto_id_seq', 1, false);
 -- Data for Name: basic_attribute; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_attribute (id, number, name, datatype, valuetype, "precision", unit, forproduct, forresource) FROM stdin;
+COPY basic_attribute (id, number, name, datatype, valuetype, "precision", unit, forproduct, forresource, forqualitycontrol) FROM stdin;
 \.
 
 
@@ -31093,7 +31329,7 @@ SELECT pg_catalog.setval('basic_currency_id_seq', 182, true);
 -- Data for Name: basic_division; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_division (id, number, name, supervisor_id, componentslocation_id, componentsoutputlocation_id, productsinputlocation_id, productionline_id, productsflowlocation_id, productionflow, automaticmoveforintermediate, automaticmoveforfinal, factory_id, active, comment, entityversion) FROM stdin;
+COPY basic_division (id, number, name, supervisor_id, componentslocation_id, componentsoutputlocation_id, productsinputlocation_id, productionline_id, productsflowlocation_id, productionflow, factory_id, active, comment, entityversion) FROM stdin;
 \.
 
 
@@ -31576,7 +31812,7 @@ SELECT pg_catalog.setval('basicproductioncounting_productioncountingoperationrun
 -- Data for Name: basicproductioncounting_productioncountingquantity; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basicproductioncounting_productioncountingquantity (id, order_id, product_id, plannedquantity, isnoncomponent, technologyoperationcomponent_id, basicproductioncounting_id, typeofmaterial, role, flowtypeincomponent, isdivisionlocation, componentsoutputlocation_id, flowtypeoutcomponent, isdivisioninputlocationmodified, componentslocation_id, isdivisionoutputlocation, isdivisionlocationmodified, isdivisionoutputlocationmodified, isdivisioninputlocation, productsinputlocation_id, productionflow, productsflowlocation_id, entityversion, replacementto_id) FROM stdin;
+COPY basicproductioncounting_productioncountingquantity (id, order_id, product_id, plannedquantity, isnoncomponent, technologyoperationcomponent_id, basicproductioncounting_id, typeofmaterial, role, componentsoutputlocation_id, componentslocation_id, productsinputlocation_id, productionflow, productsflowlocation_id, entityversion, replacementto_id) FROM stdin;
 \.
 
 
@@ -32147,7 +32383,7 @@ SELECT pg_catalog.setval('deliveries_companyproductsfamily_id_seq', 1, false);
 -- Data for Name: deliveries_deliveredproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY deliveries_deliveredproduct (id, delivery_id, product_id, deliveredquantity, damagedquantity, priceperunit, totalprice, succession, operation_id, offer_id, batchnumber, productiondate, expirationdate, entityversion, palletnumber_id, pallettype, storagelocation_id, additionalcode_id, additionalquantity, conversion, iswaste, additionalunit, damaged, batch_id) FROM stdin;
+COPY deliveries_deliveredproduct (id, delivery_id, product_id, deliveredquantity, damagedquantity, priceperunit, totalprice, succession, operation_id, offer_id, batchnumber, productiondate, expirationdate, entityversion, palletnumber_id, pallettype, storagelocation_id, additionalcode_id, additionalquantity, conversion, iswaste, additionalunit, damaged, batch_id, orderedproduct_id) FROM stdin;
 \.
 
 
@@ -33242,6 +33478,7 @@ COPY jointable_group_role (group_id, role_id) FROM stdin;
 3	115
 4	115
 4	118
+2	119
 \.
 
 
@@ -33358,6 +33595,14 @@ COPY jointable_printlabelshelper_printedlabel (printedlabel_id, printlabelshelpe
 
 
 --
+-- Data for Name: jointable_product_qualitycard; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY jointable_product_qualitycard (product_id, qualitycard_id) FROM stdin;
+\.
+
+
+--
 -- Data for Name: jointable_product_scale; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -33410,6 +33655,14 @@ COPY jointable_productionline_technology (technology_id, productionline_id) FROM
 --
 
 COPY jointable_productionline_technologygroup (technologygroup_id, productionline_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: jointable_qualitycontrolattribute_technologyoperationcomponent; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY jointable_qualitycontrolattribute_technologyoperationcomponent (technologyoperationcomponent_id, qualitycontrolattribute_id) FROM stdin;
 \.
 
 
@@ -35560,7 +35813,7 @@ SELECT pg_catalog.setval('productioncounting_productionbalance_id_seq', 1, false
 -- Data for Name: productioncounting_productiontracking; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY productioncounting_productiontracking (id, number, order_id, technologyinstanceoperationcomponent_id, shift_id, state, lasttracking, machinetime, labortime, executedoperationcycles, staff_id, workstationtype_id, division_id, active, createdate, updatedate, createuser, updateuser, laststatechangefails, laststatechangefailcause, isexternalsynchronized, timerangefrom, timerangeto, shiftstartday, changeovertime, subcontractor_id, technologyoperationcomponent_id, entityversion, repairorder_id, correction_id, iscorrection, planforordercompleted, workstation_id, batch_id, expirationdate) FROM stdin;
+COPY productioncounting_productiontracking (id, number, order_id, technologyinstanceoperationcomponent_id, shift_id, state, lasttracking, machinetime, labortime, executedoperationcycles, staff_id, workstationtype_id, division_id, active, createdate, updatedate, createuser, updateuser, laststatechangefails, laststatechangefailcause, isexternalsynchronized, timerangefrom, timerangeto, shiftstartday, changeovertime, subcontractor_id, technologyoperationcomponent_id, entityversion, repairorder_id, correction_id, iscorrection, planforordercompleted, workstation_id, batch_id, expirationdate, qualityrating) FROM stdin;
 \.
 
 
@@ -35963,6 +36216,7 @@ COPY qcadoomodel_dictionary (id, name, pluginidentifier, active, entityversion) 
 16	masterOrderState	masterOrders	t	0
 17	occupationType	assignmentToShift	t	0
 18	productionLinePlacesForSCADA	productionLines	t	0
+20	qualityRating	qualityControl	t	0
 \.
 
 
@@ -35970,7 +36224,7 @@ COPY qcadoomodel_dictionary (id, name, pluginidentifier, active, entityversion) 
 -- Name: qcadoomodel_dictionary_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoomodel_dictionary_id_seq', 19, true);
+SELECT pg_catalog.setval('qcadoomodel_dictionary_id_seq', 20, true);
 
 
 --
@@ -36203,6 +36457,7 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 154	scheduleGantt	1.5.0	DISABLED	f	0	\N	Commercial
 150	integrationAsana	1.5.0	DISABLED	f	0	\N	Commercial
 68	advancedGenealogyForOrders	1.5.0	ENABLED	f	0	genealogy	Commercial
+155	qualityControl	1.5.0	DISABLED	f	0	\N	\N
 \.
 
 
@@ -36210,7 +36465,7 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 -- Name: qcadooplugin_plugin_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooplugin_plugin_id_seq', 154, true);
+SELECT pg_catalog.setval('qcadooplugin_plugin_id_seq', 155, true);
 
 
 --
@@ -36371,6 +36626,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 116	ROLE_PRODUCTION_TRACKING_REGISTRATION	\N	0
 117	ROLE_ORDER_MATERIAL_AVAILABILITY	\N	0
 118	ROLE_NUMBER_PATTERN	\N	0
+119	ROLE_QUALITY_CONTROL	\N	0
 \.
 
 
@@ -36378,7 +36634,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 118, true);
+SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 119, true);
 
 
 --
@@ -36436,6 +36692,7 @@ COPY qcadooview_category (id, pluginidentifier, name, succession, authrole, enti
 14	subcontractorPortal	subcontractors	16	ROLE_SUBCONTRACTOR	0
 15	productionCounting	analysis	17	ROLE_ANALYSIS_VIEWER	0
 16	arch	archives	18	\N	0
+20	qualityControl	quality	19	\N	0
 \.
 
 
@@ -36443,7 +36700,7 @@ COPY qcadooview_category (id, pluginidentifier, name, succession, authrole, enti
 -- Name: qcadooview_category_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_category_id_seq', 19, true);
+SELECT pg_catalog.setval('qcadooview_category_id_seq', 20, true);
 
 
 --
@@ -36602,6 +36859,8 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 34	wageGroups	wageGroups	t	18	34	14	ROLE_STAFF_WAGES	0
 33	wageGroups	wages	t	18	33	13	ROLE_STAFF_WAGES	0
 107	productionPerShift	balancePerShift	t	8	106	8	\N	0
+158	qualityControl	qualityCardList	t	20	157	1	ROLE_QUALITY_CONTROL	0
+159	qualityControl	qualityControlList	t	20	158	2	ROLE_QUALITY_CONTROL	0
 \.
 
 
@@ -36609,7 +36868,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 157, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 159, true);
 
 
 --
@@ -36768,6 +37027,8 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 155	basic	numberPatternsList	numberPatternsList	\N	0
 156	stoppage	stoppageReasonsList	stoppageReasonsList	\N	0
 106	productionPerShift	generateBalance	generateBalance	\N	0
+157	qualityControl	qualityCardList	qualityCardList	\N	0
+158	qualityControl	qualityControlList	qualityControlList	\N	0
 \.
 
 
@@ -36775,7 +37036,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 156, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 158, true);
 
 
 --
@@ -36791,6 +37052,66 @@ COPY qcadooview_viewedalert (id, user_id, alert_id) FROM stdin;
 --
 
 SELECT pg_catalog.setval('qcadooview_viewedalert_id_seq', 1, false);
+
+
+--
+-- Data for Name: qualitycontrol_qualitycontrol; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY qualitycontrol_qualitycontrol (id, number, product_id, qualitycard_id, controltype, batch_id, date, staff_id, order_id, qualityrating) FROM stdin;
+\.
+
+
+--
+-- Name: qualitycontrol_qualitycontrol_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('qualitycontrol_qualitycontrol_id_seq', 1, false);
+
+
+--
+-- Data for Name: qualitycontrol_qualitycontrolattribute; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY qualitycontrol_qualitycontrolattribute (id, qualitycard_id, attribute_id, priority) FROM stdin;
+\.
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattribute_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('qualitycontrol_qualitycontrolattribute_id_seq', 1, false);
+
+
+--
+-- Data for Name: qualitycontrol_qualitycontrolattributeprodtracking; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY qualitycontrol_qualitycontrolattributeprodtracking (id, productiontracking_id, attribute_id, attributevalue_id, value, fromtechnology) FROM stdin;
+\.
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattributeprodtracking_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('qualitycontrol_qualitycontrolattributeprodtracking_id_seq', 1, false);
+
+
+--
+-- Data for Name: qualitycontrol_qualitycontrolattributevalue; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY qualitycontrol_qualitycontrolattributevalue (id, qualitycontrol_id, attribute_id, attributevalue_id, value) FROM stdin;
+\.
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattributevalue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('qualitycontrol_qualitycontrolattributevalue_id_seq', 1, false);
 
 
 --
@@ -37460,7 +37781,7 @@ SELECT pg_catalog.setval('technologies_operationgroup_id_seq', 1, false);
 -- Data for Name: technologies_operationproductincomponent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY technologies_operationproductincomponent (id, operationcomponent_id, product_id, quantity, productbatchrequired, itemnumberintheexplodedview, componentslocation_id, componentsoutputlocation_id, isdivisionlocation, isdivisionoutputlocation, isdivisionoutputlocationmodified, isdivisionlocationmodified, flowtypeincomponent, priority, showinproductdata, productdatanumber, pantone_id, productsflowlocation_id, productionflow, value, givenquantity, givenunit, entityversion, hardener, resin, fabric, ondelete, showmaterialcomponent, quantityformula) FROM stdin;
+COPY technologies_operationproductincomponent (id, operationcomponent_id, product_id, quantity, productbatchrequired, itemnumberintheexplodedview, componentslocation_id, componentsoutputlocation_id, priority, showinproductdata, productdatanumber, pantone_id, productsflowlocation_id, productionflow, value, givenquantity, givenunit, entityversion, hardener, resin, fabric, ondelete, showmaterialcomponent, quantityformula) FROM stdin;
 \.
 
 
@@ -37482,7 +37803,7 @@ SELECT pg_catalog.setval('technologies_operationproductincomponentdto_id_seq', 1
 -- Data for Name: technologies_operationproductoutcomponent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY technologies_operationproductoutcomponent (id, operationcomponent_id, product_id, quantity, productsinputlocation_id, isdivisioninputlocation, isdivisioninputlocationmodified, flowtypeoutcomponent, productsflowlocation_id, productsshiftinglocation_id, productionflow, automaticmove, entityversion) FROM stdin;
+COPY technologies_operationproductoutcomponent (id, operationcomponent_id, product_id, quantity, productsinputlocation_id, productsflowlocation_id, productionflow, automaticmove, entityversion) FROM stdin;
 \.
 
 
@@ -37554,10 +37875,40 @@ SELECT pg_catalog.setval('technologies_producttoproductgrouptechnology_id_seq', 
 
 
 --
+-- Data for Name: technologies_qualitycard; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY technologies_qualitycard (id, number, name, description, state) FROM stdin;
+\.
+
+
+--
+-- Name: technologies_qualitycard_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('technologies_qualitycard_id_seq', 1, false);
+
+
+--
+-- Data for Name: technologies_qualitycardstatechange; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY technologies_qualitycardstatechange (id, dateandtime, sourcestate, targetstate, status, phase, worker, qualitycard_id, shift_id) FROM stdin;
+\.
+
+
+--
+-- Name: technologies_qualitycardstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('technologies_qualitycardstatechange_id_seq', 1, false);
+
+
+--
 -- Data for Name: technologies_technology; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY technologies_technology (id, number, name, product_id, technologygroup_id, externalsynchronized, master, description, state, recipeimportstatus, recipeimportmsg, formula, minimalquantity, active, isstandardgoodfoodtechnology, range, division_id, componentslocation_id, componentsoutputlocation_id, productsinputlocation_id, isdivisionlocation, isdivisioninputlocation, isdivisionoutputlocation, technologytype, technologyprototype_id, productionline_id, productionflow, productsflowlocation_id, automaticmoveforintermediate, automaticmoveforfinal, graphicsaccepted, constructionandtechnologyaccepted, typeofproductionrecording, justone, allowtoclose, registerquantityoutproduct, autocloseorder, registerpiecework, registerquantityinproduct, registerproductiontime, entityversion, standardperformancetechnology, template, additionalactions, generatorcontext_id) FROM stdin;
+COPY technologies_technology (id, number, name, product_id, technologygroup_id, externalsynchronized, master, description, state, recipeimportstatus, recipeimportmsg, formula, minimalquantity, active, isstandardgoodfoodtechnology, range, division_id, componentslocation_id, componentsoutputlocation_id, productsinputlocation_id, technologytype, technologyprototype_id, productionline_id, productionflow, productsflowlocation_id, graphicsaccepted, constructionandtechnologyaccepted, typeofproductionrecording, justone, allowtoclose, registerquantityoutproduct, autocloseorder, registerpiecework, registerquantityinproduct, registerproductiontime, entityversion, standardperformancetechnology, template, additionalactions, generatorcontext_id, qualitycard_id) FROM stdin;
 \.
 
 
@@ -37609,7 +37960,7 @@ SELECT pg_catalog.setval('technologies_technologygroup_id_seq', 1, false);
 -- Data for Name: technologies_technologyoperationcomponent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY technologies_technologyoperationcomponent (id, technology_id, operation_id, parent_id, entitytype, priority, nodenumber, comment, attachment, areproductquantitiesdivisible, istjdivisible, tpz, laborworktime, productioninonecycleunit, nextoperationafterproducedquantityunit, nextoperationafterproducedquantity, nextoperationafterproducedtype, machineutilization, timenextoperation, pieceworkcost, machineworktime, productioninonecycle, laborutilization, duration, numberofoperations, tj, machinehourlycost, laborhourlycost, issubcontracting, assignedtooperation, workstationtype_id, quantityofworkstations, createdate, updatedate, createuser, updateuser, techopercomptimecalculation_id, hascorrections, division_id, showinproductdata, productdatanumber, productionlinechange, productionline_id, entityversion) FROM stdin;
+COPY technologies_technologyoperationcomponent (id, technology_id, operation_id, parent_id, entitytype, priority, nodenumber, comment, attachment, areproductquantitiesdivisible, istjdivisible, tpz, laborworktime, productioninonecycleunit, nextoperationafterproducedquantityunit, nextoperationafterproducedquantity, nextoperationafterproducedtype, machineutilization, timenextoperation, pieceworkcost, machineworktime, productioninonecycle, laborutilization, duration, numberofoperations, tj, machinehourlycost, laborhourlycost, issubcontracting, assignedtooperation, workstationtype_id, quantityofworkstations, createdate, updatedate, createuser, updateuser, techopercomptimecalculation_id, hascorrections, division_id, showinproductdata, productdatanumber, productionlinechange, productionline_id, entityversion, qualityrating) FROM stdin;
 \.
 
 
@@ -40435,6 +40786,14 @@ ALTER TABLE ONLY jointable_printlabelshelper_printedlabel
 
 
 --
+-- Name: jointable_product_qualitycard_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_product_qualitycard
+    ADD CONSTRAINT jointable_product_qualitycard_pkey PRIMARY KEY (qualitycard_id, product_id);
+
+
+--
 -- Name: jointable_product_scale_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -40488,6 +40847,14 @@ ALTER TABLE ONLY jointable_productionline_technology
 
 ALTER TABLE ONLY jointable_productionline_technologygroup
     ADD CONSTRAINT jointable_productionline_technologygroup_pkey PRIMARY KEY (productionline_id, technologygroup_id);
+
+
+--
+-- Name: jointable_qualitycontrolattribute_techopercomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_qualitycontrolattribute_technologyoperationcomponent
+    ADD CONSTRAINT jointable_qualitycontrolattribute_techopercomponent_pkey PRIMARY KEY (technologyoperationcomponent_id, qualitycontrolattribute_id);
 
 
 --
@@ -41747,6 +42114,38 @@ ALTER TABLE ONLY qcadooview_viewedalert
 
 
 --
+-- Name: qualitycontrol_qualitycontrol_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrol
+    ADD CONSTRAINT qualitycontrol_qualitycontrol_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattribute_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattribute
+    ADD CONSTRAINT qualitycontrol_qualitycontrolattribute_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattributeprodtracking_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattributeprodtracking
+    ADD CONSTRAINT qualitycontrol_qualitycontrolattributeprodtracking_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattributevalue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattributevalue
+    ADD CONSTRAINT qualitycontrol_qualitycontrolattributevalue_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: repairorder_number_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -42128,6 +42527,22 @@ ALTER TABLE ONLY technologies_productstructuretreenode
 
 ALTER TABLE ONLY technologies_producttoproductgrouptechnology
     ADD CONSTRAINT technologies_producttoproductgrouptechnology_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: technologies_qualitycard_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_qualitycard
+    ADD CONSTRAINT technologies_qualitycard_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: technologies_qualitycardstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_qualitycardstatechange
+    ADD CONSTRAINT technologies_qualitycardstatechange_pkey PRIMARY KEY (id);
 
 
 --
@@ -46505,6 +46920,14 @@ ALTER TABLE ONLY deliveries_deliveredproduct
 
 
 --
+-- Name: deliveredproduct_orderedproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY deliveries_deliveredproduct
+    ADD CONSTRAINT deliveredproduct_orderedproduct_fkey FOREIGN KEY (orderedproduct_id) REFERENCES deliveries_orderedproduct(id) DEFERRABLE;
+
+
+--
 -- Name: deliveredproduct_palletnumber_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -49433,14 +49856,6 @@ ALTER TABLE ONLY technologies_operationproductoutcomponent
 
 
 --
--- Name: operationproductoutcomponent_productsshiftinglocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY technologies_operationproductoutcomponent
-    ADD CONSTRAINT operationproductoutcomponent_productsshiftinglocation_fkey FOREIGN KEY (productsshiftinglocation_id) REFERENCES materialflow_location(id) DEFERRABLE;
-
-
---
 -- Name: operationskill_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -50993,6 +51408,22 @@ ALTER TABLE ONLY arch_productflowthrudivision_productstoissue
 
 
 --
+-- Name: product_qualitycard_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_product_qualitycard
+    ADD CONSTRAINT product_qualitycard_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: product_qualitycard_qualitycard_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_product_qualitycard
+    ADD CONSTRAINT product_qualitycard_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES technologies_qualitycard(id) DEFERRABLE;
+
+
+--
 -- Name: product_scale_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -52118,6 +52549,142 @@ ALTER TABLE ONLY qcadoomodel_unitconversionitem
 
 ALTER TABLE ONLY qcadoomodel_unitconversionitem
     ADD CONSTRAINT qcadoomodel_unitconv_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: qualitycardstatechange_qualitycard_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_qualitycardstatechange
+    ADD CONSTRAINT qualitycardstatechange_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES technologies_qualitycard(id) DEFERRABLE;
+
+
+--
+-- Name: qualitycardstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_qualitycardstatechange
+    ADD CONSTRAINT qualitycardstatechange_shift_fkey FOREIGN KEY (shift_id) REFERENCES basic_shift(id) DEFERRABLE;
+
+
+--
+-- Name: qualitycontrattr_techopercomponent_qualitycontrattr_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_qualitycontrolattribute_technologyoperationcomponent
+    ADD CONSTRAINT qualitycontrattr_techopercomponent_qualitycontrattr_fkey FOREIGN KEY (qualitycontrolattribute_id) REFERENCES qualitycontrol_qualitycontrolattribute(id) DEFERRABLE;
+
+
+--
+-- Name: qualitycontrattr_techopercomponent_techopercomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_qualitycontrolattribute_technologyoperationcomponent
+    ADD CONSTRAINT qualitycontrattr_techopercomponent_techopercomponent_fkey FOREIGN KEY (technologyoperationcomponent_id) REFERENCES technologies_technologyoperationcomponent(id) DEFERRABLE;
+
+
+--
+-- Name: qualitycontrol_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrol
+    ADD CONSTRAINT qualitycontrol_batch_fkey FOREIGN KEY (batch_id) REFERENCES advancedgenealogy_batch(id);
+
+
+--
+-- Name: qualitycontrol_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrol
+    ADD CONSTRAINT qualitycontrol_order_fkey FOREIGN KEY (order_id) REFERENCES orders_order(id);
+
+
+--
+-- Name: qualitycontrol_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrol
+    ADD CONSTRAINT qualitycontrol_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id);
+
+
+--
+-- Name: qualitycontrol_qualitycard_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrol
+    ADD CONSTRAINT qualitycontrol_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES technologies_qualitycard(id);
+
+
+--
+-- Name: qualitycontrol_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrol
+    ADD CONSTRAINT qualitycontrol_staff_fkey FOREIGN KEY (staff_id) REFERENCES basic_staff(id);
+
+
+--
+-- Name: qualitycontrolattribute_attribute_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattribute
+    ADD CONSTRAINT qualitycontrolattribute_attribute_fkey FOREIGN KEY (attribute_id) REFERENCES basic_attribute(id) DEFERRABLE;
+
+
+--
+-- Name: qualitycontrolattribute_qualitycard_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattribute
+    ADD CONSTRAINT qualitycontrolattribute_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES technologies_qualitycard(id) DEFERRABLE;
+
+
+--
+-- Name: qualitycontrolattributeprodtracking_attribute_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattributeprodtracking
+    ADD CONSTRAINT qualitycontrolattributeprodtracking_attribute_fkey FOREIGN KEY (attribute_id) REFERENCES basic_attribute(id) DEFERRABLE;
+
+
+--
+-- Name: qualitycontrolattributeprodtracking_attributevalue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattributeprodtracking
+    ADD CONSTRAINT qualitycontrolattributeprodtracking_attributevalue_fkey FOREIGN KEY (attributevalue_id) REFERENCES basic_attributevalue(id) DEFERRABLE;
+
+
+--
+-- Name: qualitycontrolattributeprodtracking_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattributeprodtracking
+    ADD CONSTRAINT qualitycontrolattributeprodtracking_productiontracking_fkey FOREIGN KEY (productiontracking_id) REFERENCES productioncounting_productiontracking(id) DEFERRABLE;
+
+
+--
+-- Name: qualitycontrolattributevalue_attribute_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattributevalue
+    ADD CONSTRAINT qualitycontrolattributevalue_attribute_fkey FOREIGN KEY (attribute_id) REFERENCES basic_attribute(id) DEFERRABLE;
+
+
+--
+-- Name: qualitycontrolattributevalue_attributevalue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattributevalue
+    ADD CONSTRAINT qualitycontrolattributevalue_attributevalue_fkey FOREIGN KEY (attributevalue_id) REFERENCES basic_attributevalue(id) DEFERRABLE;
+
+
+--
+-- Name: qualitycontrolattributevalue_qualitycontrol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattributevalue
+    ADD CONSTRAINT qualitycontrolattributevalue_qualitycontrol_fkey FOREIGN KEY (qualitycontrol_id) REFERENCES qualitycontrol_qualitycontrol(id) DEFERRABLE;
 
 
 --
@@ -53814,6 +54381,14 @@ ALTER TABLE ONLY technologies_technology
 
 ALTER TABLE ONLY technologies_operationproductoutcomponent
     ADD CONSTRAINT technology_productsinputlocation_fkey FOREIGN KEY (productsinputlocation_id) REFERENCES materialflow_location(id) DEFERRABLE;
+
+
+--
+-- Name: technology_qualitycard_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_technology
+    ADD CONSTRAINT technology_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES technologies_qualitycard(id) DEFERRABLE;
 
 
 --
