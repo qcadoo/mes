@@ -23,24 +23,20 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.validators;
 
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductionCountingQuantityFieldsPFTD;
-import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.productFlowThruDivision.constants.ProductionFlowComponent;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 @Service
 public class ProductionCountingQuantityValidatorsPFTD {
-
-    @Autowired
-    private TechnologyService technologyService;
 
     private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING = "qcadooView.validate.field.error.missing";
 
@@ -65,9 +61,16 @@ public class ProductionCountingQuantityValidatorsPFTD {
                         dataDefinition.getField(ProductionCountingQuantityFieldsPFTD.PRODUCTS_INPUT_LOCATION),
                         L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
             }
-            if (!productionCountingQuantity.isValid()) {
-                return false;
+            if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(typeOfMaterial)
+                    && ProductionFlowComponent.WAREHOUSE.getStringValue().equals(
+                            productionCountingQuantity.getStringField(ProductionCountingQuantityFieldsPFTD.PRODUCTION_FLOW))
+                    && productionCountingQuantity
+                            .getBelongsToField(ProductionCountingQuantityFieldsPFTD.PRODUCTS_FLOW_LOCATION) == null) {
+                productionCountingQuantity.addError(
+                        dataDefinition.getField(ProductionCountingQuantityFieldsPFTD.PRODUCTS_FLOW_LOCATION),
+                        L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
             }
+            return productionCountingQuantity.isValid();
         }
         return true;
     }

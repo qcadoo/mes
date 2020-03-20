@@ -40,10 +40,11 @@
         <dictionary name="unit" dictionary="units"/>
         <boolean name="forProduct" default="false"/>
         <boolean name="forResource" default="false"/>
+        <boolean name="forQualityControl" default="false"/>
         <hasMany name="attributeValues" joinField="attribute" model="attributeValue" cascade="delete"/>
         <hasMany name="productAttributeValues" joinField="attribute" model="productAttributeValue"/>
 
-        <file name="positionsFile" copyable="false" persistent="false"/>
+        <file name="positionsFile" persistent="false"/>
 
     </fields>
 

@@ -88,4 +88,8 @@ public final class ParameterFieldsPC {
     public static final String INCLUDE_WAGE_GROUPS = "includeWageGroups";
 
     public static final String CALCULATE_AMOUNT_TIME_EMPLOYEES_ON_ACCEPTANCE_RECORD = "calculateAmountTimeEmployeesOnAcceptanceRecord";
+
+    public static final String GENERATE_BATCH_FOR_ORDERED_PRODUCT = "generateBatchForOrderedProduct";
+
+    public static final String NUMBER_PATTERN = "numberPattern";
 }

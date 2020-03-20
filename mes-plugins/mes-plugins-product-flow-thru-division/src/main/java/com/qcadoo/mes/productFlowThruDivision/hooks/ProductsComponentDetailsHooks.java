@@ -28,14 +28,14 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Service
 public class ProductsComponentDetailsHooks {
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        List<String> references = Arrays.asList(OperationProductInComponentFieldsPFTD.COMPONENTS_LOCATION);
+        List<String> references = Collections.singletonList(OperationProductInComponentFieldsPFTD.COMPONENTS_LOCATION);
         setFieldsRequired(view, references);
     }
 

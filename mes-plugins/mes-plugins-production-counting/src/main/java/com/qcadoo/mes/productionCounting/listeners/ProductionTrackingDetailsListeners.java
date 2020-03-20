@@ -72,11 +72,7 @@ public class ProductionTrackingDetailsListeners {
 
     private static final String L_FORM = "form";
 
-    private static final String L_GRID = "grid";
-
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductionTrackingDetailsListeners.class);
-
-    public static final String L_DIVISION = "division";
 
     public static final String L_BATCH = "batch";
 
@@ -181,20 +177,15 @@ public class ProductionTrackingDetailsListeners {
 
             List<Entity> recordOutProducts = productionTracking
                     .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
-            Multimap<Long, Entity> groupedRecordOutProducts = productionTrackingDocumentsHelper.groupRecordOutProductsByLocation(
-                    recordOutProducts, order);
-
-            productionTrackingDocumentsHelper.fillFromBPCProductOut(groupedRecordOutProducts, recordOutProducts, order);
 
             List<Entity> recordInProducts = productionTracking
                     .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
-            Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper.groupRecordInProductsByWarehouse(
-                    recordInProducts, order);
 
-            productionTrackingDocumentsHelper.fillFromBPCProductIn(groupedRecordInProducts, recordInProducts, order);
+            Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper
+                    .fillFromBPCProductIn(recordInProducts, order, true);
 
-            List<Long> productIds = productionTrackingDocumentsHelper.findProductsWithInsufficientQuantity(productionTracking,
-                    groupedRecordInProducts, recordOutProducts);
+            List<Long> productIds = productionTrackingDocumentsHelper
+                    .findProductsWithInsufficientQuantity(groupedRecordInProducts, recordOutProducts);
 
             if (productIds.isEmpty()) {
                 stateExecutorService.changeState(ProductionTrackingStateServiceMarker.class, view, args);
@@ -209,7 +200,7 @@ public class ProductionTrackingDetailsListeners {
                         recordInProducts
                                 .stream()
                                 .filter(ip -> productIds.contains(ip.getBelongsToField(
-                                        TrackingOperationProductInComponentFields.PRODUCT).getId())).map(ip -> ip.getId())
+                                        TrackingOperationProductInComponentFields.PRODUCT).getId())).map(Entity::getId)
                                 .map(String::valueOf).collect(Collectors.joining(",")));
                 parameters.put("form.performAndAccept", Boolean.TRUE);
 
@@ -408,7 +399,7 @@ public class ProductionTrackingDetailsListeners {
 
         if (justOneRecord) {
             lastTrackingField.setFieldValue(justOneRecord);
-            lastTrackingField.setEnabled(!justOneRecord);
+            lastTrackingField.setEnabled(false);
             lastTrackingField.requestComponentUpdateState();
         } else {
             lastTrackingField.setEnabled(true);
@@ -515,8 +506,10 @@ public class ProductionTrackingDetailsListeners {
     }
 
     public void onAddBatchChange(final ViewDefinitionState view, final ComponentState component, final String[] args) {
-        FieldComponent batchNumber = (FieldComponent) view.getComponentByReference(ProductionTrackingFields.BATCH_NUMBER);
-        batchNumber.setEnabled(true);
+        if (!parameterService.getParameter().getBooleanField(ParameterFieldsPC.GENERATE_BATCH_FOR_ORDERED_PRODUCT)) {
+            FieldComponent batchNumber = (FieldComponent) view.getComponentByReference(ProductionTrackingFields.BATCH_NUMBER);
+            batchNumber.setEnabled(true);
+        }
     }
 
     public void correct(final ViewDefinitionState view, final ComponentState component, final String[] args) {

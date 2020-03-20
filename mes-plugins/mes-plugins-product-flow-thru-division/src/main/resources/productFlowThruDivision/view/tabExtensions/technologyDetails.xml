@@ -171,7 +171,7 @@
     </windowTab>
     <windowTab name="flowTab" reference="flowTab">
         <component type="gridLayout" name="flowLayout" columns="4"
-                   rows="8">
+                   rows="6">
 
             <layoutElement column="1" row="1" width="2">
                 <component type="lookup" name="componentsLocation"
@@ -211,11 +211,11 @@
 
             <layoutElement column="1" row="3" width="2">
                 <component type="select" name="productionFlow"
-                           field="#{form}.productionFlow" reference="productionFlow">
+                           field="#{form}.productionFlow" reference="productionFlow"
+                           hasDescription="true">
                     <listener event="onSelectedEntityChange"
                               class="com.qcadoo.mes.productFlowThruDivision.listeners.TechnologyDetailsListenersPFTD"
                               method="onProductionFlowComponentChange"/>
-
                 </component>
             </layoutElement>
 
@@ -237,11 +237,6 @@
                 </component>
             </layoutElement>
             <layoutElement column="1" row="5" width="2">
-                <component type="checkbox" name="automaticMoveForIntermediate"
-                           reference="automaticMoveForIntermediate" field="#{form}.automaticMoveForIntermediate">
-                </component>
-            </layoutElement>
-            <layoutElement column="1" row="6" width="2">
                 <component type="lookup" name="productsInputLocation"
                            field="#{form}.productsInputLocation" reference="productsInputLocation">
                     <option type="column" name="name" fields="name"/>
@@ -258,12 +253,7 @@
                             method="showWarehousesOnly"/>
                 </component>
             </layoutElement>
-            <layoutElement column="1" row="7" width="2">
-                <component type="checkbox" name="automaticMoveForFinal"
-                           reference="automaticMoveForFinal" field="#{form}.automaticMoveForFinal">
-                </component>
-            </layoutElement>
-            <layoutElement column="1" row="8" width="4">
+            <layoutElement column="1" row="6" width="4">
                 <component type="gridLayout" name="productsFlowLayout"
                            columns="1" rows="4" reference="productsFlowLayout">
                     <layoutElement column="1" row="1">
@@ -338,8 +328,6 @@
                                     />
                             <option type="column" name="productsFlowLocation"
                                     fields="productsFlowLocation" expression="#productsFlowLocation['name']"/>
-                            <option type="column" name="automaticMove" fields="automaticMove"
-                                    />
                             <option type="order" column="productNumber" direction="desc"/>
 
                             <option type="correspondingView"
@@ -366,10 +354,6 @@
                                     width="100" link="true"/>
                             <option type="column" name="productsInputLocation"
                                     fields="productsInputLocation" expression="#productsInputLocation['name']"/>
-                            <option type="column" name="automaticMove" fields="automaticMove"
-                                    />
-                            <option type="column" name="productsShiftingLocation"
-                                    fields="productsShiftingLocation" expression="#productsShiftingLocation['name']"/>
                             <option type="order" column="productNumber" direction="desc"/>
 
                             <option type="correspondingView"
@@ -377,9 +361,9 @@
                             <option type="correspondingComponent" value="form"/>
                             <option type="correspondingViewInModal" value="true"/>
                             <option type="searchable"
-                                    value="productName,productsInputLocation,operationComponent,productsShiftingLocation"/>
+                                    value="productName,productsInputLocation,operationComponent"/>
                             <option type="orderable"
-                                    value="productName,productsInputLocation,operationComponent,productsShiftingLocation"/>
+                                    value="productName,productsInputLocation,operationComponent"/>
 
                             <criteriaModifier
                                     class="com.qcadoo.mes.productFlowThruDivision.criteriaModifiers.ProductsFlowInCriteriaModifiers"

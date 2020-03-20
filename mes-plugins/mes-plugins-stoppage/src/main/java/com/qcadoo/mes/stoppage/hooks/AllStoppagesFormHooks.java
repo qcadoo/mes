@@ -5,10 +5,10 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 import java.util.Objects;
 
-import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;

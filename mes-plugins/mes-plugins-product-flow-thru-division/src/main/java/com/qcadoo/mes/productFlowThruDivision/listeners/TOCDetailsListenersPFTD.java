@@ -33,10 +33,9 @@ import com.qcadoo.view.api.components.CheckBoxComponent;
 public class TOCDetailsListenersPFTD {
 
     public void onProductionLineChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-
-        CheckBoxComponent isDivisionLocationChangeOPIC = (CheckBoxComponent) view
+        CheckBoxComponent productionLineChange = (CheckBoxComponent) view
                 .getComponentByReference("productionLineChange");
-        isDivisionLocationChangeOPIC.setChecked(true);
-        isDivisionLocationChangeOPIC.requestComponentUpdateState();
+        productionLineChange.setChecked(true);
+        productionLineChange.requestComponentUpdateState();
     }
 }

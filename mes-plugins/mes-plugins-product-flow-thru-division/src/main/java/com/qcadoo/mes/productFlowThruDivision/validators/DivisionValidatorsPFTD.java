@@ -10,7 +10,6 @@ import com.qcadoo.model.api.Entity;
 public class DivisionValidatorsPFTD {
 
     public boolean checkIfWarehousesAreDifferent(final DataDefinition dataDefinition, final Entity division) {
-
         Entity componentsLocation = division.getBelongsToField(DivisionFieldsPFTD.COMPONENTS_LOCATION);
         Entity componentsOutLocation = division.getBelongsToField(DivisionFieldsPFTD.COMPONENTS_OUTPUT_LOCATION);
 

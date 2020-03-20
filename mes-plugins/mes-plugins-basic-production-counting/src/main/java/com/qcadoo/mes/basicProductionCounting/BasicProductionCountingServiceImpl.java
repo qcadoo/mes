@@ -635,35 +635,40 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
                 if (opoc != null) {
                     productionCountingQuantity.setField(PRODUCTS_INPUT_LOCATION, opoc.getField(PRODUCTS_INPUT_LOCATION));
                 }
-            } else {
-                if (ProductionCountingQuantityRole.USED.getStringValue().equals(role)) {
-                    Entity opic = getOperationProduct(opics,
-                            productionCountingQuantity
-                                    .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
-                            productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT));
-                    if (opic != null) {
-                        if (ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue().equals(type)) {
-                            productionCountingQuantity.setField(COMPONENTS_LOCATION, opic.getField(COMPONENTS_LOCATION));
-                            productionCountingQuantity.setField(COMPONENTS_OUTPUT_LOCATION,
-                                    opic.getField(COMPONENTS_OUTPUT_LOCATION));
-                        } else if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(type)) {
+            } else if (ProductionCountingQuantityRole.USED.getStringValue().equals(role)) {
+                Entity opic = getOperationProduct(opics,
+                        productionCountingQuantity
+                                .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
+                        productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT));
+                if (opic != null) {
+                    if (ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue().equals(type)) {
+                        productionCountingQuantity.setField(COMPONENTS_LOCATION, opic.getField(COMPONENTS_LOCATION));
+                        productionCountingQuantity.setField(COMPONENTS_OUTPUT_LOCATION,
+                                opic.getField(COMPONENTS_OUTPUT_LOCATION));
+                    } else if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(type)) {
+                        if ("02cumulated".equals(order.getStringField("typeOfProductionRecording"))) {
+                            productionCountingQuantity.setField(PRODUCTION_FLOW, "02withinTheProcess");
+                        } else {
                             productionCountingQuantity.setField(PRODUCTION_FLOW, opic.getField(PRODUCTION_FLOW));
                             productionCountingQuantity.setField(PRODUCTS_FLOW_LOCATION, opic.getField(PRODUCTS_FLOW_LOCATION));
                         }
                     }
-                } else if (ProductionCountingQuantityRole.PRODUCED.getStringValue().equals(role)) {
-                    Entity opoc = getOperationProduct(opocs,
-                            productionCountingQuantity
-                                    .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
-                            productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT));
-                    if (opoc != null) {
+                }
+            } else if (ProductionCountingQuantityRole.PRODUCED.getStringValue().equals(role)) {
+                Entity opoc = getOperationProduct(opocs,
+                        productionCountingQuantity
+                                .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
+                        productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT));
+                if (opoc != null) {
+                    if ("02cumulated".equals(order.getStringField("typeOfProductionRecording"))) {
+                        productionCountingQuantity.setField(PRODUCTION_FLOW, "02withinTheProcess");
+                    } else {
                         productionCountingQuantity.setField(PRODUCTION_FLOW, opoc.getField(PRODUCTION_FLOW));
                         productionCountingQuantity.setField(PRODUCTS_FLOW_LOCATION, opoc.getField(PRODUCTS_FLOW_LOCATION));
                     }
                 }
             }
         }
-
     }
 
     private Entity getOperationProduct(final List<Entity> entities, final Entity toc, final Entity product) {

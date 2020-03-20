@@ -38,6 +38,8 @@ import com.qcadoo.model.api.utils.TreeNumberingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
+
 import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.MASTER;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT;
@@ -75,6 +77,7 @@ public class TechnologyModelHooks {
             technology.setField(TechnologyFields.TEMPLATE, false);
         }
         setNewMasterTechnology(technologyDD, technology);
+        qualityCardChange(technologyDD, technology);
     }
 
     public void onUpdate(final DataDefinition technologyDD, final Entity technology) {
@@ -128,4 +131,17 @@ public class TechnologyModelHooks {
                 technology.getId());
     }
 
+    public void qualityCardChange(final DataDefinition technologyDD, final Entity technology) {
+        if (technology.getId() != null) {
+            Entity qualityCard = technology.getBelongsToField(TechnologyFields.QUALITY_CARD);
+            Entity technologyFromDB = technologyDD.get(technology.getId());
+            Entity qualityCardFromDB = technologyFromDB.getBelongsToField(TechnologyFields.QUALITY_CARD);
+            if (qualityCardFromDB != null && (qualityCard == null || !qualityCardFromDB.getId().equals(qualityCard.getId()))) {
+                for (Entity operationComponent : technologyFromDB.getHasManyField(TechnologyFields.OPERATION_COMPONENTS)) {
+                    operationComponent.setField("qualityControlAttributes", Collections.emptyList());
+                    operationComponent.getDataDefinition().save(operationComponent);
+                }
+            }
+        }
+    }
 }

@@ -37,7 +37,7 @@
         <windowTab name="flowTab" reference="flowTab">
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="locationFlowProductsLayout"
-                           columns="1" rows="3" reference="locationFlowProductsLayout">
+                           columns="1" rows="2" reference="locationFlowProductsLayout">
 
 
                     <layoutElement column="1" row="1">
@@ -70,12 +70,6 @@
 
 
                     </layoutElement>
-                    <layoutElement column="1" row="3">
-                        <component type="checkbox" name="automaticMove"
-                                   reference="automaticMove" field="#{form}.automaticMove">
-                        </component>
-                    </layoutElement>
-
                 </component>
 
                 <option type="header" value="true"/>

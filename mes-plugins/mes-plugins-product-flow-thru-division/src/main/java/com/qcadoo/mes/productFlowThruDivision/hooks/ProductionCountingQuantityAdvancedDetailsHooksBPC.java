@@ -30,6 +30,8 @@ import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuanti
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productFlowThruDivision.constants.*;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -74,10 +76,13 @@ public class ProductionCountingQuantityAdvancedDetailsHooksBPC {
         productsFlowLocationLookup.setEnabled(false);
         productsFlowLocationLookup.requestComponentUpdateState();
         if (ProductionCountingQuantityRole.PRODUCED.getStringValue().equals(role)
-                && (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(type)
-                        || ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue().equals(type))) {
+                && (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(type))) {
             productsInputLocationLookup.setEnabled(true);
             productsInputLocationLookup.setRequired(true);
+            productsInputLocationLookup.requestComponentUpdateState();
+        } else if (ProductionCountingQuantityRole.PRODUCED.getStringValue().equals(role)
+                && (ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue().equals(type))) {
+            productsInputLocationLookup.setEnabled(true);
             productsInputLocationLookup.requestComponentUpdateState();
         } else if (ProductionCountingQuantityRole.USED.getStringValue().equals(role)
                 && ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue().equals(type)) {
@@ -92,6 +97,7 @@ public class ProductionCountingQuantityAdvancedDetailsHooksBPC {
         }
 
         Entity ent = form.getPersistedEntityWithIncludedFormValues();
+        Entity order = ent.getBelongsToField(ProductionCountingQuantityFields.ORDER);
         if (ent.getId() == null) {
             componentsLocationLookup.setFieldValue(null);
             componentsLocationLookup.requestComponentUpdateState();
@@ -105,11 +111,6 @@ public class ProductionCountingQuantityAdvancedDetailsHooksBPC {
             }
             productsFlowLocationLookup.setFieldValue(null);
             productsFlowLocationLookup.requestComponentUpdateState();
-            Entity order = ent.getBelongsToField(ProductionCountingQuantityFields.ORDER);
-
-            if (order == null) {
-                return;
-            }
 
             Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
             String range = technology.getStringField(TechnologyFieldsPFTD.RANGE);
@@ -197,6 +198,17 @@ public class ProductionCountingQuantityAdvancedDetailsHooksBPC {
             productsFlowLocationLookup.setFieldValue(null);
             productsFlowLocationLookup.requestComponentUpdateState();
         }
+
+        if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(type)
+                && TypeOfProductionRecording.CUMULATED.getStringValue()
+                        .equals(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
+            select.setFieldValue(ProductionFlowComponent.WITHIN_THE_PROCESS.getStringValue());
+            select.setEnabled(false);
+            select.requestComponentUpdateState();
+            productsFlowLocationLookup.setFieldValue(null);
+            productsFlowLocationLookup.requestComponentUpdateState();
+        }
+
         productsFlowLocationLookup.setEnabled(ProductionFlowComponent.WAREHOUSE.getStringValue().equals(select.getFieldValue()));
     }
 }

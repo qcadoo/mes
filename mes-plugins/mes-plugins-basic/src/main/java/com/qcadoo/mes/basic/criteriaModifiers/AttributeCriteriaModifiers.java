@@ -16,4 +16,8 @@ public class AttributeCriteriaModifiers {
     public void showForResource(final SearchCriteriaBuilder scb) {
         scb.add(SearchRestrictions.eq(AttributeFields.FOR_RESOURCE, Boolean.TRUE));
     }
+
+    public void showForQualityControl(final SearchCriteriaBuilder scb) {
+        scb.add(SearchRestrictions.eq(AttributeFields.FOR_QUALITY_CONTROL, Boolean.TRUE));
+    }
 }

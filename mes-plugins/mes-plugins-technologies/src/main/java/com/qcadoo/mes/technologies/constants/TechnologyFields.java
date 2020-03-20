@@ -61,4 +61,5 @@ public final class TechnologyFields {
 
     public static final String ACTIVE = "active";
 
+    public static final String QUALITY_CARD = "qualityCard";
 }

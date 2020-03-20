@@ -14,4 +14,8 @@ public final class StoppageFields {
     public static final String PRODUCTION_TRACKING = "productionTracking";
 
     public static final String DURATION = "duration";
+
+    public static final String STOPPAGE_REASON = "reason";
+
+    public static final String DESCRIPTION = "description";
 }

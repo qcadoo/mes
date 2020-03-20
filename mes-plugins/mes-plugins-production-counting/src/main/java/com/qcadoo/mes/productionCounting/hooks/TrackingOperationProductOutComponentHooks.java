@@ -107,6 +107,7 @@ public class TrackingOperationProductOutComponentHooks {
 
                     if (usedBatches > L_ONE_BATCH) {
                         clearUsedBatches(trackingOperationProductInComponent, trackingOperationProductOutComponent);
+                        fillQuantities(trackingOperationProductInComponent, ratio);
                     } else if (usedBatches == L_ONE_BATCH) {
                         fillQuantitiesInBatch(trackingOperationProductInComponent, ratio);
                     } else {
@@ -117,10 +118,10 @@ public class TrackingOperationProductOutComponentHooks {
         }
     }
 
-    private void clearUsedBatches(final Entity trackingOperationProductInComponent, Entity trackingOperationProductOutComponent) {
+    private void clearUsedBatches(Entity trackingOperationProductInComponent, Entity trackingOperationProductOutComponent) {
         trackingOperationProductInComponent
                 .setField(TrackingOperationProductInComponentFields.USED_BATCHES, Lists.newArrayList());
-        trackingOperationProductInComponent.getDataDefinition().save(trackingOperationProductInComponent);
+        trackingOperationProductInComponent = trackingOperationProductInComponent.getDataDefinition().save(trackingOperationProductInComponent);
         trackingOperationProductOutComponent.addGlobalMessage(
                 "technologies.operationProductInComponent.info.consumptionOfRawMaterialsBasedOnStandards.typeBatch",
                 trackingOperationProductInComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT)

@@ -31,7 +31,7 @@
 
     <windowTab name="locationsTab">
         <component type="gridLayout" name="locationsGridLayout"
-                   columns="4" rows="7">
+                   columns="4" rows="5">
             <layoutElement column="1" row="1" width="2">
                 <component type="lookup" name="componentsLocation" field="#{form}.componentsLocation"
                            reference="componentsLocation" >
@@ -72,7 +72,6 @@
                     <listener event="onSelectedEntityChange"
                               class="com.qcadoo.mes.productFlowThruDivision.hooks.DivisionDetailsHooksPFTD"
                               method="onProductionFlowComponentChange"/>
-
                 </component>
             </layoutElement>
 
@@ -94,11 +93,6 @@
                 </component>
             </layoutElement>
             <layoutElement column="1" row="5" width="2">
-                <component type="checkbox" name="automaticMoveForIntermediate" hasDescription="true"
-                           reference="automaticMoveForIntermediate" field="#{form}.automaticMoveForIntermediate">
-                </component>
-            </layoutElement>
-            <layoutElement column="1" row="6" width="2">
                 <component type="lookup" name="productsInputLocation" field="#{form}.productsInputLocation"
                            reference="productsInputLocation">
                     <option type="column" name="name" fields="name" link="true"/>
@@ -113,11 +107,6 @@
                     <criteriaModifier
                             class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
                             method="showWarehousesOnly"/>
-                </component>
-            </layoutElement>
-            <layoutElement column="1" row="7" width="2">
-                <component type="checkbox" name="automaticMoveForFinal" hasDescription="true"
-                           reference="automaticMoveForFinal" field="#{form}.automaticMoveForFinal">
                 </component>
             </layoutElement>
         </component>

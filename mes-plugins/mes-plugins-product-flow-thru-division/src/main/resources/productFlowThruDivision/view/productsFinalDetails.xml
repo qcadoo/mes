@@ -37,7 +37,7 @@
         <windowTab name="flowTab" reference="flowTab">
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="locationFlowProductsLayout"
-                           columns="1" rows="3" reference="locationFlowProductsLayout">
+                           columns="1" rows="1" reference="locationFlowProductsLayout">
 
                     <layoutElement column="1" row="1">
                         <component type="lookup" name="productsInputLocation"
@@ -56,37 +56,6 @@
                                     class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
                                     method="showWarehousesOnly"/>
                         </component>
-
-
-                    </layoutElement>
-                    <layoutElement column="1" row="2">
-                        <component type="checkbox" name="automaticMove"
-                                   reference="automaticMove" field="#{form}.automaticMove">
-                            <listener event="onChange"
-                                      class="com.qcadoo.mes.productFlowThruDivision.hooks.ProductsFinalDetailsHooks"
-                                      method="onAutomaticMoveChange"/>
-                        </component>
-                    </layoutElement>
-
-                    <layoutElement column="1" row="3">
-                        <component type="lookup" name="productsShiftingLocation"
-                                   field="#{form}.productsShiftingLocation" reference="productsShiftingLocation">
-                            <option type="column" name="name" fields="name"/>
-                            <option type="column" name="type" fields="type"/>
-
-                            <option type="searchable" value="number,name,type"/>
-                            <option type="orderable" value="number,name,type"/>
-
-                            <option type="expression" value="#number + ' - ' + #name"/>
-                            <option type="fieldCode" value="number"/>
-
-
-                            <criteriaModifier
-                                    class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
-                                    method="showWarehousesOnly"/>
-                        </component>
-
-
                     </layoutElement>
                 </component>
 
@@ -102,5 +71,4 @@
                 class="com.qcadoo.mes.productFlowThruDivision.hooks.ProductsFinalDetailsHooks"
                 method="onBeforeRender"/>
     </hooks>
-
 </view>
