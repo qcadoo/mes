@@ -138,6 +138,7 @@ public class TechnologyModelHooks {
             Entity qualityCardFromDB = technologyFromDB.getBelongsToField(TechnologyFields.QUALITY_CARD);
             if (qualityCardFromDB != null && (qualityCard == null || !qualityCardFromDB.getId().equals(qualityCard.getId()))) {
                 for (Entity operationComponent : technologyFromDB.getHasManyField(TechnologyFields.OPERATION_COMPONENTS)) {
+                    operationComponent.setField("qualityRating", false);
                     operationComponent.setField("qualityControlAttributes", Collections.emptyList());
                     operationComponent.getDataDefinition().save(operationComponent);
                 }
