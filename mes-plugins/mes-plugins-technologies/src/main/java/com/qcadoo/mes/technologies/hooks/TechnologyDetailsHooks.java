@@ -225,12 +225,11 @@ public class TechnologyDetailsHooks {
     private void fillCriteriaModifiers(final ViewDefinitionState viewDefinitionState) {
         LookupComponent product = (LookupComponent) viewDefinitionState.getComponentByReference("product");
         LookupComponent qualityCard = (LookupComponent) viewDefinitionState.getComponentByReference("qualityCard");
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
-        if (form.getEntityId() != null) {
+        if (product.getEntity() != null) {
             FilterValueHolder filter = qualityCard.getFilterValue();
             filter.put(QualityCardCriteriaModifiers.L_PRODUCT_ID, product.getEntity().getId());
             qualityCard.setFilterValue(filter);
+            qualityCard.requestComponentUpdateState();
         }
-        qualityCard.requestComponentUpdateState();
     }
 }
