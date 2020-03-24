@@ -124,11 +124,11 @@ public class TechnologyDetailsHooksPFTD {
                 .getComponentByReference(L_PRODUCTS_FLOW_INTERMIDIATE_OUT);
         GridComponent gridProductsFinal = (GridComponent) view
                 .getComponentByReference(L_PRODUCTS_FINAL);
-        gridProductsComponent.setEnabled(true);
+        gridProductsComponent.setEnabled(enable);
         gridProductsIntermidiateIn.setEnabled(enable);
         gridProductsIntermidiateOut.setEnabled(enable);
         gridProductsFinal.setEnabled(enable);
-        gridProductsComponent.setEditable(true);
+        gridProductsComponent.setEditable(editable);
         gridProductsIntermidiateIn.setEditable(editable);
         gridProductsIntermidiateOut.setEditable(editable);
         gridProductsFinal.setEditable(editable);
