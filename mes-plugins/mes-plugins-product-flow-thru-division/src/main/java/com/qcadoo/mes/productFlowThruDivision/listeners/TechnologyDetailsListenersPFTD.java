@@ -85,9 +85,6 @@ public class TechnologyDetailsListenersPFTD {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity technology = form.getPersistedEntityWithIncludedFormValues();
         fillLocationsInComponents(technology);
-        technology.getGlobalMessages().stream().forEach(gm -> {
-            view.addMessage(gm.getMessage(), ComponentState.MessageType.INFO, gm.getVars());
-        });
         view.addMessage("productFlowThruDivision.location.filled", ComponentState.MessageType.SUCCESS);
     }
 
