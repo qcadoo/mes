@@ -88,11 +88,12 @@ public class ResourceDataProvider {
         query.append("product.name AS productname, ");
         query.append("palletnumber.id AS palletnumberid, ");
         query.append("palletnumber.number AS palletnumbernumber, ");
-        query.append("resource.batch AS batch ");
+        query.append("batch.number AS batch ");
         query.append("FROM materialflowresources_resource resource ");
         query.append("LEFT JOIN materialflowresources_storagelocation storagelocation ON storagelocation.id = resource.storagelocation_id ");
         query.append("LEFT JOIN basic_additionalcode additionalcode ON additionalcode.id = resource.additionalcode_id ");
         query.append("LEFT JOIN basic_product product ON product.id = resource.product_id ");
+        query.append("LEFT JOIN advancedgenealogy_batch batch ON batch.id = resource.batch_id ");
         query.append("LEFT JOIN basic_palletnumber palletnumber ON palletnumber.id = resource.palletnumber_id ");
         query.append("WHERE resource.location_id = :location");
         if (appendStorageLocationIds) {
