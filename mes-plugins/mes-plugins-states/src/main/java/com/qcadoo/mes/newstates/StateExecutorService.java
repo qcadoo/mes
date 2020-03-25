@@ -1,26 +1,5 @@
 package com.qcadoo.mes.newstates;
 
-import static com.qcadoo.mes.states.constants.StateChangeStatus.IN_PROGRESS;
-import static com.qcadoo.mes.states.constants.StateChangeStatus.PAUSED;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.core.annotation.AnnotationAwareOrderComparator;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -44,6 +23,26 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import static com.qcadoo.mes.states.constants.StateChangeStatus.IN_PROGRESS;
+import static com.qcadoo.mes.states.constants.StateChangeStatus.PAUSED;
 
 @Service
 @Scope(value = "request", proxyMode = ScopedProxyMode.TARGET_CLASS)
@@ -107,6 +106,11 @@ public class StateExecutorService {
 
             stateChangeEntity = saveStateChangeContext(entity, stateChangeEntity, describer, sourceState, targetState,
                     StateChangeStatus.IN_PROGRESS);
+
+            List<Entity> stateChanges = Lists.newArrayList();
+            stateChanges.addAll(entity.getHasManyField(describer.getOwnerStateChangesFieldName()));
+            stateChanges.add(stateChangeEntity);
+            entity.setField(describer.getOwnerStateChangesFieldName(), stateChanges);
 
             entity = performChangeState(services, entity, stateChangeEntity, describer);
 
