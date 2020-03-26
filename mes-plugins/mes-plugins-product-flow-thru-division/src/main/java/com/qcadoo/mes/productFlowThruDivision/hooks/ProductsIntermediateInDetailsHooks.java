@@ -23,15 +23,18 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.hooks;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductionFlowComponent;
 import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
-import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
+import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 
@@ -40,44 +43,30 @@ public class ProductsIntermediateInDetailsHooks {
 
     private static final String L_FORM = "form";
 
-    @Autowired
-    private TechnologyDetailsHooksPFTD technologyDetailsHooksPFTD;
-
-    @Autowired
-    private TechnologyHooksPFTD technologyHooksPFTD;
-
-    @Autowired
-    private TechnologyService technologyService;
-
     public void onBeforeRender(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
         Entity opic = form.getPersistedEntityWithIncludedFormValues();
 
         LookupComponent productsFlowLocationLookup = (LookupComponent) view
                 .getComponentByReference(TechnologyFieldsPFTD.PRODUCTS_FLOW_LOCATION);
-        if (ProductionFlowComponent.WAREHOUSE.getStringValue().equals(
-                opic.getField(TechnologyFieldsPFTD.PRODUCTION_FLOW))) {
-            productsFlowLocationLookup.setEnabled(true);
-        } else {
+        productsFlowLocationLookup.setEnabled(
+                ProductionFlowComponent.WAREHOUSE.getStringValue().equals(opic.getField(TechnologyFieldsPFTD.PRODUCTION_FLOW)));
+        String typeOfProductionRecording = opic.getBelongsToField(OperationProductOutComponentFields.OPERATION_COMPONENT)
+                .getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY)
+                .getStringField(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
+        FieldComponent productionFlowFieldComponent = (FieldComponent) view
+                .getComponentByReference(TechnologyFieldsPFTD.PRODUCTION_FLOW);
+        if (TypeOfProductionRecording.CUMULATED.getStringValue().equals(typeOfProductionRecording)) {
+            productionFlowFieldComponent.setFieldValue(ProductionFlowComponent.WITHIN_THE_PROCESS.getStringValue());
+            productionFlowFieldComponent.setEnabled(false);
             productsFlowLocationLookup.setEnabled(false);
         }
     }
 
     public void onProductionFlowComponentChange(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity opic = form.getPersistedEntityWithIncludedFormValues();
-
         LookupComponent productsFlowLocationLookup = (LookupComponent) view
                 .getComponentByReference(TechnologyFieldsPFTD.PRODUCTS_FLOW_LOCATION);
-        if (ProductionFlowComponent.WAREHOUSE.getStringValue().equals(
-                opic.getField(TechnologyFieldsPFTD.PRODUCTION_FLOW))) {
-            productsFlowLocationLookup.setEnabled(true);
-            productsFlowLocationLookup.setFieldValue(null);
-        } else {
-            productsFlowLocationLookup.setEnabled(false);
-            productsFlowLocationLookup.setFieldValue(null);
-        }
-
+        productsFlowLocationLookup.setFieldValue(null);
     }
 }

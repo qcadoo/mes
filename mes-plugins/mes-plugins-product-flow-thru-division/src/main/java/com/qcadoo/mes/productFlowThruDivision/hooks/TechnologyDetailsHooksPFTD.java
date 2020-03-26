@@ -91,7 +91,7 @@ public class TechnologyDetailsHooksPFTD {
     private void fillFlowLocationForCumulatedProductionRecording(ViewDefinitionState view) {
         FieldComponent typeOfProductionRecordingFieldComponent = (FieldComponent) view
                 .getComponentByReference(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
-        if (typeOfProductionRecordingFieldComponent != null && TypeOfProductionRecording.CUMULATED.getStringValue()
+        if (TypeOfProductionRecording.CUMULATED.getStringValue()
                 .equals(typeOfProductionRecordingFieldComponent.getFieldValue())) {
             FieldComponent productionFlowFieldComponent = (FieldComponent) view
                     .getComponentByReference(TechnologyFieldsPFTD.PRODUCTION_FLOW);

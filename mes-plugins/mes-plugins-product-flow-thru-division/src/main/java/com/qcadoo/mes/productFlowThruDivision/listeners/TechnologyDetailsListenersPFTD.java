@@ -26,16 +26,18 @@ package com.qcadoo.mes.productFlowThruDivision.listeners;
 import com.qcadoo.mes.productFlowThruDivision.OperationComponentDataProvider;
 import com.qcadoo.mes.productFlowThruDivision.constants.*;
 import com.qcadoo.mes.productFlowThruDivision.hooks.TechnologyDetailsHooksPFTD;
-import com.qcadoo.mes.technologies.constants.OperationFields;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
+import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -173,9 +175,11 @@ public class TechnologyDetailsListenersPFTD {
         for (Entity op : opocs) {
             cleanOperationProduct(op);
 
-            Entity division = op.getBelongsToField(OperationProductOutComponentFields.OPERATION_COMPONENT)
-                    .getBelongsToField("division");
-            if (division != null) {
+            Entity toc = op.getBelongsToField(OperationProductOutComponentFields.OPERATION_COMPONENT);
+            Entity division = toc.getBelongsToField("division");
+            String typeOfProductionRecording = toc.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY)
+                    .getStringField(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
+            if (division != null && !TypeOfProductionRecording.CUMULATED.getStringValue().equals(typeOfProductionRecording)) {
                 String productionFlow = division.getStringField(DivisionFieldsPFTD.PRODUCTION_FLOW);
 
                 Entity productsFlowLocation = division
@@ -188,19 +192,19 @@ public class TechnologyDetailsListenersPFTD {
                 op.setField(OperationProductOutComponentFieldsPFTD.PRODUCTS_FLOW_LOCATION, null);
             }
             op.getDataDefinition().fastSave(op);
-
         }
     }
 
     private void fillForProductsIntermediateInMany(final Entity technology) {
-        List<Entity> opics = operationComponentDataProvider.getOperationsIntermediateInProductsForTechnology(
-                technology.getId());
+        List<Entity> opics = operationComponentDataProvider.getOperationsIntermediateInProductsForTechnology(technology.getId());
 
         for (Entity op : opics) {
             cleanOperationProduct(op);
-            Entity division = op.getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT)
-                    .getBelongsToField("division");
-            if (division != null) {
+            Entity toc = op.getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT);
+            Entity division = toc.getBelongsToField("division");
+            String typeOfProductionRecording = toc.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY)
+                    .getStringField(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
+            if (division != null && !TypeOfProductionRecording.CUMULATED.getStringValue().equals(typeOfProductionRecording)) {
                 String productionFlow = division.getStringField(DivisionFieldsPFTD.PRODUCTION_FLOW);
 
                 Entity productsFlowLocation = division.getBelongsToField(DivisionFieldsPFTD.PRODUCTS_FLOW_LOCATION);
@@ -212,7 +216,6 @@ public class TechnologyDetailsListenersPFTD {
                 op.setField(OperationProductInComponentFieldsPFTD.PRODUCTS_FLOW_LOCATION, null);
             }
             op.getDataDefinition().fastSave(op);
-
         }
     }
 
