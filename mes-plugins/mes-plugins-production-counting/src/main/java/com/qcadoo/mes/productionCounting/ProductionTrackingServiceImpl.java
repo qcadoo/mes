@@ -24,6 +24,7 @@
 package com.qcadoo.mes.productionCounting;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.util.ProductUnitsConversionService;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
@@ -337,7 +338,7 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
     }
 
     @Override
-    public Optional<Date> findExpirationDate(final Entity productionTracking) {
+    public Either<Boolean,Optional<Date>> findExpirationDate(final Entity productionTracking) {
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
         Entity batch = productionTracking.getBelongsToField(ProductionTrackingFields.BATCH);
 
@@ -356,9 +357,15 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
                         .filter(pt -> !pt.getId().equals(productionTracking.getId())).collect(Collectors.toList());
             }
 
-            return productionTracingsForOrder.stream()
+            boolean nullDate = productionTracingsForOrder.stream()
+                    .anyMatch(pt -> Objects.isNull(pt.getDateField(ProductionTrackingFields.EXPIRATION_DATE)));
+            if(nullDate) {
+                return Either.left(true);
+            }
+            Optional<Date> maybeDate = productionTracingsForOrder.stream()
                     .filter(pt -> Objects.nonNull(pt.getDateField(ProductionTrackingFields.EXPIRATION_DATE)))
                     .map(pt -> pt.getDateField(ProductionTrackingFields.EXPIRATION_DATE)).findFirst();
+            return Either.right(maybeDate);
         } else {
             Entity toc = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
             Entity bpcq = basicProductionCountingService
@@ -386,12 +393,18 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
                             .filter(pt -> !pt.getId().equals(productionTracking.getId())).collect(Collectors.toList());
                 }
 
-                return productionTracingsForOrder.stream()
+                boolean nullDate = productionTracingsForOrder.stream()
+                        .anyMatch(pt -> Objects.isNull(pt.getDateField(ProductionTrackingFields.EXPIRATION_DATE)));
+                if(nullDate) {
+                    return Either.left(true);
+                }
+                Optional<Date> maybeDate = productionTracingsForOrder.stream()
                         .filter(pt -> Objects.nonNull(pt.getDateField(ProductionTrackingFields.EXPIRATION_DATE)))
                         .map(pt -> pt.getDateField(ProductionTrackingFields.EXPIRATION_DATE)).findFirst();
+                return Either.right(maybeDate);
             }
         }
-
-        return Optional.empty();
+        return null;
     }
+
 }
