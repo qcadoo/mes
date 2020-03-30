@@ -72,10 +72,10 @@ public class ProductionCountingQuantityValidatorsPFTD {
             }
             return productionCountingQuantity.isValid();
         }
-        return true;
+        return checkComponentsWarehouses(productionCountingQuantity);
     }
 
-    public boolean checkComponentsWarehouses(final DataDefinition dataDefinition, final Entity pcq) {
+    private boolean checkComponentsWarehouses(final Entity pcq) {
         Entity componentsLocation = pcq.getBelongsToField(ProductionCountingQuantityFieldsPFTD.COMPONENTS_LOCATION);
         Entity componentsOutputLocation = pcq.getBelongsToField(ProductionCountingQuantityFieldsPFTD.COMPONENTS_OUTPUT_LOCATION);
         if (componentsLocation != null && componentsOutputLocation != null

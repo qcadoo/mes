@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.hooks;
 
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductionFlowComponent;
 import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
 import com.qcadoo.model.api.Entity;
@@ -30,7 +32,6 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-import org.springframework.stereotype.Service;
 
 @Service
 public class DivisionDetailsHooksPFTD {
@@ -38,21 +39,19 @@ public class DivisionDetailsHooksPFTD {
     private static final String L_FORM = "form";
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        setComponentsState(view);
+        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity division = form.getPersistedEntityWithIncludedFormValues();
+
+        LookupComponent productsFlowLocationLookup = (LookupComponent) view
+                .getComponentByReference(TechnologyFieldsPFTD.PRODUCTS_FLOW_LOCATION);
+        productsFlowLocationLookup.setEnabled(ProductionFlowComponent.WAREHOUSE.getStringValue()
+                .equals(division.getField(TechnologyFieldsPFTD.PRODUCTION_FLOW)));
     }
 
     public void onProductionFlowComponentChange(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        setComponentsState(view);
-    }
-
-    private void setComponentsState(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        Entity opic = form.getPersistedEntityWithIncludedFormValues();
-
         LookupComponent productsFlowLocationLookup = (LookupComponent) view
                 .getComponentByReference(TechnologyFieldsPFTD.PRODUCTS_FLOW_LOCATION);
-        productsFlowLocationLookup.setEnabled(ProductionFlowComponent.WAREHOUSE.getStringValue().equals(
-                opic.getField(TechnologyFieldsPFTD.PRODUCTION_FLOW)));
+        productsFlowLocationLookup.setFieldValue(null);
     }
 }
