@@ -248,6 +248,9 @@
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.technologies.TechnologyService"
                                       method="generateTechnologyName"/>
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
+                                      method="clearQualityCard"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="2" height="2">
