@@ -47,7 +47,7 @@ public class PositionModelHooks {
     private ResourceReservationsService resourceReservationsService;
 
     public void onSave(final DataDefinition positionDD, final Entity position) {
-        if (positionValidators.validateAvailableQuantity(positionDD, position)) {
+        if (position.getId() != null && positionValidators.validateAvailableQuantity(positionDD, position)) {
             reservationsService.updateReservationFromDocumentPosition(position);
         }
     }

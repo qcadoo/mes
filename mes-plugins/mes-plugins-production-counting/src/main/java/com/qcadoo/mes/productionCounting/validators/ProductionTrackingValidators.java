@@ -24,6 +24,7 @@
 package com.qcadoo.mes.productionCounting.validators;
 
 import com.google.common.collect.Sets;
+import com.qcadoo.commons.functional.Either;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
@@ -72,15 +73,21 @@ public class ProductionTrackingValidators {
     }
 
     private boolean checkIfExpirationDateTheSameForOrder(final DataDefinition productionTrackingDD, final Entity productionTracking) {
-        Optional<Date> maybeExpirationDayFilled = productionTrackingService.findExpirationDate(productionTracking);
-        if(maybeExpirationDayFilled.isPresent()) {
-            Date alreadyDefinedExpirationDate = maybeExpirationDayFilled.get();
+        Either<Boolean,Optional<Date>> maybeExpirationDayFilled = productionTrackingService.findExpirationDate(productionTracking);
+        if(Objects.nonNull(maybeExpirationDayFilled)) {
             Date expirationDate = productionTracking.getDateField(ProductionTrackingFields.EXPIRATION_DATE);
 
-            if(Objects.isNull(expirationDate) || !alreadyDefinedExpirationDate.equals(expirationDate)) {
+            if(maybeExpirationDayFilled.isLeft() && Objects.nonNull(expirationDate)) {
                 productionTracking.addError(productionTrackingDD.getField(ProductionTrackingFields.EXPIRATION_DATE),
-                        "productionCounting.productionTracking.messages.error.expirationDate", DateUtils.toDateString(alreadyDefinedExpirationDate));
-                return false;
+                        "productionCounting.productionTracking.messages.error.expirationDateNotFilled");
+            } else if (maybeExpirationDayFilled.isRight() && maybeExpirationDayFilled.getRight().isPresent()){
+                Date alreadyDefinedExpirationDate = maybeExpirationDayFilled.getRight().get();
+
+                if (Objects.isNull(expirationDate) || !alreadyDefinedExpirationDate.equals(expirationDate)) {
+                    productionTracking.addError(productionTrackingDD.getField(ProductionTrackingFields.EXPIRATION_DATE),
+                            "productionCounting.productionTracking.messages.error.expirationDate", DateUtils.toDateString(alreadyDefinedExpirationDate));
+                    return false;
+                }
             }
         }
         return true;

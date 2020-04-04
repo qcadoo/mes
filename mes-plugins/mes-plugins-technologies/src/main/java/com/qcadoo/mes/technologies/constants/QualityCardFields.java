@@ -15,4 +15,6 @@ public final class QualityCardFields {
     public static final String STATE = "state";
 
     public static final String PRODUCTS = "products";
+
+    public static final String TECHNOLOGIES = "technologies";
 }

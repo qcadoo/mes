@@ -91,7 +91,7 @@ public class TechnologyDetailsHooksPFTD {
     private void fillFlowLocationForCumulatedProductionRecording(ViewDefinitionState view) {
         FieldComponent typeOfProductionRecordingFieldComponent = (FieldComponent) view
                 .getComponentByReference(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
-        if (typeOfProductionRecordingFieldComponent != null && TypeOfProductionRecording.CUMULATED.getStringValue()
+        if (TypeOfProductionRecording.CUMULATED.getStringValue()
                 .equals(typeOfProductionRecordingFieldComponent.getFieldValue())) {
             FieldComponent productionFlowFieldComponent = (FieldComponent) view
                     .getComponentByReference(TechnologyFieldsPFTD.PRODUCTION_FLOW);
@@ -124,23 +124,15 @@ public class TechnologyDetailsHooksPFTD {
                 .getComponentByReference(L_PRODUCTS_FLOW_INTERMIDIATE_OUT);
         GridComponent gridProductsFinal = (GridComponent) view
                 .getComponentByReference(L_PRODUCTS_FINAL);
-        gridProductsComponent.setEnabled(true);
+        gridProductsComponent.setEnabled(enable);
         gridProductsIntermidiateIn.setEnabled(enable);
         gridProductsIntermidiateOut.setEnabled(enable);
         gridProductsFinal.setEnabled(enable);
-        gridProductsComponent.setEditable(true);
+        gridProductsComponent.setEditable(editable);
         gridProductsIntermidiateIn.setEditable(editable);
         gridProductsIntermidiateOut.setEditable(editable);
         gridProductsFinal.setEditable(editable);
     }
-
-
-    private void disableProductsComponentGrid(final ViewDefinitionState view){
-        GridComponent gridProductsComponent = (GridComponent) view.getComponentByReference(L_PRODUCTS_COMPONENT);
-        gridProductsComponent.setEnabled(false);
-        gridProductsComponent.setEditable(true);
-    }
-
 
     private void enableRangeGrids(final ViewDefinitionState view, final boolean enable, final boolean editable) {
         GridComponent rangeTechnologyOperationComponent = (GridComponent) view
@@ -227,7 +219,7 @@ public class TechnologyDetailsHooksPFTD {
         }
         productsInputLocationLookup.requestComponentUpdateState();
 
-        Entity productsFlow = division.getBelongsToField("productsFlowLocation");
+        Entity productsFlow = division.getBelongsToField(TechnologyFieldsPFTD.PRODUCTS_FLOW_LOCATION);
         if (productsFlow == null) {
             productsFlowLocationLookup.setFieldValue(null);
         } else {
@@ -236,7 +228,7 @@ public class TechnologyDetailsHooksPFTD {
         productsFlowLocationLookup.requestComponentUpdateState();
 
         FieldComponent productionFlow = (FieldComponent) view.getComponentByReference(TechnologyFieldsPFTD.PRODUCTION_FLOW);
-        productionFlow.setFieldValue(division.getStringField("productionFlow"));
+        productionFlow.setFieldValue(division.getStringField(TechnologyFieldsPFTD.PRODUCTION_FLOW));
         productionFlow.requestComponentUpdateState();
     }
 
@@ -273,7 +265,6 @@ public class TechnologyDetailsHooksPFTD {
                 FieldComponent productionFlowFieldComponent = (FieldComponent) view
                         .getComponentByReference(TechnologyFieldsPFTD.PRODUCTION_FLOW);
                 productionFlowFieldComponent.setEnabled(false);
-                disableProductsComponentGrid(view);
             }
         }
     }

@@ -37,6 +37,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.TreeComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import org.json.JSONObject;
@@ -176,6 +177,12 @@ public class TechnologyDetailsListeners {
             String url = "../page/technologies/operationProductInComponentsImport.html?context=" + context.toString();
             view.openModal(url);
         }
+    }
+
+    public void clearQualityCard(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        LookupComponent qualityCardLookup = (LookupComponent) view.getComponentByReference(TechnologyFields.QUALITY_CARD);
+        qualityCardLookup.setFieldValue(null);
+        qualityCardLookup.requestComponentUpdateState();
     }
 
     private DataDefinition getTechnologyDD() {

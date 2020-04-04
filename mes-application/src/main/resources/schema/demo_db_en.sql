@@ -1189,6 +1189,37 @@ $$;
 
 
 --
+-- Name: generate_qualitycontrol_number(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION generate_qualitycontrol_number() RETURNS text
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    _pattern text;
+    _sequence_value numeric;
+    _seq text;
+    _number text;
+BEGIN
+    _pattern := '#seq';
+
+    select nextval('qualitycontrol_qualitycontrol_number_seq') into _sequence_value;
+
+    _seq := to_char(_sequence_value, 'fm000000');
+
+    if _seq like '%#%' then
+        _seq := _sequence_value;
+    end if;
+
+    _number := _pattern;
+    _number := replace(_number, '#seq', _seq);
+
+    RETURN _number;
+END;
+$$;
+
+
+--
 -- Name: generate_repairorder_number(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -22513,7 +22544,8 @@ CREATE TABLE qualitycontrol_qualitycontrol (
     date date,
     staff_id bigint,
     order_id bigint,
-    qualityrating character varying(255)
+    qualityrating character varying(255),
+    state character varying(255) DEFAULT '01new'::character varying
 );
 
 
@@ -22534,6 +22566,18 @@ CREATE SEQUENCE qualitycontrol_qualitycontrol_id_seq
 --
 
 ALTER SEQUENCE qualitycontrol_qualitycontrol_id_seq OWNED BY qualitycontrol_qualitycontrol.id;
+
+
+--
+-- Name: qualitycontrol_qualitycontrol_number_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE qualitycontrol_qualitycontrol_number_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 
 --
@@ -22609,7 +22653,9 @@ CREATE TABLE qualitycontrol_qualitycontrolattributevalue (
     qualitycontrol_id bigint,
     attribute_id bigint,
     attributevalue_id bigint,
-    value character varying(255)
+    value character varying(255),
+    productiontracking_id bigint,
+    fromqualitycard boolean DEFAULT false
 );
 
 
@@ -22630,6 +22676,42 @@ CREATE SEQUENCE qualitycontrol_qualitycontrolattributevalue_id_seq
 --
 
 ALTER SEQUENCE qualitycontrol_qualitycontrolattributevalue_id_seq OWNED BY qualitycontrol_qualitycontrolattributevalue.id;
+
+
+--
+-- Name: qualitycontrol_qualitycontrolstatechange; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE qualitycontrol_qualitycontrolstatechange (
+    id bigint NOT NULL,
+    dateandtime timestamp without time zone,
+    sourcestate character varying(255),
+    targetstate character varying(255),
+    status character varying(255),
+    phase integer,
+    worker character varying(255),
+    qualitycontrol_id bigint,
+    shift_id bigint
+);
+
+
+--
+-- Name: qualitycontrol_qualitycontrolstatechange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE qualitycontrol_qualitycontrolstatechange_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: qualitycontrol_qualitycontrolstatechange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE qualitycontrol_qualitycontrolstatechange_id_seq OWNED BY qualitycontrol_qualitycontrolstatechange.id;
 
 
 --
@@ -28310,6 +28392,13 @@ ALTER TABLE ONLY qualitycontrol_qualitycontrolattributeprodtracking ALTER COLUMN
 --
 
 ALTER TABLE ONLY qualitycontrol_qualitycontrolattributevalue ALTER COLUMN id SET DEFAULT nextval('qualitycontrol_qualitycontrolattributevalue_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolstatechange ALTER COLUMN id SET DEFAULT nextval('qualitycontrol_qualitycontrolstatechange_id_seq'::regclass);
 
 
 --
@@ -36688,11 +36777,11 @@ COPY qcadooview_category (id, pluginidentifier, name, succession, authrole, enti
 8	orders	ordersTracking	12	ROLE_ORDERS_TRACKING	0
 10	lineChangeoverNorms	calculations	13	\N	0
 11	advancedGenealogy	advancedGenealogy	14	ROLE_GENEALOGY	0
-13	cmmsMachineParts	maintenance	15	\N	0
-14	subcontractorPortal	subcontractors	16	ROLE_SUBCONTRACTOR	0
-15	productionCounting	analysis	17	ROLE_ANALYSIS_VIEWER	0
-16	arch	archives	18	\N	0
-20	qualityControl	quality	19	\N	0
+20	qualityControl	quality	15	\N	0
+13	cmmsMachineParts	maintenance	16	\N	0
+14	subcontractorPortal	subcontractors	17	ROLE_SUBCONTRACTOR	0
+15	productionCounting	analysis	18	ROLE_ANALYSIS_VIEWER	0
+16	arch	archives	19	\N	0
 \.
 
 
@@ -37058,7 +37147,7 @@ SELECT pg_catalog.setval('qcadooview_viewedalert_id_seq', 1, false);
 -- Data for Name: qualitycontrol_qualitycontrol; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY qualitycontrol_qualitycontrol (id, number, product_id, qualitycard_id, controltype, batch_id, date, staff_id, order_id, qualityrating) FROM stdin;
+COPY qualitycontrol_qualitycontrol (id, number, product_id, qualitycard_id, controltype, batch_id, date, staff_id, order_id, qualityrating, state) FROM stdin;
 \.
 
 
@@ -37067,6 +37156,13 @@ COPY qualitycontrol_qualitycontrol (id, number, product_id, qualitycard_id, cont
 --
 
 SELECT pg_catalog.setval('qualitycontrol_qualitycontrol_id_seq', 1, false);
+
+
+--
+-- Name: qualitycontrol_qualitycontrol_number_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('qualitycontrol_qualitycontrol_number_seq', 1, false);
 
 
 --
@@ -37103,7 +37199,7 @@ SELECT pg_catalog.setval('qualitycontrol_qualitycontrolattributeprodtracking_id_
 -- Data for Name: qualitycontrol_qualitycontrolattributevalue; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY qualitycontrol_qualitycontrolattributevalue (id, qualitycontrol_id, attribute_id, attributevalue_id, value) FROM stdin;
+COPY qualitycontrol_qualitycontrolattributevalue (id, qualitycontrol_id, attribute_id, attributevalue_id, value, productiontracking_id, fromqualitycard) FROM stdin;
 \.
 
 
@@ -37112,6 +37208,21 @@ COPY qualitycontrol_qualitycontrolattributevalue (id, qualitycontrol_id, attribu
 --
 
 SELECT pg_catalog.setval('qualitycontrol_qualitycontrolattributevalue_id_seq', 1, false);
+
+
+--
+-- Data for Name: qualitycontrol_qualitycontrolstatechange; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY qualitycontrol_qualitycontrolstatechange (id, dateandtime, sourcestate, targetstate, status, phase, worker, qualitycontrol_id, shift_id) FROM stdin;
+\.
+
+
+--
+-- Name: qualitycontrol_qualitycontrolstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('qualitycontrol_qualitycontrolstatechange_id_seq', 1, false);
 
 
 --
@@ -42143,6 +42254,14 @@ ALTER TABLE ONLY qualitycontrol_qualitycontrolattributeprodtracking
 
 ALTER TABLE ONLY qualitycontrol_qualitycontrolattributevalue
     ADD CONSTRAINT qualitycontrol_qualitycontrolattributevalue_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: qualitycontrol_qualitycontrolstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolstatechange
+    ADD CONSTRAINT qualitycontrol_qualitycontrolstatechange_pkey PRIMARY KEY (id);
 
 
 --
@@ -52616,6 +52735,22 @@ ALTER TABLE ONLY qualitycontrol_qualitycontrol
 
 
 --
+-- Name: qualitycontrol_qualitycontrol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolstatechange
+    ADD CONSTRAINT qualitycontrol_qualitycontrol_fkey FOREIGN KEY (qualitycontrol_id) REFERENCES qualitycontrol_qualitycontrol(id) DEFERRABLE;
+
+
+--
+-- Name: qualitycontrol_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolstatechange
+    ADD CONSTRAINT qualitycontrol_shift_fkey FOREIGN KEY (shift_id) REFERENCES basic_shift(id) DEFERRABLE;
+
+
+--
 -- Name: qualitycontrol_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -52677,6 +52812,14 @@ ALTER TABLE ONLY qualitycontrol_qualitycontrolattributevalue
 
 ALTER TABLE ONLY qualitycontrol_qualitycontrolattributevalue
     ADD CONSTRAINT qualitycontrolattributevalue_attributevalue_fkey FOREIGN KEY (attributevalue_id) REFERENCES basic_attributevalue(id) DEFERRABLE;
+
+
+--
+-- Name: qualitycontrolattributevalue_productiontracking_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattributevalue
+    ADD CONSTRAINT qualitycontrolattributevalue_productiontracking_fkey FOREIGN KEY (productiontracking_id) REFERENCES productioncounting_productiontracking(id) DEFERRABLE;
 
 
 --

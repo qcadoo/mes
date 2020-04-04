@@ -42,7 +42,8 @@
 
                     <layoutElement column="1" row="1">
                         <component type="select" name="productionFlow"
-                                   field="#{form}.productionFlow" reference="productionFlow">
+                                   field="#{form}.productionFlow" reference="productionFlow"
+                                   hasDescription="true">
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.productFlowThruDivision.hooks.ProductsIntermediateOutDetailsHooks"
                                       method="onProductionFlowComponentChange"/>

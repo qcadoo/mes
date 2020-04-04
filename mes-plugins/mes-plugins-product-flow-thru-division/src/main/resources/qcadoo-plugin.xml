@@ -310,14 +310,14 @@
         <model:model-hook plugin="basic" model="division">
             <model:validatesWith
                     class="com.qcadoo.mes.productFlowThruDivision.validators.DivisionValidatorsPFTD"
-                    method="checkIfWarehousesAreDifferent"/>
+                    method="checkRequiredFields"/>
         </model:model-hook>
+
         <model:model-hook plugin="technologies" model="operationProductInComponent">
             <model:validatesWith
                     class="com.qcadoo.mes.productFlowThruDivision.hooks.OperationProductComponentsHooksPFTD"
                     method="checkRequiredFields"/>
         </model:model-hook>
-
         <model:model-hook plugin="technologies" model="operationProductInComponent">
             <model:validatesWith
                     class="com.qcadoo.mes.productFlowThruDivision.validators.OPICValidatorsPFTD"
@@ -335,12 +335,6 @@
             <model:validatesWith
                     class="com.qcadoo.mes.productFlowThruDivision.validators.ProductionCountingQuantityValidatorsPFTD"
                     method="checkRequiredFields"/>
-        </model:model-hook>
-
-        <model:model-hook plugin="basicProductionCounting" model="productionCountingQuantity">
-            <model:validatesWith
-                    class="com.qcadoo.mes.productFlowThruDivision.validators.ProductionCountingQuantityValidatorsPFTD"
-                    method="checkComponentsWarehouses"/>
         </model:model-hook>
 
         <model:model-hook plugin="technologies" model="technology">

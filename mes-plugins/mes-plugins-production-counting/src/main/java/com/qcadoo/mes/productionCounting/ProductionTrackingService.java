@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.productionCounting;
 
+import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -49,5 +50,5 @@ public interface ProductionTrackingService {
 
     Optional<BigDecimal> calculateGivenQuantity(Entity trackingOperationProductInComponent, BigDecimal usedQuantity);
 
-    Optional<Date> findExpirationDate(final Entity productionTracking);
+    Either<Boolean,Optional<Date>> findExpirationDate(final Entity productionTracking);
 }
