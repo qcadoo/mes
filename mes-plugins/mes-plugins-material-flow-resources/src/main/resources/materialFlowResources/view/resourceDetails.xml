@@ -41,7 +41,7 @@
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="resourceForm" reference="form">
                 <component type="gridLayout" name="resourceGridLayout"
-                           hasBorders="false" columns="11" rows="7">
+                           hasBorders="false" columns="11" rows="8">
 
                     <layoutElement column="1" row="1" width="5">
                         <component type="input" name="number" field="number"
@@ -195,6 +195,11 @@
                     <layoutElement column="7" row="7" width="5">
                         <component type="select" name="typeOfPallet" field="typeOfPallet"
                                    reference="typeOfPallet">
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="7" row="8" width="5">
+                        <component type="select" name="qualityRating" field="qualityRating"
+                                   reference="qualityRating">
                         </component>
                     </layoutElement>
                 </component>

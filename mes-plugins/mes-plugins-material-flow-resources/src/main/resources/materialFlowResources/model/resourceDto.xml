@@ -52,6 +52,7 @@
         <string name="additionalCode"/>
         <string name="palletNumber"/>
         <string name="typeOfPallet"/>
+        <string name="qualityRating"/>
         <string name="userName"/>
         <boolean name="isCorrected"/>
         <boolean name="waste"/>

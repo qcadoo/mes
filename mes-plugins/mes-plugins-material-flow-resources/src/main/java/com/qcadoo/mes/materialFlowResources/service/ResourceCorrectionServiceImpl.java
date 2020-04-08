@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources.service;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.base.Strings;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
@@ -44,6 +35,15 @@ import com.qcadoo.model.api.DictionaryService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ResourceCorrectionServiceImpl implements ResourceCorrectionService {
@@ -73,8 +73,7 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
         return result.getLongField("palletsCount");
     }
 
-    public long getPalletsCountInStorageLocationWithoutPalletNumber(final Entity newStorageLocation,
-            final Entity newPalletNumber) {
+    public long getPalletsCountInStorageLocationWithoutPalletNumber(final Entity newStorageLocation, final Entity newPalletNumber) {
         StringBuilder hql = new StringBuilder();
 
         hql.append("SELECT count(distinct p.number) AS palletsCount FROM #materialFlowResources_resource r ");
@@ -101,17 +100,18 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
         String newTypeOfPallet = resource.getStringField(ResourceFields.TYPE_OF_PALLET);
         Date newExpirationDate = resource.getDateField(ResourceFields.EXPIRATION_DATE);
         Entity newPalletNumber = resource.getBelongsToField(ResourceFields.PALLET_NUMBER);
+        String qualityRating = resource.getStringField(ResourceFields.QUALITY_RATING);
 
-        if (isCorrectionNeeded(oldResource, newQuantity, newStorageLocation, newPrice, newBatch, newTypeOfPallet, newPalletNumber,
-                newExpirationDate, newConversion) || fromAttribute) {
+        if (isCorrectionNeeded(oldResource, newQuantity, newStorageLocation, newPrice, newBatch, newTypeOfPallet,
+                newPalletNumber, newExpirationDate, newConversion, qualityRating) || fromAttribute) {
             boolean palletNumberChanged = isPalletNumberChanged(oldPalletNumber(oldResource), newPalletNumber);
 
             if ((storageLocationChanged(oldResource, newStorageLocation) || palletNumberChanged) && newStorageLocation != null) {
                 BigDecimal palletsInStorageLocation;
 
                 if (newPalletNumber != null) {
-                    palletsInStorageLocation = BigDecimal.valueOf(
-                            getPalletsCountInStorageLocationWithoutPalletNumber(newStorageLocation, newPalletNumber) + 1);
+                    palletsInStorageLocation = BigDecimal.valueOf(getPalletsCountInStorageLocationWithoutPalletNumber(
+                            newStorageLocation, newPalletNumber) + 1);
                 } else {
                     palletsInStorageLocation = BigDecimal.valueOf(getPalletsCountInStorageLocation(newStorageLocation) + 1);
                 }
@@ -127,7 +127,7 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
             }
 
             Entity resourceCorrection = createResourceCorrection(oldResource, newQuantity, newPrice, newConversion,
-                    newStorageLocation, newBatch, newTypeOfPallet, newExpirationDate, newPalletNumber);
+                    newStorageLocation, newBatch, newTypeOfPallet, newExpirationDate, newPalletNumber, qualityRating);
 
             resource.setField(ResourceFields.QUANTITY, newQuantity);
             resource.setField(ResourceFields.IS_CORRECTED, true);
@@ -156,7 +156,7 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
 
     private Entity createResourceCorrection(final Entity oldResource, final BigDecimal newQuantity, final BigDecimal newPrice,
             final BigDecimal newConversion, final Entity newStorageLocation, final Entity newBatch, final String newTypeOfPallet,
-            final Date newExpirationDate, final Entity newPalletNumber) {
+            final Date newExpirationDate, final Entity newPalletNumber, final String qualityRating) {
         Entity resourceCorrection = getResourceCorrectionDD().create();
 
         resourceCorrection.setField(ResourceCorrectionFields.OLD_BATCH, oldBatch(oldResource));
@@ -187,12 +187,16 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
         resourceCorrection.setField(ResourceCorrectionFields.DELIVERY_NUMBER,
                 oldResource.getStringField(ResourceFields.DELIVERY_NUMBER));
 
+        resourceCorrection.setField(ResourceCorrectionFields.NEW_QUALITY_RATING, qualityRating);
+        resourceCorrection.setField(ResourceCorrectionFields.OLD_QUALITY_RATING,
+                oldResource.getStringField(ResourceFields.QUALITY_RATING));
+
         return resourceCorrection;
     }
 
     private boolean isCorrectionNeeded(final Entity resource, final BigDecimal newQuantity, final Entity newStorageLocation,
             final BigDecimal newPrice, final Entity newBatch, final String newTypeOfPallet, final Entity newPalletNumber,
-            final Date newExpirationDate, final BigDecimal newConversion) {
+            final Date newExpirationDate, final BigDecimal newConversion, final String qualityRating) {
         boolean quantityChanged = newQuantity.compareTo(oldQuantity(resource)) != 0;
         boolean priceChanged = isPriceChanged(oldPrice(resource), newPrice);
         boolean batchChanged = isBatchChanged(oldBatch(resource), newBatch);
@@ -201,17 +205,17 @@ public class ResourceCorrectionServiceImpl implements ResourceCorrectionService 
         boolean expirationDateChanged = isExpirationDateChanged(oldExpirationDate(resource), newExpirationDate);
         boolean conversionChanged = newConversion.compareTo(oldConversion(resource)) != 0;
         boolean storageLocationChanged = storageLocationChanged(resource, newStorageLocation);
+        boolean qualityRatingChanged = isStringChanged(resource.getStringField(ResourceFields.QUALITY_RATING), qualityRating);
 
         return quantityChanged || storageLocationChanged || priceChanged || batchChanged || typeOfPalletChanged
-                || palletNumberChanged || expirationDateChanged || conversionChanged;
+                || palletNumberChanged || expirationDateChanged || conversionChanged || qualityRatingChanged;
     }
 
     private boolean storageLocationChanged(final Entity oldResourde, final Entity newStorageLocation) {
         Entity oldStorageLocation = oldStorageLocation(oldResourde);
 
-        return (newStorageLocation != null && oldStorageLocation != null)
-                ? (newStorageLocation.getId().compareTo(oldStorageLocation.getId()) != 0)
-                : !(newStorageLocation == null && oldStorageLocation == null);
+        return (newStorageLocation != null && oldStorageLocation != null) ? (newStorageLocation.getId().compareTo(
+                oldStorageLocation.getId()) != 0) : !(newStorageLocation == null && oldStorageLocation == null);
     }
 
     private Entity product(final Entity resource) {

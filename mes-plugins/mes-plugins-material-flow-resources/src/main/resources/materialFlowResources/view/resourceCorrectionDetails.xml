@@ -92,7 +92,7 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="1" height="8" width="2">
-                        <component type="gridLayout" name="correctedResourceLayout" columns="10" rows="9" hasBorders="false">
+                        <component type="gridLayout" name="correctedResourceLayout" columns="10" rows="10" hasBorders="false">
                             <layoutElement column="3" row="1" width="2">
                                 <component type="label" name="beforeCorrection">
                                     <option type="labelStyle" value="normal"/>
@@ -251,6 +251,16 @@
                             <layoutElement column="6" row="9" width="4">
                                 <component type="input" name="newTypeOfPallet" field="newTypeOfPallet"
                                            reference="newTypeOfPallet" defaultEnabled="false" hasLabel="false">
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="10" width="5">
+                                <component type="input" name="oldQualityRating" field="oldQualityRating"
+                                           reference="oldQualityRating" defaultEnabled="false">
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="6" row="10" width="4">
+                                <component type="input" name="newQualityRating" field="newQualityRating"
+                                           reference="newQualityRating" defaultEnabled="false" hasLabel="false">
                                 </component>
                             </layoutElement>
                         </component>

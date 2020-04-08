@@ -85,6 +85,9 @@
         <string name="deliveryNumber"/>
         <string name="documentNumber"/>
 
+        <dictionary name="qualityRating" dictionary="qualityRating"/>
+
+
     </fields>
     <hooks>        
         <validatesWith

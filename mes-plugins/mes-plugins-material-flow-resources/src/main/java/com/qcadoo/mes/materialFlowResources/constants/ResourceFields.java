@@ -81,4 +81,6 @@ public final class ResourceFields {
 
     public static final String RESOURCE_ATTRIBIUTE_VALUES = "resourceAttributeValues";
 
+    public static final String QUALITY_RATING = "qualityRating";
+
 }
