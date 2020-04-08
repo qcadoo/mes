@@ -263,7 +263,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         newResource.setField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT, quantityInAdditionalUnit);
 
         List<Entity> attributeValues = Lists.newArrayList();
-        resource.getHasManyField(ResourceFields.RESOURCE_ATTRIBIUTE_VALUES).forEach(
+        resource.getHasManyField(ResourceFields.RESOURCE_ATTRIBUTE_VALUES).forEach(
                 pav -> {
                     Entity av = pav.getDataDefinition().create();
                     av.setField(ResourceAttributeValueFields.VALUE, pav.getStringField(ResourceAttributeValueFields.VALUE));
@@ -273,7 +273,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                             pav.getBelongsToField(ResourceAttributeValueFields.ATTRIBUTE_VALUE));
                     attributeValues.add(av);
                 });
-        newResource.setField(ResourceFields.RESOURCE_ATTRIBIUTE_VALUES, attributeValues);
+        newResource.setField(ResourceFields.RESOURCE_ATTRIBUTE_VALUES, attributeValues);
         resourceStockService.createResourceStock(newResource);
 
         return resource.getDataDefinition().save(newResource);
@@ -1063,7 +1063,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
     private List<Entity> prepareAttributes(Entity resource) {
         List<Entity> attributes = Lists.newArrayList();
-        resource.getHasManyField(ResourceFields.RESOURCE_ATTRIBIUTE_VALUES).forEach(
+        resource.getHasManyField(ResourceFields.RESOURCE_ATTRIBUTE_VALUES).forEach(
                 aVal -> {
                     Entity positionAttributeVal = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                             MaterialFlowResourcesConstants.MODEL_POSITION_ATTRIBUTE_VALUE).create();
