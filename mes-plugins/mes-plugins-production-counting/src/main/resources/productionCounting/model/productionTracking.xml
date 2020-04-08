@@ -95,6 +95,9 @@
 
 		<date name="expirationDate"/>
 
+		<boolean name="fromTerminal" default="false" persistent="false"/>
+
+
 	</fields>
 
 	<hooks>

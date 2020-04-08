@@ -9,13 +9,15 @@ import com.qcadoo.mes.basic.constants.ProductAttributeValueFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class BaseAttributeValueHooks {
@@ -30,14 +32,7 @@ public class BaseAttributeValueHooks {
             final String ownerAttributeValueCollectionName) {
         Entity attribute = ownerAttributeValue.getBelongsToField(ATTRIBUTE);
 
-        if (AttributeDataType.CALCULATED.getStringValue().equals(attribute.getStringField(AttributeFields.DATA_TYPE))
-                && Objects.isNull(ownerAttributeValue.getBelongsToField(ATTRIBUTE_VALUE))) {
-            ownerAttributeValue.addError(ownerAttributeValueDD.getField(ATTRIBUTE_VALUE),
-                    "qcadooView.validate.field.error.missing");
-            return false;
-        }
-
-        if (AttributeDataType.CONTINUOUS.getStringValue().equals(attribute.getStringField(AttributeFields.DATA_TYPE))
+        if (StringUtils.isNoneEmpty(ownerAttributeValue.getStringField(VALUE)) && AttributeDataType.CONTINUOUS.getStringValue().equals(attribute.getStringField(AttributeFields.DATA_TYPE))
                 && AttributeValueType.NUMERIC.getStringValue().equals(attribute.getStringField(AttributeFields.VALUE_TYPE))) {
             Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParseAndIgnoreSeparator(
                     ownerAttributeValue.getStringField(VALUE), LocaleContextHolder.getLocale());
@@ -59,9 +54,6 @@ public class BaseAttributeValueHooks {
                             ProductAttributeValueFields.VALUE,
                             BigDecimalUtils.toString(eitherNumber.getRight().get(),
                                     attribute.getIntegerField(AttributeFields.PRECISION)));
-        }
-        if (checkIfValueExists(ownerAttributeValueDD, ownerAttributeValue, ownerName, ownerAttributeValueCollectionName)) {
-            return false;
         }
 
         return true;
