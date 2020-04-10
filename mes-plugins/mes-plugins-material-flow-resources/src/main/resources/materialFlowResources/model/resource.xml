@@ -86,6 +86,7 @@
         <string name="documentNumber"/>
 
         <dictionary name="qualityRating" dictionary="qualityRating"/>
+        <boolean name="blockedForQualityControl" default="false"/>
     </fields>
     <hooks>        
         <validatesWith

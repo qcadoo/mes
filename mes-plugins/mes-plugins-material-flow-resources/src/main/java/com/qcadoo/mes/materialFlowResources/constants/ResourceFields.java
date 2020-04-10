@@ -83,4 +83,5 @@ public final class ResourceFields {
 
     public static final String QUALITY_RATING = "qualityRating";
 
+    public static final String BLOCKED_FOR_QUALITY_CONTROL = "blockedForQualityControl";
 }
