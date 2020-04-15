@@ -115,13 +115,9 @@
                                     <option type="correspondingViewInModal" value="true"/>
                                     <option type="prioritizable" value="false"/>
                                     <option type="paginable" value="false"/>
-                                    <option type="weakRelation" value="true"/>
                                     <listener event="select"
                                               class="com.qcadoo.mes.productFlowThruDivision.listeners.TechnologyDetailsListenersPFTD"
                                               method="setWorkstationsLookup"/>
-                                    <criteriaModifier
-                                            class="com.qcadoo.mes.productFlowThruDivision.criteriaModifiers.OperationComponentCriteriaModifiers"
-                                            method="showTOCsForTechnology"/>
                                 </component>
                             </layoutElement>
                             <layoutElement column="2" row="1">
@@ -158,7 +154,6 @@
 
                                     <option type="creatable" value="true"/>
                                     <option type="deletable" value="true"/>
-                                    <option type="fullscreen" value="true"/>
                                     <option type="multiselect" value="true"/>
                                     <option type="paginable" value="false"/>
                                 </component>

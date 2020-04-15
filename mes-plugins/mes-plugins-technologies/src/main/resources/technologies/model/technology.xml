@@ -80,6 +80,10 @@
         <boolean name="additionalActions" default="false"/>
 
         <belongsTo name="qualityCard" model="qualityCard"/>
+
+        <hasMany name="operationComponentDtos"
+                       joinField="technology" model="technologyOperationComponentDto"
+                       persistent="false"/>
     </fields>
     <hooks>
         <validatesWith
