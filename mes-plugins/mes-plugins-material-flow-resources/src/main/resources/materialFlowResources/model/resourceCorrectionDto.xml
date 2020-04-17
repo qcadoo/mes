@@ -51,6 +51,10 @@
         <string name="newStorageLocationNumber"/>
         <string name="oldStorageLocationNumber"/>
         <boolean name="attributeCorrection"/>
+
+        <boolean name="qualityRatingCorrected"/>
+        <string name="oldQualityRating"/>
+        <string name="newQualityRating"/>
     </fields>
 
     <masterModel plugin="materialFlowResources" model="resourceCorrection"/>

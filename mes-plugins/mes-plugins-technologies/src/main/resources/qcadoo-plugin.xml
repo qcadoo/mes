@@ -106,6 +106,7 @@
 
         <model:model model="qualityCard" resource="model/qualityCard.xml"/>
         <model:model model="qualityCardStateChange" resource="model/qualityCardStateChange.xml"/>
+        <model:model model="technologyOperationComponentDto" resource="model/technologyOperationComponentDto.xml"/>
 
         <model:model-field plugin="states" model="message">
             <model:belongsTo name="technologyStateChange" plugin="technologies" model="technologyStateChange"/>

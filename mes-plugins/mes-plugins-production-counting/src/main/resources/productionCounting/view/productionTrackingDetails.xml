@@ -715,14 +715,14 @@
                 </layoutElement>
                 <layoutElement column="1" row="3">
                     <component type="checkbox" name="addBatch" field="#{form}.addBatch"
-                               reference="addBatch">
+                               reference="addBatch" hasDescription="true">
                         <listener event="onChange"
                                   class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
                                   method="onAddBatchChange"/>
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="4">
-                    <component type="input" name="batchNumber"
+                    <component type="input" name="batchNumber" hasDescription="true"
                                reference="batchNumber" field="#{form}.batchNumber">
                     </component>
                 </layoutElement>

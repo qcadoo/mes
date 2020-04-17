@@ -66,9 +66,14 @@
 
         <date name="oldExpirationDate"/>
         <date name="newExpirationDate"/>
+
         <date name="productionDate"/>
         <string name="resourceNumber"/>
         <string name="deliveryNumber"/>
+
+        <dictionary name="oldQualityRating" dictionary="qualityRating"/>
+        <dictionary name="newQualityRating" dictionary="qualityRating"/>
+
     </fields>
     <hooks/>
 </model>

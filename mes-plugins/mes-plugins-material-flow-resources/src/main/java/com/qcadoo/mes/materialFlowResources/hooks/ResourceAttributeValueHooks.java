@@ -87,7 +87,7 @@ public class ResourceAttributeValueHooks {
         Entity resource = resourceAttributeValue.getBelongsToField(ResourceAttributeValueFields.RESOURCE);
         Entity attributeValue = resourceAttributeValue.getBelongsToField(ResourceAttributeValueFields.ATTRIBUTE_VALUE);
 
-        List<Entity> values = resource.getHasManyField(ResourceFields.RESOURCE_ATTRIBIUTE_VALUES);
+        List<Entity> values = resource.getHasManyField(ResourceFields.RESOURCE_ATTRIBUTE_VALUES);
 
         List sameValue = Lists.newArrayList();
         if (Objects.nonNull(attributeValue)) {
@@ -143,7 +143,7 @@ public class ResourceAttributeValueHooks {
                         .createCorrectionForResource(resource, true);
                 if (maybeCorrection.isPresent()) {
                     Entity correction = maybeCorrection.get();
-                    List<Entity> values = resource.getHasManyField(ResourceFields.RESOURCE_ATTRIBIUTE_VALUES);
+                    List<Entity> values = resource.getHasManyField(ResourceFields.RESOURCE_ATTRIBUTE_VALUES);
                     createAttributeBeforeCorrection(values, correction);
                     createAttributeAfterCorrection(values, resourceAttributeValue, correction, false);
                 }

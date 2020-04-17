@@ -91,7 +91,7 @@ public class TechnologyDetailsHooksPFTD {
     private void fillFlowLocationForCumulatedProductionRecording(ViewDefinitionState view) {
         FieldComponent typeOfProductionRecordingFieldComponent = (FieldComponent) view
                 .getComponentByReference(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
-        if (TypeOfProductionRecording.CUMULATED.getStringValue()
+        if (typeOfProductionRecordingFieldComponent != null && TypeOfProductionRecording.CUMULATED.getStringValue()
                 .equals(typeOfProductionRecordingFieldComponent.getFieldValue())) {
             FieldComponent productionFlowFieldComponent = (FieldComponent) view
                     .getComponentByReference(TechnologyFieldsPFTD.PRODUCTION_FLOW);
@@ -336,12 +336,6 @@ public class TechnologyDetailsHooksPFTD {
                 .getComponentByReference(L_PRODUCTS_FLOW_INTERMIDIATE_OUT);
         GridComponent gridProductsFinal = (GridComponent) view
                 .getComponentByReference(L_PRODUCTS_FINAL);
-        GridComponent gridrRangeTechnologyOperationComponent = (GridComponent) view
-                .getComponentByReference("rangeTechnologyOperationComponent");
-
-        FilterValueHolder gridoperationsHolder = gridrRangeTechnologyOperationComponent.getFilterValue();
-        gridoperationsHolder.put(ProductsFlowInCriteriaModifiers.TECHNOLOGY_PARAMETER, technologyId);
-        gridrRangeTechnologyOperationComponent.setFilterValue(gridoperationsHolder);
 
         FilterValueHolder gridProductsComponentInHolder = gridProductsComponent.getFilterValue();
         gridProductsComponentInHolder.put(ProductsFlowInCriteriaModifiers.TECHNOLOGY_PARAMETER, technologyId);

@@ -79,6 +79,9 @@ public final class ResourceFields {
 
     public static final String DELIVERY = "delivery";
 
-    public static final String RESOURCE_ATTRIBIUTE_VALUES = "resourceAttributeValues";
+    public static final String RESOURCE_ATTRIBUTE_VALUES = "resourceAttributeValues";
 
+    public static final String QUALITY_RATING = "qualityRating";
+
+    public static final String BLOCKED_FOR_QUALITY_CONTROL = "blockedForQualityControl";
 }

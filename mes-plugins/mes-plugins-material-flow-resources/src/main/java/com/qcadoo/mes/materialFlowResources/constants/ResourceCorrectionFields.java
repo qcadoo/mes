@@ -76,4 +76,7 @@ public final class ResourceCorrectionFields {
 
     public static final String DELIVERY_NUMBER = "deliveryNumber";
 
+    public static final String NEW_QUALITY_RATING = "newQualityRating";
+
+    public static final String OLD_QUALITY_RATING = "oldQualityRating";
 }

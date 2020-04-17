@@ -5740,8 +5740,7 @@ CREATE TABLE technologies_technologyoperationcomponent (
     productdatanumber numeric(12,5) DEFAULT (0)::numeric,
     productionlinechange boolean DEFAULT false,
     productionline_id bigint,
-    entityversion bigint DEFAULT 0,
-    qualityrating boolean DEFAULT false
+    entityversion bigint DEFAULT 0
 );
 
 
@@ -8993,7 +8992,8 @@ CREATE TABLE basic_parameter (
     generatebatchfororderedproduct boolean,
     generatebatchoforderedproduct boolean DEFAULT false,
     acceptbatchtrackingwhenclosingorder boolean DEFAULT false,
-    completewarehousesflowwhilechecking boolean DEFAULT false
+    completewarehousesflowwhilechecking boolean DEFAULT false,
+    qualitycontrol boolean DEFAULT false
 );
 
 
@@ -14694,16 +14694,6 @@ CREATE TABLE jointable_productionline_technologygroup (
 
 
 --
--- Name: jointable_qualitycontrolattribute_technologyoperationcomponent; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE jointable_qualitycontrolattribute_technologyoperationcomponent (
-    technologyoperationcomponent_id bigint NOT NULL,
-    qualitycontrolattribute_id bigint NOT NULL
-);
-
-
---
 -- Name: jointable_staff_timeusagereportfilter; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -15883,7 +15873,9 @@ CREATE TABLE materialflowresources_resource (
     reservedquantity numeric(14,5),
     deliverynumber character varying,
     documentnumber character varying,
-    batch_id bigint
+    batch_id bigint,
+    blockedforqualitycontrol boolean DEFAULT false,
+    qualityrating character varying(255)
 );
 
 
@@ -15995,7 +15987,8 @@ CREATE TABLE materialflowresources_position (
     externaldocumentnumber character varying(255),
     orderid integer,
     sellingprice numeric(12,5) DEFAULT '0'::numeric,
-    batch_id bigint
+    batch_id bigint,
+    qualityrating character varying(255)
 );
 
 
@@ -16432,7 +16425,9 @@ CREATE TABLE materialflowresources_resourcecorrection (
     resourcenumber character varying(255),
     deliverynumber character varying,
     oldbatch_id bigint,
-    newbatch_id bigint
+    newbatch_id bigint,
+    oldqualityrating character varying(255),
+    newqualityrating character varying(255)
 );
 
 
@@ -16488,7 +16483,10 @@ CREATE VIEW materialflowresources_resourcecorrectiondto AS
                FROM materialflowresources_resourceattributevaluebeforecorrection resourceattributevalue
               WHERE (resourceattributevalue.resourcecorrection_id = resourcecorrection.id)) > 0) THEN true
             ELSE false
-        END AS attributecorrection
+        END AS attributecorrection,
+    ((COALESCE(resourcecorrection.oldqualityrating, ''::character varying))::text <> (COALESCE(resourcecorrection.newqualityrating, ''::character varying))::text) AS qualityratingcorrected,
+    resourcecorrection.newqualityrating,
+    resourcecorrection.oldqualityrating
    FROM (((((((materialflowresources_resourcecorrection resourcecorrection
      JOIN basic_product product ON ((product.id = resourcecorrection.product_id)))
      LEFT JOIN materialflowresources_resource resource ON ((resource.id = resourcecorrection.resource_id)))
@@ -16549,7 +16547,8 @@ CREATE VIEW materialflowresources_resourcedto AS
         END) AS mergedproductnumberandadditionalcode,
     (resource.location_id)::integer AS location_id,
     NULL::bigint AS positionaddmultihelper_id,
-    resource.documentnumber
+    resource.documentnumber,
+    resource.qualityrating
    FROM ((((((materialflowresources_resource resource
      JOIN materialflow_location location ON ((location.id = resource.location_id)))
      JOIN basic_product product ON ((product.id = resource.product_id)))
@@ -22621,7 +22620,8 @@ CREATE TABLE qualitycontrol_qualitycontrolattributeprodtracking (
     attribute_id bigint,
     attributevalue_id bigint,
     value character varying(255),
-    fromtechnology boolean DEFAULT false
+    fromtechnology boolean DEFAULT false,
+    moment character varying(255)
 );
 
 
@@ -22645,6 +22645,69 @@ ALTER SEQUENCE qualitycontrol_qualitycontrolattributeprodtracking_id_seq OWNED B
 
 
 --
+-- Name: qualitycontrol_qualitycontrolattributetoc; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE qualitycontrol_qualitycontrolattributetoc (
+    id bigint NOT NULL,
+    qualitycontrolattribute_id bigint,
+    technologyoperationcomponent_id bigint,
+    moment character varying(255)
+);
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattributetoc_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE qualitycontrol_qualitycontrolattributetoc_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattributetoc_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE qualitycontrol_qualitycontrolattributetoc_id_seq OWNED BY qualitycontrol_qualitycontrolattributetoc.id;
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattributetocdto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW qualitycontrol_qualitycontrolattributetocdto AS
+ SELECT qcatoc.id,
+    (qcatoc.technologyoperationcomponent_id)::integer AS technologyoperationcomponentid,
+    qcatoc.technologyoperationcomponent_id,
+    qcatoc.qualitycontrolattribute_id,
+    qcatoc.moment,
+    qca.priority,
+    a.number AS attributenumber,
+    a.name AS attributename,
+    a.datatype AS attributedatatype,
+    a.valuetype AS attributevaluetype
+   FROM ((qualitycontrol_qualitycontrolattributetoc qcatoc
+     JOIN qualitycontrol_qualitycontrolattribute qca ON ((qcatoc.qualitycontrolattribute_id = qca.id)))
+     JOIN basic_attribute a ON ((qca.attribute_id = a.id)));
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattributetocdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE qualitycontrol_qualitycontrolattributetocdto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
 -- Name: qualitycontrol_qualitycontrolattributevalue; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -22655,7 +22718,8 @@ CREATE TABLE qualitycontrol_qualitycontrolattributevalue (
     attributevalue_id bigint,
     value character varying(255),
     productiontracking_id bigint,
-    fromqualitycard boolean DEFAULT false
+    fromqualitycard boolean DEFAULT false,
+    priority integer
 );
 
 
@@ -22676,6 +22740,37 @@ CREATE SEQUENCE qualitycontrol_qualitycontrolattributevalue_id_seq
 --
 
 ALTER SEQUENCE qualitycontrol_qualitycontrolattributevalue_id_seq OWNED BY qualitycontrol_qualitycontrolattributevalue.id;
+
+
+--
+-- Name: qualitycontrol_qualitycontrolresource; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE qualitycontrol_qualitycontrolresource (
+    id bigint NOT NULL,
+    resourcenumber character varying(255),
+    qualitycontrol_id bigint,
+    resource_id bigint
+);
+
+
+--
+-- Name: qualitycontrol_qualitycontrolresource_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE qualitycontrol_qualitycontrolresource_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: qualitycontrol_qualitycontrolresource_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE qualitycontrol_qualitycontrolresource_id_seq OWNED BY qualitycontrol_qualitycontrolresource.id;
 
 
 --
@@ -24563,7 +24658,8 @@ CREATE TABLE technologies_technologydto (
     attachmentsexists boolean,
     dateandtime timestamp without time zone,
     productionlinenumber character varying(255),
-    assortmentname character varying(255)
+    assortmentname character varying(255),
+    qualitycardnumber character varying(255)
 );
 
 ALTER TABLE ONLY technologies_technologydto REPLICA IDENTITY NOTHING;
@@ -24617,6 +24713,35 @@ CREATE SEQUENCE technologies_technologyoperationcomponent_id_seq
 --
 
 ALTER SEQUENCE technologies_technologyoperationcomponent_id_seq OWNED BY technologies_technologyoperationcomponent.id;
+
+
+--
+-- Name: technologies_technologyoperationcomponentdto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW technologies_technologyoperationcomponentdto AS
+ SELECT toc.id,
+    (toc.technology_id)::integer AS technologyid,
+    toc.nodenumber,
+    op.number AS operationnumber,
+    op.name AS operationname,
+    (count(qca.technologyoperationcomponent_id) > 0) AS qualitycontrol
+   FROM ((technologies_technologyoperationcomponent toc
+     JOIN technologies_operation op ON ((toc.operation_id = op.id)))
+     LEFT JOIN qualitycontrol_qualitycontrolattributetoc qca ON ((qca.technologyoperationcomponent_id = toc.id)))
+  GROUP BY toc.id, toc.technology_id, toc.nodenumber, op.number, op.name;
+
+
+--
+-- Name: technologies_technologyoperationcomponentdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE technologies_technologyoperationcomponentdto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 
 --
@@ -28391,7 +28516,21 @@ ALTER TABLE ONLY qualitycontrol_qualitycontrolattributeprodtracking ALTER COLUMN
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattributetoc ALTER COLUMN id SET DEFAULT nextval('qualitycontrol_qualitycontrolattributetoc_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY qualitycontrol_qualitycontrolattributevalue ALTER COLUMN id SET DEFAULT nextval('qualitycontrol_qualitycontrolattributevalue_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolresource ALTER COLUMN id SET DEFAULT nextval('qualitycontrol_qualitycontrolresource_id_seq'::regclass);
 
 
 --
@@ -31539,8 +31678,8 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, enableoperationgroupingworkplan, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking) FROM stdin;
-1	167	124	szt	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01globally	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	50	3000	f	f	f	f	f	f	f	f	t	t	t	f	t	t	f	f	f	f	f	f	f	f	f	f	f	\N	\N	f	f	f
+COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, enableoperationgroupingworkplan, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol) FROM stdin;
+1	167	124	szt	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01globally	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	50	3000	f	f	f	f	f	f	f	f	t	t	t	f	t	t	f	f	f	f	f	f	f	f	f	f	f	\N	\N	f	f	f	f
 \.
 
 
@@ -33748,14 +33887,6 @@ COPY jointable_productionline_technologygroup (technologygroup_id, productionlin
 
 
 --
--- Data for Name: jointable_qualitycontrolattribute_technologyoperationcomponent; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY jointable_qualitycontrolattribute_technologyoperationcomponent (technologyoperationcomponent_id, qualitycontrolattribute_id) FROM stdin;
-\.
-
-
---
 -- Data for Name: jointable_shift_shifttimetableexception; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -34256,7 +34387,7 @@ SELECT pg_catalog.setval('materialflowresources_palletstoragestatedto_id_seq', 1
 -- Data for Name: materialflowresources_position; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY materialflowresources_position (id, document_id, product_id, quantity, price, productiondate, expirationdate, number, resource_id, givenunit, givenquantity, entityversion, storagelocation_id, additionalcode_id, conversion, palletnumber_id, typeofpallet, waste, resourcereceiptdocument, lastresource, resourcenumber, externaldocumentnumber, orderid, sellingprice, batch_id) FROM stdin;
+COPY materialflowresources_position (id, document_id, product_id, quantity, price, productiondate, expirationdate, number, resource_id, givenunit, givenquantity, entityversion, storagelocation_id, additionalcode_id, conversion, palletnumber_id, typeofpallet, waste, resourcereceiptdocument, lastresource, resourcenumber, externaldocumentnumber, orderid, sellingprice, batch_id, qualityrating) FROM stdin;
 \.
 
 
@@ -34338,7 +34469,7 @@ SELECT pg_catalog.setval('materialflowresources_reservation_id_seq', 1, false);
 -- Data for Name: materialflowresources_resource; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY materialflowresources_resource (id, location_id, product_id, quantity, price, _batch, "time", productiondate, expirationdate, iscorrected, entityversion, storagelocation_id, number, quantityinadditionalunit, additionalcode_id, conversion, palletnumber_id, typeofpallet, givenunit, username, waste, availablequantity, reservedquantity, deliverynumber, documentnumber, batch_id) FROM stdin;
+COPY materialflowresources_resource (id, location_id, product_id, quantity, price, _batch, "time", productiondate, expirationdate, iscorrected, entityversion, storagelocation_id, number, quantityinadditionalunit, additionalcode_id, conversion, palletnumber_id, typeofpallet, givenunit, username, waste, availablequantity, reservedquantity, deliverynumber, documentnumber, batch_id, blockedforqualitycontrol, qualityrating) FROM stdin;
 \.
 
 
@@ -34426,7 +34557,7 @@ SELECT pg_catalog.setval('materialflowresources_resourceattributevaluebeforecorr
 -- Data for Name: materialflowresources_resourcecorrection; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY materialflowresources_resourcecorrection (id, number, product_id, newquantity, oldquantity, location_id, "time", createdate, updatedate, createuser, updateuser, _oldbatch, resource_id, entityversion, oldstoragelocation_id, newstoragelocation_id, oldprice, newprice, _newbatch, oldpalletnumber_id, newpalletnumber_id, oldtypeofpallet, newtypeofpallet, oldexpirationdate, newexpirationdate, productiondate, oldconversion, newconversion, resourcenumber, deliverynumber, oldbatch_id, newbatch_id) FROM stdin;
+COPY materialflowresources_resourcecorrection (id, number, product_id, newquantity, oldquantity, location_id, "time", createdate, updatedate, createuser, updateuser, _oldbatch, resource_id, entityversion, oldstoragelocation_id, newstoragelocation_id, oldprice, newprice, _newbatch, oldpalletnumber_id, newpalletnumber_id, oldtypeofpallet, newtypeofpallet, oldexpirationdate, newexpirationdate, productiondate, oldconversion, newconversion, resourcenumber, deliverynumber, oldbatch_id, newbatch_id, oldqualityrating, newqualityrating) FROM stdin;
 \.
 
 
@@ -37184,7 +37315,7 @@ SELECT pg_catalog.setval('qualitycontrol_qualitycontrolattribute_id_seq', 1, fal
 -- Data for Name: qualitycontrol_qualitycontrolattributeprodtracking; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY qualitycontrol_qualitycontrolattributeprodtracking (id, productiontracking_id, attribute_id, attributevalue_id, value, fromtechnology) FROM stdin;
+COPY qualitycontrol_qualitycontrolattributeprodtracking (id, productiontracking_id, attribute_id, attributevalue_id, value, fromtechnology, moment) FROM stdin;
 \.
 
 
@@ -37196,10 +37327,32 @@ SELECT pg_catalog.setval('qualitycontrol_qualitycontrolattributeprodtracking_id_
 
 
 --
+-- Data for Name: qualitycontrol_qualitycontrolattributetoc; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY qualitycontrol_qualitycontrolattributetoc (id, qualitycontrolattribute_id, technologyoperationcomponent_id, moment) FROM stdin;
+\.
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattributetoc_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('qualitycontrol_qualitycontrolattributetoc_id_seq', 1, false);
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattributetocdto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('qualitycontrol_qualitycontrolattributetocdto_id_seq', 1, false);
+
+
+--
 -- Data for Name: qualitycontrol_qualitycontrolattributevalue; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY qualitycontrol_qualitycontrolattributevalue (id, qualitycontrol_id, attribute_id, attributevalue_id, value, productiontracking_id, fromqualitycard) FROM stdin;
+COPY qualitycontrol_qualitycontrolattributevalue (id, qualitycontrol_id, attribute_id, attributevalue_id, value, productiontracking_id, fromqualitycard, priority) FROM stdin;
 \.
 
 
@@ -37208,6 +37361,21 @@ COPY qualitycontrol_qualitycontrolattributevalue (id, qualitycontrol_id, attribu
 --
 
 SELECT pg_catalog.setval('qualitycontrol_qualitycontrolattributevalue_id_seq', 1, false);
+
+
+--
+-- Data for Name: qualitycontrol_qualitycontrolresource; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY qualitycontrol_qualitycontrolresource (id, resourcenumber, qualitycontrol_id, resource_id) FROM stdin;
+\.
+
+
+--
+-- Name: qualitycontrol_qualitycontrolresource_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('qualitycontrol_qualitycontrolresource_id_seq', 1, false);
 
 
 --
@@ -38071,7 +38239,7 @@ SELECT pg_catalog.setval('technologies_technologygroup_id_seq', 1, false);
 -- Data for Name: technologies_technologyoperationcomponent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY technologies_technologyoperationcomponent (id, technology_id, operation_id, parent_id, entitytype, priority, nodenumber, comment, attachment, areproductquantitiesdivisible, istjdivisible, tpz, laborworktime, productioninonecycleunit, nextoperationafterproducedquantityunit, nextoperationafterproducedquantity, nextoperationafterproducedtype, machineutilization, timenextoperation, pieceworkcost, machineworktime, productioninonecycle, laborutilization, duration, numberofoperations, tj, machinehourlycost, laborhourlycost, issubcontracting, assignedtooperation, workstationtype_id, quantityofworkstations, createdate, updatedate, createuser, updateuser, techopercomptimecalculation_id, hascorrections, division_id, showinproductdata, productdatanumber, productionlinechange, productionline_id, entityversion, qualityrating) FROM stdin;
+COPY technologies_technologyoperationcomponent (id, technology_id, operation_id, parent_id, entitytype, priority, nodenumber, comment, attachment, areproductquantitiesdivisible, istjdivisible, tpz, laborworktime, productioninonecycleunit, nextoperationafterproducedquantityunit, nextoperationafterproducedquantity, nextoperationafterproducedtype, machineutilization, timenextoperation, pieceworkcost, machineworktime, productioninonecycle, laborutilization, duration, numberofoperations, tj, machinehourlycost, laborhourlycost, issubcontracting, assignedtooperation, workstationtype_id, quantityofworkstations, createdate, updatedate, createuser, updateuser, techopercomptimecalculation_id, hascorrections, division_id, showinproductdata, productdatanumber, productionlinechange, productionline_id, entityversion) FROM stdin;
 \.
 
 
@@ -38080,6 +38248,13 @@ COPY technologies_technologyoperationcomponent (id, technology_id, operation_id,
 --
 
 SELECT pg_catalog.setval('technologies_technologyoperationcomponent_id_seq', 1, false);
+
+
+--
+-- Name: technologies_technologyoperationcomponentdto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('technologies_technologyoperationcomponentdto_id_seq', 1, false);
 
 
 --
@@ -40961,14 +41136,6 @@ ALTER TABLE ONLY jointable_productionline_technologygroup
 
 
 --
--- Name: jointable_qualitycontrolattribute_techopercomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY jointable_qualitycontrolattribute_technologyoperationcomponent
-    ADD CONSTRAINT jointable_qualitycontrolattribute_techopercomponent_pkey PRIMARY KEY (technologyoperationcomponent_id, qualitycontrolattribute_id);
-
-
---
 -- Name: jointable_shift_shifttimetableexception_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -42249,11 +42416,27 @@ ALTER TABLE ONLY qualitycontrol_qualitycontrolattributeprodtracking
 
 
 --
+-- Name: qualitycontrol_qualitycontrolattributetoc_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattributetoc
+    ADD CONSTRAINT qualitycontrol_qualitycontrolattributetoc_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: qualitycontrol_qualitycontrolattributevalue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qualitycontrol_qualitycontrolattributevalue
     ADD CONSTRAINT qualitycontrol_qualitycontrolattributevalue_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: qualitycontrol_qualitycontrolresource_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolresource
+    ADD CONSTRAINT qualitycontrol_qualitycontrolresource_pkey PRIMARY KEY (id);
 
 
 --
@@ -44984,8 +45167,9 @@ CREATE RULE "_RETURN" AS
     (count(technologyattachment.id) <> 0) AS attachmentsexists,
     technologystatechange.dateandtime,
     productionline.number AS productionlinenumber,
-    assortment.name AS assortmentname
-   FROM ((((((((technologies_technology technology
+    assortment.name AS assortmentname,
+    qualitycard.number AS qualitycardnumber
+   FROM (((((((((technologies_technology technology
      LEFT JOIN basic_product product ON ((technology.product_id = product.id)))
      LEFT JOIN basic_assortment assortment ON ((assortment.id = product.assortment_id)))
      LEFT JOIN basic_division division ON ((technology.division_id = division.id)))
@@ -44994,7 +45178,8 @@ CREATE RULE "_RETURN" AS
      LEFT JOIN technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technology.generatorcontext_id)))
      LEFT JOIN technologies_technologystatechange technologystatechange ON (((technologystatechange.technology_id = technology.id) AND ((technologystatechange.status)::text = '03successful'::text) AND (technologystatechange.sourcestate IS NULL) AND ((technologystatechange.targetstate)::text = '01draft'::text))))
      LEFT JOIN productionlines_productionline productionline ON ((productionline.id = technology.productionline_id)))
-  GROUP BY technology.id, product.number, product.globaltypeofmaterial, tg.number, division.name, product.name, tcontext.number, technologystatechange.dateandtime, productionline.number, assortment.name;
+     LEFT JOIN technologies_qualitycard qualitycard ON ((qualitycard.id = technology.qualitycard_id)))
+  GROUP BY technology.id, product.number, product.globaltypeofmaterial, tg.number, division.name, product.name, tcontext.number, technologystatechange.dateandtime, productionline.number, assortment.name, qualitycard.number;
 
 
 --
@@ -52687,22 +52872,6 @@ ALTER TABLE ONLY technologies_qualitycardstatechange
 
 
 --
--- Name: qualitycontrattr_techopercomponent_qualitycontrattr_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY jointable_qualitycontrolattribute_technologyoperationcomponent
-    ADD CONSTRAINT qualitycontrattr_techopercomponent_qualitycontrattr_fkey FOREIGN KEY (qualitycontrolattribute_id) REFERENCES qualitycontrol_qualitycontrolattribute(id) DEFERRABLE;
-
-
---
--- Name: qualitycontrattr_techopercomponent_techopercomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY jointable_qualitycontrolattribute_technologyoperationcomponent
-    ADD CONSTRAINT qualitycontrattr_techopercomponent_techopercomponent_fkey FOREIGN KEY (technologyoperationcomponent_id) REFERENCES technologies_technologyoperationcomponent(id) DEFERRABLE;
-
-
---
 -- Name: qualitycontrol_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -52799,6 +52968,22 @@ ALTER TABLE ONLY qualitycontrol_qualitycontrolattributeprodtracking
 
 
 --
+-- Name: qualitycontrolattributetoc_qualitycontrolattribute_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattributetoc
+    ADD CONSTRAINT qualitycontrolattributetoc_qualitycontrolattribute_fkey FOREIGN KEY (qualitycontrolattribute_id) REFERENCES qualitycontrol_qualitycontrolattribute(id) DEFERRABLE;
+
+
+--
+-- Name: qualitycontrolattributetoc_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattributetoc
+    ADD CONSTRAINT qualitycontrolattributetoc_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id) REFERENCES technologies_technologyoperationcomponent(id) DEFERRABLE;
+
+
+--
 -- Name: qualitycontrolattributevalue_attribute_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -52828,6 +53013,22 @@ ALTER TABLE ONLY qualitycontrol_qualitycontrolattributevalue
 
 ALTER TABLE ONLY qualitycontrol_qualitycontrolattributevalue
     ADD CONSTRAINT qualitycontrolattributevalue_qualitycontrol_fkey FOREIGN KEY (qualitycontrol_id) REFERENCES qualitycontrol_qualitycontrol(id) DEFERRABLE;
+
+
+--
+-- Name: qualitycontrolresource_qualitycontrol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolresource
+    ADD CONSTRAINT qualitycontrolresource_qualitycontrol_fkey FOREIGN KEY (qualitycontrol_id) REFERENCES qualitycontrol_qualitycontrol(id) DEFERRABLE;
+
+
+--
+-- Name: qualitycontrolresource_resource_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolresource
+    ADD CONSTRAINT qualitycontrolresource_resource_fkey FOREIGN KEY (resource_id) REFERENCES materialflowresources_resource(id) DEFERRABLE;
 
 
 --
