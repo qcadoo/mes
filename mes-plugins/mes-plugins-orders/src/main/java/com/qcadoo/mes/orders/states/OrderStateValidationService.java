@@ -26,14 +26,19 @@ package com.qcadoo.mes.orders.states;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.qcadoo.mes.orders.constants.OrderFields.*;
+import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
+import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
+import static com.qcadoo.mes.orders.constants.OrderFields.DONE_QUANTITY;
+import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
 
 @Service
 public class OrderStateValidationService {
@@ -56,6 +61,10 @@ public class OrderStateValidationService {
     public void validationOnCompleted(final StateChangeContext stateChangeContext) {
         final List<String> fieldNames = Arrays.asList(DATE_TO, DATE_FROM, DONE_QUANTITY);
         checkRequired(fieldNames, stateChangeContext);
+        if (Objects.nonNull(stateChangeContext.getOwner().getDecimalField(DONE_QUANTITY))
+                && stateChangeContext.getOwner().getDecimalField(DONE_QUANTITY).compareTo(BigDecimal.ZERO) == 0) {
+            stateChangeContext.addValidationError("orders.order.orderStates.doneQuantityMustBeGreaterThanZero");
+        }
     }
 
     private void checkRequired(final List<String> fieldNames, final StateChangeContext stateChangeContext) {
