@@ -23,17 +23,6 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
@@ -56,12 +45,7 @@ import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.ExpressionService;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -70,17 +54,21 @@ import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class OrderDetailsHooks {
@@ -154,7 +142,6 @@ public class OrderDetailsHooks {
         disableTechnologiesIfProductDoesNotAny(view);
         setAndDisableState(view);
         unitService.fillProductUnitBeforeRender(view);
-        disableOrderFormForExternalItems(view);
         changedEnabledFieldForSpecificOrderState(view);
         filterStateChangeHistory(view);
         disabledRibbonWhenOrderIsSynchronized(view);
@@ -430,35 +417,6 @@ public class OrderDetailsHooks {
                 fieldComponent.setEnabled(enabled);
                 fieldComponent.requestComponentUpdateState();
             }
-        }
-    }
-
-    public void disableOrderFormForExternalItems(final ViewDefinitionState state) {
-        FormComponent orderForm = (FormComponent) state.getComponentByReference(OrdersConstants.FIELD_FORM);
-
-        Long orderId = orderForm.getEntityId();
-
-        if (orderId == null) {
-            return;
-        }
-
-        Entity order = orderService.getOrder(orderId);
-
-        if (order == null) {
-            return;
-        }
-
-        String externalNumber = order.getStringField(OrderFields.EXTERNAL_NUMBER);
-
-        boolean externalSynchronized = order.getBooleanField(OrderFields.EXTERNAL_SYNCHRONIZED);
-
-        if (StringUtils.hasText(externalNumber) || !externalSynchronized) {
-            state.getComponentByReference(OrderFields.NUMBER).setEnabled(false);
-            state.getComponentByReference(OrderFields.NAME).setEnabled(false);
-            state.getComponentByReference(OrderFields.COMPANY).setEnabled(false);
-            state.getComponentByReference(OrderFields.DEADLINE).setEnabled(false);
-            state.getComponentByReference(OrderFields.PRODUCT).setEnabled(false);
-            state.getComponentByReference(OrderFields.PLANNED_QUANTITY).setEnabled(false);
         }
     }
 

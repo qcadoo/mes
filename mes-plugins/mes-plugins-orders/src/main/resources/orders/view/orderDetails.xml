@@ -287,7 +287,6 @@
 							if (del)
 							del.enable();
 							var state = #{state}.getValue().content.value;
-							var externalSynchronized = #{externalSynchronized}.getValue().content.value;
 							if (!state) {
 								return;
 							}
@@ -357,16 +356,6 @@
 								declineOrder.disable();
 								interruptOrder.disable();
 							}
-							
-							if (externalSynchronized == '0') {
-								if (save) save.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
-								if (saveBack) saveBack.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
-								if (saveNew) saveNew.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
-								if (del) del.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
-								acceptOrder.disable();
-								declineOrder.disable();
-								interruptOrder.disable();
-							}
 						}
 					});
 					]]>
@@ -384,8 +373,6 @@
                                    field="number">
                             <option type="alignment" value="right"/>
                         </component>
-                        <component type="hidden" name="externalSynchronized"
-                                   field="externalSynchronized" reference="externalSynchronized"/>
                     </layoutElement>
                     <layoutElement column="1" row="3" height="2">
                         <component type="textarea" name="name" field="name"
@@ -1121,33 +1108,6 @@
                 <option type="correspondingComponent" value="form"/>
             </component>
         </windowTab>
-
-        <windowTab name="integrationTab">
-            <script>
-                <![CDATA[
-						var del = #{window}.getRibbonItemOrNull("actions.delete");
-						var externalNumberListener = {
-							onSetValue: function(value) {
-								
-								var externalNumber = #{externalNumber}.getValue().content.value;
-								
-								if(externalNumber != undefined && externalNumber != '') {
-									if (del) del.disable("#{translate(orders.order.ribbon.message.orderIsExternal)}");
-								}
-							}
-						};
-						#{form}.addOnChangeListener(externalNumberListener);
-					]]>
-            </script>
-            <component type="gridLayout" name="gridLayout" columns="3"
-                       rows="1">
-                <layoutElement column="1" row="1">
-                    <component type="input" name="externalNumber" field="#{form}.externalNumber"
-                               reference="externalNumber" defaultEnabled="never"/>
-                </layoutElement>
-            </component>
-        </windowTab>
-
     </component>
 
     <hooks>
