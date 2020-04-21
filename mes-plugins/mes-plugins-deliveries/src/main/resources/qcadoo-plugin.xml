@@ -218,6 +218,10 @@
                                  method="checkIfDefaultSupplierIsUnique"/>
         </model:model-hook>
 
+        <model:model-field plugin="technologies" model="qualityCard">
+            <model:hasMany name="orderedProducts" plugin="deliveries" model="orderedProduct" joinField="qualityCard"/>
+        </model:model-field>
+
         <menu:menu-category name="requirements" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
 
         <menu:menu-item name="deliveries" category="requirements" defaultAuthorizationRole="ROLE_REQUIREMENTS"
