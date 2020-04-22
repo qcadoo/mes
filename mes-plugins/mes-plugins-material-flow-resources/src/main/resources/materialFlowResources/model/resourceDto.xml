@@ -60,6 +60,7 @@
         <string name="documentNumber"/>
         <string name="mergedProductNumberAndAdditionalCode"/>
         <belongsTo name="positionAddMultiHelper" model="positionAddMultiHelper"/>
+        <boolean name="blockedForQualityControl"/>
     </fields>
 
     <masterModel plugin="materialFlowResources" model="resource"/>

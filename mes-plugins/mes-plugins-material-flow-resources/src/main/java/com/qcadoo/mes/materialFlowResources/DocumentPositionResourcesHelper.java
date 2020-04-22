@@ -39,5 +39,6 @@ public class DocumentPositionResourcesHelper {
         if (useBatch) {
             queryBuilder.append(" AND batch.id = :batch ");
         }
+        queryBuilder.append(" AND r.blockedforqualitycontrol = false ");
     }
 }
