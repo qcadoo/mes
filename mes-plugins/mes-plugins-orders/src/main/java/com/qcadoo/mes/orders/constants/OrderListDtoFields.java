@@ -45,28 +45,10 @@ public final class OrderListDtoFields {
 
     public static final String DEADLINE = "deadline";
 
-    public static final String EXTERNAL_NUMBER = "externalNumber";
-
-    public static final String EXTERNAL_SYNCHRONIZED = "externalSynchronized";
-
-    public static final String IS_SUBCONTRACTED = "isSubcontracted";
-
     public static final String PLANNED_QUANTITY = "plannedQuantity";
-
-    public static final String WORK_PLAN_DELIVERED = "workPlanDelivered";
 
     public static final String PRODUCT_NUMBER = "productNumber";
 
     public static final String UNIT = "unit";
-
-    public static final String TECHNOLOGY_NUMBER = "technologyNumber";
-
-    public static final String MASTER_ORDER_NUMBER = "masterOrderNumber";
-
-    public static final String MASTER_ORDER_DEFINITION_NUMBER = "masterOrderDefinitionNumber";
-
-    public static final String DIVISION_NAME = "divisionName";
-
-    public static final String COMPANY_NAME = "companyName";
 
 }

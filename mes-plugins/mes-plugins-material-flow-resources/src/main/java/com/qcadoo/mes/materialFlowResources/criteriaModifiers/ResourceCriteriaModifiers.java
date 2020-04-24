@@ -23,15 +23,15 @@
  */
 package com.qcadoo.mes.materialFlowResources.criteriaModifiers;
 
-import java.math.BigDecimal;
-
-import org.springframework.stereotype.Service;
-
+import com.qcadoo.mes.materialFlowResources.constants.ResourceDtoFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 public class ResourceCriteriaModifiers {
@@ -55,7 +55,7 @@ public class ResourceCriteriaModifiers {
     }
 
     public void restrictToLocation(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
-
+        scb.add(SearchRestrictions.eq(ResourceDtoFields.BLOCKED_FOR_QUALITY_CONTROL, false));
         if (!filterValue.has(L_LOCATION_FROM)) {
             return;
         }

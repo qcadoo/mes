@@ -39,8 +39,6 @@
         <decimal name="plannedQuantity"/>
         <decimal name="doneQuantity"/>
         <decimal name="plannedQuantityForAdditionalUnit"/>
-        <string name="externalNumber"/>
-        <boolean name="externalSynchronized" default="true"/>
         <boolean name="isSubcontracted" default="false"/>
         <boolean name="workPlanDelivered" default="false"/>
         <string name="productNumber"/>

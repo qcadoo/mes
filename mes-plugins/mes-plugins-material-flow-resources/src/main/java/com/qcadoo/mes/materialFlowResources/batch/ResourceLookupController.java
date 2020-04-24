@@ -7,13 +7,6 @@ import com.qcadoo.mes.basic.LookupUtils;
 import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
 import com.qcadoo.mes.materialFlowResources.ResourceDTO;
 import com.qcadoo.mes.materialFlowResources.WarehouseMethodOfDisposalService;
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -23,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.*;
 
 @Controller
 @RequestMapping(value = "resource")
@@ -109,12 +104,10 @@ public class ResourceLookupController extends BasicLookupController<ResourceDTO>
         if (lastResourceFilterIsWrong) {
             queryBuilder.append(" AND lastresource IS NULL ");
         }
-        if (useAdditionalCode) {
-            // queryBuilder.append(" AND additionalcode_id = (SELECT id FROM basic_additionalcode WHERE code = :add_code) ");
-        }
         if (useBatch) {
              queryBuilder.append(" AND batch.id = :batch ");
         }
+        queryBuilder.append(" AND r.blockedforqualitycontrol = false ");
         queryBuilder.append(warehouseMethodOfDisposalService.getSqlOrderByForResource(context));
         queryBuilder.append(") as resources");
         return queryBuilder.toString();
