@@ -23,22 +23,18 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
-import java.math.BigDecimal;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.hooks.OrderedProductDetailsHooks;
+import com.qcadoo.mes.technologies.constants.QualityCardFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
@@ -48,6 +44,15 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderedProductDetailsListeners {
@@ -69,6 +74,16 @@ public class OrderedProductDetailsListeners {
     @Autowired
     private OrderedProductDetailsHooks orderedProductDetailsHooks;
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    public void onProductChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        fillUnitFields(view, state, args);
+        fillCurrencyFields(view, state, args);
+        setBatchLookupProductFilterValue(view, state, args);
+        fillQualityCard(view);
+    }
+
     public void fillUnitFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         orderedProductDetailsHooks.fillUnitFields(view);
 
@@ -87,8 +102,8 @@ public class OrderedProductDetailsListeners {
             FieldComponent conversionField = (FieldComponent) view.getComponentByReference(OrderedProductFields.CONVERSION);
 
             if (!StringUtils.isEmpty(additionalUnit)) {
-                String conversion = numberService.formatWithMinimumFractionDigits(getConversion(product, unit, additionalUnit),
-                        0);
+                String conversion = numberService
+                        .formatWithMinimumFractionDigits(getConversion(product, unit, additionalUnit), 0);
 
                 conversionField.setFieldValue(conversion);
                 conversionField.setEnabled(true);
@@ -109,8 +124,8 @@ public class OrderedProductDetailsListeners {
 
     private BigDecimal getConversion(final Entity product, final String unit, final String additionalUnit) {
         PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
-                searchCriteriaBuilder -> searchCriteriaBuilder
-                        .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+                searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
+                        UnitConversionItemFieldsB.PRODUCT, product)));
 
         if (unitConversions.isDefinedFor(additionalUnit)) {
             return unitConversions.asUnitToConversionMap().get(additionalUnit);
@@ -147,11 +162,11 @@ public class OrderedProductDetailsListeners {
         BigDecimal orderedQuantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
 
         if (Objects.nonNull(conversion) && Objects.nonNull(orderedQuantity)) {
-            String additionalQuantityUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT))
-                    .orElse(product.getStringField(ProductFields.UNIT));
+            String additionalQuantityUnit = Optional.ofNullable(product.getStringField(ProductFields.ADDITIONAL_UNIT)).orElse(
+                    product.getStringField(ProductFields.UNIT));
 
-            BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(orderedQuantity, conversion,
-                    additionalQuantityUnit);
+            BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(orderedQuantity,
+                    conversion, additionalQuantityUnit);
 
             FieldComponent additionalQuantityField = (FieldComponent) view
                     .getComponentByReference(OrderedProductFields.ADDITIONAL_QUANTITY);
@@ -174,8 +189,8 @@ public class OrderedProductDetailsListeners {
                 entity.getDecimalField(fieldName);
             } catch (IllegalArgumentException e) {
                 if (!OrderedProductFields.ORDERED_QUANTITY.equals(fieldName)) {
-                    formComponent.findFieldComponentByName(fieldName)
-                            .addMessage("qcadooView.validate.field.error.invalidNumericFormat", MessageType.FAILURE);
+                    formComponent.findFieldComponentByName(fieldName).addMessage(
+                            "qcadooView.validate.field.error.invalidNumericFormat", MessageType.FAILURE);
                 }
 
                 valid = true;
@@ -214,13 +229,31 @@ public class OrderedProductDetailsListeners {
         }
     }
 
-    public void setBatchLookupProductFilterValue(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
+    public void setBatchLookupProductFilterValue(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent orderedProductForm = (FormComponent) view.getComponentByReference(L_FORM);
 
         Entity orderedProduct = orderedProductForm.getPersistedEntityWithIncludedFormValues();
 
         orderedProductDetailsHooks.setBatchLookupProductFilterValue(view, orderedProduct);
+    }
+
+    private void fillQualityCard(final ViewDefinitionState view) {
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderedProductFields.PRODUCT);
+        Entity product = productLookup.getEntity();
+
+        if (Objects.nonNull(product)) {
+            LookupComponent qualityCardLookup = (LookupComponent) view.getComponentByReference(OrderedProductFields.QUALITY_CARD);
+            List<Entity> entities = dataDefinitionService
+                    .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_QUALITY_CARD).find()
+                    .add(SearchRestrictions.eq(QualityCardFields.STATE, "02accepted"))
+                    .createAlias(QualityCardFields.PRODUCTS, QualityCardFields.PRODUCTS, JoinType.INNER)
+                    .add(SearchRestrictions.eq(QualityCardFields.PRODUCTS + ".id", product.getId())).list().getEntities();
+            if(entities.size() == 1) {
+                qualityCardLookup.setFieldValue(entities.get(0).getId());
+            } else {
+                qualityCardLookup.setFieldValue(null);
+            }
+        }
     }
 
 }

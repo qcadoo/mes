@@ -58,13 +58,7 @@
 
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"
-                                      method="fillUnitFields"/>
-                            <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"
-                                      method="fillCurrencyFields"/>
-                            <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"
-                                      method="setBatchLookupProductFilterValue"/>
+                                      method="onProductChange"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="3" width="2">
