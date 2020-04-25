@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 public class BaseAttributeValueHooks {
 
     private static final String ATTRIBUTE_VALUE = "attributeValue";
-    
+
     private static final String ATTRIBUTE = "attribute";
 
     private static final String VALUE = "value";
