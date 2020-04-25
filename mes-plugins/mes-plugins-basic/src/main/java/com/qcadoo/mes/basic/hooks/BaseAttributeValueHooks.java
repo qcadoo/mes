@@ -23,7 +23,7 @@ import org.springframework.stereotype.Service;
 public class BaseAttributeValueHooks {
 
     private static final String ATTRIBUTE_VALUE = "attributeValue";
-
+    
     private static final String ATTRIBUTE = "attribute";
 
     private static final String VALUE = "value";
@@ -32,7 +32,8 @@ public class BaseAttributeValueHooks {
             final String ownerAttributeValueCollectionName) {
         Entity attribute = ownerAttributeValue.getBelongsToField(ATTRIBUTE);
 
-        if (StringUtils.isNoneEmpty(ownerAttributeValue.getStringField(VALUE)) && AttributeDataType.CONTINUOUS.getStringValue().equals(attribute.getStringField(AttributeFields.DATA_TYPE))
+        if (StringUtils.isNoneEmpty(ownerAttributeValue.getStringField(VALUE))
+                && AttributeDataType.CONTINUOUS.getStringValue().equals(attribute.getStringField(AttributeFields.DATA_TYPE))
                 && AttributeValueType.NUMERIC.getStringValue().equals(attribute.getStringField(AttributeFields.VALUE_TYPE))) {
             Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParseAndIgnoreSeparator(
                     ownerAttributeValue.getStringField(VALUE), LocaleContextHolder.getLocale());
@@ -97,7 +98,14 @@ public class BaseAttributeValueHooks {
     }
 
     public void onSave(final DataDefinition attributeValueDD, final Entity attributeValue) {
+
         Entity attribute = attributeValue.getBelongsToField(ATTRIBUTE);
+        if (AttributeDataType.CALCULATED.getStringValue().equals(attribute.getStringField(AttributeFields.DATA_TYPE))
+                && Objects.isNull(attributeValue.getBelongsToField(ATTRIBUTE_VALUE))) {
+            attributeValue.setField(VALUE, null);
+            return;
+        }
+
         if (AttributeValueType.NUMERIC.getStringValue().equals(attribute.getStringField(AttributeFields.VALUE_TYPE))) {
             Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils.tryParseAndIgnoreSeparator(
                     attributeValue.getStringField(VALUE), LocaleContextHolder.getLocale());
