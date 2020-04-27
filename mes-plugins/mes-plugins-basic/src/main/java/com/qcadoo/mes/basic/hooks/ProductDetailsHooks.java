@@ -23,28 +23,23 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.CONVERSION_ITEMS;
-import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.util.UnitService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import static com.qcadoo.mes.basic.constants.ProductFields.CONVERSION_ITEMS;
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
 @Service
 public class ProductDetailsHooks {
@@ -150,13 +145,11 @@ public class ProductDetailsHooks {
 
         if (product.getEntityId() != null) {
             productIdForMultiUpload.setFieldValue(product.getEntityId());
-            productIdForMultiUpload.requestComponentUpdateState();
         } else {
             productIdForMultiUpload.setFieldValue("");
-            productIdForMultiUpload.requestComponentUpdateState();
         }
+        productIdForMultiUpload.requestComponentUpdateState();
         productMultiUploadLocale.setFieldValue(LocaleContextHolder.getLocale());
         productMultiUploadLocale.requestComponentUpdateState();
-
     }
 }
