@@ -129,6 +129,7 @@ public final class ProductionTrackingListenerServicePFTD {
 
     public void createWarehouseDocuments(final Entity productionTracking) {
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        Entity toc = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
 
         List<Entity> recordOutProducts = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
@@ -139,7 +140,7 @@ public final class ProductionTrackingListenerServicePFTD {
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
 
         Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper.fillFromBPCProductIn(recordInProducts,
-                order, true);
+                order, toc, true);
 
         for (Long warehouseId : groupedRecordOutProducts.keySet()) {
             Entity locationTo = getLocationDD().get(warehouseId);
