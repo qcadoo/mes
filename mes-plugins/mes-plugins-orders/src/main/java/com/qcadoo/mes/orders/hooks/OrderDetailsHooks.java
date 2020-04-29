@@ -455,7 +455,7 @@ public class OrderDetailsHooks {
             }
         }
 
-        RibbonActionItem refreshRibbonActionItem = ribbon.getGroupByName("actions").getItemByName("refresh");
+        RibbonActionItem refreshRibbonActionItem = ribbon.getGroupByName("orderDetailsActions").getItemByName("refresh");
         RibbonActionItem backRibbonActionItem = ribbon.getGroupByName("navigation").getItemByName("back");
 
         refreshRibbonActionItem.setEnabled(true);

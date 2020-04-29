@@ -132,6 +132,13 @@ public class OrderHooks {
         setRemainingQuantity(order);
         setAdditionalFields(order);
         changedProductionLineInOperationalTasksWhenChanged(orderDD, order);
+        setExternalSynchronized(order);
+    }
+
+    private void setExternalSynchronized(Entity order) {
+        if (order.getField(OrderFields.EXTERNAL_SYNCHRONIZED) == null) {
+            order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
+        }
     }
 
     private void changedProductionLineInOperationalTasksWhenChanged(final DataDefinition orderDD, final Entity order) {
