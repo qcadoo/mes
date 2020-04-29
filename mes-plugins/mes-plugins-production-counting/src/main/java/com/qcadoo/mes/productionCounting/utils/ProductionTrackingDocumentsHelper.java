@@ -14,16 +14,18 @@ import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInCom
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductionTrackingDocumentsHelper {
@@ -42,21 +44,28 @@ public class ProductionTrackingDocumentsHelper {
     private DataDefinitionService dataDefinitionService;
 
     public final Multimap<Long, Entity> fillFromBPCProductIn(final List<Entity> recordInProducts, final Entity order,
-            final boolean withComponents) {
-        List<Entity> entities = getProductionCountingQuantityDD().find()
-                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order)).add(SearchRestrictions
-                        .eq(ProductionCountingQuantityFields.ROLE, ProductionCountingQuantityRole.USED.getStringValue()))
-                .list().getEntities();
+            final Entity toc, final boolean withComponents) {
+
+        SearchCriteriaBuilder scb = getProductionCountingQuantityDD()
+                .find()
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))
+                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
+                        ProductionCountingQuantityRole.USED.getStringValue()));
+        if(Objects.nonNull(toc)) {
+            scb = scb.add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT, toc));
+        }
+        List<Entity> entities = scb.list().getEntities();
 
         Multimap<Long, Entity> groupedRecordInProducts = ArrayListMultimap.create();
 
         for (Entity entity : entities) {
             Entity warehouse;
-            if (withComponents && ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()
-                    .equals(entity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))) {
+            if (withComponents
+                    && ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue().equals(
+                            entity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))) {
                 warehouse = entity.getBelongsToField(COMPONENTS_LOCATION);
-            } else if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue()
-                    .equals(entity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))
+            } else if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(
+                    entity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))
                     && WAREHOUSE.equals(entity.getStringField(PRODUCTION_FLOW))) {
                 warehouse = entity.getBelongsToField(PRODUCTS_FLOW_LOCATION);
             } else {
@@ -75,28 +84,30 @@ public class ProductionTrackingDocumentsHelper {
 
     public Multimap<Long, Entity> fillFromBPCProductOut(final List<Entity> recordOutProducts, final Entity order,
             final boolean withWaste) {
-        List<Entity> entities = getProductionCountingQuantityDD().find()
-                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order)).add(SearchRestrictions
-                        .eq(ProductionCountingQuantityFields.ROLE, ProductionCountingQuantityRole.PRODUCED.getStringValue()))
-                .list().getEntities();
+        List<Entity> entities = getProductionCountingQuantityDD()
+                .find()
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))
+                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
+                        ProductionCountingQuantityRole.PRODUCED.getStringValue())).list().getEntities();
 
         Multimap<Long, Entity> groupedRecordOutProducts = ArrayListMultimap.create();
 
         for (Entity entity : entities) {
             Entity warehouse;
-            if (withWaste && ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue()
-                    .equals(entity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))) {
+            if (withWaste
+                    && ProductionCountingQuantityTypeOfMaterial.WASTE.getStringValue().equals(
+                            entity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))) {
                 warehouse = entity.getBelongsToField(PRODUCTS_INPUT_LOCATION);
 
                 if (warehouse == null) {
                     continue;
                 }
-            } else if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue()
-                    .equals(entity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))
+            } else if (ProductionCountingQuantityTypeOfMaterial.INTERMEDIATE.getStringValue().equals(
+                    entity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))
                     && WAREHOUSE.equals(entity.getStringField(PRODUCTION_FLOW))) {
                 warehouse = entity.getBelongsToField(PRODUCTS_FLOW_LOCATION);
-            } else if (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue()
-                    .equals(entity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))) {
+            } else if (ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue().equals(
+                    entity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))) {
                 warehouse = entity.getBelongsToField(PRODUCTS_INPUT_LOCATION);
             } else {
                 continue;
@@ -113,13 +124,16 @@ public class ProductionTrackingDocumentsHelper {
     }
 
     public Entity findProductionRecordByProduct(final List<Entity> productionRecords, final Entity product) {
-        return productionRecords.stream().filter(productionRecord -> {
-            BigDecimal usedQuantity = productionRecord.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
+        return productionRecords
+                .stream()
+                .filter(productionRecord -> {
+                    BigDecimal usedQuantity = productionRecord
+                            .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
 
-            return product.getId()
-                    .equals(productionRecord.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId())
-                    && usedQuantity != null && BigDecimal.ZERO.compareTo(usedQuantity) < 0;
-        }).findFirst().orElse(null);
+                    return product.getId().equals(
+                            productionRecord.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId())
+                            && usedQuantity != null && BigDecimal.ZERO.compareTo(usedQuantity) < 0;
+                }).findFirst().orElse(null);
     }
 
     public List<Long> findProductsWithInsufficientQuantity(final Multimap<Long, Entity> groupedRecordInProducts,
@@ -133,10 +147,12 @@ public class ProductionTrackingDocumentsHelper {
                 boolean productInTrackingOperationProductOut = false;
 
                 for (Entity recordOutProduct : recordOutProducts) {
-                    if (productNotInStock.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId().equals(
-                            recordOutProduct.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId())) {
-                        if (Objects.isNull(
-                                recordOutProduct.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY))) {
+                    if (productNotInStock
+                            .getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT)
+                            .getId()
+                            .equals(recordOutProduct.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId())) {
+                        if (Objects.isNull(recordOutProduct
+                                .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY))) {
                             ids.add(productNotInStock.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT)
                                     .getId());
                         } else if (productNotInStock.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY)
@@ -170,13 +186,13 @@ public class ProductionTrackingDocumentsHelper {
             Map<Long, BigDecimal> stockMap = getStock(groupedRecordInProducts, warehouseId, warehouseFrom);
 
             for (Entity recordInProduct : groupedRecordInProducts.get(warehouseId)) {
-                BigDecimal productStock = stockMap
-                        .get(recordInProduct.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT).getId());
+                BigDecimal productStock = stockMap.get(recordInProduct.getBelongsToField(
+                        TrackingOperationProductInComponentFields.PRODUCT).getId());
 
                 if (Objects.isNull(productStock)) {
                     productsNotInStockQuantities.put(recordInProduct, BigDecimal.ZERO);
-                } else if (productStock.compareTo(
-                        recordInProduct.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY)) < 0) {
+                } else if (productStock.compareTo(recordInProduct
+                        .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY)) < 0) {
                     productsNotInStockQuantities.put(recordInProduct, productStock);
                 }
             }
@@ -191,22 +207,19 @@ public class ProductionTrackingDocumentsHelper {
 
     private Map<Long, BigDecimal> getStock(final Multimap<Long, Entity> groupedRecordInProducts, final Long warehouseId,
             Entity warehouseFrom) {
-        return getQuantitiesForProductsAndLocation(groupedRecordInProducts.get(warehouseId).stream()
-                .map(p -> p.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT)).collect(Collectors.toList()),
-                warehouseFrom);
+        return getQuantitiesForProductsAndLocation(
+                groupedRecordInProducts.get(warehouseId).stream()
+                        .map(p -> p.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT))
+                        .collect(Collectors.toList()), warehouseFrom);
     }
 
     public Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location) {
         Map<Long, BigDecimal> quantities = Maps.newHashMap();
 
         if (products.size() > 0) {
-            String hql = "SELECT p.id AS product, sum(r.quantity) AS quantity " +
-                    "FROM #materialFlowResources_resource as r " +
-                    "JOIN r.product AS p " +
-                    "JOIN r.location AS l " +
-                    "GROUP BY p.id, l.id " +
-                    "HAVING p.id IN (:productIds) " +
-                    "AND l.id = :locationId ";
+            String hql = "SELECT p.id AS product, sum(r.quantity) AS quantity " + "FROM #materialFlowResources_resource as r "
+                    + "JOIN r.product AS p " + "JOIN r.location AS l " + "GROUP BY p.id, l.id " + "HAVING p.id IN (:productIds) "
+                    + "AND l.id = :locationId ";
             SearchQueryBuilder sqb = getResourceDD().find(hql);
 
             sqb.setParameter("locationId", location.getId());
@@ -214,8 +227,8 @@ public class ProductionTrackingDocumentsHelper {
 
             List<Entity> productsAndQuantities = sqb.list().getEntities();
 
-            productsAndQuantities.forEach(productAndQuantity -> quantities
-                    .put((Long) productAndQuantity.getField("product"), productAndQuantity.getDecimalField("quantity")));
+            productsAndQuantities.forEach(productAndQuantity -> quantities.put((Long) productAndQuantity.getField("product"),
+                    productAndQuantity.getDecimalField("quantity")));
         }
 
         return quantities;
