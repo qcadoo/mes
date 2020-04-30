@@ -34,12 +34,12 @@ $(function() {
 							.getComponentByReferenceName(
 								"productMultiUploadLocale")
 									.getValue().content.value;
-							var techId = window.mainController
+							var productId = window.mainController
 								.getComponentByReferenceName(
 									"productIdForMultiUpload")
 										.getValue();
-							var techIdValue = techId.content;
-							if(!techIdValue.value || 0 === techIdValue.value){
+							var productIdValue = productId.content;
+							if(!productIdValue.value || 0 === productIdValue.value){
 							    $.each(data.files, function (index, file) {
 									if(locale === "pl_PL" || locale === "pl"){
 							    	showMessage("failure",
@@ -99,13 +99,13 @@ $(function() {
 					}).bind(
 					'fileuploadsubmit',
 					function(e, data) {
-						var techId = window.mainController
+						var productId = window.mainController
 								.getComponentByReferenceName(
 										"productIdForMultiUpload")
 								.getValue();
-						var techIdValue = techId.content;
+						var productIdValue = productId.content;
 						data.formData = {
-							techId : techIdValue.value
+							productId : productIdValue.value
 						};
 					
 					}).bind(

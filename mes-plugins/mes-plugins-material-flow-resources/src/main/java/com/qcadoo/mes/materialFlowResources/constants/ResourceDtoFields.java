@@ -87,4 +87,6 @@ public final class ResourceDtoFields {
 
     public static final String POSITION_ADD_MULTI_HELPER = "positionAddMultiHelper";
 
+    public static final String BLOCKED_FOR_QUALITY_CONTROL = "blockedForQualityControl";
+
 }

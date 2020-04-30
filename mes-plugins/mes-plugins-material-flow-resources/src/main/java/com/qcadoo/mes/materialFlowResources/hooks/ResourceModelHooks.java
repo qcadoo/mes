@@ -23,27 +23,22 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
+import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-
 @Service
 public class ResourceModelHooks {
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -73,6 +68,9 @@ public class ResourceModelHooks {
         if (Objects.isNull(resource.getField(ResourceFields.WASTE))) {
             resource.setField(ResourceFields.WASTE, false);
         }
+        if (Objects.isNull(resource.getField(ResourceFields.BLOCKED_FOR_QUALITY_CONTROL))) {
+            resource.setField(ResourceFields.BLOCKED_FOR_QUALITY_CONTROL, false);
+        }
         if (Objects.isNull(resource.getDecimalField(ResourceFields.RESERVED_QUANTITY))) {
             resource.setField(ResourceFields.RESERVED_QUANTITY, BigDecimal.ZERO);
         }
@@ -80,5 +78,4 @@ public class ResourceModelHooks {
             resource.setField(ResourceFields.AVAILABLE_QUANTITY, resource.getDecimalField(ResourceFields.QUANTITY));
         }
     }
-
 }

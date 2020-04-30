@@ -44,11 +44,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.Iterator;
-import javax.servlet.http.HttpServletResponse;
 
 @Controller
 @RequestMapping("/basic")
@@ -70,7 +70,7 @@ public class ProductMultiUploadController {
     @ResponseBody
     @RequestMapping(value = "/multiUploadFilesForProduct", method = RequestMethod.POST)
     public void upload(MultipartHttpServletRequest request, HttpServletResponse response) {
-        Long productId = Long.parseLong(request.getParameter("techId"));
+        Long productId = Long.parseLong(request.getParameter("productId"));
         Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
         DataDefinition attachmentDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
                 BasicConstants.MODEL_PRODUCT_ATTACHMENT);
@@ -88,16 +88,16 @@ public class ProductMultiUploadController {
                 logger.error("Unable to upload attachment.", e);
             }
             if (MultiUploadHelper.EXTS.contains(Files.getFileExtension(path).toUpperCase())) {
-                Entity atchment = attachmentDD.create();
-                atchment.setField(ProductAttachmentFields.ATTACHMENT, path);
-                atchment.setField(ProductAttachmentFields.NAME, mpf.getOriginalFilename());
-                atchment.setField(ProductAttachmentFields.PRODUCT, product);
-                atchment.setField(ProductAttachmentFields.EXT, Files.getFileExtension(path));
+                Entity attachment = attachmentDD.create();
+                attachment.setField(ProductAttachmentFields.ATTACHMENT, path);
+                attachment.setField(ProductAttachmentFields.NAME, mpf.getOriginalFilename());
+                attachment.setField(ProductAttachmentFields.PRODUCT, product);
+                attachment.setField(ProductAttachmentFields.EXT, Files.getFileExtension(path));
                 BigDecimal fileSize = new BigDecimal(mpf.getSize(), numberService.getMathContext());
                 BigDecimal divider = new BigDecimal(1024, numberService.getMathContext());
                 BigDecimal size = fileSize.divide(divider, L_SCALE, BigDecimal.ROUND_HALF_UP);
-                atchment.setField(ProductAttachmentFields.SIZE, size);
-                attachmentDD.save(atchment);
+                attachment.setField(ProductAttachmentFields.SIZE, size);
+                attachmentDD.save(attachment);
             }
         }
     }

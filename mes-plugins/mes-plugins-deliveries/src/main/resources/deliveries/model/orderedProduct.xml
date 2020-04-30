@@ -67,6 +67,8 @@
         <string name="batchNumber"/>
         <belongsTo name="batch" model="batch" plugin="advancedGenealogy"/>
 
+        <belongsTo name="qualityCard" model="qualityCard" plugin="technologies"/>
+
         <hasMany name="deliveredProducts" model="deliveredProduct"
                  joinField="orderedProduct" cascade="nullify" copyable="false"/>
     </fields>

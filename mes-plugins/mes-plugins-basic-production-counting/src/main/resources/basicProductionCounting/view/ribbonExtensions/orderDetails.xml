@@ -42,18 +42,10 @@
 					});	
 					#{form}.addOnChangeListener({
 						onSetValue: function(value) {
-							if (! value || ! value.content) {
+							if (!value || !value.content) {
 								return;
 							}
-							if (! value.content.entityId) {
-								this.disable();
-								return;
-							} else {
-								this.enable();
-							}
-						var externalNumber = #{externalNumber}.getValue().content.value;
-						var externalSynchronized = #{externalSynchronized}.getValue().content.value;
-							if (externalNumber == "" || !externalSynchronized){
+							if (!value.content.entityId) {
 								this.disable();
 							} else {
 								this.enable();

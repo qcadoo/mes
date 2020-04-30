@@ -58,13 +58,7 @@
 
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"
-                                      method="fillUnitFields"/>
-                            <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"
-                                      method="fillCurrencyFields"/>
-                            <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.deliveries.listeners.OrderedProductDetailsListeners"
-                                      method="setBatchLookupProductFilterValue"/>
+                                      method="onProductChange"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="3" width="2">
@@ -186,9 +180,32 @@
                             </component>
                         </component>
                     </layoutElement>
-                    <layoutElement column="2" row="4" height="2">
-                        <component type="textarea" name="description" reference="description"
-                                   field="description">
+                    <layoutElement column="2" row="4">
+                        <component type="gridLayout" name="qualityCardGridLayout"
+                                   hasBorders="false" columns="1" rows="3">
+                            <layoutElement column="1" row="1">
+                                <component type="lookup" name="qualityCard" field="qualityCard"
+                                           reference="qualityCard">
+                                    <option type="column" name="name" fields="name" link="true"
+                                            width="200"/>
+
+                                    <option type="searchable" value="name"/>
+                                    <option type="orderable" value="name"/>
+
+                                    <option type="expression"
+                                            value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                                    <option type="fieldCode" value="number"/>
+
+                                    <criteriaModifier
+                                              class="com.qcadoo.mes.deliveries.criteriaModifiers.QualityCardCriteriaModifiersD"
+                                              method="showQualityCardsForProduct"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="2" height="2">
+                                <component type="textarea" name="description" reference="description"
+                                           field="description">
+                                </component>
+                            </layoutElement>
                         </component>
                     </layoutElement>
                 </component>

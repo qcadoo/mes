@@ -69,8 +69,6 @@ public final class ParameterFieldsO {
 
     public static final String SET_EFFECTIVE_DATE_TO_ON_COMPLETED = "setEffectiveDateToOnCompleted";
 
-    public static final String FLAG_PERCENTAGE_OF_EXECUTION_WITH_COLOR= "flagPercentageOfExecutionWithColor";
-
     public static final String REALIZATION_FROM_STOCK= "realizationFromStock";
 
     public static final String ALWAYS_ORDER_ITEMS_WITH_PERSONALIZATION= "alwaysOrderItemsWithPersonalization";

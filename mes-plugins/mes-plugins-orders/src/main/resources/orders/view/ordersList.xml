@@ -137,9 +137,7 @@
 
 							    if(selectedEntitiesArray.length > 1) {
 									for (var i = selectedEntitiesArray.length-1 ; i > 0 ; i--) {
-										if (selectedEntitiesArray[i-1].fields.state != selectedEntitiesArray[i].fields.state
-										|| selectedEntitiesArray[i-1].fields.externalSynchronized == '0'
-										|| selectedEntitiesArray[i].fields.externalSynchronized == '0') {
+										if (selectedEntitiesArray[i-1].fields.state != selectedEntitiesArray[i].fields.state) {
 											noDifferentStates = false;
 											break;
 										}
@@ -147,9 +145,8 @@
 								}
 								if (noDifferentStates) {
 									var selectedEntityStatus = selectedEntitiesArray[0].fields.state;
-									var externalSynchronized = selectedEntitiesArray[0].fields.externalSynchronized;
 
-									if (selectedEntityStatus == '01pending' && externalSynchronized == '1') {
+									if (selectedEntityStatus == '01pending') {
 										acceptOrder.enable();
 										acceptOrder.state = "accept";
 										acceptOrder.setLabel("#{translate(orders.ordersPlanningList.window.ribbon.status.acceptOrder)}");
@@ -159,7 +156,7 @@
 										declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.declineOrder)}");
 										declineOrder.setIcon('deleteIcon16.png');
 										interruptOrder.disable();
-									} else if (selectedEntityStatus == '02accepted' && externalSynchronized == '1') {
+									} else if (selectedEntityStatus == '02accepted') {
 										acceptOrder.enable();
 										acceptOrder.state = "begin";
 										acceptOrder.setLabel("#{translate(orders.ordersPlanningList.window.ribbon.status.activateOrder)}");
@@ -169,7 +166,7 @@
 										declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.declineOrder)}");
 										declineOrder.setIcon('deleteIcon16.png');
 										interruptOrder.disable();
-									} else if (selectedEntityStatus == '03inProgress' && externalSynchronized == '1') {
+									} else if (selectedEntityStatus == '03inProgress') {
 										acceptOrder.enable();
 										acceptOrder.state = "finish";
 										acceptOrder.setLabel("#{translate(orders.ordersPlanningList.window.ribbon.status.finishOrder)}");
@@ -179,7 +176,7 @@
 										declineOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.abandonOrder)}");
 										declineOrder.setIcon('deleteIcon16.png');
 										interruptOrder.enable();
-									} else if (selectedEntityStatus == '06interrupted' && externalSynchronized == '1') {
+									} else if (selectedEntityStatus == '06interrupted') {
 										acceptOrder.enable();
 	 									acceptOrder.state = "restart";
 	 									acceptOrder.setLabel("#{translate(orders.orderDetails.window.ribbon.status.restartOrder)}");
@@ -203,23 +200,17 @@
 								if (copyButton) copyButton.enable();
 
 								var canNotDelete = false;
-								var hasExternal = false;
 
 								for (var i in selectedEntitiesArray) {
 									var state = selectedEntitiesArray[i].fields.state;
 									if (state =="02accepted" || state =="03inProgress" || state == "04completed" || state =="06interrupted" || state =="07abandoned") {
                    			 			canNotDelete = true;
 										break;
-									} else if (selectedEntitiesArray[i].fields.externalSynchronized == '0' || (typeof selectedEntitiesArray[i].fields.externalNumber === 'string')) {
-										hasExternal = true;
-										break;
 									}
 								}
                                 if (deleteButton){
                                     if (canNotDelete) {
                                         deleteButton.disable("#{translate(orders.orders.ribbon.message.someStateIsIncorrectForDelete)}");
-                                    } else if (hasExternal) {
-                                        deleteButton.disable("#{translate(orders.orders.ribbon.message.someOrderIsExternal)}");
                                     } else {
                                         deleteButton.enable();
                                     }
@@ -242,9 +233,6 @@
 			<option type="column" name="plannedQuantityForAdditionalUnit" fields="plannedQuantityForAdditionalUnit" width="35"/>
 			<option type="column" name="unitForAdditionalUnit" fields="unitForAdditionalUnit" width="15"/>
 			<option type="column" name="companyName" fields="companyName" width="50"/>
-            <option type="column" name="externalNumber" fields="externalNumber" hidden="true"/>
-            <option type="column" name="externalSynchronized" fields="externalSynchronized"
-                    expression="#externalSynchronized?'1':'0'" hidden="true"/>
 			<option type="column" name="orderCategory" fields="orderCategory" width="40"/>
 
             <option type="correspondingView" value="orders/orderDetails"/>

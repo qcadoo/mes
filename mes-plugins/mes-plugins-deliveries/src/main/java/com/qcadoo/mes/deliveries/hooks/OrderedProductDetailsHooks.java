@@ -23,6 +23,20 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier;
+import com.qcadoo.mes.basic.constants.AdditionalCodeFields;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
+import com.qcadoo.mes.technologies.criteriaModifiers.QualityCardCriteriaModifiers;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
@@ -30,19 +44,6 @@ import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier;
-import com.qcadoo.mes.basic.constants.AdditionalCodeFields;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.deliveries.DeliveriesService;
-import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Service
 public class OrderedProductDetailsHooks {
@@ -64,6 +65,7 @@ public class OrderedProductDetailsHooks {
         fillCurrencyFields(view);
 
         setBatchLookupProductFilterValue(view, orderedProduct);
+        fillCriteriaModifiers(view);
     }
 
     public void fillUnitFields(final ViewDefinitionState view) {
@@ -132,6 +134,17 @@ public class OrderedProductDetailsHooks {
 
         if (Objects.nonNull(product)) {
             batchCriteriaModifier.putProductFilterValue(batchLookup, product);
+        }
+    }
+
+    private void fillCriteriaModifiers(final ViewDefinitionState viewDefinitionState) {
+        LookupComponent product = (LookupComponent) viewDefinitionState.getComponentByReference("product");
+        LookupComponent qualityCard = (LookupComponent) viewDefinitionState.getComponentByReference("qualityCard");
+        if (product.getEntity() != null) {
+            FilterValueHolder filter = qualityCard.getFilterValue();
+            filter.put(QualityCardCriteriaModifiers.L_PRODUCT_ID, product.getEntity().getId());
+            qualityCard.setFilterValue(filter);
+            qualityCard.requestComponentUpdateState();
         }
     }
 

@@ -61,4 +61,6 @@ public final class OrderedProductFields {
 
     public static final String DELIVERED_PRODUCTS = "deliveredProducts";
 
+    public static final String QUALITY_CARD = "qualityCard";
+
 }

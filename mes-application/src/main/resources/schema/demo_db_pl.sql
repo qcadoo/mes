@@ -8993,7 +8993,8 @@ CREATE TABLE basic_parameter (
     generatebatchoforderedproduct boolean DEFAULT false,
     acceptbatchtrackingwhenclosingorder boolean DEFAULT false,
     completewarehousesflowwhilechecking boolean DEFAULT false,
-    qualitycontrol boolean DEFAULT false
+    qualitycontrol boolean DEFAULT false,
+    finalqualitycontrolwithoutresources boolean DEFAULT false
 );
 
 
@@ -11526,7 +11527,8 @@ CREATE TABLE deliveries_deliveredproduct (
     additionalunit character varying(255),
     damaged boolean DEFAULT false,
     batch_id bigint,
-    orderedproduct_id bigint
+    orderedproduct_id bigint,
+    qualityrating character varying(255)
 );
 
 
@@ -11933,7 +11935,8 @@ CREATE TABLE deliveries_orderedproduct (
     deliveredquantity numeric,
     additionaldeliveredquantity numeric,
     batchnumber character varying(255),
-    batch_id bigint
+    batch_id bigint,
+    qualitycard_id bigint
 );
 
 
@@ -16548,7 +16551,8 @@ CREATE VIEW materialflowresources_resourcedto AS
     (resource.location_id)::integer AS location_id,
     NULL::bigint AS positionaddmultihelper_id,
     resource.documentnumber,
-    resource.qualityrating
+    resource.qualityrating,
+    resource.blockedforqualitycontrol
    FROM ((((((materialflowresources_resource resource
      JOIN materialflow_location location ON ((location.id = resource.location_id)))
      JOIN basic_product product ON ((product.id = resource.product_id)))
@@ -22530,6 +22534,72 @@ ALTER SEQUENCE qcadooview_viewedalert_id_seq OWNED BY qcadooview_viewedalert.id;
 
 
 --
+-- Name: qualitycontrol_deliveryqualitycontrol; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE qualitycontrol_deliveryqualitycontrol (
+    id bigint NOT NULL,
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255),
+    delivery_id bigint
+);
+
+
+--
+-- Name: qualitycontrol_deliveryqualitycontrol_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE qualitycontrol_deliveryqualitycontrol_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: qualitycontrol_deliveryqualitycontrol_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE qualitycontrol_deliveryqualitycontrol_id_seq OWNED BY qualitycontrol_deliveryqualitycontrol.id;
+
+
+--
+-- Name: qualitycontrol_qualitycardattachment; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE qualitycontrol_qualitycardattachment (
+    id bigint NOT NULL,
+    qualitycard_id bigint,
+    attachment character varying(255),
+    name character varying(255),
+    size numeric(12,5),
+    ext character varying(255)
+);
+
+
+--
+-- Name: qualitycontrol_qualitycardattachment_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE qualitycontrol_qualitycardattachment_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: qualitycontrol_qualitycardattachment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE qualitycontrol_qualitycardattachment_id_seq OWNED BY qualitycontrol_qualitycardattachment.id;
+
+
+--
 -- Name: qualitycontrol_qualitycontrol; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -22544,7 +22614,8 @@ CREATE TABLE qualitycontrol_qualitycontrol (
     staff_id bigint,
     order_id bigint,
     qualityrating character varying(255),
-    state character varying(255) DEFAULT '01new'::character varying
+    state character varying(255) DEFAULT '01new'::character varying,
+    delivery_id bigint
 );
 
 
@@ -22580,6 +22651,39 @@ CREATE SEQUENCE qualitycontrol_qualitycontrol_number_seq
 
 
 --
+-- Name: qualitycontrol_qualitycontrolattachment; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE qualitycontrol_qualitycontrolattachment (
+    id bigint NOT NULL,
+    qualitycontrol_id bigint,
+    attachment character varying(255),
+    name character varying(255),
+    size numeric(12,5),
+    ext character varying(255)
+);
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattachment_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE qualitycontrol_qualitycontrolattachment_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattachment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE qualitycontrol_qualitycontrolattachment_id_seq OWNED BY qualitycontrol_qualitycontrolattachment.id;
+
+
+--
 -- Name: qualitycontrol_qualitycontrolattribute; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -22608,6 +22712,38 @@ CREATE SEQUENCE qualitycontrol_qualitycontrolattribute_id_seq
 --
 
 ALTER SEQUENCE qualitycontrol_qualitycontrolattribute_id_seq OWNED BY qualitycontrol_qualitycontrolattribute.id;
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattributedeliveredprod; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE qualitycontrol_qualitycontrolattributedeliveredprod (
+    id bigint NOT NULL,
+    qualitydeliveredproduct_id bigint,
+    attribute_id bigint,
+    attributevalue_id bigint,
+    value character varying(255)
+);
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattributedeliveredprod_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE qualitycontrol_qualitycontrolattributedeliveredprod_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattributedeliveredprod_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE qualitycontrol_qualitycontrolattributedeliveredprod_id_seq OWNED BY qualitycontrol_qualitycontrolattributedeliveredprod.id;
 
 
 --
@@ -22807,6 +22943,44 @@ CREATE SEQUENCE qualitycontrol_qualitycontrolstatechange_id_seq
 --
 
 ALTER SEQUENCE qualitycontrol_qualitycontrolstatechange_id_seq OWNED BY qualitycontrol_qualitycontrolstatechange.id;
+
+
+--
+-- Name: qualitycontrol_qualitydeliveredproduct; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE qualitycontrol_qualitydeliveredproduct (
+    id bigint NOT NULL,
+    deliveryqualitycontrol_id bigint,
+    qualitycard_id bigint,
+    qualityrating character varying(255),
+    product_id bigint,
+    batch_id bigint,
+    batchnumber character varying(255),
+    deliveredquantity numeric(12,5),
+    priceperunit numeric(12,5),
+    storagelocation_id bigint,
+    orderedproduct_id bigint
+);
+
+
+--
+-- Name: qualitycontrol_qualitydeliveredproduct_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE qualitycontrol_qualitydeliveredproduct_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: qualitycontrol_qualitydeliveredproduct_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE qualitycontrol_qualitydeliveredproduct_id_seq OWNED BY qualitycontrol_qualitydeliveredproduct.id;
 
 
 --
@@ -28495,6 +28669,20 @@ ALTER TABLE ONLY qcadooview_viewedalert ALTER COLUMN id SET DEFAULT nextval('qca
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY qualitycontrol_deliveryqualitycontrol ALTER COLUMN id SET DEFAULT nextval('qualitycontrol_deliveryqualitycontrol_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycardattachment ALTER COLUMN id SET DEFAULT nextval('qualitycontrol_qualitycardattachment_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY qualitycontrol_qualitycontrol ALTER COLUMN id SET DEFAULT nextval('qualitycontrol_qualitycontrol_id_seq'::regclass);
 
 
@@ -28502,7 +28690,21 @@ ALTER TABLE ONLY qualitycontrol_qualitycontrol ALTER COLUMN id SET DEFAULT nextv
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattachment ALTER COLUMN id SET DEFAULT nextval('qualitycontrol_qualitycontrolattachment_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY qualitycontrol_qualitycontrolattribute ALTER COLUMN id SET DEFAULT nextval('qualitycontrol_qualitycontrolattribute_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattributedeliveredprod ALTER COLUMN id SET DEFAULT nextval('qualitycontrol_qualitycontrolattributedeliveredprod_id_seq'::regclass);
 
 
 --
@@ -28538,6 +28740,13 @@ ALTER TABLE ONLY qualitycontrol_qualitycontrolresource ALTER COLUMN id SET DEFAU
 --
 
 ALTER TABLE ONLY qualitycontrol_qualitycontrolstatechange ALTER COLUMN id SET DEFAULT nextval('qualitycontrol_qualitycontrolstatechange_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitydeliveredproduct ALTER COLUMN id SET DEFAULT nextval('qualitycontrol_qualitydeliveredproduct_id_seq'::regclass);
 
 
 --
@@ -31678,8 +31887,8 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, enableoperationgroupingworkplan, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol) FROM stdin;
-1	167	124	szt	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01globally	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	50	3000	f	f	f	f	f	f	f	f	t	t	t	f	t	t	f	f	f	f	f	f	f	f	f	f	f	\N	\N	f	f	f	f
+COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, enableoperationgroupingworkplan, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources) FROM stdin;
+1	167	124	szt	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01globally	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	50	3000	f	f	f	f	f	f	f	f	t	t	t	f	t	t	f	f	f	f	f	f	f	f	f	f	f	\N	\N	f	f	f	f	f
 \.
 
 
@@ -32611,7 +32820,7 @@ SELECT pg_catalog.setval('deliveries_companyproductsfamily_id_seq', 1, false);
 -- Data for Name: deliveries_deliveredproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY deliveries_deliveredproduct (id, delivery_id, product_id, deliveredquantity, damagedquantity, priceperunit, totalprice, succession, operation_id, offer_id, batchnumber, productiondate, expirationdate, entityversion, palletnumber_id, pallettype, storagelocation_id, additionalcode_id, additionalquantity, conversion, iswaste, additionalunit, damaged, batch_id, orderedproduct_id) FROM stdin;
+COPY deliveries_deliveredproduct (id, delivery_id, product_id, deliveredquantity, damagedquantity, priceperunit, totalprice, succession, operation_id, offer_id, batchnumber, productiondate, expirationdate, entityversion, palletnumber_id, pallettype, storagelocation_id, additionalcode_id, additionalquantity, conversion, iswaste, additionalunit, damaged, batch_id, orderedproduct_id, qualityrating) FROM stdin;
 \.
 
 
@@ -32753,7 +32962,7 @@ SELECT pg_catalog.setval('deliveries_deliverystatechange_id_seq', 1, false);
 -- Data for Name: deliveries_orderedproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY deliveries_orderedproduct (id, delivery_id, product_id, orderedquantity, priceperunit, totalprice, description, succession, operation_id, offer_id, actualversion, entityversion, additionalquantity, conversion, additionalcode_id, deliveredquantity, additionaldeliveredquantity, batchnumber, batch_id) FROM stdin;
+COPY deliveries_orderedproduct (id, delivery_id, product_id, orderedquantity, priceperunit, totalprice, description, succession, operation_id, offer_id, actualversion, entityversion, additionalquantity, conversion, additionalcode_id, deliveredquantity, additionaldeliveredquantity, batchnumber, batch_id, qualitycard_id) FROM stdin;
 \.
 
 
@@ -37081,6 +37290,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 107	productionPerShift	balancePerShift	t	8	106	8	\N	0
 158	qualityControl	qualityCardList	t	20	157	1	ROLE_QUALITY_CONTROL	0
 159	qualityControl	qualityControlList	t	20	158	2	ROLE_QUALITY_CONTROL	0
+160	qualityControl	qualityControlAttributes	t	20	159	3	ROLE_QUALITY_CONTROL	0
 \.
 
 
@@ -37088,7 +37298,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 159, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 160, true);
 
 
 --
@@ -37249,6 +37459,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 106	productionPerShift	generateBalance	generateBalance	\N	0
 157	qualityControl	qualityCardList	qualityCardList	\N	0
 158	qualityControl	qualityControlList	qualityControlList	\N	0
+159	qualityControl	qualityControlAttributes	\N	/qualityControlAttributes.html	0
 \.
 
 
@@ -37256,7 +37467,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 158, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 159, true);
 
 
 --
@@ -37275,10 +37486,40 @@ SELECT pg_catalog.setval('qcadooview_viewedalert_id_seq', 1, false);
 
 
 --
+-- Data for Name: qualitycontrol_deliveryqualitycontrol; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY qualitycontrol_deliveryqualitycontrol (id, createdate, updatedate, createuser, updateuser, delivery_id) FROM stdin;
+\.
+
+
+--
+-- Name: qualitycontrol_deliveryqualitycontrol_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('qualitycontrol_deliveryqualitycontrol_id_seq', 1, false);
+
+
+--
+-- Data for Name: qualitycontrol_qualitycardattachment; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY qualitycontrol_qualitycardattachment (id, qualitycard_id, attachment, name, size, ext) FROM stdin;
+\.
+
+
+--
+-- Name: qualitycontrol_qualitycardattachment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('qualitycontrol_qualitycardattachment_id_seq', 1, false);
+
+
+--
 -- Data for Name: qualitycontrol_qualitycontrol; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY qualitycontrol_qualitycontrol (id, number, product_id, qualitycard_id, controltype, batch_id, date, staff_id, order_id, qualityrating, state) FROM stdin;
+COPY qualitycontrol_qualitycontrol (id, number, product_id, qualitycard_id, controltype, batch_id, date, staff_id, order_id, qualityrating, state, delivery_id) FROM stdin;
 \.
 
 
@@ -37297,6 +37538,21 @@ SELECT pg_catalog.setval('qualitycontrol_qualitycontrol_number_seq', 1, false);
 
 
 --
+-- Data for Name: qualitycontrol_qualitycontrolattachment; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY qualitycontrol_qualitycontrolattachment (id, qualitycontrol_id, attachment, name, size, ext) FROM stdin;
+\.
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattachment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('qualitycontrol_qualitycontrolattachment_id_seq', 1, false);
+
+
+--
 -- Data for Name: qualitycontrol_qualitycontrolattribute; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -37309,6 +37565,21 @@ COPY qualitycontrol_qualitycontrolattribute (id, qualitycard_id, attribute_id, p
 --
 
 SELECT pg_catalog.setval('qualitycontrol_qualitycontrolattribute_id_seq', 1, false);
+
+
+--
+-- Data for Name: qualitycontrol_qualitycontrolattributedeliveredprod; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY qualitycontrol_qualitycontrolattributedeliveredprod (id, qualitydeliveredproduct_id, attribute_id, attributevalue_id, value) FROM stdin;
+\.
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattributedeliveredprod_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('qualitycontrol_qualitycontrolattributedeliveredprod_id_seq', 1, false);
 
 
 --
@@ -37391,6 +37662,21 @@ COPY qualitycontrol_qualitycontrolstatechange (id, dateandtime, sourcestate, tar
 --
 
 SELECT pg_catalog.setval('qualitycontrol_qualitycontrolstatechange_id_seq', 1, false);
+
+
+--
+-- Data for Name: qualitycontrol_qualitydeliveredproduct; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY qualitycontrol_qualitydeliveredproduct (id, deliveryqualitycontrol_id, qualitycard_id, qualityrating, product_id, batch_id, batchnumber, deliveredquantity, priceperunit, storagelocation_id, orderedproduct_id) FROM stdin;
+\.
+
+
+--
+-- Name: qualitycontrol_qualitydeliveredproduct_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('qualitycontrol_qualitydeliveredproduct_id_seq', 1, false);
 
 
 --
@@ -42392,6 +42678,22 @@ ALTER TABLE ONLY qcadooview_viewedalert
 
 
 --
+-- Name: qualitycontrol_deliveryqualitycontrol_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_deliveryqualitycontrol
+    ADD CONSTRAINT qualitycontrol_deliveryqualitycontrol_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: qualitycontrol_qualitycardattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycardattachment
+    ADD CONSTRAINT qualitycontrol_qualitycardattachment_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: qualitycontrol_qualitycontrol_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -42400,11 +42702,27 @@ ALTER TABLE ONLY qualitycontrol_qualitycontrol
 
 
 --
+-- Name: qualitycontrol_qualitycontrolattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattachment
+    ADD CONSTRAINT qualitycontrol_qualitycontrolattachment_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: qualitycontrol_qualitycontrolattribute_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY qualitycontrol_qualitycontrolattribute
     ADD CONSTRAINT qualitycontrol_qualitycontrolattribute_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattributedeliveredprod_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattributedeliveredprod
+    ADD CONSTRAINT qualitycontrol_qualitycontrolattributedeliveredprod_pkey PRIMARY KEY (id);
 
 
 --
@@ -42445,6 +42763,14 @@ ALTER TABLE ONLY qualitycontrol_qualitycontrolresource
 
 ALTER TABLE ONLY qualitycontrol_qualitycontrolstatechange
     ADD CONSTRAINT qualitycontrol_qualitycontrolstatechange_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: qualitycontrol_qualitydeliveredproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitydeliveredproduct
+    ADD CONSTRAINT qualitycontrol_qualitydeliveredproduct_pkey PRIMARY KEY (id);
 
 
 --
@@ -47400,6 +47726,14 @@ ALTER TABLE ONLY deliveries_deliveryattachment
 
 
 --
+-- Name: deliveryqualitycontrol_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_deliveryqualitycontrol
+    ADD CONSTRAINT deliveryqualitycontrol_delivery_fkey FOREIGN KEY (delivery_id) REFERENCES deliveries_delivery(id) DEFERRABLE;
+
+
+--
 -- Name: deliverystatechange_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -50488,6 +50822,14 @@ ALTER TABLE ONLY deliveries_orderedproduct
 
 
 --
+-- Name: orderedproduct_qualitycard_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY deliveries_orderedproduct
+    ADD CONSTRAINT orderedproduct_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES technologies_qualitycard(id) DEFERRABLE;
+
+
+--
 -- Name: orderedproductreservation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -52856,6 +53198,14 @@ ALTER TABLE ONLY qcadoomodel_unitconversionitem
 
 
 --
+-- Name: qualitycardattachment_qualitycard_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycardattachment
+    ADD CONSTRAINT qualitycardattachment_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES technologies_qualitycard(id) DEFERRABLE;
+
+
+--
 -- Name: qualitycardstatechange_qualitycard_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -52877,6 +53227,14 @@ ALTER TABLE ONLY technologies_qualitycardstatechange
 
 ALTER TABLE ONLY qualitycontrol_qualitycontrol
     ADD CONSTRAINT qualitycontrol_batch_fkey FOREIGN KEY (batch_id) REFERENCES advancedgenealogy_batch(id);
+
+
+--
+-- Name: qualitycontrol_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrol
+    ADD CONSTRAINT qualitycontrol_delivery_fkey FOREIGN KEY (delivery_id) REFERENCES deliveries_delivery(id) DEFERRABLE;
 
 
 --
@@ -52928,6 +53286,14 @@ ALTER TABLE ONLY qualitycontrol_qualitycontrol
 
 
 --
+-- Name: qualitycontrolattachment_qualitycontrol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattachment
+    ADD CONSTRAINT qualitycontrolattachment_qualitycontrol_fkey FOREIGN KEY (qualitycontrol_id) REFERENCES qualitycontrol_qualitycontrol(id) DEFERRABLE;
+
+
+--
 -- Name: qualitycontrolattribute_attribute_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -52941,6 +53307,30 @@ ALTER TABLE ONLY qualitycontrol_qualitycontrolattribute
 
 ALTER TABLE ONLY qualitycontrol_qualitycontrolattribute
     ADD CONSTRAINT qualitycontrolattribute_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES technologies_qualitycard(id) DEFERRABLE;
+
+
+--
+-- Name: qualitycontrolattributedeliveredprod_attribute_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattributedeliveredprod
+    ADD CONSTRAINT qualitycontrolattributedeliveredprod_attribute_fkey FOREIGN KEY (attribute_id) REFERENCES basic_attribute(id) DEFERRABLE;
+
+
+--
+-- Name: qualitycontrolattributedeliveredprod_attributevalue_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattributedeliveredprod
+    ADD CONSTRAINT qualitycontrolattributedeliveredprod_attributevalue_fkey FOREIGN KEY (attributevalue_id) REFERENCES basic_attributevalue(id) DEFERRABLE;
+
+
+--
+-- Name: qualitycontrolattributedeliveredprod_qualitydeliveredproduct_fk; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitycontrolattributedeliveredprod
+    ADD CONSTRAINT qualitycontrolattributedeliveredprod_qualitydeliveredproduct_fk FOREIGN KEY (qualitydeliveredproduct_id) REFERENCES qualitycontrol_qualitydeliveredproduct(id) DEFERRABLE;
 
 
 --
@@ -53029,6 +53419,54 @@ ALTER TABLE ONLY qualitycontrol_qualitycontrolresource
 
 ALTER TABLE ONLY qualitycontrol_qualitycontrolresource
     ADD CONSTRAINT qualitycontrolresource_resource_fkey FOREIGN KEY (resource_id) REFERENCES materialflowresources_resource(id) DEFERRABLE;
+
+
+--
+-- Name: qualitydeliveredproduct_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitydeliveredproduct
+    ADD CONSTRAINT qualitydeliveredproduct_batch_fkey FOREIGN KEY (batch_id) REFERENCES advancedgenealogy_batch(id) DEFERRABLE;
+
+
+--
+-- Name: qualitydeliveredproduct_deliveryqualitycontrol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitydeliveredproduct
+    ADD CONSTRAINT qualitydeliveredproduct_deliveryqualitycontrol_fkey FOREIGN KEY (deliveryqualitycontrol_id) REFERENCES qualitycontrol_deliveryqualitycontrol(id) DEFERRABLE;
+
+
+--
+-- Name: qualitydeliveredproduct_orderedproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitydeliveredproduct
+    ADD CONSTRAINT qualitydeliveredproduct_orderedproduct_fkey FOREIGN KEY (orderedproduct_id) REFERENCES technologies_qualitycard(id) DEFERRABLE;
+
+
+--
+-- Name: qualitydeliveredproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitydeliveredproduct
+    ADD CONSTRAINT qualitydeliveredproduct_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: qualitydeliveredproduct_qualitycard_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitydeliveredproduct
+    ADD CONSTRAINT qualitydeliveredproduct_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES deliveries_orderedproduct(id) DEFERRABLE;
+
+
+--
+-- Name: qualitydeliveredproduct_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qualitycontrol_qualitydeliveredproduct
+    ADD CONSTRAINT qualitydeliveredproduct_storagelocation_fkey FOREIGN KEY (storagelocation_id) REFERENCES materialflowresources_storagelocation(id) DEFERRABLE;
 
 
 --

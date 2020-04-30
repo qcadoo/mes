@@ -63,8 +63,6 @@ public final class OrdersConstants {
 
     // VIEW
 
-    public static final String FIELD_FORM = "form";
-
     public static String orderDetailsUrl(final Long id) {
         return "#page/" + PLUGIN_IDENTIFIER + "/" + MODEL_ORDER + "Details.html?context=%7B%22form.id%22%3A%22" + id
                 + "%22%2C%22form.undefined%22%3Anull%7D";
