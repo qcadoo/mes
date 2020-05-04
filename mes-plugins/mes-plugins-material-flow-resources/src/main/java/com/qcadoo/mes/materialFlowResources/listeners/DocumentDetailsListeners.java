@@ -26,12 +26,7 @@ package com.qcadoo.mes.materialFlowResources.listeners;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
 import com.qcadoo.mes.materialFlowResources.print.DispositionOrderPdfService;
 import com.qcadoo.mes.materialFlowResources.service.ReceiptDocumentForReleaseHelper;
@@ -50,14 +45,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
-
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.exception.LockAcquisitionException;
 import org.json.JSONObject;
@@ -70,6 +57,8 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.util.*;
 
 @Service
 public class DocumentDetailsListeners {
@@ -303,25 +292,33 @@ public class DocumentDetailsListeners {
         }
 
         if (!document.getHasManyField(DocumentFields.POSITIONS).isEmpty()) {
-            try {
-                resourceManagementService.createResources(document);
-            } catch (InvalidResourceException ire) {
+            String blockedResources = getBlockedResources(document);
+            if (blockedResources.isEmpty()) {
+                try {
+                    resourceManagementService.createResources(document);
+                } catch (InvalidResourceException ire) {
+                    document.setNotValid();
+
+                    if ("materialFlow.error.position.batch.required"
+                            .equals(ire.getEntity().getError(ResourceFields.BATCH).getMessage())) {
+                        String productNumber = ire.getEntity().getBelongsToField(ResourceFields.PRODUCT)
+                                .getStringField(ProductFields.NUMBER);
+                        documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource.batchRequired",
+                                MessageType.FAILURE, false, productNumber);
+                    } else {
+                        String resourceNumber = ire.getEntity().getStringField(ResourceFields.NUMBER);
+                        String productNumber = ire.getEntity().getBelongsToField(ResourceFields.PRODUCT)
+                                .getStringField(ProductFields.NUMBER);
+
+                        documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource",
+                                MessageType.FAILURE, false, resourceNumber, productNumber);
+                    }
+                }
+            } else {
                 document.setNotValid();
 
-                if ("materialFlow.error.position.batch.required".equals(ire.getEntity().getError(ResourceFields.BATCH)
-                        .getMessage())) {
-                    String productNumber = ire.getEntity().getBelongsToField(ResourceFields.PRODUCT)
-                            .getStringField(ProductFields.NUMBER);
-                    documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource.batchRequired", MessageType.FAILURE,
-                            false, productNumber);
-                } else {
-                    String resourceNumber = ire.getEntity().getStringField(ResourceFields.NUMBER);
-                    String productNumber = ire.getEntity().getBelongsToField(ResourceFields.PRODUCT)
-                            .getStringField(ProductFields.NUMBER);
-
-                    documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource", MessageType.FAILURE,
-                            false, resourceNumber, productNumber);
-                }
+                documentForm.addMessage("materialFlow.document.validate.global.error.positionsBlockedForQualityControl",
+                        MessageType.FAILURE, blockedResources);
             }
         } else {
             document.setNotValid();
@@ -351,6 +348,14 @@ public class DocumentDetailsListeners {
         }
 
         documentForm.setEntity(document);
+    }
+
+    private String getBlockedResources(Entity document) {
+        String sql = "SELECT string_agg(p.number::text, ',') FROM materialflowresources_position p JOIN materialflowresources_resource r "
+                + "ON r.id = p.resource_id WHERE p.document_id = :id AND r.blockedforqualitycontrol";
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("id", document.getId());
+        return jdbcTemplate.queryForObject(sql, parameters, String.class);
     }
 
     public void clearWarehouseFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
