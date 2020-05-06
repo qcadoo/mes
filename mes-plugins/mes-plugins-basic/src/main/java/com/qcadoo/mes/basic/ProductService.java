@@ -23,12 +23,24 @@
  */
 package com.qcadoo.mes.basic;
 
-import com.qcadoo.mes.basic.constants.*;
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.SubstituteComponentFields;
+import com.qcadoo.mes.basic.constants.SubstituteFields;
+import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.basic.util.UnitService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.*;
+import com.qcadoo.model.api.search.CustomRestriction;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriterion;
+import com.qcadoo.model.api.search.SearchOrder;
+import com.qcadoo.model.api.search.SearchProjection;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.view.api.ComponentState;
@@ -36,14 +48,17 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.*;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import static com.qcadoo.mes.basic.constants.ProductFields.CONVERSION_ITEMS;
+import static com.qcadoo.mes.basic.constants.ProductFields.ENTITY_TYPE;
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
 @Service
 public class ProductService {
@@ -135,6 +150,22 @@ public class ProductService {
         } else {
             return !existingProductUnit.equals(currentUnit);
         }
+    }
+
+    public void openAdditionalDetails(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Entity product = productForm.getEntity();
+
+        if (product.getId() == null) {
+            return;
+        }
+
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        parameters.put("form.id", product.getId());
+
+        String url = "../page/basic/productAdditionalDetails.html";
+        view.redirectTo(url, false, true, parameters);
     }
 
     public void getDefaultConversions(final ViewDefinitionState view, final ComponentState state, final String[] args) {

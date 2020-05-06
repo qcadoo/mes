@@ -33,6 +33,10 @@
 
         <ribbon>
             <template name="standardFormTemplate"/>
+            <group name="additional">
+                <bigButton name="additionalDetails" state="enabled" icon="genealogyIcon24.png"
+                           action="#{form}.fireEvent(openAdditionalDetails)"/>
+            </group>
             <group name="conversions">
                 <bigButton name="getDefaultConversions" icon="genealogyIcon24.png">
                     <script>
@@ -169,6 +173,8 @@
 
                 <listener event="getDefaultConversions" class="com.qcadoo.mes.basic.ProductService"
                           method="getDefaultConversions"/>
+                <listener event="openAdditionalDetails" class="com.qcadoo.mes.basic.ProductService"
+                          method="openAdditionalDetails"/>
                 <listener event="downloadAttachment" method="downloadAttachment"
                           class="com.qcadoo.mes.basic.listeners.AttachmentsListeners"/>
 
@@ -199,37 +205,6 @@
                         <criteriaModifier
                                 class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.ProductCriteriaModifiersCMP"
                                 method="showFamiliesByMachinePartType"/>
-                    </component>
-                </layoutElement>
-            </component>
-        </windowTab>
-
-        <windowTab name="auditTab">
-            <component type="gridLayout" name="gridLayout" columns="3"
-                       rows="4">
-                <layoutElement column="1" row="1" height="4">
-                    <component type="borderLayout" name="auditBorderLayout"
-                               reference="auditBorderLayout">
-                        <option type="label" value="auditLayoutLabel"/>
-                        <component type="gridLayout" name="gridLayout" columns="1"
-                                   rows="4">
-                            <layoutElement column="1" row="1">
-                                <component type="input" name="createDate" field="#{form}.createDate"
-                                           defaultEnabled="never"/>
-                            </layoutElement>
-                            <layoutElement column="1" row="2">
-                                <component type="input" name="createUser" field="#{form}.createUser"
-                                           defaultEnabled="never"/>
-                            </layoutElement>
-                            <layoutElement column="1" row="3">
-                                <component type="input" name="updateDate" field="#{form}.updateDate"
-                                           defaultEnabled="never"/>
-                            </layoutElement>
-                            <layoutElement column="1" row="4">
-                                <component type="input" name="updateUser" field="#{form}.updateUser"
-                                           defaultEnabled="never"/>
-                            </layoutElement>
-                        </component>
                     </component>
                 </layoutElement>
             </component>
@@ -267,32 +242,6 @@
                         <option type="fullscreen" value="true"/>
                         <option type="multiselect" value="true"/>
                     </component>
-                </layoutElement>
-            </component>
-        </windowTab>
-
-        <windowTab name="integrationTab">
-            <script>
-                <![CDATA[
-						var del = #{window}.getRibbonItem("actions.delete");
-						var externalNumberListener = {
-							onSetValue: function(value) {
-
-								var externalNumber = #{externalNumber}.getValue().content.value;
-								
-								if(externalNumber != undefined && externalNumber != '') {
-									del.disable("#{translate(materialFlow.location.ribbon.message.productIsExternal)}");
-								}
-							}
-						};
-						#{form}.addOnChangeListener(externalNumberListener);
-					]]>
-            </script>
-            <component type="gridLayout" name="gridLayout" columns="3"
-                       rows="1">
-                <layoutElement column="1" row="1">
-                    <component type="input" name="externalNumber" field="#{form}.externalNumber"
-                               reference="externalNumber" defaultEnabled="never"/>
                 </layoutElement>
             </component>
         </windowTab>

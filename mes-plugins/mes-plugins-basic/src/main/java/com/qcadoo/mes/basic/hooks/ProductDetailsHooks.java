@@ -118,6 +118,31 @@ public class ProductDetailsHooks {
         }
     }
 
+    public void disableProductAdditionalFormForExternalItems(final ViewDefinitionState state) {
+        FormComponent productForm = (FormComponent) state.getComponentByReference(L_FORM);
+        Long productId = productForm.getEntityId();
+
+        if (productId == null) {
+            productForm.setFormEnabled(true);
+
+            return;
+        }
+
+        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
+
+        if (product == null) {
+            return;
+        }
+
+        String externalNumber = product.getStringField(ProductFields.EXTERNAL_NUMBER);
+
+        if (StringUtils.isEmpty(externalNumber)) {
+            productForm.setFormEnabled(true);
+        } else {
+            productForm.setFormEnabled(false);
+        }
+    }
+
     public void updateRibbonState(final ViewDefinitionState view) {
         FormComponent operationGroupForm = (FormComponent) view.getComponentByReference(L_FORM);
 
