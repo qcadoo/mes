@@ -23,13 +23,13 @@
  */
 package com.qcadoo.mes.materialFlowResources;
 
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ViewDefinitionState;
+
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ViewDefinitionState;
 
 public interface MaterialFlowResourcesService {
 
@@ -38,6 +38,9 @@ public interface MaterialFlowResourcesService {
     BigDecimal getResourcesQuantityForLocationAndProduct(final Entity location, final Entity product);
 
     Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location);
+
+    Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location,
+            final boolean withoutBlockedForQualityControl);
 
     void manageResources(final Entity transfer);
 
