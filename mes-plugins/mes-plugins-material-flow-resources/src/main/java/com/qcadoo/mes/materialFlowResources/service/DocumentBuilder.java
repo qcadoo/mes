@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources.service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Consumer;
-
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -45,6 +36,15 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.UserService;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
+
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 public class DocumentBuilder {
 
@@ -199,7 +199,7 @@ public class DocumentBuilder {
             final String givenUnit, final BigDecimal conversion, final BigDecimal price, final Entity batch,
             final Date productionDate, final Date expirationDate, final Entity resource, final Entity storageLocation,
             final Entity palletNumber, final String typeOfPallet, final Entity additionalCode, final boolean isWaste,
-            List<Entity> attributes) {
+            final String qualityRating, List<Entity> attributes) {
         Preconditions.checkArgument(product != null, "Product argument is required.");
         Preconditions.checkArgument(quantity != null, "Quantity argument is required.");
 
@@ -207,6 +207,7 @@ public class DocumentBuilder {
                 expirationDate, resource, storageLocation, palletNumber, typeOfPallet, additionalCode, isWaste);
 
         position.setField(PositionFields.POSITION_ATTRIBUTE_VALUES, attributes);
+        position.setField(PositionFields.QUALITY_RATING, qualityRating);
 
         positions.add(position);
 
@@ -352,8 +353,8 @@ public class DocumentBuilder {
                     if (!p.isValid()) {
                         invalidPositions.add(p);
                         savedDocument.setNotValid();
-                        p.getGlobalErrors()
-                                .forEach(e -> savedDocument.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
+                        p.getGlobalErrors().forEach(
+                                e -> savedDocument.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
                         p.getErrors().values()
                                 .forEach(e -> savedDocument.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
                     }

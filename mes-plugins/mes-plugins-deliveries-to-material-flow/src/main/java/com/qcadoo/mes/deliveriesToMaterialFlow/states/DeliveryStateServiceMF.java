@@ -23,17 +23,6 @@
  */
 package com.qcadoo.mes.deliveriesToMaterialFlow.states;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
@@ -60,8 +49,21 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.model.api.validators.ErrorMessage;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
 public class DeliveryStateServiceMF {
+
+    public static final String L_QUALITY_RATING = "qualityRating";
 
     @Autowired
     private DocumentManagementService documentManagementService;
@@ -134,7 +136,7 @@ public class DeliveryStateServiceMF {
                         getPrice(deliveredProduct, currency), getBatch(deliveredProduct), getProductionDate(deliveredProduct),
                         getExpirationDate(deliveredProduct), null, getStorageLocation(deliveredProduct),
                         getPalletNumber(deliveredProduct), getTypeOfPallet(deliveredProduct), getAdditionalCode(deliveredProduct),
-                        isWaste(deliveredProduct), attributes);
+                        isWaste(deliveredProduct), deliveredProduct.getStringField(L_QUALITY_RATING), attributes);
             }
         }
 
