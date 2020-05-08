@@ -294,7 +294,7 @@ public class DocumentDetailsListeners {
 
         if (!document.getHasManyField(DocumentFields.POSITIONS).isEmpty()) {
             String blockedResources = getBlockedResources(document);
-            if (blockedResources.isEmpty()) {
+            if (blockedResources == null) {
                 try {
                     resourceManagementService.createResources(document);
                 } catch (InvalidResourceException ire) {
