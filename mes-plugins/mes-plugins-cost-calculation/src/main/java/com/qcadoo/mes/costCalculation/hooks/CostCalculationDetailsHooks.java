@@ -43,14 +43,15 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.CheckBoxComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Map;
@@ -58,17 +59,12 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 @Service
 public class CostCalculationDetailsHooks {
 
-    private static final String L_FORM = "form";
+    
 
-    private static final String L_WINDOW = "window";
+
 
     private static final String L_PRODUCTION_COST_MARGIN_PROC = "productionCostMarginProc";
 
@@ -234,7 +230,7 @@ public class CostCalculationDetailsHooks {
 
     public void generateNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, CostCalculationConstants.PLUGIN_IDENTIFIER,
-                CostCalculationConstants.MODEL_COST_CALCULATION, L_FORM, CostCalculationFields.NUMBER);
+                CostCalculationConstants.MODEL_COST_CALCULATION, QcadooViewConstants.L_FORM, CostCalculationFields.NUMBER);
     }
 
     public void fillCurrencyFields(final ViewDefinitionState viewDefinitionState) {
@@ -292,7 +288,7 @@ public class CostCalculationDetailsHooks {
     }
 
     private void fillOverheadsFromParameters(ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Boolean justCreated = form.getEntity().getBooleanField("justCreated");
         if (form.getEntityId() == null && justCreated) {
             fillWithProperty("sourceOfMaterialCosts", "sourceOfMaterialCostsPB", view);
@@ -332,7 +328,7 @@ public class CostCalculationDetailsHooks {
     }
 
     private void setButtonEnabled(ViewDefinitionState view) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonActionItem saveNominalCosts = window.getRibbon().getGroupByName(CostCalculationFields.SAVE_COSTS)
                 .getItemByName(CostCalculationFields.NOMINAL_COSTS);
         CheckBoxComponent generatedField = (CheckBoxComponent) view.getComponentByReference(CostCalculationFields.GENERATED);

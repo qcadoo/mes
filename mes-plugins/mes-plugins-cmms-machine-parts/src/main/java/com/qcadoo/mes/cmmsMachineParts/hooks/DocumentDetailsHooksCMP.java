@@ -23,10 +23,10 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
-import com.qcadoo.mes.cmmsMachineParts.constants.DocumentFieldsCMP;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.cmmsMachineParts.constants.DocumentFieldsCMP;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
@@ -34,13 +34,14 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service public class DocumentDetailsHooksCMP {
 
-    private static final String L_FORM = "form";
+
 
     public void toggleEnabledForEventLookup(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity document = form.getPersistedEntityWithIncludedFormValues();
         LookupComponent eventLookup = (LookupComponent) view.getComponentByReference(DocumentFieldsCMP.MAINTENANCE_EVENT);
         LookupComponent plannedEventLookup = (LookupComponent) view.getComponentByReference(DocumentFieldsCMP.PLANNED_EVENT);

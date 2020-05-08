@@ -11,6 +11,7 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -20,7 +21,7 @@ import java.util.Objects;
 public class WarehouseStockReportDetailsHooks {
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity warehouseStockReport = form.getPersistedEntityWithIncludedFormValues();
         if (Objects.isNull(warehouseStockReport.getDateField(WarehouseStockReportFields.WAREHOUSE_STOCK_DATE))) {
             FieldComponent warehouseStockDateField = (FieldComponent) view
@@ -47,7 +48,7 @@ public class WarehouseStockReportDetailsHooks {
     private void changeStorageLocationsGridEnabled(final ViewDefinitionState view) {
         GridComponent storageLocations = (GridComponent) view
                 .getComponentByReference(WarehouseStockReportFields.STORAGE_LOCATIONS);
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity stocktaking = form.getEntity();
         boolean enabled = StorageLocationMode.SELECTED.getStringValue().equals(
                 stocktaking.getStringField(WarehouseStockReportFields.STORAGE_LOCATION_MODE));

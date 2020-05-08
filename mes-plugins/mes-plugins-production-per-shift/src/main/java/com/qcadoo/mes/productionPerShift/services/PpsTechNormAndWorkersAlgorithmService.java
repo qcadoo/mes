@@ -1,9 +1,9 @@
 package com.qcadoo.mes.productionPerShift.services;
 
 import com.qcadoo.mes.basic.shift.Shift;
+import com.qcadoo.mes.basic.util.DateTimeRange;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
-import com.qcadoo.mes.basic.util.DateTimeRange;
 import com.qcadoo.mes.productionPerShift.domain.ProgressForDaysContainer;
 import com.qcadoo.mes.productionPerShift.domain.ShiftEfficiencyCalculationHolder;
 import com.qcadoo.model.api.Entity;

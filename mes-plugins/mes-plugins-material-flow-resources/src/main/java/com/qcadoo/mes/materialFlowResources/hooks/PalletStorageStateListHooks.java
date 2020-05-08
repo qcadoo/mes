@@ -14,11 +14,12 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class PalletStorageStateListHooks {
 
-    private static final String L_GRID = "grid";
+
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -26,7 +27,7 @@ public class PalletStorageStateListHooks {
     public void applyFilters(ViewDefinitionState view) {
         boolean isShiftFilter =   ((CheckBoxComponent)view.getComponentByReference(PalletStorageStateDtoFields.IS_SHIFT_FILTER)).isChecked();
         boolean isFreeFilter = ((CheckBoxComponent)view.getComponentByReference(PalletStorageStateDtoFields.IS_FREE_FILTER)).isChecked();
-        GridComponent palletGrid = (GridComponent) view.getComponentByReference(L_GRID);
+        GridComponent palletGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         Integer palletToShift = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,MaterialFlowResourcesConstants.MODEL_DOCUMENT_POSITION_PARAMETERS).find().setMaxResults(1).uniqueResult().getIntegerField(DocumentPositionParametersItemValues.PALLET_TO_SHIFT);
         Integer palletWithFreePlace = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,MaterialFlowResourcesConstants.MODEL_DOCUMENT_POSITION_PARAMETERS).find().setMaxResults(1).uniqueResult().getIntegerField(DocumentPositionParametersItemValues.PALLET_WITH_FREE_PALECE);
         if(isShiftFilter){

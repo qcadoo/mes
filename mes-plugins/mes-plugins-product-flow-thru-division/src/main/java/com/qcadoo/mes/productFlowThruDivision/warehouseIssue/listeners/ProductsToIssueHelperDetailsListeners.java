@@ -1,19 +1,5 @@
 package com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-
-import org.apache.commons.lang3.BooleanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.localization.api.TranslationService;
@@ -33,22 +19,24 @@ import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.ProductsTo
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.WarehouseIssueFields;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks.ProductsToIssueDetailsHooks;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.validators.IssueValidators;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.exception.EntityRuntimeException;
 import com.qcadoo.model.api.exception.RuntimeExceptionWithArguments;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.model.api.validators.GlobalMessage;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
-import com.qcadoo.view.api.components.CheckBoxComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.BooleanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.*;
 
 @Service
 public class ProductsToIssueHelperDetailsListeners {
@@ -104,7 +92,7 @@ public class ProductsToIssueHelperDetailsListeners {
     }
 
     public void createDocuments(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity helper = form.getPersistedEntityWithIncludedFormValues();
        FieldComponent helperField = (FieldComponent) view.getComponentByReference("generated");
         boolean success = false;
@@ -373,7 +361,7 @@ public class ProductsToIssueHelperDetailsListeners {
     }
 
     private boolean checkNoProductsOnLocation(List<Entity> savedEntities,ViewDefinitionState view,AwesomeDynamicListComponent adl){
-        Entity location = ((FormComponent) view.getComponentByReference("form")).getEntity().getBelongsToField("locationFrom");
+        Entity location = ((FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM)).getEntity().getBelongsToField("locationFrom");
         UpdateIssuesLocationsQuantityStatusHolder updateIssuesStatus = warehouseIssueService
                 .tryUpdateIssuesLocationsQuantity(location, Optional.of(savedEntities).get());
         if (!updateIssuesStatus.isUpdated()) {
@@ -388,7 +376,7 @@ public class ProductsToIssueHelperDetailsListeners {
     public void onDeleteRow(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         AwesomeDynamicListComponent adl = (AwesomeDynamicListComponent) view.getComponentByReference("issues");
         if (adl.getFormComponents().isEmpty()) {
-            WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+            WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
             window.getRibbon().getGroups().stream().filter(g -> !g.getName().equals("navigation"))
                     .flatMap(g -> g.getItems().stream()).forEach(i -> {
                         i.setEnabled(false);

@@ -31,12 +31,13 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ProductSubstituteComponentDetailsHooks {
 
     public void fillFilterValues(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity productSubstitute = form.getPersistedEntityWithIncludedFormValues();
         Entity product = productSubstitute.getBelongsToField(SubstituteFields.BASE_PRODUCT);
         if (product != null) {

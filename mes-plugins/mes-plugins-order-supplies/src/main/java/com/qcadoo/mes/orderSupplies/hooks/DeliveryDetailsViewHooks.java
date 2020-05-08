@@ -32,8 +32,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 @Service
 public class DeliveryDetailsViewHooks {
 
-	private static final String L_FORM_CURRENCY = "currency";
-
 	@Autowired
 	private ParameterService parameterService;
 

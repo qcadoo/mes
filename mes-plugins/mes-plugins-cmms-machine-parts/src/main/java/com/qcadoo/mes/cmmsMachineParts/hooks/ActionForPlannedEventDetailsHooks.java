@@ -34,12 +34,13 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ActionForPlannedEventDetailsHooks {
 
     public void setCriteriaModifiers(final ViewDefinitionState view) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity actionForPlannedEvent = formComponent.getPersistedEntityWithIncludedFormValues();
         Entity event = actionForPlannedEvent.getBelongsToField(ActionForPlannedEventFields.PLANNED_EVENT);
         Entity workstation = event.getBelongsToField(PlannedEventFields.WORKSTATION);

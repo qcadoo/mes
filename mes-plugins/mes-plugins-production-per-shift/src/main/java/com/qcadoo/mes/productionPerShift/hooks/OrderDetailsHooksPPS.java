@@ -43,6 +43,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -82,7 +83,7 @@ public class OrderDetailsHooksPPS {
         orderDetailsRibbonHelper.setButtonEnabled(view, "orderProgressPlans", "productionPerShift", datePredicate,
                 Optional.of("orders.ribbon.message.mustFillPlannedStartDate"));
 
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (form.getEntityId() != null) {
             checkOrderDates(view, form.getPersistedEntityWithIncludedFormValues());
         }

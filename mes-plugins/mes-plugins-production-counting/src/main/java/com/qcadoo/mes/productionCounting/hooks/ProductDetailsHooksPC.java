@@ -31,13 +31,14 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ProductDetailsHooksPC {
 
-    private static final String L_FORM = "form";
 
-    private static final String L_WINDOW = "window";
+
+
 
     private static final String L_SHOW_PRODUCTION_TRACKINGS = "showProductionTrackings";
 
@@ -46,9 +47,9 @@ public class ProductDetailsHooksPC {
     private static final String L_SHOW_PRODUCTION_TRACKINGS_FOR_PRODUCT_GROUPED = "showProductionTrackingsForProductGrouped";
 
     public void updateButtonsState(final ViewDefinitionState view) {
-        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         Ribbon ribbon = window.getRibbon();
 
         RibbonGroup showProductionTrackingsRibbonGroup = ribbon.getGroupByName(L_SHOW_PRODUCTION_TRACKINGS);

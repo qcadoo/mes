@@ -23,32 +23,17 @@
  */
 package com.qcadoo.mes.productionLines.factoryStructure;
 
-import java.util.List;
-
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.*;
+import com.qcadoo.mes.productionLines.constants.*;
+import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.CompanyFields;
-import com.qcadoo.mes.basic.constants.DivisionFields;
-import com.qcadoo.mes.basic.constants.FactoryFields;
-import com.qcadoo.mes.basic.constants.ParameterFields;
-import com.qcadoo.mes.basic.constants.SubassemblyFields;
-import com.qcadoo.mes.basic.constants.WorkstationFields;
-import com.qcadoo.mes.productionLines.constants.DivisionFieldsPL;
-import com.qcadoo.mes.productionLines.constants.FactoryStructureElementFields;
-import com.qcadoo.mes.productionLines.constants.FactoryStructureElementType;
-import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
-import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.utils.EntityTreeUtilsService;
+import java.util.List;
 
 @Service
 public class FactoryStructureGenerationService {

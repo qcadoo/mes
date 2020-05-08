@@ -39,6 +39,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 public class TechnologyGroupDetailsViewHooksTest {
 
@@ -69,7 +70,7 @@ public class TechnologyGroupDetailsViewHooksTest {
 
         ReflectionTestUtils.setField(technologyGroupDetailsViewHooks, "dataDefinitionService", dataDefinitionService);
 
-        given(view.getComponentByReference("form")).willReturn(technologyGroupForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(technologyGroupForm);
         given(technologyGroupForm.getEntity()).willReturn(technologyGroup);
 
         given(view.getComponentByReference("product")).willReturn(productForm);

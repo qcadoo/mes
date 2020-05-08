@@ -13,6 +13,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class StorageLocationsListener {
@@ -47,7 +48,7 @@ public class StorageLocationsListener {
     }
 
     public void createStorageLocations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity entity = form.getPersistedEntityWithIncludedFormValues();
         boolean valid = validate(entity, state);
         if (!valid) {

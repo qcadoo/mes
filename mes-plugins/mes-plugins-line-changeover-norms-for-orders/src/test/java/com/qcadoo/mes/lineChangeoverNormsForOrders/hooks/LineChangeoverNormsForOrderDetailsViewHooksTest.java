@@ -23,27 +23,6 @@
  */
 package com.qcadoo.mes.lineChangeoverNormsForOrders.hooks;
 
-import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.LineChangeoverNormsForOrdersConstants.ORDER_FIELDS;
-import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS;
-import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.LINE_CHANGEOVER_NORM;
-import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.ORDER;
-import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.OWN_LINE_CHANGEOVER;
-import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.OWN_LINE_CHANGEOVER_DURATION;
-import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.PREVIOUS_ORDER;
-import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
-import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
-import static com.qcadoo.testing.model.EntityTestUtils.stubBelongsToField;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.util.ReflectionTestUtils.setField;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-
 import com.qcadoo.mes.lineChangeoverNorms.ChangeoverNormsSearchService;
 import com.qcadoo.mes.lineChangeoverNorms.ChangeoverNormsService;
 import com.qcadoo.mes.lineChangeoverNormsForOrders.LineChangeoverNormsForOrdersService;
@@ -58,13 +37,30 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import com.qcadoo.view.internal.components.window.WindowComponentState;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+
+import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.LineChangeoverNormsForOrdersConstants.ORDER_FIELDS;
+import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.LineChangeoverNormsForOrdersConstants.PREVIOUS_ORDER_FIELDS;
+import static com.qcadoo.mes.lineChangeoverNormsForOrders.constants.OrderFieldsLCNFO.*;
+import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
+import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
+import static com.qcadoo.testing.model.EntityTestUtils.stubBelongsToField;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 public class LineChangeoverNormsForOrderDetailsViewHooksTest {
 
     private LineChangeoverNormsForOrderDetailsViewHooks lineChangeoverNormsForOrderDetailsViewHooks;
 
-    private static final String L_FORM = "form";
+    
 
     private static final long L_ID = 1L;
 
@@ -147,7 +143,7 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
     @Test
     public void shouldNotFillOrderFormsIfOrderFormEntityIdIsNull() {
         // given
-        given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(orderForm);
 
         given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderLookup);
         given(view.getComponentByReference(ORDER)).willReturn(orderLookup);
@@ -168,7 +164,7 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
     @Test
     public void shouldNotFillOrderFormsIfOrderFormEntityIdIsNotNullAndOrderIsNull() {
         // given
-        given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(orderForm);
 
         given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderLookup);
         given(view.getComponentByReference(ORDER)).willReturn(orderLookup);
@@ -189,7 +185,7 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
     @Test
     public void shouldFillOrderFormsIfOrderFormEntityIdIsntNullAndOrderIsNotNullAndPreviousOrderIdIsNotNull() {
         // given
-        given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(orderForm);
 
         given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderLookup);
         given(view.getComponentByReference(ORDER)).willReturn(orderLookup);
@@ -212,7 +208,7 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
     @Test
     public void shouldFillOrderFormsIfOrderFormEntityIdIsntNullAndOrderIsNotNullAndPreviousOrderIsNull() {
         // given
-        given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(orderForm);
 
         given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderLookup);
         given(view.getComponentByReference(ORDER)).willReturn(orderLookup);
@@ -237,7 +233,7 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
     @Test
     public void shouldFillOrderFormsIfOrderFormEntityIdIsNotNullAndOrderIsNotNullAndPreviousOrderIsNotNull() {
         // given
-        given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(orderForm);
 
         given(view.getComponentByReference(PREVIOUS_ORDER)).willReturn(previousOrderLookup);
         given(view.getComponentByReference(ORDER)).willReturn(orderLookup);
@@ -377,7 +373,7 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         given(view.getComponentByReference("previousOrderTechnologyNumber")).willReturn(previousOrderTechnologyNumberField);
         given(view.getComponentByReference("technologyNumber")).willReturn(technologyNumberField);
 
-        given(view.getComponentByReference("window")).willReturn(window);
+        given(view.getComponentByReference(QcadooViewConstants.L_WINDOW)).willReturn(window);
 
         given(window.getRibbon()).willReturn(ribbon);
 
@@ -428,7 +424,7 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         given(view.getComponentByReference("previousOrderTechnologyNumber")).willReturn(previousOrderTechnologyNumberField);
         given(view.getComponentByReference("technologyNumber")).willReturn(technologyNumberField);
 
-        given(view.getComponentByReference("window")).willReturn((ComponentState) window);
+        given(view.getComponentByReference(QcadooViewConstants.L_WINDOW)).willReturn((ComponentState) window);
 
         given(window.getRibbon()).willReturn(ribbon);
 
@@ -495,7 +491,7 @@ public class LineChangeoverNormsForOrderDetailsViewHooksTest {
         given(view.getComponentByReference("previousOrderTechnologyNumber")).willReturn(previousOrderTechnologyNumberField);
         given(view.getComponentByReference("technologyNumber")).willReturn(technologyNumberField);
 
-        given(view.getComponentByReference("window")).willReturn(window);
+        given(view.getComponentByReference(QcadooViewConstants.L_WINDOW)).willReturn(window);
 
         given(window.getRibbon()).willReturn(ribbon);
 

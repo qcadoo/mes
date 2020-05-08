@@ -23,24 +23,24 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.RELATED_DELIVERIES;
-
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.RELATED_DELIVERIES;
 
 @Service
 public class DeliveriesListHooks {
 
-    private static final String L_GRID = "grid";
+
 
     private static final String L_DELIVERY = "delivery";
 
@@ -48,7 +48,7 @@ public class DeliveriesListHooks {
     private DeliveriesService deliveriesService;
 
     public void fillGridWithRelatedDeliveries(final ViewDefinitionState view) {
-        GridComponent deliveriesGrid = (GridComponent) view.getComponentByReference(L_GRID);
+        GridComponent deliveriesGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_DELIVERY);
 
         Long deliveryId = deliveryForm.getEntityId();

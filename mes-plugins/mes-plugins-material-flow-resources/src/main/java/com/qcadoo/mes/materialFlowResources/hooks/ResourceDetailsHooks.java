@@ -22,11 +22,12 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ResourceDetailsHooks {
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_PRICE_CURRENCY = "priceCurrency";
 
@@ -45,7 +46,7 @@ public class ResourceDetailsHooks {
     private BatchCriteriaModifier batchCriteriaModifier;
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        FormComponent resourceForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent resourceForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity resource = resourceForm.getPersistedEntityWithIncludedFormValues();
 
@@ -114,7 +115,7 @@ public class ResourceDetailsHooks {
         Either<Exception, Optional<BigDecimal>> maybeConversion = BigDecimalUtils
                 .tryParseAndIgnoreSeparator((String) conversionField.getFieldValue(), viewDefinitionState.getLocale());
         if (maybeConversion.isRight() && maybeConversion.getRight().isPresent()) {
-            FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
+            FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
             Entity resource = form.getPersistedEntityWithIncludedFormValues();
 
             BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(
@@ -139,7 +140,7 @@ public class ResourceDetailsHooks {
         Either<Exception, Optional<BigDecimal>> maybeQuantity = BigDecimalUtils
                 .tryParseAndIgnoreSeparator((String) quantityField.getFieldValue(), viewDefinitionState.getLocale());
         if (maybeQuantity.isRight() && maybeQuantity.getRight().isPresent()) {
-            FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
+            FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
             Entity resource = form.getEntity();
 
             BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(
@@ -163,7 +164,7 @@ public class ResourceDetailsHooks {
         Either<Exception, Optional<BigDecimal>> maybeQuantityInAdditionalUnit = BigDecimalUtils.tryParseAndIgnoreSeparator(
                 (String) quantityInAdditionalUnitField.getFieldValue(), viewDefinitionState.getLocale());
         if (maybeQuantityInAdditionalUnit.isRight() && maybeQuantityInAdditionalUnit.getRight().isPresent()) {
-            FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
+            FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
             Entity resource = form.getEntity();
             BigDecimal conversion = resource.getDecimalField(ResourceFields.CONVERSION);
             Entity product = resource.getBelongsToField(ResourceFields.PRODUCT);

@@ -24,9 +24,7 @@
 package com.qcadoo.mes.productionCounting.hooks;
 
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -44,10 +42,11 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 public class ProductionTrackingDetailsHooksTest {
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_PRODUCTS_TAB = "productsTab";
 
@@ -84,7 +83,7 @@ public class ProductionTrackingDetailsHooksTest {
 
         ReflectionTestUtils.setField(productionTrackingDetailsHooks, "productionTrackingService", productionTrackingService);
 
-        given(view.getComponentByReference(L_FORM)).willReturn(productionTrackingForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(productionTrackingForm);
 
         given(view.getComponentByReference(ProductionTrackingFields.STATE)).willReturn(stateField);
         given(view.getComponentByReference(ProductionTrackingFields.ORDER)).willReturn(orderLookup);

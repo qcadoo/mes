@@ -41,6 +41,7 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,7 +56,7 @@ import java.util.stream.Collectors;
 @Service
 public class TechnologyService {
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_PRODUCT = "product";
 
@@ -138,7 +139,7 @@ public class TechnologyService {
 
     public void generateTechnologyGroupNumber(final ViewDefinitionState viewDefinitionState) {
         numberGeneratorService.generateAndInsertNumber(viewDefinitionState, TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_GROUP, L_FORM, TechnologyFields.NUMBER);
+                TechnologiesConstants.MODEL_TECHNOLOGY_GROUP, QcadooViewConstants.L_FORM, TechnologyFields.NUMBER);
     }
 
     public void generateTechnologyNumber(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -176,7 +177,7 @@ public class TechnologyService {
     }
 
     public void setLookupDisableInTechnologyOperationComponent(final ViewDefinitionState viewDefinitionState) {
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent operationLookup = (FieldComponent) viewDefinitionState.getComponentByReference(L_OPERATION);
 
         operationLookup.setEnabled(form.getEntityId() == null);

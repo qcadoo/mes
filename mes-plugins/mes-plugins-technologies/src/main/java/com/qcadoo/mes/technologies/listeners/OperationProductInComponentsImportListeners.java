@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.technologies.listeners;
 
-import java.io.IOException;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.imports.services.XlsxImportService;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -39,11 +34,16 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 
 @Service
 public class OperationProductInComponentsImportListeners {
 
-    public static final String L_FORM = "form";
+
 
     @Autowired
     private OperationProductInComponentXlsxImportService operationProductInComponentXlsxImportService;
@@ -58,7 +58,7 @@ public class OperationProductInComponentsImportListeners {
 
     public void processImportFile(final ViewDefinitionState view, final ComponentState state, final String[] args)
             throws IOException {
-        FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity technology = technologyForm.getEntity();
         technology = technology.getDataDefinition().save(technology);
 

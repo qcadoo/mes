@@ -49,6 +49,7 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ProductionBalanceDetailsListeners {
@@ -133,7 +134,7 @@ public class ProductionBalanceDetailsListeners {
 
     public final void addAllRelatedOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent ordersGrid = (GridComponent) view.getComponentByReference(ProductionBalanceFields.ORDERS);
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity balance = form.getPersistedEntityWithIncludedFormValues();
         List<Entity> orders = Lists.newArrayList(balance.getHasManyField(ProductionBalanceFields.ORDERS));
         for (Entity entity : ordersGrid.getSelectedEntities()) {

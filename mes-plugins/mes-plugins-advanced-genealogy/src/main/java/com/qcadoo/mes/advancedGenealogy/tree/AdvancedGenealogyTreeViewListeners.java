@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.advancedGenealogy.tree;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.advancedGenealogy.constants.AdvancedGenealogyConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -38,6 +33,11 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class AdvancedGenealogyTreeViewListeners {
@@ -96,7 +96,7 @@ public class AdvancedGenealogyTreeViewListeners {
     }
 
     private FormComponent getForm(final ViewDefinitionState view) {
-        return (FormComponent) view.getComponentByReference("form");
+        return (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
     }
 
     static class FormValidationException extends RuntimeException {

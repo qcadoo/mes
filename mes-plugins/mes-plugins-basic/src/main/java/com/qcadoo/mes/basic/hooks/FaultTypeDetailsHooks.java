@@ -36,14 +36,15 @@ import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class FaultTypeDetailsHooks {
 
-    private static final String L_FORM = "form";
+
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity faultType = form.getPersistedEntityWithIncludedFormValues();
         String appliesTo = faultType.getStringField(FaultTypeFields.APPLIES_TO);
@@ -56,7 +57,7 @@ public class FaultTypeDetailsHooks {
     }
 
     public void toggleGridsEnable(final ViewDefinitionState view, final String appliesTo, final boolean shouldClear) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         GridComponent workstationsGrid = (GridComponent) view.getComponentByReference(FaultTypeFields.WORKSTATIONS);
         GridComponent subassembliesGrid = (GridComponent) view.getComponentByReference(FaultTypeFields.SUBASSEMBLIES);
@@ -95,7 +96,7 @@ public class FaultTypeDetailsHooks {
     }
 
     public void disableActionsWhenDefault(final ViewDefinitionState view) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup actions = window.getRibbon().getGroupByName("actions");
 
         for (RibbonActionItem item : actions.getItems()) {

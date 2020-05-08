@@ -36,6 +36,7 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -56,7 +57,7 @@ public class GeneratorView {
     private final WindowComponent window;
 
     public static GeneratorView from(final ViewDefinitionState view) {
-        FormComponent form = view.<FormComponent> tryFindComponentByReference("form").orNull();
+        FormComponent form = view.<FormComponent> tryFindComponentByReference(QcadooViewConstants.L_FORM).orNull();
         Preconditions.checkArgument(form != null, "Cannot find form component!");
 
         LookupComponent technologyLookup = view.<LookupComponent> tryFindComponentByReference("technology").orNull();
@@ -65,7 +66,7 @@ public class GeneratorView {
         TreeComponent treeComponent = (TreeComponent) view.getComponentByReference("technologiesTree");
         Preconditions.checkArgument(treeComponent != null, "Cannot find technologies tree component!");
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         Preconditions.checkArgument(window != null, "Cannot find window component!");
 
         return new GeneratorView(view, window, form, technologyLookup, treeComponent);

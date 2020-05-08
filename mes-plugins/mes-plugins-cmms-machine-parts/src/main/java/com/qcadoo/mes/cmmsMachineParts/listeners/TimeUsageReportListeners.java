@@ -1,9 +1,5 @@
 package com.qcadoo.mes.cmmsMachineParts.listeners;
 
-import java.util.Collections;
-
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.cmmsMachineParts.constants.TimeUsageReportFilterFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
@@ -12,12 +8,16 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.stereotype.Service;
+
+import java.util.Collections;
 
 @Service
 public class TimeUsageReportListeners {
 
     public void printXlsReport(final ViewDefinitionState view, final ComponentState state, final String args[]) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         form.performEvent(view, "save");
         Entity filterEntity = form.getPersistedEntityWithIncludedFormValues();
         if (workersPresent(filterEntity, view) && form.isValid()) {

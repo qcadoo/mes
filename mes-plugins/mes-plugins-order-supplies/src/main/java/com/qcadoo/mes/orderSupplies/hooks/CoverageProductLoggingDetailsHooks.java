@@ -8,14 +8,15 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class CoverageProductLoggingDetailsHooks {
 
-    private static final String L_FORM = "form";
+    
 
     public void updateCriteriaModifiersState(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         LookupComponent companyLookup = (LookupComponent) view.getComponentByReference("company");
 
         FilterValueHolder filterValueHolder = companyLookup.getFilterValue();

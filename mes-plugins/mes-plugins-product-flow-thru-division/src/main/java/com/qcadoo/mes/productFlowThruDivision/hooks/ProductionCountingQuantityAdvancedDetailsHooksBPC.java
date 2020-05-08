@@ -38,12 +38,13 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ProductionCountingQuantityAdvancedDetailsHooksBPC {
 
     public void setFlowTabState(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         LookupComponent componentsLocationLookup = (LookupComponent) view
                 .getComponentByReference(ProductionCountingQuantityFieldsPFTD.COMPONENTS_LOCATION);
         LookupComponent componentsOutputLocationLookup = (LookupComponent) view

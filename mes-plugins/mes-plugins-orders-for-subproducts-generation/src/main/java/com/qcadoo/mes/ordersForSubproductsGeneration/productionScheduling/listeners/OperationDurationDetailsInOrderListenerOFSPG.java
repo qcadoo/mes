@@ -23,6 +23,14 @@
  */
 package com.qcadoo.mes.ordersForSubproductsGeneration.productionScheduling.listeners;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -36,25 +44,19 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class OperationDurationDetailsInOrderListenerOFSPG {
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Transactional
     public final void saveDatesInSubOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long orderId = form.getEntityId();
 

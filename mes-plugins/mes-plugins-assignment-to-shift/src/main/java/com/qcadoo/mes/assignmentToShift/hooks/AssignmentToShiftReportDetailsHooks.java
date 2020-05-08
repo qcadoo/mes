@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.assignmentToShift.hooks;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftConstants;
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -37,11 +31,17 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public final class AssignmentToShiftReportDetailsHooks {
 
-    private static final String L_FORM = "form";
+
 
     private static final List<String> L_REPORT_FIELDS = Arrays.asList(AssignmentToShiftReportFields.NUMBER,
             AssignmentToShiftReportFields.NAME, AssignmentToShiftReportFields.SHIFT, AssignmentToShiftReportFields.FACTORY,
@@ -55,11 +55,11 @@ public final class AssignmentToShiftReportDetailsHooks {
 
     public void generateAssignmentToShiftReportNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, AssignmentToShiftConstants.PLUGIN_IDENTIFIER,
-                AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT_REPORT, L_FORM, AssignmentToShiftReportFields.NUMBER);
+                AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT_REPORT, QcadooViewConstants.L_FORM, AssignmentToShiftReportFields.NUMBER);
     }
 
     public void disableFields(final ViewDefinitionState view) {
-        FormComponent assignmentToShiftReportForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent assignmentToShiftReportForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long assignmentToShiftReportId = assignmentToShiftReportForm.getEntityId();
 
         if (assignmentToShiftReportId == null) {

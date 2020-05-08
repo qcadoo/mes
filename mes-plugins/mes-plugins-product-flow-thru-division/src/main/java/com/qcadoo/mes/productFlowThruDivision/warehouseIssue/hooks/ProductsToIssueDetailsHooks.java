@@ -3,12 +3,7 @@ package com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.json.JSONException;
@@ -36,11 +31,7 @@ import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.WarehouseIssueParam
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.IssueFields;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.ProductsToIssueFields;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.WarehouseIssueFields;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -49,6 +40,7 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ProductsToIssueDetailsHooks {
@@ -72,7 +64,7 @@ public class ProductsToIssueDetailsHooks {
     private CalculationQuantityService calculationQuantityService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity helper = form.getEntity();
         FieldComponent locationFromLabel = (FieldComponent) view.getComponentByReference("locationFromLabel");
         Entity locationFrom = helper.getBelongsToField("locationFrom");
@@ -110,7 +102,7 @@ public class ProductsToIssueDetailsHooks {
         } else {
             List<Entity> issues = helper.getHasManyField("issues");
             if (!issues.isEmpty() && issues.stream().allMatch(issue -> issue.getId() != null)) {
-                WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+                WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
                 Ribbon ribbon = window.getRibbon();
                 RibbonGroup group = ribbon.getGroupByName("actions");
                 RibbonActionItem createDocumentsItem = group.getItemByName("createDocuments");

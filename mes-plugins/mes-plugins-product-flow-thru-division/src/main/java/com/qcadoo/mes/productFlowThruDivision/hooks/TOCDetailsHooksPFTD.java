@@ -35,11 +35,12 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class TOCDetailsHooksPFTD {
 
-    private static final String L_FORM = "form";
+    
 
     public void onBeforeRender(final ViewDefinitionState view) {
         setViewDisable(view);
@@ -47,7 +48,7 @@ public class TOCDetailsHooksPFTD {
     }
 
     private void setCriteriaModifierParameters(final ViewDefinitionState view) {
-        FormComponent tocForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent tocForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long tocId = tocForm.getEntityId();
 
@@ -73,7 +74,7 @@ public class TOCDetailsHooksPFTD {
     }
 
     private void setViewDisable(final ViewDefinitionState view) {
-        FormComponent tocForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent tocForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (tocForm.getEntityId() == null) {
             return;
         }

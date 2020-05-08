@@ -35,13 +35,13 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class PalletNumberDetailsHooks {
 
-    public static final String L_FORM = "form";
 
-    public static final String L_WINDOW = "window";
+
 
     public static final String L_PRINT = "print";
 
@@ -68,9 +68,9 @@ public class PalletNumberDetailsHooks {
     }
 
     public void disableButtonsWhenNotSaved(final ViewDefinitionState view) {
-        FormComponent palletNumberForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent palletNumberForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         Ribbon ribbon = window.getRibbon();
 
         RibbonGroup printRibbonGroup = ribbon.getGroupByName(L_PRINT);

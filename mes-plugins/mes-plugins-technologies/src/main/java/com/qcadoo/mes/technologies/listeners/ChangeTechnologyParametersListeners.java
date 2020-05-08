@@ -14,13 +14,7 @@ import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,10 +22,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
 public class ChangeTechnologyParametersListeners {
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_CHANGE_GROUP = "changeGroup";
 
@@ -52,7 +52,7 @@ public class ChangeTechnologyParametersListeners {
 
     public void changeTechnologyParameters(final ViewDefinitionState view, final ComponentState state, final String[] args)
             throws JSONException {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         CheckBoxComponent generated = (CheckBoxComponent) view.getComponentByReference("generated");
 
         LookupComponent lookupComponent = (LookupComponent) view.getComponentByReference(L_TECHNOLOGY_GROUP);

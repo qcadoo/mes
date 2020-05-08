@@ -39,6 +39,7 @@ import com.qcadoo.mes.productionPerShift.dataProvider.ProgressForDayDataProvider
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.joda.time.DateTime;
@@ -76,7 +77,7 @@ public class NonWorkingShiftsNotifier {
 
     public void checkAndNotify(final ViewDefinitionState view, final DateTime orderStartDateTime,
             final Entity pps, final ProgressType progressType) {
-        for (FormComponent form : view.<FormComponent> tryFindComponentByReference("form").asSet()) {
+        for (FormComponent form : view.<FormComponent> tryFindComponentByReference(QcadooViewConstants.L_FORM).asSet()) {
             List<ShiftAndDate> shiftsAndDates = getShiftAndDates(pps, progressType);
             for (ShiftAndDate shiftAndDate : filterShiftsNotStartingOrderAtZeroDay(orderStartDateTime, shiftsAndDates)) {
                 notifyAboutShiftNotStartingOrderAtZeroDay(form, shiftAndDate, orderStartDateTime);

@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.negotForOrderSupplies.listeners;
 
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.negotForOrderSupplies.NegotForOrderSuppliesService;
 import com.qcadoo.mes.orderSupplies.OrderSuppliesService;
@@ -36,11 +31,16 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 public class MaterialRequirementCoverageDetailsListenersNFOS {
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
@@ -51,7 +51,7 @@ public class MaterialRequirementCoverageDetailsListenersNFOS {
     private OrderSuppliesService orderSuppliesService;
 
     public final void createNegotiation(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long materialRequirementCoverageId = materialRequirementCoverageForm.getEntityId();
 
         if (materialRequirementCoverageId == null) {

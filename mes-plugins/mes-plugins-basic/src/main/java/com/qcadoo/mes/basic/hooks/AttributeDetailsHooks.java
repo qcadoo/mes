@@ -11,24 +11,24 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-
-import java.util.Objects;
-
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Objects;
+
 @Service
 public class AttributeDetailsHooks {
 
-    private static final String L_FORM = "form";
+
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
 
-        numberGeneratorService.generateAndInsertNumber(view, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.ATTRIBUTE, L_FORM,
+        numberGeneratorService.generateAndInsertNumber(view, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.ATTRIBUTE, QcadooViewConstants.L_FORM,
                 AttributeFields.NUMBER);
 
         FieldComponent dataType = (FieldComponent) view.getComponentByReference(AttributeFields.DATA_TYPE);
@@ -66,7 +66,7 @@ public class AttributeDetailsHooks {
     }
 
     private void disableFormComponentsIfAttributeAssign(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(AttributeDetailsHooks.L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent dataType = (FieldComponent) view.getComponentByReference(AttributeFields.DATA_TYPE);
         FieldComponent valueType = (FieldComponent) view.getComponentByReference(AttributeFields.VALUE_TYPE);
         FieldComponent precision = (FieldComponent) view.getComponentByReference(AttributeFields.PRECISION);

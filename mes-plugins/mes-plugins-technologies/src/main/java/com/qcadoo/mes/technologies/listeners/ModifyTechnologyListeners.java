@@ -1,5 +1,17 @@
 package com.qcadoo.mes.technologies.listeners;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
@@ -16,17 +28,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ModifyTechnologyListeners {
@@ -51,7 +53,7 @@ public class ModifyTechnologyListeners {
 
     public static final String L_GENERATED = "generated";
 
-    public static final String L_FORM = "form";
+
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -66,7 +68,7 @@ public class ModifyTechnologyListeners {
         componentState.performEvent(view, L_SAVE, args);
         CheckBoxComponent generated = (CheckBoxComponent) view.getComponentByReference(L_GENERATED);
 
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (!formComponent.isValid()) {
             formComponent.getEntityId();
             return;

@@ -46,6 +46,7 @@ import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import com.qcadoo.view.constants.RowStyle;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +58,7 @@ import java.util.Set;
 @Service
 public class WarehouseIssueDetailHooks {
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_PRODUCTS_TO_ISSUES = "productsToIssues";
 
@@ -95,14 +96,14 @@ public class WarehouseIssueDetailHooks {
             component.requestComponentUpdateState();
             return;
         }
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (view.isViewAfterRedirect() && form.getEntityId() == null) {
             component.setFieldValue(warehouseIssueParameterService.getProductsToIssue().getStrValue());
         }
     }
 
     private void updateRibbonState(final ViewDefinitionState view) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         Ribbon ribbon = window.getRibbon();
         RibbonGroup group = ribbon.getGroupByName("issue");
         RibbonActionItem productsToIssue = group.getItemByName("productsToIssue");
@@ -129,7 +130,7 @@ public class WarehouseIssueDetailHooks {
         if (warehouseIssueParameterService.issueForOrder()) {
             grid.setEditable(false);
         } else {
-            FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+            FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
             String state = (String) view.getComponentByReference(WarehouseIssueFields.STATE).getFieldValue();
             if (StringUtils.isNotEmpty(state) && !state.equals(WarehouseIssueStringValues.DRAFT)) {
                 grid.setEditable(false);
@@ -151,7 +152,7 @@ public class WarehouseIssueDetailHooks {
     }
 
     public void setViewState(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent collectionProductsField = (FieldComponent) view
                 .getComponentByReference(WarehouseIssueFields.COLLECTION_PRODUCTS);
 
@@ -239,7 +240,7 @@ public class WarehouseIssueDetailHooks {
 
     public void generateIssueNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
-                ProductFlowThruDivisionConstants.MODEL_WAREHOUSE_ISSUE, L_FORM, WarehouseIssueFields.NUMBER);
+                ProductFlowThruDivisionConstants.MODEL_WAREHOUSE_ISSUE, QcadooViewConstants.L_FORM, WarehouseIssueFields.NUMBER);
     }
 
     private void fillWorkerWhoIssued(final ViewDefinitionState view) {

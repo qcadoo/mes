@@ -31,14 +31,15 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ProductionTrackingsForProductListListeners {
 
-    private static final String L_GRID = "grid";
+
 
     public void goToProductionTracking(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
         if (!grid.getSelectedEntitiesIds().isEmpty()) {
             String url = "../page/productionCounting/productionTrackingDetails.html";

@@ -33,6 +33,7 @@ import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,7 +70,7 @@ public class GenerateBalanceListeners {
         Entity persistedContext = contextEntity.getDataDefinition().save(contextEntity);
         if (persistedContext.isValid()) {
             // Show 'balances' tab
-            WindowComponent window = (WindowComponent) viewState.getComponentByReference("window");
+            WindowComponent window = (WindowComponent) viewState.getComponentByReference(QcadooViewConstants.L_WINDOW);
             window.setActiveTab("balances");
         }
         form.setEntity(persistedContext);

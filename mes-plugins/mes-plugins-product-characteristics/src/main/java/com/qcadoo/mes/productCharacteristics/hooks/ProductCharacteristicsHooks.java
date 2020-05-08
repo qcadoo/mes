@@ -35,6 +35,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ProductCharacteristicsHooks {
@@ -42,13 +43,13 @@ public class ProductCharacteristicsHooks {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    private static final String L_FORM = "form";
+    
 
     String[] innerComponents = { ProductFields.SIZE, "downShelve", "upShelve", "downForm", "upForm",
             ProductCharacteristicsFields.SHOW_IN_PRODUCT_DATA };
 
     public void enableCharacteristicsTabForExternalItems(final ViewDefinitionState state) {
-        FormComponent productForm = (FormComponent) state.getComponentByReference(L_FORM);
+        FormComponent productForm = (FormComponent) state.getComponentByReference(QcadooViewConstants.L_FORM);
         Long productId = productForm.getEntityId();
 
         if (productId == null) {

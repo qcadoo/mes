@@ -23,28 +23,12 @@
  */
 package com.qcadoo.mes.productionScheduling.listeners;
 
-import java.math.BigDecimal;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.Validate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
-import com.qcadoo.mes.orders.constants.OperationalTaskFields;
-import com.qcadoo.mes.orders.constants.OperationalTaskType;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderType;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.constants.*;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.productionScheduling.ProductionSchedulingService;
 import com.qcadoo.mes.productionScheduling.constants.OrderFieldsPS;
@@ -66,11 +50,23 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class OperationDurationDetailsInOrderListeners {
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_START_TIME = "startTime";
 
@@ -127,7 +123,7 @@ public class OperationDurationDetailsInOrderListeners {
     @Transactional
     public void generateRealizationTime(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
-        FormComponent orderForm = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent startTimeField = (FieldComponent) viewDefinitionState.getComponentByReference(L_START_TIME);
         LookupComponent prodLine = (LookupComponent) viewDefinitionState.getComponentByReference(OrderFields.PRODUCTION_LINE);
         if (!StringUtils.hasText((String) startTimeField.getFieldValue())) {
@@ -324,7 +320,7 @@ public class OperationDurationDetailsInOrderListeners {
     }
 
     public void createOperationalTasks(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long orderId = orderForm.getEntityId();
 

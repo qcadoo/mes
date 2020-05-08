@@ -64,11 +64,12 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class OrderTimePredictionListeners {
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED = "productionScheduling.error.fieldRequired";
 
@@ -135,7 +136,7 @@ public class OrderTimePredictionListeners {
 
     @Transactional
     public void changeRealizationTime(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         FieldComponent technologyLookup = (FieldComponent) view.getComponentByReference(OrderFields.TECHNOLOGY);
         FieldComponent plannedQuantityField = (FieldComponent) view.getComponentByReference(OrderFields.PLANNED_QUANTITY);

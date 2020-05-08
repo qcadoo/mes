@@ -9,13 +9,14 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ChangeStorageLocationHelperHooks {
 
     public void onBeforeRender(final ViewDefinitionState view) {
 
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity entity = form.getEntity();
         Entity delivery = entity.getBelongsToField(DeliveredProductFields.DELIVERY);
         Entity location = delivery.getBelongsToField(DeliveryFields.LOCATION);

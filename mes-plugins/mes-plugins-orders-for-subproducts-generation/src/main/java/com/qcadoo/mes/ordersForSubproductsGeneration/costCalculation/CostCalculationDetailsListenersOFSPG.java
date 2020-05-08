@@ -5,6 +5,7 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,13 +15,13 @@ import java.util.List;
 @Service
 public class CostCalculationDetailsListenersOFSPG {
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired
     private NumberService numberService;
 
     public void saveComponentsNominalCosts(final ViewDefinitionState view, final ComponentState state, final String[] args){
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity costsEntity = formComponent.getEntity();
         costsEntity = costsEntity.getDataDefinition().get(costsEntity.getId());
         List<Entity> componentCosts = costsEntity.getHasManyField("componentCosts");

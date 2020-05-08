@@ -23,24 +23,6 @@
  */
 package com.qcadoo.mes.supplyNegotiations.hooks;
 
-import static com.qcadoo.mes.deliveries.constants.CompanyFieldsD.BUFFER;
-import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
-import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationFields.FARTHEST_LIMIT_DATE;
-import static com.qcadoo.mes.supplyNegotiations.constants.OfferFields.NEGOTIATION;
-import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationFields.DESIRED_DATE;
-import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationFields.NUMBER;
-import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationFields.REQUEST_FOR_QUOTATION_PRODUCTS;
-import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationFields.STATE;
-import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationFields.SUPPLIER;
-import static com.qcadoo.mes.supplyNegotiations.states.constants.RequestForQuotationStateStringValues.ACCEPTED;
-import static com.qcadoo.mes.supplyNegotiations.states.constants.RequestForQuotationStateStringValues.DECLINED;
-import static com.qcadoo.mes.supplyNegotiations.states.constants.RequestForQuotationStateStringValues.DRAFT;
-
-import java.util.Date;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
@@ -49,25 +31,33 @@ import com.qcadoo.mes.supplyNegotiations.states.constants.RequestForQuotationSta
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+
+import static com.qcadoo.mes.deliveries.constants.CompanyFieldsD.BUFFER;
+import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
+import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationFields.FARTHEST_LIMIT_DATE;
+import static com.qcadoo.mes.supplyNegotiations.constants.OfferFields.NEGOTIATION;
+import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationFields.*;
+import static com.qcadoo.mes.supplyNegotiations.states.constants.RequestForQuotationStateStringValues.*;
 
 @Service
 public class RequestForQuotationDetailsHooks {
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_DELIVERY_DATE_BUFFER = "deliveryDateBuffer";
 
     private static final String L_NEGOTIATION_DATE = "negotiationDate";
 
-    private static final String L_WINDOW = "window";
+
 
     private static final String L_OFFERS = "offers";
 
@@ -83,7 +73,7 @@ public class RequestForQuotationDetailsHooks {
 
     public void generateRequestForQuotationNumber(final ViewDefinitionState state) {
         numberGeneratorService.generateAndInsertNumber(state, SupplyNegotiationsConstants.PLUGIN_IDENTIFIER,
-                SupplyNegotiationsConstants.MODEL_REQUEST_FOR_QUOTATION, L_FORM, NUMBER);
+                SupplyNegotiationsConstants.MODEL_REQUEST_FOR_QUOTATION, QcadooViewConstants.L_FORM, NUMBER);
     }
 
     public void fillBufferForSupplier(final ViewDefinitionState view) {
@@ -102,7 +92,7 @@ public class RequestForQuotationDetailsHooks {
     }
 
     public void changeFieldsEnabledDependOnState(final ViewDefinitionState view) {
-        FormComponent requestForQuotationForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent requestForQuotationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         FieldComponent stateField = (FieldComponent) view.getComponentByReference(STATE);
         String state = stateField.getFieldValue().toString();
@@ -119,7 +109,7 @@ public class RequestForQuotationDetailsHooks {
     }
 
     private void changeFieldsEnabled(final ViewDefinitionState view, final boolean enabledForm, final boolean enabledGrid) {
-        FormComponent requestForQuotationForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent requestForQuotationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         GridComponent requestForQuotationProducts = (GridComponent) view.getComponentByReference(REQUEST_FOR_QUOTATION_PRODUCTS);
 
@@ -163,9 +153,9 @@ public class RequestForQuotationDetailsHooks {
     }
 
     public void updateRibbonState(final ViewDefinitionState view) {
-        FormComponent requestForQuotationForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent requestForQuotationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
 
         RibbonGroup offers = (RibbonGroup) window.getRibbon().getGroupByName(L_OFFERS);
 

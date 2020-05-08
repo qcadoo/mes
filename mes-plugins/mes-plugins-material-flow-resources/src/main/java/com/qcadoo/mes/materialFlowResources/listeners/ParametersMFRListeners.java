@@ -12,16 +12,16 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.GridComponent;
-
-import java.util.Set;
-
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 @Service
 public class ParametersMFRListeners {
 
-    private static final String L_GRID = "grid";
+
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -37,7 +37,7 @@ public class ParametersMFRListeners {
     }
 
     public void addColumns(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         CheckBoxComponent generated = (CheckBoxComponent) view.getComponentByReference("generated");
 
         Set<Long> ids = grid.getSelectedEntitiesIds();

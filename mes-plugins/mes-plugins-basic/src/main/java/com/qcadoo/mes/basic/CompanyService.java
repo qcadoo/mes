@@ -23,17 +23,13 @@
  */
 package com.qcadoo.mes.basic;
 
-import com.qcadoo.mes.basic.constants.CompanyFields;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -41,15 +37,19 @@ import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 @Service
 public class CompanyService {
 
-    private static final String L_FORM = "form";
+    
 
-    private static final String L_WINDOW = "window";
+
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -125,7 +125,7 @@ public class CompanyService {
     }
 
     public void disabledGridWhenCompanyIsOwner(final ViewDefinitionState view, final String... references) {
-        FormComponent companyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent companyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity company = companyForm.getEntity();
 
         Boolean isOwner = isCompanyOwner(company);
@@ -145,7 +145,7 @@ public class CompanyService {
 
     public void disableButton(final ViewDefinitionState view, final String ribbonGroupName, final String ribbonActionItemName,
             final boolean isEnabled, final String message) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
 
         RibbonGroup ribbonGroup = window.getRibbon().getGroupByName(ribbonGroupName);
         RibbonActionItem ribbonActionItem = ribbonGroup.getItemByName(ribbonActionItemName);

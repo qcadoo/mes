@@ -38,19 +38,16 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
-
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
 import static com.qcadoo.mes.materialFlow.constants.LocationType.WAREHOUSE;
 
@@ -67,7 +64,7 @@ public class MaterialAvailabilityListHooks {
 
     public void fillInReplacementsAvailableQuantity(final ViewDefinitionState state) throws JSONException {
         FormComponent formComponent = (FormComponent) state.getComponentByReference("product");
-        GridComponent grid = (GridComponent) state.getComponentByReference("grid");
+        GridComponent grid = (GridComponent) state.getComponentByReference(QcadooViewConstants.L_GRID);
         JSONObject context = state.getJsonContext();
 
         Entity product = formComponent.getEntity().getDataDefinition().get(formComponent.getEntityId());
@@ -115,7 +112,7 @@ public class MaterialAvailabilityListHooks {
 
     public void fillInAvailableQuantity(final ViewDefinitionState state) {
         FormComponent formComponent = (FormComponent) state.getComponentByReference("product");
-        GridComponent grid = (GridComponent) state.getComponentByReference("grid");
+        GridComponent grid = (GridComponent) state.getComponentByReference(QcadooViewConstants.L_GRID);
 
         Entity product = formComponent.getEntity().getDataDefinition().get(formComponent.getEntityId());
 

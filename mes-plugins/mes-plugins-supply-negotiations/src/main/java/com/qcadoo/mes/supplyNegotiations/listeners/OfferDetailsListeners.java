@@ -23,18 +23,6 @@
  */
 package com.qcadoo.mes.supplyNegotiations.listeners;
 
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.*;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
-import static com.qcadoo.mes.supplyNegotiations.constants.OfferFields.*;
-
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
@@ -59,14 +47,26 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.*;
+import static com.qcadoo.mes.supplyNegotiations.constants.OfferFields.*;
 
 @Service
 public class OfferDetailsListeners {
 
     private static final Integer REPORT_WIDTH_A4 = 515;
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_FILTERS = "filters";
 
@@ -126,7 +126,7 @@ public class OfferDetailsListeners {
     }
 
     public void showRequestForQuotation(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent offerForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent offerForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long offerId = offerForm.getEntityId();
 
         if (offerId == null) {
@@ -153,7 +153,7 @@ public class OfferDetailsListeners {
     }
 
     public void createDelivery(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent offerForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent offerForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long offerId = offerForm.getEntityId();
 
         if (offerId == null) {
@@ -178,7 +178,7 @@ public class OfferDetailsListeners {
     }
 
     public final void showSupplyItemsForGivenOffer(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent offerForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent offerForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long offerId = offerForm.getEntityId();
 
         if (offerId == null) {
@@ -271,7 +271,7 @@ public class OfferDetailsListeners {
     }
 
     public void validateColumnsWidthForOffer(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        Long offerId = ((FormComponent) view.getComponentByReference("form")).getEntity().getId();
+        Long offerId = ((FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM)).getEntity().getId();
         Entity offer = supplyNegotiationsService.getOffer(offerId);
         List<String> columnNames = offerReportPdf.getUsedColumnsInOfferReport(offer);
         if (!pdfHelper.validateReportColumnWidths(REPORT_WIDTH_A4, parameterService.getReportColumnWidths(), columnNames)) {

@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
@@ -51,24 +41,30 @@ import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class DeliveryDetailsHooks {
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_LOGGINGS_GRID = "loggingsGrid";
 
-    private static final String L_WINDOW = "window";
+
 
     private static final String L_RELATED_DELIVERY = "relatedDelivery";
 
@@ -109,7 +105,7 @@ public class DeliveryDetailsHooks {
 
     public void generateDeliveryNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, DeliveriesConstants.PLUGIN_IDENTIFIER,
-                DeliveriesConstants.MODEL_DELIVERY, L_FORM, DeliveryFields.NUMBER);
+                DeliveriesConstants.MODEL_DELIVERY, QcadooViewConstants.L_FORM, DeliveryFields.NUMBER);
     }
 
     public void fillCompanyFieldsForSupplier(final ViewDefinitionState view) {
@@ -133,7 +129,7 @@ public class DeliveryDetailsHooks {
     }
 
     public void changeFieldsEnabledDependOnState(final ViewDefinitionState view) {
-        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         FieldComponent stateField = (FieldComponent) view.getComponentByReference(DeliveryFields.STATE);
         String state = stateField.getFieldValue().toString();
@@ -155,7 +151,7 @@ public class DeliveryDetailsHooks {
 
     private void changeFieldsEnabled(final ViewDefinitionState view, final boolean enabledForm, final boolean enabledOrderedGrid,
             final boolean enabledDeliveredGrid) {
-        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         GridComponent orderedProducts = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
         GridComponent deliveredProducts = (GridComponent) view.getComponentByReference(DeliveryFields.DELIVERED_PRODUCTS);
@@ -166,7 +162,7 @@ public class DeliveryDetailsHooks {
     }
 
     public void fillDeliveryAddressDefaultValue(final ViewDefinitionState view) {
-        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (Objects.nonNull(deliveryForm.getEntityId())) {
             return;
@@ -181,7 +177,7 @@ public class DeliveryDetailsHooks {
     }
 
     public void fillDescriptionDefaultValue(final ViewDefinitionState view) {
-        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (Objects.nonNull(deliveryForm.getEntityId())) {
             return;
@@ -204,10 +200,10 @@ public class DeliveryDetailsHooks {
     }
 
     public void updateRelatedDeliveryButtonsState(final ViewDefinitionState view) {
-        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long deliveryId = deliveryForm.getEntityId();
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup reports = window.getRibbon().getGroupByName(L_RELATED_DELIVERY);
 
         RibbonActionItem createRelatedDelivery = reports.getItemByName(L_CREATE_RELATED_DELIVERY);
@@ -235,7 +231,7 @@ public class DeliveryDetailsHooks {
     }
 
     public void fillCurrencyFields(final ViewDefinitionState view) {
-        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         List<String> referenceNames = Lists.newArrayList("deliveredProductsCumulatedTotalPriceCurrency",
                 "orderedProductsCumulatedTotalPriceCurrency");
@@ -259,7 +255,7 @@ public class DeliveryDetailsHooks {
     }
 
     public void fillLocationDefaultValue(final ViewDefinitionState view) {
-        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (Objects.nonNull(deliveryForm.getEntityId())) {
             return;
@@ -282,7 +278,7 @@ public class DeliveryDetailsHooks {
     }
 
     public void changeLocationEnabledDependOnState(final ViewDefinitionState view) {
-        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         LookupComponent locationField = (LookupComponent) view.getComponentByReference(DeliveryFields.LOCATION);
 
@@ -302,10 +298,10 @@ public class DeliveryDetailsHooks {
     }
 
     public void updateCopyOrderedProductButtonsState(final ViewDefinitionState view) {
-        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long deliveryId = deliveryForm.getEntityId();
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup reports = window.getRibbon().getGroupByName(L_COPY_ORDERED_PRODUCTS_TO_DELIVERY);
 
         RibbonActionItem copyWithout = reports.getItemByName(L_COPY_PRODUCTS_WITHOUT_QUANTITY);
@@ -344,10 +340,10 @@ public class DeliveryDetailsHooks {
     }
 
     public void updateChangeStorageLocationButton(final ViewDefinitionState view) {
-        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         GridComponent deliveredProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.DELIVERED_PRODUCTS);
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         Ribbon ribbon = window.getRibbon();
         RibbonGroup group = ribbon.getGroupByName(L_DELIVERY_POSITIONS);
         RibbonActionItem changeStorageLocations = group.getItemByName(L_CHANGE_STORAGE_LOCATIONS);
@@ -422,7 +418,7 @@ public class DeliveryDetailsHooks {
     }
 
     public void setDeliveryIdForMultiUploadField(final ViewDefinitionState view) {
-        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent deliveryIdForMultiUpload = (FieldComponent) view.getComponentByReference("deliveryIdForMultiUpload");
         FieldComponent deliveryMultiUploadLocale = (FieldComponent) view.getComponentByReference("deliveryMultiUploadLocale");
 

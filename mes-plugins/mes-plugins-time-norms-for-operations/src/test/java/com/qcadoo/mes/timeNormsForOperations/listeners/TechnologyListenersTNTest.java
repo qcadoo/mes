@@ -42,6 +42,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 public class TechnologyListenersTNTest {
 
@@ -80,7 +81,7 @@ public class TechnologyListenersTNTest {
     @Test
     public void shouldReturnIfTheTechnologyIsntInDraftState() {
         // given
-        given(view.getComponentByReference("form")).willReturn(form);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(form);
         given(form.getEntity()).willReturn(technology);
         given(technology.getStringField("state")).willReturn("02accepted");
 
@@ -96,7 +97,7 @@ public class TechnologyListenersTNTest {
     @Test
     public void shouldPassValidationErrorsToTheEntityForAcceptedTechnology() {
         // given
-        given(view.getComponentByReference("form")).willReturn(form);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(form);
         given(form.getEntity()).willReturn(technology);
         given(technology.getStringField("state")).willReturn("01draft");
 

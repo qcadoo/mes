@@ -42,35 +42,29 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.CheckBoxComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-
-import org.springframework.stereotype.Service;
-
 @Service
 public class ProductionTrackingDetailsHooks {
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_STATE = "state";
 
     private static final String L_IS_DISABLED = "isDisabled";
 
-    private static final String L_WINDOW = "window";
+
 
     private static final String L_ACTIONS = "actions";
 
@@ -127,7 +121,7 @@ public class ProductionTrackingDetailsHooks {
     private TranslationService translationService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         setCriteriaModifierParameters(view);
 
@@ -180,7 +174,7 @@ public class ProductionTrackingDetailsHooks {
     }
 
     private void toggleCorrectButton(ViewDefinitionState view, Entity entity) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonActionItem correctButton = window.getRibbon().getGroupByName(L_CORRECTION).getItemByName(L_CORRECT);
 
         String state = entity.getStringField(ProductionTrackingFields.STATE);
@@ -220,7 +214,7 @@ public class ProductionTrackingDetailsHooks {
     }
 
     public void setCriteriaModifierParameters(final ViewDefinitionState view) {
-        FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
                 .getComponentByReference(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
 
@@ -266,7 +260,7 @@ public class ProductionTrackingDetailsHooks {
     }
 
     public void initializeProductionTrackingDetailsView(final ViewDefinitionState view) {
-        FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         FieldComponent stateField = (FieldComponent) view.getComponentByReference(ProductionTrackingFields.STATE);
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(ProductionTrackingFields.ORDER);
@@ -325,7 +319,7 @@ public class ProductionTrackingDetailsHooks {
     }
 
     public void changeFieldComponentsEnabledAndGridsEditable(final ViewDefinitionState view) {
-        FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (productionTrackingForm.getEntityId() == null) {
             return;
@@ -360,9 +354,9 @@ public class ProductionTrackingDetailsHooks {
     }
 
     public void updateRibbonState(final ViewDefinitionState view) {
-        FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
 
         RibbonGroup actionsRibbonGroup = window.getRibbon().getGroupByName(L_ACTIONS);
         RibbonGroup productsQuantitiesRibbonGroup = window.getRibbon().getGroupByName(L_PRODUCTS_QUANTITIES);

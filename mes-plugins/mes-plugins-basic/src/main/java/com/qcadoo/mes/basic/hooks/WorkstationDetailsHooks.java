@@ -33,6 +33,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -46,7 +47,7 @@ import java.util.stream.Collectors;
 @Service
 public class WorkstationDetailsHooks {
 
-    private static final String L_FORM = "form";
+
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -55,7 +56,7 @@ public class WorkstationDetailsHooks {
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     public void setWorkstationIdForMultiUploadField(final ViewDefinitionState view) {
-        FormComponent workstationForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent workstationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent workstationIdForMultiUpload = (FieldComponent) view.getComponentByReference("workstationIdForMultiUpload");
         FieldComponent workstationMultiUploadLocale = (FieldComponent) view
                 .getComponentByReference("workstationMultiUploadLocale");
@@ -72,7 +73,7 @@ public class WorkstationDetailsHooks {
     }
 
     public void setSubassembliesHelpers(final ViewDefinitionState view) {
-        FormComponent workstationForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent workstationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (workstationForm.getEntityId() != null) {
             Entity workstation = workstationForm.getPersistedEntityWithIncludedFormValues();

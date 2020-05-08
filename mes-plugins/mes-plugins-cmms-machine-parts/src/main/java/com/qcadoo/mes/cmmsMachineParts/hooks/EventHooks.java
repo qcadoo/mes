@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Strings;
 import com.qcadoo.mes.basic.FaultTypesService;
 import com.qcadoo.mes.basic.ParameterService;
@@ -38,14 +31,7 @@ import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventContextService;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventService;
 import com.qcadoo.mes.cmmsMachineParts.SourceCostService;
-import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
-import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventContextFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
-import com.qcadoo.mes.cmmsMachineParts.constants.ParameterFieldsCMP;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventBasedOn;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
+import com.qcadoo.mes.cmmsMachineParts.constants.*;
 import com.qcadoo.mes.cmmsMachineParts.roles.EventRoles;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
 import com.qcadoo.model.api.DataDefinition;
@@ -55,24 +41,26 @@ import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.CheckBoxComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EventHooks {
 
-    private static final String L_FORM = "form";
 
-    private static final String L_WINDOW = "window";
+
+    
 
     @Autowired
     private MaintenanceEventService maintenanceEventService;
@@ -120,7 +108,7 @@ public class EventHooks {
     }
 
     private void manageSoundNotificationsField(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity event = form.getPersistedEntityWithIncludedFormValues();
         String type = event.getStringField(MaintenanceEventFields.TYPE);
         String eventState = event.getStringField(MaintenanceEventFields.STATE);
@@ -148,7 +136,7 @@ public class EventHooks {
     }
 
     private void fetchNumberFromDatabase(final ViewDefinitionState view) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (formComponent.getEntityId() != null) {
             ComponentState numberField = view.getComponentByReference(MaintenanceEventFields.NUMBER);
@@ -177,7 +165,7 @@ public class EventHooks {
     }
 
     public void toggleEnabledFromBasedOn(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity event = form.getPersistedEntityWithIncludedFormValues();
         String basedOn = event.getStringField(PlannedEventFields.BASED_ON);
         FieldComponent date = (FieldComponent) view.getComponentByReference(PlannedEventFields.DATE);
@@ -195,7 +183,7 @@ public class EventHooks {
     }
 
     private void disableCopyButtonForAfterReview(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity event = form.getPersistedEntityWithIncludedFormValues();
 
         if (PlannedEventType.from(event).equals(PlannedEventType.AFTER_REVIEW)) {
@@ -204,7 +192,7 @@ public class EventHooks {
     }
 
     private void enableShowPlannedEvent(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity event = form.getPersistedEntityWithIncludedFormValues();
 
@@ -218,7 +206,7 @@ public class EventHooks {
     }
 
     private void enableShowMaintenanceEvent(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity event = form.getPersistedEntityWithIncludedFormValues();
 
@@ -232,7 +220,7 @@ public class EventHooks {
     }
 
     private void toggleRibbonButton(final ViewDefinitionState view, String groupName, String itemName, boolean enabled) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         Ribbon ribbon = window.getRibbon();
         RibbonGroup group = ribbon.getGroupByName(groupName);
         RibbonActionItem item = group.getItemByName(itemName);
@@ -242,7 +230,7 @@ public class EventHooks {
     }
 
     private void disableFieldsForState(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity event = form.getPersistedEntityWithIncludedFormValues();
         MaintenanceEventState state = MaintenanceEventState.of(event);
 
@@ -260,7 +248,7 @@ public class EventHooks {
     }
 
     private void fillDefaultFields(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity event = form.getPersistedEntityWithIncludedFormValues();
         String type = event.getStringField(MaintenanceEventFields.TYPE);
         LookupComponent faultType = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.FAULT_TYPE);
@@ -275,14 +263,14 @@ public class EventHooks {
     }
 
     private void generateNumber(final ViewDefinitionState view, String modelName, String fieldName) {
-        if (numberGeneratorService.checkIfShouldInsertNumber(view, L_FORM, fieldName)) {
-            numberGeneratorService.generateAndInsertNumber(view, CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, modelName, L_FORM,
+        if (numberGeneratorService.checkIfShouldInsertNumber(view, QcadooViewConstants.L_FORM, fieldName)) {
+            numberGeneratorService.generateAndInsertNumber(view, CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, modelName, QcadooViewConstants.L_FORM,
                     fieldName);
         }
     }
 
     public void fillDefaultFieldsFromContext(final ViewDefinitionState view, String contextField) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (form.getEntityId() == null) {
             Entity event = form.getEntity();
@@ -348,7 +336,7 @@ public class EventHooks {
     }
 
     public void toggleEnabledViewComponents(final ViewDefinitionState view, String contextField) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity event = form.getPersistedEntityWithIncludedFormValues();
 
@@ -413,7 +401,7 @@ public class EventHooks {
     }
 
     public void setEventCriteriaModifiers(ViewDefinitionState view) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity event = formComponent.getPersistedEntityWithIncludedFormValues();
 
@@ -439,7 +427,7 @@ public class EventHooks {
     }
 
     private void setUpFaultTypeLookup(final ViewDefinitionState view) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         LookupComponent faultTypeLookup = (LookupComponent) view.getComponentByReference(MaintenanceEventFields.FAULT_TYPE);
 
         Entity event = formComponent.getPersistedEntityWithIncludedFormValues();
@@ -473,7 +461,7 @@ public class EventHooks {
     }
 
     public void setEventIdForMultiUploadField(final ViewDefinitionState view) {
-        FormComponent technology = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent technology = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent technologyIdForMultiUpload = (FieldComponent) view.getComponentByReference("eventIdForMultiUpload");
         FieldComponent technologyMultiUploadLocale = (FieldComponent) view.getComponentByReference("eventMultiUploadLocale");
 
@@ -490,12 +478,12 @@ public class EventHooks {
     }
 
     private void toggleOldSolutionsButton(ViewDefinitionState view) {
-        WindowComponent windowComponent = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent windowComponent = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         Ribbon ribbon = windowComponent.getRibbon();
         RibbonGroup solutionsRibbonGroup = ribbon.getGroupByName("solutions");
         RibbonActionItem showSolutionsRibbonActionItem = solutionsRibbonGroup.getItemByName("showSolutions");
 
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity event = formComponent.getPersistedEntityWithIncludedFormValues();
 
         showSolutionsRibbonActionItem.setEnabled(event.getId() != null);
@@ -542,13 +530,13 @@ public class EventHooks {
     }
 
     private boolean eventInState(final ViewDefinitionState view, final MaintenanceEventState state) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity event = form.getEntity();
         String eventState = event.getStringField(MaintenanceEventFields.STATE);
 
         if (eventState == null) {
-            GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+            GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
             List<Entity> entities = grid.getSelectedEntities();
 
             if (entities.isEmpty()) {
@@ -563,7 +551,7 @@ public class EventHooks {
 
     private void enableFromRibbonGroup(final ViewDefinitionState view, final boolean enable, final String groupName,
             String... items) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         Ribbon ribbon = window.getRibbon();
         RibbonGroup ribbonGroup = ribbon.getGroupByName(groupName);
 

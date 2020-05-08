@@ -1,18 +1,18 @@
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
-import java.util.Map;
-
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeComparator;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeComparator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 public class WorkTimeForUserListHooks {
@@ -26,7 +26,7 @@ public class WorkTimeForUserListHooks {
             return;
         }
         initialized.setChecked(true);
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         Entity currentUser = userService.getCurrentUserEntity();
 
         Map<String, String> filters = Maps.newHashMap();

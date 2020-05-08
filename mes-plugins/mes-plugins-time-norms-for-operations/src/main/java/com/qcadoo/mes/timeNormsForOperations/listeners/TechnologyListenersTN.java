@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.timeNormsForOperations.listeners;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.mes.timeNormsForOperations.NormService;
@@ -36,18 +31,23 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class TechnologyListenersTN {
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired
     private NormService normService;
 
     public void checkOperationOutputQuantities(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (technologyForm.getEntityId() == null) {
             return;

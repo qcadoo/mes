@@ -23,10 +23,6 @@
  */
 package com.qcadoo.mes.basic.listeners;
 
-import java.util.Map;
-
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.model.api.Entity;
@@ -34,11 +30,15 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 public class CompanyDetailsListeners {
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
@@ -49,7 +49,7 @@ public class CompanyDetailsListeners {
     public void redirectToFilteredOrderProductionList(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
 
-        FormComponent companyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent companyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity company = companyForm.getEntity();
 
@@ -76,7 +76,7 @@ public class CompanyDetailsListeners {
     }
 
     public void setTaxCountryCode(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        FormComponent companyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent companyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity company = companyForm.getPersistedEntityWithIncludedFormValues();
 

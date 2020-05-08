@@ -37,6 +37,7 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,7 +46,7 @@ import java.util.List;
 @Service
 public class WorkPlanDetailsHooks {
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_ATTCHMENT_GRID = "technologyAttachments";
 
@@ -71,7 +72,7 @@ public class WorkPlanDetailsHooks {
     }
 
     final void disableFormForGeneratedWorkPlan(final ViewDefinitionState view) {
-        FormComponent workPlanForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent workPlanForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         CheckBoxComponent generatedCheckbox = (CheckBoxComponent) view.getComponentByReference(WorkPlanFields.GENERATED);
 
         if (workPlanForm == null) {
@@ -96,7 +97,7 @@ public class WorkPlanDetailsHooks {
 
     private void setCriteriaModifierParameters(final ViewDefinitionState view) {
         // set technologies id
-        FormComponent workPlanForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent workPlanForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (workPlanForm.getEntityId() == null) {
             return;
@@ -122,7 +123,7 @@ public class WorkPlanDetailsHooks {
     }
 
     private void setWorkPlanDefaultValues(final ViewDefinitionState view) {
-        FormComponent workPlanForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent workPlanForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (workPlanForm.getEntityId() == null) {
             FieldComponent fieldComponent = (FieldComponent) view

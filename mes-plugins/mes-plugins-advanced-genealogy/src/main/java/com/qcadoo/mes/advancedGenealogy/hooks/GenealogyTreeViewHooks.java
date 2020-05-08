@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.advancedGenealogy.hooks;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.advancedGenealogy.constants.AdvancedGenealogyConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -37,6 +32,11 @@ import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class GenealogyTreeViewHooks {
@@ -74,7 +74,7 @@ public class GenealogyTreeViewHooks {
     }
 
     private FormComponent getForm(final ViewDefinitionState view) {
-        return (FormComponent) view.getComponentByReference("form");
+        return (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
     }
 
     private DataDefinition getDataDef(final String pluginName, final String modelName) {

@@ -23,26 +23,6 @@
  */
 package com.qcadoo.mes.materialFlow;
 
-import static com.qcadoo.mes.materialFlow.constants.MaterialsInLocationFields.FILE_NAME;
-import static com.qcadoo.mes.materialFlow.constants.MaterialsInLocationFields.GENERATED;
-import static com.qcadoo.mes.materialFlow.constants.MaterialsInLocationFields.MATERIALS_IN_LOCATION_COMPONENTS;
-import static com.qcadoo.mes.materialFlow.constants.MaterialsInLocationFields.MATERIAL_FLOW_FOR_DATE;
-import static com.qcadoo.mes.materialFlow.constants.MaterialsInLocationFields.NAME;
-import static com.qcadoo.mes.materialFlow.constants.MaterialsInLocationFields.TIME;
-import static com.qcadoo.mes.materialFlow.constants.MaterialsInLocationFields.WORKER;
-
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
-
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
@@ -62,13 +42,25 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+import static com.qcadoo.mes.materialFlow.constants.MaterialsInLocationFields.*;
 
 @Service
 public class MaterialsInLocationService {
 
-    private static final String LFORM = "form";
 
-    private static final String L_WINDOW = "window";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -104,8 +96,8 @@ public class MaterialsInLocationService {
     @SuppressWarnings("unchecked")
     public void setGenerateButtonState(final ViewDefinitionState state, final Locale locale, final String plugin,
             final String entityName) {
-        WindowComponent window = (WindowComponent) state.getComponentByReference(L_WINDOW);
-        FormComponent form = (FormComponent) state.getComponentByReference(LFORM);
+        WindowComponent window = (WindowComponent) state.getComponentByReference(QcadooViewConstants.L_WINDOW);
+        FormComponent form = (FormComponent) state.getComponentByReference(QcadooViewConstants.L_FORM);
         RibbonActionItem generateButton = window.getRibbon().getGroupByName("generate").getItemByName("generate");
         RibbonActionItem deleteButton = window.getRibbon().getGroupByName("actions").getItemByName("delete");
 
@@ -155,8 +147,8 @@ public class MaterialsInLocationService {
 
     public void setGridGenerateButtonState(final ViewDefinitionState state, final Locale locale, final String plugin,
             final String entityName) {
-        WindowComponent window = (WindowComponent) state.getComponentByReference(L_WINDOW);
-        GridComponent grid = (GridComponent) state.getComponentByReference("grid");
+        WindowComponent window = (WindowComponent) state.getComponentByReference(QcadooViewConstants.L_WINDOW);
+        GridComponent grid = (GridComponent) state.getComponentByReference(QcadooViewConstants.L_GRID);
         RibbonActionItem deleteButton = window.getRibbon().getGroupByName("actions").getItemByName("delete");
 
         if (grid.getSelectedEntitiesIds() == null || grid.getSelectedEntitiesIds().size() == 0) {

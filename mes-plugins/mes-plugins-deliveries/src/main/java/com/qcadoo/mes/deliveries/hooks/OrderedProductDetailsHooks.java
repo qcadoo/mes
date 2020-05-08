@@ -36,19 +36,19 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 @Service
 public class OrderedProductDetailsHooks {
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -57,7 +57,7 @@ public class OrderedProductDetailsHooks {
     private BatchCriteriaModifier batchCriteriaModifier;
 
     public void beforeRender(final ViewDefinitionState view) {
-        FormComponent orderedProductForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderedProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity orderedProduct = orderedProductForm.getPersistedEntityWithIncludedFormValues();
 
@@ -117,7 +117,7 @@ public class OrderedProductDetailsHooks {
     }
 
     public void fillCurrencyFields(final ViewDefinitionState view) {
-        FormComponent orderedProductForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderedProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         List<String> referenceNames = Lists.newArrayList("totalPriceCurrency", "pricePerUnitCurrency");
 

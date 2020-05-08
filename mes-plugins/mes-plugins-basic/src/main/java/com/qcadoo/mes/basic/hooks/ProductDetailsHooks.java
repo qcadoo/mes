@@ -33,6 +33,7 @@ import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -44,7 +45,7 @@ import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 @Service
 public class ProductDetailsHooks {
 
-    private static final String L_FORM = "form";
+
 
     private static final String UNIT_FROM = "unitFrom";
 
@@ -59,11 +60,11 @@ public class ProductDetailsHooks {
 
     public void generateProductNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT,
-                L_FORM, ProductFields.NUMBER);
+                QcadooViewConstants.L_FORM, ProductFields.NUMBER);
     }
 
     public void fillUnit(final ViewDefinitionState view) {
-        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         FieldComponent unitField = (FieldComponent) view.getComponentByReference(UNIT);
 
@@ -74,7 +75,7 @@ public class ProductDetailsHooks {
     }
 
     public void disableUnitFromWhenFormIsSaved(final ViewDefinitionState view) {
-        final FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
+        final FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         final AwesomeDynamicListComponent conversionItemsAdl = (AwesomeDynamicListComponent) view
                 .getComponentByReference(CONVERSION_ITEMS);
 
@@ -87,7 +88,7 @@ public class ProductDetailsHooks {
     }
 
     public void disableProductFormForExternalItems(final ViewDefinitionState state) {
-        FormComponent productForm = (FormComponent) state.getComponentByReference(L_FORM);
+        FormComponent productForm = (FormComponent) state.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent entityTypeField = (FieldComponent) state.getComponentByReference(ProductFields.ENTITY_TYPE);
         FieldComponent parentField = (FieldComponent) state.getComponentByReference(ProductFields.PARENT);
 
@@ -119,7 +120,7 @@ public class ProductDetailsHooks {
     }
 
     public void disableProductAdditionalFormForExternalItems(final ViewDefinitionState state) {
-        FormComponent productForm = (FormComponent) state.getComponentByReference(L_FORM);
+        FormComponent productForm = (FormComponent) state.getComponentByReference(QcadooViewConstants.L_FORM);
         Long productId = productForm.getEntityId();
 
         if (productId == null) {
@@ -144,11 +145,11 @@ public class ProductDetailsHooks {
     }
 
     public void updateRibbonState(final ViewDefinitionState view) {
-        FormComponent operationGroupForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent operationGroupForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity operationGroup = operationGroupForm.getEntity();
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
 
         RibbonGroup operationGroups = (RibbonGroup) window.getRibbon().getGroupByName("conversions");
 
@@ -164,7 +165,7 @@ public class ProductDetailsHooks {
     }
 
     public void setProductIdForMultiUploadField(final ViewDefinitionState view) {
-        FormComponent product = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent product = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent productIdForMultiUpload = (FieldComponent) view.getComponentByReference("productIdForMultiUpload");
         FieldComponent productMultiUploadLocale = (FieldComponent) view.getComponentByReference("productMultiUploadLocale");
 

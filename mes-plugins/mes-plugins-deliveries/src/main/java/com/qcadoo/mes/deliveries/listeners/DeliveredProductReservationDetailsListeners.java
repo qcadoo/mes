@@ -30,16 +30,17 @@ import com.qcadoo.mes.deliveries.constants.DeliveredProductReservationFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import org.springframework.context.i18n.LocaleContextHolder;
 
 @Service
 public class DeliveredProductReservationDetailsListeners {
@@ -48,7 +49,7 @@ public class DeliveredProductReservationDetailsListeners {
     private NumberService numberService;
 
     public void quantityChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity deliveredProductReservation = form.getEntity();
         Entity deliveredProduct = deliveredProductReservation.getBelongsToField(DeliveredProductReservationFields.DELIVERED_PRODUCT);
         BigDecimal conversion = deliveredProduct.getDecimalField(DeliveredProductFields.CONVERSION);
@@ -65,7 +66,7 @@ public class DeliveredProductReservationDetailsListeners {
     }
 
     public void additionalQuantityChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity deliveredProductReservation = form.getEntity();
         Entity deliveredProduct = deliveredProductReservation.getBelongsToField(DeliveredProductReservationFields.DELIVERED_PRODUCT);
 

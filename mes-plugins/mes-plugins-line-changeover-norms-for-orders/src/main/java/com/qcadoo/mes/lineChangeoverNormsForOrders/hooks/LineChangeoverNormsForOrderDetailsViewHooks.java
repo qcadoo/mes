@@ -43,11 +43,12 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class LineChangeoverNormsForOrderDetailsViewHooks {
 
-    private static final String L_FORM = "form";
+
 
     @Autowired
     private OrderService orderService;
@@ -62,7 +63,7 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
     private LineChangeoverNormsForOrdersService lineChangeoverNormsForOrdersService;
 
     public final void fillOrderForms(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OrderFieldsLCNFO.ORDER);
         LookupComponent previousOrderLookup = (LookupComponent) view.getComponentByReference(OrderFieldsLCNFO.PREVIOUS_ORDER);
@@ -156,7 +157,7 @@ public class LineChangeoverNormsForOrderDetailsViewHooks {
                 .getComponentByReference("previousOrderTechnologyNumber");
         FieldComponent technologyNumberField = (FieldComponent) view.getComponentByReference("technologyNumber");
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup orders = window.getRibbon().getGroupByName("orders");
         RibbonGroup lineChangeoverNorms = window.getRibbon().getGroupByName("lineChangeoverNorms");
 

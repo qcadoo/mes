@@ -15,6 +15,9 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentPositionParametersItemFields;
 import com.qcadoo.model.api.Entity;
@@ -22,9 +25,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ParametersMFRHooks {
@@ -35,7 +36,7 @@ public class ParametersMFRHooks {
     private static final String TRANSLATION_PREFIX = "materialFlowResources.materialFlowResourcesParameters.documentPositionParameters.";
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
         for (Entity entity : grid.getEntities()) {
             if(!entity.getBooleanField(DocumentPositionParametersItemFields.FOR_ATTRIBUTE)) {
@@ -47,7 +48,7 @@ public class ParametersMFRHooks {
     }
 
     public void onBeforeRenderItemDetails(final ViewDefinitionState view) {
-        FormComponent documentPositionParametersItemForm = (FormComponent) view.getComponentByReference("form");
+        FormComponent documentPositionParametersItemForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent displayNameField = (FieldComponent) view.getComponentByReference("displayName");
         Entity item = documentPositionParametersItemForm.getPersistedEntityWithIncludedFormValues();
         String name = item.getStringField("name");

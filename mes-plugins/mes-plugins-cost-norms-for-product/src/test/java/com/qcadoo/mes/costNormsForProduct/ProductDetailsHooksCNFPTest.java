@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.costNormsForProduct;
 
-import static org.mockito.Matchers.anyLong;
-import static org.mockito.Mockito.when;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.test.util.ReflectionTestUtils;
-
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
@@ -43,6 +33,16 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import static org.mockito.Matchers.anyLong;
+import static org.mockito.Mockito.when;
 
 public class ProductDetailsHooksCNFPTest {
 
@@ -80,7 +80,7 @@ public class ProductDetailsHooksCNFPTest {
         when(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT))
                 .thenReturn(dataDefinition);
 
-        when(viewDefinitionState.getComponentByReference("form")).thenReturn(form);
+        when(viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM)).thenReturn(form);
         when(form.getEntityId()).thenReturn(3L);
         when(dataDefinition.get(anyLong())).thenReturn(entity);
 

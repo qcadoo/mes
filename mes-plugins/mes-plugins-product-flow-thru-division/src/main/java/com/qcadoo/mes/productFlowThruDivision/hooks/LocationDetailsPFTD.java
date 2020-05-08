@@ -23,21 +23,22 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.hooks;
 
-import com.qcadoo.mes.materialFlow.constants.LocationType;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
+import com.qcadoo.mes.materialFlow.constants.LocationType;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class LocationDetailsPFTD {
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_LOCATION = "location";
 
@@ -46,7 +47,7 @@ public class LocationDetailsPFTD {
     private static final String L_DIVISIONS_TAB = "divisionsTab";
 
     public void setCriteriaModifierParameters(final ViewDefinitionState view) {
-        FormComponent locationForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent locationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         GridComponent divisionsGrid = (GridComponent) view.getComponentByReference(L_DIVISIONS);
 
         Entity location = locationForm.getEntity();
@@ -60,7 +61,7 @@ public class LocationDetailsPFTD {
     }
 
     public void changeDivisionsTabAndGridVisibility(final ViewDefinitionState view) {
-        FormComponent locationForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent locationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         GridComponent divisionsGrid = (GridComponent) view.getComponentByReference(L_DIVISIONS);
         ComponentState divisionsTab = view.getComponentByReference(L_DIVISIONS_TAB);
 

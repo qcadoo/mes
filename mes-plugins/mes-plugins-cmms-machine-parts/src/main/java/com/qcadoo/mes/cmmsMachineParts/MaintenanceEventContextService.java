@@ -52,14 +52,15 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import com.qcadoo.view.internal.components.form.FormComponentState;
 
 @Service
 public class MaintenanceEventContextService {
 
-    private static final String L_FORM = "form";
+    
 
-    private static final String L_GRID = "grid";
+
 
     private static final String L_PLANNED_EVENT = "plannedEvent";
 
@@ -70,7 +71,7 @@ public class MaintenanceEventContextService {
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     public void confirmOrChangeContext(ViewDefinitionState view, ComponentState componentState, String[] args) {
-        FormComponent formComponent = (FormComponentState) view.getComponentByReference(L_FORM);
+        FormComponent formComponent = (FormComponentState) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity maintenanceEventContextEntity = prepareContextEntity(formComponent.getEntity());
 
         if (maintenanceEventContextEntity.getBooleanField(MaintenanceEventContextFields.CONFIRMED)) {
@@ -83,7 +84,7 @@ public class MaintenanceEventContextService {
     }
 
     private Entity changeContext(ViewDefinitionState view, Entity maintenanceEventContextEntity) {
-        FormComponent formComponent = (FormComponentState) view.getComponentByReference(L_FORM);
+        FormComponent formComponent = (FormComponentState) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         maintenanceEventContextEntity.setField(MaintenanceEventContextFields.CONFIRMED, false);
         maintenanceEventContextEntity = maintenanceEventContextEntity.getDataDefinition().save(maintenanceEventContextEntity);
@@ -143,7 +144,7 @@ public class MaintenanceEventContextService {
     }
 
     public void beforeRenderListView(final ViewDefinitionState view) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity maintenanceEventContext = formComponent.getEntity();
 
         if (maintenanceEventContext.getBooleanField(MaintenanceEventContextFields.CONFIRMED)) {
@@ -162,7 +163,7 @@ public class MaintenanceEventContextService {
     }
 
     private void prepareViewWithEmptyContext(ViewDefinitionState view, Entity maintenanceEventContext) {
-        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         grid.setEntities(Arrays.asList());
 
         setEnableOfRibbonActions(view, false);
@@ -176,11 +177,11 @@ public class MaintenanceEventContextService {
     }
 
     private void setEnableOfMainTab(ViewDefinitionState view, boolean enabled) {
-        view.getComponentByReference(L_GRID).setEnabled(enabled);
+        view.getComponentByReference(QcadooViewConstants.L_GRID).setEnabled(enabled);
     }
 
     private void setEnableOfRibbonActions(ViewDefinitionState viewDefinitionState, boolean enabled) {
-        WindowComponent window = (WindowComponent) viewDefinitionState.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_WINDOW);
         Ribbon ribbon = window.getRibbon();
 
         RibbonGroup customActions = ribbon.getGroupByName("customActions");
@@ -196,7 +197,7 @@ public class MaintenanceEventContextService {
     }
 
     private void setGridFilterParameters(ViewDefinitionState view, Entity maintenanceEventContext) {
-        GridComponent gridComponent = (GridComponent) view.getComponentByReference(L_GRID);
+        GridComponent gridComponent = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
         FilterValueHolder filterValueHolder = gridComponent.getFilterValue();
 
@@ -218,8 +219,8 @@ public class MaintenanceEventContextService {
     }
 
     public void onSelectedEventChange(ViewDefinitionState view) {
-        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         DataDefinition maintenanceEventDD = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
                 CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT);
 
@@ -231,7 +232,7 @@ public class MaintenanceEventContextService {
     }
 
     public Entity getCurrentContext(ViewDefinitionState viewDefinitionState, ComponentState triggerState, String[] args) {
-        FormComponent formComponent = (FormComponentState) viewDefinitionState.getComponentByReference(L_FORM);
+        FormComponent formComponent = (FormComponentState) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
 
         return prepareContextEntity(formComponent.getEntity());
     }

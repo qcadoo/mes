@@ -23,14 +23,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +34,9 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+
 import static com.qcadoo.mes.states.constants.StateChangeStatus.IN_PROGRESS;
 import static com.qcadoo.mes.states.constants.StateChangeStatus.PAUSED;
 
@@ -70,7 +66,7 @@ public class StateExecutorService {
         Long userId = securityService.getCurrentUserId();
         String userLogin = securityService.getCurrentUserName();
 
-        Optional<GridComponent> maybeGridComponent = view.tryFindComponentByReference("grid");
+        Optional<GridComponent> maybeGridComponent = view.tryFindComponentByReference(QcadooViewConstants.L_GRID);
         if (maybeGridComponent.isPresent()) {
             maybeGridComponent.get().getSelectedEntities().forEach(entity -> {
                 entity = entity.getDataDefinition().getMasterModelEntity(entity.getId());
@@ -82,7 +78,7 @@ public class StateExecutorService {
             });
 
         } else {
-            Optional<FormComponent> maybeForm = view.tryFindComponentByReference("form");
+            Optional<FormComponent> maybeForm = view.tryFindComponentByReference(QcadooViewConstants.L_FORM);
             if (maybeForm.isPresent()) {
                 FormComponent formComponent = maybeForm.get();
                 Entity entity = formComponent.getEntity().getDataDefinition().get(formComponent.getEntityId());

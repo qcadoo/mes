@@ -31,14 +31,15 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class MaterialRequirementCoveragesListHooks {
 
-    private static final String L_GRID = "grid";
+
 
     public final void addDiscriminatorRestrictionToGrid(final ViewDefinitionState view) {
-        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         grid.setCustomRestriction(new CustomRestriction() {
 
             @Override

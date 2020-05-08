@@ -8,6 +8,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,13 +17,13 @@ import java.util.List;
 @Service
 public class NumberPatternDetailsListeners {
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired
     private TranslationService translationService;
 
     public void generatePatternFromElements(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity numberPattern = form.getPersistedEntityWithIncludedFormValues();
         List<Entity> elements = numberPattern.getHasManyField(NumberPatternFields.NUMBER_PATTERN_ELEMENTS);

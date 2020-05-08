@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.productionPerShift.hooks;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.test.util.ReflectionTestUtils;
-
 import com.qcadoo.mes.productionPerShift.constants.PPSReportFields;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -41,10 +31,20 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class PPSReportDetailsHooksTest {
 
-    private static final String L_FORM = "form";
+    
 
     private PPSReportDetailsHooks hooks;
 
@@ -78,7 +78,7 @@ public class PPSReportDetailsHooksTest {
     @Test
     public void shouldntDisableFieldsWhenEntityIsntSaved() {
         // given
-        given(view.getComponentByReference(L_FORM)).willReturn(reportForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(reportForm);
 
         given(view.getComponentByReference(PPSReportFields.NUMBER)).willReturn(fieldComponent);
         given(view.getComponentByReference(PPSReportFields.NAME)).willReturn(fieldComponent);
@@ -97,7 +97,7 @@ public class PPSReportDetailsHooksTest {
     @Test
     public void shouldntDisableFieldsWhenEntityIsSavedAndReportIsntGenerated() {
         // given
-        given(view.getComponentByReference(L_FORM)).willReturn(reportForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(reportForm);
 
         given(view.getComponentByReference(PPSReportFields.NUMBER)).willReturn(fieldComponent);
         given(view.getComponentByReference(PPSReportFields.NAME)).willReturn(fieldComponent);
@@ -122,7 +122,7 @@ public class PPSReportDetailsHooksTest {
     @Test
     public void shouldDisableFieldsWhenEntityIsSavedAndReportIsGenerated() {
         // given
-        given(view.getComponentByReference(L_FORM)).willReturn(reportForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(reportForm);
 
         given(view.getComponentByReference(PPSReportFields.NUMBER)).willReturn(fieldComponent);
         given(view.getComponentByReference(PPSReportFields.NAME)).willReturn(fieldComponent);

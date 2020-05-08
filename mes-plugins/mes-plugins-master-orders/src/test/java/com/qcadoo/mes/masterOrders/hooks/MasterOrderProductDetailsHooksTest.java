@@ -23,6 +23,14 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.model.api.Entity;
@@ -30,17 +38,11 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 public class MasterOrderProductDetailsHooksTest {
 
-    private static final String L_FORM = "form";
+    
 
     private MasterOrderProductDetailsHooks masterOrderProductDetailsHooks;
 
@@ -59,7 +61,7 @@ public class MasterOrderProductDetailsHooksTest {
 
         MockitoAnnotations.initMocks(this);
 
-        given(view.getComponentByReference(L_FORM)).willReturn(masterOrderProductForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(masterOrderProductForm);
 
         given(view.getComponentByReference(MasterOrderProductFields.PRODUCT)).willReturn(productField);
 

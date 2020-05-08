@@ -38,6 +38,9 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
@@ -45,13 +48,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 @Service
 public class MasterOrderPositionsListListeners {
 
-    private static final String L_GRID = "grid";
+
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
@@ -67,7 +67,7 @@ public class MasterOrderPositionsListListeners {
     private ParameterService parameterService;
 
     public void createOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent masterOrderPositionComponent = (GridComponent) view.getComponentByReference(L_GRID);
+        GridComponent masterOrderPositionComponent = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
         List<Entity> selectedEntity = masterOrderPositionComponent.getSelectedEntities();
 
@@ -108,7 +108,7 @@ public class MasterOrderPositionsListListeners {
     }
 
     public void goToGenerateOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent masterOrderPositionComponent = (GridComponent) view.getComponentByReference(L_GRID);
+        GridComponent masterOrderPositionComponent = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         Set<Long> selected = masterOrderPositionComponent.getSelectedEntitiesIds();
         boolean createCollectiveOrders = parameterService.getParameter().getBooleanField(CREATE_COLLECTIVE_ORDERS);
         if (createCollectiveOrders) {
@@ -131,7 +131,7 @@ public class MasterOrderPositionsListListeners {
     }
 
     public void generateOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity helper = form.getPersistedEntityWithIncludedFormValues();
         String selectedEntities = helper.getStringField(GeneratingOrdersHelperFields.SELECTED_ENTITIES);
         Date start = helper.getDateField(GeneratingOrdersHelperFields.START_DATE);

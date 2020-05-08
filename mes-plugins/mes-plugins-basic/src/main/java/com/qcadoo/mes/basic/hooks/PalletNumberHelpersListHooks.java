@@ -31,18 +31,19 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class PalletNumberHelpersListHooks {
 
-    public static final String L_GRID = "grid";
+
 
     public void onBeforeRender(final ViewDefinitionState view) {
         addDiscriminatorRestrictionToGrid(view);
     }
 
     public final void addDiscriminatorRestrictionToGrid(final ViewDefinitionState view) {
-        GridComponent palletNumberHelpersGrid = (GridComponent) view.getComponentByReference(L_GRID);
+        GridComponent palletNumberHelpersGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
         palletNumberHelpersGrid.setCustomRestriction(new CustomRestriction() {
 

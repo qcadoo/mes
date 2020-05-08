@@ -35,17 +35,18 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ProductionTrackingDetailsHooksTSFPC {
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     public void disabledSubcontractorFieldForState(final ViewDefinitionState view) {
-        FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         LookupComponent subcontractorLookup = (LookupComponent) view
                 .getComponentByReference(ProductionTrackingFieldsTSFPC.SUBCONTRACTOR);
 

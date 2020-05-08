@@ -1,26 +1,26 @@
 package com.qcadoo.mes.materialFlowResources.hooks;
 
-import static java.util.Comparator.comparing;
-import static org.apache.commons.lang3.ArrayUtils.contains;
-import static org.apache.commons.lang3.ArrayUtils.indexOf;
-
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialFlowResources.constants.PalletStorageStateDtoFields;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static java.util.Comparator.comparing;
+import static org.apache.commons.lang3.ArrayUtils.contains;
+import static org.apache.commons.lang3.ArrayUtils.indexOf;
 
 @Service
 public class PalletStorageStateDetailsHooks {
 
-    private static final String L_GRID = "grid";
+
 
     @Autowired
     private TranslationService translationService;
@@ -30,7 +30,7 @@ public class PalletStorageStateDetailsHooks {
                 PalletStorageStateDtoFields.TYPE_OF_PALLET, PalletStorageStateDtoFields.LOCATION_NUMBER,
                 PalletStorageStateDtoFields.STORAGE_LOCATION_NUMBER };
 
-        Map<String, String> filters = ((GridComponent) view.getComponentByReference(L_GRID)).getFilters();
+        Map<String, String> filters = ((GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID)).getFilters();
 
         String headerText = filters.entrySet().stream()
                 .filter(fe -> contains(descriminatorFiltersFields, fe.getKey()) && !fe.getValue().equals("ISNULL"))

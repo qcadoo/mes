@@ -47,6 +47,11 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -56,10 +61,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.model.api.search.SearchRestrictions.in;
 
@@ -68,9 +69,9 @@ public class CostNormsForMaterialsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(CostNormsForMaterialsService.class);
 
-    private static final String L_GRID = "grid";
 
-    private static final String L_FORM = "form";
+
+    
 
     private static final String L_ORDER = "order";
 
@@ -97,8 +98,8 @@ public class CostNormsForMaterialsService {
     public void fillInProductsGridInTechnology(final ViewDefinitionState viewDefinitionState) {
         checkArgument(viewDefinitionState != null, L_VIEW_DEFINITION_STATE_IS_NULL);
 
-        GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference(L_GRID);
-        FormComponent technology = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
+        GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_GRID);
+        FormComponent technology = (FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long technologyId = technology.getEntityId();
 
@@ -154,7 +155,7 @@ public class CostNormsForMaterialsService {
             final String[] args) {
         checkArgument(viewDefinitionState != null, L_VIEW_DEFINITION_STATE_IS_NULL);
 
-        GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference(L_GRID);
+        GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_GRID);
 
         FormComponent order = (FormComponent) viewDefinitionState.getComponentByReference(L_ORDER);
 

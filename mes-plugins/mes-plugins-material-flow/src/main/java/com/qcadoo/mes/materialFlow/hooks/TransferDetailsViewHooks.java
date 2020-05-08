@@ -23,19 +23,6 @@
  */
 package com.qcadoo.mes.materialFlow.hooks;
 
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.STAFF;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TRANSFORMATIONS_CONSUMPTION;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
-
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.qcadoo.mes.materialFlow.MaterialFlowService;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlow.constants.TransferFields;
@@ -47,13 +34,21 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.*;
 
 @Component
 public class TransferDetailsViewHooks {
 
-    private static final String L_FORM = "form";
+    
 
-    private static final String L_WINDOW = "window";
+
 
     private static final String RIBBON_GROUP = "actions";
 
@@ -71,7 +66,7 @@ public class TransferDetailsViewHooks {
     }
 
     public void checkIfTransferHasTransformations(final ViewDefinitionState view) {
-        FormComponent transferForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent transferForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long transferId = transferForm.getEntityId();
         if (transferId == null) {
@@ -102,8 +97,8 @@ public class TransferDetailsViewHooks {
     }
 
     public void disableFormWhenTransferIsSaved(final ViewDefinitionState view) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
-        FormComponent transferForm = (FormComponent) view.getComponentByReference(L_FORM);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
+        FormComponent transferForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long transferId = transferForm.getEntityId();
         if (transferId == null) {
@@ -145,7 +140,7 @@ public class TransferDetailsViewHooks {
         Long transferId = (Long) componentState.getFieldValue();
 
         if (transferId != null) {
-            view.getComponentByReference(L_FORM).addMessage("materialFlow.transformations.save.infoAterSave", MessageType.INFO,
+            view.getComponentByReference(QcadooViewConstants.L_FORM).addMessage("materialFlow.transformations.save.infoAterSave", MessageType.INFO,
                     false);
         }
     }

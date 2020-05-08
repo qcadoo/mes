@@ -9,13 +9,14 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ProductDetailsHooksD {
 
     public static final String L_PARENT_ID = "parenId";
 
-    private static final String L_FORM = "form";
+    
 
     public void beforeRender(final ViewDefinitionState view) {
         toggleSuppliersGrids(view);
@@ -23,7 +24,7 @@ public class ProductDetailsHooksD {
     }
 
     public void toggleSuppliersGrids(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity product = form.getPersistedEntityWithIncludedFormValues();
         GridComponent productCompanies = (GridComponent) view.getComponentByReference("productCompanies");
         GridComponent productsFamilyCompanies = (GridComponent) view.getComponentByReference("productsFamilyCompanies");
@@ -37,7 +38,7 @@ public class ProductDetailsHooksD {
     }
 
     private void updateParentCompaniesCriteriaModifiersState(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         GridComponent parentCompanies = (GridComponent) view.getComponentByReference("parentCompanies");
 
         Long parentId = null;

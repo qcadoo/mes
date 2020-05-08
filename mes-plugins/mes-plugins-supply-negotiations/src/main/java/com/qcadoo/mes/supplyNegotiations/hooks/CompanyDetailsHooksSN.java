@@ -31,13 +31,14 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class CompanyDetailsHooksSN {
 
-    private static final String L_FORM = "form";
+    
 
-    private static final String L_WINDOW = "window";
+
 
     private static final String L_REDIRECT_TO_FILTERED_REQUESTS_LIST = "redirectToFilteredRequestsList";
 
@@ -46,11 +47,11 @@ public class CompanyDetailsHooksSN {
     private static final String L_SUPPLIERS_GROUP = "suppliersGroup";
 
     public void updateRibbonState(final ViewDefinitionState view) {
-        FormComponent companyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent companyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity company = companyForm.getEntity();
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
 
         RibbonGroup suppliersGroup = (RibbonGroup) window.getRibbon().getGroupByName(L_SUPPLIERS_GROUP);
 

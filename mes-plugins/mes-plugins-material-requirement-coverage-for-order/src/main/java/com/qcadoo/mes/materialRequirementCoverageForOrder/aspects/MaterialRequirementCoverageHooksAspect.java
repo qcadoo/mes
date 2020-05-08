@@ -23,18 +23,6 @@
  */
 package com.qcadoo.mes.materialRequirementCoverageForOrder.aspects;
 
-import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Set;
-
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.context.i18n.LocaleContextHolder;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.MaterialRequirementCoverageForOrderService;
@@ -49,13 +37,25 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.context.i18n.LocaleContextHolder;
+
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Set;
 
 @Aspect
 @Configurable
 @RunIfEnabled(MaterialRequirementCoverageForOrderConstans.PLUGIN_IDENTIFIER)
 public class MaterialRequirementCoverageHooksAspect {
 
-    private static final String L_FORM = "form";
+
 
     @Autowired
     private MaterialRequirementCoverageForOrderService mRCForOrderService;
@@ -70,7 +70,7 @@ public class MaterialRequirementCoverageHooksAspect {
 
     @Around("fillCoverageDate(view)")
     public void aroundFillCoverageDate(final ProceedingJoinPoint pjp, final ViewDefinitionState view) throws Throwable {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity mRCForOrder = form.getEntity();
 
@@ -98,7 +98,7 @@ public class MaterialRequirementCoverageHooksAspect {
     @Around("copyLocationFromParameter(view, parameter)")
     public void aroundcCopyLocationFromParameter(final ProceedingJoinPoint pjp, final ViewDefinitionState view,
             final Entity parameter) throws Throwable {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity mRCForOrder = form.getEntity();
 

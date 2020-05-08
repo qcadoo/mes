@@ -23,19 +23,15 @@
  */
 package com.qcadoo.mes.productionPerShift.validators;
 
-import static com.qcadoo.model.api.search.SearchProjections.id;
-import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
-import static com.qcadoo.model.api.search.SearchRestrictions.idNe;
-import static com.qcadoo.model.api.search.SearchRestrictions.isNotNull;
-
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Optional;
 import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.utils.EntityUtils;
+import org.springframework.stereotype.Service;
+
+import static com.qcadoo.model.api.search.SearchProjections.id;
+import static com.qcadoo.model.api.search.SearchRestrictions.*;
 
 @Service
 public class DailyProgressValidators {

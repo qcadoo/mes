@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiFields;
@@ -43,11 +35,19 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class DeliveredProductAddMultiHooks {
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_LOCATION = "location";
 
@@ -125,7 +125,7 @@ public class DeliveredProductAddMultiHooks {
     }
 
     private void setStorageLocationFilter(final ViewDefinitionState view) {
-        FormComponent deliveredProductMultiForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent deliveredProductMultiForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity deliveredProductMultiEntity = deliveredProductMultiForm.getPersistedEntityWithIncludedFormValues();
 

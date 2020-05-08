@@ -10,22 +10,23 @@ import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class NumberPatternDetailsHooks {
 
-    private static final String L_FORM = "form";
+    
 
-    private static final String L_WINDOW = "window";
+
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity numberPattern = form.getPersistedEntityWithIncludedFormValues();
         if (numberPattern.getBooleanField(NumberPatternFields.USED)) {
             form.setFormEnabled(false);
             GridComponent grid = (GridComponent) view.getComponentByReference("numberPatternElements");
             grid.setEditable(false);
-            WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+            WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
             RibbonGroup actions = window.getRibbon().getGroupByName("actions");
 
             RibbonActionItem save = actions.getItemByName("save");

@@ -1,5 +1,14 @@
 package com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
@@ -16,15 +25,7 @@ import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ProductsToIssueListListeners {
@@ -36,7 +37,7 @@ public class ProductsToIssueListListeners {
     private ProductsToIssueService productsToIssueService;
 
     public void showProductAttributes(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent positionGird = (GridComponent) view.getComponentByReference("grid");
+        GridComponent positionGird = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         Set<Long> ids = positionGird.getSelectedEntitiesIds();
         if (ids.size() == 1) {
             Entity productToIssue = dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
@@ -51,7 +52,7 @@ public class ProductsToIssueListListeners {
     }
 
     public void correctReservations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         List<Long> selectedEntities = Lists.newArrayList(grid.getSelectedEntitiesIds());
         if (selectedEntities.isEmpty()) {
             view.addMessage("productFlowThruDivision.productsToIssueList.noSelectedEntities", ComponentState.MessageType.INFO);
@@ -80,7 +81,7 @@ public class ProductsToIssueListListeners {
 
     public void copyProductsToIssue(final ViewDefinitionState view, final ComponentState state, final String[] args) {
 
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         List<Long> selectedEntities = Lists.newArrayList(grid.getSelectedEntitiesIds());
         if (selectedEntities.isEmpty()) {
             view.addMessage("productFlowThruDivision.productsToIssueList.noSelectedEntities", ComponentState.MessageType.INFO);
@@ -105,11 +106,11 @@ public class ProductsToIssueListListeners {
 
     private void changeRibbonState(final ViewDefinitionState view) {
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup group = window.getRibbon().getGroupByName("warehouseIssues");
         RibbonActionItem copyProducts = group.getItemByName("copyProducts");
         RibbonActionItem correctReservations = group.getItemByName("correctReservations");
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
         DataDefinition productsToIssueDD = dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
                 ProductFlowThruDivisionConstants.MODEL_PRODUCTS_TO_ISSUE);
@@ -159,7 +160,7 @@ public class ProductsToIssueListListeners {
 
     public void onBeforeRender(final ViewDefinitionState view) {
         changeRibbonState(view);
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
     }
 
     public void changeRibbonState(final ViewDefinitionState view, final ComponentState state, final String[] args) {

@@ -33,17 +33,18 @@ import com.qcadoo.mes.materialRequirements.constants.ParameterFieldsMR;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class OrderDetailsHooksMR {
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired
     private ParameterService parameterService;
 
     public void setInputProductsRequiredForTypeFromParameters(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (orderForm.getEntityId() != null) {
             return;

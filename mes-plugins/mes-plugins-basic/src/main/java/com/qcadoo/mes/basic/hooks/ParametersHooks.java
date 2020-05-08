@@ -33,20 +33,21 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ParametersHooks {
 
-    private static final String L_FORM = "form";
 
-    private static final String L_WINDOW = "window";
+
+
 
     private static final String L_COMPANY = "company";
 
     private static final String L_REDIRECT_TO_COMPANY = "redirectToCompany";
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        FormComponent parametersForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent parametersForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         LookupComponent companyLookup = (LookupComponent) view.getComponentByReference(ParameterFields.COMPANY);
 
         boolean isSaved = (parametersForm.getEntityId() != null);
@@ -56,7 +57,7 @@ public class ParametersHooks {
     }
 
     private void changeButtonsState(final ViewDefinitionState view, final boolean enabled) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
 
         Ribbon ribbon = window.getRibbon();
 

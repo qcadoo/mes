@@ -41,10 +41,11 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 public class OrderDetailsHooksMRTest {
 
-    private static final String L_FORM = "form";
+    
 
     private OrderDetailsHooksMR orderDetailsHooksMR;
 
@@ -71,7 +72,7 @@ public class OrderDetailsHooksMRTest {
 
         ReflectionTestUtils.setField(orderDetailsHooksMR, "parameterService", parameterService);
 
-        given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(orderForm);
         given(orderForm.getEntityId()).willReturn(null);
 
         given(view.getComponentByReference(OrderFieldsMR.INPUT_PRODUCTS_REQUIRED_FOR_TYPE)).willReturn(

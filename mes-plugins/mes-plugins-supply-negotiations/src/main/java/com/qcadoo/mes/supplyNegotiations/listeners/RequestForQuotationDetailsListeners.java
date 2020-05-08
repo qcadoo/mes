@@ -51,13 +51,14 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Component
 public class RequestForQuotationDetailsListeners {
 
     private static final Integer REPORT_WIDTH_A4 = 515;
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_FILTERS = "filters";
 
@@ -110,7 +111,7 @@ public class RequestForQuotationDetailsListeners {
     }
 
     public final void createOffer(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent requestForQuotationForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent requestForQuotationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long requestForQuotationId = requestForQuotationForm.getEntityId();
 
         if (requestForQuotationId == null) {
@@ -136,7 +137,7 @@ public class RequestForQuotationDetailsListeners {
 
     public final void showOffersForGivenRequestForQuotation(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
-        FormComponent requestForQuotationForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent requestForQuotationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long requestForQuotationId = requestForQuotationForm.getEntityId();
 
         if (requestForQuotationId == null) {
@@ -205,7 +206,7 @@ public class RequestForQuotationDetailsListeners {
     }
 
     public void validateColumnsWidthForRequest(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        Long requestForQuotationId = ((FormComponent) view.getComponentByReference("form")).getEntity().getId();
+        Long requestForQuotationId = ((FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM)).getEntity().getId();
         Entity request = supplyNegotiationsService.getRequestForQuotation(requestForQuotationId);
         List<String> columnNames = requestForQuotationReportPdf.getUsedColumnsInRequestReport(request);
         if (!pdfHelper.validateReportColumnWidths(REPORT_WIDTH_A4, parameterService.getReportColumnWidths(), columnNames)) {

@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
@@ -36,11 +30,17 @@ import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class OrderDetailsHooksPC {
 
-    private static final String L_FORM = "form";
+
 
     private static final List<String> L_ORDER_FIELD_NAMES = Lists.newArrayList(OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT,
             OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT, OrderFieldsPC.REGISTER_PRODUCTION_TIME,
@@ -54,7 +54,7 @@ public class OrderDetailsHooksPC {
     private ParameterService parameterService;
 
     public void setOrderDefaultValues(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent typeOfProductionRecordingField = (FieldComponent) view
                 .getComponentByReference(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 

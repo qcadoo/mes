@@ -48,6 +48,7 @@ import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ProductionBalanceDetailsHooks {
@@ -59,7 +60,7 @@ public class ProductionBalanceDetailsHooks {
 
     private static final List<String> L_FIELDS = L_FIELDS_AND_CHECKBOXES.subList(0, L_FIELDS_AND_CHECKBOXES.size() - 2);
 
-    private static final String L_FORM = "form";
+    
 
     private static final List<String> L_COST_FIELDS = Arrays.asList(ProductionBalanceFields.SOURCE_OF_MATERIAL_COSTS,
             ProductionBalanceFields.CALCULATE_MATERIAL_COSTS_MODE, ProductionBalanceFields.PRODUCTION_COST_MARGIN,
@@ -86,7 +87,7 @@ public class ProductionBalanceDetailsHooks {
 
     public void generateOrderNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                ProductionCountingConstants.MODEL_PRODUCTION_BALANCE, L_FORM, ProductionBalanceFields.NUMBER);
+                ProductionCountingConstants.MODEL_PRODUCTION_BALANCE, QcadooViewConstants.L_FORM, ProductionBalanceFields.NUMBER);
     }
 
     public void disableFieldsAndGridsWhenGenerated(final ViewDefinitionState view) {
@@ -106,7 +107,7 @@ public class ProductionBalanceDetailsHooks {
             productionCountingService.setComponentsState(view, L_COST_GRIDS, true, false);
         }
 
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (form.getEntityId() == null) {
             productionCountingService.setComponentsState(view, L_COST_GRIDS, false, false);
         }
@@ -161,7 +162,7 @@ public class ProductionBalanceDetailsHooks {
     }
 
     public void setTheFieldBasedOnParameters(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (form.getEntityId() == null) {
             CheckBoxComponent isSetFieldsFromParameter = (CheckBoxComponent) view
                     .getComponentByReference("isSetFieldsFromParameter");

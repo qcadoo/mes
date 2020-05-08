@@ -56,13 +56,14 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class GenerateMRCForOrderHooks {
 
-    private static final String L_FORM = "form";
+    
 
-    private static final String L_WINDOW = "window";
+
 
     private static final String L_COVERAGE = "coverage";
 
@@ -98,7 +99,7 @@ public class GenerateMRCForOrderHooks {
     }
 
     private void setLocations(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity mRCForOrder = form.getEntity();
 
@@ -134,7 +135,7 @@ public class GenerateMRCForOrderHooks {
     }
 
     private void fillFieldsForOrder(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity mRCForOrder = form.getEntity();
 
@@ -156,11 +157,11 @@ public class GenerateMRCForOrderHooks {
 
     public void generateMaterialRequirementCoverageNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, MaterialRequirementCoverageForOrderConstans.PLUGIN_IDENTIFIER,
-                MaterialRequirementCoverageForOrderConstans.MODEL_COVERAGE_FOR_ORDER, L_FORM, CoverageForOrderFields.NUMBER);
+                MaterialRequirementCoverageForOrderConstans.MODEL_COVERAGE_FOR_ORDER, QcadooViewConstants.L_FORM, CoverageForOrderFields.NUMBER);
     }
 
     public void fillActualDate(final ViewDefinitionState view) {
-        FormComponent mateiralRequirementCoverageForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent mateiralRequirementCoverageForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (mateiralRequirementCoverageForm.getEntityId() != null) {
             return;
@@ -176,7 +177,7 @@ public class GenerateMRCForOrderHooks {
     }
 
     public void updateRibbonState(final ViewDefinitionState view) {
-        FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long materialRequirementCoverageId = materialRequirementCoverageForm.getEntityId();
 
         Entity mRCForOrder = materialRequirementCoverageForm.getEntity();
@@ -193,7 +194,7 @@ public class GenerateMRCForOrderHooks {
         FieldComponent generatedField = (FieldComponent) view.getComponentByReference(CoverageForOrderFields.GENERATED);
         boolean generated = "1".equals(generatedField.getFieldValue());
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup coverage = (RibbonGroup) window.getRibbon().getGroupByName(L_COVERAGE);
         RibbonGroup reports = (RibbonGroup) window.getRibbon().getGroupByName(L_REPORTS);
 
@@ -239,7 +240,7 @@ public class GenerateMRCForOrderHooks {
     }
 
     public void updateFormState(final ViewDefinitionState view) {
-        FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long materialRequirementCoverageId = materialRequirementCoverageForm.getEntityId();
 
         AwesomeDynamicListComponent adlc = (AwesomeDynamicListComponent) view

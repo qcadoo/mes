@@ -16,13 +16,14 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.grid.GridComponentFilterSQLUtils;
 import com.qcadoo.view.api.components.grid.GridComponentMultiSearchFilter;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ProductionAnalysisListeners {
 
     public static final String MODEL_PRODUCTION_ANALYSIS_DTO = "productionAnalysisDto";
 
-    private static final String L_GRID = "grid";
+
 
     private static final String TABLE_PRODUCTIONCOUNTING_PRODUCTIONANALYSISDTO = "productioncounting_productionanalysisdto";
 
@@ -35,7 +36,7 @@ public class ProductionAnalysisListeners {
     public void calculateTotalQuantities(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         final FieldComponent totalProducedQuantity = (FieldComponent) view.getComponentByReference("totalProducedQuantity");
         final FieldComponent numberOfWorkers = (FieldComponent) view.getComponentByReference("numberOfWorkers");
-        final GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
+        final GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
         String query = buildQuery();
 

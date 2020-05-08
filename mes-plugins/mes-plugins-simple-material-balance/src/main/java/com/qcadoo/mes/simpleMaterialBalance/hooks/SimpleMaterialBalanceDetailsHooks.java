@@ -23,26 +23,26 @@
  */
 package com.qcadoo.mes.simpleMaterialBalance.hooks;
 
-import static com.qcadoo.mes.simpleMaterialBalance.internal.constants.SimpleMaterialBalanceFields.MRPALGORITHM;
-import static com.qcadoo.mes.simpleMaterialBalance.internal.constants.SimpleMaterialBalanceFields.NAME;
-
-import java.util.Arrays;
-
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.simpleMaterialBalance.internal.constants.SimpleMaterialBalanceFields;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+
+import static com.qcadoo.mes.simpleMaterialBalance.internal.constants.SimpleMaterialBalanceFields.MRPALGORITHM;
+import static com.qcadoo.mes.simpleMaterialBalance.internal.constants.SimpleMaterialBalanceFields.NAME;
 
 @Service
 public class SimpleMaterialBalanceDetailsHooks {
 
     public void disableFieldsWhenGenerated(final ViewDefinitionState view) {
         Boolean enabled = false;
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (form.getEntityId() == null) {
             return;
         }

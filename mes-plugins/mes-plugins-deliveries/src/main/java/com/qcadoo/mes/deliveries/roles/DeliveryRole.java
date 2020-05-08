@@ -5,6 +5,7 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 public enum DeliveryRole {
 
@@ -37,7 +38,7 @@ public enum DeliveryRole {
     }
 
     protected void lockFromRibbonGroup(ViewDefinitionState view, String groupName, String... items) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         Ribbon ribbon = window.getRibbon();
         RibbonGroup ribbonGroup = ribbon.getGroupByName(groupName);
         if (ribbonGroup != null) {

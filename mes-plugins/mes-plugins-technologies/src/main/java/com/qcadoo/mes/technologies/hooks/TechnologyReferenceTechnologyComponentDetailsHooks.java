@@ -30,12 +30,13 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class TechnologyReferenceTechnologyComponentDetailsHooks {
 
     public void disabledSaveBackButton(final ViewDefinitionState viewDefinitionState) {
-        WindowComponent window = (WindowComponent) viewDefinitionState.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup actionsGroup = (RibbonGroup) window.getRibbon().getGroupByName("actions");
         RibbonActionItem saveBack = (RibbonActionItem) actionsGroup.getItemByName("saveBack");
 

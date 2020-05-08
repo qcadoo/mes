@@ -1,5 +1,12 @@
 package com.qcadoo.mes.ordersForSubproductsGeneration.hooks;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.ordersForSubproductsGeneration.OrdersForSubproductsGenerationService;
@@ -12,12 +19,7 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class OrdersForSubproductsHooks {
@@ -26,7 +28,7 @@ public class OrdersForSubproductsHooks {
 
     private static final String L_GENERATEAD_ORDERS = "generatedOrders";
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired
     private OrdersForSubproductsGenerationService ordersForSubproductsGenerationService;
@@ -37,7 +39,7 @@ public class OrdersForSubproductsHooks {
     }
 
     private void toggleGenerateOrderButton(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long id = form.getEntityId();
         boolean isEnabled = false;
         if (Objects.nonNull(id)) {
@@ -45,7 +47,7 @@ public class OrdersForSubproductsHooks {
             isEnabled = !hasGeneratedOrders(entity);
         }
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup group = window.getRibbon().getGroupByName("orders");
         RibbonActionItem generateOrders = group.getItemByName("generateOrders");
         generateOrders.setMessage("ordersForSubproductsGeneration.ordersForSubproducts.generate.msg");
@@ -74,7 +76,7 @@ public class OrdersForSubproductsHooks {
     }
 
     private void setCriteriaModifierParameters(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         GridComponent gridOrders = (GridComponent) view.getComponentByReference(L_ORDERS);
         GridComponent gridGeneratedOrders = (GridComponent) view.getComponentByReference(L_GENERATEAD_ORDERS);
         FilterValueHolder gridGeneratedOrdersHolder = gridGeneratedOrders.getFilterValue();

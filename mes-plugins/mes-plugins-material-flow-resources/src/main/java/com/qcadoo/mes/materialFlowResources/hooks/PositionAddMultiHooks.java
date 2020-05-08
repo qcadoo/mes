@@ -9,6 +9,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class PositionAddMultiHooks {
@@ -16,7 +17,7 @@ public class PositionAddMultiHooks {
     private static final String L_LOCATION_FROM = "locationFrom";
 
     public final void onBeforeRender(final ViewDefinitionState view) throws JSONException {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity helper = form.getPersistedEntityWithIncludedFormValues();
         JSONObject context = view.getJsonContext();
         if (context != null) {

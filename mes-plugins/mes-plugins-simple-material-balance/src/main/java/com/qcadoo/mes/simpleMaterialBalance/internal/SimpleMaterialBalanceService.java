@@ -52,6 +52,7 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class SimpleMaterialBalanceService {
@@ -106,8 +107,8 @@ public class SimpleMaterialBalanceService {
 
     public void setGenerateButtonState(final ViewDefinitionState state, final Locale locale, final String plugin,
             final String entityName) {
-        WindowComponent window = (WindowComponent) state.getComponentByReference("window");
-        FormComponent form = (FormComponent) state.getComponentByReference("form");
+        WindowComponent window = (WindowComponent) state.getComponentByReference(QcadooViewConstants.L_WINDOW);
+        FormComponent form = (FormComponent) state.getComponentByReference(QcadooViewConstants.L_FORM);
         RibbonActionItem generateButton = window.getRibbon().getGroupByName("generate").getItemByName("generate");
         RibbonActionItem deleteButton = window.getRibbon().getGroupByName("actions").getItemByName("delete");
 
@@ -144,8 +145,8 @@ public class SimpleMaterialBalanceService {
 
     public void setGridGenerateButtonState(final ViewDefinitionState state, final Locale locale, final String plugin,
             final String entityName) {
-        WindowComponent window = (WindowComponent) state.getComponentByReference("window");
-        GridComponent grid = (GridComponent) state.getComponentByReference("grid");
+        WindowComponent window = (WindowComponent) state.getComponentByReference(QcadooViewConstants.L_WINDOW);
+        GridComponent grid = (GridComponent) state.getComponentByReference(QcadooViewConstants.L_GRID);
         RibbonActionItem deleteButton = window.getRibbon().getGroupByName("actions").getItemByName("delete");
 
         if (grid.getSelectedEntitiesIds() == null || grid.getSelectedEntitiesIds().size() == 0) {

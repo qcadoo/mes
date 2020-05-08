@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.listeners;
 
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.codehaus.jettison.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventContextService;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventService;
@@ -46,6 +37,15 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.grid.GridComponentFilterSQLUtils;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.codehaus.jettison.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class EventsListListeners {
@@ -66,7 +66,7 @@ public class EventsListListeners {
 
     public void addEvent(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState, final String args[]) {
         String eventType = args[0];
-        long maintenanceContextId = ((FormComponent) viewDefinitionState.getComponentByReference("form")).getEntityId();
+        long maintenanceContextId = ((FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM)).getEntityId();
 
         String url = "../page/" + CmmsMachinePartsConstants.PLUGIN_IDENTIFIER + "/maintenanceEventDetails.html";
         Map<String, Object> parameters = Maps.newHashMap();
@@ -87,7 +87,7 @@ public class EventsListListeners {
 
     public void printEventXlsReport(final ViewDefinitionState view, final ComponentState state, final String args[])
             throws UnsupportedEncodingException {
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         Map<String, String> filter = grid.getFilters();
         String filterQ;
         try {
@@ -137,7 +137,7 @@ public class EventsListListeners {
     public void printXlsReport(final ViewDefinitionState view, final ComponentState state, final String args[])
             throws UnsupportedEncodingException {
 
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         Map<String, String> filter = grid.getFilters();
         String filterQ;
         try {
@@ -186,7 +186,7 @@ public class EventsListListeners {
 
     public void addPlannedEvent(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String args[]) {
-        long plannedContextId = ((FormComponent) viewDefinitionState.getComponentByReference("form")).getEntityId();
+        long plannedContextId = ((FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM)).getEntityId();
 
         String url = "../page/" + CmmsMachinePartsConstants.PLUGIN_IDENTIFIER + "/plannedEventDetails.html";
         Map<String, Object> parameters = Maps.newHashMap();
@@ -196,7 +196,7 @@ public class EventsListListeners {
 
     public void showPlannedEvent(final ViewDefinitionState view, final ComponentState state, final String[] args) {
 
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         List<Entity> selectedEntities = grid.getSelectedEntities();
         if (selectedEntities.isEmpty()) {
             return;
@@ -216,7 +216,7 @@ public class EventsListListeners {
 
     public void turnOffSoundNotifications(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState,
             final String args[]) {
-        GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference("grid");
+        GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_GRID);
         List<Entity> selectedEntities = grid.getSelectedEntities();
         selectedEntities.forEach(entity -> {
             entity = entity.getDataDefinition().getMasterModelEntity(entity.getId());
@@ -230,7 +230,7 @@ public class EventsListListeners {
 
     public void showMaintenanceEvent(final ViewDefinitionState view, final ComponentState state, final String[] args) {
 
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         List<Entity> selectedEntities = grid.getSelectedEntities();
         if (selectedEntities.isEmpty()) {
             return;

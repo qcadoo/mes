@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
-import java.util.Comparator;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.PalletNumbersService;
 import com.qcadoo.mes.basic.constants.PalletNumberHelperFields;
 import com.qcadoo.model.api.Entity;
@@ -39,13 +33,17 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class PalletNumberHelperDetailsHooks {
 
-    public static final String L_FORM = "form";
 
-    public static final String L_WINDOW = "window";
+
 
     public static final String L_ACTIONS = "actions";
 
@@ -67,7 +65,7 @@ public class PalletNumberHelperDetailsHooks {
     }
 
     private void fillPalletNumbers(final ViewDefinitionState view) {
-        FormComponent palletNumberHelperForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent palletNumberHelperForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent numbersField = (FieldComponent) view.getComponentByReference(PalletNumberHelperFields.NUMBERS);
 
         Long palletNumberHelperId = palletNumberHelperForm.getEntityId();
@@ -106,7 +104,7 @@ public class PalletNumberHelperDetailsHooks {
     }
 
     private void disableFields(final ViewDefinitionState view) {
-        FormComponent palletNumberHelperForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent palletNumberHelperForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent quantityField = (FieldComponent) view.getComponentByReference(PalletNumberHelperFields.QUANTITY);
 
         Long palletNumberHelperId = palletNumberHelperForm.getEntityId();
@@ -118,9 +116,9 @@ public class PalletNumberHelperDetailsHooks {
     }
 
     private void disableButtonsWhenNotSaved(final ViewDefinitionState view) {
-        FormComponent palletNumberHelperForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent palletNumberHelperForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         Ribbon ribbon = window.getRibbon();
 
         RibbonGroup actionsRibbonGroup = ribbon.getGroupByName(L_ACTIONS);

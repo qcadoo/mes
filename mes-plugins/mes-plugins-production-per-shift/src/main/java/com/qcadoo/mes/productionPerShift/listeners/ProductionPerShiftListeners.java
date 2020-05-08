@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.productionPerShift.listeners;
 
-import java.util.Date;
-import java.util.List;
-
-import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
@@ -66,18 +56,22 @@ import com.qcadoo.model.api.utils.EntityUtils;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
-import com.qcadoo.view.api.components.CheckBoxComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class ProductionPerShiftListeners {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProductionPerShiftListeners.class);
-
-    private static final String FORM_COMPONENT_REF = "form";
 
     private static final String VIEW_IS_INITIALIZED_CHECKBOX_REF = "viewIsInitialized";
 
@@ -89,7 +83,7 @@ public class ProductionPerShiftListeners {
 
     private static final String DATE_INPUT_REF = "date";
 
-    public static final String L_FORM = "form";
+
 
     private static final String UNIT_COMPONENT_NAME = "unit";
 
@@ -141,7 +135,7 @@ public class ProductionPerShiftListeners {
             view.addMessage(new ErrorMessage("productionPerShift.automaticAlgorithm.error.ppsOff", false));
             return;
         }
-        FormComponent productionPerShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productionPerShiftForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         AwesomeDynamicListComponent progressForDaysComponent = (AwesomeDynamicListComponent) view
                 .getComponentByReference("progressForDays");
@@ -218,7 +212,7 @@ public class ProductionPerShiftListeners {
     public void savePlan(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         boolean saveWasSuccessful = progressPerShiftViewSaver.save(view);
         if (saveWasSuccessful) {
-            FormComponent form = (FormComponent) view.getComponentByReference("form");
+            FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
             form.addMessage("qcadooView.message.saveMessage", ComponentState.MessageType.SUCCESS);
             detailsHooks.setProductAndFillProgressForDays(view);
             showNotifications(view);
@@ -226,7 +220,7 @@ public class ProductionPerShiftListeners {
     }
 
     private void showNotifications(final ViewDefinitionState view) {
-        FormComponent productionPerShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productionPerShiftForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity pps = productionPerShiftForm.getPersistedEntityWithIncludedFormValues();
         for (Entity order : getEntityFromLookup(view, ORDER_LOOKUP_REF).asSet()) {
             progressQuantitiesDeviationNotifier.compareAndNotify(view, pps, detailsHooks.isCorrectedPlan(view));
@@ -240,7 +234,7 @@ public class ProductionPerShiftListeners {
 
     public void refreshView(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         markViewAsUninitialized(view);
-        Optional<FormComponent> maybeForm = view.tryFindComponentByReference(FORM_COMPONENT_REF);
+        Optional<FormComponent> maybeForm = view.tryFindComponentByReference(QcadooViewConstants.L_FORM);
         for (FormComponent form : maybeForm.asSet()) {
             form.performEvent(view, "reset");
         }
@@ -265,7 +259,7 @@ public class ProductionPerShiftListeners {
     }
 
     public void copyFromPlanned(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent productionPerShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productionPerShiftForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity pps = productionPerShiftForm.getPersistedEntityWithIncludedFormValues();
         copyPlannedProgressesAndMarkAsCorrected(pps);
         detailsHooks.setProductAndFillProgressForDays(view);
@@ -288,7 +282,7 @@ public class ProductionPerShiftListeners {
     }
 
     public void deleteProgressForDays(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent productionPerShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productionPerShiftForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity pps = productionPerShiftForm.getPersistedEntityWithIncludedFormValues();
         deleteCorrectedProgressForDays(pps, detailsHooks.resolveProgressType(view));
         detailsHooks.setProductAndFillProgressForDays(view);
