@@ -139,7 +139,7 @@ public class BasicProductionCountingDetailsHooks {
 
     private void setFieldEditableDependsOfOrderState(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
 
         Long formId = form.getEntityId();
         if (formId == null) {

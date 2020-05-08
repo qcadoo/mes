@@ -347,7 +347,7 @@ public class GenerateMaterialRequirementCoverageListeners {
      */
     public void createRequestForQuotation(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         init();
-        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
 
         deleteSelected();
         insertSelected(grid);
@@ -369,7 +369,7 @@ public class GenerateMaterialRequirementCoverageListeners {
      */
     public void createDelivery(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         init();
-        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
 
         Entity parameter = parameterService.getParameter();
         Entity currency = parameter.getBelongsToField(ParameterFields.CURRENCY);
