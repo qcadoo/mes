@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     ***************************************************************************
@@ -23,11 +24,30 @@
     ***************************************************************************
 
 -->
-<!DOCTYPE aspectj PUBLIC
-        "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
-<aspectj>
-    <aspects>
-        <aspect name="com.qcadoo.mes.productCharacteristics.aop.WorkPlanPdfForDivisionAspectPC"/>
-        <aspect name="com.qcadoo.mes.orderSupplies.states.aop.listener.OrderSuppliesOrderStateValidationAspect"/>
-    </aspects>
-</aspectj>
+<model name="forms" activable="true"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+    <fields>
+        <string name="number" required="true" unique="true">
+            <validatesLength max="255"/>
+        </string>
+        <string name="name" required="true">
+            <validatesLength max="1024"/>
+        </string>
+
+        <belongsTo name="company" plugin="basic" model="company"/>
+
+        <decimal name="size">
+            <validatesRange from="0" exclusively="false" />
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
+
+        <dictionary name="unit" dictionary="units" />
+
+    </fields>
+    <hooks>
+        <validatesWith class="com.qcadoo.mes.basic.hooks.FormHooks"
+                       method="validatesWith"/>
+    </hooks>
+</model>

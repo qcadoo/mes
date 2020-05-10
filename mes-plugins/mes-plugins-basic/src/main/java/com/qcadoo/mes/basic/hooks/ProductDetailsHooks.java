@@ -28,16 +28,21 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.util.UnitService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
-
 import static com.qcadoo.mes.basic.constants.ProductFields.CONVERSION_ITEMS;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
@@ -47,6 +52,9 @@ public class ProductDetailsHooks {
     private static final String L_FORM = "form";
 
     private static final String UNIT_FROM = "unitFrom";
+
+    String[] innerComponents = { ProductFields.SIZE, "expiryDateValidity", "productForm",
+            "showInProductData" };
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -161,6 +169,30 @@ public class ProductDetailsHooks {
     private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {
         ribbonActionItem.setEnabled(isEnabled);
         ribbonActionItem.requestUpdate(true);
+    }
+
+    public void enableCharacteristicsTabForExternalItems(final ViewDefinitionState view) {
+        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
+        Long productId = productForm.getEntityId();
+
+        if (productId == null) {
+            return;
+        }
+
+        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
+
+        if (product == null) {
+            return;
+        }
+
+        String externalNumber = product.getStringField(ProductFields.EXTERNAL_NUMBER);
+
+        if (!StringUtils.isEmpty(externalNumber)) {
+            for (String componentName : innerComponents) {
+                ComponentState characteristicsTab = (ComponentState) view.getComponentByReference(componentName);
+                characteristicsTab.setEnabled(true);
+            }
+        }
     }
 
     public void setProductIdForMultiUploadField(final ViewDefinitionState view) {

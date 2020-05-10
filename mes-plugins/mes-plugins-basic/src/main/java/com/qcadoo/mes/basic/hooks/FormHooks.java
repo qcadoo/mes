@@ -21,24 +21,29 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productCharacteristics.constants;
+package com.qcadoo.mes.basic.hooks;
 
-public final class FormsFields {
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
 
-    private FormsFields() {}
+import java.math.BigDecimal;
 
-    public static final String COMPANY = "company";
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 
-    public static final String DOWN_FORM = "downForm";
+@Service public class FormHooks {
 
-    public static final String NAME = "name";
+    private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING = "qcadooView.validate.field.error.missing";
 
-    public static final String NUMBER = "number";
+    public boolean validatesWith(final DataDefinition dataDefinition, final Entity form) {
 
-    public static final String SIZE = "size";
+        BigDecimal size = form.getDecimalField("size");
 
-    public static final String UNIT = "unit";
+        if (size != null && StringUtils.isEmpty(form.getStringField("unit"))) {
+            form.addError(dataDefinition.getField("unit"), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
 
-    public static final String UP_FORM = "upForm";
-
+            return false;
+        }
+        return true;
+    }
 }

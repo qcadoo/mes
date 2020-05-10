@@ -31,6 +31,7 @@ import com.qcadoo.mes.advancedGenealogy.constants.TrackingRecordFields;
 import com.qcadoo.mes.advancedGenealogy.constants.TrackingRecordType;
 import com.qcadoo.mes.basic.LogService;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.services.NumberPatternGeneratorService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -48,19 +49,22 @@ import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
-
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class ProductionTrackingHooks {
@@ -118,41 +122,38 @@ public class ProductionTrackingHooks {
         generateNumberIfNeeded(productionTracking);
         setTimesToZeroIfEmpty(productionTracking);
         copyProducts(productionTracking);
-
-        boolean generateBatchForOrderedProduct = parameterService.getParameter()
-                .getBooleanField(ParameterFieldsPC.GENERATE_BATCH_FOR_ORDERED_PRODUCT);
+        fillExpirationDate(productionTracking, order);
+        boolean generateBatchForOrderedProduct = parameterService.getParameter().getBooleanField(
+                ParameterFieldsPC.GENERATE_BATCH_FOR_ORDERED_PRODUCT);
         if (productionTracking.getBooleanField(ProductionTrackingFields.ADD_BATCH)
-                && (StringUtils.isNoneEmpty(productionTracking.getStringField(ProductionTrackingFields.BATCH_NUMBER))
-                        || generateBatchForOrderedProduct)) {
+                && (StringUtils.isNoneEmpty(productionTracking.getStringField(ProductionTrackingFields.BATCH_NUMBER)) || generateBatchForOrderedProduct)) {
             Entity product = order.getBelongsToField(OrderFields.PRODUCT);
             String number = productionTracking.getStringField(ProductionTrackingFields.BATCH_NUMBER);
             if (generateBatchForOrderedProduct) {
-                number = numberPatternGeneratorService
-                        .generateNumber(parameterService.getParameter().getBelongsToField(ParameterFieldsPC.NUMBER_PATTERN));
+                number = numberPatternGeneratorService.generateNumber(parameterService.getParameter().getBelongsToField(
+                        ParameterFieldsPC.NUMBER_PATTERN));
             }
             Entity batch = advancedGenealogyService.createOrGetBatch(number, product);
 
-            if(!batch.isValid()) {
-                productionTracking.addError(
-                        productionTrackingDD.getField(ProductionTrackingFields.BATCH_NUMBER),
+            if (!batch.isValid()) {
+                productionTracking.addError(productionTrackingDD.getField(ProductionTrackingFields.BATCH_NUMBER),
                         "productionCounting.productionTracking.messages.error.batchCreation");
             } else {
                 productionTracking.setField(ProductionTrackingFields.BATCH, batch.getId());
                 List<Entity> trackingRecords = order.getHasManyField("trackingRecords");
-                List<Entity> filteredTrackingRecords = trackingRecords.stream().filter(tr -> tr.getBelongsToField(
-                        TrackingRecordFields.PRODUCED_BATCH).getId().equals(batch.getId())).collect(Collectors.toList());
-                if(filteredTrackingRecords.isEmpty()) {
+                List<Entity> filteredTrackingRecords = trackingRecords.stream()
+                        .filter(tr -> tr.getBelongsToField(TrackingRecordFields.PRODUCED_BATCH).getId().equals(batch.getId()))
+                        .collect(Collectors.toList());
+                if (filteredTrackingRecords.isEmpty()) {
                     Entity trackingRecord = advancedGenealogyService.getTrackingRecordDD().create();
                     trackingRecord.setField(TrackingRecordFields.NUMBER, numberGeneratorService.generateNumber(
-                            AdvancedGenealogyConstants.PLUGIN_IDENTIFIER,
-                            AdvancedGenealogyConstants.MODEL_TRACKING_RECORD));
+                            AdvancedGenealogyConstants.PLUGIN_IDENTIFIER, AdvancedGenealogyConstants.MODEL_TRACKING_RECORD));
                     trackingRecord.setField("order", order.getId());
                     trackingRecord.setField(TrackingRecordFields.ENTITY_TYPE, TrackingRecordType.FOR_ORDER);
                     trackingRecord.setField(TrackingRecordFields.PRODUCED_BATCH, batch.getId());
                     trackingRecord = trackingRecord.getDataDefinition().save(trackingRecord);
-                    if(!trackingRecord.isValid()) {
-                        productionTracking.addError(
-                                productionTrackingDD.getField(ProductionTrackingFields.BATCH_NUMBER),
+                    if (!trackingRecord.isValid()) {
+                        productionTracking.addError(productionTrackingDD.getField(ProductionTrackingFields.BATCH_NUMBER),
                                 "productionCounting.productionTracking.messages.error.batchCreation");
                     }
                 }
@@ -179,6 +180,18 @@ public class ProductionTrackingHooks {
                             translationService.translate("productionCounting.productionTracking.activity.created.message",
                                     LocaleContextHolder.getLocale(), worker, number,
                                     generateOrderDetailsUrl(orderNumber, order.getId()))).withCreateTime(createDate));
+        }
+    }
+
+    private void fillExpirationDate(final Entity productionTracking, final Entity order) {
+        if (Objects.isNull(productionTracking.getDateField(ProductionTrackingFields.EXPIRATION_DATE))) {
+            Entity product = order.getBelongsToField(OrderFields.PRODUCT);
+            if (Objects.nonNull(product.getIntegerField(ProductFields.EXPIRY_DATE_VALIDITY))) {
+                productionTracking.setField(
+                        ProductionTrackingFields.EXPIRATION_DATE,
+                        new DateTime(order.getDateField(OrderFields.START_DATE)).plusMonths(
+                                product.getIntegerField(ProductFields.EXPIRY_DATE_VALIDITY)).toDate());
+            }
         }
     }
 

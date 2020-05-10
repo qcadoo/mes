@@ -23,19 +23,18 @@
  */
 package com.qcadoo.mes.technologiesGenerator.customization.product;
 
-import com.qcadoo.mes.technologiesGenerator.constants.ProductFieldsTG;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.productCharacteristics.constants.ProductFieldsPC;
 import com.qcadoo.mes.technologiesGenerator.GeneratorSettings;
+import com.qcadoo.mes.technologiesGenerator.constants.ProductFieldsTG;
 import com.qcadoo.mes.technologiesGenerator.customization.product.domain.ProductNameSuffix;
 import com.qcadoo.mes.technologiesGenerator.customization.product.domain.ProductNumberSuffix;
 import com.qcadoo.mes.technologiesGenerator.customization.product.domain.ProductSuffixes;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductCustomizer {
@@ -69,7 +68,7 @@ public class ProductCustomizer {
         newProduct.setField(ProductFieldsTG.FROM_GENERATOR, true);
         
         if(settings.shouldCopyProductSize() && mainProduct!=null){
-            newProduct.setField(ProductFieldsPC.SIZE, mainProduct.getField(ProductFieldsPC.SIZE));
+            newProduct.setField(ProductFields.SIZE, mainProduct.getField(ProductFields.SIZE));
         }
 
         return productDD.save(newProduct);

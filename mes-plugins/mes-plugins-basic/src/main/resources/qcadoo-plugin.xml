@@ -291,6 +291,8 @@
 		<model:model model="numberPattern" resource="model/numberPattern.xml"/>
 		<model:model model="numberPatternElement" resource="model/numberPatternElement.xml"/>
 
+		<model:model model="forms" resource="model/forms.xml"/>
+
         <model:dictionary name="categories"/>
         <model:dictionary name="reasonTypeOfChangingOrderState"/>
 
@@ -462,6 +464,13 @@
         <view:view resource="view/numberPatternsList.xml"/>
         <view:view resource="view/numberPatternDetails.xml"/>
         <view:view resource="view/numberPatternElementDetails.xml"/>
+        <view:view resource="view/formsList.xml"/>
+        <view:view resource="view/formDetails.xml"/>
+
+
+
+        <menu:menu-item name="formsList" category="basic"
+                        view="formsList" defaultAuthorizationRole="ROLE_BASIC"/>
 
         <model:model-field plugin="qcadooSecurity" model="user">
             <model:belongsTo model="staff" plugin="basic" name="staff"/>
