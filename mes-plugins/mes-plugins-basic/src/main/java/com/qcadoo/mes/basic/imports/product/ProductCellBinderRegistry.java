@@ -23,18 +23,17 @@
  */
 package com.qcadoo.mes.basic.imports.product;
 
-import static com.qcadoo.mes.basic.imports.dtos.CellBinder.optional;
-import static com.qcadoo.mes.basic.imports.dtos.CellBinder.required;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.imports.dtos.CellBinderRegistry;
+import com.qcadoo.mes.basic.imports.helpers.CellParser;
+import com.qcadoo.mes.basic.imports.parsers.DictionaryCellParsers;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.imports.dtos.CellBinderRegistry;
-import com.qcadoo.mes.basic.imports.helpers.CellParser;
-import com.qcadoo.mes.basic.imports.parsers.DictionaryCellParsers;
+import static com.qcadoo.mes.basic.imports.dtos.CellBinder.optional;
+import static com.qcadoo.mes.basic.imports.dtos.CellBinder.required;
 
 @Component
 public class ProductCellBinderRegistry {
@@ -65,6 +64,13 @@ public class ProductCellBinderRegistry {
     @Autowired
     private CellParser bigDecimalCellParser;
 
+    @Autowired
+    private CellParser integerCellParser;
+
+    @Autowired
+    private CellParser booleanCellParser;
+
+
     @PostConstruct
     private void init() {
         cellBinderRegistry.setCellBinder(required(ProductFields.NUMBER));
@@ -80,6 +86,9 @@ public class ProductCellBinderRegistry {
         cellBinderRegistry.setCellBinder(optional(L_NOMINAL_COST, bigDecimalCellParser));
         cellBinderRegistry.setCellBinder(optional(L_LAST_PURCHASE_COST, bigDecimalCellParser));
         cellBinderRegistry.setCellBinder(optional(L_AVERAGE_COST, bigDecimalCellParser));
+        cellBinderRegistry.setCellBinder(optional(ProductFields.SIZE, integerCellParser));
+        cellBinderRegistry.setCellBinder(optional(ProductFields.EXPIRY_DATE_VALIDITY, integerCellParser));
+        cellBinderRegistry.setCellBinder(optional(ProductFields.BATCH_EVIDENCE, booleanCellParser));
     }
 
     public CellBinderRegistry getCellBinderRegistry() {
