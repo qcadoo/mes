@@ -81,7 +81,9 @@
         <boolean name="showInProductData" default="false"/>
         <belongsTo name="productForm" model="forms"/>
         <string name="size"/>
-        <integer name="expiryDateValidity"/>
+        <integer name="expiryDateValidity">
+            <validatesRange from="0" exclusively="true" />
+        </integer>
 
     </fields>
 
