@@ -30,11 +30,12 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class MachinePartDetailsHooks {
 
-    private static final String L_FORM = "form";
+
 
     public void setMachinePartCheckbox(final ViewDefinitionState view) {
         CheckBoxComponent machinePartCheckbox = (CheckBoxComponent) view.getComponentByReference("machinePart");
@@ -43,7 +44,7 @@ public class MachinePartDetailsHooks {
     }
 
     public void setMachinePartIdForMultiUploadField(final ViewDefinitionState view) {
-        FormComponent technology = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent technology = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent technologyIdForMultiUpload = (FieldComponent) view.getComponentByReference("machinePartIdForMultiUpload");
         FieldComponent technologyMultiUploadLocale = (FieldComponent) view.getComponentByReference("machinePartMultiUploadLocale");
 

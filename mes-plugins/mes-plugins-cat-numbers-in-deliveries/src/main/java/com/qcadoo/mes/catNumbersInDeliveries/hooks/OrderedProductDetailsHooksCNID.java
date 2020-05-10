@@ -29,6 +29,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -42,13 +43,13 @@ import static com.qcadoo.mes.productCatalogNumbers.constants.ProductCatalogNumbe
 @Service
 public class OrderedProductDetailsHooksCNID {
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired
     private ProductCatalogNumbersService productCatalogNumbersService;
 
     public void setCatalogProductNumber(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity orderedProduct = form.getEntity();
         if (orderedProduct.getId() != null) {
             orderedProduct = orderedProduct.getDataDefinition().get(orderedProduct.getId());

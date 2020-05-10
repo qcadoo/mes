@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
-import java.math.BigDecimal;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.DeliveriesService;
@@ -44,11 +37,18 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class DeliveredProductDetailsListeners {
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired
     private NumberService numberService;
@@ -129,7 +129,7 @@ public class DeliveredProductDetailsListeners {
     }
 
     public void quantityChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity deliveredProduct = deliveredProductForm.getEntity();
         Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
 
@@ -178,7 +178,7 @@ public class DeliveredProductDetailsListeners {
     }
 
     public void additionalQuantityChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity deliveredProduct = deliveredProductForm.getEntity();
         Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
 
@@ -205,7 +205,7 @@ public class DeliveredProductDetailsListeners {
 
     public void setBatchLookupProductFilterValue(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
-        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity deliveredProduct = deliveredProductForm.getPersistedEntityWithIncludedFormValues();
 

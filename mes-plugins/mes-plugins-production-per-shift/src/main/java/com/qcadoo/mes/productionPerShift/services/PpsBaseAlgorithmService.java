@@ -1,14 +1,5 @@
 package com.qcadoo.mes.productionPerShift.services;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
@@ -19,11 +10,7 @@ import com.qcadoo.mes.basic.util.DateTimeRange;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
-import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
-import com.qcadoo.mes.productionPerShift.constants.ParameterFieldsPPS;
-import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
-import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
-import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
+import com.qcadoo.mes.productionPerShift.constants.*;
 import com.qcadoo.mes.productionPerShift.domain.DailyProgressContainer;
 import com.qcadoo.mes.productionPerShift.domain.DailyProgressKey;
 import com.qcadoo.mes.productionPerShift.domain.ProgressForDaysContainer;
@@ -32,6 +19,14 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.validators.ErrorMessage;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 public abstract class PpsBaseAlgorithmService {
 

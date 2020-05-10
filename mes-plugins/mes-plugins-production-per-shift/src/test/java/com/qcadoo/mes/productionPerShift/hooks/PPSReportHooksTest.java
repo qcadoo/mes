@@ -23,11 +23,10 @@
  */
 package com.qcadoo.mes.productionPerShift.hooks;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
+import com.qcadoo.mes.productionPerShift.report.PPSReportXlsHelper;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,10 +35,8 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.qcadoo.mes.productionPerShift.report.PPSReportXlsHelper;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.FieldDefinition;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 
 public class PPSReportHooksTest {
 

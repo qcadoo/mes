@@ -23,6 +23,15 @@
  */
 package com.qcadoo.mes.costCalculation.listeners;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
+import java.math.BigDecimal;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
@@ -38,11 +47,7 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
@@ -51,14 +56,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-
-import java.math.BigDecimal;
-import java.util.Map;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import static com.google.common.base.Preconditions.checkArgument;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class CostCalculationDetailsListeners {
@@ -67,7 +65,7 @@ public class CostCalculationDetailsListeners {
 
     private static final String L_ORDER = "order";
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_MINIMAL_QUANTITY = "minimalQuantity";
 
@@ -109,12 +107,12 @@ public class CostCalculationDetailsListeners {
 
         costCalculationReportService.generateCostCalculationReport(view, state, args);
 
-        view.getComponentByReference(L_FORM).addMessage("costCalculation.messages.success.calculationComplete",
+        view.getComponentByReference(QcadooViewConstants.L_FORM).addMessage("costCalculation.messages.success.calculationComplete",
                 MessageType.SUCCESS);
     }
 
     private Entity getEntityFromForm(final ViewDefinitionState view) {
-        FormComponent costCalculationForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent costCalculationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         checkArgument(costCalculationForm != null, "form is null");
         checkArgument(costCalculationForm.isValid(), "invalid form");
 
@@ -316,18 +314,18 @@ public class CostCalculationDetailsListeners {
     }
 
     public void saveNominalCosts(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity costsEntity = formComponent.getEntity();
         Entity product = costsEntity.getBelongsToField(BasicConstants.MODEL_PRODUCT);
         BigDecimal tkw = costsEntity.getDecimalField(CostCalculationFields.TECHNICAL_PRODUCTION_COSTS);
         product.setField("nominalCost", numberService.setScaleWithDefaultMathContext(tkw));
         Entity savedEntity = product.getDataDefinition().save(product);
         if (!savedEntity.isValid()) {
-            view.getComponentByReference(L_FORM).addMessage("costCalculation.messages.success.saveCostsFailure",
+            view.getComponentByReference(QcadooViewConstants.L_FORM).addMessage("costCalculation.messages.success.saveCostsFailure",
                     MessageType.FAILURE);
         }
 
-        view.getComponentByReference(L_FORM).addMessage("costCalculation.messages.success.saveCostsSuccess", MessageType.SUCCESS);
+        view.getComponentByReference(QcadooViewConstants.L_FORM).addMessage("costCalculation.messages.success.saveCostsSuccess", MessageType.SUCCESS);
 
     }
 

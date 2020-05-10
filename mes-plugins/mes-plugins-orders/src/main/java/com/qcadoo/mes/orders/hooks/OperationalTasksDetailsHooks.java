@@ -23,6 +23,15 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.OperationalTasksService;
@@ -44,22 +53,14 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class OperationalTasksDetailsHooks {
 
-    private static final String L_WINDOW = "window";
 
-    private static final String L_FORM = "form";
+
+
 
     private static final String L_ORDER = "order";
 
@@ -96,7 +97,7 @@ public class OperationalTasksDetailsHooks {
     }
 
     private void setQuantities(final ViewDefinitionState view) {
-        final FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        final FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (Objects.nonNull(form.getEntityId())) {
             Entity ot = form.getEntity();
             Entity product = ot.getBelongsToField(OperationalTaskFields.PRODUCT);
@@ -137,7 +138,7 @@ public class OperationalTasksDetailsHooks {
 
     private void generateOperationalTasksNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, OrdersConstants.PLUGIN_IDENTIFIER,
-                OrdersConstants.MODEL_OPERATIONAL_TASK, L_FORM, OperationalTaskFields.NUMBER);
+                OrdersConstants.MODEL_OPERATIONAL_TASK, QcadooViewConstants.L_FORM, OperationalTaskFields.NUMBER);
     }
 
     private void filterWorkstationLookup(final ViewDefinitionState view) {
@@ -195,7 +196,7 @@ public class OperationalTasksDetailsHooks {
     }
 
     public void disableButtons(final ViewDefinitionState view) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         FieldComponent typeField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.TYPE);
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.ORDER);
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view

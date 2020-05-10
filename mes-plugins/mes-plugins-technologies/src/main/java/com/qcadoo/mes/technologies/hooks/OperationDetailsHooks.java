@@ -23,31 +23,27 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.technologies.constants.AssignedToOperation;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class OperationDetailsHooks {
 
-    public static final String L_FORM = "form";
+    
 
-    private static final String L_WINDOW = "window";
+
 
     private static final String L_WORKSTATIONS = "workstations";
 
@@ -122,7 +118,7 @@ public class OperationDetailsHooks {
 
     public void clearWorkstationsField(final ViewDefinitionState view) {
         GridComponent workstations = (GridComponent) view.getComponentByReference(OperationFields.WORKSTATIONS);
-        FormComponent operationForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent operationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity operation = operationForm.getEntity();
         List<Entity> entities = Lists.newArrayList();
@@ -144,7 +140,7 @@ public class OperationDetailsHooks {
     }
 
     private void disableWorkstationsTabFieldsIfOperationIsNotSaved(ViewDefinitionState view) {
-        FormComponent operationForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent operationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         GridComponent workstations = (GridComponent) view.getComponentByReference(OperationFields.WORKSTATIONS);
 
         if (operationForm.getEntityId() == null) {
@@ -192,7 +188,7 @@ public class OperationDetailsHooks {
     }
 
     private void enableRibbonItem(final ViewDefinitionState view, final boolean enable) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonActionItem addUpTheNumberOfWorkstations = window.getRibbon().getGroupByName(L_WORKSTATIONS)
                 .getItemByName(L_ADD_UP_THE_NUMBER_OF_WORKSTATIONS);
 

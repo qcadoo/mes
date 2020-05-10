@@ -11,6 +11,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class AnomalyListListeners {
@@ -19,7 +20,7 @@ public class AnomalyListListeners {
     private DataDefinitionService dataDefinitionService;
 
     public void completeWithoutIssue(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent gridComponent = (GridComponent) view.getComponentByReference("grid");
+        GridComponent gridComponent = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         for (Long anomalyId : gridComponent.getSelectedEntitiesIds()) {
             DataDefinition anomalyDD = getAnomalyDD();
             Entity anomaly = anomalyDD.get(anomalyId);

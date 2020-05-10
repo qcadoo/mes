@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.lineChangeoverNorms.hooks;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.test.util.ReflectionTestUtils;
-
 import com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsConstants;
 import com.qcadoo.mes.lineChangeoverNorms.listeners.MatchingChangeoverNormsDetailsListeners;
 import com.qcadoo.model.api.DataDefinition;
@@ -40,6 +31,15 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 public class MatchingChangeoverNormsDetailsHooksTest {
 
@@ -75,7 +75,7 @@ public class MatchingChangeoverNormsDetailsHooksTest {
         ReflectionTestUtils.setField(hooks, "dataDefinitionService", dataDefinitionService);
         ReflectionTestUtils.setField(hooks, "listeners", listeners);
 
-        given(view.getComponentByReference("form")).willReturn(form);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(form);
         given(view.getComponentByReference("matchingNorm")).willReturn(matchingNorm);
         given(view.getComponentByReference("matchingNormNotFound")).willReturn(matchingNormNotFound);
     }

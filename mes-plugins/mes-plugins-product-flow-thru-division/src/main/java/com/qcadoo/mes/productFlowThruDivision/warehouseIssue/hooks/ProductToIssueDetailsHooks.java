@@ -1,11 +1,5 @@
 package com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks;
 
-import java.math.BigDecimal;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.IssueCommonDetailsHelper;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.ProductsToIssueFields;
@@ -13,6 +7,12 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 public class ProductToIssueDetailsHooks {
@@ -27,7 +27,7 @@ public class ProductToIssueDetailsHooks {
     }
 
     private void fillUnit(ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity productToIssue = form.getPersistedEntityWithIncludedFormValues();
         Entity product = productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT);
         FieldComponent demandUnitField = (FieldComponent) view.getComponentByReference("demandQuantityUnit");
@@ -42,7 +42,7 @@ public class ProductToIssueDetailsHooks {
     }
 
     private void fillAdditionalUnit(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity productToIssue = form.getPersistedEntityWithIncludedFormValues();
         Entity product = productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT);
 

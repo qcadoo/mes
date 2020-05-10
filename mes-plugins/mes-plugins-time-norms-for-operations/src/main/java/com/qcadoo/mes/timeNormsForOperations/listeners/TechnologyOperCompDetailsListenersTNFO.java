@@ -39,6 +39,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class TechnologyOperCompDetailsListenersTNFO {
@@ -52,7 +53,7 @@ public class TechnologyOperCompDetailsListenersTNFO {
         ComponentState operationLookup = view.getComponentByReference(OPERATION);
         if (operationLookup.getFieldValue() == null) {
             if (!OPERATION.equals(operationLookupState.getName())) {
-                view.getComponentByReference("form").addMessage("productionTimeNorms.messages.info.missingOperationReference",
+                view.getComponentByReference(QcadooViewConstants.L_FORM).addMessage("productionTimeNorms.messages.info.missingOperationReference",
                         INFO);
             }
             return;

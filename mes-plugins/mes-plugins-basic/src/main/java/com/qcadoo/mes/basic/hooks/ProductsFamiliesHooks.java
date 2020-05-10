@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.PARENT;
-import static com.qcadoo.mes.basic.constants.ProductFields.PRODUCT_FAMILY_CHILDREN_TREE;
-
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -47,6 +39,14 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+import static com.qcadoo.mes.basic.constants.ProductFields.PARENT;
+import static com.qcadoo.mes.basic.constants.ProductFields.PRODUCT_FAMILY_CHILDREN_TREE;
 
 @Service
 public class ProductsFamiliesHooks {
@@ -113,7 +113,7 @@ public class ProductsFamiliesHooks {
     }
 
     private FormComponent getForm(final ViewDefinitionState view) {
-        return (FormComponent) view.getComponentByReference("form");
+        return (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
     }
 
     private static class FormValidationException extends RuntimeException {

@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.ordersForSubproductsGeneration.hooks;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.util.OrderDetailsRibbonHelper;
 import com.qcadoo.mes.ordersForSubproductsGeneration.constants.OrderFieldsOFSPG;
@@ -41,13 +36,18 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class OrderDetailsHooksOFSPG {
 
-    private static final String L_FORM = "form";
+    
 
-    private static final String L_WINDOW = "window";
+
 
     @Autowired
     private OrderDetailsRibbonHelper orderDetailsRibbonHelper;
@@ -63,7 +63,7 @@ public class OrderDetailsHooksOFSPG {
     }
 
     private void disableNumberFieldForSubOrder(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long orderId = orderForm.getEntityId();
         if (orderId == null) {
@@ -81,7 +81,7 @@ public class OrderDetailsHooksOFSPG {
 
     private void fillRelatedOrders(final ViewDefinitionState view) {
 
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity baseOrder = form.getPersistedEntityWithIncludedFormValues();
         if (baseOrder.getId() != null && baseOrder.getHasManyField(OrderFieldsOFSPG.RELATED_ORDERS).isEmpty()) {
             List<Entity> relatedOrders;

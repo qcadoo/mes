@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
 import com.qcadoo.model.api.Entity;
@@ -37,13 +32,18 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class CompanyDetailsHooksD {
 
-    private static final String L_FORM = "form";
+    
 
-    private static final String L_WINDOW = "window";
+
 
     private static final String L_SUPPLIERS = "suppliers";
 
@@ -57,7 +57,7 @@ public class CompanyDetailsHooksD {
     }
 
     public void disableBufferWhenCompanyIsOwner(final ViewDefinitionState view) {
-        FormComponent companyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent companyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent bufferField = (FieldComponent) view.getComponentByReference(CompanyFieldsD.BUFFER);
 
         Boolean isOwner = companyService.isCompanyOwner(companyForm.getEntity());
@@ -66,9 +66,9 @@ public class CompanyDetailsHooksD {
     }
 
     public void updateRibbonState(final ViewDefinitionState view) {
-        FormComponent companyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent companyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup suppliers = window.getRibbon().getGroupByName(L_SUPPLIERS);
         RibbonActionItem redirectToFilteredDeliveriesList = suppliers.getItemByName(L_REDIRECT_TO_FILTERED_DELIVERIES_LIST);
 

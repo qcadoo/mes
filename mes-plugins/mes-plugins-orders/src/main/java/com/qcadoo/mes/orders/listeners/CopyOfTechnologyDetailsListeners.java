@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
-import java.util.Map;
-
-import org.apache.commons.lang3.ObjectUtils;
-import org.json.JSONException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.orders.TechnologyServiceO;
@@ -41,15 +33,19 @@ import com.qcadoo.mes.orders.states.CopyOfTechnologyStateChangeVC;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyType;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.EntityOpResult;
+import com.qcadoo.model.api.*;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.ObjectUtils;
+import org.json.JSONException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Map;
 
 @Service
 public class CopyOfTechnologyDetailsListeners {
@@ -225,8 +221,7 @@ public class CopyOfTechnologyDetailsListeners {
         try {
             orderId = view.getJsonContext().getString("window.mainTab.technology.orderId");
         } catch (JSONException ex) {
-            // throw new RuntimeException(ex);
-            EntityList entities = ((FormComponent) view.getComponentByReference("form"))
+            EntityList entities = ((FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM))
                     .getPersistedEntityWithIncludedFormValues().getHasManyField("orders");
             if (!entities.isEmpty()) {
                 orderId = String.valueOf(entities.get(0).getId());

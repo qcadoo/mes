@@ -23,22 +23,6 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.util.ReflectionTestUtils.setField;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
@@ -61,12 +45,28 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(SearchRestrictions.class)
 public class OrderDetailsHooksTest {
 
-    private static final String L_FORM = "form";
+
 
     private static final Long L_ID = 1L;
 
@@ -139,7 +139,7 @@ public class OrderDetailsHooksTest {
         given(dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)).willReturn(orderDD);
         given(orderDD.get(L_ID)).willReturn(order);
 
-        given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(orderForm);
         given(orderForm.getEntityId()).willReturn(L_ID);
 
         given(view.getComponentByReference(OrderFields.STATE)).willReturn(stateField);
@@ -160,7 +160,7 @@ public class OrderDetailsHooksTest {
     @Test
     public void shouldSetAndDisableState() throws Exception {
         // given
-        given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(orderForm);
         given(orderForm.getEntityId()).willReturn(null);
 
         // when
@@ -174,7 +174,7 @@ public class OrderDetailsHooksTest {
     @Test
     public void shouldDisableState() throws Exception {
         // given
-        given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(orderForm);
         given(orderForm.getEntityId()).willReturn(L_ID);
 
         // when
@@ -194,7 +194,7 @@ public class OrderDetailsHooksTest {
 
         // then
         verify(numberGeneratorService).generateAndInsertNumber(view, OrdersConstants.PLUGIN_IDENTIFIER,
-                OrdersConstants.MODEL_ORDER, L_FORM, OrderFields.NUMBER);
+                OrdersConstants.MODEL_ORDER, QcadooViewConstants.L_FORM, OrderFields.NUMBER);
     }
 
     @Test
@@ -330,7 +330,7 @@ public class OrderDetailsHooksTest {
     @Test
     public void shouldNotDisableFormIfOrderIsNotDone() throws Exception {
         // given
-        given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(orderForm);
         given(orderForm.getEntityId()).willReturn(L_ID);
 
         given(orderService.getOrder(L_ID)).willReturn(order);
@@ -349,7 +349,7 @@ public class OrderDetailsHooksTest {
     @Test
     public void shouldNotDisableFormForDoneOrder() throws Exception {
         // given
-        given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(orderForm);
         given(orderForm.getEntityId()).willReturn(L_ID);
 
         given(orderService.getOrder(L_ID)).willReturn(order);

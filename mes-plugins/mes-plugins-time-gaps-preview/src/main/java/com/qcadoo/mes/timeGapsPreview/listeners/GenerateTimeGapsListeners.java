@@ -23,19 +23,6 @@
  */
 package com.qcadoo.mes.timeGapsPreview.listeners;
 
-import java.text.ParseException;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Set;
-
-import org.joda.time.Duration;
-import org.joda.time.Interval;
-import org.joda.time.Seconds;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.productionLines.ProductionLinesSearchService;
 import com.qcadoo.mes.timeGapsPreview.TimeGapsContext;
@@ -48,6 +35,19 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.joda.time.Duration;
+import org.joda.time.Interval;
+import org.joda.time.Seconds;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.text.ParseException;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Set;
 
 @Service
 public class GenerateTimeGapsListeners {
@@ -82,7 +82,7 @@ public class GenerateTimeGapsListeners {
 
         if (persistedContext.isValid()) {
             // Show 'time gaps' tab
-            WindowComponent window = (WindowComponent) findComponentByReferenceName(viewState, "window");
+            WindowComponent window = (WindowComponent) findComponentByReferenceName(viewState, QcadooViewConstants.L_WINDOW);
             window.setActiveTab("timeGaps");
         }
         form.setEntity(persistedContext);

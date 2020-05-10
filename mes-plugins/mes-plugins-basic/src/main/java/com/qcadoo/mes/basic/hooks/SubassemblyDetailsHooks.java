@@ -29,14 +29,15 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class SubassemblyDetailsHooks {
 
-    private static final String L_FORM = "form";
+
 
     public void setSubassemblyIdForMultiUploadField(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent subassemblyIdForMultiUpload = (FieldComponent) view.getComponentByReference("subassemblyIdForMultiUpload");
         FieldComponent subassemblyMultiUploadLocale = (FieldComponent) view
                 .getComponentByReference("subassemblyMultiUploadLocale");

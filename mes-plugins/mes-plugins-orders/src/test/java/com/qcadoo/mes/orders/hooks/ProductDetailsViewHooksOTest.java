@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -38,7 +30,15 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import com.qcadoo.view.internal.components.window.WindowComponentState;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 public class ProductDetailsViewHooksOTest {
 
@@ -73,7 +73,7 @@ public class ProductDetailsViewHooksOTest {
 
         productDetailsViewHooksO = new ProductDetailsViewHooksO();
 
-        given(view.getComponentByReference("form")).willReturn(productForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(productForm);
         given(productForm.getEntity()).willReturn(product);
     }
 
@@ -82,7 +82,7 @@ public class ProductDetailsViewHooksOTest {
         // given
         given(product.getId()).willReturn(null);
 
-        given(view.getComponentByReference("window")).willReturn((ComponentState) window);
+        given(view.getComponentByReference(QcadooViewConstants.L_WINDOW)).willReturn((ComponentState) window);
 
         given(window.getRibbon()).willReturn(ribbon);
 
@@ -106,7 +106,7 @@ public class ProductDetailsViewHooksOTest {
 
         given(product.getBelongsToField("technologyGroup")).willReturn(technologyGroup);
 
-        given(view.getComponentByReference("window")).willReturn((ComponentState) window);
+        given(view.getComponentByReference(QcadooViewConstants.L_WINDOW)).willReturn((ComponentState) window);
 
         given(window.getRibbon()).willReturn(ribbon);
 

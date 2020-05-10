@@ -23,30 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowMultitransfers.listeners;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.NAME;
-import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.NUMBER;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.PRODUCT;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.PRODUCTS;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.QUANTITY;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.STAFF;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
-import static com.qcadoo.mes.materialFlow.constants.TransferType.PRODUCTION;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.materialFlow.MaterialFlowService;
@@ -66,6 +42,22 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import static com.qcadoo.mes.basic.constants.ProductFields.NAME;
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.*;
+import static com.qcadoo.mes.materialFlow.constants.TransferType.PRODUCTION;
 
 @Component
 public class MultitransferListeners {
@@ -74,7 +66,7 @@ public class MultitransferListeners {
 
     private static final String L_ERROR_FILL_AT_LEAST_ONE_LOCATION = "materialFlow.validate.global.error.fillAtLeastOneLocation";
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_UNIT = "unit";
 
@@ -96,7 +88,7 @@ public class MultitransferListeners {
             return;
         }
 
-        FormComponent multitransferForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent multitransferForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         FieldComponent typeField = (FieldComponent) view.getComponentByReference(TYPE);
         FieldComponent timeField = (FieldComponent) view.getComponentByReference(TIME);
@@ -142,7 +134,7 @@ public class MultitransferListeners {
 
         state.performEvent(view, "refresh", new String[0]);
 
-        view.getComponentByReference(L_FORM).addMessage("materialFlowMultitransfers.multitransfer.generate.success",
+        view.getComponentByReference(QcadooViewConstants.L_FORM).addMessage("materialFlowMultitransfers.multitransfer.generate.success",
                 MessageType.SUCCESS);
     }
 
@@ -223,7 +215,7 @@ public class MultitransferListeners {
         List<FormComponent> formComponents = adlc.getFormComponents();
 
         if (formComponents.isEmpty()) {
-            view.getComponentByReference(L_FORM).addMessage(
+            view.getComponentByReference(QcadooViewConstants.L_FORM).addMessage(
                     "materialFlowMultitransfers.multitransfer.validation.productsAreRequired", MessageType.FAILURE);
 
             isValid = false;
@@ -354,7 +346,7 @@ public class MultitransferListeners {
         List<Entity> templates = getTransferTemplates(locationFrom, locationTo);
 
         if (templates.isEmpty()) {
-            view.getComponentByReference(L_FORM).addMessage("materialFlowMultitransfers.multitransfer.template.failure",
+            view.getComponentByReference(QcadooViewConstants.L_FORM).addMessage("materialFlowMultitransfers.multitransfer.template.failure",
                     MessageType.INFO);
             return;
         }
@@ -378,7 +370,7 @@ public class MultitransferListeners {
 
         fillUnitsInADL(view, PRODUCTS);
 
-        view.getComponentByReference(L_FORM).addMessage("materialFlowMultitransfers.multitransfer.template.success",
+        view.getComponentByReference(QcadooViewConstants.L_FORM).addMessage("materialFlowMultitransfers.multitransfer.template.success",
                 MessageType.SUCCESS);
     }
 

@@ -23,24 +23,24 @@
  */
 package com.qcadoo.mes.workPlans.hooks;
 
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 public class WorkPlanDetailsHooksTests {
 
-    private static final String L_FORM = "form";
+    
 
     private WorkPlanDetailsHooks workPlanDetailsHooks;
 
@@ -63,7 +63,7 @@ public class WorkPlanDetailsHooksTests {
         workPlanDetailsHooks = new WorkPlanDetailsHooks();
 
         when(view.getComponentByReference(Mockito.anyString())).thenReturn(componentState);
-        when(view.getComponentByReference(L_FORM)).thenReturn(workPlanForm);
+        when(view.getComponentByReference(QcadooViewConstants.L_FORM)).thenReturn(workPlanForm);
         when(view.getComponentByReference(WorkPlanFields.GENERATED)).thenReturn(generatedField);
         when(workPlanForm.getEntityId()).thenReturn(1L);
     }

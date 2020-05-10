@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.supplyNegotiations.listeners;
 
-import java.math.BigDecimal;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.supplyNegotiations.SupplyNegotiationsService;
 import com.qcadoo.mes.supplyNegotiations.constants.OfferFields;
@@ -38,11 +33,16 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 public class OfferProductDetailsListeners {
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired
     private OfferProductDetailsHooks offerProductDetailsHooks;
@@ -54,7 +54,7 @@ public class OfferProductDetailsListeners {
     private SupplyNegotiationsService supplyNegotiationsService;
 
     public void fillPricePerUnit(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent offerProductForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent offerProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OfferProductFields.PRODUCT);
 
         Entity offerProduct = offerProductForm.getEntity();

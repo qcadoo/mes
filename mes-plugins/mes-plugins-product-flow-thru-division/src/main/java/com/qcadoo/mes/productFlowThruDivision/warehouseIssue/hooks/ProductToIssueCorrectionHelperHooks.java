@@ -1,16 +1,5 @@
 package com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
-import java.util.OptionalLong;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.localization.api.TranslationService;
@@ -20,21 +9,24 @@ import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionC
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.IssueFields;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.ProductToIssueCorrectionFields;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.ProductsToIssueFields;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+import java.util.OptionalLong;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductToIssueCorrectionHelperHooks {
@@ -49,7 +41,7 @@ public class ProductToIssueCorrectionHelperHooks {
     private NumberService numberService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity helper = form.getEntity();
         FieldComponent locationFromLabel = (FieldComponent) view.getComponentByReference("locationFromLabel");
         Entity locationFrom = helper.getBelongsToField("locationFrom");
@@ -77,7 +69,7 @@ public class ProductToIssueCorrectionHelperHooks {
         } else {
             List<Entity> issues = helper.getHasManyField("corrections");
             if (issues.stream().allMatch(issue -> issue.getId() != null)) {
-                WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+                WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
                 Ribbon ribbon = window.getRibbon();
                 RibbonGroup group = ribbon.getGroupByName("actions");
                 RibbonActionItem saveItem = group.getItemByName("correct");

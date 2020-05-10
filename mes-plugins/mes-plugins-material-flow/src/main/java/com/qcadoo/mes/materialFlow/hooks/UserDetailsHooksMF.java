@@ -8,6 +8,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class UserDetailsHooksMF {
@@ -22,7 +23,7 @@ public class UserDetailsHooksMF {
     private SecurityService securityService;
 
     public void setupRibbonForAdmin(final ViewDefinitionState view) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         if(!securityService.hasCurrentUserRole("ROLE_SUPERADMIN") && securityService.hasCurrentUserRole("ROLE_ADMIN")){
             RibbonActionItem saveActionItem = window.getRibbon().getGroupByName("actions").getItemByName("save");
             saveActionItem.setEnabled(true);

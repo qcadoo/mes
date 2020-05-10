@@ -40,6 +40,7 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class GenerateBalanceViewHooks {
@@ -57,7 +58,7 @@ public class GenerateBalanceViewHooks {
     }
 
     private void toggleRibbonExportButtons(final ViewDefinitionState viewState) {
-        WindowComponent window = (WindowComponent) findComponent(viewState, "window");
+        WindowComponent window = (WindowComponent) findComponent(viewState, QcadooViewConstants.L_WINDOW);
         if (window == null) {
             return;
         }
@@ -66,7 +67,7 @@ public class GenerateBalanceViewHooks {
         if (genericExportGroup == null) {
             return;
         }
-        FormComponent form = (FormComponent) findComponent(viewState, "form");
+        FormComponent form = (FormComponent) findComponent(viewState, QcadooViewConstants.L_FORM);
         boolean hasGeneratedBalances = form.getEntityId() != null;
         for (RibbonActionItem ribbonExportButton : genericExportGroup.getItems()) {
             ribbonExportButton.setEnabled(hasGeneratedBalances);

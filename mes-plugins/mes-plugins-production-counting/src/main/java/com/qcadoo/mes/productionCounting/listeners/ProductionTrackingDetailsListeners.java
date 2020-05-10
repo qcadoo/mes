@@ -23,6 +23,19 @@
  */
 package com.qcadoo.mes.productionCounting.listeners;
 
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -40,21 +53,11 @@ import com.qcadoo.mes.orders.OperationalTasksService;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
-import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
-import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentDtoFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
-import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
+import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.mes.productionCounting.newstates.ProductionTrackingStateServiceMarker;
 import com.qcadoo.mes.productionCounting.utils.ProductionTrackingDocumentsHelper;
 import com.qcadoo.mes.productionCounting.utils.StaffTimeCalculator;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
@@ -64,24 +67,12 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ProductionTrackingDetailsListeners {
 
-    private static final String L_FORM = "form";
+    
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductionTrackingDetailsListeners.class);
 
@@ -122,7 +113,7 @@ public class ProductionTrackingDetailsListeners {
 
         if (!trackingOperationProductInComponentsGrid.getSelectedEntitiesIds().isEmpty()
                 && trackingOperationProductInComponentsGrid.getSelectedEntitiesIds().size() == 1) {
-            FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
+            FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
             Long productionTrackingId = productionTrackingForm.getEntityId();
             Entity inProductTracking = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                     ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT).get(
@@ -143,7 +134,7 @@ public class ProductionTrackingDetailsListeners {
                 .getComponentByReference(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
 
         if (!trackingOperationProductInComponentsGrid.getSelectedEntitiesIds().isEmpty()) {
-            FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
+            FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
             Long productionTrackingId = productionTrackingForm.getEntityId();
 
             Map<String, Object> parameters = Maps.newHashMap();
@@ -161,7 +152,7 @@ public class ProductionTrackingDetailsListeners {
     }
 
     public void goToProductionCountingQuantities(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long productionTrackingId = productionTrackingForm.getEntityId();
         Entity order = productionTrackingForm.getEntity().getBelongsToField(ProductionTrackingFields.ORDER);
@@ -176,10 +167,10 @@ public class ProductionTrackingDetailsListeners {
     }
 
     public void changeTrackingState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        Optional<FormComponent> maybeForm = view.tryFindComponentByReference(L_FORM);
+        Optional<FormComponent> maybeForm = view.tryFindComponentByReference(QcadooViewConstants.L_FORM);
         if (maybeForm.isPresent()
                 && parameterService.getParameter().getBooleanField(ParameterFieldsPC.ALLOW_ANOMALY_CREATION_ON_ACCEPTANCE_RECORD)) {
-            FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
+            FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
             Entity productionTracking = productionTrackingForm.getEntity();
 
             productionTracking = productionTracking.getDataDefinition().get(productionTracking.getId());
@@ -225,7 +216,7 @@ public class ProductionTrackingDetailsListeners {
     }
 
     public void calcTotalLaborTime(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long productionTrackingId = productionTrackingForm.getEntityId();
 
@@ -241,7 +232,7 @@ public class ProductionTrackingDetailsListeners {
     }
 
     public void copyPlannedQuantityToUsedQuantity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long productionRecordId = productionRecordForm.getEntityId();
 
@@ -424,7 +415,7 @@ public class ProductionTrackingDetailsListeners {
 
         technologyOperationComponentField.setFieldValue("");
 
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (form.getEntityId() == null) {
             return;
@@ -525,7 +516,7 @@ public class ProductionTrackingDetailsListeners {
     }
 
     public void correct(final ViewDefinitionState view, final ComponentState component, final String[] args) {
-        FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity productionRecord = productionRecordForm.getPersistedEntityWithIncludedFormValues();
 

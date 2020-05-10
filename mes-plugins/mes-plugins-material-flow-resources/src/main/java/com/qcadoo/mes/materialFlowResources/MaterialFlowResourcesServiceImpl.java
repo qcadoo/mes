@@ -43,6 +43,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -55,7 +56,7 @@ import java.util.stream.Collectors;
 @Service
 public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesService {
 
-    private static final String L_FORM = "form";
+
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -362,7 +363,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Override
     public void disableDateField(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         FieldComponent dateField = (FieldComponent) view.getComponentByReference(TransferFields.TIME);
 

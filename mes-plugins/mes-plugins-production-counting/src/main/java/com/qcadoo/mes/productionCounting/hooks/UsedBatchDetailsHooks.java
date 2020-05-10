@@ -9,22 +9,22 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.stereotype.Service;
 
 import java.util.Objects;
-
-import org.springframework.stereotype.Service;
 
 @Service
 public class UsedBatchDetailsHooks {
 
     private static final String L_UNIT = "unit";
 
-    public static final String L_FORM = "form";
+
 
     private static final String L_PRODUCT_ID = "productId";
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity usedBatch = form.getEntity();
         Entity trackingOperationProductInComponent = usedBatch.getBelongsToField(
                 UsedBatchFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENT);

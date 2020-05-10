@@ -23,6 +23,17 @@
  */
 package com.qcadoo.mes.ordersForSubproductsGeneration.listeners;
 
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.MaterialRequirementCoverageForOrderService;
@@ -47,23 +58,14 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class OrdersForSubproductsGenerationListeners {
 
     protected static final Logger LOG = LoggerFactory.getLogger(OrdersForSubproductsGenerationListeners.class);
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_ORDERS_GROUP = "ordersGroup";
 
@@ -86,7 +88,7 @@ public class OrdersForSubproductsGenerationListeners {
 
     public final void generateSimpleOrdersForSubProducts(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
-        FormComponent subOrdersForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent subOrdersForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity subOrders = subOrdersForm.getEntity();
         Entity subOrdersFromDB = subOrders.getDataDefinition().get(subOrders.getId());
@@ -208,7 +210,7 @@ public class OrdersForSubproductsGenerationListeners {
                         mrc.getBelongsToField(CoverageForOrderFields.ORDER).getStringField(OrderFields.NUMBER));
             }
         } else {
-			FormComponent materialRequirementForm = (FormComponent) view.getComponentByReference(L_FORM);
+			FormComponent materialRequirementForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
 			Entity materialRequirement = materialRequirementForm.getEntity();
 			Entity materialRequirementFromDB = materialRequirement.getDataDefinition().get(materialRequirement.getId());
@@ -248,7 +250,7 @@ public class OrdersForSubproductsGenerationListeners {
     }
 
     private boolean hasAlreadyGeneratedOrders(final ViewDefinitionState view) {
-        FormComponent coverageForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent coverageForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity coverageEntity = coverageForm.getPersistedEntityWithIncludedFormValues();
         Entity order = coverageEntity.getBelongsToField(CoverageForOrderFields.ORDER);

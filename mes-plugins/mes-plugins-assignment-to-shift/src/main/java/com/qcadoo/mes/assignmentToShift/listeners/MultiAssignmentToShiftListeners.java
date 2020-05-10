@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.assignmentToShift.listeners;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftConstants;
 import com.qcadoo.mes.assignmentToShift.constants.MultiAssignmentToShiftFields;
 import com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields;
@@ -42,6 +34,14 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class MultiAssignmentToShiftListeners {
@@ -55,7 +55,7 @@ public class MultiAssignmentToShiftListeners {
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
-    public static final String L_FORM = "form";
+
 
     public void enabledFieldWhenTypeIsSpecific(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         multiAssignmentToShiftDetailsHooks.setFieldsEnabledWhenTypeIsSpecific(view);
@@ -64,7 +64,7 @@ public class MultiAssignmentToShiftListeners {
     public void addManyWorkers(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         DataDefinition dataDefinition = dataDefinitionService.get(AssignmentToShiftConstants.PLUGIN_IDENTIFIER,
                 AssignmentToShiftConstants.MODEL_STAFF_ASSIGNMENT_TO_SHIFT);
-        FormComponent assignmentToShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent assignmentToShiftForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity multiAssignmentToShift = assignmentToShiftForm.getPersistedEntityWithIncludedFormValues();
 
         Entity productionLine = multiAssignmentToShift.getBelongsToField(MultiAssignmentToShiftFields.PRODUCTION_LINE);

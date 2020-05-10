@@ -30,6 +30,7 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ProductFamiliesAddProductHooks {
@@ -37,7 +38,7 @@ public class ProductFamiliesAddProductHooks {
     public void updateRibbonState(final ViewDefinitionState view) {
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference("child");
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
 
         RibbonGroup add = (RibbonGroup) window.getRibbon().getGroupByName("add");
 

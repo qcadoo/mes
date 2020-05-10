@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.basic.listeners;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.PRODUCT_FAMILY_CHILDREN_TREE;
-
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.hooks.ProductsFamiliesHooks;
 import com.qcadoo.view.api.ComponentState;
@@ -38,6 +31,13 @@ import com.qcadoo.view.api.components.TreeComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
+
+import static com.qcadoo.mes.basic.constants.ProductFields.PRODUCT_FAMILY_CHILDREN_TREE;
 
 @Service
 public class ProductsFamiliesListeners {
@@ -79,7 +79,7 @@ public class ProductsFamiliesListeners {
     }
 
     private void setEditButtonEnabled(final ViewDefinitionState view, final boolean isEnabled) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup edit = (RibbonGroup) window.getRibbon().getGroupByName("edit");
         RibbonActionItem editSelectedProductFromTree = edit.getItemByName("editSelectedProduct");
         editSelectedProductFromTree.setEnabled(isEnabled);

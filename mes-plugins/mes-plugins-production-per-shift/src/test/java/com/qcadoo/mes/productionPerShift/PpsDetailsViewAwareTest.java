@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.productionPerShift;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-
 import com.google.common.base.Optional;
 import com.qcadoo.commons.functional.FluentOptional;
 import com.qcadoo.mes.productionPerShift.constants.ProgressType;
@@ -41,50 +33,19 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 public abstract class PpsDetailsViewAwareTest {
 
-    protected static final String WINDOW_REF = "window";
-
-    protected static final String FORM_REF = "form";
-
-    protected static final String PROGRESS_RIBBON_GROUP_NAME = "progress";
-
     protected static final String PROGRESS_TYPE_COMBO_REF = "plannedProgressType";
 
-    protected static final String PROGRESS_FOR_DAYS_ADL_REF = "progressForDays";
-
     protected static final String ORDER_LOOKUP_REF = "order";
-
-    protected static final String TECHNOLOGY_LOOKUP_REF = "technology";
-
-    protected static final String OPERATION_LOOKUP_REF = "productionPerShiftOperation";
-
-    protected static final String PRODUCED_PRODUCT_LOOKUP_REF = "produces";
-
-    protected static final String VIEW_IS_INITIALIZED_CHECKBOX_REF = "viewIsInitialized";
-
-    protected static final String UNIT_COMPONENT_NAME = "unit";
-
-    protected static final String WAS_CORRECTED_CHECKBOX_REF = "wasItCorrected";
-
-    protected static final String PLANNED_START_DATE_TIME_REF = "orderPlannedStartDate";
-
-    protected static final String CORRECTED_START_DATE_TIME_REF = "orderCorrectedStartDate";
-
-    protected static final String EFFECTIVE_START_DATE_TIME_REF = "orderEffectiveStartDate";
-
-    protected static final String CORRECTION_CAUSE_TYPES_ADL_REF = "plannedProgressCorrectionTypes";
-
-    protected static final String CORRECTION_COMMENT_TEXT_AREA_REF = "plannedProgressCorrectionComment";
-
-    protected static final String DAY_NUMBER_INPUT_REF = "day";
-
-    protected static final String DAILY_PROGRESS_ADL_REF = "dailyProgress";
-
-    protected static final String SHIFT_LOOKUP_REF = "shift";
-
-    protected static final String QUANTITY_FIELD_REF = "quantity";
 
     @Mock
     protected ViewDefinitionState view;

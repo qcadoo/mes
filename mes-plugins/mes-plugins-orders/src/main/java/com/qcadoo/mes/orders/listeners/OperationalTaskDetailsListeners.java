@@ -38,17 +38,17 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Objects;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 @Service
 public class OperationalTaskDetailsListeners {
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_GRID_OPTIONS = "grid.options";
 
@@ -112,7 +112,7 @@ public class OperationalTaskDetailsListeners {
 
     public final void showOperationalTasksWithOrder(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
-        FormComponent operationalTaskForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent operationalTaskForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity operationalTask = operationalTaskForm.getEntity();
 
         if (Objects.isNull(operationalTask.getId())) {

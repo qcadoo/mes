@@ -23,17 +23,6 @@
  */
 package com.qcadoo.mes.timeNormsForOperations.hooks;
 
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_TYPE;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.PRODUCTION_IN_ONE_CYCLE;
-import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.TIME_NEXT_OPERATION;
-
-import java.math.BigDecimal;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -44,6 +33,13 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.*;
 
 @Service
 public class TechnologyOperationComponentDetailsHooks {
@@ -55,7 +51,7 @@ public class TechnologyOperationComponentDetailsHooks {
     private NumberService numberService;
 
     public void checkOperationOutputQuantities(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (form.getEntityId() == null) {
             return;
         }
@@ -132,7 +128,7 @@ public class TechnologyOperationComponentDetailsHooks {
 
     public void fillUnitFields(final ViewDefinitionState view) {
         FieldComponent component = null;
-        Entity formEntity = ((FormComponent) view.getComponentByReference("form")).getEntity();
+        Entity formEntity = ((FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM)).getEntity();
 
         // we can pass units only to technology level operations
         if (formEntity.getId() == null

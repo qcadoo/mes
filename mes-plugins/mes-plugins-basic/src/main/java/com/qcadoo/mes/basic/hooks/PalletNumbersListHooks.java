@@ -31,13 +31,14 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class PalletNumbersListHooks {
 
-    public static final String L_GRID = "grid";
 
-    public static final String L_WINDOW = "window";
+
+
 
     public static final String L_PRINT = "print";
 
@@ -48,9 +49,9 @@ public class PalletNumbersListHooks {
     }
 
     public void disableButtonsWhenNotSelected(final ViewDefinitionState view) {
-        GridComponent palletNumbersGrid = (GridComponent) view.getComponentByReference(L_GRID);
+        GridComponent palletNumbersGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         Ribbon ribbon = window.getRibbon();
 
         RibbonGroup printRibbonGroup = ribbon.getGroupByName(L_PRINT);

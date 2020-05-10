@@ -23,10 +23,10 @@
  */
 package com.qcadoo.mes.productionPerShift.domain;
 
-import junit.framework.Assert;
-
 import org.joda.time.LocalDate;
 import org.junit.Test;
+
+import junit.framework.Assert;
 
 public class ProductionProgressScopeTest {
 

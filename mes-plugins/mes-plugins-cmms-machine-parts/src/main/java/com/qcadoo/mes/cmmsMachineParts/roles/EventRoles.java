@@ -1,7 +1,5 @@
 package com.qcadoo.mes.cmmsMachineParts.roles;
 
-import java.util.List;
-
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
 import com.qcadoo.model.api.Entity;
@@ -13,6 +11,9 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
+
+import java.util.List;
 
 
 public enum EventRoles {
@@ -136,7 +137,7 @@ public enum EventRoles {
         @Override
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
             ComponentState contextTab = view.getComponentByReference("contextTab");
-            FormComponent form = (FormComponent) view.getComponentByReference("form");
+            FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
             if (contextTab == null && form != null && form.getEntity().getId() != null) {
                 lockComponents(view, "number", "type", "factory", "division", "productionLine", "workstation", "subassembly",
                         "faultType", "description", "personReceiving", "sourceCost");
@@ -147,7 +148,7 @@ public enum EventRoles {
 
         @Override
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
-            FormComponent form = (FormComponent) view.getComponentByReference("form");
+            FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
             if (form != null && form.getEntity().getId() != null) {
                 lockComponents(view, "machinePartsForEvent", "staffWorkTimes", "solutionDescription");
             }
@@ -172,7 +173,7 @@ public enum EventRoles {
     }
 
     protected void lockFromRibbonGroup(ViewDefinitionState view, String groupName, String... items) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         Ribbon ribbon = window.getRibbon();
         RibbonGroup ribbonGroup = ribbon.getGroupByName(groupName);
         if(ribbonGroup != null) {
@@ -205,11 +206,11 @@ public enum EventRoles {
     }
 
     protected boolean eventInState(ViewDefinitionState view, MaintenanceEventState state) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity event = form.getEntity();
         String eventState = event.getStringField(MaintenanceEventFields.STATE);
         if (eventState == null) {
-            GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+            GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
             List<Entity> entities = grid.getSelectedEntities();
             return entities.stream().allMatch(e -> state.getStringValue().equals(e.getStringField(MaintenanceEventFields.STATE)));
         }

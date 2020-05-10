@@ -23,13 +23,14 @@
  */
 package com.qcadoo.mes.productionPerShift.dates;
 
-import static org.junit.Assert.assertTrue;
-
-import java.util.List;
-import java.util.Set;
-
+import com.google.common.base.Optional;
+import com.google.common.collect.FluentIterable;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.qcadoo.commons.dateTime.TimeRange;
+import com.qcadoo.commons.functional.LazyStream;
+import com.qcadoo.mes.basic.shift.Shift;
 import junit.framework.Assert;
-
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.LocalDate;
@@ -38,13 +39,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.FluentIterable;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
-import com.qcadoo.commons.dateTime.TimeRange;
-import com.qcadoo.commons.functional.LazyStream;
-import com.qcadoo.mes.basic.shift.Shift;
+import java.util.List;
+import java.util.Set;
+
+import static org.junit.Assert.assertTrue;
 
 public class OrderRealizationDaysResolverTest extends ShiftMockingAwareTest {
 

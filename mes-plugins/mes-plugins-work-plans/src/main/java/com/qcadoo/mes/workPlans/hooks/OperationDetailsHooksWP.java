@@ -33,17 +33,18 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class OperationDetailsHooksWP {
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired
     private ParameterService parameterService;
 
     public final void setOperationDefaultValues(final ViewDefinitionState view) {
-        FormComponent operationForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent operationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (operationForm.getEntityId() == null) {
             for (String fieldName : Lists.newArrayList(ParameterFieldsWP.IMAGE_URL_IN_WORK_PLAN)) {

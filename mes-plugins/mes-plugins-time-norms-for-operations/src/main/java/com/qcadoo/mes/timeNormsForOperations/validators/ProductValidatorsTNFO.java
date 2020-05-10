@@ -23,22 +23,6 @@
  */
 package com.qcadoo.mes.timeNormsForOperations.validators;
 
-import static com.qcadoo.mes.technologies.tree.traversing.MainTocOutputProductCriteriaBuilder.Aliases;
-import static com.qcadoo.model.api.search.SearchOrders.desc;
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.field;
-import static com.qcadoo.model.api.search.SearchProjections.id;
-import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
-import static com.qcadoo.model.api.search.SearchRestrictions.in;
-import static com.qcadoo.model.api.search.SearchRestrictions.neField;
-
-import java.util.Collection;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -56,6 +40,18 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+import java.util.List;
+
+import static com.qcadoo.mes.technologies.tree.traversing.MainTocOutputProductCriteriaBuilder.Aliases;
+import static com.qcadoo.model.api.search.SearchOrders.desc;
+import static com.qcadoo.model.api.search.SearchProjections.*;
+import static com.qcadoo.model.api.search.SearchRestrictions.*;
 
 @Service
 public class ProductValidatorsTNFO {
@@ -67,7 +63,7 @@ public class ProductValidatorsTNFO {
 
     public void checkIfUnitChangeDoesNotCorruptAnyTechnology(final ViewDefinitionState viewDefinitionState,
             final ComponentState componentState, final String[] args) {
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
         Long productId = form.getEntityId();
 
         if (productId == null) {

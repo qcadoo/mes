@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.orderSupplies.listeners;
 
-import java.math.BigDecimal;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.mes.orderSupplies.constants.CoverageProductFields;
@@ -41,6 +36,10 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.math.BigDecimal;
 
 @Component
 public class SupplierModalViewListeners {

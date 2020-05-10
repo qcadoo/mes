@@ -23,22 +23,22 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-
-import java.util.Map;
-
+import com.google.common.collect.Maps;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.google.common.collect.Maps;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FormComponent;
+import java.util.Map;
+
+import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 public class ProductDetailsListenersOTest {
 
@@ -75,7 +75,7 @@ public class ProductDetailsListenersOTest {
 
         productDetailsListenersO = new ProductDetailsListenersO();
 
-        given(view.getComponentByReference("form")).willReturn(productForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(productForm);
         given(productForm.getEntity()).willReturn(product);
     }
 

@@ -23,6 +23,9 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentDtoFields;
 import com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners;
@@ -33,14 +36,12 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class TrackingOperationProductInComponentDetailsHooks {
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_SET_TAB = "setTab";
 
@@ -65,7 +66,7 @@ public class TrackingOperationProductInComponentDetailsHooks {
     public void onBeforeRender(final ViewDefinitionState view) {
         trackingOperationProductComponentDetailsListeners.onBeforeRender(view);
 
-        FormComponent trackingOperationProductInComponentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent trackingOperationProductInComponentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         toggleEnabledForWastes(view);
 
@@ -80,7 +81,7 @@ public class TrackingOperationProductInComponentDetailsHooks {
     }
 
     private void disableQuantityFieldsIfUsedBatches(final ViewDefinitionState view) {
-        FormComponent trackingOperationProductInComponentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent trackingOperationProductInComponentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         long usedBatches = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 ProductionCountingConstants.MODEL_USED_BATCH).count(
                 SearchRestrictions.belongsTo("trackingOperationProductInComponent",

@@ -30,14 +30,15 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class TechnologyDetailsHooksCNFM {
 
     public void updateViewCostsButtonState(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference("form");
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup materials = (RibbonGroup) window.getRibbon().getGroupByName("materials");
         RibbonActionItem viewCosts = (RibbonActionItem) materials.getItemByName("viewCosts");
         if (orderForm.getEntityId() == null) {

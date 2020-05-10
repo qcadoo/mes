@@ -23,11 +23,12 @@
  */
 package com.qcadoo.mes.productionPerShift.hooks;
 
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Strings;
 import com.qcadoo.mes.productionPerShift.constants.ParameterFieldsPPS;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import org.springframework.stereotype.Service;
 
 
 @Service

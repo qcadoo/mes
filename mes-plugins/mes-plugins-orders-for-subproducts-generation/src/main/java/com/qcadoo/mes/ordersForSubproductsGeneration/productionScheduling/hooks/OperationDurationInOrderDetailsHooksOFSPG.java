@@ -43,13 +43,14 @@ import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class OperationDurationInOrderDetailsHooksOFSPG {
 
-    private static final String L_FORM = "form";
+    
 
-    private static final String L_WINDOW = "window";
+
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -82,7 +83,7 @@ public class OperationDurationInOrderDetailsHooksOFSPG {
     }
 
     private boolean hasSubOrders(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long orderId = form.getEntityId();
 
@@ -116,7 +117,7 @@ public class OperationDurationInOrderDetailsHooksOFSPG {
     }
 
     private void setCriteriaModifierParameters(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long orderId = form.getEntityId();
 
@@ -132,7 +133,7 @@ public class OperationDurationInOrderDetailsHooksOFSPG {
     }
 
     private void setSaveButtonState(final ViewDefinitionState view) {
-        WindowComponent windowComponent = ((WindowComponent) view.getComponentByReference(L_WINDOW));
+        WindowComponent windowComponent = ((WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW));
         RibbonActionItem ribbonActionItem = windowComponent.getRibbon().getGroupByName("subOrders")
                 .getItemByName(CoverageForOrderFieldsOFSPG.SAVE_DATE_IN_SUBORDERS);
         String dateStart = (String) view.getComponentByReference(CoverageForOrderFieldsOFSPG.CALCULATED_START_ALL_ORDERS)

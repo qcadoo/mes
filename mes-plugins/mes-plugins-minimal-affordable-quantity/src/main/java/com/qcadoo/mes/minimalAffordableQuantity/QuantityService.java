@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.minimalAffordableQuantity;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.util.Locale;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -38,6 +30,14 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.util.Locale;
 
 @Service
 public class QuantityService {
@@ -81,7 +81,7 @@ public class QuantityService {
         String unit = product.getStringField("unit");
 
         if (plannedQuantity.compareTo(minimalQuantity) < 0) {
-            ComponentState form = (ComponentState) view.getComponentByReference("form");
+            ComponentState form = (ComponentState) view.getComponentByReference(QcadooViewConstants.L_FORM);
             form.addMessage("orders.order.report.minimalQuantity", MessageType.INFO, false, minimalQuantity.toString(), unit);
         }
     }

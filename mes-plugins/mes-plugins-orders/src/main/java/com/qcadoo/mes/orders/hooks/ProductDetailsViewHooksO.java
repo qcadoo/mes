@@ -31,17 +31,18 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ProductDetailsViewHooksO {
 
-    private static final String L_FORM = "form";
+    
 
     public void updateRibbonState(final ViewDefinitionState view) {
-        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity product = productForm.getEntity();
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup orders = (RibbonGroup) window.getRibbon().getGroupByName("orders");
 
         RibbonActionItem showOrdersWithProductMain = (RibbonActionItem) orders.getItemByName("showOrdersWithProductMain");

@@ -1,5 +1,9 @@
 package com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.IssueCommonDetailsHelper;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.IssueFields;
@@ -7,9 +11,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class IssueDetailsHooks {
@@ -23,7 +25,7 @@ public class IssueDetailsHooks {
     }
 
     private void fillUnit(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity issue = form.getPersistedEntityWithIncludedFormValues();
         if(issue.getBooleanField(IssueFields.ISSUED)){
             form.setFormEnabled(false);

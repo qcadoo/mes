@@ -23,6 +23,12 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.utils.DateUtils;
@@ -44,25 +50,16 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
-
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class DocumentDetailsHooks {
 
     public static final String L_PRINT_DISPOSITION_ORDER_PDF = "printDispositionOrderPdf";
 
-    private static final String L_FORM = "form";
 
-    private static final String L_WINDOW = "window";
+
+
 
     private static final String L_ACTIONS = "actions";
 
@@ -102,7 +99,7 @@ public class DocumentDetailsHooks {
     }
 
     public void showFieldsByDocumentType(final ViewDefinitionState view) {
-        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity document = documentForm.getPersistedEntityWithIncludedFormValues();
 
@@ -149,8 +146,8 @@ public class DocumentDetailsHooks {
     public void initializeDocument(final ViewDefinitionState view) {
         showFieldsByDocumentType(view);
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
-        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long documentId = documentForm.getEntityId();
 
@@ -241,7 +238,7 @@ public class DocumentDetailsHooks {
     }
 
     private void lockNumberAndTypeChange(final ViewDefinitionState view) {
-        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         ComponentState typeComponent = view.getComponentByReference(DocumentFields.TYPE);
 
@@ -256,7 +253,7 @@ public class DocumentDetailsHooks {
     }
 
     private void fetchNameAndNumberFromDatabase(final ViewDefinitionState view) {
-        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (documentForm.getEntityId() != null) {
             ComponentState numberField = view.getComponentByReference(DocumentFields.NUMBER);
@@ -280,9 +277,9 @@ public class DocumentDetailsHooks {
     }
 
     private void setRibbonState(final ViewDefinitionState view) {
-        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
 
         RibbonActionItem printDispositionOrderPdfRibbonActionItem = window.getRibbon().getGroupByName(L_PRINT)
                 .getItemByName(L_PRINT_DISPOSITION_ORDER_PDF);

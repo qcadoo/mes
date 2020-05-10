@@ -23,23 +23,6 @@
  */
 package com.qcadoo.mes.assignmentToShift.hooks;
 
-import static com.qcadoo.mes.assignmentToShift.constants.OccupationType.WORK_ON_LINE;
-import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.OCCUPATION_TYPE;
-import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.OCCUPATION_TYPE_NAME;
-import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.PRODUCTION_LINE;
-import static com.qcadoo.model.constants.DictionaryItemFields.NAME;
-import static com.qcadoo.model.constants.DictionaryItemFields.TECHNICAL_CODE;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.test.util.ReflectionTestUtils;
-
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -49,6 +32,21 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import static com.qcadoo.mes.assignmentToShift.constants.OccupationType.WORK_ON_LINE;
+import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.*;
+import static com.qcadoo.model.constants.DictionaryItemFields.NAME;
+import static com.qcadoo.model.constants.DictionaryItemFields.TECHNICAL_CODE;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 public class StaffAssignmentToShiftDetailsHooksTest {
 
@@ -82,7 +80,7 @@ public class StaffAssignmentToShiftDetailsHooksTest {
 
         ReflectionTestUtils.setField(detailsHooks, "dataDefinitionService", dataDefinitionService);
 
-        given(view.getComponentByReference("form")).willReturn(staffAssignmentToShiftForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(staffAssignmentToShiftForm);
 
         given(view.getComponentByReference(OCCUPATION_TYPE)).willReturn(occupationType);
         given(view.getComponentByReference(PRODUCTION_LINE)).willReturn(productionLine);

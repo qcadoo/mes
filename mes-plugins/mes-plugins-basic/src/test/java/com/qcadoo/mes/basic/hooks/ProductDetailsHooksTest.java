@@ -23,21 +23,6 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.test.util.ReflectionTestUtils;
-
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.util.UnitService;
@@ -49,12 +34,27 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(SearchRestrictions.class)
 public class ProductDetailsHooksTest {
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_SZT = "szt";
 
@@ -103,7 +103,7 @@ public class ProductDetailsHooksTest {
         // given
         Long productId = 1L;
 
-        given(view.getComponentByReference(L_FORM)).willReturn(productForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(productForm);
         given(view.getComponentByReference(ProductFields.PARENT)).willReturn(parentField);
         given(view.getComponentByReference(ProductFields.ENTITY_TYPE)).willReturn(entityTypeField);
         given(view.getComponentByReference(ProductFields.ASSORTMENT)).willReturn(assortmentLookup);
@@ -129,7 +129,7 @@ public class ProductDetailsHooksTest {
         // given
         Long productId = 1L;
 
-        given(view.getComponentByReference(L_FORM)).willReturn(productForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(productForm);
         given(view.getComponentByReference(ProductFields.PARENT)).willReturn(parentField);
         given(view.getComponentByReference(ProductFields.ENTITY_TYPE)).willReturn(entityTypeField);
 
@@ -150,7 +150,7 @@ public class ProductDetailsHooksTest {
     @Test
     public void shouldntFillUnitIfFormIsSaved() {
         // given
-        given(view.getComponentByReference(L_FORM)).willReturn(productForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(productForm);
         given(view.getComponentByReference(UNIT)).willReturn(unitField);
 
         given(productForm.getEntityId()).willReturn(L_ID);
@@ -165,7 +165,7 @@ public class ProductDetailsHooksTest {
     @Test
     public void shouldFillUnitIfFormIsntSaved() {
         // given
-        given(view.getComponentByReference(L_FORM)).willReturn(productForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(productForm);
         given(view.getComponentByReference(UNIT)).willReturn(unitField);
 
         given(productForm.getEntityId()).willReturn(null);

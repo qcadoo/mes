@@ -23,8 +23,6 @@
  */
 package com.qcadoo.mes.productionPerShift.dates;
 
-import junit.framework.Assert;
-
 import org.joda.time.LocalDate;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,6 +31,8 @@ import org.mockito.MockitoAnnotations;
 
 import com.google.common.collect.ImmutableList;
 import com.qcadoo.mes.basic.shift.Shift;
+
+import junit.framework.Assert;
 
 public class OrderRealizationDayTest {
 

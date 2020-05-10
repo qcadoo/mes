@@ -31,7 +31,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
@@ -44,6 +43,7 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import com.qcadoo.view.internal.components.window.WindowComponentState;
 
 public class ProductionTrackingServiceImplTest {
@@ -86,14 +86,14 @@ public class ProductionTrackingServiceImplTest {
         given(view.getComponentByReference(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT)).willReturn(
                 technologyOperationComponentLookup);
 
-        given(view.getComponentByReference("window")).willReturn(window);
+        given(view.getComponentByReference(QcadooViewConstants.L_WINDOW)).willReturn(window);
         given(window.getRibbon()).willReturn(ribbon);
         RibbonGroup workTimeGroup = mock(RibbonGroup.class);
         given(ribbon.getGroupByName("workTime")).willReturn(workTimeGroup);
         given(workTimeGroup.getItemByName("calcTotalLaborTime")).willReturn(calcTotalLaborTimeRibbonBtn);
 
         FormComponent form = mock(FormComponent.class);
-        given(view.getComponentByReference("form")).willReturn(form);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(form);
         given(form.getEntity()).willReturn(order);
         given(form.getPersistedEntityWithIncludedFormValues()).willReturn(order);
 

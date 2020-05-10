@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources.listeners;
 
-import java.io.IOException;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.imports.services.XlsxImportService;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
@@ -39,11 +34,16 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 
 @Service
 public class PositionsImportListeners {
 
-    public static final String L_FORM = "form";
+
 
     @Autowired
     private PositionXlsxImportService positionXlsxImportService;
@@ -58,7 +58,7 @@ public class PositionsImportListeners {
 
     public void processImportFile(final ViewDefinitionState view, final ComponentState state, final String[] args)
             throws IOException {
-        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long documentId = documentForm.getEntityId();
         Entity document = documentForm.getEntity().getDataDefinition().get(documentId);
 

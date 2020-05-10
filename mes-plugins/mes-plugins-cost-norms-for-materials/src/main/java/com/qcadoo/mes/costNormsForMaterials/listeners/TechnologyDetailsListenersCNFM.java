@@ -31,6 +31,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +41,7 @@ import java.util.Map;
 @Service
 public class TechnologyDetailsListenersCNFM {
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired
     private TechnologyService technologyService;
@@ -61,7 +62,7 @@ public class TechnologyDetailsListenersCNFM {
     }
 
     public void checkTechnologyProductsInNorms(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long technologyId = technologyForm.getEntityId();
 

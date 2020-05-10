@@ -23,9 +23,14 @@
  */
 package com.qcadoo.mes.avgLaborCostCalcForOrder.hooks;
 
-import static com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderFields.AVERAGE_LABOR_HOURLY_COST;
-import static org.mockito.Mockito.when;
-
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.ribbon.Ribbon;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import com.qcadoo.view.internal.components.window.WindowComponentState;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -33,13 +38,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.ribbon.Ribbon;
-import com.qcadoo.view.api.ribbon.RibbonActionItem;
-import com.qcadoo.view.api.ribbon.RibbonGroup;
-import com.qcadoo.view.internal.components.window.WindowComponentState;
+import static com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderFields.AVERAGE_LABOR_HOURLY_COST;
+import static org.mockito.Mockito.when;
 
 public class AvgLaborCostCalcForOrderDetailsHooksTest {
 
@@ -68,7 +68,7 @@ public class AvgLaborCostCalcForOrderDetailsHooksTest {
         orderDetailsHooks = new AvgLaborCostCalcForOrderDetailsHooks();
         MockitoAnnotations.initMocks(this);
 
-        when(view.getComponentByReference("window")).thenReturn((ComponentState) window);
+        when(view.getComponentByReference(QcadooViewConstants.L_WINDOW)).thenReturn((ComponentState) window);
         when(window.getRibbon()).thenReturn(ribbon);
         when(ribbon.getGroupByName("hourlyCostNorms")).thenReturn(hourlyCostNorms);
         when(window.getRibbon().getGroupByName("hourlyCostNorms").getItemByName("copyToOperationsNorms")).thenReturn(

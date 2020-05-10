@@ -40,6 +40,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class OrdersListListeners {
@@ -57,7 +58,7 @@ public class OrdersListListeners {
     private TechnologyServiceO technologyServiceO;
 
     public void changeState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent gridComponent = (GridComponent) view.getComponentByReference("grid");
+        GridComponent gridComponent = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         for (Long orderId : gridComponent.getSelectedEntitiesIds()) {
             Entity order = getOrderDD().get(orderId);
             order = getOrderDD().save(order);

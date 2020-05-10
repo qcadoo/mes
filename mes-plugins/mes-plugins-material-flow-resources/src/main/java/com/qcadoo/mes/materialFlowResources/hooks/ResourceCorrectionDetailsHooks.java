@@ -1,27 +1,27 @@
 package com.qcadoo.mes.materialFlowResources.hooks;
 
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceCorrectionFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class ResourceCorrectionDetailsHooks {
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired
     private BatchCriteriaModifier batchCriteriaModifier;
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        FormComponent resourceCorrectionForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent resourceCorrectionForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity resourceCorrection = resourceCorrectionForm.getPersistedEntityWithIncludedFormValues();
 

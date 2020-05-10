@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.assignmentToShift.hooks;
 
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftConstants;
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields;
@@ -50,13 +42,21 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class AssignmentToShiftDetailsHooks {
 
-    public static final String L_WINDOW = "window";
 
-    public static final String L_FORM = "form";
+
+    
 
     public static final String L_ACTIONS = "actions";
 
@@ -127,7 +127,7 @@ public class AssignmentToShiftDetailsHooks {
         addDiscriminatorRestrictionToCorrectedStaffAssignmentGrid(view);
         addDiscriminatorRestrictionToAcceptedStaffAssignmentGrid(view);
 
-        FormComponent assignmentToShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent assignmentToShiftForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         disableButtonsWhenNotExternalSynchronized(view, assignmentToShiftForm.getEntity());
 
@@ -172,7 +172,7 @@ public class AssignmentToShiftDetailsHooks {
     }
 
     private void disableButtonsWhenNotExternalSynchronized(final ViewDefinitionState view, Entity assignmentToShift) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         Ribbon ribbon = window.getRibbon();
 
         RibbonGroup actionsRibbonGroup = ribbon.getGroupByName(L_ACTIONS);
@@ -264,7 +264,7 @@ public class AssignmentToShiftDetailsHooks {
     }
 
     private void disableFormWhenStateIsAcceptedOrCorrected(final ViewDefinitionState view, final Entity assignmentToShift) {
-        FormComponent assignmentToShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent assignmentToShiftForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         GridComponent staffAssignmentToShiftsGrid = (GridComponent) view
                 .getComponentByReference(AssignmentToShiftFields.STAFF_ASSIGNMENT_TO_SHIFTS);
 

@@ -33,6 +33,7 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,9 +42,9 @@ import java.util.List;
 @Service
 public class MaterialRequirementCoverageDetailsHooks {
 
-    private static final String L_FORM = "form";
+    
 
-    private static final String L_WINDOW = "window";
+
 
     private static final String L_COVERAGE = "coverage";
 
@@ -58,7 +59,7 @@ public class MaterialRequirementCoverageDetailsHooks {
     private static final String COUNT_ALIAS = "count";
 
     public void updateFormState(final ViewDefinitionState view) {
-        FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         AwesomeDynamicListComponent adlc = (AwesomeDynamicListComponent) view
                 .getComponentByReference(MaterialRequirementCoverageFields.COVERAGE_LOCATIONS);
         materialRequirementCoverageForm.setFormEnabled(false);
@@ -73,7 +74,7 @@ public class MaterialRequirementCoverageDetailsHooks {
                 .getComponentByReference(MaterialRequirementCoverageFields.GENERATED);
         boolean generated = "1".equals(generatedField.getFieldValue());
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup coverage = (RibbonGroup) window.getRibbon().getGroupByName(L_COVERAGE);
 
         RibbonActionItem printMaterialRequirementCoverage = (RibbonActionItem) coverage

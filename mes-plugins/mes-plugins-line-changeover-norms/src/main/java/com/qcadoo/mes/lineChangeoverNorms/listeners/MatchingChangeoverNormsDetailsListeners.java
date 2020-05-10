@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.lineChangeoverNorms.listeners;
 
-import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.CHANGEOVER_TYPE;
-import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.DURATION;
-import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.NUMBER;
-
-import java.util.Arrays;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.lineChangeoverNorms.ChangeoverNormsService;
 import com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsConstants;
 import com.qcadoo.model.api.Entity;
@@ -42,6 +33,13 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+
+import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.*;
 
 @Service
 public class MatchingChangeoverNormsDetailsListeners {
@@ -64,7 +62,7 @@ public class MatchingChangeoverNormsDetailsListeners {
         Entity toTechnology = ((LookupComponent) viewDefinitionState.getComponentByReference(MATCHING_TO_TECHNOLOGY)).getEntity();
         Entity productionLine = ((LookupComponent) viewDefinitionState.getComponentByReference(MATCHING_PRODUCTION_LINE))
                 .getEntity();
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference("form");
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity changeoverNorm = changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology, productionLine);
         if (changeoverNorm == null) {
             clearField(viewDefinitionState);
@@ -89,7 +87,7 @@ public class MatchingChangeoverNormsDetailsListeners {
 
     public void enabledButtonAfterSelectionTechnologies(final ViewDefinitionState viewDefinitionState,
             final ComponentState state, final String[] args) {
-        WindowComponent window = (WindowComponent) viewDefinitionState.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonActionItem matchingChangeoverNorm = window.getRibbon().getGroupByName("matching")
                 .getItemByName("matchingChangeoverNorm");
         Entity fromTechnology = ((LookupComponent) viewDefinitionState.getComponentByReference(MATCHING_FROM_TECHNOLOGY))
@@ -104,7 +102,7 @@ public class MatchingChangeoverNormsDetailsListeners {
     }
 
     public void changeStateEditButton(final ViewDefinitionState view, final boolean enabled) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonActionItem edit = window.getRibbon().getGroupByName("editing").getItemByName("edit");
         edit.setEnabled(enabled);
         edit.requestUpdate(true);

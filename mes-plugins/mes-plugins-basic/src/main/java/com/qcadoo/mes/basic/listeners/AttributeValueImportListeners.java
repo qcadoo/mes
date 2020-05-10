@@ -6,17 +6,17 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FormComponent;
-
-import java.io.IOException;
-
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+
 @Service
 public class AttributeValueImportListeners {
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_XLSX = "xlsx";
 
@@ -36,7 +36,7 @@ public class AttributeValueImportListeners {
     public void importProductAttrValues(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         CheckBoxComponent importedCheckBoxComponent = (CheckBoxComponent) view.getComponentByReference(IMPORTED);
 
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity formEntity = form.getPersistedEntityWithIncludedFormValues();
 
@@ -63,7 +63,7 @@ public class AttributeValueImportListeners {
     public void importResourceAttrValue(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         CheckBoxComponent importedCheckBoxComponent = (CheckBoxComponent) view.getComponentByReference(IMPORTED);
 
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity formEntity = form.getPersistedEntityWithIncludedFormValues();
 

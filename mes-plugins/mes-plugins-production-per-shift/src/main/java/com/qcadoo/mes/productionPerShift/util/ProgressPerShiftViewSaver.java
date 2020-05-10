@@ -42,6 +42,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -79,11 +80,7 @@ public class ProgressPerShiftViewSaver {
         }
     };
 
-    private static final String FORM_COMPONENT_REF = "form";
-
     private static final String PROGRESS_ADL_REF = "progressForDays";
-
-    private static final String OPERATION_LOOKUP_REF = "productionPerShiftOperation";
 
     private static final String PROGRESS_TYPE_COMBO_REF = "plannedProgressType";
 
@@ -105,7 +102,7 @@ public class ProgressPerShiftViewSaver {
     private boolean saveProgressesAndForm(final ViewDefinitionState view) {
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) view
                 .getComponentByReference(PROGRESS_ADL_REF);
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity pps = form.getEntity();
         Long ppsId = pps.getId();
         List<Entity> progressForDays = progressForDaysADL.getEntities();
@@ -204,7 +201,7 @@ public class ProgressPerShiftViewSaver {
     }
 
     private FormComponent getFormComponent(final ViewDefinitionState view) {
-        return (FormComponent) view.getComponentByReference(FORM_COMPONENT_REF);
+        return (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
     }
 
     private List<Entity> validateAndSaveProgresses(final List<Entity> progressForDays, final Entity pps,

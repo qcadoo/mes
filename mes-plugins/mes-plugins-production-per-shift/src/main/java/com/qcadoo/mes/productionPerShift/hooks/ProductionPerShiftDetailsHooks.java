@@ -50,6 +50,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -58,8 +59,6 @@ import java.util.*;
 
 @Service
 public class ProductionPerShiftDetailsHooks {
-
-    private static final String WINDOW_REF = "window";
 
     private static final String PROGRESS_RIBBON_GROUP_NAME = "progress";
 
@@ -95,7 +94,7 @@ public class ProductionPerShiftDetailsHooks {
 
     private static final String QUANTITY_FIELD_REF = "quantity";
 
-    public static final String L_FORM = "form";
+    
 
     @Autowired
     private ProductionPerShiftDataProvider productionPerShiftDataProvider;
@@ -164,10 +163,10 @@ public class ProductionPerShiftDetailsHooks {
     }
 
     private void updateAutoFillButtonState(ViewDefinitionState view) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonActionItem button = window.getRibbon().getGroupByName("autoFill").getItemByName("planProgressForDays");
 
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (!automaticPpsParametersService.isAutomaticPlanForShiftOn()) {
             button.setEnabled(false);
@@ -190,7 +189,7 @@ public class ProductionPerShiftDetailsHooks {
     }
 
     private void deviationNotify(ViewDefinitionState view) {
-        FormComponent productionPerShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productionPerShiftForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity pps = productionPerShiftForm.getPersistedEntityWithIncludedFormValues();
         AwesomeDynamicListComponent progressForDaysADL = (AwesomeDynamicListComponent) view
                 .getComponentByReference(PROGRESS_ADL_REF);
@@ -201,7 +200,7 @@ public class ProductionPerShiftDetailsHooks {
     }
 
     private void checkOrderDates(final ViewDefinitionState view, final Entity order) {
-        FormComponent productionPerShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productionPerShiftForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity pps = productionPerShiftForm.getPersistedEntityWithIncludedFormValues();
         boolean shouldBeCorrected = OrderState.of(order).compareTo(OrderState.PENDING) != 0;
         Set<Long> progressForDayIds = productionPerShiftDataProvider.findIdsOfEffectiveProgressForDay(pps, shouldBeCorrected);
@@ -355,7 +354,7 @@ public class ProductionPerShiftDetailsHooks {
     }
 
     public boolean isCorrectedPlan(final ViewDefinitionState view) {
-        FormComponent productionPerShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productionPerShiftForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity pps = productionPerShiftForm.getPersistedEntityWithIncludedFormValues();
         List<Entity> progresses = progressForDayDataProvider.findForPps(pps, true);
         if (progresses.isEmpty()) {
@@ -366,7 +365,7 @@ public class ProductionPerShiftDetailsHooks {
 
     public void setProductAndFillProgressForDays(final ViewDefinitionState view,
             final AwesomeDynamicListComponent progressForDaysADL, final OrderState orderState, final ProgressType progressType) {
-        FormComponent productionPerShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productionPerShiftForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity pps = productionPerShiftForm.getPersistedEntityWithIncludedFormValues();
         Optional<Entity> maybeMainOperationProduct = getMainOutProductFor(pps);
         fillOperationProductLookup(view, maybeMainOperationProduct);
@@ -430,7 +429,7 @@ public class ProductionPerShiftDetailsHooks {
     }
 
     void changeButtonState(final ViewDefinitionState view, final ProgressType progressType, final OrderState orderState) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(WINDOW_REF);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup progressRibbonGroup = window.getRibbon().getGroupByName(PROGRESS_RIBBON_GROUP_NAME);
         boolean isInCorrectionMode = progressType == ProgressType.CORRECTED && !UNSUPPORTED_ORDER_STATES.contains(orderState);
 

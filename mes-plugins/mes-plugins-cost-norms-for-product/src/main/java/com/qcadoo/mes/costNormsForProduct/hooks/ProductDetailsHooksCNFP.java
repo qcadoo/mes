@@ -25,11 +25,7 @@ package com.qcadoo.mes.costNormsForProduct.hooks;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.AVERAGE_COST;
-import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.AVERAGE_OFFER_COST;
-import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.LAST_OFFER_COST;
-import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.LAST_PURCHASE_COST;
-import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.NOMINAL_COST;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.*;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -45,13 +41,14 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ProductDetailsHooksCNFP {
 
     private static final String L_VIEW_DEFINITION_STATE_IS_NULL = "viewDefinitionState is null";
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_COST_FOR_NUMBER_UNIT = "costForNumberUnit";
 
@@ -70,7 +67,7 @@ public class ProductDetailsHooksCNFP {
     public void fillUnitField(final ViewDefinitionState viewDefinitionState, final String fieldName, final boolean inProduct) {
         checkArgument(viewDefinitionState != null, L_VIEW_DEFINITION_STATE_IS_NULL);
 
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent unitField = (FieldComponent) viewDefinitionState.getComponentByReference(fieldName);
         unitField.setFieldValue(L_EMPTY);
         unitField.setEnabled(false);
@@ -110,7 +107,7 @@ public class ProductDetailsHooksCNFP {
     public void fillCurrencyFields(final ViewDefinitionState viewDefinitionState, final Set<String> fieldNames) {
         checkArgument(viewDefinitionState != null, L_VIEW_DEFINITION_STATE_IS_NULL);
 
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
         clearFields(viewDefinitionState, fieldNames);
         if (form == null || form.getEntityId() == null) {
             return;
@@ -139,7 +136,7 @@ public class ProductDetailsHooksCNFP {
     }
 
     public void enabledFieldForExternalID(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (form.getEntityId() == null) {
             return;
         }

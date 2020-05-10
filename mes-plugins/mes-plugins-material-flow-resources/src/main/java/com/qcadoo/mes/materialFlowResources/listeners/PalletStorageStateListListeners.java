@@ -1,16 +1,5 @@
 package com.qcadoo.mes.materialFlowResources.listeners;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Consumer;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.json.JSONObject;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.materialFlowResources.constants.PalletStorageStateDtoFields;
@@ -21,13 +10,22 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Consumer;
 
 @Service
 public class PalletStorageStateListListeners {
 
     public static final String L_ISNULL = "ISNULL";
-
-    private static final String L_GRID = "grid";
 
     private static final String L_FILTERS = "filters";
 
@@ -39,7 +37,7 @@ public class PalletStorageStateListListeners {
     private DataDefinitionService dataDefinitionService;
 
     public void showDetails(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent palletStorageStateGrid = (GridComponent) view.getComponentByReference(L_GRID);
+        GridComponent palletStorageStateGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
         final Entity selectedRecord = Iterables.getLast(palletStorageStateGrid.getSelectedEntities());
         final Map<String, String> filters = Maps.newHashMap();
@@ -83,7 +81,7 @@ public class PalletStorageStateListListeners {
     }
 
     public void showAllPallets(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent palletGrid = (GridComponent) view.getComponentByReference("grid");
+        GridComponent palletGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         palletGrid.setCustomRestriction(searchBuilder -> searchBuilder.add(SearchRestrictions.ge(PalletStorageStateDtoFields.TOTAL_QUANTITY,BigDecimal.ZERO)));
         CheckBoxComponent isShiftFilter = (CheckBoxComponent) view.getComponentByReference(PalletStorageStateDtoFields.IS_SHIFT_FILTER);
         CheckBoxComponent isFreeFilter = (CheckBoxComponent) view.getComponentByReference(PalletStorageStateDtoFields.IS_FREE_FILTER);
@@ -111,7 +109,7 @@ public class PalletStorageStateListListeners {
     }
 
     private void performActionBasedOnSelectedEntities(ViewDefinitionState view, String viewName) {
-        GridComponent palletStorageStateGrid = (GridComponent) view.getComponentByReference(L_GRID);
+        GridComponent palletStorageStateGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         Set<Long> selectedEntities = palletStorageStateGrid.getSelectedEntitiesIds();
         String palletNumberFilter = palletStorageStateGrid.getFilters().get("palletNumber");
 

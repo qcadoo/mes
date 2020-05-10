@@ -1,14 +1,12 @@
 package com.qcadoo.mes.productionPerShift.report.columns;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.productionPerShift.report.PPSReportXlsHelper;
-import com.qcadoo.mes.productionPerShift.report.print.PPSReportXlsStyleContainer;
 import com.qcadoo.model.api.Entity;
 
 @Component("productionLineReportColumn")

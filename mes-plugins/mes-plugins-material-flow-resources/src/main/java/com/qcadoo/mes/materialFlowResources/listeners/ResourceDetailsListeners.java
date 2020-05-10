@@ -38,11 +38,11 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-
-import java.math.BigDecimal;
-
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 public class ResourceDetailsListeners {
@@ -62,10 +62,10 @@ public class ResourceDetailsListeners {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    private static final String L_FORM = "form";
+
 
     public void createResourceCorrection(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent resourceForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent resourceForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent quantityInput = (FieldComponent) view.getComponentByReference(ResourceFields.QUANTITY);
         FieldComponent priceInput = (FieldComponent) view.getComponentByReference(ResourceFields.PRICE);
         FieldComponent conversionInput = (FieldComponent) view.getComponentByReference(ResourceFields.CONVERSION);

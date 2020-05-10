@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.orders.util;
 
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
@@ -41,6 +36,11 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Set;
 
 @Service
 public class OrderDetailsRibbonHelper {
@@ -84,7 +84,7 @@ public class OrderDetailsRibbonHelper {
     }
 
     private Entity getOrderEntity(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (form == null) {
             return null;
         }
@@ -97,7 +97,7 @@ public class OrderDetailsRibbonHelper {
 
     private RibbonActionItem getRibbonItem(final ViewDefinitionState view, final String ribbonGroupName,
             final String ribbonItemName) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         Ribbon ribbon = window.getRibbon();
         RibbonGroup ribbonGroup = ribbon.getGroupByName(ribbonGroupName);
         if (ribbonGroup == null) {

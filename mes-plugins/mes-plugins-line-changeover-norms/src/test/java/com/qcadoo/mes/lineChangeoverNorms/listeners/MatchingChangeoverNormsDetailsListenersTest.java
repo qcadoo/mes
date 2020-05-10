@@ -23,14 +23,7 @@
  */
 package com.qcadoo.mes.lineChangeoverNorms.listeners;
 
-import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.CHANGEOVER_TYPE;
-import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.DURATION;
-import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.FROM_TECHNOLOGY;
-import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.FROM_TECHNOLOGY_GROUP;
-import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.NUMBER;
-import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.PRODUCTION_LINE;
-import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.TO_TECHNOLOGY;
-import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.TO_TECHNOLOGY_GROUP;
+import static com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields.*;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
@@ -54,6 +47,7 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import com.qcadoo.view.internal.components.window.WindowComponentState;
 
 public class MatchingChangeoverNormsDetailsListenersTest {
@@ -147,8 +141,8 @@ public class MatchingChangeoverNormsDetailsListenersTest {
         when(view.getComponentByReference(CHANGEOVER_TYPE)).thenReturn(changeoverTypField);
         when(view.getComponentByReference(DURATION)).thenReturn(durationField);
         when(view.getComponentByReference(PRODUCTION_LINE)).thenReturn(productionLineLookup);
-        when(view.getComponentByReference("form")).thenReturn(form);
-        when(view.getComponentByReference("window")).thenReturn((ComponentState) window);
+        when(view.getComponentByReference(QcadooViewConstants.L_FORM)).thenReturn(form);
+        when(view.getComponentByReference(QcadooViewConstants.L_WINDOW)).thenReturn((ComponentState) window);
         when(window.getRibbon()).thenReturn(ribbon);
         when(ribbon.getGroupByName("matching")).thenReturn(matching);
         when(ribbon.getGroupByName("editing")).thenReturn(matching);

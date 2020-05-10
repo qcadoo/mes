@@ -23,17 +23,6 @@
  */
 package com.qcadoo.mes.assignmentToShift.hooks;
 
-import static com.qcadoo.mes.assignmentToShift.constants.MultiAssignmentToShiftFields.OCCUPATION_TYPE;
-import static com.qcadoo.mes.assignmentToShift.constants.MultiAssignmentToShiftFields.OCCUPATION_TYPE_NAME;
-import static com.qcadoo.mes.assignmentToShift.constants.MultiAssignmentToShiftFields.PRODUCTION_LINE;
-import static com.qcadoo.mes.assignmentToShift.constants.OccupationType.OTHER_CASE;
-import static com.qcadoo.mes.assignmentToShift.constants.OccupationType.WORK_ON_LINE;
-import static com.qcadoo.model.constants.DictionaryItemFields.NAME;
-import static com.qcadoo.model.constants.DictionaryItemFields.TECHNICAL_CODE;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields;
 import com.qcadoo.mes.assignmentToShift.constants.MultiAssignmentToShiftFields;
 import com.qcadoo.mes.assignmentToShift.criteriaModifiers.StaffCriteriaModifier;
@@ -42,18 +31,23 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import static com.qcadoo.mes.assignmentToShift.constants.MultiAssignmentToShiftFields.*;
+import static com.qcadoo.mes.assignmentToShift.constants.OccupationType.OTHER_CASE;
+import static com.qcadoo.mes.assignmentToShift.constants.OccupationType.WORK_ON_LINE;
+import static com.qcadoo.model.constants.DictionaryItemFields.NAME;
+import static com.qcadoo.model.constants.DictionaryItemFields.TECHNICAL_CODE;
 
 @Service
 public class MultiAssignmentToShiftDetailsHooks {
 
-    public static final String L_FORM = "form";
+
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -90,11 +84,11 @@ public class MultiAssignmentToShiftDetailsHooks {
     }
 
     private void enableAddButton(ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity multiAssignment = form.getPersistedEntityWithIncludedFormValues();
 
         GridComponent workersComponent = (GridComponent) view.getComponentByReference("workers");
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup add = (RibbonGroup) window.getRibbon().getGroupByName("add");
         RibbonActionItem addMany = (RibbonActionItem) add.getItemByName("addManyWorkers");
         if (workersComponent.getEntities().isEmpty() || !multiAssignment.isValid()) {
@@ -107,7 +101,7 @@ public class MultiAssignmentToShiftDetailsHooks {
     }
 
     private void setStaffFilter(ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity multiAssignment = form.getPersistedEntityWithIncludedFormValues();
         Entity assignment = multiAssignment.getBelongsToField("assignmentToShift");
         if (assignment != null) {
@@ -156,7 +150,7 @@ public class MultiAssignmentToShiftDetailsHooks {
     }
 
     public void setOccupationTypeToDefault(final ViewDefinitionState view) {
-        FormComponent staffAssignmentToShiftForm = (FormComponent) view.getComponentByReference("form");
+        FormComponent staffAssignmentToShiftForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent occupationType = (FieldComponent) view.getComponentByReference(OCCUPATION_TYPE);
 
         if ((staffAssignmentToShiftForm.getEntityId() == null) && (occupationType.getFieldValue() == null)) {

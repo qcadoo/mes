@@ -14,6 +14,7 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 import java.util.List;
 import java.util.Optional;
@@ -111,7 +112,7 @@ public enum PlannedEventRoles {
         @Override
         public void disableFieldsWhenNotInRole(ViewDefinitionState view) {
 
-            FormComponent form = (FormComponent) view.getComponentByReference("form");
+            FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
             Entity plannedEvent = form.getEntity();
             if (plannedEvent.getDataDefinition().getName().equals(CmmsMachinePartsConstants.MODEL_PLANNED_EVENT)) {
                 lockComponents(view, PlannedEventFields.FACTORY, PlannedEventFields.DIVISION, PlannedEventFields.PRODUCTION_LINE,
@@ -171,7 +172,7 @@ public enum PlannedEventRoles {
     }
 
     protected void lockFromRibbonGroup(ViewDefinitionState view, String groupName, String... items) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         Ribbon ribbon = window.getRibbon();
         RibbonGroup ribbonGroup = ribbon.getGroupByName(groupName);
         if (ribbonGroup != null) {
@@ -205,12 +206,12 @@ public enum PlannedEventRoles {
 
     protected boolean shouldBeActive(ViewDefinitionState view, PlannedEventState state, Optional<PlannedEventType> type,
             boolean typeEquals, boolean singleRow) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity event = form.getEntity();
         String eventState = event.getStringField(PlannedEventFields.STATE);
 
         if (eventState == null) {
-            GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+            GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
             List<Entity> entities = grid.getSelectedEntities();
             if (singleRow) {
                 if (entities.size() == 1) {

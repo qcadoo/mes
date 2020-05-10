@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.costNormsForOperationInOrder.hooks;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
@@ -36,6 +30,12 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class HourlyCostNormsInOrderDetailsHooks {
@@ -45,7 +45,7 @@ public class HourlyCostNormsInOrderDetailsHooks {
     }
 
     public void setLastUpdateDateTioc(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference("form");
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity order = orderForm.getEntity().getDataDefinition().get(orderForm.getEntityId());
         List<Entity> tocs = order.getBelongsToField(OrderFields.TECHNOLOGY)
                 .getHasManyField(TechnologyFields.OPERATION_COMPONENTS);

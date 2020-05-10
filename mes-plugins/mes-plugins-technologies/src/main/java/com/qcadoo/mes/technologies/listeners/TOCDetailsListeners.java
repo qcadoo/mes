@@ -40,11 +40,12 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class TOCDetailsListeners {
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_OPERATION_PRODUCT_IN_COMPONENTS_SOURCE = "operationProductInComponentsSource";
 
@@ -101,7 +102,7 @@ public class TOCDetailsListeners {
 
     public void copyWorkstationsSettingsFromOperation(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity toc = formComponent.getEntity();
 
         Entity operation = toc.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
@@ -149,7 +150,7 @@ public class TOCDetailsListeners {
 
     public void addUpTheNumberOfWorkstations(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         int size = form.getPersistedEntityWithIncludedFormValues()
                 .getHasManyField(TechnologyOperationComponentFields.WORKSTATIONS).size();

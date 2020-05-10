@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.supplyNegotiations.hooks;
 
-import java.math.BigDecimal;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
@@ -40,11 +35,16 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 public class OrderedProductDetailsHooksSN {
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired
     private NumberService numberService;
@@ -106,7 +106,7 @@ public class OrderedProductDetailsHooksSN {
     }
 
     public void fillPricePerUnitAndOffer(final ViewDefinitionState view) {
-        FormComponent orderedProductForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderedProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OfferProductFields.PRODUCT);
 
         Entity orderedProduct = orderedProductForm.getEntity();

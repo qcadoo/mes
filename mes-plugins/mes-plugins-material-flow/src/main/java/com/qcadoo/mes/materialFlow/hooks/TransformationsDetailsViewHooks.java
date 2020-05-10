@@ -23,31 +23,27 @@
  */
 package com.qcadoo.mes.materialFlow.hooks;
 
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
-import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.OPERATION;
-import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.STAFF;
-import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TIME;
-import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSFERS_CONSUMPTION;
-import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSFERS_PRODUCTION;
-
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.qcadoo.mes.materialFlow.MaterialFlowService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
+import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.*;
 
 @Component
 public class TransformationsDetailsViewHooks {
 
-    private static final String L_FORM = "form";
+    
 
     private static final List<String> FIELDS = Arrays.asList(TIME, STAFF, LOCATION_FROM, LOCATION_TO, OPERATION);
 
@@ -55,7 +51,7 @@ public class TransformationsDetailsViewHooks {
     private MaterialFlowService materialFlowService;
 
     public void disableFields(final ViewDefinitionState view) {
-        FormComponent transformationsForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent transformationsForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (transformationsForm.getEntityId() == null) {
             changeFieldComponentsState(view, true);
@@ -70,7 +66,7 @@ public class TransformationsDetailsViewHooks {
     }
 
     private void disableADL(final ViewDefinitionState view, final String name) {
-        FormComponent transformationsForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent transformationsForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         AwesomeDynamicListComponent adl = (AwesomeDynamicListComponent) view.getComponentByReference(name);
 

@@ -23,10 +23,6 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
-import java.math.BigDecimal;
-
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MachinePartForEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
@@ -37,17 +33,21 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 public class MachinePartForEventDetailsHooks {
 
     private static final String[] unitFields = { "plannedQuantityUnit", "availableQuantityUnit" };
 
-    private static final String L_FORM = "form";
+
 
     public void disableFieldsForIssuedPart(final ViewDefinitionState view) {
 
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity machinePartForEvent = form.getPersistedEntityWithIncludedFormValues();
         BigDecimal issuedQuantity = machinePartForEvent.getDecimalField(MachinePartForEventFields.ISSUED_QUANTITY);
 
@@ -66,7 +66,7 @@ public class MachinePartForEventDetailsHooks {
 
     public void fillUnitFields(final ViewDefinitionState view) {
 
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity machinePartForEvent = form.getPersistedEntityWithIncludedFormValues();
         Entity machinePart = machinePartForEvent.getBelongsToField(MachinePartForEventFields.MACHINE_PART);
         if (machinePart != null) {
@@ -81,7 +81,7 @@ public class MachinePartForEventDetailsHooks {
 
     public void fillWarehouse(final ViewDefinitionState view) {
 
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity machinePartForEvent = form.getPersistedEntityWithIncludedFormValues();
 
         Entity maintenanceEvent = machinePartForEvent.getBelongsToField(MachinePartForEventFields.MAINTENANCE_EVENT);

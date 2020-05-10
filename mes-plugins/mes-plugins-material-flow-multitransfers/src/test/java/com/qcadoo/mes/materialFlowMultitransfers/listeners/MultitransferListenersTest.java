@@ -24,12 +24,7 @@
 package com.qcadoo.mes.materialFlowMultitransfers.listeners;
 
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.PRODUCTS;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.STAFF;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.*;
 import static com.qcadoo.mes.materialFlowMultitransfers.constants.ProductQuantityFields.PRODUCT;
 import static com.qcadoo.mes.materialFlowMultitransfers.constants.ProductQuantityFields.QUANTITY;
 import static org.mockito.BDDMockito.given;
@@ -59,10 +54,11 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 public class MultitransferListenersTest {
 
-    private static final String L_FORM = "form";
+
 
     private MultitransferListeners multitransferListeners;
 
@@ -119,7 +115,7 @@ public class MultitransferListenersTest {
         // ReflectionTestUtils.setField(multitransferListeners, "materialFlowResourceService", materialFlowResourceService);
         ReflectionTestUtils.setField(multitransferListeners, "dataDefinitionService", dataDefinitionService);
 
-        given(view.getComponentByReference(L_FORM)).willReturn(form);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(form);
 
         given(view.getComponentByReference(PRODUCTS)).willReturn(adlc);
         given(view.getComponentByReference(TYPE)).willReturn(typeComponent);

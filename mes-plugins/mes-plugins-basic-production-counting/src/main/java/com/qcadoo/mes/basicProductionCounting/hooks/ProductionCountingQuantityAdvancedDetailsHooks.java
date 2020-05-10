@@ -23,19 +23,9 @@
  */
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
-import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
-import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityDtoFields;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
+import com.qcadoo.mes.basicProductionCounting.constants.*;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -45,11 +35,17 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ProductionCountingQuantityAdvancedDetailsHooks {
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_PLANNED_QUANTITY_UNIT = "plannedQuantityUnit";
 
@@ -75,7 +71,7 @@ public class ProductionCountingQuantityAdvancedDetailsHooks {
         fillUnitFields(view);
         setTechnologyOperationComponentFieldRequired(view);
 
-        FormComponent productionCountingQuantityForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productionCountingQuantityForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (productionCountingQuantityForm.getEntityId() != null) {
             Entity productionCountingQuantityDto = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
                     BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY_DTO).get(
@@ -92,7 +88,7 @@ public class ProductionCountingQuantityAdvancedDetailsHooks {
     }
 
     private void setCriteriaModifierParameters(final ViewDefinitionState view) {
-        FormComponent productionCountingQuantityForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productionCountingQuantityForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
                 .getComponentByReference(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
 
@@ -134,7 +130,7 @@ public class ProductionCountingQuantityAdvancedDetailsHooks {
     }
 
     private void disableFieldsDependsOfState(final ViewDefinitionState view) {
-        FormComponent productionCountingQuantityForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productionCountingQuantityForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(ProductionCountingQuantityFields.PRODUCT);
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
                 .getComponentByReference(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
@@ -158,7 +154,7 @@ public class ProductionCountingQuantityAdvancedDetailsHooks {
     }
 
     private void hideFieldsDependsOfState(final ViewDefinitionState view) {
-        FormComponent productionCountingQuantityForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productionCountingQuantityForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         ComponentState usedQuantityGridLayout = view.getComponentByReference(L_USED_QUANTITY_GRID_LAYOUT);
         ComponentState producedQuantityGridLayout = view.getComponentByReference(L_PRODUCED_QUANTITY_GRID_LAYOUT);
         FieldComponent roleField = (FieldComponent) view.getComponentByReference(ProductionCountingQuantityFields.ROLE);
@@ -186,7 +182,7 @@ public class ProductionCountingQuantityAdvancedDetailsHooks {
     }
 
     private void fillProductField(final ViewDefinitionState view) {
-        FormComponent productionCountingQuantityForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productionCountingQuantityForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(ProductionCountingQuantityFields.PRODUCT);
 
         Long productionCountingQuantityId = productionCountingQuantityForm.getEntityId();

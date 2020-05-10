@@ -32,6 +32,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class FactoryStructureForEventHooks {
@@ -43,7 +44,7 @@ public class FactoryStructureForEventHooks {
 
     // TODO move fields' names to constants
     public void generateFactoryStructure(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity maintenanceEvent = form.getEntity();
         EntityTree factoryStructure = factoryStructureGenerationService.generateFactoryStructureForEntity(maintenanceEvent,
                 "maintenanceEvent");

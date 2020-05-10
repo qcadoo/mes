@@ -33,6 +33,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +41,7 @@ import java.util.List;
 
 @Service
 public class OrderDetailsListenersPC {
-    private static final String L_FORM = "form";
+    
 
     private static final List<String> L_ORDER_FIELD_NAMES = Lists.newArrayList(OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT,
             OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT, OrderFieldsPC.REGISTER_PRODUCTION_TIME,
@@ -70,7 +71,7 @@ public class OrderDetailsListenersPC {
     }
 
     public void fillPCParameters(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent order = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent order = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity orderEntity = order.getPersistedEntityWithIncludedFormValues();
         Entity technology = orderEntity.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);

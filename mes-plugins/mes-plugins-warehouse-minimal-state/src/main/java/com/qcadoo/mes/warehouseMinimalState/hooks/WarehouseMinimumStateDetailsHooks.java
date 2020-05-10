@@ -29,6 +29,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -39,12 +40,12 @@ public class WarehouseMinimumStateDetailsHooks {
 
     private static final Set<String> UNIT_COMPONENT_REFERENCES = Sets.newHashSet("minimumStateUNIT", "optimalOrderQuantityNIT");
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_PRODUCT = "product";
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity componentEntity = form.getPersistedEntityWithIncludedFormValues();
         Entity productEntity = componentEntity.getBelongsToField(L_PRODUCT);
 

@@ -60,6 +60,7 @@ import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -75,11 +76,11 @@ public class OrderDetailsHooks {
 
     public static final String DONE_IN_PERCENTAGE_UNIT = "doneInPercentageUnit";
 
-    private static final String L_FORM = "form";
 
-    private static final String L_GRID = "grid";
 
-    private static final String L_WINDOW = "window";
+
+
+
 
     private static final String L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START = "commentReasonTypeDeviationsOfEffectiveStart";
 
@@ -159,7 +160,7 @@ public class OrderDetailsHooks {
     }
 
     public final void fillProductionLine(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
         LookupComponent defaultTechnologyField = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
         Entity technology = defaultTechnologyField.getEntity();
@@ -201,7 +202,7 @@ public class OrderDetailsHooks {
 
     public void generateOrderNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER,
-                L_FORM, OrderFields.NUMBER);
+                QcadooViewConstants.L_FORM, OrderFields.NUMBER);
     }
 
     public void fillDefaultTechnology(final ViewDefinitionState view) {
@@ -230,7 +231,7 @@ public class OrderDetailsHooks {
     }
 
     public void disableFieldOrderForm(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         boolean disabled = false;
 
@@ -292,7 +293,7 @@ public class OrderDetailsHooks {
     }
 
     public void setAndDisableState(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent stateField = (FieldComponent) view.getComponentByReference(OrderFields.STATE);
 
         stateField.setEnabled(false);
@@ -305,7 +306,7 @@ public class OrderDetailsHooks {
     }
 
     public void changedEnabledFieldForSpecificOrderState(final ViewDefinitionState view) {
-        final FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        final FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long orderId = orderForm.getEntityId();
 
         if (orderId == null) {
@@ -422,7 +423,7 @@ public class OrderDetailsHooks {
 
     // FIXME replace this beforeRender hook with <criteriaModifier /> parameter in view XML.
     public void filterStateChangeHistory(final ViewDefinitionState view) {
-        final GridComponent historyGrid = (GridComponent) view.getComponentByReference(L_GRID);
+        final GridComponent historyGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         final CustomRestriction onlySuccessfulRestriction = stateChangeHistoryService.buildStatusRestriction(
                 OrderStateChangeFields.STATUS, Lists.newArrayList(StateChangeStatus.SUCCESSFUL.getStringValue()));
 
@@ -430,8 +431,8 @@ public class OrderDetailsHooks {
     }
 
     public void disabledRibbonWhenOrderIsSynchronized(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         Ribbon ribbon = window.getRibbon();
 
         List<RibbonGroup> ribbonGroups = ribbon.getGroups();
@@ -467,7 +468,7 @@ public class OrderDetailsHooks {
     }
 
     public void compareDeadlineAndEndDate(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (orderForm.getEntityId() == null) {
             return;
@@ -485,7 +486,7 @@ public class OrderDetailsHooks {
     }
 
     public void compareDeadlineAndStartDate(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (orderForm.getEntityId() == null) {
             return;
@@ -505,7 +506,7 @@ public class OrderDetailsHooks {
     }
 
     private void changeFieldsEnabledForSpecificOrderState(final ViewDefinitionState view) {
-        final FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        final FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long orderId = orderForm.getEntityId();
 
@@ -561,7 +562,7 @@ public class OrderDetailsHooks {
             return;
         }
 
-        final FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        final FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (orderForm.getEntityId() == null) {
             return;
@@ -589,7 +590,7 @@ public class OrderDetailsHooks {
             return;
         }
 
-        final FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        final FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (orderForm.getEntityId() == null) {
             return;
@@ -631,7 +632,7 @@ public class OrderDetailsHooks {
     private boolean isValidDecimalField(final ViewDefinitionState view, final List<String> fileds) {
         boolean isValid = true;
 
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity entity = orderForm.getEntity();
 
@@ -660,7 +661,7 @@ public class OrderDetailsHooks {
     public void fillOrderDescriptionIfTechnologyHasDescription(ViewDefinitionState view) {
         LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
         FieldComponent descriptionField = (FieldComponent) view.getComponentByReference(OrderFields.DESCRIPTION);
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         LookupComponent masterOrderLookup = (LookupComponent) view.getComponentByReference("masterOrder");
         FieldComponent oldTechnologyField = (FieldComponent) view.getComponentByReference("oldTechnologyId");
 

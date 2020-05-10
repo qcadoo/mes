@@ -23,14 +23,15 @@
  */
 package com.qcadoo.mes.productionPerShift.hooks;
 
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.productionPerShift.constants.ParameterFieldsPPS;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class OrderParametersHooksPPS {
@@ -44,7 +45,7 @@ public class OrderParametersHooksPPS {
     }
     
     private void getParametersAndTogglePpsAlgorithm(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity parameters = form.getPersistedEntityWithIncludedFormValues();
         
         togglePpsAlgorithm(view, parameters);

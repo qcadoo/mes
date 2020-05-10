@@ -7,9 +7,11 @@ import com.qcadoo.mes.deliveries.constants.OrderedProductReservationFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
-import java.util.List;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class OrderedProductReservationDetailsHooks {
@@ -21,7 +23,7 @@ public class OrderedProductReservationDetailsHooks {
         List<String> referenceNames = Lists.newArrayList("orderedQuantityUnit");
         List<String> additionalUnitNames = Lists.newArrayList("additionalQuantityUnit");
 
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity orderedProductReservation = form.getPersistedEntityWithIncludedFormValues();
         Entity orderedProduct = orderedProductReservation.getBelongsToField(OrderedProductReservationFields.ORDERED_PRODUCT);
         Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);

@@ -23,29 +23,11 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveredProductMultiPositionService;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiFields;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiPositionFields;
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.constants.*;
 import com.qcadoo.mes.deliveries.helpers.DeliveredMultiProduct;
 import com.qcadoo.mes.deliveries.helpers.DeliveredMultiProductContainer;
 import com.qcadoo.mes.deliveries.hooks.DeliveredProductAddMultiHooks;
@@ -62,16 +44,21 @@ import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
-import com.qcadoo.view.api.components.CheckBoxComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.*;
 
 @Component
 public class DeliveredProductAddMultiListeners {
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_OFFER = "offer";
 
@@ -110,7 +97,7 @@ public class DeliveredProductAddMultiListeners {
     private CalculationQuantityService calculationQuantityService;
 
     public void createDeliveredProducts(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent deliveredProductMultiForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent deliveredProductMultiForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity deliveredProductMulti = deliveredProductMultiForm.getPersistedEntityWithIncludedFormValues();
 
@@ -418,7 +405,7 @@ public class DeliveredProductAddMultiListeners {
     }
 
     private Entity extractDeliveryEntityFromView(final ViewDefinitionState view) {
-        FormComponent deliveredProductMultiForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent deliveredProductMultiForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity deliveredProductMulti = deliveredProductMultiForm.getPersistedEntityWithIncludedFormValues();
 

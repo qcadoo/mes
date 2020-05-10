@@ -11,6 +11,7 @@ import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class CostCalculationDetailsHooksOFSPG {
@@ -18,12 +19,12 @@ public class CostCalculationDetailsHooksOFSPG {
     @Autowired
     private ParameterService parameterService;
 
-    private static final String L_FORM = "form";
+    
 
-    private static final String L_WINDOW = "window";
+
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (form.getEntityId() == null && view.isViewAfterRedirect()) {
             CheckBoxComponent fieldComponent = (CheckBoxComponent) view.getComponentByReference("includeComponents");
             boolean check = parameterService.getParameter().getBooleanField("includeComponents");
@@ -34,7 +35,7 @@ public class CostCalculationDetailsHooksOFSPG {
     }
 
     private void enableSaveNominalCostForComponentButton(final ViewDefinitionState view){
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonActionItem saveNominalCostsForComponent = window.getRibbon().getGroupByName(CostCalculationFieldsOFSPG.SAVE_COSTS_EXTENSION).getItemByName(CostCalculationFieldsOFSPG.NOMINAL_COSTS_FOR_COMPONENTS);
         CheckBoxComponent generatedField = (CheckBoxComponent) view.getComponentByReference(CostCalculationFields.GENERATED);
         CheckBoxComponent includeComponents = (CheckBoxComponent) view.getComponentByReference(CostCalculationFieldsOFSPG.INCLUDE_COMPONENTS);

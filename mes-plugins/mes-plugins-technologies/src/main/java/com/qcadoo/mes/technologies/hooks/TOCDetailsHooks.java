@@ -23,38 +23,30 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.technologies.constants.AssignedToOperation;
-import com.qcadoo.mes.technologies.constants.OperationFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class TOCDetailsHooks {
 
-    public static final String L_FORM = "form";
+    
 
-    private static final String L_WINDOW = "window";
+
 
     private static final String L_NAVIGATION = "navigation";
 
@@ -82,7 +74,7 @@ public class TOCDetailsHooks {
     }
 
     private void disableViewForState(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity toc = form.getEntity();
 
         if (toc.getId() == null) {
@@ -94,7 +86,7 @@ public class TOCDetailsHooks {
         Entity technology = toc.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
 
         if (!TechnologyState.DRAFT.getStringValue().equals(technology.getStringField(TechnologyFields.STATE))) {
-            WindowComponent windowComponent = (WindowComponent) view.getComponentByReference(L_WINDOW);
+            WindowComponent windowComponent = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
             Ribbon ribbon = windowComponent.getRibbon();
 
             ribbon.getGroups().stream().filter(group -> !group.getName().equals(L_NAVIGATION))
@@ -153,7 +145,7 @@ public class TOCDetailsHooks {
     }
 
     private void disableWorkstationsTabFieldsIfOperationIsNotSaved(ViewDefinitionState view) {
-        FormComponent operationForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent operationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         GridComponent workstations = (GridComponent) view
                 .getComponentByReference(TechnologyOperationComponentFields.WORKSTATIONS);
 
@@ -207,7 +199,7 @@ public class TOCDetailsHooks {
     public void clearWorkstationsField(final ViewDefinitionState view) {
         GridComponent workstations = (GridComponent) view
                 .getComponentByReference(TechnologyOperationComponentFields.WORKSTATIONS);
-        FormComponent operationForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent operationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity operation = operationForm.getEntity();
 
@@ -230,7 +222,7 @@ public class TOCDetailsHooks {
     }
 
     private void enableRibbonItem(final ViewDefinitionState view, final boolean enable) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonActionItem addUpTheNumberOfWorkstations = window.getRibbon().getGroupByName(L_WORKSTATIONS)
                 .getItemByName(L_ADD_UP_THE_NUMBER_OF_WORKSTATIONS);
 

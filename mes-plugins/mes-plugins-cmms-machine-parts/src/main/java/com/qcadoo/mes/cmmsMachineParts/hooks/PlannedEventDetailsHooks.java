@@ -32,7 +32,7 @@ import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventBasedOn;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventType;
 import com.qcadoo.mes.cmmsMachineParts.plannedEvents.factory.EventFieldsForTypeFactory;
-import com.qcadoo.mes.cmmsMachineParts.plannedEvents.fieldsForType.*;
+import com.qcadoo.mes.cmmsMachineParts.plannedEvents.fieldsForType.FieldsForType;
 import com.qcadoo.mes.cmmsMachineParts.roles.PlannedEventRoles;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.PlannedEventState;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.PlannedEventStateStringValues;
@@ -46,6 +46,7 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import com.qcadoo.view.internal.components.select.SelectComponentState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -58,11 +59,11 @@ import java.util.Set;
 @Service
 public class PlannedEventDetailsHooks {
 
-    private static final String L_GRID = "grid";
 
-    private static final String L_FORM = "form";
 
-    private static final String L_WINDOW = "window";
+
+
+
 
     private static final String L_ACTIONS = "actions";
 
@@ -98,7 +99,7 @@ public class PlannedEventDetailsHooks {
     private ParameterService parameterService;
 
     public void plannedEventBeforeRender(final ViewDefinitionState view) {
-        FormComponent plannedEventForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent plannedEventForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         plannedEventForm.setFormEnabled(true);
 
         FieldComponent acceptanceEventsField = (FieldComponent) view.getComponentByReference(PlannedEventFields.ACCEPTANCE_EVENTS);
@@ -128,8 +129,8 @@ public class PlannedEventDetailsHooks {
     }
 
     private void lockView(final ViewDefinitionState view) {
-        FormComponent plannedEventForm = (FormComponent) view.getComponentByReference(L_FORM);
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        FormComponent plannedEventForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
 
         Ribbon ribbon = window.getRibbon();
         RibbonGroup actionsRibbonGroup = ribbon.getGroupByName(L_ACTIONS);
@@ -166,7 +167,7 @@ public class PlannedEventDetailsHooks {
     }
 
     public void toggleFieldsVisible(final ViewDefinitionState view) {
-        FormComponent plannedEventForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent plannedEventForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity plannedEvent = plannedEventForm.getPersistedEntityWithIncludedFormValues();
 
@@ -186,7 +187,7 @@ public class PlannedEventDetailsHooks {
     }
 
     private void actionsButtonProcess(Entity plannedEvent, ViewDefinitionState view, FieldsForType ftype) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         PlannedEventType type = PlannedEventType.from(plannedEvent);
         Ribbon ribbon = window.getRibbon();
         RibbonGroup actionsGroup = ribbon.getGroupByName("actionsGroup");
@@ -224,7 +225,7 @@ public class PlannedEventDetailsHooks {
     }
 
     public void toggleActionsFieldsVisible(final ViewDefinitionState view) {
-        FormComponent plannedEventForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent plannedEventForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity plannedEvent = plannedEventForm.getPersistedEntityWithIncludedFormValues();
 
@@ -303,7 +304,7 @@ public class PlannedEventDetailsHooks {
     }
 
     private void disableFieldsForState(final ViewDefinitionState view) {
-        FormComponent plannedEventForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent plannedEventForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity event = plannedEventForm.getPersistedEntityWithIncludedFormValues();
 
@@ -328,7 +329,7 @@ public class PlannedEventDetailsHooks {
     }
 
     public void setEventIdForMultiUploadField(final ViewDefinitionState view) {
-        FormComponent plannedEventForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent plannedEventForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent plannedEventIdForMultiUpload = (FieldComponent) view.getComponentByReference(L_EVENT_ID_FOR_MULTI_UPLOAD);
         FieldComponent plannedEventMultiUploadLocale = (FieldComponent) view.getComponentByReference(L_EVENT_MULTI_UPLOAD_LOCALE);
 
@@ -371,14 +372,14 @@ public class PlannedEventDetailsHooks {
     }
 
     private boolean eventInState(final ViewDefinitionState view, final PlannedEventState state) {
-        FormComponent plannedEventForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent plannedEventForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity event = plannedEventForm.getEntity();
 
         String eventState = event.getStringField(PlannedEventFields.STATE);
 
         if (eventState == null) {
-            GridComponent gridComponent = (GridComponent) view.getComponentByReference(L_GRID);
+            GridComponent gridComponent = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
             List<Entity> entities = gridComponent.getSelectedEntities();
 
@@ -394,7 +395,7 @@ public class PlannedEventDetailsHooks {
 
     private void enableFromRibbonGroup(final ViewDefinitionState view, final boolean enable, final String groupName,
             String... items) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
 
         Ribbon ribbon = window.getRibbon();
         RibbonGroup ribbonGroup = ribbon.getGroupByName(groupName);
@@ -430,7 +431,7 @@ public class PlannedEventDetailsHooks {
     }
 
     private void toggleAddMultipleActions(ViewDefinitionState view, FieldsForType fieldsForType, Entity plannedEvent) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
 
         Ribbon ribbon = window.getRibbon();
         RibbonGroup actionsGroup = ribbon.getGroupByName("actionsGroup");

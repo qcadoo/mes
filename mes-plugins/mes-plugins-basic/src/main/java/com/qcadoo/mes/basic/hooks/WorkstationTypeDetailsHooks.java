@@ -33,6 +33,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +47,7 @@ public class WorkstationTypeDetailsHooks {
 
     public void disableSubassemblyCheckbox(final ViewDefinitionState view) {
 
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity workstationType = form.getEntity();
         FieldComponent subassemblyCheckbox = (FieldComponent) view.getComponentByReference(WorkstationTypeFields.SUBASSEMBLY);
         if (workstationType.getBooleanField(WorkstationTypeFields.SUBASSEMBLY)) {

@@ -1,19 +1,5 @@
 package com.qcadoo.mes.technologies.hooks;
 
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.technologies.constants.ModifyTechnologyHelperFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
-import com.qcadoo.view.api.components.CheckBoxComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
@@ -22,6 +8,17 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.technologies.constants.ModifyTechnologyHelperFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ModifyTechnologyDetailsHooks {
@@ -32,7 +29,7 @@ public class ModifyTechnologyDetailsHooks {
 
     private static final String L_REPLACE_PRODUCT_UNIT = "replaceProductUnit";
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_MAIN_PRODUCT = "product";
 
@@ -46,7 +43,7 @@ public class ModifyTechnologyDetailsHooks {
     private DataDefinitionService dataDefinitionService;
 
     public final void onBeforeRender(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (view.isViewAfterRedirect()) {
             Entity mt = form.getEntity().getDataDefinition().get(form.getEntityId());
 

@@ -34,13 +34,7 @@ import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderState;
-import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
-import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
-import com.qcadoo.mes.productionCounting.constants.StaffWorkTimeFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
-import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
-import com.qcadoo.mes.productionCounting.constants.UsedBatchFields;
+import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.mes.productionCounting.newstates.ProductionTrackingStateServiceMarker;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.mes.states.service.StateChangeContextBuilder;
@@ -58,6 +52,10 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -65,10 +63,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class ProductionTrackingServiceImpl implements ProductionTrackingService {
@@ -85,9 +79,9 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
     private static final String L_CALC_LABOR_TOTAL_TIME_RIBBON_BUTTON = "calcTotalLaborTime";
 
-    private static final String L_WINDOW = "window";
 
-    private static final String L_FORM = "form";
+
+
 
     private static final String USER_CHANGE_STATE = "user";
 
@@ -129,9 +123,9 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
         view.getComponentByReference(L_TIME_TAB).setVisible(registerProductionTime && !recordingTypeEqualsBasic);
 
         ProductionTrackingState recordState = getTrackingState(view);
-        final FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        final FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (form.getEntityId() != null) {
-            WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+            WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
 
             RibbonActionItem calcTotalLaborTimeBtn = window.getRibbon().getGroupByName(L_WORK_TIME_RIBBON_GROUP)
                     .getItemByName(L_CALC_LABOR_TOTAL_TIME_RIBBON_BUTTON);
@@ -145,7 +139,7 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
     @Override
     public ProductionTrackingState getTrackingState(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity productionRecordFormEntity = form.getEntity();
         String stateStringValue = productionRecordFormEntity.getStringField(ProductionTrackingFields.STATE);
         if (StringUtils.isEmpty(stateStringValue)) {
@@ -156,7 +150,7 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
     @Override
     public void changeProducedQuantityFieldState(final ViewDefinitionState viewDefinitionState) {
-        final FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
+        final FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity order = null;
         if (form.getEntityId() != null) {
             order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(

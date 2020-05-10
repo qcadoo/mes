@@ -39,6 +39,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
@@ -50,11 +51,11 @@ import static com.qcadoo.mes.technologies.states.constants.TechnologyStateChange
 @Service
 public class TechnologyDetailsHooks {
 
-    public static final String L_GRID = "grid";
 
-    private static final String L_FORM = "form";
 
-    private static final String L_WINDOW = "window";
+
+
+
 
     private static final String L_IMPORT = "import";
 
@@ -84,7 +85,7 @@ public class TechnologyDetailsHooks {
     }
 
     public void filterStateChangeHistory(final ViewDefinitionState view) {
-        final GridComponent historyGrid = (GridComponent) view.getComponentByReference(L_GRID);
+        final GridComponent historyGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         final CustomRestriction onlySuccessfulRestriction = stateChangeHistoryService.buildStatusRestriction(STATUS,
                 Lists.newArrayList(StateChangeStatus.SUCCESSFUL.getStringValue()));
 
@@ -111,13 +112,13 @@ public class TechnologyDetailsHooks {
     }
 
     private boolean technologyIsAlreadySaved(final ViewDefinitionState view) {
-        final FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        final FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         return Objects.nonNull(technologyForm.getEntityId());
     }
 
     private TechnologyState getTechnologyState(final ViewDefinitionState view) {
-        final FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        final FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         final Entity technology = form.getEntity();
 
         TechnologyState state = TechnologyState.DRAFT;
@@ -130,7 +131,7 @@ public class TechnologyDetailsHooks {
     }
 
     public void disableFieldTechnologyFormAndEnabledMaster(final ViewDefinitionState view) {
-        FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent masterField = (FieldComponent) view.getComponentByReference(TechnologyFields.MASTER);
         LookupComponent technologyGroupLookup = (LookupComponent) view.getComponentByReference(TechnologyFields.TECHNOLOGY_GROUP);
 
@@ -173,12 +174,12 @@ public class TechnologyDetailsHooks {
         Long selectedEntity = technologyTree.getSelectedEntityId();
 
         if (Objects.nonNull(selectedEntity)) {
-            ((WindowComponent) view.getComponentByReference(L_WINDOW)).setActiveTab(L_TREE_TAB);
+            ((WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW)).setActiveTab(L_TREE_TAB);
         }
     }
 
     public void setTechnologyIdForMultiUploadField(final ViewDefinitionState view) {
-        FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent technologyIdForMultiUpload = (FieldComponent) view.getComponentByReference("technologyIdForMultiUpload");
         FieldComponent technologyMultiUploadLocale = (FieldComponent) view.getComponentByReference("technologyMultiUploadLocale");
 
@@ -197,9 +198,9 @@ public class TechnologyDetailsHooks {
     }
 
     private void setRibbonState(final ViewDefinitionState view) {
-        FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
 
         RibbonActionItem openOperationProductInComponentsImportPageRibbonActionItem = window.getRibbon().getGroupByName(L_IMPORT)
                 .getItemByName(L_OPEN_OPERATION_PRODUCT_IN_COMPONENTS_IMPORT_PAGE);

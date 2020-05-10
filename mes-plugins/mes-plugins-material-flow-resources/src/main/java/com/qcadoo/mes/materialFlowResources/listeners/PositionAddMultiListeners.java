@@ -1,13 +1,5 @@
 package com.qcadoo.mes.materialFlowResources.listeners;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
@@ -21,11 +13,19 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class PositionAddMultiListeners {
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_RESOURCE_GRID = "resourceGrid";
 
@@ -53,7 +53,7 @@ public class PositionAddMultiListeners {
             return;
         }
 
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity helper = form.getPersistedEntityWithIncludedFormValues();
         Entity document = getDocumentDD().get(helper.getLongField(L_DOCUMENT_ID));

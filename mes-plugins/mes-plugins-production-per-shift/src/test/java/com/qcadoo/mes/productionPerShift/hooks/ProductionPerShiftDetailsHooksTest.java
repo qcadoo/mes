@@ -23,12 +23,13 @@
  */
 package com.qcadoo.mes.productionPerShift.hooks;
 
+import org.junit.Before;
+import org.mockito.Mock;
+
 import com.qcadoo.mes.productionPerShift.PpsDetailsViewAwareTest;
 import com.qcadoo.mes.productionPerShift.dataProvider.ProgressForDayDataProvider;
 import com.qcadoo.mes.technologies.tree.MainTocOutputProductProvider;
 import com.qcadoo.mes.technologies.tree.dataProvider.TechnologyOperationDataProvider;
-import org.junit.Before;
-import org.mockito.Mock;
 
 public class ProductionPerShiftDetailsHooksTest extends PpsDetailsViewAwareTest {
 

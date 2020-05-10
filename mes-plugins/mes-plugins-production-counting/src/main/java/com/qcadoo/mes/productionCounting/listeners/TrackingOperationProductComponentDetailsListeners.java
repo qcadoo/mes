@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.listeners;
 
-import java.math.BigDecimal;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.qcadoo.commons.functional.Either;
@@ -45,6 +38,13 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Set;
 
 @Service
 public class TrackingOperationProductComponentDetailsListeners {
@@ -55,7 +55,7 @@ public class TrackingOperationProductComponentDetailsListeners {
     private static final Set<String> UNIT_COMPONENT_REFERENCES = Sets.newHashSet("plannedQuantityUNIT", "usedQuantityUNIT",
             "givenUnit", "producedSumUNIT", "wastesSumUNIT", "remainingQuantityUNIT", "wastesQuantityUNIT");
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_PRODUCT = "product";
 
@@ -71,7 +71,7 @@ public class TrackingOperationProductComponentDetailsListeners {
     }
 
     private Entity getFormEntity(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         return form.getPersistedEntityWithIncludedFormValues();
     }
 
@@ -107,7 +107,7 @@ public class TrackingOperationProductComponentDetailsListeners {
     }
 
     public void calculateQuantity(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity productComponent = form.getPersistedEntityWithIncludedFormValues();
 
         String givenUnit = productComponent.getStringField(TrackingOperationProductInComponentFields.GIVEN_UNIT);
@@ -155,7 +155,7 @@ public class TrackingOperationProductComponentDetailsListeners {
 
     public void calculateQuantityToGiven(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
 
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity productComponent = form.getPersistedEntityWithIncludedFormValues();
 
         Entity product = productComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);

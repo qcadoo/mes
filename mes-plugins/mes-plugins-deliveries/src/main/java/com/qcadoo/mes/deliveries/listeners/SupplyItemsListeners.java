@@ -28,6 +28,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -36,7 +37,7 @@ import java.util.Map;
 public class SupplyItemsListeners {
 
     public void redirectToDeliveryDetails(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
         if (grid.getSelectedEntities().isEmpty()) {
             return;

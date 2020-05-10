@@ -23,6 +23,9 @@
  */
 package com.qcadoo.mes.masterOrders.listeners;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
@@ -35,8 +38,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class MasterOrdersListListeners {
@@ -54,7 +56,7 @@ public class MasterOrdersListListeners {
     private TechnologyServiceO technologyServiceO;
 
     public void changeState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent gridComponent = (GridComponent) view.getComponentByReference("grid");
+        GridComponent gridComponent = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         for (Long masterOrderId : gridComponent.getSelectedEntitiesIds()) {
             Entity masterOrderDB = getMasterOrderDD().get(masterOrderId);
             String status = args[0];

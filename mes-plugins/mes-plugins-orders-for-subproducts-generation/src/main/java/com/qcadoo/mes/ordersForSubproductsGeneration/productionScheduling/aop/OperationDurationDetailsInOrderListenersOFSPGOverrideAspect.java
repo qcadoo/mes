@@ -23,24 +23,6 @@
  */
 package com.qcadoo.mes.ordersForSubproductsGeneration.productionScheduling.aop;
 
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.Validate;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-import org.springframework.util.StringUtils;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
@@ -72,13 +54,26 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.Validate;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Aspect
 @Configurable
 @RunIfEnabled(OrdersForSubproductsGenerationConstans.PLUGIN_IDENTIFIER)
 public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_START_TIME = "startTime";
 
@@ -122,7 +117,7 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
             return;
         }
 
-        FormComponent orderForm = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
                 .get(orderForm.getEntity().getId());
@@ -159,7 +154,7 @@ public class OperationDurationDetailsInOrderListenersOFSPGOverrideAspect {
             return;
         }
 
-        FormComponent orderForm = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent startTimeField = (FieldComponent) viewDefinitionState.getComponentByReference(L_START_TIME);
 
         if (!StringUtils.hasText((String) startTimeField.getFieldValue())) {

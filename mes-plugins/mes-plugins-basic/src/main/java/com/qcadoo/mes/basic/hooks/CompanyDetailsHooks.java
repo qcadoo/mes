@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
@@ -40,11 +33,18 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class CompanyDetailsHooks {
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_ORDER_PRODUCTION = "orderProduction";
 
@@ -75,7 +75,7 @@ public class CompanyDetailsHooks {
     }
 
     private void disabledRedirectToFilteredOrderProductionListButton(final ViewDefinitionState view) {
-        FormComponent companyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent companyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity company = companyForm.getEntity();
 
         boolean isEnabled = (company.getId() != null);
@@ -84,7 +84,7 @@ public class CompanyDetailsHooks {
     }
 
     private void disabledRibbonForOwnerOrExternal(final ViewDefinitionState view) {
-        FormComponent companyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent companyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity company = companyForm.getEntity();
 
         Boolean isOwner = companyService.isCompanyOwner(companyForm.getEntity());
@@ -104,11 +104,11 @@ public class CompanyDetailsHooks {
 
     public void generateCompanyNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COMPANY,
-                L_FORM, CompanyFields.NUMBER);
+                QcadooViewConstants.L_FORM, CompanyFields.NUMBER);
     }
 
     public void fillDefaultCountry(final ViewDefinitionState view) {
-        FormComponent companyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent companyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (companyForm.getEntityId() != null) {
             return;
@@ -134,7 +134,7 @@ public class CompanyDetailsHooks {
     }
 
     public void disabledFieldsForExternalCompany(final ViewDefinitionState view) {
-        FormComponent companyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent companyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (companyForm.getEntityId() == null) {
             companyForm.setFormEnabled(true);

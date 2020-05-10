@@ -1,10 +1,5 @@
 package com.qcadoo.mes.orders.util;
 
-import java.math.BigDecimal;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
@@ -17,6 +12,11 @@ import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 public class AdditionalUnitService {
@@ -72,7 +72,7 @@ public class AdditionalUnitService {
     }
 
     public void setAdditionalUnitField(final ViewDefinitionState state) {
-        Entity order = ((FormComponent) state.getComponentByReference("form")).getEntity();
+        Entity order = ((FormComponent) state.getComponentByReference(QcadooViewConstants.L_FORM)).getEntity();
         Entity product = order.getBelongsToField(BasicConstants.MODEL_PRODUCT);
         FieldComponent additionalUnitField = (FieldComponent) state.getComponentByReference(OrderFields.UNIT_FOR_ADDITIONAL_UNIT);
         String additionalUnit = getAdditionalUnit(product);

@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.productionScheduling.hooks;
 
-import static org.mockito.BDDMockito.given;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
@@ -42,13 +34,21 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import com.qcadoo.view.internal.components.window.WindowComponentState;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+
+import static org.mockito.BDDMockito.given;
 
 public class OperationDurationDetailsInOrderHooksTest {
 
-    private static final String L_FORM = "form";
+    
 
-    private static final String L_WINDOW = "window";
+
 
     private static final String L_OPERATIONAL_TASKS = "operationalTasks";
 
@@ -93,14 +93,14 @@ public class OperationDurationDetailsInOrderHooksTest {
 
         Long orderId = 1L;
 
-        given(view.getComponentByReference(L_WINDOW)).willReturn((ComponentState) window);
+        given(view.getComponentByReference(QcadooViewConstants.L_WINDOW)).willReturn((ComponentState) window);
         given(window.getRibbon()).willReturn(ribbon);
         given(ribbon.getGroupByName(L_OPERATIONAL_TASKS)).willReturn(operationalTasks);
         given(operationalTasks.getItemByName(L_CREATE_OPERATIONAL_TASKS)).willReturn(createOperationalTasks);
 
         given(view.getComponentByReference(L_GENERATED_END_DATE)).willReturn(generatedEndDateField);
 
-        given(view.getComponentByReference(L_FORM)).willReturn(orderForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(orderForm);
         given(orderForm.getEntityId()).willReturn(orderId);
         given(orderForm.getEntity()).willReturn(order);
         given(order.getDataDefinition()).willReturn(orderDD);

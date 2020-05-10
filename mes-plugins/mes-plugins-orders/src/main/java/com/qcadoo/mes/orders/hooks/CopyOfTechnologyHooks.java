@@ -53,13 +53,14 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class CopyOfTechnologyHooks {
 
-    private static final String L_WINDOW = "window";
 
-    private static final String L_FORM = "form";
+
+    
 
     private static final String L_CLEAR_AND_LOAD_PATTERN_TECHNOLOGY = "clearAndLoadPatternTechnology";
 
@@ -87,7 +88,7 @@ public class CopyOfTechnologyHooks {
     private ParameterService parameterService;
 
     public final void onBeforeRender(final ViewDefinitionState view) {
-        final FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        final FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long technologyId = technologyForm.getEntityId();
 
@@ -118,7 +119,7 @@ public class CopyOfTechnologyHooks {
            orderId = state.getJsonContext().getString("window.mainTab.technology.orderId");
         } catch (JSONException ex) {
            // throw new RuntimeException(ex);
-           EntityList entities = ((FormComponent) state.getComponentByReference(L_FORM)).getPersistedEntityWithIncludedFormValues().getHasManyField("orders");
+           EntityList entities = ((FormComponent) state.getComponentByReference(QcadooViewConstants.L_FORM)).getPersistedEntityWithIncludedFormValues().getHasManyField("orders");
            if(!entities.isEmpty()){
                orderId = String.valueOf(entities.get(0).getId());
            }
@@ -127,7 +128,7 @@ public class CopyOfTechnologyHooks {
     }
 
     private void disableForm(final ViewDefinitionState view, final Entity order, final Entity technology) {
-        FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         boolean isDisabled = true;
 
         if (technologyForm.getEntityId() != null) {
@@ -167,7 +168,7 @@ public class CopyOfTechnologyHooks {
     }
 
     private void disableRibbonItem(final ViewDefinitionState view, final String orderType, final Entity order) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         Ribbon ribbon = window.getRibbon();
 
         RibbonGroup technology = ribbon.getGroupByName(L_TECHNOLOGY);

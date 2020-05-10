@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.advancedGenealogy.hooks;
 
-import static com.qcadoo.mes.orders.states.constants.OrderStateChangeFields.STATUS;
-import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.advancedGenealogy.states.constants.BatchStateStringValues;
@@ -41,11 +34,18 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import static com.qcadoo.mes.orders.states.constants.OrderStateChangeFields.STATUS;
+import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
 
 @Service
 public final class BatchViewHooks {
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_LOGGINGS_GRID = "loggingsGrid";
 
@@ -63,7 +63,7 @@ public final class BatchViewHooks {
     }
 
     private void disableFormWhenExternalSynchronized(final ViewDefinitionState view) {
-        FormComponent batchForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent batchForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long batchId = batchForm.getEntityId();
 

@@ -23,6 +23,10 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.hooks;
 
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.productFlowThruDivision.constants.MaterialAvailabilityFields;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -32,17 +36,14 @@ import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
-
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class OrderWithMaterialAvailabilityListHooks {
 
-    private static final String L_WINDOW = "window";
 
-    private static final String L_GRID = "grid";
+
+
 
     private static final String L_MATERIAL_AVAILABILITY = "materialAvailability";
 
@@ -56,14 +57,14 @@ public class OrderWithMaterialAvailabilityListHooks {
     private DataDefinitionService dataDefinitionService;
 
     public void toggleShowAvailabilityButton(final ViewDefinitionState view) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup materialAvailability = (RibbonGroup) window.getRibbon().getGroupByName(L_MATERIAL_AVAILABILITY);
         RibbonActionItem showAvailability = (RibbonActionItem) materialAvailability.getItemByName(L_SHOW_AVAILABILITY);
         RibbonActionItem showReplacementsAvailability = (RibbonActionItem) materialAvailability
                 .getItemByName(L_SHOW_REPLACEMENTS_AVAILABILITY);
         JSONObject obj = view.getJsonContext();
 
-        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
         if (grid.getSelectedEntitiesIds().size() != 1) {
             showAvailability.setEnabled(false);

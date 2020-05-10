@@ -1,5 +1,15 @@
 package com.qcadoo.mes.materialFlowResources.listeners;
 
+import static com.qcadoo.model.api.search.SearchRestrictions.eq;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PalletStorageStateDtoFields;
@@ -18,15 +28,7 @@ import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import static com.qcadoo.model.api.search.SearchRestrictions.eq;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class PalletMoveToStorageLocationHelperListeners {
@@ -63,7 +65,7 @@ public class PalletMoveToStorageLocationHelperListeners {
 
     public void movePallets(final ViewDefinitionState view, final ComponentState state, final String[] args) {
 
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity helper = form.getPersistedEntityWithIncludedFormValues();
         CheckBoxComponent generated = (CheckBoxComponent) view.getComponentByReference("generated");
         List<Entity> dtos = helper.getHasManyField(L_PALLET_STORAGE_STATE_DTOS);

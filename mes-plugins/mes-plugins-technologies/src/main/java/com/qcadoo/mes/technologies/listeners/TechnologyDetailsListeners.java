@@ -40,6 +40,7 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.TreeComponent;
 import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -54,9 +55,9 @@ import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT_STR
 @Service
 public class TechnologyDetailsListeners {
 
-    private static final String L_WINDOW = "window";
 
-    private static final String L_FORM = "form";
+
+
 
     private static final String L_PRODUCT_STRUCTURE_FORM = "productStructureForm";
 
@@ -90,7 +91,7 @@ public class TechnologyDetailsListeners {
         boolean removed = removeTOCService.removeOnlySelectedOperation(selectedOperation, view);
 
         if (removed) {
-            FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
+            FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
             technologyForm.performEvent(view, "reset");
 
@@ -109,7 +110,7 @@ public class TechnologyDetailsListeners {
     }
 
     public void generateProductStructure(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FormComponent productStructureForm = (FormComponent) view.getComponentByReference(L_PRODUCT_STRUCTURE_FORM);
 
         Entity technology = technologyForm.getEntity();
@@ -119,12 +120,12 @@ public class TechnologyDetailsListeners {
         productTechnology.setField(PRODUCT_STRUCTURE_TREE, generatedTree);
         productStructureForm.setEntity(productTechnology);
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         window.setActiveTab(L_PRODUCT_STRUCTURE);
     }
 
     public void fillProducts(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity technology = getTechnologyDD().get(technologyForm.getEntityId());
 
@@ -162,7 +163,7 @@ public class TechnologyDetailsListeners {
 
     public void openOperationProductInComponentsImportPage(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
-        FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity technology = technologyForm.getPersistedEntityWithIncludedFormValues();
 
         Long technologyId = technology.getId();

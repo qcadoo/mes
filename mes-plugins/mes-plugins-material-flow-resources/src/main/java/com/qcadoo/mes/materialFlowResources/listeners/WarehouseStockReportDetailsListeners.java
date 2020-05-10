@@ -6,6 +6,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ import java.util.Date;
 @Service
 public class WarehouseStockReportDetailsListeners {
 
-    private static final String L_FORM = "form";
+    
     private static final Logger LOG = LoggerFactory.getLogger(WarehouseStockReportDetailsListeners.class);
 
     @Autowired
@@ -31,7 +32,7 @@ public class WarehouseStockReportDetailsListeners {
         if (state.isHasError()) {
             return;
         }
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity report = form.getEntity();
         Entity reportDb = report.getDataDefinition().get(report.getId());
         reportDb.setField("generated", Boolean.TRUE);

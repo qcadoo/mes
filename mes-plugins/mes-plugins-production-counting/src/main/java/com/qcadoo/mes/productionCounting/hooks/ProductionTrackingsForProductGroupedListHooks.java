@@ -25,29 +25,29 @@ package com.qcadoo.mes.productionCounting.hooks;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ProductionTrackingsForProductGroupedListHooks {
 
-    public static final String L_GRID = "grid";
 
-    private static final String L_WINDOW = "window";
+
+
 
     private static final String L_SHOW_PRODUCTION_TRACKINGS = "showProductionTrackings";
 
     private static final String L_SHOW_PRODUCTION_TRACKINGS_FOR_PRODUCT = "showProductionTrackingsForProduct";
 
     public void updateButtonsState(final ViewDefinitionState view) {
-        GridComponent productionTrackingsForProductGroupedGrid = (GridComponent) view.getComponentByReference(L_GRID);
+        GridComponent productionTrackingsForProductGroupedGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         Ribbon ribbon = window.getRibbon();
 
         RibbonGroup showProductionTrackingsRibbonGroup = ribbon.getGroupByName(L_SHOW_PRODUCTION_TRACKINGS);

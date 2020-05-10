@@ -29,10 +29,10 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
-
-import org.springframework.stereotype.Service;
 
 @Service
 public class StoppageService {
@@ -41,10 +41,10 @@ public class StoppageService {
 
     private static final String L_FILTERS = "filters";
 
-    private static final String L_FORM = "form";
+
 
     public void showStoppage(final ViewDefinitionState viewDefinitionState, final ComponentState triggerState, final String[] args) {
-        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity order = form.getEntity();
         Map<String, String> filters = Maps.newHashMap();
         filters.put("orderNumber", applyInOperator(order.getStringField(OrderFields.NUMBER)));

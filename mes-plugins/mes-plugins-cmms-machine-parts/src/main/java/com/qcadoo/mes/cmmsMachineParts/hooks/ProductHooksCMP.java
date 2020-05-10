@@ -32,17 +32,18 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ProductHooksCMP {
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_PARENT = "parent";
 
     public void setCriteriaModifierParameters(final ViewDefinitionState view) {
         LookupComponent parentLookup = (LookupComponent) view.getComponentByReference(L_PARENT);
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity product = form.getPersistedEntityWithIncludedFormValues();
 

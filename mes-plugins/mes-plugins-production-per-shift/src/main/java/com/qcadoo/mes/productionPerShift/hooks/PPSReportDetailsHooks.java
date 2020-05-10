@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.productionPerShift.hooks;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.productionPerShift.constants.PPSReportFields;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -37,11 +31,17 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public final class PPSReportDetailsHooks {
 
-    private static final String L_FORM = "form";
+
 
     private static final List<String> REPORT_FIELDS = Arrays.asList(PPSReportFields.NUMBER, PPSReportFields.NAME,
             PPSReportFields.DATE_FROM, PPSReportFields.DATE_TO);
@@ -54,11 +54,11 @@ public final class PPSReportDetailsHooks {
 
     public void generateReportNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, ProductionPerShiftConstants.PLUGIN_IDENTIFIER,
-                ProductionPerShiftConstants.MODEL_PPS_REPORT, L_FORM, PPSReportFields.NUMBER);
+                ProductionPerShiftConstants.MODEL_PPS_REPORT, QcadooViewConstants.L_FORM, PPSReportFields.NUMBER);
     }
 
     public void disableFields(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long reportId = form.getEntityId();
 
         if (reportId == null) {

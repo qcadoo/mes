@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import static com.qcadoo.mes.orders.constants.OrderFields.*;
-import static com.qcadoo.mes.orders.constants.ParameterFieldsO.BLOCK_ABILITY_TO_CHANGE_APPROVAL_ORDER;
-
-import java.util.Arrays;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -41,6 +32,15 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static com.qcadoo.mes.orders.constants.OrderFields.*;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.BLOCK_ABILITY_TO_CHANGE_APPROVAL_ORDER;
 
 @Service
 public class OrderProductQuantityHooks {
@@ -54,7 +54,7 @@ public class OrderProductQuantityHooks {
     private ParameterService parameterService;
 
     public void changeFieldsEnabledForSpecificOrderState(final ViewDefinitionState view) {
-        final FormComponent form = (FormComponent) view.getComponentByReference("form");
+        final FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (form.getEntityId() == null) {
             return;
         }

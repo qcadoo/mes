@@ -45,6 +45,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.exception.LockAcquisitionException;
 import org.json.JSONObject;
@@ -65,7 +66,7 @@ public class DocumentDetailsListeners {
 
     private static final Logger LOG = LoggerFactory.getLogger(DocumentDetailsListeners.class);
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -116,7 +117,7 @@ public class DocumentDetailsListeners {
 
     public void showProductAttributesFromPositionLists(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
-        GridComponent positionGird = (GridComponent) view.getComponentByReference("grid");
+        GridComponent positionGird = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         Set<Long> ids = positionGird.getSelectedEntitiesIds();
         if (ids.size() == 1) {
             Entity position = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
@@ -130,7 +131,7 @@ public class DocumentDetailsListeners {
     }
 
     public void printDocument(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity document = documentForm.getEntity();
 
@@ -148,7 +149,7 @@ public class DocumentDetailsListeners {
             createResourcesForDocuments(view, state, args);
         }
 
-        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (documentForm.isValid()) {
             Entity documentDb = documentForm.getEntity().getDataDefinition().get(documentForm.getEntityId());
@@ -175,7 +176,7 @@ public class DocumentDetailsListeners {
     }
 
     public void onSave(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity document = documentForm.getEntity();
 
@@ -201,7 +202,7 @@ public class DocumentDetailsListeners {
     }
 
     public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
@@ -293,7 +294,7 @@ public class DocumentDetailsListeners {
 
         if (!document.getHasManyField(DocumentFields.POSITIONS).isEmpty()) {
             String blockedResources = getBlockedResources(document);
-            if (blockedResources.isEmpty()) {
+            if (blockedResources == null) {
                 try {
                     resourceManagementService.createResources(document);
                 } catch (InvalidResourceException ire) {
@@ -369,7 +370,7 @@ public class DocumentDetailsListeners {
     }
 
     public void refreshView(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         documentForm.performEvent(view, "refresh");
     }
@@ -379,7 +380,7 @@ public class DocumentDetailsListeners {
     }
 
     public void fillResources(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity document = form.getPersistedEntityWithIncludedFormValues();
 
         try {
@@ -404,7 +405,7 @@ public class DocumentDetailsListeners {
     }
 
     public void checkResourcesStock(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
 
         resourceStockService.checkResourcesStock(document);
@@ -417,7 +418,7 @@ public class DocumentDetailsListeners {
     }
 
     public void addMultipleResources(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
         Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
 
@@ -440,7 +441,7 @@ public class DocumentDetailsListeners {
     }
 
     public void openPositionsImportPage(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity document = documentForm.getPersistedEntityWithIncludedFormValues();
 
         Long documentId = document.getId();

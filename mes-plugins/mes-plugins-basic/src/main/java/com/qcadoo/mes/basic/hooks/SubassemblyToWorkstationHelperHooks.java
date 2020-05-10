@@ -34,6 +34,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -84,7 +85,7 @@ public class SubassemblyToWorkstationHelperHooks {
     }
 
     private void refreshTypeComponentValue(ViewDefinitionState view) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity subassemblyToWorkstationHelper = formComponent.getEntity();
         Entity subassemly = subassemblyToWorkstationHelper.getBelongsToField(SubassemblyToWorkstationHelperFields.SUBASSEMBLY);
         if (subassemly != null) {

@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.json.JSONException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.GlobalTypeOfMaterial;
 import com.qcadoo.mes.basicProductionCounting.ProductionTrackingUpdateService;
@@ -46,6 +37,15 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.json.JSONException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class DetailedProductionCountingAndProgressListHooks {
@@ -54,7 +54,7 @@ public class DetailedProductionCountingAndProgressListHooks {
 
     private static final String L_ORDER = "order";
 
-    private static final String L_GRID = "grid";
+
 
     @Autowired
     private OrderService orderService;
@@ -82,7 +82,7 @@ public class DetailedProductionCountingAndProgressListHooks {
 
     public void setGridEditableDependsOfOrderState(final ViewDefinitionState view) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(L_ORDER);
-        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
         Long orderId = orderForm.getEntityId();
         if (orderId == null) {
@@ -95,7 +95,7 @@ public class DetailedProductionCountingAndProgressListHooks {
 
     public void onRemoveSelectedProductionCountingQuantities(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
-        GridComponent grid = ((GridComponent) view.getComponentByReference(L_GRID));
+        GridComponent grid = ((GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID));
         List<Entity> selectedEntities = grid.getSelectedEntities();
         List<Long> ids = new ArrayList<>();
 

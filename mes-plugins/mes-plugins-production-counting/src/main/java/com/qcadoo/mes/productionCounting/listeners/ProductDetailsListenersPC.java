@@ -33,11 +33,12 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ProductDetailsListenersPC {
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_FILTERS = "filters";
 
@@ -46,7 +47,7 @@ public class ProductDetailsListenersPC {
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
     public void showProductionTrackingsForProduct(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity product = productForm.getEntity();
 
@@ -79,7 +80,7 @@ public class ProductDetailsListenersPC {
 
     public void showProductionTrackingsForProductGrouped(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
-        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity product = productForm.getEntity();
 

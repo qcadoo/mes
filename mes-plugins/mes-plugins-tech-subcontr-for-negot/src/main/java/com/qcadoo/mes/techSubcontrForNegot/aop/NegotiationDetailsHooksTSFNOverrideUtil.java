@@ -32,6 +32,7 @@ import com.qcadoo.mes.techSubcontrForNegot.constants.TechSubcontrForNegotConstan
 import com.qcadoo.plugin.api.PluginStateResolver;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class NegotiationDetailsHooksTSFNOverrideUtil {
@@ -51,7 +52,7 @@ public class NegotiationDetailsHooksTSFNOverrideUtil {
     }
 
     public void changeApprovedNotApprovedLeftQuantity(final ViewDefinitionState view) {
-        FormComponent negotiationForm = (FormComponent) view.getComponentByReference("form");
+        FormComponent negotiationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long negotiationId = negotiationForm.getEntityId();
 
