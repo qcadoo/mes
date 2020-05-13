@@ -352,7 +352,7 @@ public class DocumentDetailsListeners {
     }
 
     private String getBlockedResources(Entity document) {
-        String sql = "SELECT string_agg(p.number::text, ',') FROM materialflowresources_position p JOIN materialflowresources_resource r "
+        String sql = "SELECT string_agg(p.number::text, ',' ORDER BY p.number) FROM materialflowresources_position p JOIN materialflowresources_resource r "
                 + "ON r.id = p.resource_id WHERE p.document_id = :id AND r.blockedforqualitycontrol";
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("id", document.getId());
