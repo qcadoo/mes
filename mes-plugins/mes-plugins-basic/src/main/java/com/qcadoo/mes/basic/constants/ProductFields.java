@@ -76,4 +76,6 @@ public final class ProductFields {
     public static final String EXPIRY_DATE_VALIDITY = "expiryDateValidity";
 
     public static final String BATCH_EVIDENCE = "batchEvidence";
+
+    public static final String PRODUCT_FORM = "productForm";
 }

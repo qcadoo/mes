@@ -25,33 +25,60 @@ package com.qcadoo.mes.workPlans.pdf.document;
 
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
-import com.lowagie.text.*;
-import com.lowagie.text.pdf.*;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Image;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.Rectangle;
+import com.lowagie.text.pdf.Barcode128;
+import com.lowagie.text.pdf.PdfContentByte;
+import com.lowagie.text.pdf.PdfPCell;
+import com.lowagie.text.pdf.PdfPTable;
+import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.BarcodeOperationComponentService;
 import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.mes.technologies.constants.*;
+import com.qcadoo.mes.technologies.constants.OperationFields;
+import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.workPlans.constants.OperationProductInComponentFieldsWP;
 import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.holder.OrderOperationComponent;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.ProductDirection;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationProductColumn;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.*;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class WorkPlanPdfForDivision {
@@ -403,6 +430,12 @@ public class WorkPlanPdfForDivision {
         summary.append(numberService.formatWithMinimumFractionDigits(order.getDecimalField(OrderFields.PLANNED_QUANTITY), 0));
         summary.append(" ");
         summary.append(product.getStringField(ProductFields.UNIT));
+        Entity form = product.getBelongsToField(ProductFields.PRODUCT_FORM);
+        if(Objects.nonNull(form)) {
+            summary.append(", ");
+            summary.append(form.getStringField("number"));
+        }
+
         return summary.toString();
     }
 
