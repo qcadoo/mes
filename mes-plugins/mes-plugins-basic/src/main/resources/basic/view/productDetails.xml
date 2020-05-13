@@ -100,6 +100,11 @@
 								}
 								cancel.enable();
 								del.enable();
+								var externalNumber = #{externalNumber}.getValue().content.value;
+
+								if(externalNumber != undefined && externalNumber != '') {
+									del.disable("#{translate(materialFlow.location.ribbon.message.productIsExternal)}");
+								}
 								addManyReplacements.enable("#{translate(basic.productReplacements.window.ribbon.replacements.addManyReplacements.desc)}");
 							}
 						});
@@ -112,6 +117,8 @@
                                    reference="number">
                             <option type="alignment" value="right"/>
                         </component>
+                        <component type="input" name="externalNumber" field="#{form}.externalNumber"
+                                   reference="externalNumber" defaultEnabled="never" defaultVisible="false"/>
                     </layoutElement>
                     <layoutElement column="1" row="2" height="2">
                         <component type="textarea" name="name" field="name"

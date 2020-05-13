@@ -32,7 +32,7 @@
     <component type="window" name="window" reference="window">
 
         <ribbon>
-            <template name="standardFormTemplate"/>
+            <template name="standardFormTemplate" excludeItems="actions.copy,actions.saveNew,actions.delete"/>
         </ribbon>
 
         <windowTab name="auditTab">
@@ -41,10 +41,8 @@
                     <![CDATA[
 						var save = #{window}.getRibbonItem("actions.save");
 						var saveBack = #{window}.getRibbonItem("actions.saveBack");
-						var saveNew = #{window}.getRibbonItem("actions.saveNew");
-						var cancel = #{window}.getRibbonItem("actions.cancel");
-						var del = #{window}.getRibbonItem("actions.delete");
 
+						var cancel = #{window}.getRibbonItem("actions.cancel");
 						this.addOnChangeListener({
 							onSetValue: function(value) {
 								if (! value || ! value.content) {
@@ -52,15 +50,13 @@
 								}
 								save.enable();
 								saveBack.enable();
-								saveNew.enable();
-								
+
 								if (! value.content.entityId) {
 									cancel.disable();
-									del.disable();
 									return;
 								}
 								cancel.enable();
-								del.enable();							}
+								}
 						});
 					]]>
                 </script>
@@ -100,22 +96,6 @@
         </windowTab>
 
         <windowTab name="integrationTab">
-            <script>
-                <![CDATA[
-						var del = #{window}.getRibbonItem("actions.delete");
-						var externalNumberListener = {
-							onSetValue: function(value) {
-
-								var externalNumber = #{externalNumber}.getValue().content.value;
-								
-								if(externalNumber != undefined && externalNumber != '') {
-									del.disable("#{translate(materialFlow.location.ribbon.message.productIsExternal)}");
-								}
-							}
-						};
-						#{form}.addOnChangeListener(externalNumberListener);
-					]]>
-            </script>
             <component type="gridLayout" name="gridLayout" columns="3"
                        rows="1">
                 <layoutElement column="1" row="1">
