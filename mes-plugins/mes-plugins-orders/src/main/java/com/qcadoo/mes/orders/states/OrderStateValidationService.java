@@ -26,6 +26,7 @@ package com.qcadoo.mes.orders.states;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.plugin.api.PluginUtils;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -62,7 +63,8 @@ public class OrderStateValidationService {
         final List<String> fieldNames = Arrays.asList(DATE_TO, DATE_FROM, DONE_QUANTITY);
         checkRequired(fieldNames, stateChangeContext);
         if (Objects.nonNull(stateChangeContext.getOwner().getDecimalField(DONE_QUANTITY))
-                && stateChangeContext.getOwner().getDecimalField(DONE_QUANTITY).compareTo(BigDecimal.ZERO) == 0) {
+                && stateChangeContext.getOwner().getDecimalField(DONE_QUANTITY).compareTo(BigDecimal.ZERO) == 0
+                && !PluginUtils.isEnabled("ziepiwowarski")) {
             stateChangeContext.addValidationError("orders.order.orderStates.doneQuantityMustBeGreaterThanZero");
         }
     }
