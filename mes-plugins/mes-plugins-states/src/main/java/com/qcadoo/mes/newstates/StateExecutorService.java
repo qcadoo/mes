@@ -24,6 +24,14 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,9 +42,6 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
-
 import static com.qcadoo.mes.states.constants.StateChangeStatus.IN_PROGRESS;
 import static com.qcadoo.mes.states.constants.StateChangeStatus.PAUSED;
 
@@ -260,7 +265,7 @@ public class StateExecutorService {
 
     private Entity rollbackStateChange(Entity entity, String sourceState) {
         entity.setField("state", sourceState);
-
+        entity.setNotValid();
         return entity;
     }
 
