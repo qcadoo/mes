@@ -18,6 +18,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,7 +29,7 @@ import java.util.List;
 @Service
 public class ProductsToIssueDetailsListeners {
 
-    public static final String FORM = "form";
+
 
     @Autowired
     private ProductToIssueDetailsHooks productToIssueDetailsHooks;
@@ -61,7 +62,7 @@ public class ProductsToIssueDetailsListeners {
     }
 
     public void onDemandQuantityChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity productToIssue = form.getPersistedEntityWithIncludedFormValues();
         if (!checkIfDecimalFieldsCorrect(productToIssue, form)) {
             return;
@@ -82,7 +83,7 @@ public class ProductsToIssueDetailsListeners {
     }
 
     public void onAdditionalDemandQuantityChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity productToIssue = form.getPersistedEntityWithIncludedFormValues();
         if (!checkIfDecimalFieldsCorrect(productToIssue, form)) {
             return;

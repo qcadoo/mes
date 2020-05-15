@@ -11,6 +11,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +28,7 @@ public class ChangeDatesDetailsListeners {
     public void changeDates(final ViewDefinitionState view, final ComponentState state, final String[] args) {
 
         DataDefinition orderDD = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity helper = form.getEntity();
         String orderIds = helper.getStringField(ChangeDatesHelperFields.ORDER_IDS);
         List<Long> ids = Lists.newArrayList(orderIds.split(",")).stream().map(Long::valueOf).collect(Collectors.toList());

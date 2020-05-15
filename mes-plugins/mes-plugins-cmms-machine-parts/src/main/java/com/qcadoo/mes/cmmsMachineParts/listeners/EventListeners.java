@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.listeners;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.FaultTypesService;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
@@ -55,6 +47,14 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EventListeners {
@@ -269,7 +269,7 @@ public class EventListeners {
     }
 
     public void validateIssueOrProposal(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity event = form.getPersistedEntityWithIncludedFormValues();
 
         if (event.getId() == null || MaintenanceEventState.of(event) == MaintenanceEventState.NEW
@@ -292,7 +292,7 @@ public class EventListeners {
     }
 
     public void showPlannedEvent(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity maintenanceEvent = dataDefinitionService
                 .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT)
                 .get(form.getEntityId());

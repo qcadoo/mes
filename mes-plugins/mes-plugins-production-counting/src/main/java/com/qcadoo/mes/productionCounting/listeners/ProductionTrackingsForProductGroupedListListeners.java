@@ -23,17 +23,16 @@
  */
 package com.qcadoo.mes.productionCounting.listeners;
 
-import java.util.Map;
-
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingForProductGroupedDtoFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 public class ProductionTrackingsForProductGroupedListListeners {
@@ -44,10 +43,8 @@ public class ProductionTrackingsForProductGroupedListListeners {
 
     private static final String L_FILTERS = "filters";
 
-    public static final String L_GRID = "grid";
-
     public void showProductionTrackingsForProduct(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent productionTrackingsForProductGroupedGrid = (GridComponent) view.getComponentByReference(L_GRID);
+        GridComponent productionTrackingsForProductGroupedGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
         if (productionTrackingsForProductGroupedGrid.getSelectedEntities().isEmpty()) {
             return;

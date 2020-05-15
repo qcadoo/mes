@@ -23,22 +23,22 @@
  */
 package com.qcadoo.mes.supplyNegotiations.listeners;
 
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
-
-import java.util.Map;
-
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
+
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
 
 @Service
 public class NegotiationDetailsListeners {
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_FILTERS = "filters";
 
@@ -50,7 +50,7 @@ public class NegotiationDetailsListeners {
 
     public final void showRequestForQuotationsForGivenNegotiation(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
-        FormComponent negotiationForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent negotiationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity negotiation = negotiationForm.getEntity();
 
         if (negotiation.getId() == null) {
@@ -80,7 +80,7 @@ public class NegotiationDetailsListeners {
 
     public final void showOffersForGivenNegotiation(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
-        FormComponent negotiationForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent negotiationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity negotiation = negotiationForm.getEntity();
 
         if (negotiation.getId() == null) {
@@ -110,7 +110,7 @@ public class NegotiationDetailsListeners {
 
     public final void showOffersItemsForGivenNegotiation(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
-        FormComponent negotiationForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent negotiationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity negotiation = negotiationForm.getEntity();
 
         if (negotiation.getId() == null) {
@@ -140,7 +140,7 @@ public class NegotiationDetailsListeners {
 
     public final void showSupplyItemsForGivenNegotiation(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
-        FormComponent negotiationForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent negotiationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity negotiation = negotiationForm.getEntity();
 
         if (negotiation.getId() == null) {

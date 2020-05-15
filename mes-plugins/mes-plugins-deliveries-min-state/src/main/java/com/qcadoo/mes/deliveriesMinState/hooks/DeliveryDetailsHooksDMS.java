@@ -33,11 +33,12 @@ import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class DeliveryDetailsHooksDMS {
 
-    private static final String L_WINDOW = "window";
+
 
     private static final String L_FILL = "fill";
 
@@ -63,7 +64,7 @@ public class DeliveryDetailsHooksDMS {
     }
 
     private RibbonActionItem getFillPricesButton(final ViewDefinitionState view) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup ribbonGroup = window.getRibbon().getGroupByName(L_FILL);
 
         return ribbonGroup.getItemByName(L_FILL_PRICES);

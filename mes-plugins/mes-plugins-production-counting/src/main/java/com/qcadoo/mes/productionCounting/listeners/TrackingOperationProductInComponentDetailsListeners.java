@@ -32,20 +32,21 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
-
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+
 import static com.qcadoo.model.api.BigDecimalUtils.convertNullToZero;
 
 @Service
 public class TrackingOperationProductInComponentDetailsListeners {
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_PRODUCT = "product";
 
@@ -66,7 +67,7 @@ public class TrackingOperationProductInComponentDetailsListeners {
     private TrackingOperationProductComponentDetailsListeners trackingOperationProductComponentDetailsListeners;
 
     private Entity getFormEntity(final ViewDefinitionState view) {
-        return ((FormComponent) view.getComponentByReference(L_FORM)).getPersistedEntityWithIncludedFormValues();
+        return ((FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM)).getPersistedEntityWithIncludedFormValues();
     }
 
     public void onWasteUsedChange(final ViewDefinitionState view, final ComponentState wasteUsed, final String[] args) {
@@ -142,7 +143,7 @@ public class TrackingOperationProductInComponentDetailsListeners {
     }
 
     public void onRemoveUsedBatch(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         form.performEvent(view, "reset");
     }
 

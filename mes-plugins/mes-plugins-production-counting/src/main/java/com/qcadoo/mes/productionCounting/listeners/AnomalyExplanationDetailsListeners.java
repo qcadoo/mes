@@ -1,16 +1,5 @@
 package com.qcadoo.mes.productionCounting.listeners;
 
-import static com.google.common.collect.Iterables.toArray;
-import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.apache.commons.lang3.StringUtils.isNotBlank;
-
-import java.math.BigDecimal;
-import java.util.function.Function;
-
-import org.apache.commons.lang3.ArrayUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Optional;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -27,6 +16,17 @@ import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.function.Function;
+
+import static com.google.common.collect.Iterables.toArray;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Service
 public class AnomalyExplanationDetailsListeners {
@@ -41,12 +41,12 @@ public class AnomalyExplanationDetailsListeners {
         GridComponent anomalyExplanationsGrid = (GridComponent) view.getComponentByReference("anomalyExplanations");
         DataDefinition dataDefinition = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_ANOMALY_EXPLANATION);
         dataDefinition.delete(toArray(anomalyExplanationsGrid.getSelectedEntitiesIds(), Long.class));
-        FormComponent documentForm = (FormComponent) view.getComponentByReference("form");
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         documentForm.performEvent(view, "reset");
     }
 
     public void onUseWasteChange(final ViewDefinitionState view, final ComponentState useWaste, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity anomalyExplanation = form.getPersistedEntityWithIncludedFormValues();
         if (anomalyExplanation.getBooleanField(AnomalyExplanationFields.USE_WASTE)) {
             anomalyExplanation.setField(AnomalyExplanationFields.PRODUCT, null);
@@ -63,7 +63,7 @@ public class AnomalyExplanationDetailsListeners {
     }
 
     public void selectedProductChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity anomalyExplanation = form.getPersistedEntityWithIncludedFormValues();
         Entity selectedProduct = anomalyExplanation.getBelongsToField(AnomalyExplanationFields.PRODUCT);
 
@@ -93,7 +93,7 @@ public class AnomalyExplanationDetailsListeners {
     }
 
     public void copyGivenToUsedWhenUseWasteChecked(final ViewDefinitionState view, final ComponentState cs, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity anomalyExplanation = form.getPersistedEntityWithIncludedFormValues();
 
         if(anomalyExplanation.getBooleanField(AnomalyExplanationFields.USE_WASTE)){
@@ -141,7 +141,7 @@ public class AnomalyExplanationDetailsListeners {
 
         private CalculationHelper(final ViewDefinitionState view, ProductUnitsConversionService productUnitsConversionService) {
             this.view = view;
-            form = (FormComponent) view.getComponentByReference("form");
+            form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
             anomalyExplanation = form.getPersistedEntityWithIncludedFormValues();
             selectedProduct = anomalyExplanation.getBelongsToField(AnomalyExplanationFields.PRODUCT);
             this.productUnitsConversionService = productUnitsConversionService;

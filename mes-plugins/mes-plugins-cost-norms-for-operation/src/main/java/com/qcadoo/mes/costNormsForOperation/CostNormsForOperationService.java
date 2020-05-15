@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.costNormsForOperation;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperationConstants.FIELDS;
-import static com.qcadoo.view.api.ComponentState.MessageType.INFO;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -39,6 +32,13 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperationConstants.FIELDS;
+import static com.qcadoo.view.api.ComponentState.MessageType.INFO;
 
 @Service
 public class CostNormsForOperationService {
@@ -58,7 +58,7 @@ public class CostNormsForOperationService {
         ComponentState operationLookup = view.getComponentByReference(OPERATION_FIELD);
         if (operationLookup.getFieldValue() == null) {
             if (!OPERATION_FIELD.equals(operationLookupState.getName())) {
-                view.getComponentByReference("form").addMessage("costNormsForOperation.messages.info.missingOperationReference",
+                view.getComponentByReference(QcadooViewConstants.L_FORM).addMessage("costNormsForOperation.messages.info.missingOperationReference",
                         INFO);
             }
             return;

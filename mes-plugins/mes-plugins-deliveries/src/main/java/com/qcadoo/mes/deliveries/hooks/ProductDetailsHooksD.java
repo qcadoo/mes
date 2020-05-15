@@ -1,7 +1,5 @@
 package com.qcadoo.mes.deliveries.hooks;
 
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.model.api.Entity;
@@ -9,13 +7,16 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductDetailsHooksD {
 
     public static final String L_PARENT_ID = "parenId";
 
-    private static final String L_FORM = "form";
+    
 
     public void beforeRender(final ViewDefinitionState view) {
         toggleSuppliersGrids(view);
@@ -23,7 +24,7 @@ public class ProductDetailsHooksD {
     }
 
     public void toggleSuppliersGrids(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity product = form.getPersistedEntityWithIncludedFormValues();
         GridComponent productCompanies = (GridComponent) view.getComponentByReference("productCompanies");
         GridComponent productsFamilyCompanies = (GridComponent) view.getComponentByReference("productsFamilyCompanies");
@@ -37,11 +38,11 @@ public class ProductDetailsHooksD {
     }
 
     private void updateParentCompaniesCriteriaModifiersState(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         GridComponent parentCompanies = (GridComponent) view.getComponentByReference("parentCompanies");
 
         Long parentId = null;
-        Entity parent = form.getEntity().getBelongsToField(ProductFields.PARENT);
+        Entity parent = form.getEntity().getDataDefinition().get(form.getEntityId()).getBelongsToField(ProductFields.PARENT);
         if (parent != null) {
             parentId = parent.getId();
         }

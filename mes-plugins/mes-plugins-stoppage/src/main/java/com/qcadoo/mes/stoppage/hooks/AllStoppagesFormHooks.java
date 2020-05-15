@@ -6,12 +6,12 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
-
-import java.util.Objects;
-
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class AllStoppagesFormHooks {
@@ -20,14 +20,14 @@ public class AllStoppagesFormHooks {
 
     private static final String L_PRODUCTION_TRACKING = "productionTracking";
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_CONTEXT_KEY_PRODUCTION_TRACKING = "window.mainTab.form.productionTracking";
 
     private static final String L_CONTEXT_KEY_ORDER = "window.mainTab.form.order";
 
     public final void onBeforeRender(final ViewDefinitionState view) throws JSONException {
-        if (Objects.isNull(((FormComponent) view.getComponentByReference(L_FORM)).getEntityId())) {
+        if (Objects.isNull(((FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM)).getEntityId())) {
             JSONObject context = view.getJsonContext();
 
             if (view.isViewAfterRedirect() && context.has(L_CONTEXT_KEY_PRODUCTION_TRACKING)) {

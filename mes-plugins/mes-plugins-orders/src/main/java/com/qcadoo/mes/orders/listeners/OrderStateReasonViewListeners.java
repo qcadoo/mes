@@ -26,7 +26,7 @@ package com.qcadoo.mes.orders.listeners;
 import static com.qcadoo.mes.orders.states.constants.OrderStateChangeFields.REASON_REQUIRED;
 import static com.qcadoo.mes.orders.states.constants.OrderStateChangeFields.REASON_TYPES;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,12 +45,12 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import java.util.List;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class OrderStateReasonViewListeners {
 
-    private static final String L_FORM = "form";
+    
 
     private static final List<String> DATE_FIELDS = Lists.newArrayList("sourceCorrectedDateFrom", "sourceCorrectedDateTo",
             "sourceStartDate", "sourceFinishDate", "targetCorrectedDateFrom", "targetCorrectedDateTo", "targetStartDate",
@@ -102,7 +102,7 @@ public class OrderStateReasonViewListeners {
     }
 
     public void beforeRenderDetails(final ViewDefinitionState view) {
-        final FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        final FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         final FieldComponent reasonTypeField = (FieldComponent) view.getComponentByReference(REASON_TYPES);
         reasonTypeField.setRequired(form.getEntity().getBooleanField(REASON_REQUIRED));
         Entity orderStateChange = form.getPersistedEntityWithIncludedFormValues();

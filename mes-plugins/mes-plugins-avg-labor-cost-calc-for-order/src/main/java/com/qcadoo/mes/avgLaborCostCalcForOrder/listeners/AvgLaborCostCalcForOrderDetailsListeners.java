@@ -23,20 +23,6 @@
  */
 package com.qcadoo.mes.avgLaborCostCalcForOrder.listeners;
 
-import static com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderFields.AVERAGE_LABOR_HOURLY_COST;
-import static com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderFields.BASED_ON;
-import static com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderFields.FINISH_DATE;
-import static com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderFields.ORDER;
-import static com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderFields.PRODUCTION_LINE;
-import static com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderFields.START_DATE;
-import static com.qcadoo.mes.costNormsForOperation.constants.TechnologyOperationComponentFieldsCNFO.LABOR_HOURLY_COST;
-
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.avgLaborCostCalcForOrder.AverageCostService;
 import com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderConstants;
@@ -53,6 +39,15 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+
+import static com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderFields.*;
+import static com.qcadoo.mes.costNormsForOperation.constants.TechnologyOperationComponentFieldsCNFO.LABOR_HOURLY_COST;
 
 @Service
 public class AvgLaborCostCalcForOrderDetailsListeners {
@@ -72,7 +67,7 @@ public class AvgLaborCostCalcForOrderDetailsListeners {
                 AvgLaborCostCalcForOrderConstants.PLUGIN_IDENTIFIER,
                 AvgLaborCostCalcForOrderConstants.MODEL_AVG_LABOR_COST_CALC_FOR_ORDER);
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(sourceId);
-        FormComponent avgLaborCostCalcForOrderForm = (FormComponent) view.getComponentByReference("form");
+        FormComponent avgLaborCostCalcForOrderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity avgLaborCostCalcForOrder = avgLaborCostCalcForOrderDD.find().add(SearchRestrictions.belongsTo("order", order))
                 .uniqueResult();
         if (avgLaborCostCalcForOrder == null) {
@@ -100,7 +95,7 @@ public class AvgLaborCostCalcForOrderDetailsListeners {
         FieldComponent finishDate = (FieldComponent) view.getComponentByReference(FINISH_DATE);
         FieldComponent averageLaborHourlyCost = (FieldComponent) view.getComponentByReference(AVERAGE_LABOR_HOURLY_COST);
 
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity avgLaborCostCalcForOrder = form.getEntity().getDataDefinition().get(form.getEntityId());
 
         LookupComponent lookup = (LookupComponent) view.getComponentByReference("productionLine");
@@ -119,7 +114,7 @@ public class AvgLaborCostCalcForOrderDetailsListeners {
     }
 
     public void copyToOperationsNorms(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity avgLaborCostCalcForOrder = form.getEntity().getDataDefinition().get(form.getEntityId());
         Entity order = avgLaborCostCalcForOrder.getBelongsToField(AvgLaborCostCalcForOrderFields.ORDER);
         List<Entity> tocs = order.getBelongsToField(OrderFields.TECHNOLOGY)

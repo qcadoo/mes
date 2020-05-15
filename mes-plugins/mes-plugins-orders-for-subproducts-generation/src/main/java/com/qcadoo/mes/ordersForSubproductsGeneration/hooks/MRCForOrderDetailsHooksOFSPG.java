@@ -23,6 +23,14 @@
  */
 package com.qcadoo.mes.ordersForSubproductsGeneration.hooks;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Joiner;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageForOrderFields;
 import com.qcadoo.mes.orderSupplies.constants.MaterialRequirementCoverageFields;
@@ -37,22 +45,16 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class MRCForOrderDetailsHooksOFSPG {
 
     private static final Logger LOG = LoggerFactory.getLogger(MRCForOrderDetailsHooksOFSPG.class);
 
-    private static final String L_FORM = "form";
+    
 
-    private static final String L_WINDOW = "window";
+
 
     public static final String ORDERS_RIBBON_GROUP = "orders";
 
@@ -73,12 +75,12 @@ public class MRCForOrderDetailsHooksOFSPG {
         FieldComponent generatedField = (FieldComponent) view.getComponentByReference(CoverageForOrderFields.GENERATED);
         boolean isEnabled = "1".equals(generatedField.getFieldValue());
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup coverage = (RibbonGroup) window.getRibbon().getGroupByName(ORDERS_RIBBON_GROUP);
 
         RibbonActionItem generateOrders = (RibbonActionItem) coverage.getItemByName(ORDERS_RIBBON_GROUP_GENERATE_ORDERS);
         generateOrders.setMessage("ordersForSubproductsGeneration.ordersForSubproducts.generateFromCoverage.msg");
-        FormComponent coverageForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent coverageForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long coverageId = coverageForm.getEntityId();
         Entity coverageEntity = coverageForm.getPersistedEntityWithIncludedFormValues();
@@ -99,7 +101,7 @@ public class MRCForOrderDetailsHooksOFSPG {
     }
 
     private void setCriteriaModifierParameters(final ViewDefinitionState view) {
-        FormComponent coverageForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent coverageForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity coverageEntity = coverageForm.getPersistedEntityWithIncludedFormValues();
         Entity order = coverageEntity.getBelongsToField(CoverageForOrderFields.ORDER);

@@ -35,13 +35,14 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class AddressDetailsHooks {
 
-    private static final String L_FORM = "form";
 
-    private static final String L_WINDOW = "window";
+
+
 
     private static final String L_ACTIONS = "actions";
 
@@ -55,9 +56,9 @@ public class AddressDetailsHooks {
     }
 
     private void updateRibbonState(final ViewDefinitionState view) {
-        FormComponent addressForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent addressForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
 
         RibbonGroup ribbonGroup = window.getRibbon().getGroupByName(L_ACTIONS);
 
@@ -70,7 +71,7 @@ public class AddressDetailsHooks {
     }
 
     private void updateFormState(final ViewDefinitionState view) {
-        FormComponent addressForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent addressForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         boolean isEnabled = shouldBeEnabled(addressForm);
 
@@ -100,7 +101,7 @@ public class AddressDetailsHooks {
     }
 
     private void generateNumber(final ViewDefinitionState view) {
-        FormComponent addressForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent addressForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent numberField = (FieldComponent) view.getComponentByReference(AddressFields.NUMBER);
 
         Entity address = addressForm.getPersistedEntityWithIncludedFormValues();

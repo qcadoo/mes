@@ -23,9 +23,11 @@
  */
 package com.qcadoo.mes.productionPerShift;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-
+import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchQueryBuilder;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,13 +36,8 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchQueryBuilder;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 public class PPSHelperTest {
 

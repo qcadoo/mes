@@ -23,19 +23,6 @@
  */
 package com.qcadoo.mes.supplyNegotiations.hooks;
 
-import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
-import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationFields.*;
-import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationProductFields.*;
-import static com.qcadoo.mes.supplyNegotiations.states.constants.NegotiationStateStringValues.*;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.deliveries.DeliveriesService;
@@ -59,13 +46,26 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
+import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationFields.*;
+import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationProductFields.*;
+import static com.qcadoo.mes.supplyNegotiations.states.constants.NegotiationStateStringValues.*;
 
 @Service
 public class NegotiationDetailsHooks {
 
-    private static final String L_FORM = "form";
+    
 
-    private static final String L_WINDOW = "window";
+
 
     private static final String L_REQUEST_FOR_QUOTATIONS = "requestForQuotations";
 
@@ -107,11 +107,11 @@ public class NegotiationDetailsHooks {
 
     public void generateNegotiationNumber(final ViewDefinitionState state) {
         numberGeneratorService.generateAndInsertNumber(state, SupplyNegotiationsConstants.PLUGIN_IDENTIFIER,
-                SupplyNegotiationsConstants.MODEL_NEGOTIATION, L_FORM, NUMBER);
+                SupplyNegotiationsConstants.MODEL_NEGOTIATION, QcadooViewConstants.L_FORM, NUMBER);
     }
 
     public void changeFieldsEnabledDependOnState(final ViewDefinitionState view) {
-        FormComponent negotiationForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent negotiationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         FieldComponent stateField = (FieldComponent) view.getComponentByReference(STATE);
         String state = stateField.getFieldValue().toString();
@@ -128,7 +128,7 @@ public class NegotiationDetailsHooks {
     }
 
     private void changeFieldsEnabled(final ViewDefinitionState view, final boolean enabledForm, final boolean enabledGrid) {
-        FormComponent negotiationForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent negotiationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         GridComponent negotiationProducts = (GridComponent) view.getComponentByReference(NEGOTIATION_PRODUCTS);
 
@@ -138,9 +138,9 @@ public class NegotiationDetailsHooks {
     }
 
     public void updateRibbonState(final ViewDefinitionState view) {
-        FormComponent negotiationForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent negotiationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
 
         RibbonGroup requestForQuotations = (RibbonGroup) window.getRibbon().getGroupByName(L_REQUEST_FOR_QUOTATIONS);
         RibbonGroup offers = (RibbonGroup) window.getRibbon().getGroupByName(L_OFFERS);
@@ -180,7 +180,7 @@ public class NegotiationDetailsHooks {
     }
 
     public void changeApprovedNotApprovedLeftQuantity(final ViewDefinitionState view) {
-        FormComponent negotiationForm = (FormComponent) view.getComponentByReference("form");
+        FormComponent negotiationForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long negotiationId = negotiationForm.getEntityId();
 

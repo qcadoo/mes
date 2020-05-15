@@ -6,6 +6,7 @@ import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,13 +20,13 @@ public class ActionListHooks {
     }
 
     private void disableActionsWhenDefault(final ViewDefinitionState view) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup actions = window.getRibbon().getGroupByName("actions");
 
         RibbonActionItem copyButton = actions.getItemByName("copy");
         RibbonActionItem deleteButton = actions.getItemByName("delete");
 
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         List<Entity> selectedFaults = grid.getSelectedEntities();
         for (Entity selectedFault : selectedFaults) {
             if (selectedFault.getBooleanField("isDefault")) {

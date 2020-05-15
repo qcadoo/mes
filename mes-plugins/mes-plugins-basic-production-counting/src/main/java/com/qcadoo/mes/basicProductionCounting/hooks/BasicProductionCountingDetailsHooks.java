@@ -23,19 +23,9 @@
  */
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
-import java.util.Arrays;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
-import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
-import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingDtoFields;
-import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
-import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
+import com.qcadoo.mes.basicProductionCounting.constants.*;
 import com.qcadoo.mes.basicProductionCounting.hooks.util.ProductionProgressModifyLockHelper;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -47,13 +37,18 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
 
 @Service
 public class BasicProductionCountingDetailsHooks {
 
     private static final String L_GRID = "productionCountingQuantities";
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_BASIC = "01basic";
 
@@ -82,7 +77,7 @@ public class BasicProductionCountingDetailsHooks {
         setFieldEditableDependsOfOrderState(view);
         fillUnitFields(view);
 
-        FormComponent basicProductionCountingForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent basicProductionCountingForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity basicProductionCountingDto = dataDefinitionService
                 .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
                         BasicProductionCountingConstants.MODEL_BASIC_PRODUCTION_COUNTING_DTO)
@@ -94,7 +89,7 @@ public class BasicProductionCountingDetailsHooks {
     }
 
     private void disableUsedAndProducedFieldsDependsOfProductType(final ViewDefinitionState view) {
-        FormComponent basicProductionCountingForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent basicProductionCountingForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent producedQuantityField = (FieldComponent) view
                 .getComponentByReference(BasicProductionCountingFields.PRODUCED_QUANTITY);
         FieldComponent usedQuantityField = (FieldComponent) view
@@ -143,7 +138,7 @@ public class BasicProductionCountingDetailsHooks {
     }
 
     private void setFieldEditableDependsOfOrderState(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
 
         Long formId = form.getEntityId();
@@ -157,7 +152,7 @@ public class BasicProductionCountingDetailsHooks {
     }
 
     private void fillUnitFields(final ViewDefinitionState view) {
-        FormComponent basicProductionCountingForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent basicProductionCountingForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long basicProductionCountingId = basicProductionCountingForm.getEntityId();
 

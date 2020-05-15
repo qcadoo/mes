@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.listeners;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.cmmsMachineParts.constants.ActionForPlannedEventFields;
@@ -47,13 +37,23 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class PlannedEventDetailsListeners {
 
-    private static final String L_FORM = "form";
+    
 
-    private static final String L_GRID = "grid";
+
 
     @Autowired
     private PlannedEventDetailsHooks plannedEventDetailsHooks;
@@ -89,7 +89,7 @@ public class PlannedEventDetailsListeners {
     }
 
     public void addActions(final ViewDefinitionState view, final ComponentState state, final String[] args) throws JSONException {
-        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         List<Entity> selectedEntities = grid.getSelectedEntities();
 
         DataDefinition actionForPlannedEventDD = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
@@ -110,7 +110,7 @@ public class PlannedEventDetailsListeners {
     }
 
     public void onAddExistingResponsible(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity formEntity = form.getEntity();
         formEntity = formEntity.getDataDefinition().get(formEntity.getId());
         form.setEntity(formEntity);
@@ -118,7 +118,7 @@ public class PlannedEventDetailsListeners {
     }
 
     public void onRemoveExistingResponsible(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity formEntity = form.getEntity();
         formEntity = formEntity.getDataDefinition().get(formEntity.getId());
         form.setEntity(formEntity);
@@ -130,7 +130,7 @@ public class PlannedEventDetailsListeners {
             return;
         }
 
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity currentEvent = form.getPersistedEntityWithIncludedFormValues();
         List<Long> addedRelatedEventsIds = parseIds(args[0]);
 
@@ -167,7 +167,7 @@ public class PlannedEventDetailsListeners {
     public void onRemoveRelatedEvents(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent relatedEventsGrid = (GridComponent) view.getComponentByReference(PlannedEventFields.RELATED_EVENTS);
 
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity currentEvent = dataDefinitionService
                 .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_PLANNED_EVENT)
                 .get(form.getEntityId());
@@ -204,7 +204,7 @@ public class PlannedEventDetailsListeners {
     }
 
     public void showMaintenanceEvent(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity plannedEvent = dataDefinitionService
                 .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_PLANNED_EVENT)
                 .get(form.getEntityId());
@@ -220,7 +220,7 @@ public class PlannedEventDetailsListeners {
     }
 
     public void gotToActions(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("form.id", form.getEntityId());
         view.redirectTo("/page/" + CmmsMachinePartsConstants.PLUGIN_IDENTIFIER + "/plannedEventActions.html", false, true,
@@ -228,7 +228,7 @@ public class PlannedEventDetailsListeners {
     }
 
     public void showRecurringEvent(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity plannedEvent = dataDefinitionService
                 .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_PLANNED_EVENT)
                 .get(form.getEntityId());

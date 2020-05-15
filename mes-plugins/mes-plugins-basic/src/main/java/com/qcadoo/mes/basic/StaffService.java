@@ -32,11 +32,11 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-
-import java.util.Objects;
-
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class StaffService {
@@ -49,7 +49,7 @@ public class StaffService {
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
-    private static final String L_FORM = "form";
+
 
     public void onBeforeRender(final ViewDefinitionState view) {
         generateStaffNumber(view);
@@ -74,7 +74,7 @@ public class StaffService {
     }
 
     public void setOwnerCompany(final ViewDefinitionState view) {
-        FormComponent staffForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent staffForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent workForLookup = (FieldComponent) view.getComponentByReference(StaffFields.WORK_FOR);
 
         Entity ownerCompany = companyService.getCompany();
@@ -89,7 +89,7 @@ public class StaffService {
 
     public void generateStaffNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_STAFF,
-                L_FORM, StaffFields.NUMBER);
+                QcadooViewConstants.L_FORM, StaffFields.NUMBER);
     }
 
     /**

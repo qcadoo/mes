@@ -23,29 +23,11 @@
  */
 package com.qcadoo.mes.productionCounting;
 
-import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
-
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
-import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
-import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
-import com.qcadoo.mes.productionCounting.constants.ProductionTrackingReportFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
-import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
+import com.qcadoo.mes.productionCounting.constants.*;
 import com.qcadoo.mes.productionCounting.print.utils.EntityProductionTrackingComparator;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
@@ -63,13 +45,25 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
+
+import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
 
 @Service
 public class ProductionCountingServiceImpl implements ProductionCountingService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductionCountingServiceImpl.class);
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_ORDER = "order";
 
@@ -232,7 +226,7 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
 
     @Override
     public void changeDoneQuantityAndAmountOfProducedQuantityFieldState(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent typeOfProductionRecordingField = (FieldComponent) view
                 .getComponentByReference(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 
@@ -276,7 +270,7 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
 
     @Override
     public void fillFieldsFromProduct(final ViewDefinitionState view, final DataDefinition trackingOperationProductComponentDD) {
-        FormComponent trackingOperationProductComponentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent trackingOperationProductComponentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long trackingOperationProductComponentId = trackingOperationProductComponentForm.getEntityId();
 

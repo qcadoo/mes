@@ -23,20 +23,6 @@
  */
 package com.qcadoo.mes.advancedGenealogy.tree;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.test.util.ReflectionTestUtils;
-
 import com.qcadoo.mes.advancedGenealogy.constants.AdvancedGenealogyConstants;
 import com.qcadoo.mes.advancedGenealogy.tree.AdvancedGenealogyTreeViewListeners.FormValidationException;
 import com.qcadoo.model.api.DataDefinition;
@@ -46,6 +32,18 @@ import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Locale;
+
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.*;
 
 public class AdvancedGenealogyTreeViewListenersTest {
 
@@ -88,7 +86,7 @@ public class AdvancedGenealogyTreeViewListenersTest {
         formEntity = mock(Entity.class);
         batchLookup = mock(ComponentState.class);
 
-        when(view.getComponentByReference("form")).thenReturn(formComponent);
+        when(view.getComponentByReference(QcadooViewConstants.L_FORM)).thenReturn(formComponent);
         when(formComponent.getEntity()).thenReturn(formEntity);
 
         when(view.getComponentByReference("batchLookup")).thenReturn(batchLookup);

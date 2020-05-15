@@ -24,11 +24,12 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.grid.GridComponentFilterSQLUtils;
 import com.qcadoo.view.api.components.grid.GridComponentMultiSearchFilter;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class PerformanceAnalysisListeners {
 
-    private static final String L_GRID = "grid";
+
 
     private static final String L_FILTERS = "filters";
 
@@ -51,7 +52,7 @@ public class PerformanceAnalysisListeners {
 
     public void showDetails(final ViewDefinitionState view, final ComponentState state, final String[] args) {
 
-        GridComponent performanceAnalysisGrid = (GridComponent) view.getComponentByReference(L_GRID);
+        GridComponent performanceAnalysisGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
         Entity analysis = performanceAnalysisGrid.getSelectedEntities().get(0);
 
@@ -108,7 +109,7 @@ public class PerformanceAnalysisListeners {
                 .getComponentByReference(PerformanceAnalysisDtoFields.TOTAL_DEVIATION_TIME);
         FieldComponent totalPerformance = (FieldComponent) view
                 .getComponentByReference(PerformanceAnalysisDtoFields.TOTAL_PERFORMANCE);
-        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
         String query = buildQuery();
 

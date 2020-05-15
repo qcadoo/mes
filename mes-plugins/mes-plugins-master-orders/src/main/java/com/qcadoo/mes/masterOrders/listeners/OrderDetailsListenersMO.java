@@ -12,6 +12,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class OrderDetailsListenersMO {
@@ -21,7 +22,7 @@ public class OrderDetailsListenersMO {
 
     public void updateDescription(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         if (parameterService.getParameter().getBooleanField(ParameterFieldsMO.COPY_DESCRIPTION)) {
-            FormComponent form = (FormComponent) view.getComponentByReference("form");
+            FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
             Entity order = form.getEntity();
             Entity masterOrder = order.getBelongsToField(OrderFieldsMO.MASTER_ORDER);
             if (masterOrder != null) {

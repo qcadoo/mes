@@ -74,7 +74,6 @@
         <module>mes-plugins-orders-for-subproducts-generation</module>
         <module>mes-plugins-sub-orders</module>
         <module>mes-plugins-time-gaps-preview</module>
-        <module>mes-plugins-product-characteristics</module>
         <module>mes-plugins-technologies-generator</module>
         <module>mes-plugins-email-notifications</module>
         <module>mes-plugins-deliveries-min-state</module>

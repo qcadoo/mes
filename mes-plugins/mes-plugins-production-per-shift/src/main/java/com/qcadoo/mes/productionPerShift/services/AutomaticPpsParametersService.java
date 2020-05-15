@@ -1,10 +1,10 @@
 package com.qcadoo.mes.productionPerShift.services;
 
-import com.qcadoo.mes.productionPerShift.constants.ParameterFieldsPPS;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.productionPerShift.constants.ParameterFieldsPPS;
 import com.qcadoo.mes.productionPerShift.constants.PpsAlgorithm;
 
 @Service

@@ -1,27 +1,27 @@
 package com.qcadoo.mes.deliveries.listeners;
 
-import java.util.Objects;
-
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class DeliveryByPalletTypeReportListeners {
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_FROM_DATE = "fromDate";
 
     private static final String L_TO_DATE = "toDate";
 
     public final void generateReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity entity = form.getPersistedEntityWithIncludedFormValues();
 

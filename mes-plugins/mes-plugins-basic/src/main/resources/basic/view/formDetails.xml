@@ -62,21 +62,11 @@
                     <layoutElement column="1" row="4">
                         <component type="input" name="size" field="size" reference="size">
                             <option type="alignment" value="right" />
-                            <listener event="onSetValue" method="onSetSize"
-                           			class="com.qcadoo.mes.productCharacteristics.listeners.FormDetailsListeners" />
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="5">
                         <component type="select" name="unit" field="unit"
                                    reference="unit"/>
-                    </layoutElement>
-                    <layoutElement column="1" row="6">
-                        <component type="checkbox" name="upForm" field="upForm"
-                                   reference="upForm"/>
-                    </layoutElement>
-                    <layoutElement column="1" row="7">
-                        <component type="checkbox" name="downForm" field="downForm"
-                                   reference="downForm"/>
                     </layoutElement>
                 </component>
                 <option type="header" value="true"/>
@@ -87,7 +77,7 @@
     </component>
 
     <hooks>
-        <beforeRender class="com.qcadoo.mes.productCharacteristics.hooks.FormDetailsHooks"
+        <beforeRender class="com.qcadoo.mes.basic.hooks.FormDetailsHooks"
                       method="onBeforeRender" />
     </hooks>
 

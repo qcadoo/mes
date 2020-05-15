@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.advancedGenealogy;
 
-import java.io.IOException;
-import java.util.Date;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.lowagie.text.DocumentException;
 import com.qcadoo.mes.advancedGenealogy.constants.AdvancedGenealogyConstants;
 import com.qcadoo.mes.advancedGenealogy.print.AdvancedGenealogyPdfService;
@@ -42,6 +36,12 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.Date;
 
 @Service
 public class AdvancedGenealogyReportService {
@@ -111,7 +111,7 @@ public class AdvancedGenealogyReportService {
     }
 
     public void disableForm(final ViewDefinitionState view) {
-        final FormComponent genealogyReportForm = (FormComponent) view.getComponentByReference("form");
+        final FormComponent genealogyReportForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         final Long genealogyReportId = genealogyReportForm.getEntityId();
         final String[] componentsToDisable = { "reportedBatch", "name", "type", "includeDraft", "directOnly" };
         final FieldComponent isGeneratedField = (FieldComponent) view.getComponentByReference("isGenerated");

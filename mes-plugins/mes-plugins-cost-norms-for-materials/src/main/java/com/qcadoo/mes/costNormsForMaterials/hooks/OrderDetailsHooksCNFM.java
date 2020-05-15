@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.costNormsForMaterials.hooks;
 
-import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.OrderStateService;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
@@ -39,6 +33,12 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY;
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.STATE;
 
 @Service
 public class OrderDetailsHooksCNFM {
@@ -50,9 +50,9 @@ public class OrderDetailsHooksCNFM {
     private OrderStateService orderStateService;
 
     public void updateViewCostsButtonState(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference("form");
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup materials = (RibbonGroup) window.getRibbon().getGroupByName("materials");
         RibbonActionItem viewCosts = (RibbonActionItem) materials.getItemByName("viewCosts");
 

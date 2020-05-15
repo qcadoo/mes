@@ -23,22 +23,22 @@
  */
 package com.qcadoo.mes.basic;
 
-import java.util.LinkedList;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.LinkedList;
 import java.util.List;
 
 @Service
 public class PalletNumberGenerator {
 
-    private static final String L_FORM = "form";
+
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
@@ -53,7 +53,7 @@ public class PalletNumberGenerator {
      *
      */
     public boolean checkIfShouldInsertNumber(final ViewDefinitionState view) {
-        return numberGeneratorService.checkIfShouldInsertNumber(view, L_FORM, PalletNumberFields.NUMBER);
+        return numberGeneratorService.checkIfShouldInsertNumber(view, QcadooViewConstants.L_FORM, PalletNumberFields.NUMBER);
     }
 
     /**

@@ -39,6 +39,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class DivisionDetailsListenersPL {
@@ -50,7 +51,7 @@ public class DivisionDetailsListenersPL {
         if (args.length < 1) {
             return;
         }
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity division = form.getPersistedEntityWithIncludedFormValues();
         List<Long> addedWorkstationIds = parseIds(args[0]);
         for (Long addedWorkstationId : addedWorkstationIds) {
@@ -85,7 +86,7 @@ public class DivisionDetailsListenersPL {
     public void onRemoveSelectedProductionLines(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent productionLinesGrid = (GridComponent) view.getComponentByReference("productionLines");
         List<Entity> productionLinesToDelete = productionLinesGrid.getSelectedEntities();
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long divisionId = form.getEntityId();
         for (Entity productionLine : productionLinesToDelete) {
             List<Entity> workstations = productionLine.getHasManyField(ProductionLineFields.WORKSTATIONS);

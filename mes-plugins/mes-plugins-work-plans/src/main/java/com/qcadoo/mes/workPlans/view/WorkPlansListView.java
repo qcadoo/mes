@@ -23,16 +23,16 @@
  */
 package com.qcadoo.mes.workPlans.view;
 
-import java.util.List;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import java.util.List;
 
 public class WorkPlansListView {
 
@@ -43,8 +43,8 @@ public class WorkPlansListView {
     private final WindowComponent window;
 
     public static WorkPlansListView from(final ViewDefinitionState view) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         RibbonActionItem deleteButton = window.getRibbon().getGroupByName("actions").getItemByName("delete");
         return new WorkPlansListView(window, deleteButton, grid);
     }

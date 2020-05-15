@@ -36,12 +36,7 @@ import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.orderSupplies.OrderSuppliesService;
-import com.qcadoo.mes.orderSupplies.constants.CoverageLocationFields;
-import com.qcadoo.mes.orderSupplies.constants.CoverageProductFields;
-import com.qcadoo.mes.orderSupplies.constants.CoverageProductGeneratedFields;
-import com.qcadoo.mes.orderSupplies.constants.CoverageProductSelectedFields;
-import com.qcadoo.mes.orderSupplies.constants.MaterialRequirementCoverageFields;
-import com.qcadoo.mes.orderSupplies.constants.OrderSuppliesConstants;
+import com.qcadoo.mes.orderSupplies.constants.*;
 import com.qcadoo.mes.orderSupplies.coverage.MaterialRequirementCoverageService;
 import com.qcadoo.mes.orderSupplies.print.MaterialRequirementCoverageReportPdfService;
 import com.qcadoo.mes.productCatalogNumbers.ProductCatalogNumbersService;
@@ -61,18 +56,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -80,15 +64,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.CURRENCY;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.EXTERNAL_SYNCHRONIZED;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.NUMBER;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.*;
 
 @Service
 public class GenerateMaterialRequirementCoverageListeners {
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_GRID = "coverageProducts";
 
@@ -159,7 +147,7 @@ public class GenerateMaterialRequirementCoverageListeners {
 
     @Transactional
     public final void generate(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long materialRequirementCoverageId = materialRequirementCoverageForm.getEntityId();
 
@@ -199,7 +187,7 @@ public class GenerateMaterialRequirementCoverageListeners {
             state.performEvent(view, "save", args);
 
             if (!state.isHasError()) {
-                FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(L_FORM);
+                FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
                 Long materialRequirementCoverageId = materialRequirementCoverageForm.getEntityId();
 
                 boolean saved = orderSuppliesService.checkIfMaterialRequirementCoverageIsSaved(materialRequirementCoverageId);
@@ -224,7 +212,7 @@ public class GenerateMaterialRequirementCoverageListeners {
         state.performEvent(view, "save", args);
 
         if (!state.isHasError()) {
-            FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(L_FORM);
+            FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
             Long materialRequirementCoverageId = materialRequirementCoverageForm.getEntityId();
 
             if (materialRequirementCoverageId != null) {
@@ -285,7 +273,7 @@ public class GenerateMaterialRequirementCoverageListeners {
     }
 
     public void showReplacementsAvailability(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long materialRequirementCoverageId = materialRequirementCoverageForm.getEntityId();
         Entity materialRequirement = dataDefinitionService.get(OrderSuppliesConstants.PLUGIN_IDENTIFIER,
                 OrderSuppliesConstants.MODEL_MATERIAL_REQUIREMENT_COVERAGE).get(materialRequirementCoverageId);

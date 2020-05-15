@@ -23,19 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources;
 
-import java.math.BigDecimal;
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -43,11 +30,7 @@ import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlow.constants.LocationType;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlow.constants.TransferFields;
-import com.qcadoo.mes.materialFlowResources.constants.ChangeDateWhenTransferToWarehouseType;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
-import com.qcadoo.mes.materialFlowResources.constants.TransferFieldsMFR;
+import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -60,11 +43,20 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.text.DateFormat;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesService {
 
-    private static final String L_FORM = "form";
+
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -243,6 +235,12 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Override
     public Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location) {
+        return getQuantitiesForProductsAndLocation(products, location, false);
+    }
+
+    @Override
+    public Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location,
+            final boolean withoutBlockedForQualityControl) {
         Map<Long, BigDecimal> quantities = Maps.newHashMap();
 
         if (products.size() > 0) {
@@ -252,6 +250,9 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             sb.append("FROM #materialFlowResources_resource AS r ");
             sb.append("JOIN r.product AS p ");
             sb.append("JOIN r.location AS l ");
+            if (withoutBlockedForQualityControl) {
+                sb.append("WHERE r.blockedForQualityControl = false ");
+            }
             sb.append("GROUP BY p.id, l.id ");
             sb.append("HAVING p.id IN (:productIds) ");
             sb.append("AND l.id = :locationId ");
@@ -362,7 +363,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Override
     public void disableDateField(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         FieldComponent dateField = (FieldComponent) view.getComponentByReference(TransferFields.TIME);
 

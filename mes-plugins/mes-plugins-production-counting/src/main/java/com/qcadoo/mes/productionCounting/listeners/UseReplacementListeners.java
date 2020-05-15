@@ -15,21 +15,21 @@ import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-
-import java.util.List;
-import java.util.Objects;
-
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class UseReplacementListeners {
 
     public static final String QUANTITY = "quantity";
 
-    private static final String L_FORM = "form";
+    
 
     private static final String PRODUCT = "product";
 
@@ -45,7 +45,7 @@ public class UseReplacementListeners {
 
     public void addReplacement(final ViewDefinitionState view, final ComponentState state, final String[] args)
             throws JSONException {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         CheckBoxComponent generated = (CheckBoxComponent) view.getComponentByReference("generated");
         generated.setChecked(false);
 

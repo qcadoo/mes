@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.assignmentToShift.listeners;
 
-import static com.qcadoo.mes.assignmentToShift.constants.OccupationType.WORK_ON_LINE;
-import static com.qcadoo.model.constants.DictionaryItemFields.NAME;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftConstants;
@@ -51,13 +41,23 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static com.qcadoo.mes.assignmentToShift.constants.OccupationType.WORK_ON_LINE;
+import static com.qcadoo.model.constants.DictionaryItemFields.NAME;
 
 @Service
 public class AssignmentToShiftDetailsListeners {
 
-    public static final String L_WINDOW = "window";
 
-    public static final String L_FORM = "form";
+
+
 
     public static final String L_COPY = "copy";
 
@@ -70,7 +70,7 @@ public class AssignmentToShiftDetailsListeners {
     private MultiAssignmentToShiftDetailsHooks multiAssignmentToShiftDetailsHooks;
 
     public void addManyWorkers(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent assignmentToShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent assignmentToShiftForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity multiAssignmentToShift = prepareMultiAssignmetEntity(assignmentToShiftForm.getEntity());
         Map<String, Object> parameters = Maps.newHashMap();
@@ -96,7 +96,7 @@ public class AssignmentToShiftDetailsListeners {
     }
 
     public void copyStaffAssignmentToShift(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent assignmentToShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent assignmentToShiftForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         GridComponent staffAssignmentToShiftsGrid = (GridComponent) view
                 .getComponentByReference(AssignmentToShiftFields.STAFF_ASSIGNMENT_TO_SHIFTS);
 
@@ -156,7 +156,7 @@ public class AssignmentToShiftDetailsListeners {
 
     public void changeCopyStaffAssignmentToShiftButtonState(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
-        FormComponent assignmentToShiftForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent assignmentToShiftForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity assignmentToShift = assignmentToShiftForm.getEntity();
 
@@ -164,7 +164,7 @@ public class AssignmentToShiftDetailsListeners {
     }
 
     private void changeCopyStaffAssignmentToShiftButtonState(ViewDefinitionState view, Entity assignmentToShift) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         Ribbon ribbon = window.getRibbon();
 
         RibbonGroup copyRibbonGroup = ribbon.getGroupByName(L_COPY);

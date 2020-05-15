@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
@@ -55,11 +47,19 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class OrderDetailsListeners {
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_PLANNED_DATE_FROM = "plannedDateFrom";
 
@@ -182,7 +182,7 @@ public class OrderDetailsListeners {
     }
 
     private void copyDate(final ViewDefinitionState view, final String fromNameField, final String toNameField) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent fromField = (FieldComponent) view.getComponentByReference(fromNameField);
         FieldComponent toField = (FieldComponent) view.getComponentByReference(toNameField);
 
@@ -224,7 +224,7 @@ public class OrderDetailsListeners {
     }
 
     public void copyStartDateToDetails(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long orderId = orderForm.getEntityId();
 
@@ -251,7 +251,7 @@ public class OrderDetailsListeners {
     }
 
     public void copyFinishDateToDetails(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long orderId = orderForm.getEntityId();
 
@@ -319,7 +319,7 @@ public class OrderDetailsListeners {
 
     public void changeState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         state.performEvent(view, "save", args);
-        FormComponent formComponent = (FormComponent) view.getComponentByReference("form");
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity order = formComponent.getPersistedEntityWithIncludedFormValues();
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
@@ -336,16 +336,16 @@ public class OrderDetailsListeners {
 
     public void onQuantityForAdditionalUnitChange(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        additionalUnitService.setQuantityForUnit(view, ((FormComponent) view.getComponentByReference(L_FORM)).getEntity());
+        additionalUnitService.setQuantityForUnit(view, ((FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM)).getEntity());
     }
 
     public void onQuantityChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         additionalUnitService.setQuantityFieldForAdditionalUnit(view,
-                ((FormComponent) view.getComponentByReference(L_FORM)).getEntity());
+                ((FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM)).getEntity());
     }
 
     public void showOperationalTasks(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long orderId = orderForm.getEntityId();
 

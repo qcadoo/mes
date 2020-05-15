@@ -42,6 +42,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ProductionLineDetailsListeners {
@@ -56,7 +57,7 @@ public class ProductionLineDetailsListeners {
         if (args.length < 1) {
             return;
         }
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity productionLine = form.getPersistedEntityWithIncludedFormValues();
         List<Long> addedWorkstationIds = parseIds(args[0]);
         for (Long addedWorkstationId : addedWorkstationIds) {
@@ -90,7 +91,7 @@ public class ProductionLineDetailsListeners {
     public void onRemoveSelectedDivisions(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent divisionsGrid = (GridComponent) view.getComponentByReference("divisions");
         List<Entity> divisionsToDelete = divisionsGrid.getSelectedEntities();
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long productionLineId = form.getEntityId();
         for (Entity division : divisionsToDelete) {
             List<Entity> workstations = division.getHasManyField(DivisionFields.WORKSTATIONS);
@@ -106,12 +107,12 @@ public class ProductionLineDetailsListeners {
     }
 
     public void generateFactoryStructure(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity productionLine = form.getEntity();
         EntityTree structure = factoryStructureGenerationService.generateFactoryStructureForProductionLine(productionLine);
         productionLine.setField(WorkstationFieldsPL.FACTORY_STRUCTURE, structure);
         form.setEntity(productionLine);
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         window.setActiveTab("factoryStructureTab");
     }
 

@@ -23,6 +23,10 @@
  */
 package com.qcadoo.mes.productionPerShift.util;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
 import com.qcadoo.mes.productionPerShift.constants.ReasonTypeOfCorrectionPlanFields;
@@ -30,9 +34,6 @@ import com.qcadoo.mes.productionPerShift.domain.PpsCorrectionReason;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class PpsCorrectionReasonAppender {

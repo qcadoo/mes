@@ -32,6 +32,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class TechnologyGroupDetailsViewHooks {
@@ -41,7 +42,7 @@ public class TechnologyGroupDetailsViewHooks {
 
     public void addTechnologyGroupToProduct(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        FormComponent technologyGroupForm = (FormComponent) view.getComponentByReference("form");
+        FormComponent technologyGroupForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity technologyGroup = technologyGroupForm.getEntity();
 
         if (technologyGroup.getId() == null) {

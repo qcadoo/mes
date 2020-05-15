@@ -45,17 +45,17 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 @Service
 public class TrackingOperationProductOutComponentDetailsHooks {
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_ID = ".id";
 
@@ -78,7 +78,7 @@ public class TrackingOperationProductOutComponentDetailsHooks {
         trackingOperationProductComponentDetailsListeners.onBeforeRender(view);
         fillStorageLocation(view);
 
-        FormComponent trackingOperationProductOutComponentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent trackingOperationProductOutComponentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity trackingOperationProductOutComponent = trackingOperationProductOutComponentForm
                 .getPersistedEntityWithIncludedFormValues();
@@ -105,7 +105,7 @@ public class TrackingOperationProductOutComponentDetailsHooks {
     }
 
     private void fillStorageLocation(final ViewDefinitionState view) {
-        FormComponent trackingOperationProductOutComponentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent trackingOperationProductOutComponentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity trackingOperationProductOutComponent = trackingOperationProductOutComponentForm.getEntity();
 

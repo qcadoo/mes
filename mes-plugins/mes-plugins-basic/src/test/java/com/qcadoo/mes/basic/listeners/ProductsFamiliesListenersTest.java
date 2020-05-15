@@ -23,20 +23,20 @@
  */
 package com.qcadoo.mes.basic.listeners;
 
-import static org.mockito.Mockito.when;
-
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.ribbon.Ribbon;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import com.qcadoo.view.internal.components.window.WindowComponentState;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.ribbon.Ribbon;
-import com.qcadoo.view.api.ribbon.RibbonActionItem;
-import com.qcadoo.view.api.ribbon.RibbonGroup;
-import com.qcadoo.view.internal.components.window.WindowComponentState;
+import static org.mockito.Mockito.when;
 
 public class ProductsFamiliesListenersTest {
 
@@ -69,7 +69,7 @@ public class ProductsFamiliesListenersTest {
     @Test
     public void shouldEnabledButtonWhenProductOnTreeIsSelected() throws Exception {
         // given
-        when(view.getComponentByReference("window")).thenReturn((ComponentState) windowComponent);
+        when(view.getComponentByReference(QcadooViewConstants.L_WINDOW)).thenReturn((ComponentState) windowComponent);
         when(windowComponent.getRibbon()).thenReturn(ribbon);
         when(ribbon.getGroupByName("edit")).thenReturn(ribbonGroup);
         when(ribbonGroup.getItemByName("editSelectedProduct")).thenReturn(actionItem);

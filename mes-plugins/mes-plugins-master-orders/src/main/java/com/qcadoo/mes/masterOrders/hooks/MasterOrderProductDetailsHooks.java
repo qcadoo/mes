@@ -37,18 +37,18 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Objects;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 @Service
 public class MasterOrderProductDetailsHooks {
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired
     private MasterOrderDetailsHooks masterOrderDetailsHooks;
@@ -79,7 +79,7 @@ public class MasterOrderProductDetailsHooks {
     }
 
     public void fillQuantities(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity productComponent = form.getEntity();
         if (productComponent.getId() != null) {
             Entity masterOrderProductDto = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
@@ -120,7 +120,7 @@ public class MasterOrderProductDetailsHooks {
 
     public void showErrorWhenCumulatedQuantity(final ViewDefinitionState view) {
         if (view.isViewAfterRedirect()) {
-            FormComponent masterOrderProductForm = (FormComponent) view.getComponentByReference(L_FORM);
+            FormComponent masterOrderProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
             Entity masterOrderProduct = masterOrderProductForm.getPersistedEntityWithIncludedFormValues();
 
             if ((masterOrderProduct == null) || !masterOrderProduct.isValid()) {

@@ -23,22 +23,22 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
-
-import java.util.Map;
-
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.stereotype.Service;
+
+import java.util.Map;
+
+import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
 
 @Service
 public class ProductDetailsListenersO {
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_FILTERS = "filters";
 
@@ -48,7 +48,7 @@ public class ProductDetailsListenersO {
 
     public final void showOrdersWithProductMain(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity product = productForm.getEntity();
 
         if (product.getId() == null) {
@@ -78,7 +78,7 @@ public class ProductDetailsListenersO {
 
     public final void showOrdersWithProductPlanned(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity product = productForm.getEntity();
 
         if (product.getId() == null) {

@@ -8,27 +8,27 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 @Service
 public class TechnologiesWithUsingProductListListeners {
 
-    private static final String L_GRID = "grid";
 
-    public static final String L_FORM = "form";
+
+
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     public void goToModifyTechnology(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
-        GridComponent grid = (GridComponent) view.getComponentByReference(L_GRID);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         Set<Long> selected = grid.getSelectedEntitiesIds();
 
                Entity modifyTechnology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,

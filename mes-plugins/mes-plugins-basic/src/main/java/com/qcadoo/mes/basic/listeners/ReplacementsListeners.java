@@ -10,13 +10,13 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
-
-import java.util.Map;
-
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 public class ReplacementsListeners {
@@ -25,7 +25,7 @@ public class ReplacementsListeners {
     private DataDefinitionService dataDefinitionService;
 
     public final void openReplacements(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent productForm = (FormComponent) view.getComponentByReference("form");
+        FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity product = productForm.getEntity();
         String url = "/basic/productReplacements.html";
         Map<String, Object> parameters = Maps.newHashMap();
@@ -37,7 +37,7 @@ public class ReplacementsListeners {
             throws JSONException {
         JSONObject obj = view.getJsonContext();
         if(obj.has("window.mainTab.product.productId")) {
-            GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+            GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
             Long productId = obj.getLong("window.mainTab.product.productId");
             for(Long sub : grid.getSelectedEntitiesIds()) {
                 Entity substituteComponent = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SUBSTITUTE_COMPONENT).create();

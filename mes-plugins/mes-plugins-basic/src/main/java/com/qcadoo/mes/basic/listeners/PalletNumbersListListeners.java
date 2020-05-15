@@ -23,22 +23,22 @@
  */
 package com.qcadoo.mes.basic.listeners;
 
-import java.util.List;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.PalletNumbersService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class PalletNumbersListListeners {
 
-    public static final String L_GRID = "grid";
+
 
     @Autowired
     private PalletNumbersService palletNumbersService;
@@ -50,7 +50,7 @@ public class PalletNumbersListListeners {
     }
 
     public void printPalletNumbersReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent palletNumbersGrid = (GridComponent) view.getComponentByReference(L_GRID);
+        GridComponent palletNumbersGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
         Set<Long> palletNumberIds = palletNumbersGrid.getSelectedEntitiesIds();
 

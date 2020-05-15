@@ -33,20 +33,21 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class TechnologyDetailsHooksCC {
 
     private static final String L_COST_CALCULATE = "costCalculate";
 
-    private static final String L_WINDOW = "window";
 
-    private static final String L_FORM = "form";
+
+    
 
     public void updateViewCostsCalculationButtonState(final ViewDefinitionState view) {
-        FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup ribbonGroup = window.getRibbon().getGroupByName(L_COST_CALCULATE);
         RibbonActionItem costCalculate = ribbonGroup.getItemByName(L_COST_CALCULATE);
 

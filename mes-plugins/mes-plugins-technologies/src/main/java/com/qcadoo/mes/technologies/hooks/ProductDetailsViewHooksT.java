@@ -35,11 +35,12 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ProductDetailsViewHooksT {
 
-    private static final String L_FORM = "form";
+
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -56,10 +57,10 @@ public class ProductDetailsViewHooksT {
         if (!securityService.hasRole(loggedUser, "ROLE_TECHNOLOGIES")) {
             view.getComponentByReference("technologyTab").setVisible(false);
         }
-        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity product = productForm.getEntity();
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup technologies = window.getRibbon().getGroupByName("technologies");
 
         RibbonActionItem showTechnologiesWithTechnologyGroup = technologies

@@ -32,7 +32,6 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.aspects.MRCCriteriaModifiersMRCFOOverideAspect;
-import com.qcadoo.mes.materialRequirementCoverageForOrder.criteriaModifiers.MRCForOrderCriteriaModifiers;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -40,15 +39,16 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class GenerateMaterialRequirementDetailsHooksMRCFO {
 
     private static final Logger LOG = LoggerFactory.getLogger(GenerateMaterialRequirementDetailsHooksMRCFO.class);
 
-    private static final String L_FORM = "form";
+    
 
-    private static final String L_WINDOW = "window";
+
 
     private static final String L_COVERAGE = "coverage";
 
@@ -58,7 +58,7 @@ public class GenerateMaterialRequirementDetailsHooksMRCFO {
     }
 
     private void setCriteriaModifierParameters(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity mRCForOrder = form.getEntity();
 
@@ -75,7 +75,7 @@ public class GenerateMaterialRequirementDetailsHooksMRCFO {
     }
 
     private void fillFieldsForOrder(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity mRCForOrder = form.getEntity();
 

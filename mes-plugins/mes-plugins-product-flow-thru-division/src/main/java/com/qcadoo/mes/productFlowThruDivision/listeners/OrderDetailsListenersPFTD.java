@@ -40,6 +40,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class OrderDetailsListenersPFTD {
@@ -50,7 +51,7 @@ public class OrderDetailsListenersPFTD {
 
     private static final String L_FILTERS = "filters";
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -59,7 +60,7 @@ public class OrderDetailsListenersPFTD {
     private OrderMaterialAvailability orderMaterialAvailability;
 
     public void showWarehouseIssuesForOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity order = form.getEntity();
 
         if (order.getId() == null) {
@@ -94,7 +95,7 @@ public class OrderDetailsListenersPFTD {
 
     public void showMaterialAvailabilityForProductionTracking(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
-        FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productionRecordForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity productionRecord = productionRecordForm.getEntity();
 

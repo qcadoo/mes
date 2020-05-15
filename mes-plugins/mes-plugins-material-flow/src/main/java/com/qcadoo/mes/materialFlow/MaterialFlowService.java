@@ -42,39 +42,29 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.*;
+
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 import static com.qcadoo.mes.materialFlow.constants.LocationFields.EXTERNAL_NUMBER;
 import static com.qcadoo.mes.materialFlow.constants.MaterialsInLocationFields.MATERIALS_IN_LOCATION_COMPONENTS;
 import static com.qcadoo.mes.materialFlow.constants.MaterialsInLocationFields.MATERIAL_FLOW_FOR_DATE;
-import static com.qcadoo.mes.materialFlow.constants.StockCorrectionFields.FOUND;
-import static com.qcadoo.mes.materialFlow.constants.StockCorrectionFields.LOCATION;
 import static com.qcadoo.mes.materialFlow.constants.StockCorrectionFields.PRODUCT;
-import static com.qcadoo.mes.materialFlow.constants.StockCorrectionFields.SHOULD_BE;
-import static com.qcadoo.mes.materialFlow.constants.StockCorrectionFields.STOCK_CORRECTION_DATE;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
+import static com.qcadoo.mes.materialFlow.constants.StockCorrectionFields.*;
 import static com.qcadoo.mes.materialFlow.constants.TransferFields.NUMBER;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.QUANTITY;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.*;
 import static com.qcadoo.mes.materialFlow.constants.TransferType.CONSUMPTION;
 import static com.qcadoo.mes.materialFlow.constants.TransferType.PRODUCTION;
 
 @Service
 public class MaterialFlowService {
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_ID = "id";
 
@@ -214,7 +204,7 @@ public class MaterialFlowService {
             return;
         }
         numberGeneratorService.generateAndInsertNumber(view, MaterialFlowConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowConstants.MODEL_TRANSFORMATIONS, L_FORM, NUMBER);
+                MaterialFlowConstants.MODEL_TRANSFORMATIONS, QcadooViewConstants.L_FORM, NUMBER);
     }
 
     public void generateNumberForTransfer(final ViewDefinitionState state, final ComponentState componentState,
@@ -235,7 +225,7 @@ public class MaterialFlowService {
         FieldComponent number = (FieldComponent) state.getComponentByReference(NUMBER);
         FieldComponent productState = (FieldComponent) componentState;
 
-        if (!numberGeneratorService.checkIfShouldInsertNumber(state, L_FORM, NUMBER)) {
+        if (!numberGeneratorService.checkIfShouldInsertNumber(state, QcadooViewConstants.L_FORM, NUMBER)) {
             return;
         }
         if (productState.getFieldValue() != null) {

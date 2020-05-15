@@ -36,13 +36,9 @@ public interface AdvancedGenealogyConstants {
 
     String MODEL_TRACKING_RECORD = "trackingRecord";
 
-    String MODEL_SIMPLE_TRACKING_RECORD = "trackingRecordSimple";
-
     String MODEL_TRACKING_RECORD_STATE_CHANGE = "trackingRecordStateChange";
 
     String MODEL_USED_BATCH_SIMPLE = "usedBatchSimple";
-
-    String FIELD_FORM = "form";
 
     String FIELD_NUMBER = "number";
 

@@ -143,6 +143,10 @@ public class TrackingOperationProductOutComponentHooks {
         boolean enteredFromTerminal = BooleanUtils.isTrue(trackingOperationProductOutComponent
                 .getBooleanField(TrackingOperationProductOutComponentFields.ENTERED_FROM_TERMINAL));
 
+        if(enteredFromTerminal) {
+            return false;
+        }
+
         boolean allowToOverrideQuantitiesFromTerminal = BooleanUtils.isTrue(parameterService.getParameter().getBooleanField(
                 ParameterFieldsPC.ALLOW_CHANGES_TO_USED_QUANTITY_ON_TERMINAL));
 

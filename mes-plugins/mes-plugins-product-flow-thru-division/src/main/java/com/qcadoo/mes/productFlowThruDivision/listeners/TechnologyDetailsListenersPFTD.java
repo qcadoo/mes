@@ -23,6 +23,12 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.listeners;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.qcadoo.mes.productFlowThruDivision.OperationComponentDataProvider;
 import com.qcadoo.mes.productFlowThruDivision.constants.*;
 import com.qcadoo.mes.productFlowThruDivision.hooks.TechnologyDetailsHooksPFTD;
@@ -39,16 +45,12 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class TechnologyDetailsListenersPFTD {
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired
     private TechnologyDetailsHooksPFTD technologyDetailsHooksPFTD;
@@ -84,7 +86,7 @@ public class TechnologyDetailsListenersPFTD {
     @Transactional
     public void fillLocationsInComponents(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity technology = form.getPersistedEntityWithIncludedFormValues();
         fillLocationsInComponents(technology);
         view.addMessage("productFlowThruDivision.location.filled", ComponentState.MessageType.SUCCESS);
@@ -298,7 +300,7 @@ public class TechnologyDetailsListenersPFTD {
 
     public void onProductionFlowComponentChange(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity technology = form.getPersistedEntityWithIncludedFormValues();
 
         if (Range.ONE_DIVISION.getStringValue().equals(technology.getStringField(TechnologyFieldsPFTD.RANGE))) {

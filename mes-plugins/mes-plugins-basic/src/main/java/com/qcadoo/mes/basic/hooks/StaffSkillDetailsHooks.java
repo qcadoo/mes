@@ -31,22 +31,22 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.stereotype.Service;
 
 import java.util.Objects;
-
-import org.springframework.stereotype.Service;
 
 @Service
 public class StaffSkillDetailsHooks {
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_STAFF_ID = "staffId";
 
     private static final String MAX_LEVEL = "maxLevel";
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        FormComponent staffSkillForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent staffSkillForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         LookupComponent skillLookup = (LookupComponent) view.getComponentByReference(StaffSkillsFields.SKILL);
 
         Entity staffSkill = staffSkillForm.getEntity();

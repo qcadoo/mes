@@ -33,17 +33,17 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 @Service
 public class GeneratorViewHooks {
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired
     private TechnologyStructureNodeDataProvider nodeDataProvider;
@@ -64,7 +64,7 @@ public class GeneratorViewHooks {
 
     public void generateProductNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, TechnologiesGeneratorConstants.PLUGIN_IDENTIFIER, TechnologiesGeneratorConstants.MODEL_GENERATOR_CONTEXT,
-                L_FORM, GeneratorContextFields.NAME);
+                QcadooViewConstants.L_FORM, GeneratorContextFields.NAME);
     }
 
     void showRibbonButtons(final GeneratorView generatorView, final ViewDefinitionState view) {

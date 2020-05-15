@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.productionScheduling.hooks;
 
-import java.util.Objects;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -39,21 +33,23 @@ import com.qcadoo.mes.productionScheduling.criteriaModifiers.OperCompTimeCalcula
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.CheckBoxComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 @Service
 public class OperationDurationDetailsInOrderHooks {
 
-    private static final String L_FORM = "form";
+    
 
-    private static final String L_WINDOW = "window";
+
 
     private static final String L_GENERATED_END_DATE = "generatedEndDate";
 
@@ -68,7 +64,7 @@ public class OperationDurationDetailsInOrderHooks {
     private ParameterService parameterService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (orderForm.getEntityId() == null && view.isViewAfterRedirect()) {
             CheckBoxComponent includeTpzField = (CheckBoxComponent) view.getComponentByReference(OrderFieldsPS.INCLUDE_TPZ);
@@ -88,7 +84,7 @@ public class OperationDurationDetailsInOrderHooks {
     }
 
     private void setCriteriaModifierParameters(ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long orderId = orderForm.getEntityId();
         GridComponent grid = (GridComponent) view.getComponentByReference("operCompTimeCalculationsGrid");
         FilterValueHolder holder = grid.getFilterValue();
@@ -98,7 +94,7 @@ public class OperationDurationDetailsInOrderHooks {
     }
 
     private void fillUnitField(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent unitField = (FieldComponent) view.getComponentByReference(OrderFieldsPS.OPERATION_DURATION_QUANTITY_UNIT);
 
         Long orderId = orderForm.getEntityId();
@@ -117,7 +113,7 @@ public class OperationDurationDetailsInOrderHooks {
     }
 
     private void disableCopyRealizationTimeButton(final ViewDefinitionState view) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
 
         RibbonGroup realizationTimeGroup = window.getRibbon().getGroupByName("operationDuration");
         RibbonActionItem realizationTime = realizationTimeGroup.getItemByName("copy");
@@ -138,7 +134,7 @@ public class OperationDurationDetailsInOrderHooks {
     }
 
     void disableCreateButton(final ViewDefinitionState view) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
 
         RibbonGroup operationalTasks = window.getRibbon().getGroupByName(L_OPERATIONAL_TASKS);
         RibbonActionItem createOperationalTasks = operationalTasks.getItemByName(L_CREATE_OPERATIONAL_TASKS);
@@ -153,7 +149,7 @@ public class OperationDurationDetailsInOrderHooks {
     }
 
     private boolean orderHasTechnologyAndCorrectState(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long orderId = orderForm.getEntityId();
 

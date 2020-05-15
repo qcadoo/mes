@@ -45,6 +45,7 @@ import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -56,9 +57,9 @@ import java.util.Set;
 @Service
 public class TechnologyDetailsHooksPFTD {
 
-    private static final String L_FORM = "form";
 
-    private static final String L_WINDOW = "window";
+
+
 
     private static final String L_PRODUCTS_COMPONENT = "productsFlowComponent";
 
@@ -147,14 +148,14 @@ public class TechnologyDetailsHooksPFTD {
     }
 
     private void changeRibbonState(final ViewDefinitionState view) {
-        FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long technologyId = technologyForm.getEntityId();
         if (technologyId == null) {
             return;
         }
 
         Entity technology = technologyForm.getPersistedEntityWithIncludedFormValues();
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup flow = window.getRibbon().getGroupByName("productsFlow");
 
         RibbonActionItem fillLocationsInComponents = flow.getItemByName("fillLocationsInComponents");
@@ -173,7 +174,7 @@ public class TechnologyDetailsHooksPFTD {
             return;
         }
 
-        FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent rangeField = (FieldComponent) view.getComponentByReference(TechnologyFieldsPFTD.RANGE);
 
         String range = (String) rangeField.getFieldValue();
@@ -233,7 +234,7 @@ public class TechnologyDetailsHooksPFTD {
     }
 
     private void disableTab(final ViewDefinitionState view) {
-        FormComponent technology = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent technology = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (technology.getEntityId() != null) {
             Entity entity = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY).get(technology.getEntityId());
@@ -270,7 +271,7 @@ public class TechnologyDetailsHooksPFTD {
     }
 
     private void enableTab(final ViewDefinitionState view) {
-        FormComponent technology = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent technology = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (technology.getEntityId() != null) {
             Entity entity = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY).get(technology.getEntityId());
@@ -307,7 +308,7 @@ public class TechnologyDetailsHooksPFTD {
     }
 
     private void setCriteriaModifierParameters(final ViewDefinitionState view) {
-        FormComponent technologForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent technologForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long technologyId = technologForm.getEntityId();
 
@@ -355,7 +356,7 @@ public class TechnologyDetailsHooksPFTD {
     }
 
     private void disableOneDivisionSections(final ViewDefinitionState view) {
-        FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (technologyForm.getEntityId() == null) {
             return;
@@ -383,7 +384,7 @@ public class TechnologyDetailsHooksPFTD {
         productsInputLocationLookup.setEnabled(b);
         productionFlow.setEnabled(b);
 
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity technology = form.getPersistedEntityWithIncludedFormValues();
         if (Range.ONE_DIVISION.getStringValue().equals(technology.getStringField(TechnologyFieldsPFTD.RANGE)) && b) {
             productsFlowLocationLookup.setEnabled(ProductionFlowComponent.WAREHOUSE.getStringValue().equals(
@@ -392,7 +393,7 @@ public class TechnologyDetailsHooksPFTD {
     }
 
     public void disbaleRangeIfOperationsAreFromDifferentDivisions(final ViewDefinitionState view) {
-        FormComponent technologyForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (technologyForm.getEntityId() == null) {
             return;

@@ -24,28 +24,25 @@
 package com.qcadoo.mes.orderSupplies.listeners;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.components.GridComponent;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.orderSupplies.OrderSuppliesService;
 import com.qcadoo.mes.orderSupplies.constants.MaterialRequirementCoverageFields;
 import com.qcadoo.mes.orderSupplies.constants.OrderSuppliesConstants;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.report.api.ReportService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Set;
 
 @Service public class MaterialRequirementCoverageDetailsListeners {
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired private OrderSuppliesService orderSuppliesService;
 
@@ -59,7 +56,7 @@ import java.util.Set;
             state.performEvent(view, "save", args);
 
             if (!state.isHasError()) {
-                FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(L_FORM);
+                FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
                 Long materialRequirementCoverageId = materialRequirementCoverageForm.getEntityId();
 
                 boolean saved = orderSuppliesService.checkIfMaterialRequirementCoverageIsSaved(materialRequirementCoverageId);
@@ -90,7 +87,7 @@ import java.util.Set;
     }
 
     public final void deleteCoverage(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         Set<Long> ids = grid.getSelectedEntitiesIds();
         orderSuppliesService.deleteMaterialRequirementCoverageAndReferences(Lists.newArrayList(ids));
 

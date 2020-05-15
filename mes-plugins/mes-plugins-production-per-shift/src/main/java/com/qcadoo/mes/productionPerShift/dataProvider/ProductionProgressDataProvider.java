@@ -23,10 +23,10 @@
  */
 package com.qcadoo.mes.productionPerShift.dataProvider;
 
-import java.util.Collection;
-
 import com.qcadoo.mes.productionPerShift.domain.ProductionProgress;
 import org.joda.time.Interval;
+
+import java.util.Collection;
 
 public interface ProductionProgressDataProvider {
 

@@ -24,9 +24,9 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" name="shelvesList" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" name="formsList" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-      modelName="shelves" menuAccessible="true">
+      modelName="forms" menuAccessible="true">
 
     <component type="window" name="window" reference="window">
 
@@ -34,26 +34,26 @@
             <template name="standardGridTemplate" />
         </ribbon>
 
-        <component type="grid" name="shelvesGrid" reference="grid">
+        <component type="grid" name="formsGrid" reference="grid">
             <option type="column" name="number" fields="number"
                     width="80" link="true" />
             <option type="column" name="name" fields="name"
                     width="80" link="true"/>
             <option type="column" name="company" fields="company"
                     expression="#company['name']" width="40" />
-            <option type="column" name="upShelve" fields="upShelve"
+            <option type="column" name="size" fields="size"
                     width="40" />
-            <option type="column" name="downShelve" fields="downShelve"
+            <option type="column" name="unit" fields="unit"
                     width="40" />
 
             <option type="order" column="number" direction="asc" />
 
             <option type="searchable"
-                    value="number,name,company,finishDate,upShelve,downShelve" />
+                    value="number,name,company,finishDate,size,unit" />
             <option type="orderable"
-                    value="number,name,company,finishDate,upShelve,downShelve" />
+                    value="number,name,company,finishDate,size,unit" />
 
-            <option type="correspondingView" value="productCharacteristics/shelveDetails" />
+            <option type="correspondingView" value="basic/formDetails" />
             <option type="correspondingViewInModal" value="false" />
             <option type="correspondingComponent" value="form" />
 

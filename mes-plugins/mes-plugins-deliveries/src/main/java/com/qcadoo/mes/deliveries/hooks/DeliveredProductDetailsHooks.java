@@ -51,11 +51,12 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class DeliveredProductDetailsHooks {
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_DELIVERED_PRODUCT_RESERVATIONS = "deliveredProductReservations";
 
@@ -76,7 +77,7 @@ public class DeliveredProductDetailsHooks {
     private BatchCriteriaModifier batchCriteriaModifier;
 
     public void beforeRender(final ViewDefinitionState view) {
-        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity deliveredProduct = deliveredProductForm.getPersistedEntityWithIncludedFormValues();
 
@@ -93,7 +94,7 @@ public class DeliveredProductDetailsHooks {
     }
 
     private void disableReservationsForWaste(final ViewDefinitionState view) {
-        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         GridComponent reservationsGrid = (GridComponent) view.getComponentByReference(L_DELIVERED_PRODUCT_RESERVATIONS);
 
         Entity deliveredProduct = deliveredProductForm.getEntity();
@@ -111,7 +112,7 @@ public class DeliveredProductDetailsHooks {
     }
 
     public void fillCurrencyFields(final ViewDefinitionState view) {
-        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         List<String> referenceNames = Lists.newArrayList("totalPriceCurrency", "pricePerUnitCurrency");
 
@@ -122,7 +123,7 @@ public class DeliveredProductDetailsHooks {
     }
 
     public void fillOrderedQuantities(final ViewDefinitionState view) {
-        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(DeliveredProductFields.PRODUCT);
         FieldComponent orderedQuantity = (FieldComponent) view.getComponentByReference(OrderedProductFields.ORDERED_QUANTITY);
 
@@ -237,7 +238,7 @@ public class DeliveredProductDetailsHooks {
     }
 
     private void setFilters(final ViewDefinitionState view) {
-        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent deliveredProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(DeliveredProductFields.PRODUCT);
         LookupComponent storageLocationsLookup = (LookupComponent) view
                 .getComponentByReference(DeliveredProductFields.STORAGE_LOCATION);

@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.advancedGenealogy.hooks;
 
-import static com.qcadoo.mes.orders.states.constants.OrderStateChangeFields.STATUS;
-import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.advancedGenealogy.constants.AdvancedGenealogyConstants;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
@@ -44,6 +38,12 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import static com.qcadoo.mes.orders.states.constants.OrderStateChangeFields.STATUS;
+import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
 
 @Service
 public class TrackingRecordSimpleViewHooks {
@@ -69,7 +69,7 @@ public class TrackingRecordSimpleViewHooks {
 
     public void generateOrderNumber(final ViewDefinitionState state) {
         numberGeneratorService.generateAndInsertNumber(state, AdvancedGenealogyConstants.PLUGIN_IDENTIFIER,
-                AdvancedGenealogyConstants.MODEL_TRACKING_RECORD, AdvancedGenealogyConstants.FIELD_FORM,
+                AdvancedGenealogyConstants.MODEL_TRACKING_RECORD, QcadooViewConstants.L_FORM,
                 AdvancedGenealogyConstants.FIELD_NUMBER);
     }
 
@@ -85,8 +85,8 @@ public class TrackingRecordSimpleViewHooks {
     }
 
     public final void fillUnitField(final ViewDefinitionState view) {
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent batchLookup = getFieldComponent(view, L_BATCH_LOOKUP);
         FieldComponent unitField = getFieldComponent(view, L_UNIT);
 
@@ -121,7 +121,7 @@ public class TrackingRecordSimpleViewHooks {
     }
 
     public final void addDiscriminatorRestrictionToGrid(final ViewDefinitionState view) {
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         grid.setCustomRestriction(new CustomRestriction() {
 
             @Override

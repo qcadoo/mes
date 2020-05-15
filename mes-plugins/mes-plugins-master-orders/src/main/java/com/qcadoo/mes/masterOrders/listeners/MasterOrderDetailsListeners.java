@@ -41,20 +41,20 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 @Service
 public class MasterOrderDetailsListeners {
 
-    private static final String L_FORM = "form";
+    
 
-    private static final String L_WINDOW = "window";
+
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
@@ -71,17 +71,17 @@ public class MasterOrderDetailsListeners {
     private OrdersFromMOProductsGenerationService ordersGenerationService;
 
     public void onAddExistingEntity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         form.performEvent(view, "reset", new String[0]);
     }
 
     public void onRemoveSelectedEntity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         form.performEvent(view, "reset", new String[0]);
     }
 
     public void changeState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity masterOrder = masterOrderForm.getEntity();
         Entity masterOrderDB = masterOrder.getDataDefinition().get(masterOrder.getId());
 
@@ -107,7 +107,7 @@ public class MasterOrderDetailsListeners {
         GridComponent masterOrderProductsGrid = (GridComponent) view
                 .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup orders = (RibbonGroup) window.getRibbon().getGroupByName("orders");
         RibbonActionItem createOrder = (RibbonActionItem) orders.getItemByName("createOrder");
 
@@ -123,7 +123,7 @@ public class MasterOrderDetailsListeners {
     }
 
     public void refreshView(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         masterOrderForm.performEvent(view, "refresh");
     }
 
@@ -136,7 +136,7 @@ public class MasterOrderDetailsListeners {
     }
 
     public void createOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity masterOrder = masterOrderForm.getEntity();
 
         Long masterOrderId = masterOrder.getId();

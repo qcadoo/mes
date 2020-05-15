@@ -40,6 +40,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 public class CostNormsForOperationServiceTest {
 
@@ -82,7 +83,7 @@ public class CostNormsForOperationServiceTest {
         when(dataDefinitionService.get("technologies", "operation")).thenReturn(operationDD);
 
         when(view.getComponentByReference("operation")).thenReturn(state);
-        when(view.getComponentByReference("form")).thenReturn(form);
+        when(view.getComponentByReference(QcadooViewConstants.L_FORM)).thenReturn(form);
 
         when(view.getComponentByReference("pieceworkCost")).thenReturn(field1);
         when(view.getComponentByReference("numberOfOperations")).thenReturn(field2);

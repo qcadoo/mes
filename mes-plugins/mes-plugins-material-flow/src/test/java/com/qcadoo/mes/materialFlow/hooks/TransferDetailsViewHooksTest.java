@@ -23,23 +23,6 @@
  */
 package com.qcadoo.mes.materialFlow.hooks;
 
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.STAFF;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TRANSFORMATIONS_CONSUMPTION;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TRANSFORMATIONS_PRODUCTION;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.springframework.test.util.ReflectionTestUtils.setField;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -47,12 +30,23 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 public class TransferDetailsViewHooksTest {
 
     private TransferDetailsViewHooks transferDetailsViewHooks;
 
-    private static final String L_FORM = "form";
+
 
     @Mock
     private ViewDefinitionState view;
@@ -84,7 +78,7 @@ public class TransferDetailsViewHooksTest {
     @Test
     public void shouldReturnWhenCheckIfTransferHasTransformationsAndNumberIsNull() {
         // given
-        given(view.getComponentByReference(L_FORM)).willReturn(transferForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(transferForm);
 
         given(view.getComponentByReference(TYPE)).willReturn(typeField);
         given(view.getComponentByReference(TIME)).willReturn(typeField);
@@ -108,7 +102,7 @@ public class TransferDetailsViewHooksTest {
     @Test
     public void shouldReturnWhenCheckIfTransferHasTransformationsAndTransferIsNull() {
         // given
-        given(view.getComponentByReference(L_FORM)).willReturn(transferForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(transferForm);
 
         given(view.getComponentByReference(TYPE)).willReturn(typeField);
         given(view.getComponentByReference(TIME)).willReturn(timeField);
@@ -136,7 +130,7 @@ public class TransferDetailsViewHooksTest {
     @Test
     public void shouldReturnWhenCheckIfTransferHasTransformationsAndTransformationsAreNull() {
         // given
-        given(view.getComponentByReference(L_FORM)).willReturn(transferForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(transferForm);
 
         given(view.getComponentByReference(TYPE)).willReturn(typeField);
         given(view.getComponentByReference(TIME)).willReturn(timeField);
@@ -167,7 +161,7 @@ public class TransferDetailsViewHooksTest {
     @Test
     public void shouldDisableFieldsWhenCheckIfTransferHasTransformationsAndTransformationsAreNull() {
         // given
-        given(view.getComponentByReference(L_FORM)).willReturn(transferForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(transferForm);
 
         given(view.getComponentByReference(TYPE)).willReturn(typeField);
         given(view.getComponentByReference(TIME)).willReturn(timeField);

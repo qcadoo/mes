@@ -23,6 +23,9 @@
  */
 package com.qcadoo.mes.materialFlow.hooks;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -30,8 +33,7 @@ import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Component
 public class LocationDetailsViewHooks {
@@ -39,10 +41,10 @@ public class LocationDetailsViewHooks {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    private static final String L_FORM = "form";
+    
 
     public void disableLocationFormForExternalItems(final ViewDefinitionState state) {
-        FormComponent form = (FormComponent) state.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) state.getComponentByReference(QcadooViewConstants.L_FORM);
         if (form.getEntityId() == null) {
             return;
         }
@@ -64,7 +66,7 @@ public class LocationDetailsViewHooks {
     }
 
     public void disableTypeEdit(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (form.getEntityId() == null) {
             return;
         } else {

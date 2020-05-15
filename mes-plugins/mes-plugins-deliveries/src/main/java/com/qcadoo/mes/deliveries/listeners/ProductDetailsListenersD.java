@@ -37,6 +37,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ProductDetailsListenersD {
@@ -51,7 +52,7 @@ public class ProductDetailsListenersD {
     private ProductDetailsHooksD productDetailsHooksD;
 
     public void checkIfDefaultSupplierIsUnique(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         DataDefinition productDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
         Entity formProduct = form.getPersistedEntityWithIncludedFormValues();
         Entity product = formProduct.getId() != null ? productDD.get(formProduct.getId()) : formProduct;

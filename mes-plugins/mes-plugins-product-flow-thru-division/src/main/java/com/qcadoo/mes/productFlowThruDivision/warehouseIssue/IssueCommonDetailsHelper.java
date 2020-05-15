@@ -1,5 +1,10 @@
 package com.qcadoo.mes.productFlowThruDivision.warehouseIssue;
 
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.ProductsToIssueFields;
@@ -12,10 +17,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Optional;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class IssueCommonDetailsHelper {
@@ -24,7 +26,7 @@ public class IssueCommonDetailsHelper {
 
     public static final String ADDITIONAL_CODE = "additionalCode";
 
-    public static final String FORM = "form";
+
 
     public static final String PRODUCT = "product";
 
@@ -47,7 +49,7 @@ public class IssueCommonDetailsHelper {
 
 
     public void fillStorageLocation(ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity productToIssue = form.getPersistedEntityWithIncludedFormValues();
         Entity product = productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT);
         Entity warehouse = productToIssue.getBelongsToField(ProductsToIssueFields.LOCATION);
@@ -67,7 +69,7 @@ public class IssueCommonDetailsHelper {
     }
 
     public void setFilterValue(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity productToIssue = form.getPersistedEntityWithIncludedFormValues();
         Entity product = productToIssue.getBelongsToField(ProductsToIssueFields.PRODUCT);
         Entity warehouse = productToIssue.getBelongsToField(ProductsToIssueFields.LOCATION);

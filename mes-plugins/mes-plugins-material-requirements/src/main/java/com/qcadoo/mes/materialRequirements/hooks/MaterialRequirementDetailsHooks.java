@@ -33,22 +33,23 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class MaterialRequirementDetailsHooks {
 
-    private static final String L_FORM = "form";
+
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
     public void generateMaterialRequirementNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, MaterialRequirementsConstants.PLUGIN_IDENTIFIER,
-                MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT, L_FORM, MaterialRequirementFields.NUMBER);
+                MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT, QcadooViewConstants.L_FORM, MaterialRequirementFields.NUMBER);
     }
 
     public void disableFormForExistingMaterialRequirement(final ViewDefinitionState view) {
-        FormComponent materialRequirementForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent materialRequirementForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (materialRequirementForm.getEntityId() == null) {
             return;

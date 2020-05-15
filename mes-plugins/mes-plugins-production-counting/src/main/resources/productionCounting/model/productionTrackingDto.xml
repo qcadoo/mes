@@ -72,6 +72,8 @@
 
         <string name="correctionNumber"/>
         <string name="createUser"/>
+        <string name="workstationNumber"/>
+
     </fields>
 
     <masterModel plugin="productionCounting" model="productionTracking"/>

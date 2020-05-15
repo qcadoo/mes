@@ -26,12 +26,7 @@ package com.qcadoo.mes.materialFlowResources.listeners;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
 import com.qcadoo.mes.materialFlowResources.print.DispositionOrderPdfService;
 import com.qcadoo.mes.materialFlowResources.service.ReceiptDocumentForReleaseHelper;
@@ -50,14 +45,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
-
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.exception.LockAcquisitionException;
 import org.json.JSONObject;
@@ -71,12 +59,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
+import java.util.*;
+
 @Service
 public class DocumentDetailsListeners {
 
     private static final Logger LOG = LoggerFactory.getLogger(DocumentDetailsListeners.class);
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -127,7 +117,7 @@ public class DocumentDetailsListeners {
 
     public void showProductAttributesFromPositionLists(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
-        GridComponent positionGird = (GridComponent) view.getComponentByReference("grid");
+        GridComponent positionGird = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         Set<Long> ids = positionGird.getSelectedEntitiesIds();
         if (ids.size() == 1) {
             Entity position = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
@@ -141,7 +131,7 @@ public class DocumentDetailsListeners {
     }
 
     public void printDocument(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity document = documentForm.getEntity();
 
@@ -159,7 +149,7 @@ public class DocumentDetailsListeners {
             createResourcesForDocuments(view, state, args);
         }
 
-        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (documentForm.isValid()) {
             Entity documentDb = documentForm.getEntity().getDataDefinition().get(documentForm.getEntityId());
@@ -186,7 +176,7 @@ public class DocumentDetailsListeners {
     }
 
     public void onSave(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity document = documentForm.getEntity();
 
@@ -212,7 +202,7 @@ public class DocumentDetailsListeners {
     }
 
     public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT);
@@ -303,25 +293,33 @@ public class DocumentDetailsListeners {
         }
 
         if (!document.getHasManyField(DocumentFields.POSITIONS).isEmpty()) {
-            try {
-                resourceManagementService.createResources(document);
-            } catch (InvalidResourceException ire) {
+            String blockedResources = getBlockedResources(document);
+            if (blockedResources == null) {
+                try {
+                    resourceManagementService.createResources(document);
+                } catch (InvalidResourceException ire) {
+                    document.setNotValid();
+
+                    if ("materialFlow.error.position.batch.required"
+                            .equals(ire.getEntity().getError(ResourceFields.BATCH).getMessage())) {
+                        String productNumber = ire.getEntity().getBelongsToField(ResourceFields.PRODUCT)
+                                .getStringField(ProductFields.NUMBER);
+                        documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource.batchRequired",
+                                MessageType.FAILURE, false, productNumber);
+                    } else {
+                        String resourceNumber = ire.getEntity().getStringField(ResourceFields.NUMBER);
+                        String productNumber = ire.getEntity().getBelongsToField(ResourceFields.PRODUCT)
+                                .getStringField(ProductFields.NUMBER);
+
+                        documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource",
+                                MessageType.FAILURE, false, resourceNumber, productNumber);
+                    }
+                }
+            } else {
                 document.setNotValid();
 
-                if ("materialFlow.error.position.batch.required".equals(ire.getEntity().getError(ResourceFields.BATCH)
-                        .getMessage())) {
-                    String productNumber = ire.getEntity().getBelongsToField(ResourceFields.PRODUCT)
-                            .getStringField(ProductFields.NUMBER);
-                    documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource.batchRequired", MessageType.FAILURE,
-                            false, productNumber);
-                } else {
-                    String resourceNumber = ire.getEntity().getStringField(ResourceFields.NUMBER);
-                    String productNumber = ire.getEntity().getBelongsToField(ResourceFields.PRODUCT)
-                            .getStringField(ProductFields.NUMBER);
-
-                    documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource", MessageType.FAILURE,
-                            false, resourceNumber, productNumber);
-                }
+                documentForm.addMessage("materialFlow.document.validate.global.error.positionsBlockedForQualityControl",
+                        MessageType.FAILURE, blockedResources);
             }
         } else {
             document.setNotValid();
@@ -353,6 +351,14 @@ public class DocumentDetailsListeners {
         documentForm.setEntity(document);
     }
 
+    private String getBlockedResources(Entity document) {
+        String sql = "SELECT string_agg(p.number::text, ',' ORDER BY p.number) FROM materialflowresources_position p JOIN materialflowresources_resource r "
+                + "ON r.id = p.resource_id WHERE p.document_id = :id AND r.blockedforqualitycontrol";
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("id", document.getId());
+        return jdbcTemplate.queryForObject(sql, parameters, String.class);
+    }
+
     public void clearWarehouseFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FieldComponent locationFromField = (FieldComponent) view.getComponentByReference(DocumentFields.LOCATION_FROM);
         locationFromField.setFieldValue(null);
@@ -364,7 +370,7 @@ public class DocumentDetailsListeners {
     }
 
     public void refreshView(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         documentForm.performEvent(view, "refresh");
     }
@@ -374,7 +380,7 @@ public class DocumentDetailsListeners {
     }
 
     public void fillResources(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity document = form.getPersistedEntityWithIncludedFormValues();
 
         try {
@@ -399,7 +405,7 @@ public class DocumentDetailsListeners {
     }
 
     public void checkResourcesStock(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
 
         resourceStockService.checkResourcesStock(document);
@@ -412,7 +418,7 @@ public class DocumentDetailsListeners {
     }
 
     public void addMultipleResources(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent formComponent = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity document = formComponent.getPersistedEntityWithIncludedFormValues();
         Entity warehouseFrom = document.getBelongsToField(DocumentFields.LOCATION_FROM);
 
@@ -435,7 +441,7 @@ public class DocumentDetailsListeners {
     }
 
     public void openPositionsImportPage(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent documentForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent documentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity document = documentForm.getPersistedEntityWithIncludedFormValues();
 
         Long documentId = document.getId();

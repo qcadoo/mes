@@ -5,16 +5,16 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
-
-import java.util.Map;
-
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.json.JSONException;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 public class AllStoppagesListeners {
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_ORDER = "order";
 
@@ -25,7 +25,7 @@ public class AllStoppagesListeners {
 
     public void addNewFromProductionTracking(final ViewDefinitionState view, final ComponentState state, final String[] args)
             throws JSONException {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity productionTracking = form.getEntity();
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("form.productionTracking", productionTracking.getId());

@@ -30,26 +30,20 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.SUPPLIER;
-import static com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues.APPROVED;
-import static com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues.DECLINED;
-import static com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues.DRAFT;
-import static com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues.PREPARED;
-import static com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues.RECEIVED;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.*;
+import static com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public class DeliveryDetailsHooksTest {
 
-    private static final String L_FORM = "form";
+
 
     private static final String L_DELIVERY_DATE_BUFFER = "deliveryDateBuffer";
 
@@ -90,7 +84,7 @@ public class DeliveryDetailsHooksTest {
 
         deliveryDetailsHooks = new DeliveryDetailsHooks();
 
-        when(view.getComponentByReference(L_FORM)).thenReturn(form);
+        when(view.getComponentByReference(QcadooViewConstants.L_FORM)).thenReturn(form);
 
         when(view.getComponentByReference(STATE)).thenReturn(stateField);
         when(view.getComponentByReference(DELIVERED_PRODUCTS)).thenReturn(deliveredProducts);

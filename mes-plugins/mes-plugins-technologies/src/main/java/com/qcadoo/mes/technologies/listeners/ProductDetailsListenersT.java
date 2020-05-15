@@ -29,6 +29,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -44,11 +45,11 @@ public class ProductDetailsListenersT {
 
     private static final String L_FILTERS = "filters";
 
-    private static final String L_FORM = "form";
+
 
     // TODO MAKU Fix passing values to another view
     public final void addTechnologyGroup(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity product = productForm.getEntity();
 
         if (product.getId() == null) {
@@ -65,7 +66,7 @@ public class ProductDetailsListenersT {
 
     public final void showTechnologiesWithTechnologyGroup(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity product = productForm.getEntity();
 
         if (product.getId() == null) {
@@ -97,7 +98,7 @@ public class ProductDetailsListenersT {
 
     public final void showTechnologiesWithProduct(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity product = productForm.getEntity();
 
         if (product.getId() == null) {
@@ -127,7 +128,7 @@ public class ProductDetailsListenersT {
 
     public final void showProductGroupTechnologies(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
-        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity product = productForm.getEntity();
 
         if (product.getId() == null) {
@@ -158,7 +159,7 @@ public class ProductDetailsListenersT {
     
     public final void showTechnologiesWithUsingProduct(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
-        FormComponent productForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity product = productForm.getEntity();
 
         if (product.getId() == null) {

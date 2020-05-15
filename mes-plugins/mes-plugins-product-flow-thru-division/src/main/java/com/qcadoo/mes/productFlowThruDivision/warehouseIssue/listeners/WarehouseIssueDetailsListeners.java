@@ -23,6 +23,14 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners;
 
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -53,23 +61,12 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class WarehouseIssueDetailsListeners {
 
-    private static final String L_FORM = "form";
+
 
     @Autowired
     private WarehouseIssueDetailHooks warehouseIssueDetailHooks;
@@ -111,7 +108,7 @@ public class WarehouseIssueDetailsListeners {
     }
 
     public void fillProductsToIssue(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent issueForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent issueForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent collectionProductsField = (FieldComponent) view
                 .getComponentByReference(WarehouseIssueFields.COLLECTION_PRODUCTS);
         LookupComponent operation = (LookupComponent) view
@@ -160,7 +157,7 @@ public class WarehouseIssueDetailsListeners {
     }
 
     public void copyProductsToIssue(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent issueForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent issueForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long warehouseIssueId = issueForm.getEntityId();
 
         if (warehouseIssueId == null) {

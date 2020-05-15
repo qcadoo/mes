@@ -21,23 +21,26 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productCharacteristics.constants;
+package com.qcadoo.mes.basic.hooks;
 
-public class ProductCharacteristicsFields {
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 
-    private ProductCharacteristicsFields() {
+import org.springframework.stereotype.Service;
 
+@Service
+public class FormDetailsHooks {
+
+    public final void onBeforeRender(final ViewDefinitionState view) {
+        FieldComponent size = (FieldComponent) view.getComponentByReference("size");
+        FieldComponent unit = (FieldComponent) view.getComponentByReference("unit");
+
+        if(size.getFieldValue() != null){
+            unit.setRequired(true);
+            unit.requestComponentUpdateState();
+        }else{
+            unit.setRequired(false);
+            unit.requestComponentUpdateState();
+        }
     }
-
-    public static final String LOWER_SHELF = "lowerShelf";
-
-    public static final String UPPER_SHELF = "upperShelf";
-
-    public static final String LOWER_FORM = "lowerForm";
-
-    public static final String UPPER_FORM = "upperForm";
-
-    public static final String SHOW_IN_PRODUCT_DATA = "showInProductData";
-
-    public static final String PLUGIN_IDENTIFIER = "productCharacteristics";
 }

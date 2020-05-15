@@ -23,20 +23,6 @@
  */
 package com.qcadoo.mes.productionPerShift.report;
 
-import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
-
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.joda.time.DateTime;
-import org.joda.time.Days;
-import org.joda.time.LocalTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.commons.dateTime.TimeRange;
 import com.qcadoo.mes.basic.ShiftsService;
@@ -45,17 +31,22 @@ import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.mes.lineChangeoverNorms.ChangeoverNormsService;
 import com.qcadoo.mes.lineChangeoverNormsForOrders.LineChangeoverNormsForOrdersService;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.productionPerShift.constants.DailyProgressFields;
-import com.qcadoo.mes.productionPerShift.constants.PPSReportFields;
-import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftConstants;
-import com.qcadoo.mes.productionPerShift.constants.ProductionPerShiftFields;
-import com.qcadoo.mes.productionPerShift.constants.ProgressForDayFields;
+import com.qcadoo.mes.productionPerShift.constants.*;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.UserService;
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.LocalTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
+
+import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
 
 @Service
 public class PPSReportXlsHelper {

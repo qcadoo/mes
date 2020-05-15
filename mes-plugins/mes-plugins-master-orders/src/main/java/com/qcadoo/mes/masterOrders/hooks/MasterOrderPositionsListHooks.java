@@ -29,6 +29,7 @@ import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,18 +37,18 @@ import java.util.List;
 @Service
 public class MasterOrderPositionsListHooks {
 
-    private static final String L_GRID = "grid";
 
-    private static final String L_WINDOW = "window";
+
+
 
     private static final String L_ORDERS = "orders";
 
     private static final String L_CREATE_ORDER = "createOrder";
 
     public void disableButton(final ViewDefinitionState view) {
-        GridComponent masterOrderPositionComponent = (GridComponent) view.getComponentByReference(L_GRID);
+        GridComponent masterOrderPositionComponent = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup ordersRibbonGroup = window.getRibbon().getGroupByName(L_ORDERS);
         RibbonActionItem createOrderRibbonActionItem = ordersRibbonGroup.getItemByName(L_CREATE_ORDER);
         RibbonActionItem generateOrders = ordersRibbonGroup.getItemByName("generateOrders");

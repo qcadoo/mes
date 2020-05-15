@@ -7,6 +7,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,13 +16,13 @@ import java.util.Map;
 @Service
 public class OrderDetailsListenersOFSPG {
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     public void redirectToOrdersForSubproducts(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity orderEntity = orderForm.getPersistedEntityWithIncludedFormValues();
 
         Entity ordersForSubproducts = dataDefinitionService.get(OrdersForSubproductsGenerationConstans.PLUGIN_IDENTIFIER, "subOrders").create();
@@ -36,7 +37,7 @@ public class OrderDetailsListenersOFSPG {
     }
 
     public void redirectToOrdersForSubproductsGroup(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity orderEntity = orderForm.getPersistedEntityWithIncludedFormValues();
 
         Entity ordersForSubproducts = dataDefinitionService.get(OrdersForSubproductsGenerationConstans.PLUGIN_IDENTIFIER, "subOrders").create();

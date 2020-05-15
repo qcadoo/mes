@@ -38,6 +38,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class CostNormsGeneratorListeners {
@@ -45,7 +46,7 @@ public class CostNormsGeneratorListeners {
     @Autowired
     private CostNormsService costNormsService;
 
-    private static final String L_FORM = "form";
+    
 
     private static final String L_PRODUCTS = "products";
 
@@ -76,7 +77,7 @@ public class CostNormsGeneratorListeners {
     public void toggleProductsGrid(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
 
         Entity generator = getFormEntity(view);
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         boolean gridVisible = ProductsToUpdate.of(generator).compareTo(ProductsToUpdate.SELECTED) == 0;
         GridComponent grid = (GridComponent) view.getComponentByReference(L_PRODUCTS);
         grid.setVisible(gridVisible);
@@ -88,7 +89,7 @@ public class CostNormsGeneratorListeners {
     }
 
     private Entity getFormEntity(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         return form.getPersistedEntityWithIncludedFormValues();
     }
 }

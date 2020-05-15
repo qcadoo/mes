@@ -23,6 +23,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -70,7 +71,7 @@ public class StateExecutorService {
         Long userId = securityService.getCurrentUserId();
         String userLogin = securityService.getCurrentUserName();
 
-        Optional<GridComponent> maybeGridComponent = view.tryFindComponentByReference("grid");
+        Optional<GridComponent> maybeGridComponent = view.tryFindComponentByReference(QcadooViewConstants.L_GRID);
         if (maybeGridComponent.isPresent()) {
             maybeGridComponent.get().getSelectedEntities().forEach(entity -> {
                 entity = entity.getDataDefinition().getMasterModelEntity(entity.getId());
@@ -82,7 +83,7 @@ public class StateExecutorService {
             });
 
         } else {
-            Optional<FormComponent> maybeForm = view.tryFindComponentByReference("form");
+            Optional<FormComponent> maybeForm = view.tryFindComponentByReference(QcadooViewConstants.L_FORM);
             if (maybeForm.isPresent()) {
                 FormComponent formComponent = maybeForm.get();
                 Entity entity = formComponent.getEntity().getDataDefinition().get(formComponent.getEntityId());
@@ -264,7 +265,7 @@ public class StateExecutorService {
 
     private Entity rollbackStateChange(Entity entity, String sourceState) {
         entity.setField("state", sourceState);
-
+        entity.setNotValid();
         return entity;
     }
 

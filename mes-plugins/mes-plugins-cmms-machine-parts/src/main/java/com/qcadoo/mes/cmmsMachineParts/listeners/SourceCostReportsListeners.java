@@ -1,10 +1,5 @@
 package com.qcadoo.mes.cmmsMachineParts.listeners;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.cmmsMachineParts.constants.SourceCostReportFilterFields;
 import com.qcadoo.model.api.Entity;
@@ -12,6 +7,11 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Service
 public class SourceCostReportsListeners {
@@ -19,7 +19,7 @@ public class SourceCostReportsListeners {
     private static final SimpleDateFormat df = new SimpleDateFormat(DateUtils.L_DATE_FORMAT);
 
     public void generateReport(final ViewDefinitionState view, final ComponentState state, final String args[]) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         form.performEvent(view, "save");
 
         if (args != null && args.length > 0) {

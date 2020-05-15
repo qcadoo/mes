@@ -1,14 +1,5 @@
 package com.qcadoo.mes.productionCounting.hooks;
 
-import java.util.List;
-import java.util.Objects;
-
-import org.json.JSONException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.google.common.primitives.Longs;
@@ -22,13 +13,22 @@ import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.json.JSONException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class AnomalyProductionTrackingDetailsHooks {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AnomalyProductionTrackingDetailsHooks.class);
 
-    private static final String L_WINDOW = "window";
+
 
     private static final String L_ACTIONS = "actions";
 
@@ -102,7 +102,7 @@ public class AnomalyProductionTrackingDetailsHooks {
 
     private void updateRibbon(final ViewDefinitionState view) {
         try {
-            WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+            WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
             RibbonGroup actions = window.getRibbon().getGroupByName(L_ACTIONS);
 
             RibbonActionItem perform = actions.getItemByName("perform");

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PRODUCTS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="productAdditionalDetails" modelName="product">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <template name="standardFormTemplate" excludeItems="actions.copy,actions.saveNew,actions.delete"/>
+        </ribbon>
+
+        <windowTab name="auditTab">
+            <component type="form" name="product" reference="form">
+                <script>
+                    <![CDATA[
+						var save = #{window}.getRibbonItem("actions.save");
+						var saveBack = #{window}.getRibbonItem("actions.saveBack");
+
+						var cancel = #{window}.getRibbonItem("actions.cancel");
+						this.addOnChangeListener({
+							onSetValue: function(value) {
+								if (! value || ! value.content) {
+									return;
+								}
+								save.enable();
+								saveBack.enable();
+
+								if (! value.content.entityId) {
+									cancel.disable();
+									return;
+								}
+								cancel.enable();
+								}
+						});
+					]]>
+                </script>
+                <component type="gridLayout" name="gridLayout" columns="3"
+                           rows="4">
+                    <layoutElement column="1" row="1" height="4">
+                        <component type="borderLayout" name="auditBorderLayout"
+                                   reference="auditBorderLayout">
+                            <option type="label" value="auditLayoutLabel"/>
+                            <component type="gridLayout" name="gridLayout" columns="1"
+                                       rows="4">
+                                <layoutElement column="1" row="1">
+                                    <component type="input" name="createDate" field="#{form}.createDate"
+                                               defaultEnabled="never"/>
+                                </layoutElement>
+                                <layoutElement column="1" row="2">
+                                    <component type="input" name="createUser" field="#{form}.createUser"
+                                               defaultEnabled="never"/>
+                                </layoutElement>
+                                <layoutElement column="1" row="3">
+                                    <component type="input" name="updateDate" field="#{form}.updateDate"
+                                               defaultEnabled="never"/>
+                                </layoutElement>
+                                <layoutElement column="1" row="4">
+                                    <component type="input" name="updateUser" field="#{form}.updateUser"
+                                               defaultEnabled="never"/>
+                                </layoutElement>
+                            </component>
+                        </component>
+                    </layoutElement>
+                </component>
+
+                <option type="header" value="true"/>
+                <option type="expression" value="#name"/>
+
+            </component>
+        </windowTab>
+
+        <windowTab name="integrationTab">
+            <component type="gridLayout" name="gridLayout" columns="3"
+                       rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="input" name="externalNumber" field="#{form}.externalNumber"
+                               reference="externalNumber" defaultEnabled="never"/>
+                </layoutElement>
+            </component>
+        </windowTab>
+
+    </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
+                      method="disableProductAdditionalFormForExternalItems"/>
+    </hooks>
+</view>

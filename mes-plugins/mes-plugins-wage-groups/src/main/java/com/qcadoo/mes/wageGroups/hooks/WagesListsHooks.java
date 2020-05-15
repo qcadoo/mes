@@ -33,6 +33,7 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class WagesListsHooks {
@@ -41,7 +42,7 @@ public class WagesListsHooks {
     private CompanyService companyService;
 
     public final void addDiscriminatorRestrictionToGrid(final ViewDefinitionState view) {
-        GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
         grid.setCustomRestriction(new CustomRestriction() {
 
             @Override

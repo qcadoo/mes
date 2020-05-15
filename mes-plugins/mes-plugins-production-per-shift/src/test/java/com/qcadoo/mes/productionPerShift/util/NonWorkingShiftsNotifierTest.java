@@ -23,12 +23,14 @@
  */
 package com.qcadoo.mes.productionPerShift.util;
 
-import com.qcadoo.mes.productionPerShift.PpsDetailsViewAwareTest;
-import com.qcadoo.mes.productionPerShift.dataProvider.ProgressForDayDataProvider;
-import com.qcadoo.view.api.components.FormComponent;
 import org.junit.Before;
 import org.mockito.Mock;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import com.qcadoo.mes.productionPerShift.PpsDetailsViewAwareTest;
+import com.qcadoo.mes.productionPerShift.dataProvider.ProgressForDayDataProvider;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 public class NonWorkingShiftsNotifierTest extends PpsDetailsViewAwareTest {
 
@@ -47,7 +49,7 @@ public class NonWorkingShiftsNotifierTest extends PpsDetailsViewAwareTest {
 
         ReflectionTestUtils.setField(nonWorkingShiftsNotifier, "progressForDayDataProvider", progressForDayDataProvider);
 
-        stubViewComponent(FORM_REF, form);
+        stubViewComponent(QcadooViewConstants.L_FORM, form);
     }
 /*
     private void stubProgressForDayFindResults(final Iterable<Entity> progresses) {

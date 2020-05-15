@@ -31,6 +31,7 @@ import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ProductionLinesDetailsHooksPS {
@@ -42,7 +43,7 @@ public class ProductionLinesDetailsHooksPS {
         if (!parameterService.getParameter().getBooleanField("workstationsQuantityFromProductionLine")) {
             FieldComponent field = (FieldComponent) view
                     .getComponentByReference(ProductionLineFields.QUANTITY_FOR_OTHER_WORKSTATION_TYPES);
-            GridComponent workstationTypeComponentGrid = (GridComponent) view.getComponentByReference("grid");
+            GridComponent workstationTypeComponentGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
             field.setEnabled(false);
             workstationTypeComponentGrid.setEditable(false);
         }

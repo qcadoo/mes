@@ -23,19 +23,19 @@
  */
 package com.qcadoo.mes.productionLines.hooks;
 
-import static org.mockito.BDDMockito.given;
-
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.junit.Before;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FormComponent;
+import static org.mockito.BDDMockito.given;
 
 public class ProductionLineDetailsViewHooksTest {
 
-    private static final String L_FORM = "form";
+    
 
     private ProductionLineDetailsViewHooks productionLinesViewHooks;
 
@@ -54,7 +54,7 @@ public class ProductionLineDetailsViewHooksTest {
 
         productionLinesViewHooks = new ProductionLineDetailsViewHooks();
 
-        given(view.getComponentByReference(L_FORM)).willReturn(productionLineForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(productionLineForm);
     }
 
 }

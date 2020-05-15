@@ -48,6 +48,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class GenerateMRCForOrderListeners {
@@ -67,7 +68,7 @@ public class GenerateMRCForOrderListeners {
     @Autowired
     private ReportService reportService;
 
-    private static final String L_FORM = "form";
+    
 
     public final void printMaterialRequirementCoverageForOrder(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
@@ -76,7 +77,7 @@ public class GenerateMRCForOrderListeners {
             state.performEvent(view, "save", args);
 
             if (!state.isHasError()) {
-                FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(L_FORM);
+                FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
                 Long materialRequirementCoverageId = materialRequirementCoverageForm.getEntityId();
 
                 boolean saved = checkIfMaterialRequirementCoverageIsSaved(materialRequirementCoverageId);
@@ -101,7 +102,7 @@ public class GenerateMRCForOrderListeners {
         state.performEvent(view, "save", args);
 
         if (!state.isHasError()) {
-            FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(L_FORM);
+            FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
             Long materialRequirementCoverageId = materialRequirementCoverageForm.getEntityId();
 
             if (materialRequirementCoverageId != null) {
@@ -159,7 +160,7 @@ public class GenerateMRCForOrderListeners {
         state.performEvent(view, "save", args);
 
         if (!state.isHasError()) {
-            FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+            FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
             Long mRCForOrderId = form.getEntityId();
 

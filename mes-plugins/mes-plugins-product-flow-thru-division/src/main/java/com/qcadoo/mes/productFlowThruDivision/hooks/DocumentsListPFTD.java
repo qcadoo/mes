@@ -29,14 +29,15 @@ import com.qcadoo.mes.productFlowThruDivision.constants.DocumentDtoFieldsPFTD;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class DocumentsListPFTD {
 
-    private static final String L_GRID = "grid";
+
 
     public void setCriteriaModifierParameters(final ViewDefinitionState view) {
-        GridComponent documentsGrid = (GridComponent) view.getComponentByReference(L_GRID);
+        GridComponent documentsGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
         FilterValueHolder filterValueHolder = documentsGrid.getFilterValue();
         filterValueHolder.put(DocumentDtoFieldsPFTD.ORDER_NUMBER, 0);

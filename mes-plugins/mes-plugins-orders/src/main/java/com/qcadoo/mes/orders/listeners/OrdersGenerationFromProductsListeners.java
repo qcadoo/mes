@@ -1,11 +1,7 @@
 package com.qcadoo.mes.orders.listeners;
 
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,11 +32,12 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class OrdersGenerationFromProductsListeners {
 
-    private static final String L_FORM = "form";
+
 
     private static final String DATE_FROM = "dateFrom";
 
@@ -67,7 +64,7 @@ public class OrdersGenerationFromProductsListeners {
 
     public void generateOrders(final ViewDefinitionState view, final ComponentState state, final String[] args)
             throws JSONException {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         CheckBoxComponent generated = (CheckBoxComponent) view.getComponentByReference("generated");
         Entity entity = form.getPersistedEntityWithIncludedFormValues();
 

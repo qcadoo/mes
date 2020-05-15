@@ -32,6 +32,7 @@ import com.qcadoo.mes.productFlowThruDivision.constants.OrderFieldsPFTD;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class OrderDetailsHooksPFTD {
@@ -44,7 +45,7 @@ public class OrderDetailsHooksPFTD {
 
     public void onBeforeRender(final ViewDefinitionState view) {
 
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent ignoreMissingProductsField = (FieldComponent) view
                 .getComponentByReference(OrderFieldsPFTD.IGNORE_MISSING_COMPONENTS);
 

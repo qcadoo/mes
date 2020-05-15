@@ -33,6 +33,10 @@
 
         <ribbon>
             <template name="standardFormTemplate"/>
+            <group name="additional">
+                <bigButton name="additionalDetails" state="enabled" icon="genealogyIcon24.png"
+                           action="#{form}.fireEvent(openAdditionalDetails)"/>
+            </group>
             <group name="conversions">
                 <bigButton name="getDefaultConversions" icon="genealogyIcon24.png">
                     <script>
@@ -96,6 +100,11 @@
 								}
 								cancel.enable();
 								del.enable();
+								var externalNumber = #{externalNumber}.getValue().content.value;
+
+								if(externalNumber != undefined && externalNumber != '') {
+									del.disable("#{translate(materialFlow.location.ribbon.message.productIsExternal)}");
+								}
 								addManyReplacements.enable("#{translate(basic.productReplacements.window.ribbon.replacements.addManyReplacements.desc)}");
 							}
 						});
@@ -108,6 +117,8 @@
                                    reference="number">
                             <option type="alignment" value="right"/>
                         </component>
+                        <component type="input" name="externalNumber" field="#{form}.externalNumber"
+                                   reference="externalNumber" defaultEnabled="never" defaultVisible="false"/>
                     </layoutElement>
                     <layoutElement column="1" row="2" height="2">
                         <component type="textarea" name="name" field="name"
@@ -169,6 +180,8 @@
 
                 <listener event="getDefaultConversions" class="com.qcadoo.mes.basic.ProductService"
                           method="getDefaultConversions"/>
+                <listener event="openAdditionalDetails" class="com.qcadoo.mes.basic.ProductService"
+                          method="openAdditionalDetails"/>
                 <listener event="downloadAttachment" method="downloadAttachment"
                           class="com.qcadoo.mes.basic.listeners.AttachmentsListeners"/>
 
@@ -199,37 +212,6 @@
                         <criteriaModifier
                                 class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.ProductCriteriaModifiersCMP"
                                 method="showFamiliesByMachinePartType"/>
-                    </component>
-                </layoutElement>
-            </component>
-        </windowTab>
-
-        <windowTab name="auditTab">
-            <component type="gridLayout" name="gridLayout" columns="3"
-                       rows="4">
-                <layoutElement column="1" row="1" height="4">
-                    <component type="borderLayout" name="auditBorderLayout"
-                               reference="auditBorderLayout">
-                        <option type="label" value="auditLayoutLabel"/>
-                        <component type="gridLayout" name="gridLayout" columns="1"
-                                   rows="4">
-                            <layoutElement column="1" row="1">
-                                <component type="input" name="createDate" field="#{form}.createDate"
-                                           defaultEnabled="never"/>
-                            </layoutElement>
-                            <layoutElement column="1" row="2">
-                                <component type="input" name="createUser" field="#{form}.createUser"
-                                           defaultEnabled="never"/>
-                            </layoutElement>
-                            <layoutElement column="1" row="3">
-                                <component type="input" name="updateDate" field="#{form}.updateDate"
-                                           defaultEnabled="never"/>
-                            </layoutElement>
-                            <layoutElement column="1" row="4">
-                                <component type="input" name="updateUser" field="#{form}.updateUser"
-                                           defaultEnabled="never"/>
-                            </layoutElement>
-                        </component>
                     </component>
                 </layoutElement>
             </component>
@@ -267,32 +249,6 @@
                         <option type="fullscreen" value="true"/>
                         <option type="multiselect" value="true"/>
                     </component>
-                </layoutElement>
-            </component>
-        </windowTab>
-
-        <windowTab name="integrationTab">
-            <script>
-                <![CDATA[
-						var del = #{window}.getRibbonItem("actions.delete");
-						var externalNumberListener = {
-							onSetValue: function(value) {
-
-								var externalNumber = #{externalNumber}.getValue().content.value;
-								
-								if(externalNumber != undefined && externalNumber != '') {
-									del.disable("#{translate(materialFlow.location.ribbon.message.productIsExternal)}");
-								}
-							}
-						};
-						#{form}.addOnChangeListener(externalNumberListener);
-					]]>
-            </script>
-            <component type="gridLayout" name="gridLayout" columns="3"
-                       rows="1">
-                <layoutElement column="1" row="1">
-                    <component type="input" name="externalNumber" field="#{form}.externalNumber"
-                               reference="externalNumber" defaultEnabled="never"/>
                 </layoutElement>
             </component>
         </windowTab>
@@ -382,6 +338,51 @@
                 </layoutElement>
             </component>
         </windowTab>
+        <windowTab name="characteristicsTab" reference="characteristicsTab">
+            <component type="gridLayout" name="gridLayout" columns="9"
+                       rows="4" hasBorders="false">
+                <layoutElement column="1" row="1" width="3">
+                    <component type="input" name="size" field="#{form}.size"
+                               reference="size">
+                        <option type="alignment" value="right" />
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2" width="3">
+                    <component type="input" name="expiryDateValidity" field="#{form}.expiryDateValidity"
+                               reference="expiryDateValidity" hasDescription="true">
+                        <option type="alignment" value="right" />
+                    </component>
+                </layoutElement>
+                <layoutElement column="4" row="2">
+                    <component type="label" name="expiryDateValidityMonth">
+                        <option type="labelStyle" value="text"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="3" width="3">
+                    <component type="lookup" name="productForm" field="#{form}.productForm"
+                               reference="productForm" hasDescription="true">
+                        <option type="column" name="name" fields="name"  />
+                        <option type="column" name="company" fields="company"
+                                expression="#company['name']"/>
+                        <option type="column" name="size" fields="size"
+                                width="40" />
+                        <option type="column" name="unit" fields="unit"
+                                width="40" />
+                        <option type="searchable" value="name,number,company,unit,size" />
+                        <option type="orderable" value="name,number,company,unit,size" />
+
+                        <option type="expression"
+                                value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
+                        <option type="fieldCode" value="number" />
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="4" width="3">
+                    <component type="checkbox" name="showInProductData" field="#{form}.showInProductData"
+                               reference="showInProductData" defaultVisible="true" hasDescription="true">
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
         <windowTab name="additionalCodes">
             <component type="gridLayout" name="additionalCodesGridLayout"
                        columns="3" rows="1">
@@ -459,5 +460,7 @@
                       method="setCriteriaModifierParameters"/>
         <beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
                       method="setProductIdForMultiUploadField"/>
+        <beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
+                      method="enableCharacteristicsTabForExternalItems"/>
     </hooks>
 </view>

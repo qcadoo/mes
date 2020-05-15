@@ -33,11 +33,12 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class MatchingChangeoverNormsDetailsHooks {
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -46,7 +47,7 @@ public class MatchingChangeoverNormsDetailsHooks {
     private MatchingChangeoverNormsDetailsListeners listeners;
 
     public void setFieldsVisible(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         ComponentState matchingNorm = view.getComponentByReference("matchingNorm");
         ComponentState matchingNormNotFound = view.getComponentByReference("matchingNormNotFound");
@@ -61,7 +62,7 @@ public class MatchingChangeoverNormsDetailsHooks {
     }
 
     public void fillOrCleanFields(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (form.getEntityId() == null) {
             listeners.clearField(view);

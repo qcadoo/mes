@@ -31,6 +31,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -70,7 +71,7 @@ public class ProgressQuantitiesDeviationNotifier {
 
     private void showQuantitiesDeviationNotice(final ViewDefinitionState view, final BigDecimal quantitiesDifference,
             final String messageKey) {
-        for (ComponentState productionPerShiftForm : view.tryFindComponentByReference("form").asSet()) {
+        for (ComponentState productionPerShiftForm : view.tryFindComponentByReference(QcadooViewConstants.L_FORM).asSet()) {
             productionPerShiftForm.addMessage(messageKey, ComponentState.MessageType.INFO, false,
                     numberService.formatWithMinimumFractionDigits(quantitiesDifference.abs(numberService.getMathContext()), 0));
         }

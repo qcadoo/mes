@@ -23,6 +23,10 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.hooks;
 
+import org.json.JSONException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.basic.constants.SubassemblyFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
@@ -30,13 +34,10 @@ import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
-import org.json.JSONException;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class AddActionsForPlannedEventHooks {
@@ -57,7 +58,7 @@ public class AddActionsForPlannedEventHooks {
             Entity subassembly = event.getBelongsToField(PlannedEventFields.SUBASSEMBLY);
             if (workstation != null) {
 
-                GridComponent grid = (GridComponent) view.getComponentByReference("grid");
+                GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
                 FilterValueHolder filter = grid.getFilterValue();
                 filter.put(PlannedEventFields.WORKSTATION, workstation.getId());

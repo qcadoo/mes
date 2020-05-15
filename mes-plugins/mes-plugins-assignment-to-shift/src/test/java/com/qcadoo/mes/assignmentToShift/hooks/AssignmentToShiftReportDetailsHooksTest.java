@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.assignmentToShift.hooks;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.test.util.ReflectionTestUtils;
-
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftConstants;
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -42,10 +32,20 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 public class AssignmentToShiftReportDetailsHooksTest {
 
-    private static final String L_FORM = "form";
+
 
     private AssignmentToShiftReportDetailsHooks hooks;
 
@@ -89,13 +89,13 @@ public class AssignmentToShiftReportDetailsHooksTest {
 
         // then
         verify(numberGeneratorService).generateAndInsertNumber(view, AssignmentToShiftConstants.PLUGIN_IDENTIFIER,
-                AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT_REPORT, L_FORM, AssignmentToShiftReportFields.NUMBER);
+                AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT_REPORT, QcadooViewConstants.L_FORM, AssignmentToShiftReportFields.NUMBER);
     }
 
     @Test
     public void shouldntDisableFieldsWhenEntityIsntSaved() {
         // given
-        given(view.getComponentByReference(L_FORM)).willReturn(assignmentToShiftReportForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(assignmentToShiftReportForm);
 
         given(view.getComponentByReference(AssignmentToShiftReportFields.NUMBER)).willReturn(fieldComponent);
         given(view.getComponentByReference(AssignmentToShiftReportFields.NAME)).willReturn(fieldComponent);
@@ -116,7 +116,7 @@ public class AssignmentToShiftReportDetailsHooksTest {
     @Test
     public void shouldntDisableFieldsWhenEntityIsSavedAndReportIsntGenerated() {
         // given
-        given(view.getComponentByReference(L_FORM)).willReturn(assignmentToShiftReportForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(assignmentToShiftReportForm);
 
         given(view.getComponentByReference(AssignmentToShiftReportFields.NUMBER)).willReturn(fieldComponent);
         given(view.getComponentByReference(AssignmentToShiftReportFields.NAME)).willReturn(fieldComponent);
@@ -144,7 +144,7 @@ public class AssignmentToShiftReportDetailsHooksTest {
     @Test
     public void shouldDisableFieldsWhenEntityIsSavedAndReportIsGenerated() {
         // given
-        given(view.getComponentByReference(L_FORM)).willReturn(assignmentToShiftReportForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(assignmentToShiftReportForm);
 
         given(view.getComponentByReference(AssignmentToShiftReportFields.NUMBER)).willReturn(fieldComponent);
         given(view.getComponentByReference(AssignmentToShiftReportFields.NAME)).willReturn(fieldComponent);

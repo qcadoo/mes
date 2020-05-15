@@ -28,34 +28,19 @@ import com.google.common.collect.Sets;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orderSupplies.OrderSuppliesService;
-import com.qcadoo.mes.orderSupplies.constants.CoverageLocationFields;
-import com.qcadoo.mes.orderSupplies.constants.CoverageOrderStateFields;
-import com.qcadoo.mes.orderSupplies.constants.CoverageProductGeneratedFields;
-import com.qcadoo.mes.orderSupplies.constants.MaterialRequirementCoverageFields;
-import com.qcadoo.mes.orderSupplies.constants.OrderSuppliesConstants;
-import com.qcadoo.mes.orderSupplies.constants.ParameterFieldsOS;
+import com.qcadoo.mes.orderSupplies.constants.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import com.qcadoo.view.constants.RowStyle;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -63,14 +48,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 @Service
 public class GenerateMaterialRequirementCoverageHooks {
 
     private static final Logger LOG = LoggerFactory.getLogger(GenerateMaterialRequirementCoverageHooks.class);
 
-    private static final String L_FORM = "form";
+    
 
-    private static final String L_WINDOW = "window";
+
 
     private static final String L_COVERAGE = "coverage";
 
@@ -128,11 +118,11 @@ public class GenerateMaterialRequirementCoverageHooks {
 
     public void generateMaterialRequirementCoverageNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, OrderSuppliesConstants.PLUGIN_IDENTIFIER,
-                OrderSuppliesConstants.MODEL_MATERIAL_REQUIREMENT_COVERAGE, L_FORM, MaterialRequirementCoverageFields.NUMBER);
+                OrderSuppliesConstants.MODEL_MATERIAL_REQUIREMENT_COVERAGE, QcadooViewConstants.L_FORM, MaterialRequirementCoverageFields.NUMBER);
     }
 
     public void fillActualDate(final ViewDefinitionState view) {
-        FormComponent mateiralRequirementCoverageForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent mateiralRequirementCoverageForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (mateiralRequirementCoverageForm.getEntityId() != null) {
             return;
@@ -149,7 +139,7 @@ public class GenerateMaterialRequirementCoverageHooks {
     }
 
     public void fillCoverageDate(final ViewDefinitionState view) {
-        FormComponent materialRequirementCoverageform = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent materialRequirementCoverageform = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (materialRequirementCoverageform.getEntityId() != null) {
             return;
@@ -170,7 +160,7 @@ public class GenerateMaterialRequirementCoverageHooks {
     }
 
     public void updateFormState(final ViewDefinitionState view) {
-        FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long materialRequirementCoverageId = materialRequirementCoverageForm.getEntityId();
 
         AwesomeDynamicListComponent adlc = (AwesomeDynamicListComponent) view
@@ -188,7 +178,7 @@ public class GenerateMaterialRequirementCoverageHooks {
     }
 
     public void updateRibbonState(final ViewDefinitionState view) {
-        FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long materialRequirementCoverageId = materialRequirementCoverageForm.getEntityId();
 
         boolean saved = orderSuppliesService.checkIfMaterialRequirementCoverageIsSaved(materialRequirementCoverageId);
@@ -197,7 +187,7 @@ public class GenerateMaterialRequirementCoverageHooks {
                 .getComponentByReference(MaterialRequirementCoverageFields.GENERATED);
         boolean generated = "1".equals(generatedField.getFieldValue());
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup coverage = (RibbonGroup) window.getRibbon().getGroupByName(L_COVERAGE);
         RibbonGroup reports = (RibbonGroup) window.getRibbon().getGroupByName(L_REPORTS);
         RibbonGroup materialAvailability = (RibbonGroup) window.getRibbon().getGroupByName(L_MATERIAL_AVAILABILITY);
@@ -250,7 +240,7 @@ public class GenerateMaterialRequirementCoverageHooks {
     }
 
     public void fillDefaultValuesFromParameter(final ViewDefinitionState view) {
-        FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (materialRequirementCoverageForm.getEntityId() != null) {
             return;
@@ -298,7 +288,7 @@ public class GenerateMaterialRequirementCoverageHooks {
     }
 
     private void updateMRCCriteriaModifiersState(final ViewDefinitionState view) {
-        FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (materialRequirementCoverageForm.getEntityId() == null) {
             return;
@@ -312,7 +302,7 @@ public class GenerateMaterialRequirementCoverageHooks {
     }
 
     private void hideTabInData(ViewDefinitionState view) {
-        FormComponent coverageForm = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent coverageForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity coverageEntity = coverageForm.getEntity();
         Entity order = coverageEntity.getBelongsToField("order");

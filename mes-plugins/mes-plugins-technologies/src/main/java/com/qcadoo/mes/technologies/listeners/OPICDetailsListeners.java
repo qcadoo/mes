@@ -38,6 +38,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.ValidationResult;
@@ -49,7 +50,7 @@ import java.math.BigDecimal;
 
 @Service public class OPICDetailsListeners {
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired private UnitConversionService unitConversionService;
 
@@ -58,7 +59,7 @@ import java.math.BigDecimal;
     public void calculateQuantityFormula(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
 
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity opic = form.getPersistedEntityWithIncludedFormValues();
         String formula = opic.getStringField(OperationProductInComponentFields.QUANTITY_FORMULA);
         formula = formula.replace(",", ".");
@@ -106,7 +107,7 @@ import java.math.BigDecimal;
 
     public void calculateQuantity(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
 
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity opic = form.getPersistedEntityWithIncludedFormValues();
         calculateQuantity(view, opic);
         form.setEntity(opic);

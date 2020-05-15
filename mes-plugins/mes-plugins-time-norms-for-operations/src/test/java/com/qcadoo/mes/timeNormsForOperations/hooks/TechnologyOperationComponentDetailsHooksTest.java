@@ -51,6 +51,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 public class TechnologyOperationComponentDetailsHooksTest {
 
@@ -109,7 +110,7 @@ public class TechnologyOperationComponentDetailsHooksTest {
             }
         });
 
-        given(view.getComponentByReference("form")).willReturn(form);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(form);
         given(form.getEntity()).willReturn(opComp1);
         given(opComp1.getDataDefinition()).willReturn(dd);
         given(dd.get(0L)).willReturn(opComp1);

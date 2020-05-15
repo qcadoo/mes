@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.technologies;
 
-import static com.qcadoo.mes.technologies.states.constants.TechnologyState.DRAFT;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -38,6 +31,13 @@ import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.utils.TreeNumberingService;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import static com.qcadoo.mes.technologies.states.constants.TechnologyState.DRAFT;
 
 @Service
 public class TechnologyTreeNumberingHooks {
@@ -51,7 +51,7 @@ public class TechnologyTreeNumberingHooks {
     private static final Logger LOG = LoggerFactory.getLogger(TechnologyTreeNumberingHooks.class);
 
     public void rebuildTreeNumbering(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference("form");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long technologyId = form.getEntityId();
         if (technologyId == null) {
             return;

@@ -31,11 +31,12 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class MaterialRequirementCoverageDetailsHooksNFOS {
 
-    private static final String L_WINDOW = "window";
+
 
     private static final String L_NEGOTIATIONS = "negotiations";
 
@@ -46,7 +47,7 @@ public class MaterialRequirementCoverageDetailsHooksNFOS {
                 .getComponentByReference(MaterialRequirementCoverageFields.GENERATED);
         boolean generated = "1".equals(generatedField.getFieldValue());
 
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup reports = (RibbonGroup) window.getRibbon().getGroupByName(L_NEGOTIATIONS);
 
         RibbonActionItem createNegotiation = (RibbonActionItem) reports.getItemByName(L_CREATE_NEGOTIATION);

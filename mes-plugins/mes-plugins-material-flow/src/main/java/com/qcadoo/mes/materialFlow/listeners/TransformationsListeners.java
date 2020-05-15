@@ -23,22 +23,6 @@
  */
 package com.qcadoo.mes.materialFlow.listeners;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.NAME;
-import static com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants.MODEL_TRANSFER;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.NUMBER;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.QUANTITY;
-import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.OPERATION;
-import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSFERS_CONSUMPTION;
-import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSFERS_PRODUCTION;
-import static com.qcadoo.mes.technologies.constants.OperationFields.PRODUCT_IN_COMPONENTS;
-import static com.qcadoo.mes.technologies.constants.OperationFields.PRODUCT_OUT_COMPONENTS;
-import static com.qcadoo.mes.technologies.constants.ProductComponentFields.PRODUCT;
-
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.materialFlow.MaterialFlowService;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
@@ -53,11 +37,25 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
+
+import static com.qcadoo.mes.basic.constants.ProductFields.NAME;
+import static com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants.MODEL_TRANSFER;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.NUMBER;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.QUANTITY;
+import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.*;
+import static com.qcadoo.mes.technologies.constants.OperationFields.PRODUCT_IN_COMPONENTS;
+import static com.qcadoo.mes.technologies.constants.OperationFields.PRODUCT_OUT_COMPONENTS;
+import static com.qcadoo.mes.technologies.constants.ProductComponentFields.PRODUCT;
 
 @Component
 public class TransformationsListeners {
 
-    private static final String L_FORM = "form";
+    
 
     @Autowired
     private MaterialFlowService materialFlowService;
@@ -152,10 +150,10 @@ public class TransformationsListeners {
         }
 
         if (modified) {
-            view.getComponentByReference(L_FORM).addMessage("materialFlow.transformations.productsLoaded.success",
+            view.getComponentByReference(QcadooViewConstants.L_FORM).addMessage("materialFlow.transformations.productsLoaded.success",
                     MessageType.SUCCESS);
         } else {
-            view.getComponentByReference(L_FORM).addMessage("materialFlow.transformations.productsLoaded.failure",
+            view.getComponentByReference(QcadooViewConstants.L_FORM).addMessage("materialFlow.transformations.productsLoaded.failure",
                     MessageType.FAILURE);
         }
     }

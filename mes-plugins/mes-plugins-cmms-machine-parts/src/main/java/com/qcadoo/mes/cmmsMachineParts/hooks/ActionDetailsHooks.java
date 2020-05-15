@@ -36,15 +36,16 @@ import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ActionDetailsHooks {
 
-    private static final String L_FORM = "form";
+
 
     public void onBeforeRender(final ViewDefinitionState view) {
 
-        FormComponent form = (FormComponent) view.getComponentByReference(L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity action = form.getPersistedEntityWithIncludedFormValues();
         ActionAppliesTo appliesTo = ActionAppliesTo.from(action);
         toggleGridsEnable(view, appliesTo, false);
@@ -87,7 +88,7 @@ public class ActionDetailsHooks {
     }
 
     public void disableActionsWhenDefault(final ViewDefinitionState view) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference("window");
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonGroup actions = window.getRibbon().getGroupByName("actions");
 
         for (RibbonActionItem item : actions.getItems()) {

@@ -23,21 +23,23 @@
  */
 package com.qcadoo.mes.warehouseMinimalState.hooks;
 
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
-import org.springframework.stereotype.Service;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class WarehouseMinimumStateAddMulti {
 
-    private static final String L_WINDOW = "window";
+
 
     public void onBeforeRender(final ViewDefinitionState view) {
         LookupComponent location = (LookupComponent) view.getComponentByReference("location");
         location.setRequired(true);
-        WindowComponent window = (WindowComponent) view.getComponentByReference(L_WINDOW);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonActionItem addMultiButton = window.getRibbon().getGroupByName("action").getItemByName("createMultiMinimalStates");
         addMultiButton.setMessage("warehouseMinimalState.warehouseMinimumStateAddMulti.createMultiMinimalStates.button.message");
         addMultiButton.requestUpdate(true);

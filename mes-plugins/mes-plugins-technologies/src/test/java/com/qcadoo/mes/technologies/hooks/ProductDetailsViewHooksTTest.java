@@ -39,6 +39,7 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import com.qcadoo.view.internal.components.window.WindowComponentState;
 
 public class ProductDetailsViewHooksTTest {
@@ -74,7 +75,7 @@ public class ProductDetailsViewHooksTTest {
 
         productDetailsViewHooksT = new ProductDetailsViewHooksT();
 
-        given(view.getComponentByReference("form")).willReturn(productForm);
+        given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(productForm);
         given(productForm.getEntity()).willReturn(product);
     }
 
@@ -85,7 +86,7 @@ public class ProductDetailsViewHooksTTest {
         // given
         given(product.getId()).willReturn(null);
 
-        given(view.getComponentByReference("window")).willReturn((ComponentState) window);
+        given(view.getComponentByReference(QcadooViewConstants.L_WINDOW)).willReturn((ComponentState) window);
 
         given(window.getRibbon()).willReturn(ribbon);
 
@@ -112,7 +113,7 @@ public class ProductDetailsViewHooksTTest {
 
         given(product.getBelongsToField("technologyGroup")).willReturn(null);
 
-        given(view.getComponentByReference("window")).willReturn((ComponentState) window);
+        given(view.getComponentByReference(QcadooViewConstants.L_WINDOW)).willReturn((ComponentState) window);
 
         given(window.getRibbon()).willReturn(ribbon);
 
@@ -139,7 +140,7 @@ public class ProductDetailsViewHooksTTest {
 
         given(product.getBelongsToField("technologyGroup")).willReturn(technologyGroup);
 
-        given(view.getComponentByReference("window")).willReturn((ComponentState) window);
+        given(view.getComponentByReference(QcadooViewConstants.L_WINDOW)).willReturn((ComponentState) window);
 
         given(window.getRibbon()).willReturn(ribbon);
 
