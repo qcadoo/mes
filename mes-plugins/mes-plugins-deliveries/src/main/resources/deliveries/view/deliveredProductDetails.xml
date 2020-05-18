@@ -300,9 +300,9 @@
         </windowTab>
 
         <windowTab name="storageLocationTab">
-            <component type="gridLayout" name="storageLocationGridLayout" columns="2"
-                       rows="5">
-                <layoutElement column="1" row="1">
+            <component type="gridLayout" name="storageLocationGridLayout" columns="3"
+                       rows="7">
+                <layoutElement column="1" row="1" width="2">
                     <component type="lookup" name="palletNumber" reference="palletNumber"
                                field="#{form}.palletNumber">
                         <option type="searchable" value="number"/>
@@ -313,11 +313,11 @@
                         <option type="fieldCode" value="number"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="1" row="2">
+                <layoutElement column="1" row="2" width="2">
                     <component type="select" name="palletType" field="#{form}.palletType"
                                reference="palletType"/>
                 </layoutElement>
-                <layoutElement column="1" row="3">
+                <layoutElement column="1" row="3" width="2">
                     <component type="lookup" name="storageLocation" reference="storageLocation"
                                                    field="#{form}.storageLocation" hasDescription="true">
                         <option type="column" name="location" fields="location"
@@ -335,7 +335,7 @@
                                 method="restrictStorageLocation"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="1" row="4">
+                <layoutElement column="1" row="4" width="2">
                     <component type="input" name="batchNumber" field="#{form}.batchNumber"
                                reference="batchNumber" hasDescription="true">
                         <listener event="onInputChange"
@@ -343,7 +343,7 @@
                                   method="fillOrderedQuantities"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="1" row="5">
+                <layoutElement column="1" row="5" width="2">
                     <component type="lookup" name="batch" field="#{form}.batch"
                                reference="batch">
                         <option type="column" name="supplierName" fields="supplier"
@@ -365,6 +365,13 @@
                                 class="com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier"
                                 method="filterByProduct"/>
                     </component>
+                </layoutElement>
+                <layoutElement column="1" row="6" width="2">
+                    <component type="calendar" name="productionDate" field="#{form}.productionDate" reference="productionDate"/>
+                </layoutElement>
+
+                <layoutElement column="1" row="7" width="2">
+                    <component type="calendar" name="expirationDate" field="#{form}.expirationDate" reference="expirationDate"/>
                 </layoutElement>
             </component>
         </windowTab>

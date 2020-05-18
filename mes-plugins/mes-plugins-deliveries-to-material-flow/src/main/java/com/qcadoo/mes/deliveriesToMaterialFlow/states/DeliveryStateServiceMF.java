@@ -33,7 +33,6 @@ import com.qcadoo.mes.deliveries.constants.DeliveredProductAttributeValFields;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveredProductFieldsDTMF;
 import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DocumentFieldsDTMF;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
@@ -48,17 +47,16 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.model.api.validators.ErrorMessage;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class DeliveryStateServiceMF {
@@ -289,7 +287,7 @@ public class DeliveryStateServiceMF {
     }
 
     private Date getExpirationDate(final Entity deliveredProduct) {
-        return deliveredProduct.getDateField(DeliveredProductFieldsDTMF.EXPIRATION_DATE);
+        return deliveredProduct.getDateField(DeliveredProductFields.EXPIRATION_DATE);
     }
 
     private String getTypeOfPallet(final Entity deliveredProduct) {
@@ -313,7 +311,7 @@ public class DeliveryStateServiceMF {
     }
 
     private Date getProductionDate(final Entity deliveredProduct) {
-        return deliveredProduct.getDateField(DeliveredProductFieldsDTMF.PRODUCTION_DATE);
+        return deliveredProduct.getDateField(DeliveredProductFields.PRODUCTION_DATE);
     }
 
     private boolean isRequired(final Entity location, final String fieldName) {

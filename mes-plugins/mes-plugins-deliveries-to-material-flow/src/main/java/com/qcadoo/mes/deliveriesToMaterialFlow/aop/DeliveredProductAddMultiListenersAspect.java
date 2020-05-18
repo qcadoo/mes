@@ -23,17 +23,18 @@
  */
 package com.qcadoo.mes.deliveriesToMaterialFlow.aop;
 
-import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiPositionFields;
-import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveredProductFieldsDTMF;
-import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveriesToMaterialFlowConstants;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.plugin.api.RunIfEnabled;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.springframework.beans.factory.annotation.Configurable;
+
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiPositionFields;
+import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveriesToMaterialFlowConstants;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.plugin.api.RunIfEnabled;
 
 @Aspect
 @Configurable
@@ -49,7 +50,7 @@ public class DeliveredProductAddMultiListenersAspect {
     public Entity aroundCreateDeliveredProduct(final ProceedingJoinPoint pjp, Entity position, DataDefinition deliveredProductDD)
             throws Throwable {
         Entity deliveredProduct = (Entity) pjp.proceed();
-        deliveredProduct.setField(DeliveredProductFieldsDTMF.EXPIRATION_DATE,
+        deliveredProduct.setField(DeliveredProductFields.EXPIRATION_DATE,
                 position.getStringField(DeliveredProductMultiPositionFields.EXPIRATION_DATE));
         return deliveredProduct;
     }
