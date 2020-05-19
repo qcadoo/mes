@@ -3,6 +3,7 @@ package com.qcadoo.mes.ordersForSubproductsGeneration;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.GenerationOrderResult;
+import com.qcadoo.mes.masterOrders.SubOrderErrorHolder;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.ordersForSubproductsGeneration.constants.OrdersForSubproductsGenerationConstans;
@@ -68,7 +69,7 @@ public class OrdersFromMOProductsGenerationServiceOverrideAspect {
                 result.addOrderWithGeneratedSubOrders(order.getStringField(OrderFields.NUMBER));
             }
         } catch (Exception exc) {
-            result.addOrderWithoutGeneratedSubOrders(order.getStringField(OrderFields.NUMBER));
+            result.addOrderWithoutGeneratedSubOrders(new SubOrderErrorHolder(order.getStringField(OrderFields.NUMBER), ""));
         }
     }
 
