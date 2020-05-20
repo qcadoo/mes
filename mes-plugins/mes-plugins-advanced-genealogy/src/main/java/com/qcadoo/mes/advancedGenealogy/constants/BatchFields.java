@@ -54,4 +54,6 @@ public final class BatchFields {
     public static final String ENTITY_TYPE = "entityType";
 
     public static final String EXTERNAL_NUMBER = "externalNumber";
+
+    public static final String GENEALOGY_TREE_NODE_LABEL = "genealogyTreeNodeLabel";
 }

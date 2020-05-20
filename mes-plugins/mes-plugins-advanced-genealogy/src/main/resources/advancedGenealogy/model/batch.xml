@@ -52,6 +52,7 @@
 		<enum name="entityType" values="batch" default="batch"
 			persistent="false" />
 		<string name="externalNumber" unique="true"/>
+		<string name="genealogyTreeNodeLabel" persistent="false"/>
 	</fields>
 	<hooks>
 		<onCreate class="com.qcadoo.mes.advancedGenealogy.hooks.BatchModelHooks"

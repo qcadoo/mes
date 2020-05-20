@@ -40,6 +40,10 @@ public interface AdvancedGenealogyConstants {
 
     String MODEL_USED_BATCH_SIMPLE = "usedBatchSimple";
 
-    String FIELD_NUMBER = "number";
+    String L_PRODUCED_FROM = "02producedFrom";
+
+    String L_USED_TO_PRODUCE = "01usedToProduce";
+
+    String L_SPACER = ": ";
 
 }

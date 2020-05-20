@@ -78,7 +78,7 @@
 						<component type="borderLayout" name="treeBorder">
 							<component type="tree" name="genealogyTree" reference="genealogyTree" field="genealogyTree" defaultEnabled="false">
 								<dataType name="batch">
-									<option type="nodeLabelExpression" value="(#supplier == null) ? '&lt;strong&gt;' + #number + ' &lt;/strong&gt;' + ' - ' + #product.get('name') + ' (' + #product.get('number') + ')' : '&lt;strong&gt;' + #number + ' &lt;/strong&gt;' + ' - ' + #product.get('name') + ' (' + #product.get('number') + ') - ' + #supplier.get('name')" />
+									<option type="nodeLabelExpression" value="'&lt;strong&gt;' + #number + ' &lt;/strong&gt;' + #genealogyTreeNodeLabel" />
 									<option type="nodeIcon" value="/technologies/public/css/icons/operationIcon16.png" />
 									<option type="newIcon" value="/technologies/public/css/icons/newOperationIcon16.png" />
 								</dataType>
