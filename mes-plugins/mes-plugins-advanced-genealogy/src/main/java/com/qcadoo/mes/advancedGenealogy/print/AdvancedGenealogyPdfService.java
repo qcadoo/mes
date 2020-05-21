@@ -29,6 +29,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import com.qcadoo.mes.advancedGenealogy.constants.GenealogyReportFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,10 +56,6 @@ public class AdvancedGenealogyPdfService extends PdfDocumentService {
 
     private static final String L_ADVANCED_GENEALOGY_BATCH_REPORT_BATCH_NUMBER_MESSAGE = "advancedGenealogy.batch.report.batchNumber";
 
-    private static final String L_NAME = "name";
-
-    private static final String L_TYPE = "type";
-
     @Autowired
     private AdvancedGenealogyTreeService treeService;
 
@@ -73,17 +70,17 @@ public class AdvancedGenealogyPdfService extends PdfDocumentService {
         Preconditions.checkArgument(entity != null, "Batch is required");
         final String documentTitle = getReportTitle(locale);
         final String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
-        pdfHelper.addDocumentHeader(document, (String) entity.getField(L_NAME), documentTitle, documentAuthor,
-                (Date) entity.getField("date"));
+        pdfHelper.addDocumentHeader(document, (String) entity.getField(GenealogyReportFields.NAME), documentTitle, documentAuthor,
+                (Date) entity.getField(GenealogyReportFields.DATE));
         document.add(Chunk.NEWLINE);
 
         final PdfPTable panelTable = createDocumentPanelTable(entity, locale);
         document.add(panelTable);
 
-        Entity rootBatch = entity.getBelongsToField("batch");
+        Entity rootBatch = entity.getBelongsToField(GenealogyReportFields.BATCH);
 
-        String type = entity.getStringField(L_TYPE);
-        List<Entity> batches = getAllRelatedBatches(rootBatch, type, entity.getBooleanField("includeDraft"));
+        String type = entity.getStringField(GenealogyReportFields.TYPE);
+        List<Entity> batches = getAllRelatedBatches(rootBatch, type, entity.getBooleanField(GenealogyReportFields.INCLUDE_DRAFT));
 
         final List<String> batchHeader = new ArrayList<String>();
         batchHeader.add(translationService.translate("advancedGenealogy.batch.report.date", locale));
@@ -96,7 +93,7 @@ public class AdvancedGenealogyPdfService extends PdfDocumentService {
             batchHeader.add(translationService.translate("advancedGenealogy.batch.report.order", locale));
         }
 
-        boolean directOnly = entity.getBooleanField("directRelatedOnly");
+        boolean directOnly = entity.getBooleanField(GenealogyReportFields.DIRECT_RELATED_ONLY);
 
         if (batches.size() > 1) {
             generateBatchTable(document, batches, rootBatch, type, batchHeader, locale, !directOnly);
@@ -210,15 +207,15 @@ public class AdvancedGenealogyPdfService extends PdfDocumentService {
 
     private PdfPTable createDocumentPanelTable(final Entity entity, final Locale locale) {
         final PdfPTable panel = pdfHelper.createPanelTable(2);
-        final Entity batch = entity.getBelongsToField("batch");
+        final Entity batch = entity.getBelongsToField(GenealogyReportFields.BATCH);
         final TranslationService translation = translationService;
         String batchNumber = translation.translate(L_ADVANCED_GENEALOGY_BATCH_REPORT_BATCH_NUMBER_MESSAGE, locale)
                 + AdvancedGenealogyConstants.L_SPACER + batch.getField(BatchFields.NUMBER);
         final StringBuilder type = new StringBuilder(translation.translate("advancedGenealogy.batch.report.type", locale))
                 .append(AdvancedGenealogyConstants.L_SPACER);
-        if (AdvancedGenealogyConstants.L_USED_TO_PRODUCE.equals(entity.getField(L_TYPE))) {
+        if (AdvancedGenealogyConstants.L_USED_TO_PRODUCE.equals(entity.getField(GenealogyReportFields.TYPE))) {
             type.append(translation.translate("advancedGenealogy.genealogyReport.type.value.01usedToProduce", locale));
-        } else if (AdvancedGenealogyConstants.L_PRODUCED_FROM.equals(entity.getField(L_TYPE))) {
+        } else if (AdvancedGenealogyConstants.L_PRODUCED_FROM.equals(entity.getField(GenealogyReportFields.TYPE))) {
             type.append(translation.translate("advancedGenealogy.genealogyReport.type.value.02producedFrom", locale));
         } else {
             throw new IllegalStateException("Type of genealogy table should be specified");
@@ -226,7 +223,7 @@ public class AdvancedGenealogyPdfService extends PdfDocumentService {
         final StringBuilder includeDraft = new StringBuilder(
                 translation.translate("advancedGenealogy.batch.report.includeDraft", locale))
                         .append(AdvancedGenealogyConstants.L_SPACER);
-        if (entity.getBooleanField("includeDraft")) {
+        if (entity.getBooleanField(GenealogyReportFields.INCLUDE_DRAFT)) {
             includeDraft.append(translation.translate("qcadooView.true", locale));
         } else {
             includeDraft.append(translation.translate("qcadooView.false", locale));
@@ -234,7 +231,7 @@ public class AdvancedGenealogyPdfService extends PdfDocumentService {
         final StringBuilder directRelatedOnly = new StringBuilder(
                 translation.translate("advancedGenealogy.batch.report.directRelatedOnly", locale))
                         .append(AdvancedGenealogyConstants.L_SPACER);
-        if (entity.getBooleanField("directRelatedOnly")) {
+        if (entity.getBooleanField(GenealogyReportFields.DIRECT_RELATED_ONLY)) {
             directRelatedOnly.append(translation.translate("qcadooView.true", locale));
         } else {
             directRelatedOnly.append(translation.translate("qcadooView.false", locale));
@@ -253,7 +250,7 @@ public class AdvancedGenealogyPdfService extends PdfDocumentService {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", locale);
         for (Entity batch : batches) {
             final List<Entity> stateChanges = batch.getHasManyField(BatchFields.STATE_CHANGES);
-            final Entity firstStateChange = getFirstSuccessfullStateChange(stateChanges);
+            final Entity firstStateChange = getFirstSuccessfulStateChange(stateChanges);
             Phrase datePhrase = new Phrase();
             if (firstStateChange != null) {
                 final Date date = (Date) firstStateChange.getField(BatchStateChangeFields.DATE_AND_TIME);
@@ -280,7 +277,7 @@ public class AdvancedGenealogyPdfService extends PdfDocumentService {
         document.add(table);
     }
 
-    private Entity getFirstSuccessfullStateChange(final List<Entity> stateChanges) {
+    private Entity getFirstSuccessfulStateChange(final List<Entity> stateChanges) {
         for (Entity stateChange : stateChanges) {
             if (StateChangeStatus.SUCCESSFUL.getStringValue().equals(stateChange.getStringField(BatchStateChangeFields.STATUS))) {
                 return stateChange;

@@ -23,16 +23,20 @@
  */
 package com.qcadoo.mes.advancedGenealogy.hooks;
 
+import com.qcadoo.mes.advancedGenealogy.constants.GenealogyReportFields;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
-public class GeneaogyReportHooks {
+public class GenealogyReportHooks {
 
     public final void resetStatus(final DataDefinition dataDefinition, final Entity genealogyReport) {
-        genealogyReport.setField("generated", Boolean.FALSE);
+        genealogyReport.setField(GenealogyReportFields.FILE_NAME, null);
+        genealogyReport.setField(GenealogyReportFields.GENERATED, Boolean.FALSE);
+        genealogyReport.setField(GenealogyReportFields.DATE, null);
+        genealogyReport.setField(GenealogyReportFields.WORKER, null);
     }
 
 }
