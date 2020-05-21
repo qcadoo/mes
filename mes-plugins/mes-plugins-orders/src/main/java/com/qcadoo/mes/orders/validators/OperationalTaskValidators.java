@@ -226,8 +226,7 @@ public class OperationalTaskValidators {
         Entity workstation = operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION);
         if (technologyOperationComponent != null && workstation != null) {
             List<Entity> workstations = technologyOperationComponent
-                    .getBelongsToField(TechnologyOperationComponentFields.OPERATION)
-                    .getHasManyField(TechnologyOperationComponentFields.WORKSTATIONS);
+                    .getManyToManyField(TechnologyOperationComponentFields.WORKSTATIONS);
             if (!workstations.isEmpty() && workstations.stream().noneMatch(w -> w.getId().equals(workstation.getId()))) {
                 operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.WORKSTATION),
                         "orders.error.inappropriateWorkstationForOperation");
