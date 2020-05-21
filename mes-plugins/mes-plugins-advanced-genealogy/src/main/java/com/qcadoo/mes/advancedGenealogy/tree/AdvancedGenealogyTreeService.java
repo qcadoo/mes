@@ -29,6 +29,7 @@ import static com.qcadoo.mes.advancedGenealogy.constants.TrackingRecordFields.US
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,9 +67,9 @@ public class AdvancedGenealogyTreeService {
     private TranslationService translationService;
 
     public List<Entity> getProducedFromTree(final Entity batch, final boolean includeDrafts, final boolean makeIdsUnique) {
-        List<Entity> tree = new ArrayList<Entity>();
+        List<Entity> tree = new ArrayList<>();
 
-        addChild(tree, batch, makeIdsUnique, AdvancedGenealogyConstants.L_PRODUCED_FROM);
+        addChild(tree, batch, makeIdsUnique);
 
         generateProducedFromTree(batch, tree, includeDrafts, makeIdsUnique);
 
@@ -76,25 +77,25 @@ public class AdvancedGenealogyTreeService {
     }
 
     public List<Entity> getUsedToProduceTree(final Entity batch, final boolean includeDrafts, final boolean makeIdsUnique) {
-        List<Entity> tree = new ArrayList<Entity>();
+        List<Entity> tree = new ArrayList<>();
 
         long realParentId = batch.getId();
 
-        addChild(tree, batch, true, AdvancedGenealogyConstants.L_USED_TO_PRODUCE);
+        addChild(tree, batch, true);
 
         generateUsedToProduceTree(batch, tree, includeDrafts, true, realParentId);
 
         return tree;
     }
 
-    private boolean addChild(final List<Entity> tree, final Entity child, final boolean makeIdsUnique, final String type) {
+    private boolean addChild(final List<Entity> tree, final Entity child, final boolean makeIdsUnique) {
         child.setField(PARENT, null);
-        String genealogyTreeNodeLabel = createGenealogyTreeNodeLabel(child, type);
+        String genealogyTreeNodeLabel = createGenealogyTreeNodeLabel(child);
         child.setField(GENEALOGY_TREE_NODE_LABEL, genealogyTreeNodeLabel);
         return addToList(tree, child, makeIdsUnique);
     }
 
-    private String createGenealogyTreeNodeLabel(Entity batch, String type) {
+    private String createGenealogyTreeNodeLabel(Entity batch) {
         Entity product = batch.getBelongsToField(PRODUCT);
         Entity supplier = batch.getBelongsToField(SUPPLIER);
         StringBuilder sb = new StringBuilder();
@@ -107,12 +108,7 @@ public class AdvancedGenealogyTreeService {
             sb.append(" - ");
             sb.append(supplier.getStringField(CompanyFields.NAME));
         }
-        String orders;
-        if (AdvancedGenealogyConstants.L_PRODUCED_FROM.equals(type)) {
-            orders = getOrdersForProducedBatch(batch);
-        } else {
-            orders = getOrdersForUsedBatch(batch);
-        }
+        String orders = getOrdersForBatch(batch);
         if (!orders.isEmpty()) {
             sb.append(" - ");
             sb.append(translationService.translate("advancedGenealogy.batch.report.order", LocaleContextHolder.getLocale()));
@@ -122,10 +118,9 @@ public class AdvancedGenealogyTreeService {
         return sb.toString();
     }
 
-    private boolean addChild(final List<Entity> tree, final Entity child, final Entity parent, final boolean makeIdsUnique,
-            final String type) {
+    private boolean addChild(final List<Entity> tree, final Entity child, final Entity parent, final boolean makeIdsUnique) {
         child.setField(PARENT, parent);
-        String genealogyTreeNodeLabel = createGenealogyTreeNodeLabel(child, type);
+        String genealogyTreeNodeLabel = createGenealogyTreeNodeLabel(child);
         child.setField(GENEALOGY_TREE_NODE_LABEL, genealogyTreeNodeLabel);
         return addToList(tree, child, makeIdsUnique);
     }
@@ -149,11 +144,6 @@ public class AdvancedGenealogyTreeService {
         for (Entity entity : tree) {
             if (child.getField(PARENT).equals(entity.getField(PARENT))
                     && entity.getField(NUMBER).equals(child.getField(NUMBER))) {
-                Entity supplierChild = child.getBelongsToField(SUPPLIER);
-                Entity supplierEntity = entity.getBelongsToField(SUPPLIER);
-                if (supplierChild != null && supplierChild.equals(supplierEntity)) {
-                    return true;
-                }
                 return true;
             }
         }
@@ -188,8 +178,7 @@ public class AdvancedGenealogyTreeService {
                         Entity batch = usedBatch.getBelongsToField(UsedBatchSimpleFields.BATCH);
                         if (batch.getId().equals(realParentId)) {
                             long realId = producedBatch.getId();
-                            boolean addedChild = addChild(tree, producedBatch, parent, makeIdsUnique,
-                                    AdvancedGenealogyConstants.L_USED_TO_PRODUCE);
+                            boolean addedChild = addChild(tree, producedBatch, parent, makeIdsUnique);
                             if (addedChild) {
                                 generateUsedToProduceTree(producedBatch, tree, includeDrafts, makeIdsUnique, realId);
                             }
@@ -206,8 +195,7 @@ public class AdvancedGenealogyTreeService {
                             }
                             if (batch.getId().equals(realParentId)) {
                                 long realId = producedBatch.getId();
-                                boolean addedChild = addChild(tree, producedBatch, parent, makeIdsUnique,
-                                        AdvancedGenealogyConstants.L_USED_TO_PRODUCE);
+                                boolean addedChild = addChild(tree, producedBatch, parent, makeIdsUnique);
                                 if (addedChild) {
                                     generateUsedToProduceTree(producedBatch, tree, includeDrafts, makeIdsUnique, realId);
                                 }
@@ -242,8 +230,7 @@ public class AdvancedGenealogyTreeService {
                 EntityList usedBatches = trackingRecord.getHasManyField(USED_BATCHES_SIMPLE);
                 for (Entity usedBatch : usedBatches) {
                     Entity batch = usedBatch.getBelongsToField(UsedBatchSimpleFields.BATCH);
-                    boolean addedChild = addChild(tree, batch, producedBatch, makeIdsUnique,
-                            AdvancedGenealogyConstants.L_PRODUCED_FROM);
+                    boolean addedChild = addChild(tree, batch, producedBatch, makeIdsUnique);
                     if (addedChild) {
                         generateProducedFromTree(batch, tree, includeDrafts, makeIdsUnique);
                     }
@@ -257,8 +244,7 @@ public class AdvancedGenealogyTreeService {
                         if (batch == null) {
                             continue;
                         }
-                        boolean addedChild = addChild(tree, batch, producedBatch, makeIdsUnique,
-                                AdvancedGenealogyConstants.L_PRODUCED_FROM);
+                        boolean addedChild = addChild(tree, batch, producedBatch, makeIdsUnique);
                         if (addedChild) {
                             generateProducedFromTree(batch, tree, includeDrafts, makeIdsUnique);
                         }
@@ -276,21 +262,10 @@ public class AdvancedGenealogyTreeService {
         return pluginAccessor.getPlugin(pluginIdentifier) != null;
     }
 
-    public String getOrdersForProducedBatch(Entity batch) {
+    public String getOrdersForBatch(Entity batch) {
         if (isEnabled(ADVANCED_GENEALOGY_FOR_ORDERS)) {
-            return batch.getHasManyField(TRACKING_RECORDS).stream().filter(e -> e.getBelongsToField(ORDER) != null)
-                    .map(e -> e.getBelongsToField(ORDER).getStringField(OrderFields.NUMBER)).distinct()
-                    .collect(Collectors.joining(", "));
-        } else {
-            return "";
-        }
-    }
-
-    public String getOrdersForUsedBatch(Entity batch) {
-        if (isEnabled(ADVANCED_GENEALOGY_FOR_ORDERS)) {
-            return batch.getHasManyField(TRACKING_RECORDS).stream().filter(e -> e.getBelongsToField(ORDER) != null)
-                    .map(e -> e.getBelongsToField(ORDER).getStringField(OrderFields.NUMBER)).distinct()
-                    .collect(Collectors.joining(", "));
+            return batch.getHasManyField(TRACKING_RECORDS).stream().map(e -> e.getBelongsToField(ORDER)).filter(Objects::nonNull)
+                    .map(e -> e.getStringField(OrderFields.NUMBER)).distinct().collect(Collectors.joining(", "));
         } else {
             return "";
         }

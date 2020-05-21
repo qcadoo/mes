@@ -101,7 +101,7 @@ public class AdvancedGenealogyPdfService extends PdfDocumentService {
         if (batches.size() > 1) {
             generateBatchTable(document, batches, rootBatch, type, batchHeader, locale, !directOnly);
         } else {
-            createPanelForEmptyBatch(document, rootBatch, locale, type);
+            createPanelForEmptyBatch(document, rootBatch, locale);
         }
     }
 
@@ -160,7 +160,7 @@ public class AdvancedGenealogyPdfService extends PdfDocumentService {
             header.append(L_DASH).append(supplier.getField(CompanyFields.NAME));
         }
         if (AdvancedGenealogyConstants.L_PRODUCED_FROM.equals(type)) {
-            String orders = treeService.getOrdersForProducedBatch(batch);
+            String orders = treeService.getOrdersForBatch(batch);
             if (!orders.isEmpty()) {
                 header.append(" ").append(translationService.translate("advancedGenealogy.batch.report.order", locale))
                         .append(AdvancedGenealogyConstants.L_SPACER).append(orders);
@@ -185,7 +185,7 @@ public class AdvancedGenealogyPdfService extends PdfDocumentService {
         document.add(typeOfReport);
     }
 
-    private void createPanelForEmptyBatch(final Document document, final Entity batch, final Locale locale, final String type)
+    private void createPanelForEmptyBatch(final Document document, final Entity batch, final Locale locale)
             throws DocumentException {
         final StringBuilder header = new StringBuilder();
         final Entity product = batch.getBelongsToField(BatchFields.PRODUCT);
@@ -273,8 +273,7 @@ public class AdvancedGenealogyPdfService extends PdfDocumentService {
                                 : (String) batch.getBelongsToField(BatchFields.SUPPLIER).getField(CompanyFields.NAME),
                         FontUtils.getDejavuRegular7Dark()));
             } else {
-                String orders = treeService.getOrdersForUsedBatch(batch);
-                table.addCell(new Phrase(orders, FontUtils.getDejavuRegular7Dark()));
+                table.addCell(new Phrase(treeService.getOrdersForBatch(batch), FontUtils.getDejavuRegular7Dark()));
             }
         }
 
