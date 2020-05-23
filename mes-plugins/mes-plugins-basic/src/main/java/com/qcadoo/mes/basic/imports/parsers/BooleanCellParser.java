@@ -40,52 +40,31 @@ public class BooleanCellParser implements CellParser {
 
     private static final String L_TRUE_BOOLEAN_PATTERN = "^(true|tak|t|1)$";
 
-    private static final String L_FALSE_BOOLEAN_PATTERN = "^(false|nie|f|n|0)$";
-
     @Override
-    public void parse(final String cellValue, final String dependentCellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {
-        if (validateBooleanFormat(cellValue, errorsAccessor)) {
-            Optional<Boolean> mayBeValue = parse(cellValue);
+    public void parse(final String cellValue, final String dependentCellValue, final CellErrorsAccessor errorsAccessor,
+            final Consumer<Object> valueConsumer) {
 
-            if (mayBeValue.isPresent()) {
-                Boolean value = mayBeValue.get();
+        Optional<Boolean> mayBeValue = parse(cellValue);
 
-                valueConsumer.accept(value);
-            } else {
-                errorsAccessor.addError(L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM);
-            }
-        }
-    }
+        if (mayBeValue.isPresent()) {
+            Boolean value = mayBeValue.get();
 
-    private boolean validateBooleanFormat(final String cellValue, final CellErrorsAccessor errorsAccessor) {
-        Pattern trueBooleanPattern = Pattern.compile(L_TRUE_BOOLEAN_PATTERN, Pattern.CASE_INSENSITIVE);
-        Pattern falseBooleanPattern = Pattern.compile(L_FALSE_BOOLEAN_PATTERN, Pattern.CASE_INSENSITIVE);
-
-        Matcher trueBooleanMatcher = trueBooleanPattern.matcher(cellValue);
-        Matcher falseBooleanMatcher = falseBooleanPattern.matcher(cellValue);
-
-        if (!trueBooleanMatcher.matches() && !falseBooleanMatcher.matches()) {
+            valueConsumer.accept(value);
+        } else {
             errorsAccessor.addError(L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM);
-
-            return false;
         }
 
-        return true;
     }
 
     private Optional<Boolean> parse(final String cellValue) {
         Pattern trueBooleanPattern = Pattern.compile(L_TRUE_BOOLEAN_PATTERN, Pattern.CASE_INSENSITIVE);
-        Pattern falseBooleanPattern = Pattern.compile(L_FALSE_BOOLEAN_PATTERN, Pattern.CASE_INSENSITIVE);
 
         Matcher trueBooleanMatcher = trueBooleanPattern.matcher(cellValue);
-        Matcher falseBooleanMatcher = falseBooleanPattern.matcher(cellValue);
 
         if (trueBooleanMatcher.matches()) {
             return Optional.of(Boolean.TRUE);
-        } else if (falseBooleanMatcher.matches()) {
-            return Optional.of(Boolean.FALSE);
         } else {
-            return Optional.empty();
+            return Optional.of(Boolean.FALSE);
         }
     }
 
