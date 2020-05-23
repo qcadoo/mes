@@ -74,7 +74,8 @@
 							    changeTechnologyParameters.enable();
 							    var changePerformanceNorm = #{changePerformanceNorm}.getValue().content.value;
 							    var changeGroup = #{changeGroup}.getValue().content.value;
-                                if (changePerformanceNorm == '0' && changeGroup == '0') {
+							    var updateOperationTimeNorms = #{updateOperationTimeNorms}.getValue().content.value;
+                                if (changePerformanceNorm == '0' && changeGroup == '0' && updateOperationTimeNorms == '0') {
                                     changeTechnologyParameters.disable();
                                 }
 						    }
@@ -83,7 +84,7 @@
           			]]>
                 </script>
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="4">
+                           rows="5">
                     <layoutElement column="1" row="1">
                         <component type="checkbox" name="generated" defaultVisible="false"
                                    reference="generated" defaultEnabled="false"/>
@@ -134,6 +135,16 @@
                         <component type="input" name="selectedEntities" reference="selectedEntities"
                                    field="selectedEntities" defaultVisible="false" defaultEnabled="false"/>
 
+                    </layoutElement>
+                    <layoutElement column="1" row="5">
+                        <component type="checkbox" name="updateOperationTimeNorms"
+                                   reference="updateOperationTimeNorms"
+                                   field="#{form}.updateOperationTimeNorms" hasDescription="true">
+                            <option type="labelWidth" value="35" />
+                            <listener event="onChange"
+                                      class="com.qcadoo.mes.technologies.listeners.ChangeTechnologyParametersListeners"
+                                      method="onChangeUpdateOperationTimeNorms"/>
+                        </component>
                     </layoutElement>
                 </component>
                 <option type="header" value="true"/>

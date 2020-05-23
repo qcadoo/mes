@@ -67,4 +67,6 @@ public final class OperationFields {
 
     public static final String OPERATION_SKILLS = "operationSkills";
 
+    public static final String CREATE_OPERATION_OUTPUT = "createOperationOutput";
+
 }
