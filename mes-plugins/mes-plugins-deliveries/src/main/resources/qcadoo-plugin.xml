@@ -275,10 +275,6 @@
                             class="com.qcadoo.mes.deliveries.listeners.ProductDetailsListenersD"
                             method="checkIfDefaultSupplierIsUnique"/>
 
-        <view:view-listener plugin="basic" view="productDetails" component="entityType" event="onSelectedEntityChange"
-                            class="com.qcadoo.mes.deliveries.listeners.ProductDetailsListenersD"
-                            method="toggleSuppliersGrids"/>
-
         <view:view-hook plugin="basic" view="companyDetails"
                         type="beforeRender" class="com.qcadoo.mes.deliveries.hooks.CompanyDetailsHooksD"
                         method="updateRibbonState"/>
