@@ -23,15 +23,14 @@
  */
 package com.qcadoo.mes.deliveriesToMaterialFlow.hooks;
 
-import java.util.Date;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.deliveriesToMaterialFlow.constants.DeliveredProductFieldsDTMF;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 @Service
 public class DeliveredProductHooksDTMF {
@@ -40,11 +39,11 @@ public class DeliveredProductHooksDTMF {
     private PalletValidatorService palletValidatorService;
 
     public boolean validate(final DataDefinition deliveredProductDD, final Entity deliveredProduct) {
-        Date productionDate = deliveredProduct.getDateField(DeliveredProductFieldsDTMF.PRODUCTION_DATE);
-        Date expirationDate = deliveredProduct.getDateField(DeliveredProductFieldsDTMF.EXPIRATION_DATE);
+        Date productionDate = deliveredProduct.getDateField(DeliveredProductFields.PRODUCTION_DATE);
+        Date expirationDate = deliveredProduct.getDateField(DeliveredProductFields.EXPIRATION_DATE);
         if (productionDate != null && expirationDate != null) {
             if (productionDate.after(expirationDate)) {
-                deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFieldsDTMF.EXPIRATION_DATE),
+                deliveredProduct.addError(deliveredProductDD.getField(DeliveredProductFields.EXPIRATION_DATE),
                         "materialFlow.error.position.expirationDate.lessThenProductionDate");
                 return false;
             }

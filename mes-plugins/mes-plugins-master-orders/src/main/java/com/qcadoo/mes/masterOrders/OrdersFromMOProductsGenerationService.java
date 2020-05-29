@@ -80,6 +80,10 @@ public class OrdersFromMOProductsGenerationService {
 
     private static final String IGNORE_MISSING_COMPONENTS = "ignoreMissingComponents";
 
+    private static final String PARAMETER_AUTOMATICALLY_GENERATE_ORDERS_FOR_COMPONENTS = "automaticallyGenerateOrdersForComponents";
+
+    private static final String PARAMETER_ORDERS_GENERATED_BY_COVERAGE = "ordersGeneratedByCoverage";
+
     @Autowired
     private TechnologyServiceO technologyServiceO;
 
@@ -183,9 +187,9 @@ public class OrdersFromMOProductsGenerationService {
 
         masterOrderProductsEntities.forEach(mop -> {
             ProductTechnologyKey key = new ProductTechnologyKey(mop);
-            if(Objects.isNull(key.getTechnology())){
+            if (Objects.isNull(key.getTechnology())) {
                 Entity technology = technologyServiceO.getDefaultTechnology(key.getProduct());
-                if(Objects.nonNull(technology)) {
+                if (Objects.nonNull(technology)) {
                     key.setTechnology(technology);
                     key.setTechnologyId(technology.getId());
                 }
@@ -265,7 +269,20 @@ public class OrdersFromMOProductsGenerationService {
                 result.addGeneratedOrderNumber(order.getStringField(OrderFields.NUMBER));
             }
 
-            generateSubOrders(result, order);
+            if (order.isValid()) {
+                if (Objects.isNull(order.getBelongsToField(OrderFields.TECHNOLOGY))) {
+                    result.addOrderWithoutGeneratedSubOrders(new SubOrderErrorHolder(order.getStringField(OrderFields.NUMBER),
+                            "masterOrders.masterOrder.generationOrder.ordersWithoutGeneratedSubOrders.technologyNotSet"));
+                } else if (parameter.getBooleanField(PARAMETER_AUTOMATICALLY_GENERATE_ORDERS_FOR_COMPONENTS)
+                        && parameter.getBooleanField(PARAMETER_ORDERS_GENERATED_BY_COVERAGE)
+                        && Objects.nonNull(order.getDateField(OrderFields.DATE_FROM))
+                        && order.getDateField(OrderFields.DATE_FROM).before(new Date())) {
+                    result.addOrderWithoutGeneratedSubOrders(new SubOrderErrorHolder(order.getStringField(OrderFields.NUMBER),
+                            "masterOrders.masterOrder.generationOrder.ordersWithoutGeneratedSubOrders.orderStartDateEarlierThanToday"));
+                } else {
+                    generateSubOrders(result, order);
+                }
+            }
 
             if (order.isValid() && generatePPS && automaticPps
                     && !parameter.getBooleanField(ORDERS_GENERATION_NOT_COMPLETE_DATES)) {

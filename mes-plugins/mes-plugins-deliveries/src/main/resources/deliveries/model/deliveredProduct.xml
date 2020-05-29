@@ -73,6 +73,8 @@
                  joinField="deliveredProduct" cascade="delete"/>
 
         <belongsTo name="orderedProduct" model="orderedProduct"/>
+        <date name="productionDate"/>
+        <date name="expirationDate"/>
     </fields>
 
     <hooks>

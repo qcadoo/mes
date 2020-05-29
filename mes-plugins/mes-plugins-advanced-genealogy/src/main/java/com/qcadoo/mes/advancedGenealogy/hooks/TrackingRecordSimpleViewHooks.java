@@ -25,6 +25,7 @@ package com.qcadoo.mes.advancedGenealogy.hooks;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.advancedGenealogy.constants.AdvancedGenealogyConstants;
+import com.qcadoo.mes.advancedGenealogy.constants.TrackingRecordFields;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -70,7 +71,7 @@ public class TrackingRecordSimpleViewHooks {
     public void generateOrderNumber(final ViewDefinitionState state) {
         numberGeneratorService.generateAndInsertNumber(state, AdvancedGenealogyConstants.PLUGIN_IDENTIFIER,
                 AdvancedGenealogyConstants.MODEL_TRACKING_RECORD, QcadooViewConstants.L_FORM,
-                AdvancedGenealogyConstants.FIELD_NUMBER);
+                TrackingRecordFields.NUMBER);
     }
 
     public void filterStateChangeHistory(final ViewDefinitionState view) {

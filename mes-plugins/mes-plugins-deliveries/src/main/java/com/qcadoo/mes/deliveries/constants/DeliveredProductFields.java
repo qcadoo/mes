@@ -75,4 +75,8 @@ public final class DeliveredProductFields {
 
     public static final String ORDERED_PRODUCT = "orderedProduct";
 
+    public static final String PRODUCTION_DATE = "productionDate";
+
+    public static final String EXPIRATION_DATE = "expirationDate";
+
 }

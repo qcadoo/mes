@@ -96,9 +96,11 @@
                                field="#{form}.products" defaultVisible="false" persistent="false"
                                hasLabel="false">
                         <option type="column" name="name" fields="name" link="true"/>
+                        <option type="column" name="category" fields="category"/>
+                        <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial"/>
 
-                        <option type="searchable" value="number,name"/>
-                        <option type="orderable" value="number,name"/>
+                        <option type="searchable" value="number,name,globalTypeOfMaterial,category"/>
+                        <option type="orderable" value="number,name,globalTypeOfMaterial,category"/>
 
                         <option type="expression" value="#number + ' - ' + #name"/>
                         <option type="fieldCode" value="number"/>

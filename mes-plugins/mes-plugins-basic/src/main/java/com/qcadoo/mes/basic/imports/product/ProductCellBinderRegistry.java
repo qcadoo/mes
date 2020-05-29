@@ -86,7 +86,7 @@ public class ProductCellBinderRegistry {
         cellBinderRegistry.setCellBinder(optional(L_NOMINAL_COST, bigDecimalCellParser));
         cellBinderRegistry.setCellBinder(optional(L_LAST_PURCHASE_COST, bigDecimalCellParser));
         cellBinderRegistry.setCellBinder(optional(L_AVERAGE_COST, bigDecimalCellParser));
-        cellBinderRegistry.setCellBinder(optional(ProductFields.SIZE, integerCellParser));
+        cellBinderRegistry.setCellBinder(optional(ProductFields.SIZE));
         cellBinderRegistry.setCellBinder(optional(ProductFields.EXPIRY_DATE_VALIDITY, integerCellParser));
         cellBinderRegistry.setCellBinder(optional(ProductFields.BATCH_EVIDENCE, booleanCellParser));
     }

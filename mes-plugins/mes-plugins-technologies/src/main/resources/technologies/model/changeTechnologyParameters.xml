@@ -29,6 +29,7 @@
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
         <boolean name="changePerformanceNorm" default="false"/>
+        <boolean name="updateOperationTimeNorms" default="false"/>
         <decimal name="standardPerformanceTechnology">
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="7"/>

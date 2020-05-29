@@ -63,6 +63,7 @@
         <string name="mergedProductNumberAndAdditionalCode"/>
         <boolean name="hasAttachments"/>
         <string name="batchNumber"/>
+        <string name="qualityCardNumber"/>
     </fields>
 
     <masterModel plugin="deliveries" model="orderedProduct"/>

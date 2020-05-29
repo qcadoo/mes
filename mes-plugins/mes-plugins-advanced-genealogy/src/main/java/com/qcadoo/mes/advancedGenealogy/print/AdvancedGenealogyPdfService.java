@@ -29,21 +29,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import com.qcadoo.mes.advancedGenealogy.constants.GenealogyReportFields;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Preconditions;
-import com.lowagie.text.Chunk;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.pdf.PdfCell;
+import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.advancedGenealogy.constants.AdvancedGenealogyConstants;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.advancedGenealogy.states.constants.BatchStateChangeFields;
 import com.qcadoo.mes.advancedGenealogy.tree.AdvancedGenealogyTreeService;
+import com.qcadoo.mes.basic.constants.CompanyFields;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.FontUtils;
@@ -55,23 +54,7 @@ public class AdvancedGenealogyPdfService extends PdfDocumentService {
 
     private static final String L_DASH = " - ";
 
-    private static final String L_SPACER = " : ";
-
-    private static final String L_SUPPLIER = "supplier";
-
-    private static final String L_PRODUCT = "product";
-
-    private static final String L_PRODUCED_FROM = "02producedFrom";
-
-    private static final String L_USED_TO_PRODUCE = "01usedToProduce";
-
     private static final String L_ADVANCED_GENEALOGY_BATCH_REPORT_BATCH_NUMBER_MESSAGE = "advancedGenealogy.batch.report.batchNumber";
-
-    private static final String L_NAME = "name";
-
-    private static final String L_TYPE = "type";
-
-    private static final String L_NUMBER = "number";
 
     @Autowired
     private AdvancedGenealogyTreeService treeService;
@@ -87,32 +70,35 @@ public class AdvancedGenealogyPdfService extends PdfDocumentService {
         Preconditions.checkArgument(entity != null, "Batch is required");
         final String documentTitle = getReportTitle(locale);
         final String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
-        pdfHelper.addDocumentHeader(document, (String) entity.getField(L_NAME), documentTitle, documentAuthor,
-                (Date) entity.getField("date"));
+        pdfHelper.addDocumentHeader(document, (String) entity.getField(GenealogyReportFields.NAME), documentTitle, documentAuthor,
+                (Date) entity.getField(GenealogyReportFields.DATE));
         document.add(Chunk.NEWLINE);
 
         final PdfPTable panelTable = createDocumentPanelTable(entity, locale);
         document.add(panelTable);
 
-        Entity rootBatch = entity.getBelongsToField("batch");
+        Entity rootBatch = entity.getBelongsToField(GenealogyReportFields.BATCH);
 
-        List<Entity> batches = getAllRelatedBatches(rootBatch, entity.getStringField(L_TYPE),
-                entity.getBooleanField("includeDraft"));
+        String type = entity.getStringField(GenealogyReportFields.TYPE);
+        List<Entity> batches = getAllRelatedBatches(rootBatch, type, entity.getBooleanField(GenealogyReportFields.INCLUDE_DRAFT));
 
         final List<String> batchHeader = new ArrayList<String>();
         batchHeader.add(translationService.translate("advancedGenealogy.batch.report.date", locale));
         batchHeader.add(translationService.translate(L_ADVANCED_GENEALOGY_BATCH_REPORT_BATCH_NUMBER_MESSAGE, locale));
         batchHeader.add(translationService.translate("advancedGenealogy.batch.report.productNumber", locale));
         batchHeader.add(translationService.translate("advancedGenealogy.batch.report.productName", locale));
-        batchHeader.add(translationService.translate("advancedGenealogy.batch.report.company", locale));
+        if (AdvancedGenealogyConstants.L_PRODUCED_FROM.equals(type)) {
+            batchHeader.add(translationService.translate("advancedGenealogy.batch.report.company", locale));
+        } else {
+            batchHeader.add(translationService.translate("advancedGenealogy.batch.report.order", locale));
+        }
 
-        String type = entity.getStringField(L_TYPE);
-        boolean directOnly = entity.getBooleanField("directRelatedOnly");
+        boolean directOnly = entity.getBooleanField(GenealogyReportFields.DIRECT_RELATED_ONLY);
 
         if (batches.size() > 1) {
             generateBatchTable(document, batches, rootBatch, type, batchHeader, locale, !directOnly);
         } else {
-            createPanelForEmptyBatch(document, rootBatch, locale, type);
+            createPanelForEmptyBatch(document, rootBatch, locale);
         }
     }
 
@@ -134,7 +120,7 @@ public class AdvancedGenealogyPdfService extends PdfDocumentService {
 
         if (!children.isEmpty()) {
             createPanelForBatch(document, parent, locale, type);
-            addBatchSeries(document, children, batchHeader, locale);
+            addBatchSeries(document, children, batchHeader, locale, type);
 
             if (youHaveToGoDeeper) {
                 for (Entity child : children) {
@@ -146,9 +132,9 @@ public class AdvancedGenealogyPdfService extends PdfDocumentService {
 
     private List<Entity> getAllRelatedBatches(final Entity batch, final String type, final boolean includeDraft) {
         List<Entity> batches;
-        if (L_USED_TO_PRODUCE.equals(type)) {
+        if (AdvancedGenealogyConstants.L_USED_TO_PRODUCE.equals(type)) {
             batches = treeService.getUsedToProduceTree(batch, includeDraft, false);
-        } else if (L_PRODUCED_FROM.equals(type)) {
+        } else if (AdvancedGenealogyConstants.L_PRODUCED_FROM.equals(type)) {
             batches = treeService.getProducedFromTree(batch, includeDraft, false);
         } else {
             throw new IllegalStateException("");
@@ -158,22 +144,29 @@ public class AdvancedGenealogyPdfService extends PdfDocumentService {
 
     private void createPanelForBatch(final Document document, final Entity batch, final Locale locale, final String type)
             throws DocumentException {
-        final PdfPTable panel = pdfHelper.createPanelTable(2);
         final StringBuilder header = new StringBuilder();
-        final Entity product = batch.getBelongsToField(L_PRODUCT);
-        final Entity supplier = batch.getBelongsToField(L_SUPPLIER);
+        final Entity product = batch.getBelongsToField(BatchFields.PRODUCT);
+        final Entity supplier = batch.getBelongsToField(BatchFields.SUPPLIER);
         final StringBuilder footer = new StringBuilder();
 
         header.append(translationService.translate(L_ADVANCED_GENEALOGY_BATCH_REPORT_BATCH_NUMBER_MESSAGE, locale)).append(" ");
-        header.append(batch.getField(L_NUMBER));
-        header.append(L_DASH).append(product.getField(L_NAME)).append(" ( ").append(product.getField(L_NUMBER)).append(" )");
+        header.append(batch.getField(BatchFields.NUMBER));
+        header.append(L_DASH).append(product.getField(ProductFields.NAME)).append(" ( ")
+                .append(product.getField(ProductFields.NUMBER)).append(" )");
         if (supplier != null) {
-            header.append(L_DASH).append(supplier.getField(L_NAME));
+            header.append(L_DASH).append(supplier.getField(CompanyFields.NAME));
+        }
+        if (AdvancedGenealogyConstants.L_PRODUCED_FROM.equals(type)) {
+            String orders = treeService.getOrdersForBatch(batch);
+            if (!orders.isEmpty()) {
+                header.append(" ").append(translationService.translate("advancedGenealogy.batch.report.order", locale))
+                        .append(AdvancedGenealogyConstants.L_SPACER).append(orders);
+            }
         }
 
-        if (L_USED_TO_PRODUCE.equals(type)) {
+        if (AdvancedGenealogyConstants.L_USED_TO_PRODUCE.equals(type)) {
             footer.append(translationService.translate("advancedGenealogy.genealogyReport.type.value.01usedToProduce", locale));
-        } else if (L_PRODUCED_FROM.equals(type)) {
+        } else if (AdvancedGenealogyConstants.L_PRODUCED_FROM.equals(type)) {
             footer.append(translationService.translate("advancedGenealogy.genealogyReport.type.value.02producedFrom", locale));
         } else {
             throw new IllegalStateException("Type of genealogy table should be specified");
@@ -183,53 +176,24 @@ public class AdvancedGenealogyPdfService extends PdfDocumentService {
         document.add(new Paragraph(header.toString(), FontUtils.getDejavuBold11Dark()));
         document.add(Chunk.NEWLINE);
 
-        final StringBuilder productNumber = new StringBuilder();
-        final StringBuilder company = new StringBuilder();
-        final StringBuilder productName = new StringBuilder();
-
-        productNumber.append(translationService.translate("advancedGenealogy.batch.report.productNumber", locale));
-        productNumber.append(L_SPACER).append(product.getField(L_NUMBER));
-
-        company.append(translationService.translate("advancedGenealogy.batch.report.company", locale));
-        if (supplier != null) {
-            company.append(L_SPACER).append(supplier.getField(L_NAME));
-        }
-
-        productName.append(translationService.translate("advancedGenealogy.batch.report.productName", locale));
-        productName.append(L_SPACER).append(product.getField(L_NAME));
-
-        panel.getDefaultCell().setBorder(PdfCell.NO_BORDER);
-        panel.addCell(new Phrase(productNumber.toString(), FontUtils.getDejavuBold9Dark()));
-        panel.addCell(new Phrase(company.toString(), FontUtils.getDejavuBold9Dark()));
-        panel.addCell(new Phrase(productName.toString(), FontUtils.getDejavuBold9Dark()));
-        panel.addCell(new Phrase());
-
         Paragraph typeOfReport = new Paragraph(footer.toString(), FontUtils.getDejavuBold9Dark());
         typeOfReport.setAlignment(Chunk.ALIGN_CENTER);
 
         document.add(typeOfReport);
     }
 
-    private void createPanelForEmptyBatch(final Document document, final Entity batch, final Locale locale, final String type)
+    private void createPanelForEmptyBatch(final Document document, final Entity batch, final Locale locale)
             throws DocumentException {
         final StringBuilder header = new StringBuilder();
-        final Entity product = batch.getBelongsToField(L_PRODUCT);
-        final Entity supplier = batch.getBelongsToField(L_SUPPLIER);
-        final StringBuilder footer = new StringBuilder();
+        final Entity product = batch.getBelongsToField(BatchFields.PRODUCT);
+        final Entity supplier = batch.getBelongsToField(BatchFields.SUPPLIER);
 
         header.append(translationService.translate(L_ADVANCED_GENEALOGY_BATCH_REPORT_BATCH_NUMBER_MESSAGE, locale)).append(" ");
-        header.append(batch.getField(L_NUMBER));
-        header.append(L_DASH).append(product.getField(L_NAME)).append(" ( ").append(product.getField(L_NUMBER)).append(" )");
+        header.append(batch.getField(BatchFields.NUMBER));
+        header.append(L_DASH).append(product.getField(ProductFields.NAME)).append(" ( ")
+                .append(product.getField(ProductFields.NUMBER)).append(" )");
         if (supplier != null) {
-            header.append(L_DASH).append(supplier.getField(L_NAME));
-        }
-
-        if (L_USED_TO_PRODUCE.equals(type)) {
-            footer.append(translationService.translate("advancedGenealogy.genealogyReport.type.value.01usedToProduce", locale));
-        } else if (L_PRODUCED_FROM.equals(type)) {
-            footer.append(translationService.translate("advancedGenealogy.genealogyReport.type.value.02producedFrom", locale));
-        } else {
-            throw new IllegalStateException("Type of genealogy table should be specified");
+            header.append(L_DASH).append(supplier.getField(CompanyFields.NAME));
         }
 
         document.add(Chunk.NEWLINE);
@@ -243,36 +207,37 @@ public class AdvancedGenealogyPdfService extends PdfDocumentService {
 
     private PdfPTable createDocumentPanelTable(final Entity entity, final Locale locale) {
         final PdfPTable panel = pdfHelper.createPanelTable(2);
-        final Entity batch = entity.getBelongsToField("batch");
+        final Entity batch = entity.getBelongsToField(GenealogyReportFields.BATCH);
         final TranslationService translation = translationService;
-        final StringBuilder batchNumber = new StringBuilder(translation.translate(
-                L_ADVANCED_GENEALOGY_BATCH_REPORT_BATCH_NUMBER_MESSAGE, locale));
-        batchNumber.append(L_SPACER).append(batch.getField(L_NUMBER));
+        String batchNumber = translation.translate(L_ADVANCED_GENEALOGY_BATCH_REPORT_BATCH_NUMBER_MESSAGE, locale)
+                + AdvancedGenealogyConstants.L_SPACER + batch.getField(BatchFields.NUMBER);
         final StringBuilder type = new StringBuilder(translation.translate("advancedGenealogy.batch.report.type", locale))
-                .append(L_SPACER);
-        if (L_USED_TO_PRODUCE.equals(entity.getField(L_TYPE))) {
+                .append(AdvancedGenealogyConstants.L_SPACER);
+        if (AdvancedGenealogyConstants.L_USED_TO_PRODUCE.equals(entity.getField(GenealogyReportFields.TYPE))) {
             type.append(translation.translate("advancedGenealogy.genealogyReport.type.value.01usedToProduce", locale));
-        } else if (L_PRODUCED_FROM.equals(entity.getField(L_TYPE))) {
+        } else if (AdvancedGenealogyConstants.L_PRODUCED_FROM.equals(entity.getField(GenealogyReportFields.TYPE))) {
             type.append(translation.translate("advancedGenealogy.genealogyReport.type.value.02producedFrom", locale));
         } else {
             throw new IllegalStateException("Type of genealogy table should be specified");
         }
-        final StringBuilder includeDraft = new StringBuilder(translation.translate("advancedGenealogy.batch.report.includeDraft",
-                locale)).append(L_SPACER);
-        if (entity.getBooleanField("includeDraft")) {
+        final StringBuilder includeDraft = new StringBuilder(
+                translation.translate("advancedGenealogy.batch.report.includeDraft", locale))
+                        .append(AdvancedGenealogyConstants.L_SPACER);
+        if (entity.getBooleanField(GenealogyReportFields.INCLUDE_DRAFT)) {
             includeDraft.append(translation.translate("qcadooView.true", locale));
         } else {
             includeDraft.append(translation.translate("qcadooView.false", locale));
         }
-        final StringBuilder directRelatedOnly = new StringBuilder(translation.translate(
-                "advancedGenealogy.batch.report.directRelatedOnly", locale)).append(L_SPACER);
-        if (entity.getBooleanField("directRelatedOnly")) {
+        final StringBuilder directRelatedOnly = new StringBuilder(
+                translation.translate("advancedGenealogy.batch.report.directRelatedOnly", locale))
+                        .append(AdvancedGenealogyConstants.L_SPACER);
+        if (entity.getBooleanField(GenealogyReportFields.DIRECT_RELATED_ONLY)) {
             directRelatedOnly.append(translation.translate("qcadooView.true", locale));
         } else {
             directRelatedOnly.append(translation.translate("qcadooView.false", locale));
         }
 
-        panel.addCell(new Phrase(batchNumber.toString(), FontUtils.getDejavuBold9Dark()));
+        panel.addCell(new Phrase(batchNumber, FontUtils.getDejavuBold9Dark()));
         panel.addCell(new Phrase(type.toString(), FontUtils.getDejavuBold9Dark()));
         panel.addCell(new Phrase(includeDraft.toString(), FontUtils.getDejavuBold9Dark()));
         panel.addCell(new Phrase(directRelatedOnly.toString(), FontUtils.getDejavuBold9Dark()));
@@ -280,12 +245,12 @@ public class AdvancedGenealogyPdfService extends PdfDocumentService {
     }
 
     private void addBatchSeries(final Document document, final List<Entity> batches, final List<String> batchHeader,
-            final Locale locale) throws DocumentException {
+            final Locale locale, String type) throws DocumentException {
         PdfPTable table = pdfHelper.createTableWithHeader(5, batchHeader, false);
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", locale);
         for (Entity batch : batches) {
             final List<Entity> stateChanges = batch.getHasManyField(BatchFields.STATE_CHANGES);
-            final Entity firstStateChange = getFirstSuccessfullStateChange(stateChanges);
+            final Entity firstStateChange = getFirstSuccessfulStateChange(stateChanges);
             Phrase datePhrase = new Phrase();
             if (firstStateChange != null) {
                 final Date date = (Date) firstStateChange.getField(BatchStateChangeFields.DATE_AND_TIME);
@@ -294,19 +259,25 @@ public class AdvancedGenealogyPdfService extends PdfDocumentService {
                 }
             }
             table.addCell(datePhrase);
-            table.addCell(new Phrase((String) batch.getField(L_NUMBER), FontUtils.getDejavuRegular7Dark()));
-            table.addCell(new Phrase((String) batch.getBelongsToField(L_PRODUCT).getField(L_NUMBER), FontUtils
-                    .getDejavuRegular7Dark()));
-            table.addCell(new Phrase((String) batch.getBelongsToField(L_PRODUCT).getField(L_NAME), FontUtils
-                    .getDejavuRegular7Dark()));
-            table.addCell(new Phrase((batch.getBelongsToField(L_SUPPLIER) == null) ? " " : (String) batch.getBelongsToField(
-                    L_SUPPLIER).getField(L_NAME), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase((String) batch.getField(BatchFields.NUMBER), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase((String) batch.getBelongsToField(BatchFields.PRODUCT).getField(ProductFields.NUMBER),
+                    FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase((String) batch.getBelongsToField(BatchFields.PRODUCT).getField(ProductFields.NAME),
+                    FontUtils.getDejavuRegular7Dark()));
+            if (AdvancedGenealogyConstants.L_PRODUCED_FROM.equals(type)) {
+                table.addCell(new Phrase(
+                        (batch.getBelongsToField(BatchFields.SUPPLIER) == null) ? " "
+                                : (String) batch.getBelongsToField(BatchFields.SUPPLIER).getField(CompanyFields.NAME),
+                        FontUtils.getDejavuRegular7Dark()));
+            } else {
+                table.addCell(new Phrase(treeService.getOrdersForBatch(batch), FontUtils.getDejavuRegular7Dark()));
+            }
         }
 
         document.add(table);
     }
 
-    private Entity getFirstSuccessfullStateChange(final List<Entity> stateChanges) {
+    private Entity getFirstSuccessfulStateChange(final List<Entity> stateChanges) {
         for (Entity stateChange : stateChanges) {
             if (StateChangeStatus.SUCCESSFUL.getStringValue().equals(stateChange.getStringField(BatchStateChangeFields.STATUS))) {
                 return stateChange;

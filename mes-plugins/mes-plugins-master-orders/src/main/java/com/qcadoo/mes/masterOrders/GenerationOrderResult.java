@@ -7,6 +7,8 @@ import com.qcadoo.view.api.ViewDefinitionState;
 
 import java.util.List;
 
+import org.springframework.context.i18n.LocaleContextHolder;
+
 public class GenerationOrderResult {
 
     private TranslationService translationService;
@@ -23,7 +25,7 @@ public class GenerationOrderResult {
 
     private List<String> ordersWithoutPps = Lists.newArrayList();
 
-    private List<String> ordersWithoutGeneratedSubOrders = Lists.newArrayList();
+    private List<SubOrderErrorHolder> ordersWithoutGeneratedSubOrders = Lists.newArrayList();
 
     private List<String> ordersWithGeneratedSubOrders = Lists.newArrayList();
 
@@ -47,8 +49,8 @@ public class GenerationOrderResult {
         ordersWithoutPps.add(number);
     }
 
-    public void addOrderWithoutGeneratedSubOrders(String number) {
-        ordersWithoutGeneratedSubOrders.add(number);
+    public void addOrderWithoutGeneratedSubOrders(SubOrderErrorHolder error) {
+        ordersWithoutGeneratedSubOrders.add(error);
     }
 
     public void addOrderWithGeneratedSubOrders(String number) {
@@ -76,8 +78,12 @@ public class GenerationOrderResult {
         }
 
         if (!ordersWithoutGeneratedSubOrders.isEmpty()) {
-            view.addMessage("masterOrders.masterOrder.generationOrder.ordersWithoutGeneratedSubOrders",
-                    ComponentState.MessageType.INFO, false, String.join(", ", ordersWithoutGeneratedSubOrders));
+            ordersWithoutGeneratedSubOrders.forEach(error -> {
+                view.addMessage("masterOrders.masterOrder.generationOrder.ordersWithoutGeneratedSubOrders",
+                        ComponentState.MessageType.INFO, false, error.getNumber(), translationService.translate(error.getError(),
+                                LocaleContextHolder.getLocale()));
+            });
+
         }
 
         if (!ordersWithGeneratedSubOrders.isEmpty()) {

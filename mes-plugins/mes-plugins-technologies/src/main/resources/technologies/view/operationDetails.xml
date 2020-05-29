@@ -50,7 +50,7 @@
         <windowTab name="mainTab">
             <component type="form" name="operation" reference="form">
                 <component type="gridLayout" name="mainTabGridLayout"
-                           columns="3" rows="7">
+                           columns="3" rows="6">
                     <layoutElement column="1" row="1">
                         <component type="input" name="number" field="number"/>
                     </layoutElement>
@@ -61,6 +61,10 @@
                         <component type="file" name="attachment" field="attachment"/>
                     </layoutElement>
                     <layoutElement column="1" row="5">
+                        <component type="checkbox" name="createOperationOutput" field="createOperationOutput"
+                                   reference="createOperationOutput" hasDescription="true"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="6">
                         <component type="lookup" name="product" field="product"
                                    reference="product" hasDescription="true">
                             <option type="column" name="name" fields="name" link="true"
@@ -75,6 +79,8 @@
                             <option type="fieldCode" value="number"/>
                         </component>
                     </layoutElement>
+
+
                     <layoutElement column="2" row="1" height="2">
                         <component type="textarea" name="comment" field="comment"/>
                     </layoutElement>

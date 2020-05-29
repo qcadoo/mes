@@ -43,7 +43,7 @@
 	</fields>
 	<hooks>
 		<onCopy
-			class="com.qcadoo.mes.advancedGenealogy.hooks.GeneaogyReportHooks"
+			class="com.qcadoo.mes.advancedGenealogy.hooks.GenealogyReportHooks"
 			method="resetStatus" />
 	</hooks>
 	<identifier expression="#name" />

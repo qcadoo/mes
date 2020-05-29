@@ -21,16 +21,30 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveriesToMaterialFlow.constants;
+package com.qcadoo.mes.advancedGenealogy.constants;
 
-public final class DeliveredProductFieldsDTMF {
+public final class GenealogyReportFields {
 
-    private DeliveredProductFieldsDTMF() {
+    private GenealogyReportFields() {
 
     }
 
-    public static final String EXPIRATION_DATE = "expirationDate";
+    public static final String NAME = "name";
 
-    public static final String PRODUCTION_DATE = "productionDate";
+    public static final String DATE = "date";
+
+    public static final String WORKER = "worker";
+
+    public static final String GENERATED = "generated";
+
+    public static final String FILE_NAME = "fileName";
+
+    public static final String INCLUDE_DRAFT = "includeDraft";
+
+    public static final String DIRECT_RELATED_ONLY = "directRelatedOnly";
+
+    public static final String TYPE = "type";
+
+    public static final String BATCH = "batch";
 
 }
