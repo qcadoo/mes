@@ -4820,8 +4820,6 @@ CREATE TABLE basic_product (
     drawingnumber character varying(255),
     catalognumber character varying(255),
     isproductiondate boolean DEFAULT false,
-    fabric boolean,
-    fabricgrammage numeric(14,5),
     entityversion bigint DEFAULT 0,
     ispallet boolean DEFAULT false,
     additionalunit character varying(255),
@@ -5321,8 +5319,6 @@ CREATE TABLE technologies_technology (
     productionline_id bigint,
     productionflow character varying(255) DEFAULT '02withinTheProcess'::character varying,
     productsflowlocation_id bigint,
-    graphicsaccepted boolean,
-    constructionandtechnologyaccepted boolean,
     typeofproductionrecording character varying(255),
     justone boolean,
     allowtoclose boolean,
@@ -5686,7 +5682,8 @@ CREATE TABLE technologies_operation (
     productdatanumber numeric(12,5) DEFAULT (0)::numeric,
     productionline_id bigint,
     entityversion bigint DEFAULT 0,
-    product_id bigint
+    product_id bigint,
+    createoperationoutput boolean DEFAULT false
 );
 
 
@@ -8932,9 +8929,6 @@ CREATE TABLE basic_parameter (
     possibleworktimedeviation numeric(12,5),
     ordersincludeperiod integer,
     includerequirements boolean DEFAULT false,
-    ratio numeric(14,5),
-    resin_id bigint,
-    hardener_id bigint,
     entityversion bigint DEFAULT 0,
     labelsbtpath character varying(255),
     profitpb numeric(12,5),
@@ -8968,7 +8962,6 @@ CREATE TABLE basic_parameter (
     technologiesgeneratorcopyproductsize boolean,
     cartonlabelsbtpath character varying,
     esilcodispositionshiftlocation_id bigint,
-    resinandhardenerlocation_id bigint,
     maxproductsquantity integer,
     allowerrorsinmasterorderpositions boolean,
     companyname_id bigint,
@@ -11706,7 +11699,8 @@ CREATE VIEW deliveries_deliveredproductdto AS
     deliveredproduct.pallettype,
     deliveredproduct.additionalunit,
     deliveredproduct.damaged,
-    COALESCE(reservations.hasreservations, false) AS hasreservations
+    COALESCE(reservations.hasreservations, false) AS hasreservations,
+    deliveredproduct.expirationdate
    FROM (((((((((deliveries_deliveredproduct deliveredproduct
      LEFT JOIN deliveries_delivery delivery ON ((delivery.id = deliveredproduct.delivery_id)))
      LEFT JOIN basic_product product ON ((product.id = deliveredproduct.product_id)))
@@ -12012,6 +12006,19 @@ CREATE TABLE supplynegotiations_negotiation (
 
 
 --
+-- Name: technologies_qualitycard; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE technologies_qualitycard (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(2048),
+    description character varying(2048),
+    state character varying(255) DEFAULT '01new'::character varying
+);
+
+
+--
 -- Name: deliveries_orderedproductdto; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -12069,8 +12076,9 @@ CREATE VIEW deliveries_orderedproductdto AS
             ELSE (0)::numeric
         END AS additionallefttoreceivequantity,
     attachments.hasattachments,
-    batch.number AS batchnumber
-   FROM ((((((((((deliveries_orderedproduct orderedproduct
+    batch.number AS batchnumber,
+    qualitycard.number AS qualitycardnumber
+   FROM (((((((((((deliveries_orderedproduct orderedproduct
      LEFT JOIN deliveries_delivery delivery ON ((delivery.id = orderedproduct.delivery_id)))
      LEFT JOIN basic_currency currency ON ((currency.id = delivery.currency_id)))
      LEFT JOIN basic_company supplier ON ((supplier.id = delivery.supplier_id)))
@@ -12080,7 +12088,8 @@ CREATE VIEW deliveries_orderedproductdto AS
      LEFT JOIN technologies_operation operation ON ((operation.id = orderedproduct.operation_id)))
      LEFT JOIN basic_additionalcode additionalcode ON ((additionalcode.id = orderedproduct.additionalcode_id)))
      LEFT JOIN product_attachments attachments ON ((attachments.productid = product.id)))
-     LEFT JOIN advancedgenealogy_batch batch ON ((batch.id = orderedproduct.batch_id)));
+     LEFT JOIN advancedgenealogy_batch batch ON ((batch.id = orderedproduct.batch_id)))
+     LEFT JOIN technologies_qualitycard qualitycard ON ((qualitycard.id = orderedproduct.qualitycard_id)));
 
 
 --
@@ -17190,71 +17199,6 @@ ALTER SEQUENCE materialrequirements_materialrequirement_id_seq OWNED BY material
 
 
 --
--- Name: nblsport_fabric; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE nblsport_fabric (
-    id bigint NOT NULL,
-    technologyoperationcomponent_id bigint,
-    product_id bigint,
-    hardener boolean DEFAULT false,
-    resin boolean DEFAULT false,
-    quantity numeric(14,5),
-    unit character varying(255)
-);
-
-
---
--- Name: nblsport_fabric_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE nblsport_fabric_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: nblsport_fabric_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE nblsport_fabric_id_seq OWNED BY nblsport_fabric.id;
-
-
---
--- Name: nblsport_overhead; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE nblsport_overhead (
-    id bigint NOT NULL,
-    parameterproductioncost_id bigint,
-    parametermaterialcost_id bigint,
-    quantity numeric(14,5)
-);
-
-
---
--- Name: nblsport_overhead_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE nblsport_overhead_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: nblsport_overhead_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE nblsport_overhead_id_seq OWNED BY nblsport_overhead.id;
-
-
---
 -- Name: number_pattern_number_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -19193,235 +19137,6 @@ CREATE SEQUENCE ordersupplies_orderdto_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
---
--- Name: pantone_importpantones; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE pantone_importpantones (
-    id bigint NOT NULL,
-    filetoimport character varying(255),
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: pantone_importpantones_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE pantone_importpantones_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: pantone_importpantones_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE pantone_importpantones_id_seq OWNED BY pantone_importpantones.id;
-
-
---
--- Name: pantone_operationproductdeleted; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE pantone_operationproductdeleted (
-    id bigint NOT NULL,
-    deletedid integer,
-    active boolean DEFAULT true,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: pantone_operationproductdeleted_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE pantone_operationproductdeleted_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: pantone_operationproductdeleted_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE pantone_operationproductdeleted_id_seq OWNED BY pantone_operationproductdeleted.id;
-
-
---
--- Name: pantone_pantone; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE pantone_pantone (
-    id bigint NOT NULL,
-    number character varying(20),
-    code character varying(20),
-    unit character varying(20) DEFAULT 'kg'::character varying,
-    weighthardener numeric(12,5) DEFAULT (0)::numeric,
-    weightpaste numeric(12,5) DEFAULT (0)::numeric,
-    active boolean DEFAULT true,
-    weight numeric(12,5) DEFAULT (0)::numeric,
-    pantone character varying(20),
-    isdefault boolean DEFAULT false,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: pantone_pantone_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE pantone_pantone_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: pantone_pantone_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE pantone_pantone_id_seq OWNED BY pantone_pantone.id;
-
-
---
--- Name: pantone_pantoneforoperationproduct; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE pantone_pantoneforoperationproduct (
-    id bigint NOT NULL,
-    pantoneforproducts_id bigint,
-    operationproductincomponent_id bigint,
-    active boolean DEFAULT true,
-    weight numeric(12,5),
-    pantone_id bigint,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: pantone_pantoneforoperationproduct_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE pantone_pantoneforoperationproduct_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: pantone_pantoneforoperationproduct_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE pantone_pantoneforoperationproduct_id_seq OWNED BY pantone_pantoneforoperationproduct.id;
-
-
---
--- Name: pantone_pantoneforproducts; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE pantone_pantoneforproducts (
-    id bigint NOT NULL,
-    weight numeric(12,5) DEFAULT (0)::numeric,
-    pantone_id bigint,
-    active boolean DEFAULT true,
-    technologyoperationcomponent_id bigint,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: pantone_pantoneforproducts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE pantone_pantoneforproducts_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: pantone_pantoneforproducts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE pantone_pantoneforproducts_id_seq OWNED BY pantone_pantoneforproducts.id;
-
-
---
--- Name: pantone_parameters; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE pantone_parameters (
-    id bigint NOT NULL,
-    hardener_id bigint,
-    paste_id bigint,
-    active boolean DEFAULT true,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: pantone_parameters_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE pantone_parameters_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: pantone_parameters_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE pantone_parameters_id_seq OWNED BY pantone_parameters.id;
-
-
---
--- Name: pantone_selectedtechnologyoperationcomponent; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE pantone_selectedtechnologyoperationcomponent (
-    id bigint NOT NULL,
-    operationcomponentid integer,
-    active boolean DEFAULT true,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: pantone_selectedtechnologyoperationcomponent_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE pantone_selectedtechnologyoperationcomponent_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: pantone_selectedtechnologyoperationcomponent_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE pantone_selectedtechnologyoperationcomponent_id_seq OWNED BY pantone_selectedtechnologyoperationcomponent.id;
 
 
 --
@@ -22563,19 +22278,6 @@ ALTER SEQUENCE qualitycontrol_qualitycardattachment_id_seq OWNED BY qualitycontr
 
 
 --
--- Name: technologies_qualitycard; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE technologies_qualitycard (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(2048),
-    description character varying(2048),
-    state character varying(255) DEFAULT '01new'::character varying
-);
-
-
---
 -- Name: qualitycontrol_qualitycarddto; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -24337,7 +24039,8 @@ CREATE TABLE technologies_changetechnologyparameters (
     createdate timestamp without time zone,
     updatedate timestamp without time zone,
     createuser character varying(255),
-    updateuser character varying(255)
+    updateuser character varying(255),
+    updateoperationtimenorms boolean DEFAULT false
 );
 
 
@@ -24496,17 +24199,11 @@ CREATE TABLE technologies_operationproductincomponent (
     priority integer,
     showinproductdata boolean,
     productdatanumber numeric(12,5) DEFAULT (0)::numeric,
-    pantone_id bigint,
     productsflowlocation_id bigint,
     productionflow character varying(255) DEFAULT '02withinTheProcess'::character varying,
-    value numeric(14,5),
     givenquantity numeric(14,5),
     givenunit character varying(255),
     entityversion bigint DEFAULT 0,
-    hardener boolean,
-    resin boolean,
-    fabric boolean,
-    ondelete boolean,
     showmaterialcomponent boolean,
     quantityformula character varying(255)
 );
@@ -24546,7 +24243,6 @@ CREATE TABLE technologies_operationproductincomponentdto (
     quantity numeric(14,5),
     priority integer,
     itemnumberintheexplodedview character varying(255),
-    value numeric(14,5),
     operationname character varying(1024),
     nodenumber character varying(255),
     technologyid integer,
@@ -27992,20 +27688,6 @@ ALTER TABLE ONLY materialrequirements_materialrequirement ALTER COLUMN id SET DE
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY nblsport_fabric ALTER COLUMN id SET DEFAULT nextval('nblsport_fabric_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY nblsport_overhead ALTER COLUMN id SET DEFAULT nextval('nblsport_overhead_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY nutritionfacts_nutrientcalculation ALTER COLUMN id SET DEFAULT nextval('nutritionfacts_nutrientcalculation_id_seq'::regclass);
 
 
@@ -28231,55 +27913,6 @@ ALTER TABLE ONLY ordersupplies_coverageregister ALTER COLUMN id SET DEFAULT next
 --
 
 ALTER TABLE ONLY ordersupplies_materialrequirementcoverage ALTER COLUMN id SET DEFAULT nextval('ordersupplies_materialrequirementcoverage_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY pantone_importpantones ALTER COLUMN id SET DEFAULT nextval('pantone_importpantones_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY pantone_operationproductdeleted ALTER COLUMN id SET DEFAULT nextval('pantone_operationproductdeleted_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY pantone_pantone ALTER COLUMN id SET DEFAULT nextval('pantone_pantone_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY pantone_pantoneforoperationproduct ALTER COLUMN id SET DEFAULT nextval('pantone_pantoneforoperationproduct_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY pantone_pantoneforproducts ALTER COLUMN id SET DEFAULT nextval('pantone_pantoneforproducts_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY pantone_parameters ALTER COLUMN id SET DEFAULT nextval('pantone_parameters_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY pantone_selectedtechnologyoperationcomponent ALTER COLUMN id SET DEFAULT nextval('pantone_selectedtechnologyoperationcomponent_id_seq'::regclass);
 
 
 --
@@ -31925,8 +31558,8 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, ratio, resin_id, hardener_id, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, resinandhardenerlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, enableoperationgroupingworkplan, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id) FROM stdin;
-1	167	124	szt	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01globally	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	50	3000	f	f	f	f	f	f	f	f	t	t	t	f	t	t	f	f	f	f	f	f	f	f	f	f	f	\N	\N	f	f	f	f	f	\N
+COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, enableoperationgroupingworkplan, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id) FROM stdin;
+1	167	124	szt	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01globally	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	50	3000	f	f	f	f	f	f	f	f	t	t	t	f	t	t	f	f	f	f	f	f	f	f	f	f	f	\N	\N	f	f	f	f	f	\N
 \.
 
 
@@ -31941,7 +31574,7 @@ SELECT pg_catalog.setval('basic_parameter_id_seq', 1, true);
 -- Data for Name: basic_product; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_product (id, number, name, globaltypeofmaterial, ean, category, unit, externalnumber, description, parent_id, nodenumber, entitytype, durabilityinmonths, averageoffercost, costfornumber, lastpurchasecost, lastoffercost, isglutenproduct, symbol, averagecost, goodsgroup, nominalcost, bio, isdoublepallet, technologygroup_id, active, createdate, updatedate, createuser, updateuser, quantityofextrusioningredient, norm, actualversion, hasnutritionelements, quantityfornutritions, quantityfornutritionsunit, showinproductdata, doublequantityfordoublepallet, size, usedquantitycontrol, automaticusedquantity, nominalweight, countusedquantityforfullpallets, quantityinpackage, synchronize, capacitynormfortwodimensionalmachines, downform_id, upform_id, downshelve_id, upshelve_id, costnormsgenerator_id, producer_id, machinepart, drawingnumber, catalognumber, isproductiondate, fabric, fabricgrammage, entityversion, ispallet, additionalunit, fromgenerator, generatorcontext_id, dateformatinqcp5code, assortment_id, isoil, isaroma, capacitynormforthreedimensionalmachines, recommendednumofheadsfortwodimensionalmachines, recommendednumofheadsforthreedimensionalmachines, iscartonlabel, isactivecartonlabelquantity, batchevidence, expirydatevalidity, productform_id) FROM stdin;
+COPY basic_product (id, number, name, globaltypeofmaterial, ean, category, unit, externalnumber, description, parent_id, nodenumber, entitytype, durabilityinmonths, averageoffercost, costfornumber, lastpurchasecost, lastoffercost, isglutenproduct, symbol, averagecost, goodsgroup, nominalcost, bio, isdoublepallet, technologygroup_id, active, createdate, updatedate, createuser, updateuser, quantityofextrusioningredient, norm, actualversion, hasnutritionelements, quantityfornutritions, quantityfornutritionsunit, showinproductdata, doublequantityfordoublepallet, size, usedquantitycontrol, automaticusedquantity, nominalweight, countusedquantityforfullpallets, quantityinpackage, synchronize, capacitynormfortwodimensionalmachines, downform_id, upform_id, downshelve_id, upshelve_id, costnormsgenerator_id, producer_id, machinepart, drawingnumber, catalognumber, isproductiondate, entityversion, ispallet, additionalunit, fromgenerator, generatorcontext_id, dateformatinqcp5code, assortment_id, isoil, isaroma, capacitynormforthreedimensionalmachines, recommendednumofheadsfortwodimensionalmachines, recommendednumofheadsforthreedimensionalmachines, iscartonlabel, isactivecartonlabelquantity, batchevidence, expirydatevalidity, productform_id) FROM stdin;
 \.
 
 
@@ -35062,36 +34695,6 @@ SELECT pg_catalog.setval('materialrequirements_materialrequirement_id_seq', 1, f
 
 
 --
--- Data for Name: nblsport_fabric; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY nblsport_fabric (id, technologyoperationcomponent_id, product_id, hardener, resin, quantity, unit) FROM stdin;
-\.
-
-
---
--- Name: nblsport_fabric_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('nblsport_fabric_id_seq', 1, false);
-
-
---
--- Data for Name: nblsport_overhead; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY nblsport_overhead (id, parameterproductioncost_id, parametermaterialcost_id, quantity) FROM stdin;
-\.
-
-
---
--- Name: nblsport_overhead_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('nblsport_overhead_id_seq', 1, false);
-
-
---
 -- Name: number_pattern_number_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -35724,111 +35327,6 @@ SELECT pg_catalog.setval('ordersupplies_materialrequirementcoveragedto_id_seq', 
 --
 
 SELECT pg_catalog.setval('ordersupplies_orderdto_id_seq', 1, false);
-
-
---
--- Data for Name: pantone_importpantones; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY pantone_importpantones (id, filetoimport, entityversion) FROM stdin;
-\.
-
-
---
--- Name: pantone_importpantones_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('pantone_importpantones_id_seq', 1, false);
-
-
---
--- Data for Name: pantone_operationproductdeleted; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY pantone_operationproductdeleted (id, deletedid, active, entityversion) FROM stdin;
-\.
-
-
---
--- Name: pantone_operationproductdeleted_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('pantone_operationproductdeleted_id_seq', 1, false);
-
-
---
--- Data for Name: pantone_pantone; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY pantone_pantone (id, number, code, unit, weighthardener, weightpaste, active, weight, pantone, isdefault, entityversion) FROM stdin;
-\.
-
-
---
--- Name: pantone_pantone_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('pantone_pantone_id_seq', 1, false);
-
-
---
--- Data for Name: pantone_pantoneforoperationproduct; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY pantone_pantoneforoperationproduct (id, pantoneforproducts_id, operationproductincomponent_id, active, weight, pantone_id, entityversion) FROM stdin;
-\.
-
-
---
--- Name: pantone_pantoneforoperationproduct_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('pantone_pantoneforoperationproduct_id_seq', 1, false);
-
-
---
--- Data for Name: pantone_pantoneforproducts; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY pantone_pantoneforproducts (id, weight, pantone_id, active, technologyoperationcomponent_id, entityversion) FROM stdin;
-\.
-
-
---
--- Name: pantone_pantoneforproducts_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('pantone_pantoneforproducts_id_seq', 1, false);
-
-
---
--- Data for Name: pantone_parameters; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY pantone_parameters (id, hardener_id, paste_id, active, entityversion) FROM stdin;
-\.
-
-
---
--- Name: pantone_parameters_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('pantone_parameters_id_seq', 1, false);
-
-
---
--- Data for Name: pantone_selectedtechnologyoperationcomponent; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY pantone_selectedtechnologyoperationcomponent (id, operationcomponentid, active, entityversion) FROM stdin;
-\.
-
-
---
--- Name: pantone_selectedtechnologyoperationcomponent_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('pantone_selectedtechnologyoperationcomponent_id_seq', 1, false);
 
 
 --
@@ -36771,7 +36269,6 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 7	productData	1.5.0	DISABLED	f	0	other	Commercial
 8	urcDeliveriesToWarehouse	1.5.0	DISABLED	f	0	supplies	Commercial
 9	orcWalusiak	1.5.0	DISABLED	f	0	other	Commercial
-10	nblsport	1.5.0	DISABLED	f	0	other	Commercial
 12	srcWarehouse	1.5.0	DISABLED	f	0	supplies	Commercial
 14	integration	1.5.0	DISABLED	f	0	other	Commercial
 15	cdnrcGoodFood	1.5.0	DISABLED	f	0	other	Commercial
@@ -36830,7 +36327,6 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 97	cfcSimple	1.5.0	DISABLED	f	0	other	Commercial
 98	urcMaterialAvailability	1.5.0	DISABLED	f	0	planning	Commercial
 100	srcAdvGenealogyForOrders	1.5.0	DISABLED	f	0	genealogy	Commercial
-101	pantone	1.5.0	DISABLED	f	0	other	Commercial
 103	ziepiwowarski	1.5.0	DISABLED	f	0	other	Commercial
 104	cdnrcAneks	1.5.0	DISABLED	f	0	other	Commercial
 105	qcadooPlugin	1.5.0	ENABLED	t	0	framework	AGPL
@@ -37299,6 +36795,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 159	qualityControl	qualityControlList	t	20	158	2	ROLE_QUALITY_CONTROL	0
 160	qualityControl	qualityControlAttributes	t	20	159	3	ROLE_QUALITY_CONTROL	0
 161	basic	formsList	t	4	160	27	ROLE_BASIC	0
+162	advancedGenealogyForOrders	genealogyAnalysis	t	15	161	6	ROLE_ANALYSIS_VIEWER	0
 \.
 
 
@@ -37306,7 +36803,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 161, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 162, true);
 
 
 --
@@ -37469,6 +36966,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 158	qualityControl	qualityControlList	qualityControlList	\N	0
 159	qualityControl	qualityControlAttributes	\N	/qualityControlAttributes.html	0
 160	basic	formsList	formsList	\N	0
+161	advancedGenealogyForOrders	genealogyAnalysis	\N	/genealogyAnalysis.html	0
 \.
 
 
@@ -37476,7 +36974,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 160, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 161, true);
 
 
 --
@@ -38294,7 +37792,7 @@ SELECT pg_catalog.setval('technologies_barcodeoperationcomponent_number_seq', 1,
 -- Data for Name: technologies_changetechnologyparameters; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY technologies_changetechnologyparameters (id, changeperformancenorm, standardperformancetechnology, changegroup, technologygroup_id, createdate, updatedate, createuser, updateuser) FROM stdin;
+COPY technologies_changetechnologyparameters (id, changeperformancenorm, standardperformancetechnology, changegroup, technologygroup_id, createdate, updatedate, createuser, updateuser, updateoperationtimenorms) FROM stdin;
 \.
 
 
@@ -38339,7 +37837,7 @@ SELECT pg_catalog.setval('technologies_modifytechnologyhelper_id_seq', 1, false)
 -- Data for Name: technologies_operation; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY technologies_operation (id, number, name, comment, workstationtype_id, attachment, areproductquantitiesdivisible, istjdivisible, operationgroup_id, imageurlinworkplan, pieceworkcost, productioninonecycle, laborhourlycost, numberofoperations, laborutilization, nextoperationafterproducedtype, nextoperationafterproducedquantityunit, machinehourlycost, tj, nextoperationafterproducedquantity, machineutilization, timenextoperation, tpz, productioninonecycleunit, active, issubcontracting, assignedtooperation, quantityofworkstations, division_id, showinproductdata, productdatanumber, productionline_id, entityversion, product_id) FROM stdin;
+COPY technologies_operation (id, number, name, comment, workstationtype_id, attachment, areproductquantitiesdivisible, istjdivisible, operationgroup_id, imageurlinworkplan, pieceworkcost, productioninonecycle, laborhourlycost, numberofoperations, laborutilization, nextoperationafterproducedtype, nextoperationafterproducedquantityunit, machinehourlycost, tj, nextoperationafterproducedquantity, machineutilization, timenextoperation, tpz, productioninonecycleunit, active, issubcontracting, assignedtooperation, quantityofworkstations, division_id, showinproductdata, productdatanumber, productionline_id, entityversion, product_id, createoperationoutput) FROM stdin;
 \.
 
 
@@ -38369,7 +37867,7 @@ SELECT pg_catalog.setval('technologies_operationgroup_id_seq', 1, false);
 -- Data for Name: technologies_operationproductincomponent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY technologies_operationproductincomponent (id, operationcomponent_id, product_id, quantity, itemnumberintheexplodedview, componentslocation_id, componentsoutputlocation_id, priority, showinproductdata, productdatanumber, pantone_id, productsflowlocation_id, productionflow, value, givenquantity, givenunit, entityversion, hardener, resin, fabric, ondelete, showmaterialcomponent, quantityformula) FROM stdin;
+COPY technologies_operationproductincomponent (id, operationcomponent_id, product_id, quantity, itemnumberintheexplodedview, componentslocation_id, componentsoutputlocation_id, priority, showinproductdata, productdatanumber, productsflowlocation_id, productionflow, givenquantity, givenunit, entityversion, showmaterialcomponent, quantityformula) FROM stdin;
 \.
 
 
@@ -38496,7 +37994,7 @@ SELECT pg_catalog.setval('technologies_qualitycardstatechange_id_seq', 1, false)
 -- Data for Name: technologies_technology; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY technologies_technology (id, number, name, product_id, technologygroup_id, externalsynchronized, master, description, state, recipeimportstatus, recipeimportmsg, formula, minimalquantity, active, isstandardgoodfoodtechnology, range, division_id, componentslocation_id, componentsoutputlocation_id, productsinputlocation_id, technologytype, technologyprototype_id, productionline_id, productionflow, productsflowlocation_id, graphicsaccepted, constructionandtechnologyaccepted, typeofproductionrecording, justone, allowtoclose, registerquantityoutproduct, autocloseorder, registerpiecework, registerquantityinproduct, registerproductiontime, entityversion, standardperformancetechnology, template, additionalactions, generatorcontext_id, qualitycard_id) FROM stdin;
+COPY technologies_technology (id, number, name, product_id, technologygroup_id, externalsynchronized, master, description, state, recipeimportstatus, recipeimportmsg, formula, minimalquantity, active, isstandardgoodfoodtechnology, range, division_id, componentslocation_id, componentsoutputlocation_id, productsinputlocation_id, technologytype, technologyprototype_id, productionline_id, productionflow, productsflowlocation_id, typeofproductionrecording, justone, allowtoclose, registerquantityoutproduct, autocloseorder, registerpiecework, registerquantityinproduct, registerproductiontime, entityversion, standardperformancetechnology, template, additionalactions, generatorcontext_id, qualitycard_id) FROM stdin;
 \.
 
 
@@ -41845,22 +41343,6 @@ ALTER TABLE ONLY materialrequirements_materialrequirement
 
 
 --
--- Name: nblsport_fabric_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY nblsport_fabric
-    ADD CONSTRAINT nblsport_fabric_pkey PRIMARY KEY (id);
-
-
---
--- Name: nblsport_overhead_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY nblsport_overhead
-    ADD CONSTRAINT nblsport_overhead_pkey PRIMARY KEY (id);
-
-
---
 -- Name: nutrientcalculation_id_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -42154,62 +41636,6 @@ ALTER TABLE ONLY ordersupplies_materialrequirementcoverage
 
 ALTER TABLE ONLY goodfood_pallet
     ADD CONSTRAINT pallet_externalnumber_unique UNIQUE (externalnumber);
-
-
---
--- Name: pantone_importpantones_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY pantone_importpantones
-    ADD CONSTRAINT pantone_importpantones_pkey PRIMARY KEY (id);
-
-
---
--- Name: pantone_operationproductdeleted_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY pantone_operationproductdeleted
-    ADD CONSTRAINT pantone_operationproductdeleted_pkey PRIMARY KEY (id);
-
-
---
--- Name: pantone_pantone_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY pantone_pantone
-    ADD CONSTRAINT pantone_pantone_pkey PRIMARY KEY (id);
-
-
---
--- Name: pantone_pantoneforoperationproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY pantone_pantoneforoperationproduct
-    ADD CONSTRAINT pantone_pantoneforoperationproduct_pkey PRIMARY KEY (id);
-
-
---
--- Name: pantone_pantoneforproducts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY pantone_pantoneforproducts
-    ADD CONSTRAINT pantone_pantoneforproducts_pkey PRIMARY KEY (id);
-
-
---
--- Name: pantone_parameters_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY pantone_parameters
-    ADD CONSTRAINT pantone_parameters_pkey PRIMARY KEY (id);
-
-
---
--- Name: pantone_selectedtechnologyoperationcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY pantone_selectedtechnologyoperationcomponent
-    ADD CONSTRAINT pantone_selectedtechnologyoperationcomponent_pkey PRIMARY KEY (id);
 
 
 --
@@ -45453,43 +44879,6 @@ CREATE RULE "_RETURN" AS
 --
 
 CREATE RULE "_RETURN" AS
-    ON SELECT TO technologies_operationproductincomponentdto DO INSTEAD  SELECT opic.id,
-    (toc.id)::integer AS operationcomponentid,
-    product.id AS product_id,
-    (product.id)::integer AS productid,
-    product.number AS productnumber,
-    product.name AS productname,
-    product.unit AS productunit,
-    opic.quantity,
-    opic.priority,
-    opic.itemnumberintheexplodedview,
-    opic.value,
-    op.name AS operationname,
-    toc.nodenumber,
-    (tech.id)::integer AS technologyid,
-    tech.name AS technologyname,
-    tech.state AS technologystate,
-    tech.number AS technologynumber,
-    tech.master AS mastertechnology,
-    tech.active AS activetechnology,
-    tech.technologytype,
-    (count(at.id) > 0) AS hasacceptedtechnology,
-    (count(ct.id) > 0) AS hascheckedtechnology
-   FROM ((((((technologies_operationproductincomponent opic
-     LEFT JOIN technologies_technologyoperationcomponent toc ON ((toc.id = opic.operationcomponent_id)))
-     LEFT JOIN technologies_operation op ON ((op.id = toc.operation_id)))
-     LEFT JOIN basic_product product ON ((product.id = opic.product_id)))
-     LEFT JOIN technologies_technology tech ON ((tech.id = toc.technology_id)))
-     LEFT JOIN technologies_technology at ON (((at.product_id = opic.product_id) AND (at.technologytype IS NULL) AND (at.active = true) AND ((at.state)::text = '02accepted'::text))))
-     LEFT JOIN technologies_technology ct ON (((ct.product_id = opic.product_id) AND (ct.technologytype IS NULL) AND (ct.active = true) AND ((ct.state)::text = '05checked'::text))))
-  GROUP BY opic.id, toc.id, product.id, product.number, product.name, product.unit, opic.quantity, opic.priority, opic.itemnumberintheexplodedview, tech.name, tech.number, tech.state, tech.master, op.name, tech.active, tech.technologytype, tech.id;
-
-
---
--- Name: _RETURN; Type: RULE; Schema: public; Owner: -
---
-
-CREATE RULE "_RETURN" AS
     ON SELECT TO technologies_technologydto DO INSTEAD  SELECT technology.id,
     technology.name,
     technology.number,
@@ -45521,6 +44910,42 @@ CREATE RULE "_RETURN" AS
      LEFT JOIN productionlines_productionline productionline ON ((productionline.id = technology.productionline_id)))
      LEFT JOIN technologies_qualitycard qualitycard ON ((qualitycard.id = technology.qualitycard_id)))
   GROUP BY technology.id, product.number, product.globaltypeofmaterial, tg.number, division.name, product.name, tcontext.number, technologystatechange.dateandtime, productionline.number, assortment.name, qualitycard.number;
+
+
+--
+-- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE RULE "_RETURN" AS
+    ON SELECT TO technologies_operationproductincomponentdto DO INSTEAD  SELECT opic.id,
+    (toc.id)::integer AS operationcomponentid,
+    product.id AS product_id,
+    (product.id)::integer AS productid,
+    product.number AS productnumber,
+    product.name AS productname,
+    product.unit AS productunit,
+    opic.quantity,
+    opic.priority,
+    opic.itemnumberintheexplodedview,
+    op.name AS operationname,
+    toc.nodenumber,
+    (tech.id)::integer AS technologyid,
+    tech.name AS technologyname,
+    tech.state AS technologystate,
+    tech.number AS technologynumber,
+    tech.master AS mastertechnology,
+    tech.active AS activetechnology,
+    tech.technologytype,
+    (count(at.id) > 0) AS hasacceptedtechnology,
+    (count(ct.id) > 0) AS hascheckedtechnology
+   FROM ((((((technologies_operationproductincomponent opic
+     LEFT JOIN technologies_technologyoperationcomponent toc ON ((toc.id = opic.operationcomponent_id)))
+     LEFT JOIN technologies_operation op ON ((op.id = toc.operation_id)))
+     LEFT JOIN basic_product product ON ((product.id = opic.product_id)))
+     LEFT JOIN technologies_technology tech ON ((tech.id = toc.technology_id)))
+     LEFT JOIN technologies_technology at ON (((at.product_id = opic.product_id) AND (at.technologytype IS NULL) AND (at.active = true) AND ((at.state)::text = '02accepted'::text))))
+     LEFT JOIN technologies_technology ct ON (((ct.product_id = opic.product_id) AND (ct.technologytype IS NULL) AND (ct.active = true) AND ((ct.state)::text = '05checked'::text))))
+  GROUP BY opic.id, toc.id, product.id, product.number, product.name, product.unit, opic.quantity, opic.priority, opic.itemnumberintheexplodedview, tech.name, tech.number, tech.state, tech.master, op.name, tech.active, tech.technologytype, tech.id;
 
 
 --
@@ -48429,22 +47854,6 @@ ALTER TABLE ONLY arch_goodfood_extrusiontakenoffmixingredient
 
 
 --
--- Name: fabric_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY nblsport_fabric
-    ADD CONSTRAINT fabric_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
--- Name: fabric_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY nblsport_fabric
-    ADD CONSTRAINT fabric_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id) REFERENCES technologies_technologyoperationcomponent(id) DEFERRABLE;
-
-
---
 -- Name: factory_warehouse_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -50469,14 +49878,6 @@ ALTER TABLE ONLY technologies_operationproductincomponent
 
 
 --
--- Name: operationproductincomponent_pantone_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY technologies_operationproductincomponent
-    ADD CONSTRAINT operationproductincomponent_pantone_fkey FOREIGN KEY (pantone_id) REFERENCES pantone_pantone(id) DEFERRABLE;
-
-
---
 -- Name: operationproductincomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -51205,46 +50606,6 @@ ALTER TABLE ONLY arch_goodfood_palletstatechange
 
 
 --
--- Name: pantoneforoperationproduct_operationproductincomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY pantone_pantoneforoperationproduct
-    ADD CONSTRAINT pantoneforoperationproduct_operationproductincomponent_fkey FOREIGN KEY (operationproductincomponent_id) REFERENCES technologies_operationproductincomponent(id) DEFERRABLE;
-
-
---
--- Name: pantoneforoperationproduct_pantone_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY pantone_pantoneforoperationproduct
-    ADD CONSTRAINT pantoneforoperationproduct_pantone_fkey FOREIGN KEY (pantone_id) REFERENCES pantone_pantone(id) DEFERRABLE;
-
-
---
--- Name: pantoneforoperationproduct_pantoneforproducts_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY pantone_pantoneforoperationproduct
-    ADD CONSTRAINT pantoneforoperationproduct_pantoneforproducts_fkey FOREIGN KEY (pantoneforproducts_id) REFERENCES pantone_pantoneforproducts(id) DEFERRABLE;
-
-
---
--- Name: pantoneforproducts_pantone_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY pantone_pantoneforproducts
-    ADD CONSTRAINT pantoneforproducts_pantone_fkey FOREIGN KEY (pantone_id) REFERENCES pantone_pantone(id) DEFERRABLE;
-
-
---
--- Name: pantoneforproducts_technologyoperationcomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY pantone_pantoneforproducts
-    ADD CONSTRAINT pantoneforproducts_technologyoperationcomponent_fkey FOREIGN KEY (technologyoperationcomponent_id) REFERENCES technologies_technologyoperationcomponent(id) DEFERRABLE;
-
-
---
 -- Name: parameter_baselinkerparameters_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -51365,14 +50726,6 @@ ALTER TABLE ONLY basic_parameter
 
 
 --
--- Name: parameter_resinandhardenerlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY basic_parameter
-    ADD CONSTRAINT parameter_resinandhardenerlocation_fkey FOREIGN KEY (resinandhardenerlocation_id) REFERENCES materialflow_location(id) DEFERRABLE;
-
-
---
 -- Name: parameter_slaughterlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -51445,59 +50798,11 @@ ALTER TABLE ONLY deliveries_parameterdeliveryordercolumn
 
 
 --
--- Name: parametermaterialcost_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY nblsport_overhead
-    ADD CONSTRAINT parametermaterialcost_parameter_fkey FOREIGN KEY (parametermaterialcost_id) REFERENCES basic_parameter(id) DEFERRABLE;
-
-
---
--- Name: parameterproductioncost__parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY nblsport_overhead
-    ADD CONSTRAINT parameterproductioncost__parameter_fkey FOREIGN KEY (parameterproductioncost_id) REFERENCES basic_parameter(id) DEFERRABLE;
-
-
---
--- Name: parameters_hardener_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY pantone_parameters
-    ADD CONSTRAINT parameters_hardener_fkey FOREIGN KEY (hardener_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
--- Name: parameters_paste_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY pantone_parameters
-    ADD CONSTRAINT parameters_paste_fkey FOREIGN KEY (paste_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
 -- Name: parammeter_documentpositionparameters_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_parameter
     ADD CONSTRAINT parammeter_documentpositionparameters_fkey FOREIGN KEY (documentpositionparameters_id) REFERENCES materialflowresources_documentpositionparameters(id) DEFERRABLE;
-
-
---
--- Name: parammeter_hardener_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY basic_parameter
-    ADD CONSTRAINT parammeter_hardener_fkey FOREIGN KEY (hardener_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
--- Name: parammeter_resin_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY basic_parameter
-    ADD CONSTRAINT parammeter_resin_fkey FOREIGN KEY (resin_id) REFERENCES basic_product(id) DEFERRABLE;
 
 
 --
