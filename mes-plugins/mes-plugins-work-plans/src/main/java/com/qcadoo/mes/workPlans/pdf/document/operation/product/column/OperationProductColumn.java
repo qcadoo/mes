@@ -23,10 +23,10 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.product.column;
 
-import java.util.Locale;
-
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.ProductDirection;
 import com.qcadoo.model.api.Entity;
+
+import java.util.Locale;
 
 public interface OperationProductColumn {
 
@@ -37,6 +37,8 @@ public interface OperationProductColumn {
     String getDescription(Locale locale, ProductDirection productDirection);
 
     String getColumnValue(Entity operationProduct);
+
+    String getColumnValueForOrder(Entity order, Entity operationProduct);
 
     ProductDirection[] getDirection();
 

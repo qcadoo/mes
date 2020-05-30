@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.product.column;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
@@ -38,6 +32,12 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.ProductDirection;
 import com.qcadoo.model.api.Entity;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component("productNameOperationProductColumn")
 public class ProductNameOperationProductColumn extends AbstractOperationProductColumn {
@@ -56,6 +56,11 @@ public class ProductNameOperationProductColumn extends AbstractOperationProductC
     public String getColumnValue(Entity operationProduct) {
         Entity product = product(operationProduct);
         return buildValue(product);
+    }
+
+    @Override
+    public String getColumnValueForOrder(Entity order, Entity operationProduct) {
+        return "";
     }
 
     @Override

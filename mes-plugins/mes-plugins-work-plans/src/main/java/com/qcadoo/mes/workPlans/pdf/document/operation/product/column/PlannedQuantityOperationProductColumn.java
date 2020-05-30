@@ -23,14 +23,14 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.product.column;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.ProductDirection;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component("plannedQuantityOperationProductColumn")
 public class PlannedQuantityOperationProductColumn extends AbstractOperationProductColumn {
@@ -52,6 +52,11 @@ public class PlannedQuantityOperationProductColumn extends AbstractOperationProd
     public String getColumnValue(Entity operationProduct) {
         return String.valueOf(numberService.format(numberService.setScaleWithDefaultMathContext(operationProduct
                 .getDecimalField(OperationProductInComponentFields.QUANTITY))));
+    }
+
+    @Override
+    public String getColumnValueForOrder(Entity order, Entity operationProduct) {
+        return "";
     }
 
     @Override
