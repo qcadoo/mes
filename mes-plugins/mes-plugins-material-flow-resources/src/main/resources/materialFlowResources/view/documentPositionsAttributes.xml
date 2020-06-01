@@ -31,6 +31,19 @@
 
     <component type="window" name="window" reference="window">
         <ribbon>
+            <group name="actions">
+                <bigButton name="generate" icon="startIcon24.png" state="enabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									QCD.documentPositionsAttributes.generate();
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
         <windowTab name="mainTab">
             <component type="form" name="form" reference="form">
@@ -46,21 +59,6 @@
             </component>
         </windowTab>
         <windowTab name="dataTab">
-            <ribbon>
-                <group name="actions">
-                    <bigButton name="generate" icon="startIcon24.png" state="enabled">
-                        <script>
-                            <![CDATA[
-							this.addOnChangeListener({
-								onClick: function() {
-									QCD.documentPositionsAttributes.generate();
-								}
-							});
-						]]>
-                        </script>
-                    </bigButton>
-                </group>
-            </ribbon>
             <component type="form" name="dataForm" reference="dataForm">
                 <component type="flowLayout" name="layout">
                     <component type="staticPage" name="documentPositionsAttributes" reference="documentPositionsAttributes">
