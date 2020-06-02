@@ -108,7 +108,9 @@ public class ProductionTrackingHooks {
     private NumberPatternGeneratorService numberPatternGeneratorService;
 
     public void onCreate(final DataDefinition productionTrackingDD, final Entity productionTracking) {
+        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
         setInitialState(productionTracking);
+        fillExpirationDate(productionTracking, order);
     }
 
     public void onCopy(final DataDefinition productionTrackingDD, final Entity productionTracking) {
@@ -122,7 +124,6 @@ public class ProductionTrackingHooks {
         generateNumberIfNeeded(productionTracking);
         setTimesToZeroIfEmpty(productionTracking);
         copyProducts(productionTracking);
-        fillExpirationDate(productionTracking, order);
         boolean generateBatchForOrderedProduct = parameterService.getParameter().getBooleanField(
                 ParameterFieldsPC.GENERATE_BATCH_FOR_ORDERED_PRODUCT);
         if (productionTracking.getBooleanField(ProductionTrackingFields.ADD_BATCH)
