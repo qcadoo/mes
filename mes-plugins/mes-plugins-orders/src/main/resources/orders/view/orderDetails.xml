@@ -240,6 +240,19 @@
                 </bigButton>
             </group>
             <group name="operationalTasks">
+                <bigButton name="generateOperationalTasks" icon="generateIcon24.png">
+                    <script>
+                        <![CDATA[
+					        this.addOnChangeListener({
+						        onClick: function() {
+							        if(window.canClose()) {
+								        #{form}.performEvent('generateOperationalTasks', []);
+							        }
+						        }
+					        });
+				        ]]>
+                    </script>
+                </bigButton>
                 <bigButton name="showOperationalTasks" icon="genealogyIcon24.png">
                     <script>
                         <![CDATA[
@@ -630,6 +643,8 @@
                 <listener event="printOrderReport" method="printOrderReport"
                           class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
                 <listener event="showOperationalTasks" method="showOperationalTasks"
+                          class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
+                <listener event="generateOperationalTasks" method="generateOperationalTasks"
                           class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
 
             </component>

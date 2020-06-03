@@ -24,10 +24,15 @@
 package com.qcadoo.mes.orders.listeners;
 
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
+import com.qcadoo.mes.orders.constants.OperationalTaskFields;
+import com.qcadoo.mes.orders.constants.OperationalTaskType;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.criteriaModifiers.TechnologyCriteriaModifiersO;
 import com.qcadoo.mes.orders.hooks.OrderDetailsHooks;
 import com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient;
@@ -35,9 +40,13 @@ import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.util.AdditionalUnitService;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
+import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.TechnologyStateChangeViewClient;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.view.api.ComponentState;
@@ -47,14 +56,16 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderDetailsListeners {
@@ -72,6 +83,8 @@ public class OrderDetailsListeners {
     private static final String L_GRID_OPTIONS = "grid.options";
 
     private static final String L_FILTERS = "filters";
+
+    private static final String IS_SUBCONTRACTING = "isSubcontracting";
 
     @Autowired
     private OrderStateChangeViewClient orderStateChangeViewClient;
@@ -93,6 +106,15 @@ public class OrderDetailsListeners {
 
     @Autowired
     private ExpressionService expressionService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private NumberGeneratorService numberGeneratorService;
+
+    @Autowired
+    private TechnologyService technologyService;
 
     public void clearAddress(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         LookupComponent address = (LookupComponent) view.getComponentByReference(OrderFields.ADDRESS);
@@ -342,6 +364,52 @@ public class OrderDetailsListeners {
     public void onQuantityChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         additionalUnitService.setQuantityFieldForAdditionalUnit(view,
                 ((FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM)).getEntity());
+    }
+
+    public void generateOperationalTasks(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        Entity order = orderForm.getEntity().getDataDefinition().get(orderForm.getEntityId());
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        List<Entity> technologyOperationComponents = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
+
+        for (Entity technologyOperationComponent : technologyOperationComponents) {
+            createOperationalTasks(order, technologyOperationComponent);
+        }
+        orderForm.addMessage("orders.ordersDetails.info.operationalTasksCreated",
+                MessageType.SUCCESS);
+
+    }
+
+    private void createOperationalTasks(Entity order, Entity technologyOperationComponent) {
+        DataDefinition operationalTaskDD = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
+                OrdersConstants.MODEL_OPERATIONAL_TASK);
+
+        Entity operationalTask = operationalTaskDD.create();
+        operationalTask.setField(OperationalTaskFields.NUMBER, numberGeneratorService
+                .generateNumber(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK));
+        operationalTask.setField(OperationalTaskFields.START_DATE, order.getField(OrderFields.START_DATE));
+        operationalTask.setField(OperationalTaskFields.FINISH_DATE, order.getField(OrderFields.FINISH_DATE));
+        operationalTask.setField(OperationalTaskFields.TYPE,
+                OperationalTaskType.EXECUTION_OPERATION_IN_ORDER.getStringValue());
+
+        operationalTask.setField(OperationalTaskFields.ORDER, order);
+
+        if (!technologyOperationComponent.getBooleanField(IS_SUBCONTRACTING)) {
+            operationalTask.setField(OperationalTaskFields.PRODUCTION_LINE,
+                    order.getBelongsToField(OrderFields.PRODUCTION_LINE));
+        }
+
+        operationalTask.setField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
+
+        Entity mainOutputProductComponent = technologyService.getMainOutputProductComponent(technologyOperationComponent);
+        Entity product = mainOutputProductComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT);
+        if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(product.getField(ProductFields.ENTITY_TYPE))) {
+            product = order.getBelongsToField(OrderFields.PRODUCT);
+        }
+        operationalTask.setField(OperationalTaskFields.PRODUCT, product);
+
+        operationalTaskDD.save(operationalTask);
+
     }
 
     public void showOperationalTasks(final ViewDefinitionState view, final ComponentState state, final String[] args) {

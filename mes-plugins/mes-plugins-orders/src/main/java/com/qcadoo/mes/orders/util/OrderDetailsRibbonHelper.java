@@ -73,6 +73,27 @@ public class OrderDetailsRibbonHelper {
         }
     };
 
+    public static final String FOR_EACH = "03forEach";
+
+    public static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
+
+    public static final Predicate<Entity> CAN_NOT_GENERATE_OPERATIONAL_TASKS = new Predicate<Entity>() {
+
+        @Override
+        public boolean apply(final Entity order) {
+            if (order == null) {
+                return false;
+            }
+            if(!OrderStateStringValues.ACCEPTED.equals(order.getStringField(OrderFields.STATE))) {
+                return false;
+            }
+            if(!FOR_EACH.equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
+                return false;
+            }
+            return order.getHasManyField(OrderFields.OPERATIONAL_TASKS).isEmpty();
+        }
+    };
+
     @Autowired
     private OrderService orderService;
 
