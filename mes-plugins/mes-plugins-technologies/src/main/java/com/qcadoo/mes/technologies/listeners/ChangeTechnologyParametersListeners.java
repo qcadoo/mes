@@ -141,9 +141,10 @@ public class ChangeTechnologyParametersListeners {
                 if (entity.getBooleanField(L_CHANGE_PERFORMANCE_NORM)) {
                     copyTechnology.setField(TechnologyFields.STANDARD_PERFORMANCE_TECHNOLOGY, finalStandardPerformanceTechnology);
                 }
-
+                copyTechnology = copyTechnology.getDataDefinition().save(copyTechnology);
+                Entity copyTechnologyDb = copyTechnology.getDataDefinition().get(copyTechnology.getId());
                 if (updateOperationTimeNorms) {
-                    List<Entity> tocs = copyTechnology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
+                    List<Entity> tocs = copyTechnologyDb.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
                     tocs.forEach(toc -> {
                         Entity operation = toc.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
                         for (String fieldName : FIELDS_OPERATION) {
@@ -160,11 +161,12 @@ public class ChangeTechnologyParametersListeners {
                         if (operation.getField(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY) == null) {
                             toc.setField(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY, "0");
                         }
+                        toc.getDataDefinition().save(toc);
                     });
                     technologyStateChangeViewClient.changeState(new ViewContextHolder(view, state),
                             TechnologyStateStringValues.OUTDATED, technology);
                 }
-                Entity savedTech = copyTechnology.getDataDefinition().save(copyTechnology);
+                Entity savedTech = copyTechnologyDb.getDataDefinition().get(copyTechnologyDb.getId());
                 if (savedTech.isValid()) {
                     technologyStateChangeViewClient.changeState(new ViewContextHolder(view, state),
                             TechnologyStateStringValues.ACCEPTED, savedTech);
