@@ -51,16 +51,12 @@ public final class WorkstationFields {
 
     public static final String WNK_NUMBER = "wnkNumber";
 
-    public static final String COMPANIES = "companies";
-
-    public static final String ATTACHMENTS = "attachments";
-
     public static final String SUBASSEMBLIES = "subassemblies";
 
     public static final String SUBASSEMBLIES_HELPERS = "subassembliesHelpers";
 
-    public static final String FAULT_TYPES = "faultTypes";
-
     public static final String ACTIVE = "active";
+
+    public static final String STAFF = "staff";
 
 }

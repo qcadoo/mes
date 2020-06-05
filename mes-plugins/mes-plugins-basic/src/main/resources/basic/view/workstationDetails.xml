@@ -139,7 +139,7 @@
             <component type="form" name="workstation" reference="form"
                        defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="6">
+                           rows="7">
                     <layoutElement column="1" row="1">
                         <component type="input" name="number" field="number">
                             <option type="alignment" value="right"/>
@@ -185,6 +185,19 @@
                     </layoutElement>
                     <layoutElement column="2" row="6">
                         <component type="input" name="wnkNumber" field="wnkNumber" reference="wnkNumber"/>
+                    </layoutElement>
+                    <layoutElement column="2" row="7">
+                        <component type="lookup" name="staff" field="staff"
+                                   reference="staff" hasDescription="true">
+                            <option type="column" name="name" fields="name" link="true"/>
+                            <option type="column" name="surname" fields="surname" link="true"/>
+
+                            <option type="searchable" value="number,name,surname"/>
+                            <option type="orderable" value="number,name,surname"/>
+
+                            <option type="expression" value="#number"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
                     </layoutElement>
                 </component>
 

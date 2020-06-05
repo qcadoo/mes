@@ -45,7 +45,7 @@
               default="01shortestTime"
               required="true"/>
         <enum name="workerAssignCriterion"
-              values="01workstationLastOperatorLatestFinished,02workstationLastOperatorEarliestFinished"
+              values="01workstationLastOperatorLatestFinished,02workstationLastOperatorEarliestFinished,03workstationDefaultOperator"
               default="01workstationLastOperatorLatestFinished"
               required="true"/>
         <datetime name="approveTime" />
@@ -56,7 +56,7 @@
                  cascade="delete"/>
 
         <hasMany name="positionsDto" joinField="schedule" model="schedulePositionDto"
-                 cascade="nullify" copyable="false" persistent="false"/>
+                 persistent="false"/>
     </fields>
 
     <hooks>

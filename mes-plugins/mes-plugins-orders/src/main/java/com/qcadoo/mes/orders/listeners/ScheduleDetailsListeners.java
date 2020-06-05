@@ -1,16 +1,10 @@
 package com.qcadoo.mes.orders.listeners;
 
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.list;
-import static com.qcadoo.model.api.search.SearchProjections.rowCount;
+import static com.qcadoo.model.api.search.SearchProjections.*;
 import static java.util.Map.Entry.comparingByValue;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Optional;
-import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +17,9 @@ import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.StaffSkillsFields;
+import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.newstates.StateExecutorService;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.orders.constants.ScheduleFields;
-import com.qcadoo.mes.orders.constants.SchedulePositionFields;
-import com.qcadoo.mes.orders.constants.ScheduleSortOrder;
-import com.qcadoo.mes.orders.constants.ScheduleWorkerAssignCriterion;
-import com.qcadoo.mes.orders.constants.ScheduleWorkstationAssignCriterion;
+import com.qcadoo.mes.orders.constants.*;
 import com.qcadoo.mes.orders.states.ScheduleServiceMarker;
 import com.qcadoo.mes.productionLines.constants.WorkstationFieldsPL;
 import com.qcadoo.mes.technologies.constants.OperationFields;
@@ -37,12 +27,7 @@ import com.qcadoo.mes.technologies.constants.OperationSkillFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.JoinType;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchProjections;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.search.SearchSubqueries;
+import com.qcadoo.model.api.search.*;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -203,6 +188,7 @@ public class ScheduleDetailsListeners {
     @Transactional
     public void assignWorkersToOperations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Entity schedule = ((FormComponent) state).getEntity();
+        String scheduleWorkerAssignCriterion = schedule.getStringField(ScheduleFields.WORKER_ASSIGN_CRITERION);
         Map<Long, Date> workersFinishDates = Maps.newHashMap();
         Map<Long, Long> workstationLastWorkers = Maps.newHashMap();
         List<Entity> positions = sortPositionsForWorkers(schedule.getId());
@@ -212,27 +198,32 @@ public class ScheduleDetailsListeners {
             if (position.getIntegerField(SchedulePositionFields.MACHINE_WORK_TIME) == 0 || workstation == null) {
                 continue;
             }
-            List<Entity> workers = getWorkers(position);
-            Map<Long, Date> operationWorkersFinishDates = Maps.newHashMap();
-            getWorkersFinishDate(workersFinishDates, scheduleStartTime, position, workers, operationWorkersFinishDates);
-            if (workstationLastWorkers.get(workstation.getId()) == null) {
-                workstationLastWorkers.put(workstation.getId(), getOperationalTasksLastWorkerForWorkstation(workstation));
-            }
-            Long workstationLastWorkerId = workstationLastWorkers.get(workstation.getId());
-            Optional<Entry<Long, Date>> firstEntryOptional = operationWorkersFinishDates.entrySet().stream()
-                    .filter(entry -> entry.getKey().equals(workstationLastWorkerId)).findFirst();
-
-            if (!firstEntryOptional.isPresent()) {
-                if (ScheduleWorkerAssignCriterion.WORKSTATION_LAST_OPERATOR_LATEST_FINISHED.getStringValue()
-                        .equals(schedule.getStringField(ScheduleFields.WORKER_ASSIGN_CRITERION))) {
-                    firstEntryOptional = operationWorkersFinishDates.entrySet().stream().max(comparingByValue());
-                } else {
-                    firstEntryOptional = operationWorkersFinishDates.entrySet().stream().min(comparingByValue());
+            if (ScheduleWorkerAssignCriterion.WORKSTATION_DEFAULT_OPERATOR.getStringValue()
+                    .equals(scheduleWorkerAssignCriterion)) {
+                position.setField(SchedulePositionFields.STAFF, workstation.getBelongsToField(WorkstationFields.STAFF));
+            } else {
+                List<Entity> workers = getWorkers(position);
+                Map<Long, Date> operationWorkersFinishDates = Maps.newHashMap();
+                getWorkersFinishDate(workersFinishDates, scheduleStartTime, position, workers, operationWorkersFinishDates);
+                if (workstationLastWorkers.get(workstation.getId()) == null) {
+                    workstationLastWorkers.put(workstation.getId(), getOperationalTasksLastWorkerForWorkstation(workstation));
                 }
+                Long workstationLastWorkerId = workstationLastWorkers.get(workstation.getId());
+                Optional<Entry<Long, Date>> firstEntryOptional = operationWorkersFinishDates.entrySet().stream()
+                        .filter(entry -> entry.getKey().equals(workstationLastWorkerId)).findFirst();
+
+                if (!firstEntryOptional.isPresent()) {
+                    if (ScheduleWorkerAssignCriterion.WORKSTATION_LAST_OPERATOR_LATEST_FINISHED.getStringValue()
+                            .equals(scheduleWorkerAssignCriterion)) {
+                        firstEntryOptional = operationWorkersFinishDates.entrySet().stream().max(comparingByValue());
+                    } else {
+                        firstEntryOptional = operationWorkersFinishDates.entrySet().stream().min(comparingByValue());
+                    }
+                }
+                position.setField(SchedulePositionFields.STAFF, null);
+                firstEntryOptional.ifPresent(firstEntry -> updatePositionWorker(workersFinishDates, workstationLastWorkers,
+                        position, workstation, firstEntry));
             }
-            position.setField(SchedulePositionFields.STAFF, null);
-            firstEntryOptional.ifPresent(firstEntry -> updatePositionWorker(workersFinishDates, workstationLastWorkers, position,
-                    workstation, firstEntry));
             position.getDataDefinition().save(position);
         }
     }
