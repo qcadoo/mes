@@ -21,13 +21,10 @@ import java.util.Objects;
 @Service
 public class AttributeDetailsHooks {
 
-
-
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
-
         numberGeneratorService.generateAndInsertNumber(view, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.ATTRIBUTE, QcadooViewConstants.L_FORM,
                 AttributeFields.NUMBER);
 
