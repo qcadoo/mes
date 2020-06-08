@@ -62,7 +62,7 @@ public class GeneratorViewListeners {
 
     @Autowired
     private ParameterService parameterService;
-    
+
     public void goToGeneratedTechnologies(final ViewDefinitionState view, final ComponentState eventPerformer, final String[] args) {
         GridComponent grid = (GridComponent) view.getComponentByReference("generatorTechnologiesForProducts");
         if(!grid.getSelectedEntitiesIds().isEmpty()) {
@@ -144,10 +144,17 @@ public class GeneratorViewListeners {
 
     private Optional<Either<String, TechnologyId>> tryPerformCustomization(final GeneratorView generatorView, final Entity context) {
         try {
-            return Optional.ofNullable(context.getBelongsToField(GeneratorContextFields.PRODUCT)).flatMap(
+            Optional<Either<String, TechnologyId>> customizedTechId =  Optional.ofNullable(context.getBelongsToField(GeneratorContextFields.PRODUCT)).flatMap(
                     mainProduct -> generatorView.getSelectedNodeId()
                             .flatMap(nodeId -> technologyCustomizer
                                             .customize(nodeId, mainProduct, GeneratorSettings.from(context, parameterService.getParameter()), false)));
+            customizedTechId.ifPresent(cti -> {
+                if (cti.isRight()) {
+                    TechnologyId technologyId = cti.getRight();
+                    technologyCustomizer.addCustomizedProductToQualityCard(technologyId);
+                }
+            });
+            return customizedTechId;
         } catch (Exception e) {
             if (LOGGER.isWarnEnabled()) {
                 LOGGER.warn("Cannot perform technology customization due to unexpected error", e);
@@ -155,5 +162,6 @@ public class GeneratorViewListeners {
             return Optional.of(Either.left("Cannot perform technology customization due to unexpected error"));
         }
     }
+
 
 }

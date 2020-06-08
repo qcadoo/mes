@@ -23,6 +23,10 @@ import com.qcadoo.mes.technologiesGenerator.view.GeneratorView;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+
+import java.util.List;
+import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +35,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TechnologiesGeneratorForProductsService {
@@ -117,6 +118,12 @@ public class TechnologiesGeneratorForProductsService {
                     mainProduct -> Optional.ofNullable(node.getId()).flatMap(
                             nodeId -> customize(nodeId, mainProduct,
                                     GeneratorSettings.from(context, parameterService.getParameter()), true)));
+            customizedTechId.ifPresent(cti -> {
+                if (cti.isRight()) {
+                    TechnologyId technologyId = cti.getRight();
+                    technologyCustomizer.addCustomizedProductToQualityCard(technologyId);
+                }
+            });
         } catch (Exception e) {
             if (LOG.isWarnEnabled()) {
                 LOG.warn("Cannot perform technology customization due to unexpected error", e);
@@ -171,8 +178,8 @@ public class TechnologiesGeneratorForProductsService {
                     .flatMap(techId -> save(node, techId, Optional.of(mainProduct)));
         } else {
             Entity nodeProduct = node.getBelongsToField(GeneratorTreeNodeFields.PRODUCT);
-            return setupTechnologyNumberAndName(settings, technology, nodeProduct)
-                    .flatMap((techId) -> save(node, techId, Optional.empty()));
+            return setupTechnologyNumberAndName(settings, technology, nodeProduct).flatMap(
+                    (techId) -> save(node, techId, Optional.empty()));
         }
     }
 
