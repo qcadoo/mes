@@ -102,7 +102,7 @@
 						<option type="column" name="productNumber" fields="product"
 							expression="#product.get('number')" />
 						<option type="column" name="supplierName" fields="supplier"
-							expression="(#supplier == null) ? '' : #supplier.get('name')" />
+							expression="#supplier['name']" />
 						<option type="searchable" value="productNumber, productName, supplierName" />
 						<option type="orderable"
 							value="number,productNumber,productName,supplierName" />

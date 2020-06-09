@@ -54,7 +54,7 @@
 						<component type="lookup" name="producedBatch" field="#{form}.producedBatch" reference="batchLookup" persistent="false">
 							<option type="column" name="productName" fields="product" expression="#product.get('name')" />
 							<option type="column" name="productNumber" fields="product" expression="#product.get('number')" />
-							<option type="column" name="supplierName" fields="supplier" expression="(#supplier == null) ? '' : #supplier.get('name')"  />
+							<option type="column" name="supplierName" fields="supplier" expression="#supplier['name']"  />
 							<option type="orderable" value="number,productNumber,productName,supplierName" />
 							<option type="searchable" value="producedBatch, productNumber, productName, supplierName" />
 							<option type="expression" value="(#supplier == null ) ? #number + ' - ' + #product.get('name') + ' (' + #product.get('number') +')' :  #number + ' - ' + #product.get('name') + ' (' + #product.get('number') +') - ' + #supplier.get('name')" />
