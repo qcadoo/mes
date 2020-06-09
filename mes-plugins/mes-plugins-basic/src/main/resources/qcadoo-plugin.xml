@@ -234,6 +234,8 @@
 
         <security:role identifier="ROLE_QUALITY_CONTROL"/>
 
+        <security:role identifier="ROLE_OEE"/>
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="crew" resource="model/crew.xml"/>
@@ -466,8 +468,6 @@
         <view:view resource="view/numberPatternElementDetails.xml"/>
         <view:view resource="view/formsList.xml"/>
         <view:view resource="view/formDetails.xml"/>
-
-
 
         <menu:menu-item name="formsList" category="basic"
                         view="formsList" defaultAuthorizationRole="ROLE_BASIC"/>
