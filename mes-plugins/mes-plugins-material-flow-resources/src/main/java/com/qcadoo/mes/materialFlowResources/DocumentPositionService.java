@@ -303,8 +303,8 @@ public class DocumentPositionService {
             StringBuilder query = new StringBuilder();
             query.append("SELECT documentpositionparametersitem.*, attr.dataType as attributeDataType, attr.valueType as attributeValueType ");
             query.append("FROM materialflowresources_documentpositionparametersitem documentpositionparametersitem ");
-            query.append("LEFT JOIN basic_attribute attr ON attr.id = documentpositionparametersitem.attribute_id ");
-            query.append(" ORDER BY documentpositionparametersitem.ordering");
+            query.append("LEFT JOIN basic_attribute attr ON attr.id = documentpositionparametersitem.attribute_id  ");
+            query.append("WHERE attr IS NULL OR attr.active = TRUE  ORDER BY documentpositionparametersitem.ordering");
             List<ColumnProperties> columns = jdbcTemplate.query(query.toString(), Collections.EMPTY_MAP,
                     new BeanPropertyRowMapper(ColumnProperties.class));
 

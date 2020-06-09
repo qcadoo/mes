@@ -5,13 +5,19 @@ import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.ColumnDTO;
 import com.qcadoo.mes.materialFlowResources.constants.PositionDtoFields;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
 
 @Service
 public class DocumentPositionsAttributesDataProvider {
@@ -34,7 +40,7 @@ public class DocumentPositionsAttributesDataProvider {
             + "LEFT JOIN orders_order o ON (o.id = doc.order_id OR o.id = pos.orderid) "
             + "LEFT JOIN advancedgenealogy_batch b ON b.id = pos.batch_id "
             + "LEFT JOIN basic_productattributevalue pav ON p.id = pav.product_id "
-            + "LEFT JOIN basic_attribute a ON a.id = pav.attribute_id WHERE doc.\"time\" BETWEEN '";
+            + "LEFT JOIN basic_attribute a ON a.id = pav.attribute_id WHERE (a IS NULL OR a.active = TRUE) AND doc.\"time\" BETWEEN '";
 
     private static final String positionResourceAttributeFrom = "FROM materialflowresources_position pos "
             + "LEFT JOIN materialflowresources_document doc ON doc.id = pos.document_id "
@@ -44,7 +50,7 @@ public class DocumentPositionsAttributesDataProvider {
             + "LEFT JOIN orders_order o ON (o.id = doc.order_id OR o.id = pos.orderid) "
             + "LEFT JOIN advancedgenealogy_batch b ON b.id = pos.batch_id "
             + "LEFT JOIN materialflowresources_positionattributevalue posav ON pos.id = posav.position_id "
-            + "LEFT JOIN basic_attribute a ON a.id = posav.attribute_id WHERE doc.\"time\" BETWEEN '";
+            + "LEFT JOIN basic_attribute a ON a.id = posav.attribute_id WHERE (a IS NULL OR a.active = TRUE) AND doc.\"time\" BETWEEN '";
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -93,9 +99,9 @@ public class DocumentPositionsAttributesDataProvider {
         columns.add(new ColumnDTO(PositionDtoFields.BATCH,
                 translationService.translate("materialFlowResources.positionDto.batch.label", locale)));
         String query = "SELECT 'resource' || a.number AS id, a.name, a.unit, a.valuetype AS dataType "
-                + "FROM basic_attribute a WHERE a.forresource = TRUE "
+                + "FROM basic_attribute a WHERE a.active = TRUE AND a.forresource = TRUE "
                 + "UNION ALL SELECT 'product' || a.number AS id, a.name, a.unit, a.valuetype AS dataType "
-                + "FROM basic_attribute a WHERE a.forproduct = TRUE ORDER BY id";
+                + "FROM basic_attribute a WHERE a.active = TRUE AND a.forproduct = TRUE ORDER BY id";
         columns.addAll(jdbcTemplate.query(query, Collections.emptyMap(), new BeanPropertyRowMapper(ColumnDTO.class)));
         return columns;
     }
