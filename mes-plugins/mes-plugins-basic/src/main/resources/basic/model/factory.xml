@@ -34,7 +34,7 @@
         <string name="name" required="true">
             <validatesLength max="1024"/>
         </string>
-        <string name="city" required="true">
+        <string name="city">
             <validatesLength max="255"/>
         </string>
         <hasMany name="divisions" model="division" joinField="factory" cascade="nullify"/>
