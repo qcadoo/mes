@@ -132,6 +132,16 @@
 
         <!-- Range -->
 
+        <model:model-field plugin="basic" model="parameter">
+            <model:enum name="range" values="01oneDivision,02manyDivisions"
+                        default="01oneDivision"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:belongsTo name="division" plugin="basic"
+                             model="division"/>
+        </model:model-field>
+
         <model:model-field plugin="technologies" model="technology">
             <model:enum name="range" values="01oneDivision,02manyDivisions"
                         default="01oneDivision"/>
@@ -421,6 +431,7 @@
         <view:view-tab resource="view/tabExtensions/ordersParameters.xml"/>
         <view:view-tab resource="view/tabExtensions/supplyParameters.xml"/>
         <view:view-tab resource="view/tabExtensions/productionCountingQuantityAdvancedDetails.xml"/>
+        <view:view-tab resource="view/tabExtensions/technologiesParameters.xml"/>
 
         <view:view-hook plugin="basic" view="divisionDetails"
                         type="beforeRender"
@@ -471,6 +482,11 @@
                         plugin="basicProductionCounting"
                         class="com.qcadoo.mes.productFlowThruDivision.hooks.ProductionCountingQuantityAdvancedDetailsHooksBPC"
                         method="setFlowTabState"/>
+
+        <view:view-hook plugin="technologies" view="technologiesParameters"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.productFlowThruDivision.hooks.TechnologiesParametersHooksPFTD"
+                        method="onBeforeRender"/>
 
         <view:view-grid-column plugin="materialFlowResources"
                                view="documentsList" component="grid">

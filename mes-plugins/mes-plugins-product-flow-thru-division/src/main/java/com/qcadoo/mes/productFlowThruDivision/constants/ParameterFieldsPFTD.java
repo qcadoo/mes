@@ -25,6 +25,10 @@ package com.qcadoo.mes.productFlowThruDivision.constants;
 
 public final class ParameterFieldsPFTD {
 
+    private ParameterFieldsPFTD() {
+
+    }
+
     public static final String IGNORE_MISSING_COMPONENTS = "ignoreMissingComponents";
 
     public static final String GENERATE_WAREHOUSE_ISSUES_TO_ORDERS = "generateWarehouseIssuesToOrders";
@@ -32,7 +36,7 @@ public final class ParameterFieldsPFTD {
     public static final String DAYS_BEFORE_ORDER_START = "daysBeforeOrderStart";
 
     public static final String ISSUE_LOCATION = "issueLocation";
-    
+
     public static final String WAREHOUSE_ISSUE_PRODUCTS_SOURCE = "warehouseIssueProductsSource";
 
     public static final String GENERATE_WAREHOUSE_ISSUES_TO_DELIVERIES = "generateWarehouseIssuesToDeliveries";
@@ -46,5 +50,9 @@ public final class ParameterFieldsPFTD {
     public static final String ISSUED_QUANTITY_UP_TO_NEED = "issuedQuantityUpToNeed";
 
     public static final String PRODUCTS_TO_ISSUE = "productsToIssue";
+
+    public static final String RANGE = "range";
+
+    public static final String DIVISION = "division";
 
 }
