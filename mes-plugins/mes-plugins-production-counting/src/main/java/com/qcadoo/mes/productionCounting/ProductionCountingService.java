@@ -33,14 +33,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 public interface ProductionCountingService {
 
     /**
-     * Gets production tracking report
-     *
-     * @param productionTrackingReportId
-     * @return production tracking report
-     */
-    Entity getProductionTrackingReport(final Long productionTrackingReportId);
-
-    /**
      * Gets production tracking
      *
      * @param productionTrackingId
@@ -79,13 +71,6 @@ public interface ProductionCountingService {
      * @return staff work time
      */
     Entity getStaffWorkTime(final Long staffWorkTimeId);
-
-    /**
-     * Gets production tracking report data definition
-     *
-     * @return production tracking report data definition
-     */
-    DataDefinition getProductionTrackingReportDD();
 
     /**
      * Gets production tracking data definition
@@ -170,13 +155,14 @@ public interface ProductionCountingService {
     /**
      * Validates order
      *
-     * @param productionTrackingReportOrBalanceDD
-     *            production tracking report or production balance data definition
-     * @param productionTrackingReportOrBalance
-     *            production tracking report or production balance
+     * @param productionTrackingBalanceDD
+     *            production balance data definition
+     * @param productionTrackingBalance
+     *            production balance
      * @return boolean
      */
-    boolean validateOrder(final DataDefinition productionTrackingReportOrBalanceDD, final Entity productionTrackingReportOrBalance);
+    boolean validateOrder(final DataDefinition productionTrackingBalanceDD,
+            final Entity productionTrackingBalance);
 
     /**
      * Sets components state
@@ -200,32 +186,6 @@ public interface ProductionCountingService {
      *            view
      */
     void changeDoneQuantityAndAmountOfProducedQuantityFieldState(final ViewDefinitionState view);
-
-    /**
-     * Fills fields from product
-     *
-     * @param view
-     *            view
-     * @param trackingOperationProductComponentDD
-     *            tracking operation product component data definition
-     */
-    void fillFieldsFromProduct(final ViewDefinitionState view, final DataDefinition trackingOperationProductComponentDD);
-
-    /**
-     * Fills product field
-     *
-     * @param view
-     *            view
-     */
-    void fillProductField(final ViewDefinitionState view);
-
-    /**
-     * Fills production trackings grid
-     *
-     * @param view
-     *            view
-     */
-    void fillProductionTrackingsGrid(final ViewDefinitionState view);
 
     BigDecimal getRegisteredProductValueForOperationProductIn(final Entity operationProduct, final BigDecimal planed);
 

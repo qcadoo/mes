@@ -82,7 +82,6 @@
         <model:model model="productionTracking" resource="model/productionTracking.xml"/>
         <model:model model="productionTrackingStateChange" resource="model/productionTrackingStateChange.xml"/>
         <model:model model="productionBalance" resource="model/productionBalance.xml"/>
-        <model:model model="productionTrackingReport" resource="model/productionTrackingReport.xml"/>
         <model:model model="trackingOperationProductInComponent"
                      resource="model/trackingOperationProductInComponent.xml"/>
         <model:model model="trackingOperationProductOutComponent"
@@ -344,11 +343,6 @@
         </model:model-field>
 
         <model:model-field model="order" plugin="orders">
-            <model:hasMany name="productionTrackingReports" model="productionTrackingReport"
-                           joinField="order" plugin="productionCounting" cascade="delete"/>
-        </model:model-field>
-
-        <model:model-field model="order" plugin="orders">
             <model:manyToMany name="productionBalance"
                               plugin="productionCounting" model="productionBalance"
                               joinField="orders" cascade="nullify"/>
@@ -448,9 +442,6 @@
 
         <menu:menu-item name="productionBalance" category="ordersTracking"
                         view="productionBalancesList" defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING"/>
-        <menu:menu-item name="productionTrackingReports"
-                        category="ordersTracking" view="productionTrackingReportsList"
-                        defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING"/>
 
         <menu:menu-item name="productionTrackingForProduct" category="ordersTracking"
                         view="productionTrackingsForProductList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
@@ -471,8 +462,6 @@
         <view:view resource="view/productionTrackingDetails.xml"/>
         <view:view resource="view/productionBalancesList.xml"/>
         <view:view resource="view/productionBalanceDetails.xml"/>
-        <view:view resource="view/productionTrackingReportsList.xml"/>
-        <view:view resource="view/productionTrackingReportDetails.xml"/>
         <view:view resource="view/trackingOperationProductInComponentDetails.xml"/>
         <view:view resource="view/trackingOperationProductOutComponentDetails.xml"/>
         <view:view resource="view/staffWorkTimeDetails.xml"/>

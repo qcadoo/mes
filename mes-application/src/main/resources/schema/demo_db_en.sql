@@ -31867,8 +31867,6 @@ SELECT pg_catalog.setval('basic_workstationattachment_id_seq', 1, false);
 --
 
 COPY basic_workstationtype (id, name, number, description, active, subassembly, entityversion) FROM stdin;
-1	Głowica ekstruzyjna dwustemplowa	GL.EKSTR2	\N	t	\N	0
-2	Głowica ekstruzyjna trzystemplowa	GL.EKSTR3	\N	t	t	0
 \.
 
 

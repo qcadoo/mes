@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo MES
+ * Project: Qcadoo Framework
  * Version: 1.4
  *
  * This file is part of Qcadoo.
@@ -21,27 +21,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.productionCounting.validators;
+package com.qcadoo.mes.productFlowThruDivision.constants;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+public final class TechnologyOperationComponentFieldsPFTD {
 
-import com.qcadoo.mes.productionCounting.ProductionCountingService;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
+    private TechnologyOperationComponentFieldsPFTD() {
 
-@Service
-public class ProductionTrackingReportValidators {
-
-    @Autowired
-    private ProductionCountingService productionCountingService;
-
-    public boolean validatesWith(final DataDefinition productionTrackingReportDD, final Entity productionTrackingReport) {
-        return validateOrder(productionTrackingReportDD, productionTrackingReport);
     }
 
-    private boolean validateOrder(final DataDefinition productionTrackingReportDD, final Entity productionTrackingReport) {
-        return productionCountingService.validateOrder(productionTrackingReportDD, productionTrackingReport);
-    }
+    public static final String PRODUCTION_LINE_CHANGE = "productionLineChange";
 
 }
