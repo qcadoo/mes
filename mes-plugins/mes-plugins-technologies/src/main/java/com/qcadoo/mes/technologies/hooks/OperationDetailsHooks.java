@@ -29,21 +29,24 @@ import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.components.CheckBoxComponent;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public class OperationDetailsHooks {
-
-    
-
-
 
     private static final String L_WORKSTATIONS = "workstations";
 
@@ -59,10 +62,25 @@ public class OperationDetailsHooks {
     private static final List<String> L_WORKSTATIONS_TAB_LOOKUPS = Arrays.asList(OperationFields.PRODUCTION_LINE,
             OperationFields.DIVISION, OperationFields.WORKSTATION_TYPE);
 
+    public static final String L_CREATE_OPERATION_OUTPUT = "createOperationOutput";
+
+    public static final String L_PRODUCT = "product";
+
     public final void onBeforeRender(final ViewDefinitionState view) {
         disableWorkstationsTabFieldsIfOperationIsNotSaved(view);
         setWorkstationsCriteriaModifiers(view);
         hideProductInOutComponents(view);
+        disableCreateOperationOutput(view);
+    }
+
+    private void disableCreateOperationOutput(final ViewDefinitionState view) {
+        CheckBoxComponent createOperationOutput = (CheckBoxComponent) view.getComponentByReference(L_CREATE_OPERATION_OUTPUT);
+        LookupComponent productLookupComponent = (LookupComponent) view.getComponentByReference(L_PRODUCT);
+        if(!productLookupComponent.isEmpty() && Objects.nonNull(productLookupComponent.getEntity())) {
+            createOperationOutput.setEnabled(false);
+        } else {
+            createOperationOutput.setEnabled(true);
+        }
     }
 
     private void hideProductInOutComponents(final ViewDefinitionState view) {
