@@ -47,6 +47,4 @@ public final class OrderFieldsPC {
 
     public static final String PRODUCTION_TRACKINGS = "productionTrackings";
 
-    public static final String PRODUCTION_TRACKING_REPORTS = "productionTrackingReports";
-
 }
