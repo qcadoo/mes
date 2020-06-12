@@ -98,97 +98,98 @@ QCD.documentPositionsAttributes = (function () {
     }
 
     function init() {
-        $.get("/rest/docPositionsAttributes/columns", function (columns) {
-            QCD.components.elements.utils.LoadingIndicator.blockElement($('body'));
-            $('#documentPositionsAttributesGrid').height($('#window_windowContent').height() - 80);
-            $('#documentPositionsAttributesGrid').width($('#window_windowContent').width() - 20);
-            for (let i = 0; i < columns.length; i++) {
-                columns[i].field = columns[i].id;
-                columns[i].toolTip = columns[i].name;
-                columns[i].sortable = true;
-                columns[i].autoSize = {
-                    ignoreHeaderText: true
-                };
-                if (columns[i].dataType === '02numeric') {
-                    columns[i].cssClass = 'right-align';
-                    columns[i].formatter = numberFormatter;
-                    if (columns[i].unit) {
-                        columns[i].name = columns[i].name + '(' + columns[i].unit + ')';
+        let params = {
+            dateFrom: document.getElementById("window.mainTab.form.gridLayout.dateFrom_input").value,
+            dateTo: document.getElementById("window.mainTab.form.gridLayout.dateTo_input").value
+        };
+        QCD.components.elements.utils.LoadingIndicator.blockElement($('body'));
+        $.get("/rest/docPositionsAttributes/validate", params, function (message) {
+            if (message) {
+                QCD.components.elements.utils.LoadingIndicator.unblockElement($('body'));
+                new QCD.MessagesController().addMessage({
+                    type: 'failure',
+                    title: QCD.translate('qcadooView.notification.failure'),
+                    content: QCD.translate(message),
+                    autoClose: false,
+                    extraLarge: false
+                });
+            } else {
+                mainController.getComponentByReferenceName('window').setActiveTab('dataTab');
+                $.get("/rest/docPositionsAttributes/columns", function (columns) {
+                    $('#documentPositionsAttributesGrid').height($('#window_windowContent').height() - 80);
+                    $('#documentPositionsAttributesGrid').width($('#window_windowContent').width() - 20);
+                    for (let i = 0; i < columns.length; i++) {
+                        columns[i].field = columns[i].id;
                         columns[i].toolTip = columns[i].name;
+                        columns[i].sortable = true;
+                        columns[i].autoSize = {
+                            ignoreHeaderText: true
+                        };
+                        if (columns[i].dataType === '02numeric') {
+                            columns[i].cssClass = 'right-align';
+                            columns[i].formatter = numberFormatter;
+                            if (columns[i].unit) {
+                                columns[i].name = columns[i].name + '(' + columns[i].unit + ')';
+                                columns[i].toolTip = columns[i].name;
+                            }
+                        }
                     }
-                }
-            }
-            let dataView = new Slick.Data.DataView();
-            grid = new Slick.Grid("#documentPositionsAttributesGrid", dataView, columns, options);
+                    let dataView = new Slick.Data.DataView();
+                    grid = new Slick.Grid("#documentPositionsAttributesGrid", dataView, columns, options);
 
-            new Slick.Controls.Pager(dataView, grid, $("#pager"), pagerOptions);
+                    new Slick.Controls.Pager(dataView, grid, $("#pager"), pagerOptions);
 
-            dataView.onRowCountChanged.subscribe(function (e, args) {
-                grid.updateRowCount();
-                grid.render();
-                updateAllTotals(grid, dataView);
-            });
-
-            dataView.onRowsChanged.subscribe(function (e, args) {
-                grid.invalidateRows(args.rows);
-                grid.render();
-            });
-
-            dataView.onPagingInfoChanged.subscribe(function (e, pagingInfo) {
-                grid.updatePagingStatusFromView(pagingInfo);
-            });
-
-            $(grid.getHeaderRow()).on("change keyup", ":input", function (e) {
-                let columnId = $(this).data("columnId");
-                if (columnId != null) {
-                    columnFilters[columnId] = $.trim($(this).val());
-                    dataView.refresh();
-                }
-            });
-
-            grid.onHeaderRowCellRendered.subscribe(function (e, args) {
-                $(args.node).empty();
-                $("<input type='text'>")
-                    .data("columnId", args.column.id)
-                    .val(columnFilters[args.column.id])
-                    .appendTo(args.node);
-            });
-
-            grid.onSort.subscribe(function (e, args) {
-                let comparer = function (a, b) {
-                    if (a[args.sortCol.field] === b[args.sortCol.field]) {
-                        return 0;
-                    } else if (a[args.sortCol.field] === undefined || a[args.sortCol.field] === null) {
-                        return 1;
-                    } else if (b[args.sortCol.field] === undefined || b[args.sortCol.field] === null) {
-                        return -1;
-                    } else {
-                        return a[args.sortCol.field] < b[args.sortCol.field] ? -1 : 1;
-                    }
-                };
-
-                dataView.sort(comparer, args.sortAsc);
-            });
-
-            grid.onColumnsReordered.subscribe(function (e, args) {
-                updateAllTotals(grid, dataView);
-            });
-
-            let params = {
-                dateFrom: document.getElementById("window.mainTab.form.gridLayout.dateFrom_input").value,
-                dateTo: document.getElementById("window.mainTab.form.gridLayout.dateTo_input").value
-            };
-            $.get("/rest/docPositionsAttributes/validate", params, function (message) {
-                if (message) {
-                    QCD.components.elements.utils.LoadingIndicator.unblockElement($('body'));
-                    new QCD.MessagesController().addMessage({
-                        type: 'failure',
-                        title: QCD.translate('qcadooView.notification.failure'),
-                        content: QCD.translate(message),
-                        autoClose: false,
-                        extraLarge: false
+                    dataView.onRowCountChanged.subscribe(function (e, args) {
+                        grid.updateRowCount();
+                        grid.render();
+                        updateAllTotals(grid, dataView);
                     });
-                } else {
+
+                    dataView.onRowsChanged.subscribe(function (e, args) {
+                        grid.invalidateRows(args.rows);
+                        grid.render();
+                    });
+
+                    dataView.onPagingInfoChanged.subscribe(function (e, pagingInfo) {
+                        grid.updatePagingStatusFromView(pagingInfo);
+                    });
+
+                    $(grid.getHeaderRow()).on("change keyup", ":input", function (e) {
+                        let columnId = $(this).data("columnId");
+                        if (columnId != null) {
+                            columnFilters[columnId] = $.trim($(this).val());
+                            dataView.refresh();
+                        }
+                    });
+
+                    grid.onHeaderRowCellRendered.subscribe(function (e, args) {
+                        $(args.node).empty();
+                        $("<input type='text'>")
+                            .data("columnId", args.column.id)
+                            .val(columnFilters[args.column.id])
+                            .appendTo(args.node);
+                    });
+
+                    grid.onSort.subscribe(function (e, args) {
+                        let comparer = function (a, b) {
+                            if (a[args.sortCol.field] === b[args.sortCol.field]) {
+                                return 0;
+                            } else if (a[args.sortCol.field] === undefined || a[args.sortCol.field] === null) {
+                                return 1;
+                            } else if (b[args.sortCol.field] === undefined || b[args.sortCol.field] === null) {
+                                return -1;
+                            } else {
+                                return a[args.sortCol.field] < b[args.sortCol.field] ? -1 : 1;
+                            }
+                        };
+
+                        dataView.sort(comparer, args.sortAsc);
+                    });
+
+                    grid.onColumnsReordered.subscribe(function (e, args) {
+                        updateAllTotals(grid, dataView);
+                    });
+
                     $.get("/rest/docPositionsAttributes/records", params, function (records) {
                         grid.init();
                         grid.autosizeColumns();
@@ -200,9 +201,9 @@ QCD.documentPositionsAttributes = (function () {
                         $('.slick-header-columns').children().eq(0).trigger('click');
                         QCD.components.elements.utils.LoadingIndicator.unblockElement($('body'));
                     }, 'json');
-                }
-            }, 'text');
-        }, 'json');
+                }, 'json');
+            }
+        }, 'text');
     }
 
     return {

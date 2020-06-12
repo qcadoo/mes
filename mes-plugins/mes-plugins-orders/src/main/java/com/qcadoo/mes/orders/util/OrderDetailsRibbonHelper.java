@@ -28,6 +28,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -37,10 +38,11 @@ import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderDetailsRibbonHelper {
@@ -57,6 +59,38 @@ public class OrderDetailsRibbonHelper {
             }
             Entity orderTechnology = order.getBelongsToField(OrderFields.TECHNOLOGY);
             return orderTechnology != null && SUPPORTED_TECHNOLOGY_STATES.contains(TechnologyState.of(orderTechnology));
+        }
+    };
+
+    public static final Predicate<Entity> DIFFERENT_STATE_THAN_PENDING = new Predicate<Entity>() {
+
+        @Override
+        public boolean apply(final Entity order) {
+            if (order == null) {
+                return false;
+            }
+            return !OrderStateStringValues.PENDING.equals(order.getStringField(OrderFields.STATE));
+        }
+    };
+
+    public static final String FOR_EACH = "03forEach";
+
+    public static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
+
+    public static final Predicate<Entity> CAN_NOT_GENERATE_OPERATIONAL_TASKS = new Predicate<Entity>() {
+
+        @Override
+        public boolean apply(final Entity order) {
+            if (order == null) {
+                return false;
+            }
+            if(!OrderStateStringValues.ACCEPTED.equals(order.getStringField(OrderFields.STATE))) {
+                return false;
+            }
+            if(!FOR_EACH.equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
+                return false;
+            }
+            return order.getHasManyField(OrderFields.OPERATIONAL_TASKS).isEmpty();
         }
     };
 

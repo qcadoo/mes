@@ -371,12 +371,6 @@
 
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
-            <artifactId>mes-plugins-sub-orders</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-time-gaps-preview</artifactId>
             <version>${project.version}</version>
         </dependency>

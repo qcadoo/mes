@@ -72,7 +72,6 @@
         <module>mes-plugins-tech-subcontr-for-order-supplies</module>
         <module>mes-plugins-order-supplies</module>
         <module>mes-plugins-orders-for-subproducts-generation</module>
-        <module>mes-plugins-sub-orders</module>
         <module>mes-plugins-time-gaps-preview</module>
         <module>mes-plugins-technologies-generator</module>
         <module>mes-plugins-email-notifications</module>

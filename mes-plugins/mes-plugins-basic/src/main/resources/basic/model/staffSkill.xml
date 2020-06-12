@@ -29,8 +29,8 @@
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <belongsTo name="staff" plugin="basic" model="staff" required="true"/>
-        <belongsTo name="skill" plugin="basic" model="skill" required="true"/>
+        <belongsTo name="staff" model="staff" required="true"/>
+        <belongsTo name="skill" model="skill" required="true"/>
         <integer name="level" required="true">
             <validatesRange from="0" exclusively="true"/>
         </integer>

@@ -41,6 +41,16 @@ import com.qcadoo.mes.productionPerShift.report.print.utils.EntityProductionPerS
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.xls.XlsDocumentService;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFPrintSetup;
@@ -55,10 +65,6 @@ import org.joda.time.Seconds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 @Service
 public class PPSReportXlsService extends XlsDocumentService {
@@ -238,7 +244,9 @@ public class PPSReportXlsService extends XlsDocumentService {
         List<Entity> productionPerShifts = ppsReportXlsHelper.getProductionPerShiftForReport(report);
         List<Entity> shifts = ppsReportXlsHelper.getShifts();
 
-        Shift shiftFirst = new Shift(shifts.get(0));
+        DateTime dateFrom = new DateTime(report.getDateField(PPSReportFields.DATE_FROM));
+
+        Shift shiftFirst = new Shift(shifts.get(0), dateFrom, false);
         List<TimeRange> ranges = shiftFirst.findWorkTimeAt(new LocalDate(report.getDateField(PPSReportFields.DATE_FROM)));
 
         if (ranges.isEmpty()) {

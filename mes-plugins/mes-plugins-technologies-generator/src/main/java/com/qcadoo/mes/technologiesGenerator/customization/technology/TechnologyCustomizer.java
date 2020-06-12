@@ -26,6 +26,8 @@ package com.qcadoo.mes.technologiesGenerator.customization.technology;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.technologies.TechnologyNameAndNumberGenerator;
+import com.qcadoo.mes.technologies.constants.QualityCardFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.dataProvider.TechnologyDataProvider;
 import com.qcadoo.mes.technologies.domain.TechnologyId;
@@ -36,13 +38,17 @@ import com.qcadoo.mes.technologiesGenerator.customization.product.domain.Product
 import com.qcadoo.mes.technologiesGenerator.dataProvider.TechnologyStructureTreeDataProvider;
 import com.qcadoo.mes.technologiesGenerator.domain.TechnologyStructureNodeType;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
-import java.util.Optional;
 
 @Service
 public class TechnologyCustomizer {
@@ -62,6 +68,9 @@ public class TechnologyCustomizer {
     @Autowired
     private TechnologyProductsCustomizer technologyOperationProductsCustomizer;
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     @Transactional
     public Optional<Either<String, TechnologyId>> customize(final Long nodeId, final Entity mainProduct,
             final GeneratorSettings settings, boolean generationMode) {
@@ -75,6 +84,19 @@ public class TechnologyCustomizer {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
         }
         return customizationResult;
+    }
+
+
+    public void addCustomizedProductToQualityCard(TechnologyId technologyId) {
+        Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY)
+                .get(technologyId.get());
+        if (Objects.nonNull(technology.getBelongsToField(TechnologyFields.QUALITY_CARD))) {
+            Entity qualityCard = technology.getBelongsToField(TechnologyFields.QUALITY_CARD);
+            List<Entity> products = qualityCard.getManyToManyField(QualityCardFields.PRODUCTS);
+            products.add(technology.getBelongsToField(TechnologyFields.PRODUCT));
+            qualityCard.setField(QualityCardFields.PRODUCTS, products);
+            qualityCard.getDataDefinition().save(qualityCard);
+        }
     }
 
     private boolean isCustomizableNode(final Entity nodeEntity) {

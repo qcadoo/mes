@@ -132,12 +132,13 @@ public class OperationOrderInfoHeader {
         List<Entity> attrValues = product.getHasManyField(ProductFields.PRODUCT_ATTRIBUTE_VALUES);
         Map<String, List<String>> valuesByAttribute = Maps.newHashMap();
         attrValues.forEach(prodAttrVal -> {
-            String number = prodAttrVal.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).getStringField(
-                    AttributeFields.NUMBER);
-            if (valuesByAttribute.containsKey(number)) {
-                valuesByAttribute.get(number).add(prodAttrVal.getStringField(ProductAttributeValueFields.VALUE));
-            } else {
-                valuesByAttribute.put(number, Lists.newArrayList(prodAttrVal.getStringField(ProductAttributeValueFields.VALUE)));
+            if (prodAttrVal.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).getBooleanField("active")) {
+                String number = prodAttrVal.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).getStringField(AttributeFields.NUMBER);
+                if (valuesByAttribute.containsKey(number)) {
+                    valuesByAttribute.get(number).add(prodAttrVal.getStringField(ProductAttributeValueFields.VALUE));
+                } else {
+                    valuesByAttribute.put(number, Lists.newArrayList(prodAttrVal.getStringField(ProductAttributeValueFields.VALUE)));
+                }
             }
         });
         for (Map.Entry<String, List<String>> entry : valuesByAttribute.entrySet()) {

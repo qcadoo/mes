@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.product.column;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.TechnologyFieldsO;
@@ -39,6 +31,14 @@ import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.ProductDirection;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component("quantityPerUnitOperationProductColumn")
 public class QuantityPerUnitOperationProductColumn extends AbstractOperationProductColumn {
@@ -66,6 +66,11 @@ public class QuantityPerUnitOperationProductColumn extends AbstractOperationProd
         }
         return String.valueOf(numberService.format(numberService.setScaleWithDefaultMathContext(quantity.divide(
                 orders.get(0).getDecimalField(OrderFields.PLANNED_QUANTITY), RoundingMode.HALF_UP))));
+    }
+
+    @Override
+    public String getColumnValueForOrder(Entity order, Entity operationProduct) {
+        return "";
     }
 
     @Override

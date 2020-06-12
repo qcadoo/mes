@@ -45,6 +45,20 @@ public final class ProductionTrackingDtoFields {
 
     public static final String ORDER_NUMBER = "orderNumber";
 
+    public static final String PRODUCT_NUMBER = "productNumber";
+
+    public static final String OUT_PRODUCT_NUMBER = "outProductNumber";
+
+    public static final String PRODUCT_UNIT = "productUnit";
+
+    public static final String COMPANY_NUMBER = "companyNumber";
+
+    public static final String USED_QUANTITY = "usedQuantity";
+
+    public static final String PRODUCTIONLINE_ID = "productionline_id";
+
+    public static final String PRODUCTION_LINE_NUMBER = "productionLineNumber";
+
     public static final String ORDER_STATE = "orderState";
 
     public static final String TECHNOLOGY_OPERATION_COMPONENT_ID = "technologyOperationComponent_id";
@@ -64,5 +78,11 @@ public final class ProductionTrackingDtoFields {
     public static final String DIVISION_ID = "division_id";
 
     public static final String DIVISION_NUMBER = "divisionNumber";
+
+    public static final String CORRECTION_NUMBER = "correctionNumber";
+
+    public static final String CREATE_USER = "createUser";
+
+    public static final String WORKSTATION_NUMBER = "workstationNumber";
 
 }

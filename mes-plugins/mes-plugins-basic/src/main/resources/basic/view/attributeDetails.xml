@@ -52,16 +52,16 @@
                         <component type="select" name="dataType"
                                    field="dataType" reference="dataType">
                             <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.basic.listeners.AttributeDetailsListeners"
-                                      method="onChangeDataType"/>
+                                      class="com.qcadoo.view.api.listeners.RerenderListener"
+                                      method="onChangeRerender"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="5">
                         <component type="select" name="valueType"
                                    field="valueType" reference="valueType">
                             <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.basic.listeners.AttributeDetailsListeners"
-                                      method="onChangeValueType"/>
+                                      class="com.qcadoo.view.api.listeners.RerenderListener"
+                                      method="onChangeRerender"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="6">

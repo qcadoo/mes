@@ -1,5 +1,11 @@
 package com.qcadoo.mes.basic.controllers.dataProvider;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.ColumnDTO;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -12,12 +18,6 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.ColumnDTO;
 
 @Service
 public class ProductsAttributesDataProvider {
@@ -48,7 +48,7 @@ public class ProductsAttributesDataProvider {
         columns.add(new ColumnDTO(ProductFields.CATEGORY, translationService.translate("basic.product.category.label", locale)));
         columns.add(new ColumnDTO(ProductFields.SIZE, translationService.translate("basic.product.size.label", locale)));
         String query = "SELECT a.number AS id, a.name, a.unit, a.valuetype AS dataType "
-                + "FROM basic_attribute a WHERE a.forproduct = TRUE ORDER BY a.number";
+                + "FROM basic_attribute a WHERE a.active = TRUE AND a.forproduct = TRUE ORDER BY a.number";
         columns.addAll(jdbcTemplate.query(query, Collections.emptyMap(), new BeanPropertyRowMapper(ColumnDTO.class)));
         return columns;
     }

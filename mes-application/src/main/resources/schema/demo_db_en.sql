@@ -305,7 +305,6 @@ BEGIN
             INSERT INTO arch_simplematerialbalance_simplematerialbalanceorderscomponent SELECT * FROM simplematerialbalance_simplematerialbalanceorderscomponent WHERE order_id = _order.id;
             INSERT INTO arch_productionscheduling_ordertimecalculation SELECT * FROM productionscheduling_ordertimecalculation WHERE order_id = _order.id;
             INSERT INTO arch_productionpershift_productionpershift SELECT * FROM productionpershift_productionpershift WHERE order_id = _order.id;
-            INSERT INTO arch_productioncounting_productiontrackingreport SELECT * FROM productioncounting_productiontrackingreport WHERE order_id = _order.id;
             INSERT INTO arch_productioncounting_productiontracking SELECT * FROM productioncounting_productiontracking WHERE order_id = _order.id;
             INSERT INTO arch_productflowthrudivision_materialavailability SELECT * FROM productflowthrudivision_materialavailability WHERE order_id = _order.id;
             INSERT INTO arch_orders_operationaltask SELECT * FROM orders_operationaltask WHERE order_id = _order.id;
@@ -1704,7 +1703,6 @@ BEGIN
             DELETE FROM goodfood_extrusionprotocol WHERE order_id = _order.id;
             DELETE FROM orders_operationaltask WHERE order_id = _order.id;
             DELETE FROM productflowthrudivision_materialavailability WHERE order_id = _order.id;
-            DELETE FROM productioncounting_productiontrackingreport WHERE order_id = _order.id;
             DELETE FROM productioncounting_productiontracking WHERE order_id = _order.id;
             DELETE FROM productionpershift_productionpershift WHERE order_id = _order.id;
             DELETE FROM simplematerialbalance_simplematerialbalanceorderscomponent WHERE order_id = _order.id;
@@ -2091,9 +2089,9 @@ CREATE TABLE advancedgenealogyfororders_genealogyproductincomponent (
     id bigint NOT NULL,
     trackingrecord_id bigint,
     technologyinstanceoperationcomponent_id bigint,
-    productincomponent_id bigint,
     technologyoperationcomponent_id bigint,
-    entityversion bigint DEFAULT 0
+    entityversion bigint DEFAULT 0,
+    product_id bigint
 );
 
 
@@ -7062,45 +7060,6 @@ CREATE SEQUENCE arch_productioncounting_productiontrackingdto_id_seq
 
 
 --
--- Name: arch_productioncounting_productiontrackingreport; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE arch_productioncounting_productiontrackingreport (
-    id bigint NOT NULL,
-    generated boolean,
-    order_id bigint,
-    product_id bigint,
-    name character varying(1024),
-    date timestamp without time zone,
-    worker character varying(255),
-    description character varying(255),
-    filename character varying(255),
-    active boolean DEFAULT true,
-    entityversion bigint DEFAULT 0,
-    archived boolean DEFAULT false
-);
-
-
---
--- Name: arch_productioncounting_productiontrackingreport_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE arch_productioncounting_productiontrackingreport_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: arch_productioncounting_productiontrackingreport_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE arch_productioncounting_productiontrackingreport_id_seq OWNED BY arch_productioncounting_productiontrackingreport.id;
-
-
---
 -- Name: arch_productioncounting_productiontrackingstatechange; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -8388,7 +8347,8 @@ CREATE TABLE basic_attribute (
     unit character varying(255),
     forproduct boolean DEFAULT false,
     forresource boolean DEFAULT false,
-    forqualitycontrol boolean DEFAULT false
+    forqualitycontrol boolean DEFAULT false,
+    active boolean DEFAULT true
 );
 
 
@@ -9020,7 +8980,11 @@ CREATE TABLE basic_parameter (
     completewarehousesflowwhilechecking boolean DEFAULT false,
     qualitycontrol boolean DEFAULT false,
     finalqualitycontrolwithoutresources boolean DEFAULT false,
-    terminalproductattribute_id bigint
+    terminalproductattribute_id bigint,
+    oeefor character varying(255) DEFAULT '01productionLine'::character varying,
+    oeeworktimefrom character varying(255) DEFAULT '01staffWorkTimes'::character varying,
+    range character varying(255) DEFAULT '01oneDivision'::character varying,
+    division_id bigint
 );
 
 
@@ -9365,7 +9329,8 @@ CREATE TABLE basic_workstation (
     producer character varying(255),
     productiondate date,
     wnknumber character varying(255),
-    entityversion bigint DEFAULT 0
+    entityversion bigint DEFAULT 0,
+    staff_id bigint
 );
 
 
@@ -14599,6 +14564,26 @@ CREATE TABLE jointable_multiassignmenttoshift_staff (
 
 
 --
+-- Name: jointable_oee_productionline; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE jointable_oee_productionline (
+    oee_id bigint NOT NULL,
+    productionline_id bigint NOT NULL
+);
+
+
+--
+-- Name: jointable_oee_workstation; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE jointable_oee_workstation (
+    oee_id bigint NOT NULL,
+    workstation_id bigint NOT NULL
+);
+
+
+--
 -- Name: jointable_operation_workstation; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -17414,6 +17399,80 @@ CREATE SEQUENCE nutritionfacts_prototypeproductcomponent_id_seq
 --
 
 ALTER SEQUENCE nutritionfacts_prototypeproductcomponent_id_seq OWNED BY nutritionfacts_prototypeproductcomponent.id;
+
+
+--
+-- Name: oee_oee; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE oee_oee (
+    id bigint NOT NULL,
+    datefrom date,
+    dateto date,
+    oeefor character varying(255) DEFAULT '01productionLine'::character varying,
+    oeepercent numeric(12,5),
+    generated boolean,
+    date timestamp without time zone,
+    worker character varying(255),
+    active boolean DEFAULT true,
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255)
+);
+
+
+--
+-- Name: oee_oee_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE oee_oee_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: oee_oee_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE oee_oee_id_seq OWNED BY oee_oee.id;
+
+
+--
+-- Name: oee_oeevalue; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE oee_oeevalue (
+    id bigint NOT NULL,
+    oee_id bigint,
+    productionline_id bigint,
+    workstation_id bigint,
+    totalavailabletime integer,
+    effectivetime integer,
+    oeepercent numeric(12,5)
+);
+
+
+--
+-- Name: oee_oeevalue_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE oee_oeevalue_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: oee_oeevalue_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE oee_oeevalue_id_seq OWNED BY oee_oeevalue.id;
 
 
 --
@@ -20959,44 +21018,6 @@ CREATE SEQUENCE productioncounting_productiontrackingforproductgroupeddto_id_se
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
---
--- Name: productioncounting_productiontrackingreport; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE productioncounting_productiontrackingreport (
-    id bigint NOT NULL,
-    generated boolean,
-    order_id bigint,
-    product_id bigint,
-    name character varying(1024),
-    date timestamp without time zone,
-    worker character varying(255),
-    description character varying(255),
-    filename character varying(255),
-    active boolean DEFAULT true,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: productioncounting_productiontrackingreport_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE productioncounting_productiontrackingreport_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: productioncounting_productiontrackingreport_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE productioncounting_productiontrackingreport_id_seq OWNED BY productioncounting_productiontrackingreport.id;
 
 
 --
@@ -26302,13 +26323,6 @@ ALTER TABLE ONLY arch_productioncounting_productiontracking ALTER COLUMN id SET 
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY arch_productioncounting_productiontrackingreport ALTER COLUMN id SET DEFAULT nextval('arch_productioncounting_productiontrackingreport_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY arch_productioncounting_productiontrackingstatechange ALTER COLUMN id SET DEFAULT nextval('arch_productioncounting_productiontrackingstatechange_id_seq'::regclass);
 
 
@@ -27730,6 +27744,20 @@ ALTER TABLE ONLY nutritionfacts_prototypeproductcomponent ALTER COLUMN id SET DE
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY oee_oee ALTER COLUMN id SET DEFAULT nextval('oee_oee_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY oee_oeevalue ALTER COLUMN id SET DEFAULT nextval('oee_oeevalue_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY orders_changedateshelper ALTER COLUMN id SET DEFAULT nextval('orders_changedateshelper_id_seq'::regclass);
 
 
@@ -28081,13 +28109,6 @@ ALTER TABLE ONLY productioncounting_productionbalance ALTER COLUMN id SET DEFAUL
 --
 
 ALTER TABLE ONLY productioncounting_productiontracking ALTER COLUMN id SET DEFAULT nextval('productioncounting_productiontracking_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY productioncounting_productiontrackingreport ALTER COLUMN id SET DEFAULT nextval('productioncounting_productiontrackingreport_id_seq'::regclass);
 
 
 --
@@ -29081,7 +29102,7 @@ SELECT pg_catalog.setval('advancedgenealogyfororders_genealogyproductinbatch_id_
 -- Data for Name: advancedgenealogyfororders_genealogyproductincomponent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY advancedgenealogyfororders_genealogyproductincomponent (id, trackingrecord_id, technologyinstanceoperationcomponent_id, productincomponent_id, technologyoperationcomponent_id, entityversion) FROM stdin;
+COPY advancedgenealogyfororders_genealogyproductincomponent (id, trackingrecord_id, technologyinstanceoperationcomponent_id, technologyoperationcomponent_id, entityversion, product_id) FROM stdin;
 \.
 
 
@@ -30394,21 +30415,6 @@ SELECT pg_catalog.setval('arch_productioncounting_productiontrackingdto_id_seq',
 
 
 --
--- Data for Name: arch_productioncounting_productiontrackingreport; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY arch_productioncounting_productiontrackingreport (id, generated, order_id, product_id, name, date, worker, description, filename, active, entityversion, archived) FROM stdin;
-\.
-
-
---
--- Name: arch_productioncounting_productiontrackingreport_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('arch_productioncounting_productiontrackingreport_id_seq', 1, false);
-
-
---
 -- Data for Name: arch_productioncounting_productiontrackingstatechange; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -30900,7 +30906,7 @@ SELECT pg_catalog.setval('basic_attachmentdto_id_seq', 1, false);
 -- Data for Name: basic_attribute; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_attribute (id, number, name, datatype, valuetype, "precision", unit, forproduct, forresource, forqualitycontrol) FROM stdin;
+COPY basic_attribute (id, number, name, datatype, valuetype, "precision", unit, forproduct, forresource, forqualitycontrol, active) FROM stdin;
 \.
 
 
@@ -31558,8 +31564,8 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, enableoperationgroupingworkplan, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id) FROM stdin;
-1	\N	5	pc	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01globally	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	50	3000	f	f	f	f	f	f	f	f	t	t	t	f	t	t	f	f	f	f	f	f	f	f	f	f	f	\N	\N	f	f	f	f	f	\N
+COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, enableoperationgroupingworkplan, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id) FROM stdin;
+1	\N	5	pc	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01globally	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	50	3000	f	f	f	f	f	f	f	f	t	t	t	f	t	t	f	f	f	f	f	f	f	f	f	f	f	\N	\N	f	f	f	f	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N
 \.
 
 
@@ -31836,7 +31842,7 @@ SELECT pg_catalog.setval('basic_viewedactivity_id_seq', 1, false);
 -- Data for Name: basic_workstation; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_workstation (id, number, name, description, workstationtype_id, operation_id, active, productionline_id, division_id, serialnumber, udtnumber, series, producer, productiondate, wnknumber, entityversion) FROM stdin;
+COPY basic_workstation (id, number, name, description, workstationtype_id, operation_id, active, productionline_id, division_id, serialnumber, udtnumber, series, producer, productiondate, wnknumber, entityversion, staff_id) FROM stdin;
 \.
 
 
@@ -31867,8 +31873,6 @@ SELECT pg_catalog.setval('basic_workstationattachment_id_seq', 1, false);
 --
 
 COPY basic_workstationtype (id, name, number, description, active, subassembly, entityversion) FROM stdin;
-1	Głowica ekstruzyjna dwustemplowa	GL.EKSTR2	\N	t	\N	0
-2	Głowica ekstruzyjna trzystemplowa	GL.EKSTR3	\N	t	t	0
 \.
 
 
@@ -33587,6 +33591,7 @@ COPY jointable_group_role (group_id, role_id) FROM stdin;
 4	115
 4	118
 2	119
+2	120
 \.
 
 
@@ -33627,6 +33632,22 @@ COPY jointable_materialrequirementcoverage_order (materialrequirementcoverage_id
 --
 
 COPY jointable_multiassignmenttoshift_staff (multiassignmenttoshift_id, staff_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: jointable_oee_productionline; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY jointable_oee_productionline (oee_id, productionline_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: jointable_oee_workstation; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY jointable_oee_workstation (oee_id, workstation_id) FROM stdin;
 \.
 
 
@@ -34792,6 +34813,36 @@ SELECT pg_catalog.setval('nutritionfacts_prototypeproductcomponent_id_seq', 1, f
 
 
 --
+-- Data for Name: oee_oee; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY oee_oee (id, datefrom, dateto, oeefor, oeepercent, generated, date, worker, active, createdate, updatedate, createuser, updateuser) FROM stdin;
+\.
+
+
+--
+-- Name: oee_oee_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('oee_oee_id_seq', 1, false);
+
+
+--
+-- Data for Name: oee_oeevalue; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY oee_oeevalue (id, oee_id, productionline_id, workstation_id, totalavailabletime, effectivetime, oeepercent) FROM stdin;
+\.
+
+
+--
+-- Name: oee_oeevalue_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('oee_oeevalue_id_seq', 1, false);
+
+
+--
 -- Data for Name: orders_changedateshelper; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -35795,21 +35846,6 @@ SELECT pg_catalog.setval('productioncounting_productiontrackingforproductgrouped
 
 
 --
--- Data for Name: productioncounting_productiontrackingreport; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY productioncounting_productiontrackingreport (id, generated, order_id, product_id, name, date, worker, description, filename, active, entityversion) FROM stdin;
-\.
-
-
---
--- Name: productioncounting_productiontrackingreport_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('productioncounting_productiontrackingreport_id_seq', 1, false);
-
-
---
 -- Data for Name: productioncounting_productiontrackingstatechange; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -36373,7 +36409,6 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 70	negotForOrderSupplies	1.5.0	ENABLED	f	0	supplies	AGPL
 71	techSubcontrForOrderSupplies	1.5.0	ENABLED	f	0	supplies	AGPL
 72	ordersForSubproductsGeneration	1.5.0	ENABLED	f	0	other	AGPL
-117	subOrders	1.4.0	ENABLED	f	0	planning	AGPL
 121	advancedGenealogy	1.5.0	ENABLED	f	0	genealogy	AGPL
 131	deliveriesMinState	1.5.0	ENABLED	f	0	deliveries	AGPL
 134	techSubcontrForNegot	1.5.0	ENABLED	f	0	supplies	AGPL
@@ -36390,6 +36425,7 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 150	integrationAsana	1.5.0	DISABLED	f	0	\N	Commercial
 68	advancedGenealogyForOrders	1.5.0	ENABLED	f	0	genealogy	Commercial
 155	qualityControl	1.5.0	DISABLED	f	0	\N	\N
+156	oee	1.5.0	DISABLED	f	0	\N	\N
 \.
 
 
@@ -36397,7 +36433,7 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 -- Name: qcadooplugin_plugin_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooplugin_plugin_id_seq', 155, true);
+SELECT pg_catalog.setval('qcadooplugin_plugin_id_seq', 156, true);
 
 
 --
@@ -36559,6 +36595,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 117	ROLE_ORDER_MATERIAL_AVAILABILITY	\N	0
 118	ROLE_NUMBER_PATTERN	\N	0
 119	ROLE_QUALITY_CONTROL	\N	0
+120	ROLE_OEE	\N	0
 \.
 
 
@@ -36566,7 +36603,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 119, true);
+SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 120, true);
 
 
 --
@@ -36709,7 +36746,6 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 79	productionScheduling	orderTimePrediction	t	10	79	3	ROLE_CALCULATIONS	0
 92	productionCounting	productionTrackingForProductGrouped	t	8	92	2	ROLE_PRODUCTION_TRACKING	0
 93	productionCounting	productionTrackingForProduct	t	8	93	3	ROLE_PRODUCTION_TRACKING	0
-94	productionCounting	productionTrackingReports	t	8	94	4	ROLE_PRODUCTION_COUNTING	0
 95	productionCounting	productionBalance	t	8	95	5	ROLE_PRODUCTION_COUNTING	0
 97	workPlans	workPlans	t	7	97	9	ROLE_PLANNING	0
 100	orderSupplies	generateMaterialRequirementCoverage	t	9	100	9	ROLE_REQUIREMENTS	0
@@ -36796,6 +36832,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 160	qualityControl	qualityControlAttributes	t	20	159	3	ROLE_QUALITY_CONTROL	0
 161	basic	formsList	t	4	160	27	ROLE_BASIC	0
 162	advancedGenealogyForOrders	genealogyAnalysis	t	15	161	6	ROLE_ANALYSIS_VIEWER	0
+163	oee	oeeList	t	15	162	7	ROLE_OEE	0
 \.
 
 
@@ -36803,7 +36840,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 162, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 163, true);
 
 
 --
@@ -36901,7 +36938,6 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 99	orderSupplies	coverageRegistryList	coverageRegistryList	\N	0
 92	productionCounting	productionTrackingsForProductGroupedList	productionTrackingsForProductGroupedList	\N	0
 93	productionCounting	productionTrackingsForProductList	productionTrackingsForProductList	\N	0
-94	productionCounting	productionTrackingReportsList	productionTrackingReportsList	\N	0
 95	productionCounting	productionBalancesList	productionBalancesList	\N	0
 96	productionCounting	productionTrackingsList	productionTrackingsList	\N	0
 97	workPlans	workPlansList	workPlansList	\N	0
@@ -36967,6 +37003,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 159	qualityControl	qualityControlAttributes	\N	/qualityControlAttributes.html	0
 160	basic	formsList	formsList	\N	0
 161	advancedGenealogyForOrders	genealogyAnalysis	\N	/genealogyAnalysis.html	0
+162	oee	oeeList	oeeList	\N	0
 \.
 
 
@@ -36974,7 +37011,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 161, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 162, true);
 
 
 --
@@ -39335,14 +39372,6 @@ ALTER TABLE ONLY arch_productioncounting_productiontracking
 
 
 --
--- Name: arch_productioncounting_productiontrackingreport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY arch_productioncounting_productiontrackingreport
-    ADD CONSTRAINT arch_productioncounting_productiontrackingreport_pkey PRIMARY KEY (id);
-
-
---
 -- Name: arch_productioncounting_productiontrackingstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -40815,6 +40844,22 @@ ALTER TABLE ONLY jointable_multiassignmenttoshift_staff
 
 
 --
+-- Name: jointable_oee_productionline_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_oee_productionline
+    ADD CONSTRAINT jointable_oee_productionline_pkey PRIMARY KEY (oee_id, productionline_id);
+
+
+--
+-- Name: jointable_oee_workstation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_oee_workstation
+    ADD CONSTRAINT jointable_oee_workstation_pkey PRIMARY KEY (oee_id, workstation_id);
+
+
+--
 -- Name: jointable_operation_workstation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -41391,6 +41436,22 @@ ALTER TABLE ONLY nutritionfacts_nutritiongroup
 
 
 --
+-- Name: oee_oee_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY oee_oee
+    ADD CONSTRAINT oee_oee_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: oee_oeevalue_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY oee_oeevalue
+    ADD CONSTRAINT oee_oeevalue_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: orders_changedateshelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -41828,14 +41889,6 @@ ALTER TABLE ONLY productioncounting_prodoutresourceattrval
 
 ALTER TABLE ONLY productioncounting_productionbalance
     ADD CONSTRAINT productioncounting_productionbalance_pkey PRIMARY KEY (id);
-
-
---
--- Name: productioncounting_productioncounting_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY productioncounting_productiontrackingreport
-    ADD CONSTRAINT productioncounting_productioncounting_pkey PRIMARY KEY (id);
 
 
 --
@@ -47942,11 +47995,11 @@ ALTER TABLE ONLY arch_advancedgenealogyfororders_genealogyproductinbatch
 
 
 --
--- Name: genealogyproductincomponent_productincomponent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: genealogyproductincomponent_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY advancedgenealogyfororders_genealogyproductincomponent
-    ADD CONSTRAINT genealogyproductincomponent_productincomponent_fkey FOREIGN KEY (productincomponent_id) REFERENCES technologies_operationproductincomponent(id) DEFERRABLE;
+    ADD CONSTRAINT genealogyproductincomponent_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
 
 
 --
@@ -49686,6 +49739,62 @@ ALTER TABLE ONLY nutritionfacts_prototypeproductcomponent
 
 
 --
+-- Name: oee_productionline_oee_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_oee_productionline
+    ADD CONSTRAINT oee_productionline_oee_fkey FOREIGN KEY (oee_id) REFERENCES oee_oee(id) DEFERRABLE;
+
+
+--
+-- Name: oee_productionline_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_oee_productionline
+    ADD CONSTRAINT oee_productionline_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES productionlines_productionline(id) DEFERRABLE;
+
+
+--
+-- Name: oee_workstation_oee_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_oee_workstation
+    ADD CONSTRAINT oee_workstation_oee_fkey FOREIGN KEY (oee_id) REFERENCES oee_oee(id) DEFERRABLE;
+
+
+--
+-- Name: oee_workstation_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_oee_workstation
+    ADD CONSTRAINT oee_workstation_workstation_fkey FOREIGN KEY (workstation_id) REFERENCES basic_workstation(id) DEFERRABLE;
+
+
+--
+-- Name: oeevalue_oee_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY oee_oeevalue
+    ADD CONSTRAINT oeevalue_oee_fkey FOREIGN KEY (oee_id) REFERENCES oee_oee(id) DEFERRABLE;
+
+
+--
+-- Name: oeevalue_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY oee_oeevalue
+    ADD CONSTRAINT oeevalue_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES productionlines_productionline(id) DEFERRABLE;
+
+
+--
+-- Name: oeevalue_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY oee_oeevalue
+    ADD CONSTRAINT oeevalue_workstation_fkey FOREIGN KEY (workstation_id) REFERENCES basic_workstation(id) DEFERRABLE;
+
+
+--
 -- Name: offer_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -50643,6 +50752,14 @@ ALTER TABLE ONLY basic_parameter
 
 ALTER TABLE ONLY basic_parameter
     ADD CONSTRAINT parameter_currency_fkey FOREIGN KEY (currency_id) REFERENCES basic_currency(id) DEFERRABLE;
+
+
+--
+-- Name: parameter_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_parameter
+    ADD CONSTRAINT parameter_division_fkey FOREIGN KEY (division_id) REFERENCES basic_division(id) DEFERRABLE;
 
 
 --
@@ -52147,38 +52264,6 @@ ALTER TABLE ONLY productioncounting_productiontracking
 
 ALTER TABLE ONLY arch_productioncounting_productiontracking
     ADD CONSTRAINT productiontracking_workstation_fkey FOREIGN KEY (workstation_id) REFERENCES basic_workstation(id) DEFERRABLE;
-
-
---
--- Name: productiontrackingreport_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY productioncounting_productiontrackingreport
-    ADD CONSTRAINT productiontrackingreport_order_fkey FOREIGN KEY (order_id) REFERENCES orders_order(id) DEFERRABLE;
-
-
---
--- Name: productiontrackingreport_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY arch_productioncounting_productiontrackingreport
-    ADD CONSTRAINT productiontrackingreport_order_fkey FOREIGN KEY (order_id) REFERENCES arch_orders_order(id) DEFERRABLE;
-
-
---
--- Name: productiontrackingreport_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY productioncounting_productiontrackingreport
-    ADD CONSTRAINT productiontrackingreport_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
--- Name: productiontrackingreport_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY arch_productioncounting_productiontrackingreport
-    ADD CONSTRAINT productiontrackingreport_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
 
 
 --
@@ -55387,6 +55472,14 @@ ALTER TABLE ONLY jointable_operation_workstation
 
 ALTER TABLE ONLY basic_workstation
     ADD CONSTRAINT workstation_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES productionlines_productionline(id) DEFERRABLE;
+
+
+--
+-- Name: workstation_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_workstation
+    ADD CONSTRAINT workstation_staff_fkey FOREIGN KEY (staff_id) REFERENCES basic_staff(id) DEFERRABLE;
 
 
 --
