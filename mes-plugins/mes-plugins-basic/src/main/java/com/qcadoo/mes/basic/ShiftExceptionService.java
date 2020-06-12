@@ -24,7 +24,7 @@ public class ShiftExceptionService {
     private TimetableExceptionService timetableExceptionService;
 
     public List<DateTimeRange> manageExceptions(List<DateTimeRange> shiftWorkDateTime, final Entity productionLine,
-            final Shift shift, final Date dateOfDay) {
+            final Shift shift, final Date dateOfDay, final boolean removeFreeTimeException) {
         List<Entity> exceptions;
         Entity shiftEntity = shift.getEntity();
 
@@ -37,7 +37,7 @@ public class ShiftExceptionService {
         Shift shiftForDay = new Shift(shiftEntity, new DateTime(dateOfDay), false);
 
         for (Entity exception : exceptions) {
-            if (TimetableExceptionType.FREE_TIME.getStringValue()
+            if (removeFreeTimeException && TimetableExceptionType.FREE_TIME.getStringValue()
                     .equals(exception.getStringField(ShiftTimetableExceptionFields.TYPE))) {
                 shiftWorkDateTime = removeFreeTimeException(shiftWorkDateTime, exception, shiftForDay);
             }
@@ -51,7 +51,8 @@ public class ShiftExceptionService {
         return shiftWorkDateTime;
     }
 
-    public List<DateTimeRange> getShiftWorkDateTimes(final Entity productionLine, final Shift shift, DateTime dateOfDay) {
+    public List<DateTimeRange> getShiftWorkDateTimes(final Entity productionLine, final Shift shift, DateTime dateOfDay,
+            final boolean removeFreeTimeException) {
         List<TimeRange> shiftWorkTime = Lists.newArrayList();
         List<DateTimeRange> shiftWorkDateTime = Lists.newArrayList();
         if (shift.worksAt(dateOfDay.dayOfWeek().get())) {
@@ -61,7 +62,8 @@ public class ShiftExceptionService {
             shiftWorkDateTime.add(new DateTimeRange(dateOfDay, range));
         }
 
-        shiftWorkDateTime = manageExceptions(shiftWorkDateTime, productionLine, shift, dateOfDay.toDate());
+        shiftWorkDateTime = manageExceptions(shiftWorkDateTime, productionLine, shift, dateOfDay.toDate(),
+                removeFreeTimeException);
 
         return shiftWorkDateTime;
     }
@@ -108,8 +110,8 @@ public class ShiftExceptionService {
         Date fromDate = exception.getDateField(ShiftTimetableExceptionFields.FROM_DATE);
         Date toDate = exception.getDateField(ShiftTimetableExceptionFields.TO_DATE);
 
-        if(Objects.isNull(shift.getShiftStartDate()) || Objects.isNull(shift.getShiftEndDate())) {
-            if(workingException) {
+        if (Objects.isNull(shift.getShiftStartDate()) || Objects.isNull(shift.getShiftEndDate())) {
+            if (workingException) {
                 return Optional.of(new DateTimeRange(fromDate, toDate));
             } else {
                 return Optional.empty();

@@ -23,25 +23,13 @@
  */
 package com.qcadoo.mes.assignmentToShift.print.xls;
 
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields;
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportConstants;
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields;
 import com.qcadoo.mes.assignmentToShift.constants.OccupationType;
+import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.FactoryFields;
 import com.qcadoo.mes.basic.constants.ShiftFields;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
@@ -52,6 +40,18 @@ import com.qcadoo.model.constants.DictionaryFields;
 import com.qcadoo.model.constants.DictionaryItemFields;
 import com.qcadoo.model.constants.QcadooModelConstants;
 import com.qcadoo.report.api.xls.XlsDocumentService;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 
 @Service
 public class AssignmentToShiftXlsService extends XlsDocumentService {
@@ -69,6 +69,9 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private ShiftsService shiftsService;
 
     @Override
     public String getReportTitle(final Locale locale) {
@@ -109,15 +112,19 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
         headerAuthorFactoryLine.setHeightInPoints(20);
 
+        DateTime dateFrom = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_FROM));
+        DateTime dateTo = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_TO));
         assignmentToShiftXlsStyleHelper.addMarginsAndStylesForAuthor(sheet, 1,
-                assignmentToShiftXlsHelper.getNumberOfDaysBetweenGivenDates(assignmentToShiftReport));
+                shiftsService.getNumberOfDaysBetweenGivenDates(dateFrom, dateTo));
         assignmentToShiftXlsStyleHelper.addMarginsAndStylesForAuthorFactory(sheet, 2,
-                assignmentToShiftXlsHelper.getNumberOfDaysBetweenGivenDates(assignmentToShiftReport));
+                shiftsService.getNumberOfDaysBetweenGivenDates(dateFrom, dateTo));
     }
 
     private void createHeaderForAssignmentToShift(final HSSFSheet sheet, final Locale locale,
             final Entity assignmentToShiftReport) {
-        List<DateTime> days = assignmentToShiftXlsHelper.getDaysBetweenGivenDates(assignmentToShiftReport);
+        DateTime dateFrom = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_FROM));
+        DateTime dateTo = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_TO));
+        List<DateTime> days = shiftsService.getDaysBetweenGivenDates(dateFrom, dateTo);
 
         if (days != null) {
             HSSFRow headerAssignmentToShift = sheet.createRow(4);
@@ -141,13 +148,15 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
             headerAssignmentToShift.setHeightInPoints(14);
 
             assignmentToShiftXlsStyleHelper.addMarginsAndStylesForAssignmentToShift(sheet, 4,
-                    assignmentToShiftXlsHelper.getNumberOfDaysBetweenGivenDates(assignmentToShiftReport));
+                    shiftsService.getNumberOfDaysBetweenGivenDates(dateFrom, dateTo));
         }
     }
 
     @Override
     protected void addSeries(final HSSFSheet sheet, final Entity assignmentToShiftReport) {
-        List<DateTime> days = assignmentToShiftXlsHelper.getDaysBetweenGivenDates(assignmentToShiftReport);
+        DateTime dateFrom = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_FROM));
+        DateTime dateTo = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_TO));
+        List<DateTime> days = shiftsService.getDaysBetweenGivenDates(dateFrom, dateTo);
 
         if (days != null) {
             int rowNum = 5;
@@ -173,6 +182,8 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
     private int fillColumnWithStaffForWorkOnLine(final HSSFSheet sheet, int rowNum, final Entity assignmentToShiftReport,
             final List<DateTime> days, final List<Entity> productionLines, final Entity dictionaryItem) {
         if ((assignmentToShiftReport != null) && (days != null) && (productionLines != null)) {
+            DateTime dateFrom = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_FROM));
+            DateTime dateTo = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_TO));
             for (Entity productionLine : productionLines) {
                 int rowNumFromLastSection = rowNum;
                 int numberOfColumnsForWorkers = getNumberOfRowsForWorkers(assignmentToShiftReport, days, productionLine,
@@ -183,7 +194,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                     rowNum++;
                 }
 
-                String productionLineValue = null;
+                String productionLineValue;
 
                 if (productionLine.getStringField(ProductionLineFields.PLACE) == null) {
                     productionLineValue = productionLine.getStringField(ProductionLineFields.NUMBER);
@@ -192,7 +203,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                             + productionLine.getStringField(ProductionLineFields.PLACE);
                 }
 
-                HSSFRow firstRowInSection = null;
+                HSSFRow firstRowInSection;
 
                 if (sheet.getRow(rowNumFromLastSection) == null) {
                     firstRowInSection = sheet.createRow(rowNumFromLastSection);
@@ -213,7 +224,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                 for (DateTime day : days) {
                     List<Entity> assignmentsToShift = assignmentToShiftXlsHelper.getAssignmentToShift(
                             assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.SHIFT),
-                            assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.FACTORY), day.toDate());
+                            assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.FACTORY), day);
 
                     if (assignmentsToShift == null || assignmentsToShift.isEmpty()) {
                         columnNumber += 3;
@@ -257,7 +268,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
                 for (int i = rowNumFromLastSection; i < rowNum; i++) {
                     assignmentToShiftXlsStyleHelper.addMarginsAndStylesForSeries(sheet, i,
-                            assignmentToShiftXlsHelper.getNumberOfDaysBetweenGivenDates(assignmentToShiftReport));
+                            shiftsService.getNumberOfDaysBetweenGivenDates(dateFrom, dateTo));
 
                 }
             }
@@ -273,7 +284,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
         for (DateTime day : days) {
             List<Entity> assignmentsToShift = assignmentToShiftXlsHelper.getAssignmentToShift(
                     assignmentToShiftReport.getBelongsToField(AssignmentToShiftFields.SHIFT),
-                    assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.FACTORY), day.toDate());
+                    assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.FACTORY), day);
 
             List<Entity> staffs = Lists.newArrayList();
             for (Entity assignmentToShift : assignmentsToShift) {
@@ -298,7 +309,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
         for (DateTime day : days) {
             List<Entity> assignmentsToShift = assignmentToShiftXlsHelper.getAssignmentToShift(
                     assignmentToShiftReport.getBelongsToField(AssignmentToShiftFields.SHIFT),
-                    assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.FACTORY), day.toDate());
+                    assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.FACTORY), day);
 
             List<Entity> staffs = Lists.newArrayList();
             for (Entity assignmentToShift : assignmentsToShift) {
@@ -306,7 +317,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                         dictionaryItem.getStringField(DictionaryItemFields.NAME), null));
             }
 
-            List<String> workers = Lists.newArrayList();
+            List<String> workers;
 
             if (OccupationType.OTHER_CASE.getStringValue()
                     .equals(dictionaryItem.getStringField(DictionaryItemFields.TECHNICAL_CODE))) {
@@ -326,6 +337,8 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
     private int fillColumnWithStaffForOtherTypes(final HSSFSheet sheet, int rowNum, final Entity assignmentToShiftReport,
             final List<DateTime> days, final Entity dictionaryItem) {
         if ((assignmentToShiftReport != null) && (days != null) && (dictionaryItem != null)) {
+            DateTime dateFrom = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_FROM));
+            DateTime dateTo = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_TO));
             int rowNumFromLastSection = rowNum;
 
             int numberOfColumnsForWorkers = getNumberOfRowsForWorkersForOtherTypes(assignmentToShiftReport, days, dictionaryItem);
@@ -337,14 +350,13 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
             String occupationTypeValue = dictionaryItem.getStringField(DictionaryItemFields.NAME);
 
-            HSSFRow firstRowInSection = null;
+            HSSFRow firstRowInSection;
 
             if (sheet.getRow(rowNumFromLastSection) == null) {
                 firstRowInSection = sheet.createRow(rowNumFromLastSection);
                 rowNum++;
             } else {
                 firstRowInSection = sheet.getRow(rowNumFromLastSection);
-
             }
 
             HSSFCell cell = firstRowInSection.createCell(0);
@@ -356,7 +368,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
             for (DateTime day : days) {
                 List<Entity> assignmentsToShift = assignmentToShiftXlsHelper.getAssignmentToShift(
                         assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.SHIFT),
-                        assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.FACTORY), day.toDate());
+                        assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.FACTORY), day);
 
                 if (assignmentsToShift == null || assignmentsToShift.isEmpty()) {
                     columnNumber += 3;
@@ -375,7 +387,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
                     continue;
                 }
 
-                List<String> workers = Lists.newArrayList();
+                List<String> workers;
 
                 if (OccupationType.OTHER_CASE.getStringValue()
                         .equals(dictionaryItem.getStringField(DictionaryItemFields.TECHNICAL_CODE))) {
@@ -401,7 +413,7 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
             for (int i = rowNumFromLastSection; i < rowNum; i++) {
                 assignmentToShiftXlsStyleHelper.addMarginsAndStylesForSeries(sheet, i,
-                        assignmentToShiftXlsHelper.getNumberOfDaysBetweenGivenDates(assignmentToShiftReport));
+                        shiftsService.getNumberOfDaysBetweenGivenDates(dateFrom, dateTo));
             }
         }
 

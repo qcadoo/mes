@@ -23,11 +23,10 @@
  */
 package com.qcadoo.mes.assignmentToShift.hooks;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
+import com.qcadoo.mes.basic.ShiftsService;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,17 +35,15 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.qcadoo.mes.assignmentToShift.print.xls.AssignmentToShiftXlsHelper;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.FieldDefinition;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 
 public class AssignmentToShiftReportHooksTest {
 
     private AssignmentToShiftReportHooks hooks;
 
     @Mock
-    private AssignmentToShiftXlsHelper assignmentToShiftXlsHelper;
+    private ShiftsService shiftsService;
 
     @Mock
     private DataDefinition assignmentToShiftReportDD;
@@ -60,13 +57,13 @@ public class AssignmentToShiftReportHooksTest {
 
         MockitoAnnotations.initMocks(this);
 
-        ReflectionTestUtils.setField(hooks, "assignmentToShiftXlsHelper", assignmentToShiftXlsHelper);
+        ReflectionTestUtils.setField(hooks, "shiftsService", shiftsService);
     }
 
     @Test
     public void shouldReturnFalseWhenCheckIfIsMoreThatFiveDays() {
         // given
-        given(assignmentToShiftXlsHelper.getNumberOfDaysBetweenGivenDates(assignmentToShiftReport)).willReturn(10);
+        given(shiftsService.getNumberOfDaysBetweenGivenDates(Mockito.anyObject(), Mockito.anyObject())).willReturn(10);
 
         // when
         boolean result = hooks.checkIfIsMoreThatFiveDays(assignmentToShiftReportDD, assignmentToShiftReport);
@@ -80,7 +77,7 @@ public class AssignmentToShiftReportHooksTest {
     @Test
     public void shouldReturnTrueWhenCheckIfIsMoreThatFiveDays() {
         // given
-        given(assignmentToShiftXlsHelper.getNumberOfDaysBetweenGivenDates(assignmentToShiftReport)).willReturn(3);
+        given(shiftsService.getNumberOfDaysBetweenGivenDates(Mockito.anyObject(), Mockito.anyObject())).willReturn(3);
 
         // when
         boolean result = hooks.checkIfIsMoreThatFiveDays(assignmentToShiftReportDD, assignmentToShiftReport);

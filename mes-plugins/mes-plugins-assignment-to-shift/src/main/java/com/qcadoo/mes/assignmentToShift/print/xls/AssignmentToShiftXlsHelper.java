@@ -23,27 +23,12 @@
  */
 package com.qcadoo.mes.assignmentToShift.print.xls;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.Days;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftConstants;
-import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields;
-import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields;
-import com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields;
-import com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftState;
+import com.qcadoo.mes.assignmentToShift.constants.*;
 import com.qcadoo.mes.assignmentToShift.states.constants.AssignmentToShiftState;
-import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.StaffFields;
+import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -51,6 +36,15 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class AssignmentToShiftXlsHelper {
@@ -60,64 +54,32 @@ public class AssignmentToShiftXlsHelper {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    @Autowired
-    private ShiftsService shiftsService;
-
-    public List<DateTime> getDaysBetweenGivenDates(final Entity assignmentToShiftReport) {
-        List<DateTime> days = Lists.newLinkedList();
-
-        DateTime dateFrom = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_FROM));
-        DateTime dateTo = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_TO));
-
-        DateTime nextDay = dateFrom;
-
-        int numberOfDays = Days.daysBetween(dateFrom.toDateMidnight(), dateTo.toDateMidnight()).getDays();
-
-        days.add(nextDay);
-
-        int oneDay = 1;
-
-        while (numberOfDays != 0) {
-            nextDay = nextDay.plusDays(oneDay).toDateTime();
-            days.add(nextDay);
-            numberOfDays--;
-        }
-
-        return days;
-    }
-
-    public int getNumberOfDaysBetweenGivenDates(final Entity assignmentToShiftReport) {
-        DateTime dateFrom = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_FROM));
-        DateTime dateTo = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_TO));
-
-        return Days.daysBetween(dateFrom.toDateMidnight(), dateTo.toDateMidnight()).getDays();
-    }
-
     public List<Entity> getAssignmentToShift(final Entity assignmentToShiftReport) {
         return dataDefinitionService
-                .get(AssignmentToShiftConstants.PLUGIN_IDENTIFIER, AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT)
-                .find()
+                .get(AssignmentToShiftConstants.PLUGIN_IDENTIFIER, AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT).find()
                 .add(SearchRestrictions.belongsTo(AssignmentToShiftFields.SHIFT,
                         assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.SHIFT)))
                 .add(SearchRestrictions.belongsTo(AssignmentToShiftFields.FACTORY,
-                        assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.FACTORY))).list().getEntities();
+                        assignmentToShiftReport.getBelongsToField(AssignmentToShiftReportFields.FACTORY)))
+                .list().getEntities();
     }
 
-    public List<Entity> getAssignmentToShift(final Entity shift, final Entity factory, final Date date) {
-        boolean shiftWorks = shiftsService.checkIfShiftWorkAtDate(date, shift);
+    public List<Entity> getAssignmentToShift(final Entity shift, final Entity factory, final DateTime date) {
+        boolean shiftWorks = new Shift(shift).worksAt(date.dayOfWeek().get());
 
         if (shiftWorks) {
             List<Entity> assignmentsToShift = dataDefinitionService
                     .get(AssignmentToShiftConstants.PLUGIN_IDENTIFIER, AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT)
-                    .find()
-                    .add(SearchRestrictions.belongsTo(AssignmentToShiftFields.SHIFT, shift))
+                    .find().add(SearchRestrictions.belongsTo(AssignmentToShiftFields.SHIFT, shift))
                     .add(SearchRestrictions.belongsTo(AssignmentToShiftFields.FACTORY, factory))
-                    .add(SearchRestrictions.or(SearchRestrictions.eq(AssignmentToShiftFields.STATE,
-                            AssignmentToShiftState.ACCEPTED.getStringValue()), SearchRestrictions.eq(
-                            AssignmentToShiftFields.STATE, AssignmentToShiftState.CORRECTED.getStringValue())))
+                    .add(SearchRestrictions.or(
+                            SearchRestrictions.eq(AssignmentToShiftFields.STATE,
+                                    AssignmentToShiftState.ACCEPTED.getStringValue()),
+                            SearchRestrictions.eq(AssignmentToShiftFields.STATE,
+                                    AssignmentToShiftState.CORRECTED.getStringValue())))
                     .add(SearchRestrictions.le(AssignmentToShiftFields.START_DATE, date))
                     .addOrder(SearchOrders.desc(AssignmentToShiftFields.START_DATE)).list().getEntities();
-            return findCurrentAssignmentsToShift(date, assignmentsToShift);
+            return findCurrentAssignmentsToShift(date.toDate(), assignmentsToShift);
 
         } else {
             return Lists.newArrayList();
@@ -125,14 +87,12 @@ public class AssignmentToShiftXlsHelper {
     }
 
     private List<Entity> findCurrentAssignmentsToShift(final Date date, List<Entity> assignmentsToShift) {
-
         List<Entity> currentAssignments = Lists.newArrayList();
 
         Map<Entity, List<Entity>> assignmentsForCrews = assignmentsToShift.stream()
                 .filter(assignment -> assignment.getBelongsToField(AssignmentToShiftFields.CREW) != null)
                 .collect(Collectors.groupingBy(assignment -> assignment.getBelongsToField(AssignmentToShiftFields.CREW)));
-        assignmentsForCrews.put(
-                null,
+        assignmentsForCrews.put(null,
                 assignmentsToShift.stream()
                         .filter(assignment -> assignment.getBelongsToField(AssignmentToShiftFields.CREW) == null)
                         .collect(Collectors.toList()));
@@ -146,7 +106,6 @@ public class AssignmentToShiftXlsHelper {
     }
 
     private List<Entity> findCurrentAssignmentsToShiftForCrew(final Date date, List<Entity> assignmentsToShiftForCrew) {
-
         List<Entity> currentAssignments = Lists.newArrayList();
         if (assignmentsToShiftForCrew == null) {
             return currentAssignments;
@@ -233,8 +192,8 @@ public class AssignmentToShiftXlsHelper {
             listOfWorkersWithOtherCases.append(" ");
             listOfWorkersWithOtherCases.append(worker.getStringField(StaffFields.SURNAME));
             listOfWorkersWithOtherCases.append(" - ");
-            listOfWorkersWithOtherCases.append(staffAssignmentToShift
-                    .getStringField(StaffAssignmentToShiftFields.OCCUPATION_TYPE_NAME));
+            listOfWorkersWithOtherCases
+                    .append(staffAssignmentToShift.getStringField(StaffAssignmentToShiftFields.OCCUPATION_TYPE_NAME));
 
             if (staffAssignmentToShifts.indexOf(staffAssignmentToShift) != (staffAssignmentToShifts.size() - 1)) {
                 listOfWorkersWithOtherCases.append(", ");
@@ -296,13 +255,11 @@ public class AssignmentToShiftXlsHelper {
         String assignmentState = assignmentToShift.getStringField(AssignmentToShiftFields.STATE);
 
         if (AssignmentToShiftState.CORRECTED.getStringValue().equals(assignmentState)) {
-            staffs = builder
-                    .add(SearchRestrictions.eq(StaffAssignmentToShiftFields.STATE,
-                            StaffAssignmentToShiftState.CORRECTED.getStringValue())).list().getEntities();
+            staffs = builder.add(SearchRestrictions.eq(StaffAssignmentToShiftFields.STATE,
+                    StaffAssignmentToShiftState.CORRECTED.getStringValue())).list().getEntities();
         } else if (!AssignmentToShiftState.DRAFT.getStringValue().equals(assignmentState)) {
-            staffs = builder
-                    .add(SearchRestrictions.eq(StaffAssignmentToShiftFields.STATE,
-                            StaffAssignmentToShiftState.ACCEPTED.getStringValue())).list().getEntities();
+            staffs = builder.add(SearchRestrictions.eq(StaffAssignmentToShiftFields.STATE,
+                    StaffAssignmentToShiftState.ACCEPTED.getStringValue())).list().getEntities();
         }
 
         return staffs;

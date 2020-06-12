@@ -23,28 +23,29 @@
  */
 package com.qcadoo.mes.assignmentToShift.hooks;
 
-import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.DATE_FROM;
-import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.DATE_TO;
-import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.FILE_NAME;
-import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.GENERATED;
-
-import java.util.Date;
-
+import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields;
+import com.qcadoo.mes.basic.ShiftsService;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.assignmentToShift.print.xls.AssignmentToShiftXlsHelper;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
+import java.util.Date;
+
+import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields.*;
 
 @Service
 public class AssignmentToShiftReportHooks {
 
     @Autowired
-    private AssignmentToShiftXlsHelper assignmentToShiftXlsHelper;
+    private ShiftsService shiftsService;
 
-    public boolean checkIfIsMoreThatFiveDays(final DataDefinition assignmentToShiftReportDD, final Entity assignmentToShiftReport) {
-        int days = assignmentToShiftXlsHelper.getNumberOfDaysBetweenGivenDates(assignmentToShiftReport);
+    public boolean checkIfIsMoreThatFiveDays(final DataDefinition assignmentToShiftReportDD,
+            final Entity assignmentToShiftReport) {
+        DateTime dateFrom = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_FROM));
+        DateTime dateTo = new DateTime(assignmentToShiftReport.getDateField(AssignmentToShiftReportFields.DATE_TO));
+        int days = shiftsService.getNumberOfDaysBetweenGivenDates(dateFrom, dateTo);
 
         if (days > 5) {
             assignmentToShiftReport.addError(assignmentToShiftReportDD.getField(DATE_FROM),
@@ -62,15 +63,16 @@ public class AssignmentToShiftReportHooks {
         assignmentToShiftReport.setField(GENERATED, false);
         assignmentToShiftReport.setField(FILE_NAME, null);
     }
-    
+
     public final boolean validateDates(final DataDefinition dataDefinition, final Entity assignmentToShiftReport) {
         Date dateFrom = (Date) assignmentToShiftReport.getField(DATE_FROM);
         Date dateTo = (Date) assignmentToShiftReport.getField(DATE_TO);
         if (dateFrom != null && dateTo != null && dateTo.before(dateFrom)) {
-        	assignmentToShiftReport.addError(dataDefinition.getField(DATE_TO), "assignmentToShift.assignmentToShift.report.badDatesOrder");
+            assignmentToShiftReport.addError(dataDefinition.getField(DATE_TO),
+                    "assignmentToShift.assignmentToShift.report.badDatesOrder");
             return false;
         } else {
-			return true;
-		}
-    }    
+            return true;
+        }
+    }
 }

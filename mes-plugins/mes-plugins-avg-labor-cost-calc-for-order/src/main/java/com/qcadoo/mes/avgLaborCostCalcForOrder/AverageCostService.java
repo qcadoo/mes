@@ -23,26 +23,6 @@
  */
 package com.qcadoo.mes.avgLaborCostCalcForOrder;
 
-import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields.SHIFT;
-import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields.START_DATE;
-import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.WORKER;
-import static com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderFields.AVERAGE_LABOR_HOURLY_COST;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.joda.time.DateTime;
-import org.joda.time.Days;
-import org.joda.time.Period;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftConstants;
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields;
@@ -54,13 +34,26 @@ import com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrde
 import com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderFields;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.ShiftsServiceImpl.ShiftHour;
-import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.joda.time.DateTime;
+import org.joda.time.Period;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.Map.Entry;
+
+import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields.SHIFT;
+import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields.START_DATE;
+import static com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields.WORKER;
+import static com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderFields.AVERAGE_LABOR_HOURLY_COST;
 
 @Service
 public class AverageCostService {
@@ -77,9 +70,7 @@ public class AverageCostService {
     public Entity generateAssignmentWorkerToShiftAndAverageCost(final Entity entity, final Date start, final Date finish,
             final Entity productionLine) {
         Entity avgLaborCostCalcForOrder = entity.getDataDefinition().get(entity.getId());
-        List<DateTime> days = getDaysBetweenGivenDates(start, finish);
-        List<Entity> shifts = getAllShifts();
-        Map<Entity, BigDecimal> workersWithHoursWorked = generateMapWorkersWithHoursWorked(days, shifts, productionLine);
+        Map<Entity, BigDecimal> workersWithHoursWorked = generateMapWorkersWithHoursWorked(start, finish, productionLine);
         BigDecimal averageCost = countAverageCost(workersWithHoursWorked);
         if (averageCost == null) {
             avgLaborCostCalcForOrder.addError(entity.getDataDefinition().getField(AVERAGE_LABOR_HOURLY_COST),
@@ -96,22 +87,24 @@ public class AverageCostService {
         return avgLaborCostCalcForOrder;
     }
 
-    private Map<Entity, BigDecimal> generateMapWorkersWithHoursWorked(final List<DateTime> days, final List<Entity> shifts,
+    private Map<Entity, BigDecimal> generateMapWorkersWithHoursWorked(final Date start, final Date finish,
             final Entity productionLine) {
-        Map<Entity, BigDecimal> workersWithHours = new HashMap<Entity, BigDecimal>();
+        Map<Entity, BigDecimal> workersWithHours = new HashMap<>();
+        List<Shift> shifts = shiftsService.findAll();
+        List<DateTime> days = shiftsService.getDaysBetweenGivenDates(new DateTime(start), new DateTime(finish));
         for (DateTime day : days) {
-            for (Entity shift : shifts) {
-                Entity assignmentToShift = getAssignmentToShift(shift, day.toDate());
+            for (Shift shift : shifts) {
+                Entity assignmentToShift = getAssignmentToShift(shift, day);
                 if (assignmentToShift == null) {
                     continue;
                 }
                 List<Entity> staffs = getStaffAssignmentToShiftDependOnAssignmentToShiftState(assignmentToShift, productionLine);
                 for (Entity staff : staffs) {
                     if (workersWithHours.containsKey(staff)) {
-                        BigDecimal countHours = workersWithHours.get(staff).add(getWorkedHoursOfWorker(shift, day));
+                        BigDecimal countHours = workersWithHours.get(staff).add(getWorkedHoursOfWorker(shift.getEntity(), day));
                         workersWithHours.put(staff, countHours);
                     } else {
-                        workersWithHours.put(staff, getWorkedHoursOfWorker(shift, day));
+                        workersWithHours.put(staff, getWorkedHoursOfWorker(shift.getEntity(), day));
                     }
                 }
             }
@@ -147,13 +140,14 @@ public class AverageCostService {
         return hours;
     }
 
-    private Entity getAssignmentToShift(final Entity shift, final Date date) {
-        boolean shiftWorks = shiftsService.checkIfShiftWorkAtDate(date, shift);
+    private Entity getAssignmentToShift(final Shift shift, final DateTime date) {
+        boolean shiftWorks = shift.worksAt(date.dayOfWeek().get());
         if (shiftWorks) {
             return dataDefinitionService
                     .get(AssignmentToShiftConstants.PLUGIN_IDENTIFIER, AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT)
-                    .find().add(SearchRestrictions.belongsTo(SHIFT, shift)).add(SearchRestrictions.le(START_DATE, date))
-                    .addOrder(SearchOrders.desc(START_DATE)).setMaxResults(1).uniqueResult();
+                    .find().add(SearchRestrictions.belongsTo(SHIFT, shift.getEntity()))
+                    .add(SearchRestrictions.le(START_DATE, date.toDate())).addOrder(SearchOrders.desc(START_DATE))
+                    .setMaxResults(1).uniqueResult();
         } else {
             return null;
         }
@@ -188,40 +182,17 @@ public class AverageCostService {
                     AvgLaborCostCalcForOrderConstants.MODEL_ASSIGNMENT_WORKER_TO_SHIFT).create();
             if (workers.containsKey(workerId)) {
                 assignmentWorkerToShift = workers.get(workerId);
-                BigDecimal countHours = assignmentWorkerToShift.getDecimalField(AssignmentWorkerToShiftFields.WORKED_HOURS).add(
-                        workerWithHours.getValue());
+                BigDecimal countHours = assignmentWorkerToShift.getDecimalField(AssignmentWorkerToShiftFields.WORKED_HOURS)
+                        .add(workerWithHours.getValue());
                 assignmentWorkerToShift.setField(AssignmentWorkerToShiftFields.WORKED_HOURS, countHours);
             } else {
-                assignmentWorkerToShift.setField(AssignmentWorkerToShiftFields.ASSIGNMENT_TO_SHIFT, workerWithHours.getKey()
-                        .getBelongsToField("assignmentToShift"));
+                assignmentWorkerToShift.setField(AssignmentWorkerToShiftFields.ASSIGNMENT_TO_SHIFT,
+                        workerWithHours.getKey().getBelongsToField("assignmentToShift"));
                 assignmentWorkerToShift.setField(AssignmentWorkerToShiftFields.WORKER, worker);
                 assignmentWorkerToShift.setField(AssignmentWorkerToShiftFields.WORKED_HOURS, workerWithHours.getValue());
             }
             workers.put(worker.getId(), assignmentWorkerToShift);
         }
         return Lists.newArrayList(workers.values());
-    }
-
-    private List<DateTime> getDaysBetweenGivenDates(final Date start, final Date finish) {
-        List<DateTime> days = new LinkedList<DateTime>();
-        DateTime startDate = new DateTime(start);
-        DateTime finishDate = new DateTime(finish);
-
-        DateTime nextDay = startDate;
-        int numberOfDays = Days.daysBetween(startDate.toDateMidnight(), finishDate.toDateMidnight()).getDays();
-        days.add(nextDay);
-
-        int oneDay = 1;
-        while (numberOfDays != 0) {
-            nextDay = nextDay.plusDays(oneDay).toDateTime();
-            days.add(nextDay);
-            numberOfDays--;
-        }
-        return days;
-    }
-
-    private List<Entity> getAllShifts() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SHIFT).find().list()
-                .getEntities();
     }
 }

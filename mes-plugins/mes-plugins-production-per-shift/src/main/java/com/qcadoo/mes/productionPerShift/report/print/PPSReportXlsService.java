@@ -26,6 +26,7 @@ package com.qcadoo.mes.productionPerShift.report.print;
 import com.google.common.collect.Maps;
 import com.qcadoo.commons.dateTime.TimeRange;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.ShiftFields;
 import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.mes.lineChangeoverNorms.constants.LineChangeoverNormsFields;
@@ -41,16 +42,6 @@ import com.qcadoo.mes.productionPerShift.report.print.utils.EntityProductionPerS
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.xls.XlsDocumentService;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFPrintSetup;
@@ -65,6 +56,10 @@ import org.joda.time.Seconds;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class PPSReportXlsService extends XlsDocumentService {
@@ -87,6 +82,9 @@ public class PPSReportXlsService extends XlsDocumentService {
 
     @Autowired
     private PPSReportColumnHelper ppsReportColumnHelper;
+
+    @Autowired
+    private ShiftsService shiftsService;
 
     @Override
     public String getReportTitle(final Locale locale) {
@@ -168,8 +166,10 @@ public class PPSReportXlsService extends XlsDocumentService {
     private void createHeaderLineForDaysWithShifts(final HSSFSheet sheet, final Locale locale, final HSSFRow headerMainLine,
             final HSSFRow headerProductionLine, final Entity report, final PPSReportXlsStyleContainer styleContainer,
             final List<ReportColumn> columns) {
-        List<Entity> shifts = ppsReportXlsHelper.getShifts();
-        List<DateTime> days = ppsReportXlsHelper.getDaysBetweenGivenDates(report);
+        List<Entity> shifts = shiftsService.getShifts();
+        DateTime dateFrom = new DateTime(report.getDateField(PPSReportFields.DATE_FROM));
+        DateTime dateTo = new DateTime(report.getDateField(PPSReportFields.DATE_TO));
+        List<DateTime> days = shiftsService.getDaysBetweenGivenDates(dateFrom, dateTo);
 
         int columnNumber = columns.size();
 
@@ -242,7 +242,7 @@ public class PPSReportXlsService extends XlsDocumentService {
     private void addSeriesOfProductionLine(final HSSFSheet sheet, final Entity report,
             final PPSReportXlsStyleContainer styleContainer, final List<ReportColumn> columns) {
         List<Entity> productionPerShifts = ppsReportXlsHelper.getProductionPerShiftForReport(report);
-        List<Entity> shifts = ppsReportXlsHelper.getShifts();
+        List<Entity> shifts = shiftsService.getShifts();
 
         DateTime dateFrom = new DateTime(report.getDateField(PPSReportFields.DATE_FROM));
 
@@ -259,7 +259,7 @@ public class PPSReportXlsService extends XlsDocumentService {
             return;
         }
 
-        Collections.sort(productionPerShifts, new EntityProductionPerShiftsComparator());
+        productionPerShifts.sort(new EntityProductionPerShiftsComparator());
 
         String oldProductionLineNumber = "";
         String newProductionLineNumber;
@@ -354,8 +354,10 @@ public class PPSReportXlsService extends XlsDocumentService {
     private void addSeriesOfDailyProgress(final HSSFSheet sheet, final Entity entity, final HSSFRow row,
             final Entity productionPerShift, final boolean rowNumberIsEven, PPSReportXlsStyleContainer styleContainer,
             final List<ReportColumn> columns) {
-        List<Entity> shifts = ppsReportXlsHelper.getShifts();
-        List<DateTime> days = ppsReportXlsHelper.getDaysBetweenGivenDates(entity);
+        List<Entity> shifts = shiftsService.getShifts();
+        DateTime dateFrom = new DateTime(entity.getDateField(PPSReportFields.DATE_FROM));
+        DateTime dateTo = new DateTime(entity.getDateField(PPSReportFields.DATE_TO));
+        List<DateTime> days = shiftsService.getDaysBetweenGivenDates(dateFrom, dateTo);
 
         int columnNumber = columns.size();
 
@@ -389,8 +391,10 @@ public class PPSReportXlsService extends XlsDocumentService {
             final Entity order, final PPSReportXlsStyleContainer styleContainer, final List<ReportColumn> columns) {
         Map<Integer, DayShiftHolder> mapCells = Maps.newHashMap();
 
-        List<Entity> shifts = ppsReportXlsHelper.getShifts();
-        List<DateTime> days = ppsReportXlsHelper.getDaysBetweenGivenDates(entity);
+        List<Entity> shifts = shiftsService.getShifts();
+        DateTime dateFrom = new DateTime(entity.getDateField(PPSReportFields.DATE_FROM));
+        DateTime dateTo = new DateTime(entity.getDateField(PPSReportFields.DATE_TO));
+        List<DateTime> days = shiftsService.getDaysBetweenGivenDates(dateFrom, dateTo);
 
         Date startDateOrder = order.getDateField(OrderFields.START_DATE);
 
