@@ -30,8 +30,11 @@ import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductInComponentFieldsPFTD;
+import com.qcadoo.mes.productFlowThruDivision.constants.ParameterFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductionFlowComponent;
 import com.qcadoo.mes.productFlowThruDivision.constants.Range;
 import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
@@ -54,12 +57,31 @@ public class TechnologyHooksPFTD {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
+    @Autowired
+    private ParameterService parameterService;
+
     public void onCreate(final DataDefinition technologyDD, final Entity technology) {
-        if (Objects.isNull(technology.getField(TechnologyFieldsPFTD.RANGE))) {
-            technology.setField(TechnologyFieldsPFTD.RANGE, Range.MANY_DIVISIONS.getStringValue());
+        fillRangeAndDivision(technologyDD, technology);
+        fillProductionFlow(technologyDD, technology);
+    }
+
+    private void fillRangeAndDivision(final DataDefinition technologyDD, final Entity technology) {
+        String range = technology.getStringField(TechnologyFieldsPFTD.RANGE);
+        Entity division = technology.getBelongsToField(TechnologyFieldsPFTD.DIVISION);
+
+        if (StringUtils.isEmpty(range)) {
+            range = parameterService.getParameter().getStringField(ParameterFieldsPFTD.RANGE);
+
+            if (StringUtils.isEmpty(range)) {
+                range = Range.MANY_DIVISIONS.getStringValue();
+            }
+        }
+        if (Objects.isNull(division)) {
+            division = parameterService.getParameter().getBelongsToField(ParameterFieldsPFTD.DIVISION);
         }
 
-        fillProductionFlow(technologyDD, technology);
+        technology.setField(TechnologyFieldsPFTD.RANGE, range);
+        technology.setField(TechnologyFieldsPFTD.DIVISION, division);
     }
 
     public void fillProductionFlow(final DataDefinition technologyDD, final Entity technology) {

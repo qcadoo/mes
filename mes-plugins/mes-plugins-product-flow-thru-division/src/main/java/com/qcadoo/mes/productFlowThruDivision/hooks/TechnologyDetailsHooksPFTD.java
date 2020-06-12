@@ -31,7 +31,6 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
@@ -170,24 +169,17 @@ public class TechnologyDetailsHooksPFTD {
 
         Long technologyId = technologyForm.getEntityId();
 
-        String range = (String) rangeField.getFieldValue();
-        Entity division = divisionLookup.getEntity();
+        if (Objects.isNull(technologyId) && view.isViewAfterRedirect()) {
+            String range = parameterService.getParameter().getStringField(ParameterFieldsPFTD.RANGE);
+            Entity division = parameterService.getParameter().getBelongsToField(ParameterFieldsPFTD.DIVISION);
 
-        if (Objects.isNull(technologyId)) {
-            if (StringUtils.isEmpty(range)) {
-                range = parameterService.getParameter().getStringField(ParameterFieldsPFTD.RANGE);
+            rangeField.setFieldValue(range);
+
+            if (Objects.nonNull(division)) {
+                divisionLookup.setFieldValue(division.getId());
+            } else {
+                divisionLookup.setFieldValue(null);
             }
-            if (Objects.isNull(division)) {
-                division = parameterService.getParameter().getBelongsToField(ParameterFieldsPFTD.DIVISION);
-            }
-        }
-
-        rangeField.setFieldValue(range);
-
-        if (Objects.nonNull(division)) {
-            divisionLookup.setFieldValue(division.getId());
-        } else {
-            divisionLookup.setFieldValue(null);
         }
 
         rangeField.requestComponentUpdateState();

@@ -144,7 +144,7 @@
 
         <model:model-field plugin="technologies" model="technology">
             <model:enum name="range" values="01oneDivision,02manyDivisions"
-                        default="01oneDivision"/>
+                        default="02manyDivisions"/>
         </model:model-field>
 
         <model:model-field plugin="technologies" model="technology">
