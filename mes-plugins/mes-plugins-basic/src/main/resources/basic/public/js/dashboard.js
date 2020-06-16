@@ -10,15 +10,24 @@ new Chart('chart', {
                 'forestgreen'
             ]
         }],
-        labels: ['Oczekujące', 'Realizowane', 'Gotowe']
+        labels: [
+            QCD.translate('basic.dashboard.dailyProductionChart.pending.label'),
+            QCD.translate('basic.dashboard.dailyProductionChart.inProgress.label'),
+            QCD.translate('basic.dashboard.dailyProductionChart.done.label')
+        ]
     },
     options: {
         title: {
             display: true,
-            text: 'Dzienna produkcja'
+            text: QCD.translate('basic.dashboard.dailyProductionChart.header'),
+            fontSize: 16,
+            fontColor: 'white'
         },
         legend: {
-            position: 'bottom'
+            position: 'bottom',
+            labels: {
+                fontColor: 'white'
+            }
         }
     }
 });
