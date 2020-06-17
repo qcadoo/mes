@@ -23,6 +23,15 @@
  */
 package com.qcadoo.mes.basic;
 
+import java.io.Serializable;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import org.joda.time.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.commons.dateTime.TimeRange;
@@ -40,14 +49,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.joda.time.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.io.Serializable;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class ShiftsServiceImpl implements ShiftsService {
@@ -372,26 +373,16 @@ public class ShiftsServiceImpl implements ShiftsService {
 
         long totalAvailableTime = 0;
 
-        DateTime dateFromDT = new DateTime(dateFrom, DateTimeZone.getDefault());
-        DateTime dateToDT = new DateTime(dateTo, DateTimeZone.getDefault());
-
         List<Shift> shifts = findAll(productionLine);
         DateTime dateOfDay = new DateTime(dateFrom);
-        dateOfDay = dateOfDay.minusDays(1);
-        dateOfDay = dateOfDay.toLocalDate().toDateTimeAtStartOfDay();
         int loopCount = 0;
-        while (!dateOfDay.isAfter(dateToDT)) {
+        while (!dateOfDay.isAfter(new DateTime(dateTo))) {
             if (loopCount > MAX_LOOPS) {
                 return (dateTo.getTime() - dateFrom.getTime()) / 1000;
             }
             for (Shift shift : shifts) {
                 for (DateTimeRange range : shiftExceptionService.getShiftWorkDateTimes(productionLine, shift, dateOfDay, false)) {
-                    if (dateFrom.after(dateOfDay.toDate())) {
-                        range = range.trimBefore(dateFromDT);
-                    }
-                    if (range != null) {
-                        totalAvailableTime += range.durationMillis();
-                    }
+                    totalAvailableTime += range.durationMillis();
                 }
             }
             loopCount++;

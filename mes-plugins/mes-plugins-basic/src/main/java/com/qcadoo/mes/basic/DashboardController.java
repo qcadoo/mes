@@ -23,9 +23,8 @@
  */
 package com.qcadoo.mes.basic;
 
-import java.util.Locale;
-import java.util.Map;
-
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.security.api.SecurityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -34,8 +33,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.security.api.SecurityService;
+import java.util.Locale;
+import java.util.Map;
 
 @Controller
 public final class DashboardController {
@@ -52,8 +51,6 @@ public final class DashboardController {
     @RequestMapping(value = "dashboard", method = RequestMethod.GET)
     public ModelAndView getDashboardView(@RequestParam final Map<String, String> arguments, final Locale locale) {
         ModelAndView mav = new ModelAndView();
-
-        mav.addObject("userLogin", securityService.getCurrentUserName());
 
         mav.addObject("translationsMap", translationService.getMessagesGroup("dashboard", locale));
 
