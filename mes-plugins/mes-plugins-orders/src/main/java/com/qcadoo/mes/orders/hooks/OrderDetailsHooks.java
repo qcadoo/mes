@@ -328,6 +328,13 @@ public class OrderDetailsHooks {
         Long orderId = orderForm.getEntityId();
 
         if (orderId == null) {
+            List<String> references = Lists.newArrayList(OrderFields.CORRECTED_DATE_FROM, OrderFields.CORRECTED_DATE_TO,
+                    OrderFields.REASON_TYPES_CORRECTION_DATE_FROM, OrderFields.REASON_TYPES_CORRECTION_DATE_TO,
+                    OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END, OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START,
+                    L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END, L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START,
+                    OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO, OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_FROM,
+                    OrderFields.EFFECTIVE_DATE_FROM, OrderFields.EFFECTIVE_DATE_TO);
+            changedEnabledFields(view, references, false);
             return;
         }
 

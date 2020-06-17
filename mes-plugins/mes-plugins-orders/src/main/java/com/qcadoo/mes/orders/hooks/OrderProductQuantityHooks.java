@@ -33,13 +33,19 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static com.qcadoo.mes.orders.constants.OrderFields.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import static com.qcadoo.mes.orders.constants.OrderFields.COMMENT_REASON_TYPE_DEVIATIONS_QUANTITY;
+import static com.qcadoo.mes.orders.constants.OrderFields.COMMISSIONED_CORRECTED_QUANTITY;
+import static com.qcadoo.mes.orders.constants.OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT;
+import static com.qcadoo.mes.orders.constants.OrderFields.PLANNED_QUANTITY;
+import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCT;
+import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
+import static com.qcadoo.mes.orders.constants.OrderFields.TYPE_OF_CORRECTION_CAUSES;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.BLOCK_ABILITY_TO_CHANGE_APPROVAL_ORDER;
 
 @Service
@@ -56,6 +62,9 @@ public class OrderProductQuantityHooks {
     public void changeFieldsEnabledForSpecificOrderState(final ViewDefinitionState view) {
         final FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (form.getEntityId() == null) {
+            List<String> references = Arrays.asList(COMMISSIONED_CORRECTED_QUANTITY, TYPE_OF_CORRECTION_CAUSES,
+                    COMMENT_REASON_TYPE_DEVIATIONS_QUANTITY);
+            changedEnabledFields(view, references, false);
             return;
         }
         final Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
