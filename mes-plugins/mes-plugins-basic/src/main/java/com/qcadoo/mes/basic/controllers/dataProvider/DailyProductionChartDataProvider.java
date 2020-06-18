@@ -19,7 +19,7 @@ public class DailyProductionChartDataProvider {
         String query = "SELECT sum(o.plannedquantity) FROM orders_order o WHERE o.state not in ('05declined', '07abandoned') "
                 + "AND o.startdate <= current_date AND current_date <= o.finishdate ";
 
-        data.add(jdbcTemplate.queryForObject(query + "AND o.donequantity = 0", Collections.emptyMap(), Long.class));
+        data.add(jdbcTemplate.queryForObject(query + "AND coalesce(o.donequantity, 0) = 0", Collections.emptyMap(), Long.class));
         data.add(jdbcTemplate.queryForObject(
                 query + "AND o.donequantity * 100 / o.plannedquantity > 0 AND o.donequantity * 100 / o.plannedquantity < 100",
                 Collections.emptyMap(), Long.class));
