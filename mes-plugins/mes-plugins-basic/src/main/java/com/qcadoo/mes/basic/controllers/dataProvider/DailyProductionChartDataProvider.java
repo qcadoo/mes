@@ -16,7 +16,7 @@ public class DailyProductionChartDataProvider {
 
     public List<Long> getData() {
         List<Long> data = Lists.newArrayList();
-        String query = "SELECT count(*) FROM orders_order o WHERE o.state not in ('05declined', '07abandoned') "
+        String query = "SELECT sum(o.plannedquantity) FROM orders_order o WHERE o.state not in ('05declined', '07abandoned') "
                 + "AND o.startdate <= current_date AND current_date <= o.finishdate ";
 
         data.add(jdbcTemplate.queryForObject(query + "AND o.donequantity = 0", Collections.emptyMap(), Long.class));
