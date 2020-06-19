@@ -14,7 +14,7 @@ public class DailyProductionChartDataProvider {
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
-    private static final String queryDatePart = "AND date_trunc('day', o.startdate) <= current_date + interval '1000 day' AND current_date + interval '1000 day' <= date_trunc('day', o.finishdate) ";
+    private static final String queryDatePart = "AND date_trunc('day', o.startdate) <= current_date AND current_date <= date_trunc('day', o.finishdate) ";
 
     public List<Long> getData() {
         List<Long> data = Lists.newArrayList();
