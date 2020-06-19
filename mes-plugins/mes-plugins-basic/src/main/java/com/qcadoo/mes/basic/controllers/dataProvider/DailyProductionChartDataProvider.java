@@ -14,17 +14,17 @@ public class DailyProductionChartDataProvider {
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
-    private static final String queryDatePart = "AND date_trunc('day', o.startdate) <= current_date AND current_date <= date_trunc('day', o.finishdate) ";
+    private static final String queryDatePart = "AND date_trunc('day', o.startdate) <= current_date + interval '1000 day' AND current_date + interval '1000 day' <= date_trunc('day', o.finishdate) ";
 
     public List<Long> getData() {
         List<Long> data = Lists.newArrayList();
-        String pendingQuery = "SELECT sum(o.plannedquantity) FROM orders_order o "
+        String pendingQuery = "SELECT coalesce(sum(o.plannedquantity), 0) FROM orders_order o "
                 + "WHERE o.state not in ('05declined', '07abandoned', '04completed') " + queryDatePart
                 + "AND coalesce(o.donequantity, 0) = 0";
-        String inProgressQuery = "SELECT sum(o.plannedquantity) FROM orders_order o "
+        String inProgressQuery = "SELECT coalesce(sum(o.plannedquantity), 0) FROM orders_order o "
                 + "WHERE o.state not in ('05declined', '07abandoned','04completed') " + queryDatePart
                 + "AND o.donequantity * 100 / o.plannedquantity > 0 AND o.donequantity * 100 / o.plannedquantity < 100";
-        String doneQuery = "SELECT sum(coalesce(o.donequantity, 0)) FROM orders_order o "
+        String doneQuery = "SELECT coalesce(sum(o.donequantity), 0) FROM orders_order o "
                 + "WHERE o.state not in ('05declined', '07abandoned') " + queryDatePart
                 + "AND (o.donequantity * 100 / o.plannedquantity >= 100 OR o.state = '04completed')";
 
