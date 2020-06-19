@@ -31,12 +31,12 @@
 String ctx = request.getContextPath();
 %>
 
-<script src="/deliveries/public/js/jquery.form.js"></script>
-<script src="/deliveries/public/js/jquery.ui.widget.js"></script>
-<script src="/deliveries/public/js/jquery.iframe-transport.js"></script>
-<script src="/deliveries/public/js/jquery.fileupload.js"></script>
+<script src="/basic/public/js/jquery.form.js"></script>
+<script src="/basic/public/js/jquery.ui.widget.js"></script>
+<script src="/basic/public/js/jquery.iframe-transport.js"></script>
+<script src="/basic/public/js/jquery.fileupload.js"></script>
 <script src="/deliveries/public/js/multiuploadfunctions.js"></script>
-<script src="/deliveries/public/js/bootstrap.min.js"></script>
+<script src="/basic/public/js/bootstrap.min.js"></script>
 
 <link href="/basic/public/css/dropzone.css" type="text/css" rel="stylesheet" />
 
