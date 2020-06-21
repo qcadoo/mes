@@ -142,7 +142,7 @@
 			method="showProductionCounting" />
 			
 		<view:view-listener plugin="orders" view="ordersParameters" 
-			component="blockAbilityToChangeApprovalOrder" event="onChange" 
+			component="allowQuantityChangeInAcceptedOrder" event="onChange"
 			class="com.qcadoo.mes.basicProductionCounting.listeners.OrderParametersListenersBPC" 
 			method="onChangeLockOrderPlannedQuantity"/>
 

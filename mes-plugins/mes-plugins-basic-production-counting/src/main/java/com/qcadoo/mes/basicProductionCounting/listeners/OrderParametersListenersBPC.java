@@ -23,15 +23,15 @@
  */
 package com.qcadoo.mes.basicProductionCounting.listeners;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basicProductionCounting.constants.ParameterFieldsBPC;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderParametersListenersBPC {
@@ -41,27 +41,27 @@ public class OrderParametersListenersBPC {
     public void onChangeLockProductionProgress(final ViewDefinitionState viewState, final ComponentState componentState,
             final String[] args) {
         CheckBoxComponent lockProductionProgressCheckBox = (CheckBoxComponent) componentState;
-        CheckBoxComponent lockOrderPlannedQuantityCheckBox = (CheckBoxComponent) viewState
-                .getComponentByReference(ParameterFieldsO.BLOCK_ABILITY_TO_CHANGE_APPROVAL_ORDER);
+        CheckBoxComponent allowQuantityChangeInAcceptedOrderCheckBox = (CheckBoxComponent) viewState
+                .getComponentByReference(ParameterFieldsO.ALLOW_QUANTITY_CHANGE_IN_ACCEPTED_ORDER);
 
-        if (lockOrderPlannedQuantityCheckBox == null) {
+        if (allowQuantityChangeInAcceptedOrderCheckBox == null) {
             if (LOG.isErrorEnabled()) {
                 LOG.error(String.format("orderParameters view: can't find component with reference='%s'",
-                        ParameterFieldsO.BLOCK_ABILITY_TO_CHANGE_APPROVAL_ORDER));
+                        ParameterFieldsO.ALLOW_QUANTITY_CHANGE_IN_ACCEPTED_ORDER));
             }
             return;
         }
-        if (lockOrderPlannedQuantityCheckBox.isEnabled() && lockProductionProgressCheckBox.isChecked()) {
-            lockOrderPlannedQuantityCheckBox.setChecked(true);
+        if (!allowQuantityChangeInAcceptedOrderCheckBox.isEnabled() && lockProductionProgressCheckBox.isChecked()) {
+            allowQuantityChangeInAcceptedOrderCheckBox.setChecked(false);
         }
     }
 
     public void onChangeLockOrderPlannedQuantity(final ViewDefinitionState viewState, final ComponentState componentState,
             final String[] args) {
-        CheckBoxComponent lockOrderPlannedQuantityCheckBox = (CheckBoxComponent) componentState;
+        CheckBoxComponent allowQuantityChangeInAcceptedOrderCheckBox = (CheckBoxComponent) componentState;
         CheckBoxComponent lockProgressCheckBox = (CheckBoxComponent) viewState
                 .getComponentByReference(ParameterFieldsBPC.LOCK_PRODUCTION_PROGRESS);
-        if (!lockOrderPlannedQuantityCheckBox.isChecked()) {
+        if (allowQuantityChangeInAcceptedOrderCheckBox.isChecked()) {
             lockProgressCheckBox.setChecked(false);
         }
     }
