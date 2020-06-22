@@ -43,7 +43,9 @@ public class DashboardButtonHooks {
 
     private boolean checkDashboardButtonsTotalNumberOfEntities(final DataDefinition dashboardButtonDD,
             final Entity dashboardButton) {
-        if (getDashboardButtonsTotalNumberOfEntities(dashboardButtonDD) >= L_MAX_NUMBER_OF_BUTTONS) {
+        boolean active = dashboardButton.getBooleanField(DashboardButtonFields.ACTIVE);
+
+        if (active && getDashboardButtonsTotalNumberOfEntities(dashboardButtonDD) >= L_MAX_NUMBER_OF_BUTTONS) {
             dashboardButton.addGlobalError("basic.dashboardButton.error.totalNumberOfEntities",
                     String.valueOf(L_MAX_NUMBER_OF_BUTTONS));
 

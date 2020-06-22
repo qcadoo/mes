@@ -44,13 +44,13 @@
                     <layoutElement column="1" row="1">
                         <component type="checkbox" name="showChartOnDashboard" field="showChartOnDashboard"
                                    reference="showChartOnDashboard" hasDescription="true">
-                            <option type="labelWidth" value="40"/>
+                            <option type="labelWidth" value="60"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
                         <component type="select" name="whatToShowOnDashboard" field="whatToShowOnDashboard"
                                    reference="whatToShowOnDashboard" hasDescription="true">
-                            <option type="labelWidth" value="40" />
+                            <option type="labelWidth" value="60" />
 
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.view.api.listeners.RerenderListener"
@@ -75,7 +75,7 @@
                                         <option type="expression" value="#number + ' - ' + #name"/>
                                         <option type="fieldCode" value="number"/>
 
-                                        <option type="labelWidth" value="40"/>
+                                        <option type="labelWidth" value="60"/>
                                     </component>
                                 </layoutElement>
                                 <layoutElement column="1" row="2">
@@ -89,7 +89,7 @@
                                         <option type="expression" value="#number + ' - ' + #name"/>
                                         <option type="fieldCode" value="number"/>
 
-                                        <option type="labelWidth" value="40"/>
+                                        <option type="labelWidth" value="60"/>
                                     </component>
                                 </layoutElement>
                                 <layoutElement column="1" row="3">
@@ -103,7 +103,7 @@
                                         <option type="expression" value="#number + ' - ' + #name"/>
                                         <option type="fieldCode" value="number"/>
 
-                                        <option type="labelWidth" value="40"/>
+                                        <option type="labelWidth" value="60"/>
                                     </component>
                                 </layoutElement>
                             </component>
@@ -112,13 +112,14 @@
                     <layoutElement column="2" row="1" width="2" minHeight="4">
                         <component type="grid" name="dashboardButtons" source="dashboardButtons"
                                    reference="dashboardButtons">
-                            <option type="column" name="identifier" fields="identifier" expression="'@' + #identifier" link="true" width="80"/>
-                            <option type="column" name="active" fields="active" link="true" width="20"/>
+                            <option type="column" name="succession" fields="succession" link="true" width="5"/>
+                            <option type="column" name="identifier" fields="identifier" expression="'@' + #identifier" link="true" width="85"/>
+                            <option type="column" name="active" fields="active" link="true" width="10"/>
 
-                            <option type="order" column="succession" direction="desc"/>
+                            <option type="order" column="succession" direction="asc"/>
 
-                            <option type="searchable" value="active"/>
-                            <option type="orderable" value="active"/>
+                            <option type="searchable" value="succession,active"/>
+                            <option type="orderable" value="succession,active"/>
 
                             <option type="correspondingView" value="materialFlow/dashboardButtonDetails" />
                             <option type="correspondingViewInModal" value="true" />
