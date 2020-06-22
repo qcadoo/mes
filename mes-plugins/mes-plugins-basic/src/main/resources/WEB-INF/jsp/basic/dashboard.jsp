@@ -44,6 +44,7 @@
 </script>
 
 <html>
+
 <head>
 	<c:choose>
 		<c:when test="${useCompressedStaticResources}">
@@ -52,7 +53,6 @@
 		<c:otherwise>
 			<link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/core/dashboard.css?ver=${buildNumber}" type="text/css" />
 			<link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/core/menu/style.css?ver=${buildNumber}" type="text/css" />
-			
 		</c:otherwise>
 	</c:choose>
 	<link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/ChartJS/Chart.min.css?ver=${buildNumber}" type="text/css" />
@@ -60,6 +60,7 @@
 	<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/core/lib/moment-with-locales.js?ver=${buildNumber}"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/ChartJS/Chart.min.js?ver=${buildNumber}"></script>
 </head>
+
 <body>
 	<div id="windowContainer">
 		<div id="windowContainerContentBody">
@@ -71,15 +72,19 @@
 						</div>
 					</div>
 				</div>
-				<div id="chartElement" class="chart-container">
-					<canvas id="chart"></canvas>
-				</div>
+				<c:choose>
+                    <c:when test="${showChartOnDashboard}">
+                        <div id="chartElement" class="chart-container">
+                            <canvas id="chart"></canvas>
+                        </div>
+                    </c:when>
+                </c:choose>
 				<div id="buttonsElement">
 				</div>
 			</div>
-
 		</div>
 	</div>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/basic/public/js/dashboard.js?ver=${buildNumber}"></script>
 </body>
+
 </html>

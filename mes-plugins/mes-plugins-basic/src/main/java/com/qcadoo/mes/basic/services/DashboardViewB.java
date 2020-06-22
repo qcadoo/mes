@@ -21,29 +21,41 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic.controllers;
+package com.qcadoo.mes.basic.services;
 
 import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.qcadoo.mes.basic.services.DashboardView;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.security.api.SecurityService;
 
-@Controller
-public class DashboardController {
+@Service
+public class DashboardViewB implements DashboardView {
 
     @Autowired
-    private DashboardView dashboardView;
+    private TranslationService translationService;
 
-    @RequestMapping(value = "dashboard", method = RequestMethod.GET)
-    public ModelAndView getDashboardView(@RequestParam final Map<String, String> arguments, final Locale locale) {
-        return dashboardView.getModelAndView(arguments, locale);
+    @Autowired
+    private SecurityService securityService;
+
+    @Value("${useCompressedStaticResources}")
+    private boolean useCompressedStaticResources;
+
+    public ModelAndView getModelAndView(final Map<String, String> arguments, final Locale locale) {
+        ModelAndView mav = new ModelAndView();
+
+        mav.setViewName("basic/dashboard");
+
+        mav.addObject("translationsMap", translationService.getMessagesGroup("dashboard", locale));
+        mav.addObject("useCompressedStaticResources", useCompressedStaticResources);
+
+        return mav;
     }
 
 }

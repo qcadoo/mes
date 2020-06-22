@@ -21,29 +21,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic.controllers;
+package com.qcadoo.mes.basic.services;
 
 import java.util.Locale;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.qcadoo.mes.basic.services.DashboardView;
+public interface DashboardView {
 
-@Controller
-public class DashboardController {
-
-    @Autowired
-    private DashboardView dashboardView;
-
-    @RequestMapping(value = "dashboard", method = RequestMethod.GET)
-    public ModelAndView getDashboardView(@RequestParam final Map<String, String> arguments, final Locale locale) {
-        return dashboardView.getModelAndView(arguments, locale);
-    }
+    ModelAndView getModelAndView(final Map<String, String> arguments, final Locale locale);
 
 }
