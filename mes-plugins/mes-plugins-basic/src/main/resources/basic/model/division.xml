@@ -36,9 +36,7 @@
         </string>
         <belongsTo name="supervisor" model="staff"/>
         <belongsTo name="factory" model="factory"/>
-        <!-- <manyToMany name="workstationTypes" model="workstationType"
-            joinField="divisions" /> -->
-        <hasMany name="workstations" model="workstation" joinField="division" cascade="nullify"/>
+        <hasMany name="workstations" model="workstation" joinField="division"/>
 
         <string name="comment">
             <validatesLength max="2048"/>

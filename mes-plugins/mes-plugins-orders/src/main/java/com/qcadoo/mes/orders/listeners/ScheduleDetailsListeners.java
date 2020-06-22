@@ -6,10 +6,12 @@ import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.StaffSkillsFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
+import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
 import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.orders.constants.*;
 import com.qcadoo.mes.orders.states.ScheduleServiceMarker;
 import com.qcadoo.mes.productionLines.constants.WorkstationFieldsPL;
+import com.qcadoo.mes.technologies.constants.AssignedToOperation;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationSkillFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
@@ -67,8 +69,21 @@ public class ScheduleDetailsListeners {
             if (ordersToAvoid.contains(position.getBelongsToField(SchedulePositionFields.ORDER).getId())) {
                 continue;
             }
-            List<Entity> workstations = position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT)
-                    .getManyToManyField(TechnologyOperationComponentFields.WORKSTATIONS);
+            Entity technologyOperationComponent = position
+                    .getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT);
+            List<Entity> workstations;
+            if (AssignedToOperation.WORKSTATIONS.getStringValue().equals(
+                    technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ASSIGNED_TO_OPERATION))) {
+                workstations = technologyOperationComponent.getManyToManyField(TechnologyOperationComponentFields.WORKSTATIONS);
+            } else {
+                Entity workstationType = technologyOperationComponent
+                        .getBelongsToField(TechnologyOperationComponentFields.WORKSTATION_TYPE);
+                if (workstationType == null) {
+                    workstations = Collections.emptyList();
+                } else {
+                    workstations = workstationType.getHasManyField(WorkstationTypeFields.WORKSTATIONS);
+                }
+            }
             if (workstations.isEmpty() || position.getIntegerField(SchedulePositionFields.MACHINE_WORK_TIME) == 0) {
                 ordersToAvoid.add(position.getBelongsToField(SchedulePositionFields.ORDER).getId());
                 continue;
