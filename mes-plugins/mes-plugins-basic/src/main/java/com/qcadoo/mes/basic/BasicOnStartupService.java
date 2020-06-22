@@ -27,6 +27,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qcadoo.mes.basic.loaders.AddressTypeLoader;
+import com.qcadoo.mes.basic.loaders.ColorLoader;
+import com.qcadoo.mes.basic.loaders.CountryLoader;
+import com.qcadoo.mes.basic.loaders.CurrencyLoader;
+import com.qcadoo.mes.basic.loaders.DefaultFaultTypesLoader;
+import com.qcadoo.mes.basic.loaders.ReportColumnWidthLoader;
+import com.qcadoo.mes.basic.loaders.TypeOfPalletLoader;
 import com.qcadoo.plugin.api.Module;
 
 @Component

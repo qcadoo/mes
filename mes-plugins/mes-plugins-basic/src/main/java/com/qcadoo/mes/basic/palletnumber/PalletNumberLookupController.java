@@ -4,7 +4,7 @@ package com.qcadoo.mes.basic.palletnumber;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.qcadoo.mes.basic.BasicLookupController;
+import com.qcadoo.mes.basic.controllers.BasicLookupController;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.PalletNumberDTO;
 import java.util.Arrays;
 import java.util.List;

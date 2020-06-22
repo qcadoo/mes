@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic;
+package com.qcadoo.mes.basic.loaders;
 
 import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
 import static com.qcadoo.model.api.search.SearchRestrictions.eq;

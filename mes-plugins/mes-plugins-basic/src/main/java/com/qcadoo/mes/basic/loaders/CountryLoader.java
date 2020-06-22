@@ -21,11 +21,10 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic;
+package com.qcadoo.mes.basic.loaders;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -42,16 +41,16 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.CurrencyFields;
+import com.qcadoo.mes.basic.constants.CountryFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.tenant.api.DefaultLocaleResolver;
 
 @Component
-public class CurrencyLoader {
+public class CountryLoader {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CurrencyLoader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CountryLoader.class);
 
     @Autowired
     private DefaultLocaleResolver defaultLocaleResolver;
@@ -59,10 +58,10 @@ public class CurrencyLoader {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void loadCurrencies() {
+    public void loadCountries() {
         if (databaseHasToBePrepared()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Currency table will be populated ...");
+                LOG.debug("Country table will be populated ...");
             }
 
             readDataFromXML();
@@ -70,19 +69,19 @@ public class CurrencyLoader {
     }
 
     private void readDataFromXML() {
-        LOG.info("Loading data from currency.xml" + "_" + defaultLocaleResolver.getDefaultLocale().getLanguage() + ".xml ...");
+        LOG.info("Loading data from country" + "_" + defaultLocaleResolver.getDefaultLocale().getLanguage() + ".xml ...");
 
         try {
             SAXBuilder builder = new SAXBuilder();
 
-            Document document = builder.build(getCurrencyXmlFile());
+            Document document = builder.build(getContryXmlFile());
             Element rootNode = document.getRootElement();
 
             @SuppressWarnings("unchecked")
             List<Element> nodes = rootNode.getChildren("row");
 
             for (Element node : nodes) {
-                parseAndAddCurrency(node);
+                parseAndAddCountry(node);
             }
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
@@ -91,7 +90,7 @@ public class CurrencyLoader {
         }
     }
 
-    private void parseAndAddCurrency(final Element node) {
+    private void parseAndAddCountry(final Element node) {
         @SuppressWarnings("unchecked")
         List<Attribute> attributes = node.getAttributes();
 
@@ -101,44 +100,40 @@ public class CurrencyLoader {
             values.put(attribute.getName().toLowerCase(Locale.ENGLISH), attribute.getValue());
         }
 
-        addCurrency(values);
+        addCountry(values);
     }
 
-    private void addCurrency(final Map<String, String> values) {
-        DataDefinition currencyDD = getCurrencyDD();
+    private void addCountry(final Map<String, String> values) {
+        DataDefinition conutryDD = getCountryDD();
 
-        Entity currency = currencyDD.create();
+        Entity country = conutryDD.create();
 
-        currency.setField(CurrencyFields.CURRENCY, values.get(CurrencyFields.CURRENCY.toLowerCase(Locale.ENGLISH)));
-        currency.setField(CurrencyFields.ALPHABETIC_CODE, values.get(CurrencyFields.ALPHABETIC_CODE.toLowerCase(Locale.ENGLISH)));
-        currency.setField(CurrencyFields.ISO_CODE,
-                Integer.valueOf(values.get(CurrencyFields.ISO_CODE.toLowerCase(Locale.ENGLISH))));
-        currency.setField(CurrencyFields.MINOR_UNIT,
-                Integer.valueOf(values.get(CurrencyFields.MINOR_UNIT.toLowerCase(Locale.ENGLISH))));
-        currency.setField(CurrencyFields.EXCHANGE_RATE, BigDecimal.ONE);
+        country.setField(CountryFields.COUNTRY, values.get(CountryFields.COUNTRY.toLowerCase(Locale.ENGLISH)));
+        country.setField(CountryFields.CODE, values.get(CountryFields.CODE.toLowerCase(Locale.ENGLISH)));
 
-        currency = currencyDD.save(currency);
+        country = conutryDD.save(country);
 
-        if (currency.isValid()) {
+        if (country.isValid()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Currency saved {currency : " + currency.toString() + "}");
+                LOG.debug("Country saved {country : " + country.toString() + "}");
             }
         } else {
-            throw new IllegalStateException("Saved currency entity have validation errors - "
-                    + values.get(CurrencyFields.CURRENCY.toLowerCase(Locale.ENGLISH)));
+            throw new IllegalStateException("Saved country entity have validation errors - "
+                    + values.get(CountryFields.COUNTRY.toLowerCase(Locale.ENGLISH)));
         }
     }
 
     private boolean databaseHasToBePrepared() {
-        return getCurrencyDD().find().list().getTotalNumberOfEntities() == 0;
+        return getCountryDD().find().list().getTotalNumberOfEntities() == 0;
     }
 
-    private DataDefinition getCurrencyDD() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY);
+    private DataDefinition getCountryDD() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COUNTRY);
     }
 
-    private InputStream getCurrencyXmlFile() throws IOException {
-        return CurrencyLoader.class.getResourceAsStream("/basic/model/data/currency.xml");
+    private InputStream getContryXmlFile() throws IOException {
+        return CountryLoader.class.getResourceAsStream("/basic/model/data/country" + "_"
+                + defaultLocaleResolver.getDefaultLocale().getLanguage() + ".xml");
     }
 
 }

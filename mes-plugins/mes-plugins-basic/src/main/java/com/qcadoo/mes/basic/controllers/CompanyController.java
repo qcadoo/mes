@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic;
+package com.qcadoo.mes.basic.controllers;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.common.collect.ImmutableMap;
+import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.view.api.crud.CrudService;
 

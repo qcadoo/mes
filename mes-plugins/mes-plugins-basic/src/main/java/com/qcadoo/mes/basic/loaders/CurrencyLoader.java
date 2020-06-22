@@ -21,10 +21,11 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic;
+package com.qcadoo.mes.basic.loaders;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -41,45 +42,47 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.ReportColumnWidthFields;
+import com.qcadoo.mes.basic.constants.CurrencyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.tenant.api.DefaultLocaleResolver;
 
 @Component
-public class ReportColumnWidthLoader {
+public class CurrencyLoader {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ReportColumnWidthLoader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(CurrencyLoader.class);
+
+    @Autowired
+    private DefaultLocaleResolver defaultLocaleResolver;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    @Autowired
-    private ParameterService parameterService;
-
-    public void loadReportColumnWidths() {
+    public void loadCurrencies() {
         if (databaseHasToBePrepared()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Report column width table will be populated ...");
+                LOG.debug("Currency table will be populated ...");
             }
+
             readDataFromXML();
         }
     }
 
     private void readDataFromXML() {
-        LOG.info("Loading data from reportColumnWidth.xml ...");
+        LOG.info("Loading data from currency.xml" + "_" + defaultLocaleResolver.getDefaultLocale().getLanguage() + ".xml ...");
 
         try {
             SAXBuilder builder = new SAXBuilder();
 
-            Document document = builder.build(getReportColumnWidthXmlFile());
+            Document document = builder.build(getCurrencyXmlFile());
             Element rootNode = document.getRootElement();
 
             @SuppressWarnings("unchecked")
             List<Element> nodes = rootNode.getChildren("row");
 
             for (Element node : nodes) {
-                parseAndAddReportColumnWidth(node);
+                parseAndAddCurrency(node);
             }
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
@@ -88,7 +91,7 @@ public class ReportColumnWidthLoader {
         }
     }
 
-    private void parseAndAddReportColumnWidth(final Element node) {
+    private void parseAndAddCurrency(final Element node) {
         @SuppressWarnings("unchecked")
         List<Attribute> attributes = node.getAttributes();
 
@@ -98,44 +101,44 @@ public class ReportColumnWidthLoader {
             values.put(attribute.getName().toLowerCase(Locale.ENGLISH), attribute.getValue());
         }
 
-        addReportColumnWidth(values);
+        addCurrency(values);
     }
 
-    private void addReportColumnWidth(final Map<String, String> values) {
-        DataDefinition reportColumnWidthDD = getReportColumnWidthDD();
+    private void addCurrency(final Map<String, String> values) {
+        DataDefinition currencyDD = getCurrencyDD();
 
-        Entity reportColumnWidth = reportColumnWidthDD.create();
+        Entity currency = currencyDD.create();
 
-        reportColumnWidth.setField(ReportColumnWidthFields.IDENTIFIER,
-                values.get(ReportColumnWidthFields.IDENTIFIER.toLowerCase(Locale.ENGLISH)));
-        reportColumnWidth.setField(ReportColumnWidthFields.NAME,
-                values.get(ReportColumnWidthFields.NAME.toLowerCase(Locale.ENGLISH)));
-        reportColumnWidth.setField(ReportColumnWidthFields.CHAR_TYPE,
-                values.get(ReportColumnWidthFields.CHAR_TYPE.toLowerCase(Locale.ENGLISH)));
-        reportColumnWidth.setField(ReportColumnWidthFields.PARAMETER, parameterService.getParameter());
+        currency.setField(CurrencyFields.CURRENCY, values.get(CurrencyFields.CURRENCY.toLowerCase(Locale.ENGLISH)));
+        currency.setField(CurrencyFields.ALPHABETIC_CODE, values.get(CurrencyFields.ALPHABETIC_CODE.toLowerCase(Locale.ENGLISH)));
+        currency.setField(CurrencyFields.ISO_CODE,
+                Integer.valueOf(values.get(CurrencyFields.ISO_CODE.toLowerCase(Locale.ENGLISH))));
+        currency.setField(CurrencyFields.MINOR_UNIT,
+                Integer.valueOf(values.get(CurrencyFields.MINOR_UNIT.toLowerCase(Locale.ENGLISH))));
+        currency.setField(CurrencyFields.EXCHANGE_RATE, BigDecimal.ONE);
 
-        reportColumnWidth = reportColumnWidthDD.save(reportColumnWidth);
+        currency = currencyDD.save(currency);
 
-        if (reportColumnWidth.isValid()) {
+        if (currency.isValid()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Report column width saved {reportColumnWidth : " + reportColumnWidth.toString() + "}");
+                LOG.debug("Currency saved {currency : " + currency.toString() + "}");
             }
         } else {
-            throw new IllegalStateException("Saved report column width entity have validation errors - "
-                    + values.get(ReportColumnWidthFields.IDENTIFIER.toLowerCase(Locale.ENGLISH)));
+            throw new IllegalStateException("Saved currency entity have validation errors - "
+                    + values.get(CurrencyFields.CURRENCY.toLowerCase(Locale.ENGLISH)));
         }
     }
 
     private boolean databaseHasToBePrepared() {
-        return getReportColumnWidthDD().find().list().getTotalNumberOfEntities() == 0;
+        return getCurrencyDD().find().list().getTotalNumberOfEntities() == 0;
     }
 
-    private DataDefinition getReportColumnWidthDD() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_REPORT_COLUMN_WIDTH);
+    private DataDefinition getCurrencyDD() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY);
     }
 
-    private InputStream getReportColumnWidthXmlFile() throws IOException {
-        return ReportColumnWidthLoader.class.getResourceAsStream("/basic/model/data/reportColumnWidth.xml");
+    private InputStream getCurrencyXmlFile() throws IOException {
+        return CurrencyLoader.class.getResourceAsStream("/basic/model/data/currency.xml");
     }
 
 }

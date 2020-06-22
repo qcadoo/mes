@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic;
+package com.qcadoo.mes.basic.loaders;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,16 +41,16 @@ import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.CountryFields;
+import com.qcadoo.mes.basic.constants.FaultTypeFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.tenant.api.DefaultLocaleResolver;
 
 @Component
-public class CountryLoader {
+public class DefaultFaultTypesLoader {
 
-    private static final Logger LOG = LoggerFactory.getLogger(CountryLoader.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultFaultTypesLoader.class);
 
     @Autowired
     private DefaultLocaleResolver defaultLocaleResolver;
@@ -58,10 +58,10 @@ public class CountryLoader {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void loadCountries() {
+    public void loadDefaultFaultTypes() {
         if (databaseHasToBePrepared()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Country table will be populated ...");
+                LOG.debug("Fault types table will be populated ...");
             }
 
             readDataFromXML();
@@ -69,19 +69,20 @@ public class CountryLoader {
     }
 
     private void readDataFromXML() {
-        LOG.info("Loading data from country" + "_" + defaultLocaleResolver.getDefaultLocale().getLanguage() + ".xml ...");
+        LOG.info("Loading data from defaultFaultTypes" + "_" + defaultLocaleResolver.getDefaultLocale().getLanguage()
+                + ".xml ...");
 
         try {
             SAXBuilder builder = new SAXBuilder();
 
-            Document document = builder.build(getContryXmlFile());
+            Document document = builder.build(getDefaultFaultTypesXmlFile());
             Element rootNode = document.getRootElement();
 
             @SuppressWarnings("unchecked")
             List<Element> nodes = rootNode.getChildren("row");
 
             for (Element node : nodes) {
-                parseAndAddCountry(node);
+                parseAndAddFaultType(node);
             }
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
@@ -90,7 +91,7 @@ public class CountryLoader {
         }
     }
 
-    private void parseAndAddCountry(final Element node) {
+    private void parseAndAddFaultType(final Element node) {
         @SuppressWarnings("unchecked")
         List<Attribute> attributes = node.getAttributes();
 
@@ -100,39 +101,40 @@ public class CountryLoader {
             values.put(attribute.getName().toLowerCase(Locale.ENGLISH), attribute.getValue());
         }
 
-        addCountry(values);
+        addFaultType(values);
     }
 
-    private void addCountry(final Map<String, String> values) {
-        DataDefinition conutryDD = getCountryDD();
+    private void addFaultType(final Map<String, String> values) {
+        DataDefinition faultTypeDD = getFaultTypeDD();
 
-        Entity country = conutryDD.create();
+        Entity faultType = faultTypeDD.create();
 
-        country.setField(CountryFields.COUNTRY, values.get(CountryFields.COUNTRY.toLowerCase(Locale.ENGLISH)));
-        country.setField(CountryFields.CODE, values.get(CountryFields.CODE.toLowerCase(Locale.ENGLISH)));
+        faultType.setField(FaultTypeFields.NAME, values.get(FaultTypeFields.NAME.toLowerCase(Locale.ENGLISH)));
+        faultType.setField(FaultTypeFields.APPLIES_TO, values.get(FaultTypeFields.APPLIES_TO.toLowerCase(Locale.ENGLISH)));
+        faultType.setField(FaultTypeFields.IS_DEFAULT, values.get(FaultTypeFields.IS_DEFAULT.toLowerCase(Locale.ENGLISH)));
 
-        country = conutryDD.save(country);
+        faultType = faultTypeDD.save(faultType);
 
-        if (country.isValid()) {
+        if (faultType.isValid()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Country saved {country : " + country.toString() + "}");
+                LOG.debug("Fault type saved {faultType : " + faultType.toString() + "}");
             }
         } else {
-            throw new IllegalStateException("Saved country entity have validation errors - "
-                    + values.get(CountryFields.COUNTRY.toLowerCase(Locale.ENGLISH)));
+            throw new IllegalStateException("Saved fault type entity have validation errors - "
+                    + values.get(FaultTypeFields.NAME.toLowerCase(Locale.ENGLISH)));
         }
     }
 
     private boolean databaseHasToBePrepared() {
-        return getCountryDD().find().list().getTotalNumberOfEntities() == 0;
+        return getFaultTypeDD().find().list().getTotalNumberOfEntities() == 0;
     }
 
-    private DataDefinition getCountryDD() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_COUNTRY);
+    private DataDefinition getFaultTypeDD() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_FAULT_TYPE);
     }
 
-    private InputStream getContryXmlFile() throws IOException {
-        return CountryLoader.class.getResourceAsStream("/basic/model/data/country" + "_"
+    private InputStream getDefaultFaultTypesXmlFile() throws IOException {
+        return DefaultFaultTypesLoader.class.getResourceAsStream("/basic/model/data/defaultFaultTypes" + "_"
                 + defaultLocaleResolver.getDefaultLocale().getLanguage() + ".xml");
     }
 

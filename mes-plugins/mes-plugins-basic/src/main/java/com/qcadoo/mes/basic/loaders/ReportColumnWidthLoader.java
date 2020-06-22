@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic;
+package com.qcadoo.mes.basic.loaders;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -40,49 +40,47 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.FaultTypeFields;
+import com.qcadoo.mes.basic.constants.ReportColumnWidthFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.tenant.api.DefaultLocaleResolver;
 
 @Component
-public class DefaultFaultTypesLoader {
+public class ReportColumnWidthLoader {
 
-    private static final Logger LOG = LoggerFactory.getLogger(DefaultFaultTypesLoader.class);
-
-    @Autowired
-    private DefaultLocaleResolver defaultLocaleResolver;
+    private static final Logger LOG = LoggerFactory.getLogger(ReportColumnWidthLoader.class);
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void loadDefaultFaultTypes() {
+    @Autowired
+    private ParameterService parameterService;
+
+    public void loadReportColumnWidths() {
         if (databaseHasToBePrepared()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Fault types table will be populated ...");
+                LOG.debug("Report column width table will be populated ...");
             }
-
             readDataFromXML();
         }
     }
 
     private void readDataFromXML() {
-        LOG.info("Loading data from defaultFaultTypes" + "_" + defaultLocaleResolver.getDefaultLocale().getLanguage()
-                + ".xml ...");
+        LOG.info("Loading data from reportColumnWidth.xml ...");
 
         try {
             SAXBuilder builder = new SAXBuilder();
 
-            Document document = builder.build(getDefaultFaultTypesXmlFile());
+            Document document = builder.build(getReportColumnWidthXmlFile());
             Element rootNode = document.getRootElement();
 
             @SuppressWarnings("unchecked")
             List<Element> nodes = rootNode.getChildren("row");
 
             for (Element node : nodes) {
-                parseAndAddFaultType(node);
+                parseAndAddReportColumnWidth(node);
             }
         } catch (IOException e) {
             LOG.error(e.getMessage(), e);
@@ -91,7 +89,7 @@ public class DefaultFaultTypesLoader {
         }
     }
 
-    private void parseAndAddFaultType(final Element node) {
+    private void parseAndAddReportColumnWidth(final Element node) {
         @SuppressWarnings("unchecked")
         List<Attribute> attributes = node.getAttributes();
 
@@ -101,41 +99,44 @@ public class DefaultFaultTypesLoader {
             values.put(attribute.getName().toLowerCase(Locale.ENGLISH), attribute.getValue());
         }
 
-        addFaultType(values);
+        addReportColumnWidth(values);
     }
 
-    private void addFaultType(final Map<String, String> values) {
-        DataDefinition faultTypeDD = getFaultTypeDD();
+    private void addReportColumnWidth(final Map<String, String> values) {
+        DataDefinition reportColumnWidthDD = getReportColumnWidthDD();
 
-        Entity faultType = faultTypeDD.create();
+        Entity reportColumnWidth = reportColumnWidthDD.create();
 
-        faultType.setField(FaultTypeFields.NAME, values.get(FaultTypeFields.NAME.toLowerCase(Locale.ENGLISH)));
-        faultType.setField(FaultTypeFields.APPLIES_TO, values.get(FaultTypeFields.APPLIES_TO.toLowerCase(Locale.ENGLISH)));
-        faultType.setField(FaultTypeFields.IS_DEFAULT, values.get(FaultTypeFields.IS_DEFAULT.toLowerCase(Locale.ENGLISH)));
+        reportColumnWidth.setField(ReportColumnWidthFields.IDENTIFIER,
+                values.get(ReportColumnWidthFields.IDENTIFIER.toLowerCase(Locale.ENGLISH)));
+        reportColumnWidth.setField(ReportColumnWidthFields.NAME,
+                values.get(ReportColumnWidthFields.NAME.toLowerCase(Locale.ENGLISH)));
+        reportColumnWidth.setField(ReportColumnWidthFields.CHAR_TYPE,
+                values.get(ReportColumnWidthFields.CHAR_TYPE.toLowerCase(Locale.ENGLISH)));
+        reportColumnWidth.setField(ReportColumnWidthFields.PARAMETER, parameterService.getParameter());
 
-        faultType = faultTypeDD.save(faultType);
+        reportColumnWidth = reportColumnWidthDD.save(reportColumnWidth);
 
-        if (faultType.isValid()) {
+        if (reportColumnWidth.isValid()) {
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Fault type saved {faultType : " + faultType.toString() + "}");
+                LOG.debug("Report column width saved {reportColumnWidth : " + reportColumnWidth.toString() + "}");
             }
         } else {
-            throw new IllegalStateException("Saved fault type entity have validation errors - "
-                    + values.get(FaultTypeFields.NAME.toLowerCase(Locale.ENGLISH)));
+            throw new IllegalStateException("Saved report column width entity have validation errors - "
+                    + values.get(ReportColumnWidthFields.IDENTIFIER.toLowerCase(Locale.ENGLISH)));
         }
     }
 
     private boolean databaseHasToBePrepared() {
-        return getFaultTypeDD().find().list().getTotalNumberOfEntities() == 0;
+        return getReportColumnWidthDD().find().list().getTotalNumberOfEntities() == 0;
     }
 
-    private DataDefinition getFaultTypeDD() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_FAULT_TYPE);
+    private DataDefinition getReportColumnWidthDD() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_REPORT_COLUMN_WIDTH);
     }
 
-    private InputStream getDefaultFaultTypesXmlFile() throws IOException {
-        return DefaultFaultTypesLoader.class.getResourceAsStream("/basic/model/data/defaultFaultTypes" + "_"
-                + defaultLocaleResolver.getDefaultLocale().getLanguage() + ".xml");
+    private InputStream getReportColumnWidthXmlFile() throws IOException {
+        return ReportColumnWidthLoader.class.getResourceAsStream("/basic/model/data/reportColumnWidth.xml");
     }
 
 }

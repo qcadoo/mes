@@ -1,6 +1,6 @@
 package com.qcadoo.mes.basic.additionalcode;
 
-import com.qcadoo.mes.basic.BasicLookupController;
+import com.qcadoo.mes.basic.controllers.BasicLookupController;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.AdditionalCodeDTO;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
