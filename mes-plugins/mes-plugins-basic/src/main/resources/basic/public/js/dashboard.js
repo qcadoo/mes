@@ -55,3 +55,26 @@ if ($('#chartElement').length) {
         }
     });
 }
+
+if ($('#buttonsElement').length) {
+    function goToMenuPosition(position) {
+        if (window.parent.goToMenuPosition) {
+            window.parent.goToMenuPosition(position);
+        } else {
+            window.location = "/main.html"
+        }
+    }
+
+    $(document).ready(function() {
+        $(".card").each( function( index, element ){
+            $(this).fadeIn((index + 1) * 250);
+        });
+        $(".card").hover(
+            function() {
+                $(this).addClass('shadow').removeClass('bg-warning').addClass('bg-secondary');
+            }, function() {
+                $(this).removeClass('shadow').addClass('bg-warning').removeClass('bg-secondary');
+            }
+        );
+    });
+}

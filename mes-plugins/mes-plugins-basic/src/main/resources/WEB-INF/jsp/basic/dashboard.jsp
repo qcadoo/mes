@@ -46,6 +46,10 @@
 <html>
 
 <head>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/ChartJS/Chart.min.css?ver=${buildNumber}" type="text/css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/core/lib/bootstrap.min.css?ver=${buildNumber}" type="text/css" />
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/core/lib/bootstrap-glyphicons.css?ver=${buildNumber}" type="text/css" />
+
 	<c:choose>
 		<c:when test="${useCompressedStaticResources}">
 			<link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/qcadoo-min.css?ver=${buildNumber}" type="text/css" />
@@ -55,10 +59,12 @@
 			<link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/core/menu/style.css?ver=${buildNumber}" type="text/css" />
 		</c:otherwise>
 	</c:choose>
-	<link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/ChartJS/Chart.min.css?ver=${buildNumber}" type="text/css" />
-	<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/core/lib/_jquery-1.4.2.min.js?ver=${buildNumber}"></script>
+
+    <script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/core/lib/jquery-3.2.1.min.js?ver=${buildNumber}"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/core/lib/moment-with-locales.js?ver=${buildNumber}"></script>
-	<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/ChartJS/Chart.min.js?ver=${buildNumber}"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/ChartJS/Chart.min.js?ver=${buildNumber}"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/core/lib/popper.min.js?ver=${buildNumber}"></script>
+	<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/core/lib/bootstrap.min.js?ver=${buildNumber}"></script>
 </head>
 
 <body>
@@ -72,15 +78,38 @@
 						</div>
 					</div>
 				</div>
-				<c:choose>
-                    <c:when test="${showChartOnDashboard}">
-                        <div id="chartElement" class="chart-container">
-                            <canvas id="chart"></canvas>
+                <c:if test="${showChartOnDashboard}">
+                    <div id="chartElement" class="chart-container">
+                        <canvas id="chart"></canvas>
+                    </div>
+                </c:if>
+                <c:if test="${dashboardButtons.size() > 0}">
+                    <div id="buttonsElement">
+                        <div class="card-columns">
+                            <c:forEach items="${dashboardButtons}" var="dashboardButton">
+                                <c:set var = "identifier" value = "${dashboardButton.getStringField('identifier')}" />
+                                <c:set var = "item" value = "${dashboardButton.getBelongsToField('item')}" />
+                                <c:set var = "icon" value = "${dashboardButton.getStringField('icon')}" />
+
+                                <c:if test="${item != null}">
+                                    <c:set var = "category" value = "${item.getBelongsToField('category')}" />
+
+                                    <c:set var = "categoryName" value = "${category.getStringField('name')}" />
+                                    <c:set var = "itemName" value = "${item.getStringField('name')}" />
+
+                                    <div class="card bg-warning text-white" style="display: none;"
+                                        onclick="goToMenuPosition('${categoryName}.${itemName}')">
+                                        <div class="card-body">
+                                            <img class="img float-left" src="${icon}" alt="${translationsMap[identifier]}"/>
+                                            <span class="glyphicon glyphicon-chevron-right float-right"></span>
+                                            <h5 class="card-title">${translationsMap[identifier]}</h5>
+                                        </div>
+                                    </div>
+                                </c:if>
+                            </c:forEach>
                         </div>
-                    </c:when>
-                </c:choose>
-				<div id="buttonsElement">
-				</div>
+                    </div>
+                </c:if>
 			</div>
 		</div>
 	</div>

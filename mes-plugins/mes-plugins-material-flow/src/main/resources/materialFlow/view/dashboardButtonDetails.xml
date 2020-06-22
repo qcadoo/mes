@@ -57,7 +57,7 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="3">
-                        <component type="file" name="icon" field="icon"
+                        <component type="input" name="icon" field="icon"
                                    reference="icon" defaultEnabled="never"/>
                     </layoutElement>
                     <layoutElement column="1" row="4">

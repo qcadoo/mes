@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.materialFlow;
 
+import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
 
@@ -30,14 +31,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.DashboardButtonFields;
+import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.mes.basic.services.DashboardView;
 import com.qcadoo.mes.materialFlow.constants.ParameterFieldsMF;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
 
 @Service
@@ -65,9 +70,20 @@ public class DashboardViewMF implements DashboardView {
 
         mav.addObject("translationsMap", translationService.getMessagesGroup("dashboard", locale));
         mav.addObject("useCompressedStaticResources", useCompressedStaticResources);
-        mav.addObject("showChartOnDashboard", parameter.getBooleanField(ParameterFieldsMF.SHOW_CHART_ON_DASHBOARD));
+        mav.addObject("showChartOnDashboard", getShowChartOnDashboard(parameter));
+        mav.addObject("dashboardButtons", gerDashboardButtons(parameter));
 
         return mav;
+    }
+
+    private boolean getShowChartOnDashboard(final Entity parameter) {
+        return parameter.getBooleanField(ParameterFieldsMF.SHOW_CHART_ON_DASHBOARD);
+    }
+
+    private LinkedList<Entity> gerDashboardButtons(final Entity parameter) {
+        return Lists.newLinkedList(parameter.getHasManyField(ParameterFields.DASHBOARD_BUTTONS).find()
+                .add(SearchRestrictions.eq(DashboardButtonFields.ACTIVE, true))
+                .addOrder(SearchOrders.asc(DashboardButtonFields.SUCCESSION)).list().getEntities());
     }
 
 }
