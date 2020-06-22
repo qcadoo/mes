@@ -21,26 +21,25 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.materialFlow.constants;
+package com.qcadoo.mes.materialFlow.listeners;
 
-public final class LocationFields {
+import java.util.Objects;
 
-    private LocationFields() {
+import org.springframework.stereotype.Component;
 
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+
+@Component
+public class ParametersListenersMF {
+
+    public void redirectToDashboardParameters(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        Long parameterId = (Long) state.getFieldValue();
+
+        if (Objects.nonNull(parameterId)) {
+            String url = "../page/materialFlow/dashboardParameters.html?context={\"form.id\":\"" + parameterId + "\"}";
+            view.redirectTo(url, false, true);
+        }
     }
-
-    public static final String NUMBER = "number";
-
-    public static final String NAME = "name";
-
-    public static final String TYPE = "type";
-
-    public static final String MATERIALS_IN_LOCATIONS = "materialsInLocations";
-
-    public static final String EXTERNAL_NUMBER = "externalNumber";
-
-    public static final String DASHBOARD_COMPONENTS_LOCATIONS = "dashboardComponentsLocations";
-
-    public static final String DASHBOARD_PRODUCTS_INPUT_LOCATIONS = "dashboardProductsInputLocations";
 
 }

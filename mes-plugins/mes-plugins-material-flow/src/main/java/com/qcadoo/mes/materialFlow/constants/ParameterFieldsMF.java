@@ -23,24 +23,20 @@
  */
 package com.qcadoo.mes.materialFlow.constants;
 
-public final class LocationFields {
+public final class ParameterFieldsMF {
 
-    private LocationFields() {
+    private ParameterFieldsMF() {
 
     }
 
-    public static final String NUMBER = "number";
+    public static final String SHOW_CHART_ON_DASHBOARD = "showChartOnDashboard";
 
-    public static final String NAME = "name";
+    public static final String WHAT_TO_SHOW_ON_DASHBOARD = "whatToShowOnDashboard";
 
-    public static final String TYPE = "type";
+    public static final String DASHBOARD_OPERATION = "dashboardOperation";
 
-    public static final String MATERIALS_IN_LOCATIONS = "materialsInLocations";
+    public static final String DASHBOARD_COMPONENTS_LOCATION = "dashboardComponentsLocation";
 
-    public static final String EXTERNAL_NUMBER = "externalNumber";
-
-    public static final String DASHBOARD_COMPONENTS_LOCATIONS = "dashboardComponentsLocations";
-
-    public static final String DASHBOARD_PRODUCTS_INPUT_LOCATIONS = "dashboardProductsInputLocations";
+    public static final String DASHBOARD_PRODUCTS_INPUT_LOCATION = "dashboardProductsInputLocation";
 
 }

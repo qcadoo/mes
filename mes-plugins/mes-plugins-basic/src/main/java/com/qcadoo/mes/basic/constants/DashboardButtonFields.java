@@ -21,26 +21,24 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.materialFlow.constants;
+package com.qcadoo.mes.basic.constants;
 
-public final class LocationFields {
+public final class DashboardButtonFields {
 
-    private LocationFields() {
+    private DashboardButtonFields() {
 
     }
 
-    public static final String NUMBER = "number";
+    public static final String PARAMETER = "parameter";
 
-    public static final String NAME = "name";
+    public static final String IDENTIFIER = "identifier";
 
-    public static final String TYPE = "type";
+    public static final String ITEM = "item";
 
-    public static final String MATERIALS_IN_LOCATIONS = "materialsInLocations";
+    public static final String ICON = "icon";
 
-    public static final String EXTERNAL_NUMBER = "externalNumber";
+    public static final String SUCCESSION = "succession";
 
-    public static final String DASHBOARD_COMPONENTS_LOCATIONS = "dashboardComponentsLocations";
-
-    public static final String DASHBOARD_PRODUCTS_INPUT_LOCATIONS = "dashboardProductsInputLocations";
+    public static final String ACTIVE = "active";
 
 }

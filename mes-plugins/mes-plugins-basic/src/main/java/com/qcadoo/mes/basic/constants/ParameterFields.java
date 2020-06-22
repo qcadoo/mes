@@ -45,4 +45,6 @@ public final class ParameterFields {
 
     public static final String EXPORT_TO_CSV_ONLY_VISIBLE_COLUMNS = "exportToCsvOnlyVisibleColumns";
 
+    public static final String DASHBOARD_BUTTONS = "dashboardButtons";
+
 }
