@@ -134,11 +134,14 @@
                                    field="#{form}.adviseStartDateOfTheOrder"
                                    reference="adviseStartDateOfTheOrder" hasDescription="true">
                             <option type="labelWidth" value="40"/>
+                            <listener event="onChange"
+                                      class="com.qcadoo.view.api.listeners.RerenderListener"
+                                      method="onChangeRerender"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="11">
-                        <component type="select" name="orderStartDateBasedOn" field="orderStartDateBasedOn"
-                                   reference="#{form}.orderStartDateBasedOn" hasDescription="true">
+                        <component type="select" name="orderStartDateBasedOn" field="#{form}.orderStartDateBasedOn"
+                                   reference="orderStartDateBasedOn" hasDescription="true">
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="1" height="11">

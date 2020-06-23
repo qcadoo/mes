@@ -32,6 +32,7 @@ import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.GridComponent;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -111,6 +112,15 @@ public class ParametersHooksO {
             realizationLocationsGrid.setEditable(false);
         }
         alwaysOrderItemsWithPersonalizationComponent.requestComponentUpdateState();
+        CheckBoxComponent adviseStartDateOfTheOrder = (CheckBoxComponent) view
+                .getComponentByReference(ParameterFieldsO.ADVISE_START_DATE_OF_THE_ORDER);
+        FieldComponent orderStartDateBasedOn = (FieldComponent) view
+                .getComponentByReference("orderStartDateBasedOn");
+        if(adviseStartDateOfTheOrder.isChecked()) {
+            orderStartDateBasedOn.setEnabled(true);
+        } else {
+            orderStartDateBasedOn.setEnabled(false);
+        }
     }
 
     public void showTimeFields(final ViewDefinitionState view) {

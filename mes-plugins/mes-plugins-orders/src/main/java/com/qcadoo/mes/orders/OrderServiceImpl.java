@@ -37,6 +37,8 @@ import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -47,6 +49,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -318,4 +321,15 @@ public class OrderServiceImpl implements OrderService {
 
     }
 
+
+    @Override
+    public Optional<Entity> findLastOrder(final Entity order) {
+        Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
+        Entity lastOrder = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find()
+                .add(SearchRestrictions.isNotNull(OrderFields.FINISH_DATE))
+                .add(SearchRestrictions.belongsTo(OrderFields.PRODUCTION_LINE, productionLine))
+                .add(SearchRestrictions.ne(OrderFields.STATE, OrderState.ABANDONED.getStringValue()))
+                .addOrder(SearchOrders.desc(OrderFields.FINISH_DATE)).setMaxResults(1).uniqueResult();
+        return Optional.ofNullable(lastOrder);
+    }
 }
