@@ -34,7 +34,7 @@
 
 		<string name="identifier" required="true"/>
 		<belongsTo name="item" plugin="qcadooView" model="item"/>
-		<file name="icon" required="true"/>
+		<string name="icon" required="true"/>
 		<priority name="succession" required="true"/>
 		<boolean name="active" default="false" required="true"/>
 	</fields>
