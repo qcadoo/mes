@@ -78,6 +78,7 @@
 						</div>
 					</div>
 				</div>
+				<div class="clear"></div>
                 <c:if test="${showChartOnDashboard}">
                     <div id="chartElement" class="chart-container">
                         <canvas id="chart"></canvas>
