@@ -69,21 +69,7 @@ public class ScheduleDetailsListeners {
             if (ordersToAvoid.contains(position.getBelongsToField(SchedulePositionFields.ORDER).getId())) {
                 continue;
             }
-            Entity technologyOperationComponent = position
-                    .getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT);
-            List<Entity> workstations;
-            if (AssignedToOperation.WORKSTATIONS.getStringValue().equals(
-                    technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ASSIGNED_TO_OPERATION))) {
-                workstations = technologyOperationComponent.getManyToManyField(TechnologyOperationComponentFields.WORKSTATIONS);
-            } else {
-                Entity workstationType = technologyOperationComponent
-                        .getBelongsToField(TechnologyOperationComponentFields.WORKSTATION_TYPE);
-                if (workstationType == null) {
-                    workstations = Collections.emptyList();
-                } else {
-                    workstations = workstationType.getHasManyField(WorkstationTypeFields.WORKSTATIONS);
-                }
-            }
+            List<Entity> workstations = getWorkstationsFromTOC(position);
             if (workstations.isEmpty() || position.getIntegerField(SchedulePositionFields.MACHINE_WORK_TIME) == 0) {
                 ordersToAvoid.add(position.getBelongsToField(SchedulePositionFields.ORDER).getId());
                 continue;
@@ -112,6 +98,25 @@ public class ScheduleDetailsListeners {
                         operationWorkstationsStartDates.get(firstEntry.getKey()));
             }
         }
+    }
+
+    private List<Entity> getWorkstationsFromTOC(Entity position) {
+        Entity technologyOperationComponent = position
+                .getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT);
+        List<Entity> workstations;
+        if (AssignedToOperation.WORKSTATIONS.getStringValue().equals(
+                technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ASSIGNED_TO_OPERATION))) {
+            workstations = technologyOperationComponent.getManyToManyField(TechnologyOperationComponentFields.WORKSTATIONS);
+        } else {
+            Entity workstationType = technologyOperationComponent
+                    .getBelongsToField(TechnologyOperationComponentFields.WORKSTATION_TYPE);
+            if (workstationType == null) {
+                workstations = Collections.emptyList();
+            } else {
+                workstations = workstationType.getHasManyField(WorkstationTypeFields.WORKSTATIONS);
+            }
+        }
+        return workstations;
     }
 
     private void getWorkstationsNewFinishDate(Map<Long, Date> workstationsFinishDates, Date scheduleStartTime, Entity position,
