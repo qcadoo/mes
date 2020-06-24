@@ -102,10 +102,6 @@ public final class BasicConstants {
 
     // VIEW
 
-    public static final String VIEW_MACHINE_DETAILS = "machineDetails";
-
-    public static final String VIEW_MACHINES_LIST = "machinesList";
-
     public static final String VIEW_PARAMETERS = "parameters";
 
     public static final String VIEW_PRODUCT_DETAILS = "productDetails";
