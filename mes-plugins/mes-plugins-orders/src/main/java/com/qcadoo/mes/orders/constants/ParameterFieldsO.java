@@ -76,4 +76,5 @@ public final class ParameterFieldsO {
     public static final String REALIZATION_LOCATIONS= "realizationLocations";
 
     public static final String ADVISE_START_DATE_OF_THE_ORDER= "adviseStartDateOfTheOrder";
+    public static final String ORDER_START_BASED_ON= "orderStartDateBasedOn";
 }
