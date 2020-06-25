@@ -24,7 +24,11 @@
 package com.qcadoo.mes.assignmentToShift.print.xls;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.assignmentToShift.constants.*;
+import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftConstants;
+import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields;
+import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields;
+import com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftFields;
+import com.qcadoo.mes.assignmentToShift.constants.StaffAssignmentToShiftState;
 import com.qcadoo.mes.assignmentToShift.states.constants.AssignmentToShiftState;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.StaffFields;
@@ -36,15 +40,16 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class AssignmentToShiftXlsHelper {
@@ -77,7 +82,7 @@ public class AssignmentToShiftXlsHelper {
                                     AssignmentToShiftState.ACCEPTED.getStringValue()),
                             SearchRestrictions.eq(AssignmentToShiftFields.STATE,
                                     AssignmentToShiftState.CORRECTED.getStringValue())))
-                    .add(SearchRestrictions.le(AssignmentToShiftFields.START_DATE, date))
+                    .add(SearchRestrictions.le(AssignmentToShiftFields.START_DATE, date.toDate()))
                     .addOrder(SearchOrders.desc(AssignmentToShiftFields.START_DATE)).list().getEntities();
             return findCurrentAssignmentsToShift(date.toDate(), assignmentsToShift);
 
