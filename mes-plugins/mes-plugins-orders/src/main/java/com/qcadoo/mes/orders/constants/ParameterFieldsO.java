@@ -55,9 +55,9 @@ public final class ParameterFieldsO {
 
     public static final String EARLIER_EFFECTIVE_DATE_TO_TIME = "earlierEffectiveDateToTime";
 
-    public static final String BLOCK_ABILITY_TO_CHANGE_APPROVAL_ORDER = "blockAbilityToChangeApprovalOrder";
+    public static final String ALLOW_QUANTITY_CHANGE_IN_ACCEPTED_ORDER = "allowQuantityChangeInAcceptedOrder";
 
-    public static final String LOCK_TECHNOLOGY_TREE = "lockTechnologyTree";
+    public static final String ALLOW_TECHNOLOGY_TREE_CHANGE_INPENDING_ORDER = "allowTechnologyTreeChangeInPendingOrder";
 
     public static final String REASON_NEEDED_WHEN_CORRECTING_THE_REQUESTED_VOLUME = "reasonNeededWhenCorrectingTheRequestedVolume";
 
@@ -74,4 +74,7 @@ public final class ParameterFieldsO {
     public static final String ALWAYS_ORDER_ITEMS_WITH_PERSONALIZATION= "alwaysOrderItemsWithPersonalization";
 
     public static final String REALIZATION_LOCATIONS= "realizationLocations";
+
+    public static final String ADVISE_START_DATE_OF_THE_ORDER= "adviseStartDateOfTheOrder";
+    public static final String ORDER_START_BASED_ON= "orderStartDateBasedOn";
 }

@@ -1,6 +1,6 @@
 package com.qcadoo.mes.materialFlowResources.batch;
 
-import com.qcadoo.mes.basic.BasicLookupController;
+import com.qcadoo.mes.basic.controllers.BasicLookupController;
 import com.qcadoo.mes.materialFlowResources.BatchDTO;
 
 import java.util.Arrays;

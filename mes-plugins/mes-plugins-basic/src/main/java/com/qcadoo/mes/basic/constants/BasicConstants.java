@@ -98,11 +98,9 @@ public final class BasicConstants {
 
     public static final String MODEL_NUMBER_PATTERN = "numberPattern";
 
+    public static final String MODEL_DASHBOARD_BUTTON = "dashboardButton";
+
     // VIEW
-
-    public static final String VIEW_MACHINE_DETAILS = "machineDetails";
-
-    public static final String VIEW_MACHINES_LIST = "machinesList";
 
     public static final String VIEW_PARAMETERS = "parameters";
 

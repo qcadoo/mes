@@ -50,5 +50,5 @@ public interface ProductionTrackingService {
 
     Optional<BigDecimal> calculateGivenQuantity(Entity trackingOperationProductInComponent, BigDecimal usedQuantity);
 
-    Either<Boolean,Optional<Date>> findExpirationDate(final Entity productionTracking);
+    Either<Boolean,Optional<Date>> findExpirationDate(final Entity productionTracking, final Entity order, final Entity toc, final Entity batch);
 }

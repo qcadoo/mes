@@ -23,24 +23,26 @@
  */
 package com.qcadoo.mes.productionPerShift.hooks;
 
-import java.util.Date;
-
+import com.qcadoo.mes.basic.ShiftsService;
+import com.qcadoo.mes.productionPerShift.constants.PPSReportFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.productionPerShift.constants.PPSReportFields;
-import com.qcadoo.mes.productionPerShift.report.PPSReportXlsHelper;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
+import java.util.Date;
 
 @Service
 public class PPSReportHooks {
 
     @Autowired
-    private PPSReportXlsHelper ppsReportXlsHelper;
+    private ShiftsService shiftsService;
 
     public boolean checkIfIsMoreThatFiveDays(final DataDefinition reportDD, final Entity report) {
-        int days = ppsReportXlsHelper.getNumberOfDaysBetweenGivenDates(report);
+        DateTime dateFrom = new DateTime(report.getField(PPSReportFields.DATE_FROM));
+        DateTime dateTo = new DateTime(report.getField(PPSReportFields.DATE_TO));
+        int days = shiftsService.getNumberOfDaysBetweenGivenDates(dateFrom, dateTo);
 
         if (days > 7) {
             report.addError(reportDD.getField(PPSReportFields.DATE_FROM), "productionPerShift.report.onlyFiveDays");

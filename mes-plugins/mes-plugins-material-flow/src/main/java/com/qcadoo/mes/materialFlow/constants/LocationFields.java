@@ -39,4 +39,8 @@ public final class LocationFields {
 
     public static final String EXTERNAL_NUMBER = "externalNumber";
 
+    public static final String DASHBOARD_COMPONENTS_LOCATIONS = "dashboardComponentsLocations";
+
+    public static final String DASHBOARD_PRODUCTS_INPUT_LOCATIONS = "dashboardProductsInputLocations";
+
 }

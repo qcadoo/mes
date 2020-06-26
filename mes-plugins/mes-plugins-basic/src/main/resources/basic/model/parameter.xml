@@ -40,6 +40,9 @@
 			model="reportColumnWidth" cascade="delete" copyable="true" />
 		<boolean name="exportToPdfOnlyVisibleColumns" default="false" />
 		<boolean name="exportToCsvOnlyVisibleColumns" default="false" />
+
+		<hasMany name="dashboardButtons" model="dashboardButton"
+				 joinField="parameter" cascade="delete" copyable="true" />
 	</fields>
 
 	<hooks>

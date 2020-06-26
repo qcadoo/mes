@@ -86,7 +86,7 @@ public class ProductNameOperationProductColumn extends AbstractOperationProductC
         List<Entity> attrValues = product.getHasManyField(ProductFields.PRODUCT_ATTRIBUTE_VALUES);
         Map<String, List<String>> valuesByAttribute = Maps.newHashMap();
         attrValues.forEach(prodAttrVal -> {
-            if (prodAttrVal.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).getBooleanField("active")) {
+            if (prodAttrVal.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).isActive()) {
                 String number = prodAttrVal.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).getStringField(
                         AttributeFields.NUMBER);
                 if (valuesByAttribute.containsKey(number)) {

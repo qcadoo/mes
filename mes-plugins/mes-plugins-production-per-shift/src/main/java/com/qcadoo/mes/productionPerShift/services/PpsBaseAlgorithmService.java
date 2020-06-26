@@ -153,7 +153,7 @@ public abstract class PpsBaseAlgorithmService {
                 BigDecimal shiftEfficiency = BigDecimal.ZERO;
                 int time = 0;
                 for (DateTimeRange range : shiftExceptionService
-                        .getShiftWorkDateTimes(order.getBelongsToField(OrderFields.PRODUCTION_LINE), shift, dateOfDay)) {
+                        .getShiftWorkDateTimes(order.getBelongsToField(OrderFields.PRODUCTION_LINE), shift, dateOfDay, true)) {
                     if (orderStartDate.after(dateOfDay.toDate())) {
                         range = range.trimBefore(orderStartDateDT);
                     }

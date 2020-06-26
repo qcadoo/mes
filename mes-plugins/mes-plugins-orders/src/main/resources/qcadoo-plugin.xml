@@ -205,7 +205,16 @@
             <model:integer name="earlierEffectiveDateToTime" default="900"/>
         </model:model-field>
         <model:model-field plugin="basic" model="parameter">
-            <model:boolean name="blockAbilityToChangeApprovalOrder" default="false"/>
+            <model:boolean name="allowQuantityChangeInAcceptedOrder" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="adviseStartDateOfTheOrder" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:enum name="orderStartDateBasedOn"
+                        values="01currentDate,02beginningFirstShiftNextDay,03endDateLastOrderOnTheLine"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">
@@ -213,7 +222,7 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">
-            <model:boolean name="lockTechnologyTree" default="false"/>
+            <model:boolean name="allowTechnologyTreeChangeInPendingOrder" default="false"/>
         </model:model-field>
         <model:model-field plugin="basic" model="parameter">
             <model:boolean name="reasonNeededWhenCorrectingTheRequestedVolume" default="false"/>
@@ -235,7 +244,8 @@
             <model:boolean name="alwaysOrderItemsWithPersonalization" default="false"/>
         </model:model-field>
         <model:model-field plugin="basic" model="parameter">
-            <model:hasMany name="realizationLocations" joinField="realizationLocation" model="location" plugin="materialFlow" cascade="nullify"/>
+            <model:hasMany name="realizationLocations" joinField="realizationLocation" model="location" plugin="materialFlow"
+                           cascade="nullify"/>
         </model:model-field>
         <model:model-field plugin="materialFlow" model="location">
             <model:belongsTo name="realizationLocation" model="parameter"
@@ -271,16 +281,16 @@
 
         <model:model-field plugin="basic" model="division">
             <model:hasMany name="orders" plugin="orders" model="order"
-                             joinField="division" cascade="nullify"/>
+                           joinField="division" cascade="nullify"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="staff">
             <model:hasMany name="operationalTasks" plugin="orders" model="operationalTask"
-                           joinField="staff" />
+                           joinField="staff"/>
         </model:model-field>
         <model:model-field plugin="basic" model="workstation">
             <model:hasMany name="operationalTasks" plugin="orders" model="operationalTask"
-                           joinField="workstation" />
+                           joinField="workstation"/>
         </model:model-field>
         <model:model-field plugin="productionLines" model="productionLine">
             <model:hasMany name="operationalTasks" plugin="orders" model="operationalTask"
@@ -293,10 +303,10 @@
         </model:model-field>
 
         <model:model-enum-value plugin="basic" model="parameter"
-                                value="02startOperationalTask" enum="inputProductsRequiredForType" />
+                                value="02startOperationalTask" enum="inputProductsRequiredForType"/>
 
         <model:model-enum-value plugin="orders" model="order"
-                                value="02startOperationalTask" enum="inputProductsRequiredForType" />
+                                value="02startOperationalTask" enum="inputProductsRequiredForType"/>
 
         <model:model-field plugin="basic" model="parameter">
             <model:boolean name="operTaskFlagPercentExecutionWithColor" default="false"/>

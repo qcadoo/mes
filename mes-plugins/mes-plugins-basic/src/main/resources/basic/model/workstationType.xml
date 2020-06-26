@@ -37,11 +37,11 @@
         <string name="description">
             <validatesLength max="2048"/>
         </string>
-        <!-- <manyToMany name="divisions" model="division" joinField="workstationTypes" /> -->
+        <hasMany name="workstations" model="workstation" joinField="workstationType"/>
         <boolean name="subassembly"/>
-        <hasMany name="subassemblies" model="subassembly" joinField="workstationType" cascade="nullify"/>
+        <hasMany name="subassemblies" model="subassembly" joinField="workstationType"/>
 
-        <manyToMany name="faultTypes" model="faultType" joinField="workstationTypes" cascade="nullify"/>
+        <manyToMany name="faultTypes" model="faultType" joinField="workstationTypes"/>
     </fields>
 
     <hooks/>

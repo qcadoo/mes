@@ -32,8 +32,10 @@ import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.GridComponent;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DELAYED_EFFECTIVE_DATE_FROM_TIME;
@@ -76,6 +78,12 @@ public class ParametersHooksO {
                     Boolean.FALSE);
             isValid = false;
         }
+        if (parameter.getBooleanField(ParameterFieldsO.ADVISE_START_DATE_OF_THE_ORDER)
+                && StringUtils.isEmpty(parameter.getStringField(ParameterFieldsO.ORDER_START_BASED_ON))) {
+            parameter.addError(parameterDD.getField(ParameterFieldsO.ORDER_START_BASED_ON),
+                    "qcadooView.validate.field.error.missing");
+            isValid = false;
+        }
         return isValid;
     }
 
@@ -111,6 +119,14 @@ public class ParametersHooksO {
             realizationLocationsGrid.setEditable(false);
         }
         alwaysOrderItemsWithPersonalizationComponent.requestComponentUpdateState();
+        CheckBoxComponent adviseStartDateOfTheOrder = (CheckBoxComponent) view
+                .getComponentByReference(ParameterFieldsO.ADVISE_START_DATE_OF_THE_ORDER);
+        FieldComponent orderStartDateBasedOn = (FieldComponent) view.getComponentByReference("orderStartDateBasedOn");
+        if (adviseStartDateOfTheOrder.isChecked()) {
+            orderStartDateBasedOn.setEnabled(true);
+        } else {
+            orderStartDateBasedOn.setEnabled(false);
+        }
     }
 
     public void showTimeFields(final ViewDefinitionState view) {

@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import java.util.List;
-
-import org.json.JSONException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -54,6 +48,12 @@ import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
+
+import java.util.List;
+
+import org.json.JSONException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class CopyOfTechnologyHooks {
@@ -149,10 +149,10 @@ public class CopyOfTechnologyHooks {
 
         technologyForm.setFormEnabled(!isDisabled);
 
-        if (lockTechnologyTree()) {
-            technologyDetailsHooks.setTreeTabEditable(view, false);
-        } else {
+        if (allowTechnologyTreeChangeInPendingOrder()) {
             technologyDetailsHooks.setTreeTabEditable(view, !isDisabled);
+        } else {
+            technologyDetailsHooks.setTreeTabEditable(view, false);
         }
     }
 
@@ -219,8 +219,8 @@ public class CopyOfTechnologyHooks {
         }
     }
 
-    public boolean lockTechnologyTree() {
-        return parameterService.getParameter().getBooleanField(ParameterFieldsO.LOCK_TECHNOLOGY_TREE);
+    private boolean allowTechnologyTreeChangeInPendingOrder() {
+        return parameterService.getParameter().getBooleanField(ParameterFieldsO.ALLOW_TECHNOLOGY_TREE_CHANGE_INPENDING_ORDER);
     }
 
     private void enableGroupField(final ViewDefinitionState view, final Entity order) {

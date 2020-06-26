@@ -295,6 +295,8 @@
 
 		<model:model model="forms" resource="model/forms.xml"/>
 
+        <model:model model="dashboardButton" resource="model/dashboardButton.xml"/>
+
         <model:dictionary name="categories"/>
         <model:dictionary name="reasonTypeOfChangingOrderState"/>
 

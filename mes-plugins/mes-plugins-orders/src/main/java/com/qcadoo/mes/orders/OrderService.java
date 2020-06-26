@@ -28,6 +28,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 
 import java.util.Locale;
+import java.util.Optional;
 
 public interface OrderService {
 
@@ -134,4 +135,5 @@ public interface OrderService {
      */
     String buildOrderDescription(Entity masterOrder, Entity technology, boolean fillOrderDescriptionBasedOnTechnology);
 
+    Optional<Entity> findLastOrder(Entity order);
 }

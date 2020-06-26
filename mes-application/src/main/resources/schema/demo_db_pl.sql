@@ -8519,6 +8519,40 @@ ALTER SEQUENCE basic_currency_id_seq OWNED BY basic_currency.id;
 
 
 --
+-- Name: basic_dashboardbutton; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_dashboardbutton (
+    id bigint NOT NULL,
+    parameter_id bigint,
+    identifier character varying(255),
+    item_id bigint,
+    icon character varying(255),
+    succession integer,
+    active boolean DEFAULT false
+);
+
+
+--
+-- Name: basic_dashboardbutton_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE basic_dashboardbutton_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_dashboardbutton_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE basic_dashboardbutton_id_seq OWNED BY basic_dashboardbutton.id;
+
+
+--
 -- Name: basic_division_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -8817,7 +8851,7 @@ CREATE TABLE basic_parameter (
     reasonneededwhenearliereffectivedateto boolean DEFAULT false,
     earliereffectivedatefromtime integer DEFAULT 900,
     defaultaddress character varying(255) DEFAULT '01companyAddress'::character varying,
-    blockabilitytochangeapprovalorder boolean DEFAULT false,
+    allowquantitychangeinacceptedorder boolean DEFAULT false,
     reasonneededwhendelayedeffectivedateto boolean DEFAULT false,
     justone boolean,
     registerquantityinproduct boolean,
@@ -8867,7 +8901,7 @@ CREATE TABLE basic_parameter (
     hideemptycolumnsforrequests boolean,
     validateproductionrecordtimes boolean,
     workstationsquantityfromproductionline boolean,
-    locktechnologytree boolean DEFAULT false,
+    allowtechnologytreechangeinpendingorder boolean DEFAULT false,
     lockproductionprogress boolean DEFAULT false,
     hidebarcodeoperationcomponentinworkplans boolean,
     ignoremissingcomponents boolean DEFAULT true,
@@ -8984,7 +9018,15 @@ CREATE TABLE basic_parameter (
     oeefor character varying(255) DEFAULT '01productionLine'::character varying,
     oeeworktimefrom character varying(255) DEFAULT '01staffWorkTimes'::character varying,
     range character varying(255) DEFAULT '01oneDivision'::character varying,
-    division_id bigint
+    division_id bigint,
+    showqronordersgrouppdf boolean DEFAULT false,
+    advisestartdateoftheorder boolean DEFAULT false,
+    orderstartdatebasedon character varying(255),
+    showchartondashboard boolean DEFAULT true,
+    whattoshowondashboard character varying(255) DEFAULT '01orders'::character varying,
+    dashboardoperation_id bigint,
+    dashboardcomponentslocation_id bigint,
+    dashboardproductsinputlocation_id bigint
 );
 
 
@@ -14634,6 +14676,16 @@ CREATE TABLE jointable_palletnumber_palletnumberhelper (
 
 
 --
+-- Name: jointable_parameter_productionline; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE jointable_parameter_productionline (
+    parameter_id bigint NOT NULL,
+    productionline_id bigint NOT NULL
+);
+
+
+--
 -- Name: jointable_plannedevent_plannedevent; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -17473,6 +17525,64 @@ CREATE SEQUENCE oee_oeevalue_id_seq
 --
 
 ALTER SEQUENCE oee_oeevalue_id_seq OWNED BY oee_oeevalue.id;
+
+
+--
+-- Name: oee_productionlinedto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW oee_productionlinedto AS
+ SELECT productionline.id,
+    productionline.number,
+    productionline.name,
+    productionline.active,
+    string_agg((division.number)::text, ', '::text) AS divisions
+   FROM ((productionlines_productionline productionline
+     LEFT JOIN jointable_division_productionline division_productionline ON ((division_productionline.productionline_id = productionline.id)))
+     LEFT JOIN basic_division division ON ((division.id = division_productionline.division_id)))
+  GROUP BY productionline.id, productionline.number, productionline.name, productionline.active;
+
+
+--
+-- Name: oee_productionlinedto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE oee_productionlinedto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: oee_workstationdto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW oee_workstationdto AS
+ SELECT workstation.id,
+    workstation.number,
+    workstation.name,
+    workstation.active,
+    productionline.number AS productionlinenumber,
+    string_agg((division.number)::text, ', '::text) AS divisions
+   FROM (((basic_workstation workstation
+     LEFT JOIN productionlines_productionline productionline ON ((productionline.id = workstation.productionline_id)))
+     LEFT JOIN jointable_division_productionline division_productionline ON ((division_productionline.productionline_id = productionline.id)))
+     LEFT JOIN basic_division division ON ((division.id = division_productionline.division_id)))
+  GROUP BY workstation.id, workstation.number, workstation.name, workstation.active, productionline.number;
+
+
+--
+-- Name: oee_workstationdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE oee_workstationdto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
 
 
 --
@@ -26582,6 +26692,13 @@ ALTER TABLE ONLY basic_currency ALTER COLUMN id SET DEFAULT nextval('basic_curre
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY basic_dashboardbutton ALTER COLUMN id SET DEFAULT nextval('basic_dashboardbutton_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY basic_division ALTER COLUMN id SET DEFAULT nextval('basic_division_id_seq'::regclass);
 
 
@@ -30854,7 +30971,7 @@ SELECT pg_catalog.setval('basic_additionalcode_id_seq', 1, false);
 --
 
 COPY basic_address (id, company_id, addresstype, number, name, phone, email, website, street, house, flat, zipcode, city, state, country_id, contactperson, canbedeleted, active, externalnumber) FROM stdin;
-1	1	główny	1-01	\N	+48 12 200 25 69	welcome@qcadoo.com	http://www.qcadoo.com/	Basztowa	4	4	31-134	Kraków	małopolskie	167	\N	f	t	\N
+1	1	główny	1-01	\N	+48 881 501 347	welcome@qcadoo.com	http://www.qcadoo.com/	Walerego Sławka	3A	\N	30-633	Kraków	małopolskie	167	\N	f	t	\N
 \.
 
 
@@ -30937,7 +31054,7 @@ SELECT pg_catalog.setval('basic_attributevalue_id_seq', 1, false);
 --
 
 COPY basic_company (id, number, name, taxcountrycode_id, tax, street, house, flat, zipcode, city, state, country_id, email, website, phone, externalnumber, buffer, active, paymentform, country, entityversion, contactperson, issupplier, isreceiver, logoimage) FROM stdin;
-1	1	Qcadoo Limited Sp. z o.o.	\N	676-241-35-25	Basztowa	4	4	31-134	Kraków	małopolskie	167	welcome@qcadoo.com	http://www.qcadoo.com/	+48 12 200 25 69	\N	\N	t	\N	\N	0	\N	f	f	\N
+1	1	Qcadoo Limited Sp. z o.o.	\N	676-241-35-25	Walerego Sławka	3A	\N	30-633	Kraków	małopolskie	167	welcome@qcadoo.com	http://www.qcadoo.com/	+48 881 501 347	\N	\N	t	\N	\N	0	\N	f	f	\N
 \.
 
 
@@ -31425,6 +31542,32 @@ SELECT pg_catalog.setval('basic_currency_id_seq', 182, true);
 
 
 --
+-- Data for Name: basic_dashboardbutton; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY basic_dashboardbutton (id, parameter_id, identifier, item_id, icon, succession, active) FROM stdin;
+1	1	basic.dashboardButton.identifier.orders.ordersPlanningList	47	/qcadooView/public/css/core/images/dashboard/define.png	1	f
+2	1	basic.dashboardButton.identifier.orders.operationalTasksList	46	/qcadooView/public/css/core/images/dashboard/define.png	2	f
+3	1	basic.dashboardButton.identifier.orders.schedulesList	149	/qcadooView/public/css/core/images/dashboard/define.png	3	f
+4	1	basic.dashboardButton.identifier.technology.technologiesList	39	/qcadooView/public/css/core/images/dashboard/define.png	4	f
+5	1	basic.dashboardButton.identifier.requirements.generateMaterialRequirementCoverage	100	/qcadooView/public/css/core/images/dashboard/define.png	5	f
+6	1	basic.dashboardButton.identifier.requirements.deliveriesList	62	/qcadooView/public/css/core/images/dashboard/define.png	6	f
+7	1	basic.dashboardButton.identifier.materialFlow.warehouseStocksList	72	/qcadooView/public/css/core/images/dashboard/define.png	7	f
+8	1	basic.dashboardButton.identifier.materialFlow.resourcesList	75	/qcadooView/public/css/core/images/dashboard/define.png	8	f
+9	1	basic.dashboardButton.identifier.materialFlow.documentsList	73	/qcadooView/public/css/core/images/dashboard/define.png	9	f
+10	1	basic.dashboardButton.identifier.ordersTracking.productionTrackingsList	96	/qcadooView/public/css/core/images/dashboard/define.png	10	f
+11	1	basic.dashboardButton.identifier.ordersTracking.productionBalancesList	95	/qcadooView/public/css/core/images/dashboard/define.png	11	f
+\.
+
+
+--
+-- Name: basic_dashboardbutton_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('basic_dashboardbutton_id_seq', 11, true);
+
+
+--
 -- Data for Name: basic_division; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -31564,8 +31707,8 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, blockabilitytochangeapprovalorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, locktechnologytree, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, enableoperationgroupingworkplan, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id) FROM stdin;
-1	167	124	szt	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01globally	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	t	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	50	3000	f	f	f	f	f	f	f	f	t	t	t	f	t	t	f	f	f	f	f	f	f	f	f	f	f	\N	\N	f	f	f	f	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N
+COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, allowtechnologytreechangeinpendingorder, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, enableoperationgroupingworkplan, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id) FROM stdin;
+1	167	124	szt.	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01globally	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	50	3000	f	f	f	f	f	f	f	f	t	t	t	f	t	t	f	f	f	f	f	f	f	f	f	f	f	\N	\N	f	f	f	f	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	f	\N	t	01orders	\N	\N	\N
 \.
 
 
@@ -33700,6 +33843,14 @@ COPY jointable_palletnumber_palletnumberhelper (palletnumberhelper_id, palletnum
 
 
 --
+-- Data for Name: jointable_parameter_productionline; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY jointable_parameter_productionline (parameter_id, productionline_id) FROM stdin;
+\.
+
+
+--
 -- Data for Name: jointable_plannedevent_plannedevent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -34840,6 +34991,20 @@ COPY oee_oeevalue (id, oee_id, productionline_id, workstation_id, totalavailable
 --
 
 SELECT pg_catalog.setval('oee_oeevalue_id_seq', 1, false);
+
+
+--
+-- Name: oee_productionlinedto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('oee_productionlinedto_id_seq', 1, false);
+
+
+--
+-- Name: oee_workstationdto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('oee_workstationdto_id_seq', 1, false);
 
 
 --
@@ -36228,7 +36393,7 @@ COPY qcadoomodel_dictionaryitem (id, name, externalnumber, description, technica
 23	kg	\N	Kilogram	\N	1	t	0	f
 24	l	\N	Litr	\N	1	t	0	f
 25	hl	\N	Hektolitr	\N	1	t	0	f
-26	szt	\N	Sztuka	\N	1	t	0	f
+26	szt.	\N	Sztuka	\N	1	t	0	f
 27	para	\N	Para	\N	1	t	0	f
 28	kpl	\N	Komplet	\N	1	t	0	f
 29	Nieobecność pracownika	\N	\N	\N	7	t	0	f
@@ -36283,7 +36448,7 @@ COPY qcadoomodel_unitconversionitem (id, quantityfrom, quantityto, unitfrom, uni
 6	1.00000	1000.00000	kg	g	1	\N	0
 7	1.00000	1.00000	l	dm3	1	\N	0
 8	1.00000	100.00000	hl	l	1	\N	0
-9	1.00000	2.00000	para	szt	1	\N	0
+9	1.00000	2.00000	para	szt.	1	\N	0
 \.
 
 
@@ -36757,7 +36922,6 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 90	assignmentToShift	assignmentToShiftReportList	t	7	90	7	ROLE_ASSIGNMENT_TO_SHIFT	0
 91	assignmentToShift	assignmentToShift	t	7	91	8	ROLE_ASSIGNMENT_TO_SHIFT	0
 92	productionCounting	productionTrackingForProductGrouped	t	8	92	2	ROLE_PRODUCTION_TRACKING	0
-95	productionCounting	productionBalance	t	8	95	5	ROLE_PRODUCTION_COUNTING	0
 97	workPlans	workPlans	t	7	97	9	ROLE_PLANNING	0
 98	productionPerShift	ppsReports	t	7	98	10	ROLE_PLANNING	0
 99	orderSupplies	coverageRegistryList	t	9	99	8	ROLE_SUPERADMIN	0
@@ -36826,13 +36990,14 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 148	basic	skillsList	t	18	147	23	ROLE_SKILLS	0
 34	wageGroups	wageGroups	t	18	34	14	ROLE_STAFF_WAGES	0
 33	wageGroups	wages	t	18	33	13	ROLE_STAFF_WAGES	0
-107	productionPerShift	balancePerShift	t	8	106	8	\N	0
 158	qualityControl	qualityCardList	t	20	157	1	ROLE_QUALITY_CONTROL	0
 159	qualityControl	qualityControlList	t	20	158	2	ROLE_QUALITY_CONTROL	0
 160	qualityControl	qualityControlAttributes	t	20	159	3	ROLE_QUALITY_CONTROL	0
 161	basic	formsList	t	4	160	27	ROLE_BASIC	0
 162	advancedGenealogyForOrders	genealogyAnalysis	t	15	161	6	ROLE_ANALYSIS_VIEWER	0
 163	oee	oeeList	t	15	162	7	ROLE_OEE	0
+95	productionCounting	productionBalance	t	15	95	5	ROLE_PRODUCTION_COUNTING	0
+107	productionPerShift	balancePerShift	t	15	106	8	\N	0
 \.
 
 
@@ -39692,6 +39857,14 @@ ALTER TABLE ONLY basic_currency
 
 
 --
+-- Name: basic_dashboardbutton_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_dashboardbutton
+    ADD CONSTRAINT basic_dashboardbutton_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: basic_division_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -40905,6 +41078,14 @@ ALTER TABLE ONLY jointable_order_workplan
 
 ALTER TABLE ONLY jointable_palletnumber_palletnumberhelper
     ADD CONSTRAINT jointable_palletnumber_palletnumberhelper_pkey PRIMARY KEY (palletnumber_id, palletnumberhelper_id);
+
+
+--
+-- Name: jointable_parameter_productionline_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_parameter_productionline
+    ADD CONSTRAINT jointable_parameter_productionline_pkey PRIMARY KEY (productionline_id, parameter_id);
 
 
 --
@@ -47011,6 +47192,22 @@ ALTER TABLE ONLY arch_productionpershift_dailyprogress
 
 
 --
+-- Name: dashboardbutton_item_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_dashboardbutton
+    ADD CONSTRAINT dashboardbutton_item_fkey FOREIGN KEY (item_id) REFERENCES qcadooview_item(id) DEFERRABLE;
+
+
+--
+-- Name: dashboardbutton_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_dashboardbutton
+    ADD CONSTRAINT dashboardbutton_parameter_fkey FOREIGN KEY (parameter_id) REFERENCES basic_parameter(id) DEFERRABLE;
+
+
+--
 -- Name: deliveredproduct_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -50755,6 +50952,30 @@ ALTER TABLE ONLY basic_parameter
 
 
 --
+-- Name: parameter_dashboardcomponentslocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_parameter
+    ADD CONSTRAINT parameter_dashboardcomponentslocation_fkey FOREIGN KEY (dashboardcomponentslocation_id) REFERENCES materialflow_location(id) DEFERRABLE;
+
+
+--
+-- Name: parameter_dashboardoperation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_parameter
+    ADD CONSTRAINT parameter_dashboardoperation_fkey FOREIGN KEY (dashboardoperation_id) REFERENCES technologies_operation(id) DEFERRABLE;
+
+
+--
+-- Name: parameter_dashboardproductsinputlocation_feky; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_parameter
+    ADD CONSTRAINT parameter_dashboardproductsinputlocation_feky FOREIGN KEY (dashboardproductsinputlocation_id) REFERENCES materialflow_location(id) DEFERRABLE;
+
+
+--
 -- Name: parameter_division_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -50840,6 +51061,22 @@ ALTER TABLE ONLY basic_parameter
 
 ALTER TABLE ONLY basic_parameter
     ADD CONSTRAINT parameter_product_fkey FOREIGN KEY (belongstofamily_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: parameter_productionline_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_parameter_productionline
+    ADD CONSTRAINT parameter_productionline_parameter_fkey FOREIGN KEY (parameter_id) REFERENCES basic_parameter(id) DEFERRABLE;
+
+
+--
+-- Name: parameter_productionline_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_parameter_productionline
+    ADD CONSTRAINT parameter_productionline_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES productionlines_productionline(id) DEFERRABLE;
 
 
 --

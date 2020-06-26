@@ -29,7 +29,8 @@
 	<aspects>
 		<aspect name="com.qcadoo.mes.advancedGenealogy.states.aop.BatchStateChangeAspect" />
 		<aspect name="com.qcadoo.mes.advancedGenealogy.states.aop.listener.BatchBasicStateListenerAspect" />
-		
+
+		<aspect name="com.qcadoo.mes.advancedGenealogy.states.aop.listener.TrackingRecordStateListenerAspect" />
 		<aspect name="com.qcadoo.mes.advancedGenealogy.states.aop.TrackingRecordStateChangeAspect" />
 	</aspects>
 </aspectj>

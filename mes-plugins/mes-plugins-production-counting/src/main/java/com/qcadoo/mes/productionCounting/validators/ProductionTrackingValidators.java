@@ -73,7 +73,10 @@ public class ProductionTrackingValidators {
     }
 
     private boolean checkIfExpirationDateTheSameForOrder(final DataDefinition productionTrackingDD, final Entity productionTracking) {
-        Either<Boolean,Optional<Date>> maybeExpirationDayFilled = productionTrackingService.findExpirationDate(productionTracking);
+        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        Entity batch = productionTracking.getBelongsToField(ProductionTrackingFields.BATCH);
+        Entity toc = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+        Either<Boolean,Optional<Date>> maybeExpirationDayFilled = productionTrackingService.findExpirationDate(productionTracking, order, toc, batch);
         if(Objects.nonNull(maybeExpirationDayFilled)) {
             Date expirationDate = productionTracking.getDateField(ProductionTrackingFields.EXPIRATION_DATE);
 

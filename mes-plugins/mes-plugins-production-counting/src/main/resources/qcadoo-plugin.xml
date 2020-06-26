@@ -434,14 +434,14 @@
                         view="beforeAdditionalActionsAnalysisGenerator"
                         defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
+        <menu:menu-item name="productionBalance" category="analysis"
+                        view="productionBalancesList" defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING"/>
+
         <menu:menu-item name="productionTracking" category="ordersTracking"
                         view="productionTrackingsList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING_REGISTRATION"/>
 
         <menu:menu-item name="productionTrackingsDraftList" category="ordersTracking"
                         view="productionTrackingsDraftList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>
-
-        <menu:menu-item name="productionBalance" category="ordersTracking"
-                        view="productionBalancesList" defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING"/>
 
         <menu:menu-item name="productionTrackingForProduct" category="ordersTracking"
                         view="productionTrackingsForProductList" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING"/>

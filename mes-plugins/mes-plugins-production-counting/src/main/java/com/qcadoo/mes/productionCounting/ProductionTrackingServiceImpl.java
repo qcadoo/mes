@@ -34,7 +34,13 @@ import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderState;
-import com.qcadoo.mes.productionCounting.constants.*;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.constants.StaffWorkTimeFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
+import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
+import com.qcadoo.mes.productionCounting.constants.UsedBatchFields;
 import com.qcadoo.mes.productionCounting.newstates.ProductionTrackingStateServiceMarker;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.mes.states.service.StateChangeContextBuilder;
@@ -53,9 +59,6 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -63,6 +66,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductionTrackingServiceImpl implements ProductionTrackingService {
@@ -332,10 +339,7 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
     }
 
     @Override
-    public Either<Boolean,Optional<Date>> findExpirationDate(final Entity productionTracking) {
-        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
-        Entity batch = productionTracking.getBelongsToField(ProductionTrackingFields.BATCH);
-
+    public Either<Boolean,Optional<Date>> findExpirationDate(final Entity productionTracking, final Entity order, final Entity toc, final Entity batch) {
         if (TypeOfProductionRecording.CUMULATED.getStringValue().equals(
                 order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
 
@@ -346,7 +350,7 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
                     .add(SearchRestrictions.belongsTo(ProductionTrackingFields.BATCH, batch))
                     .list().getEntities();
 
-            if (Objects.nonNull(productionTracking.getId())) {
+            if (Objects.nonNull(productionTracking) && Objects.nonNull(productionTracking.getId())) {
                 productionTracingsForOrder = productionTracingsForOrder.stream()
                         .filter(pt -> !pt.getId().equals(productionTracking.getId())).collect(Collectors.toList());
             }
@@ -361,7 +365,6 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
                     .map(pt -> pt.getDateField(ProductionTrackingFields.EXPIRATION_DATE)).findFirst();
             return Either.right(maybeDate);
         } else {
-            Entity toc = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
             Entity bpcq = basicProductionCountingService
                     .getProductionCountingQuantityDD()
                     .find()
@@ -382,7 +385,7 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
                         .list()
                         .getEntities();
 
-                if (Objects.nonNull(productionTracking.getId())) {
+                if (Objects.nonNull(productionTracking) && Objects.nonNull(productionTracking.getId())) {
                     productionTracingsForOrder = productionTracingsForOrder.stream()
                             .filter(pt -> !pt.getId().equals(productionTracking.getId())).collect(Collectors.toList());
                 }

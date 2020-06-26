@@ -1,6 +1,6 @@
 package com.qcadoo.mes.materialFlowResources.storagelocation;
 
-import com.qcadoo.mes.basic.BasicLookupController;
+import com.qcadoo.mes.basic.controllers.BasicLookupController;
 import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

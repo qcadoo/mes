@@ -294,7 +294,7 @@ public class OrdersFromMOProductsGenerationService {
 
                     Date calculatedOrderStartDate = null;
                     if (Objects.isNull(ord.getDateField(OrderFields.DATE_FROM))) {
-                        Optional<Entity> maybeOrder = findLastOrder(ord);
+                        Optional<Entity> maybeOrder = orderService.findLastOrder(ord);
                         if (maybeOrder.isPresent()) {
                             calculatedOrderStartDate = ord.getDateField(OrderFields.FINISH_DATE);
                         } else {
@@ -339,16 +339,6 @@ public class OrdersFromMOProductsGenerationService {
 
         }
 
-    }
-
-    public Optional<Entity> findLastOrder(final Entity order) {
-        Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
-        Entity lastOrder = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find()
-                .add(SearchRestrictions.isNotNull(OrderFields.FINISH_DATE))
-                .add(SearchRestrictions.belongsTo(OrderFields.PRODUCTION_LINE, productionLine))
-                .add(SearchRestrictions.ne(OrderFields.STATE, OrderState.ABANDONED.getStringValue()))
-                .addOrder(SearchOrders.desc(OrderFields.FINISH_DATE)).setMaxResults(1).uniqueResult();
-        return Optional.ofNullable(lastOrder);
     }
 
     public Optional<Entity> findNextOrder(final Entity order) {

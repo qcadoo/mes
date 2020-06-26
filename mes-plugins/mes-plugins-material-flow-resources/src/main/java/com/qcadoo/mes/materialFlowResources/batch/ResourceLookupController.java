@@ -1,7 +1,7 @@
 package com.qcadoo.mes.materialFlowResources.batch;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.BasicLookupController;
+import com.qcadoo.mes.basic.controllers.BasicLookupController;
 import com.qcadoo.mes.basic.GridResponse;
 import com.qcadoo.mes.basic.LookupUtils;
 import com.qcadoo.mes.materialFlowResources.DocumentPositionService;

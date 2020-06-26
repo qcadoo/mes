@@ -33,9 +33,14 @@
         </string>
         <string name="name" required="true"/>
         <enum name="type" values="01controlPoint,02warehouse" default="02warehouse" required="true"/>
-        <hasMany name="materialsInLocations" model="materialsInLocationComponent"
-                 plugin="materialFlow" joinField="location"/>
+        <hasMany name="materialsInLocations" plugin="materialFlow" model="materialsInLocationComponent"
+                 joinField="location"/>
         <string name="externalNumber" unique="true"/>
+
+        <hasMany name="dashboardComponentsLocations" plugin="basic" model="parameter"
+                 joinField="dashboardComponentsLocation"/>
+        <hasMany name="dashboardProductsInputLocations" plugin="basic" model="parameter"
+                 joinField="dashboardProductsInputLocation"/>
     </fields>
     <hooks>
         <onCopy class="com.qcadoo.mes.materialFlow.hooks.LocationModelHooks" method="clearExternalIdOnCopy"/>

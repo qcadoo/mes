@@ -181,7 +181,7 @@ public class ShiftsServiceImpl implements ShiftsService {
             getNearestWorkingDateForShiftWorkTime(shiftWorkTime, dateFrom, currentDate, workTimes);
         }
 
-        workTimes = shiftExceptionService.manageExceptions(workTimes, productionLine, shift, currentDate.toDate());
+        workTimes = shiftExceptionService.manageExceptions(workTimes, productionLine, shift, currentDate.toDate(), true);
 
         workTimes = workTimes.stream().filter(workTime -> workTime.contains(dateFrom) || workTime.isAfter(dateFrom))
                 .collect(Collectors.toList());
@@ -300,7 +300,7 @@ public class ShiftsServiceImpl implements ShiftsService {
         return valid;
     }
 
-    public boolean validateHourField(final String day, final DataDefinition dataDefinition, final Entity entity) {
+    private boolean validateHourField(final String day, final DataDefinition dataDefinition, final Entity entity) {
         boolean isDayActive = (Boolean) entity.getField(day + WORKING_LITERAL);
 
         String fieldValue = entity.getStringField(day + HOURS_LITERAL);
@@ -345,7 +345,7 @@ public class ShiftsServiceImpl implements ShiftsService {
                 return Date.from(dateFrom.toInstant().plusSeconds(seconds));
             }
             for (Shift shift : shifts) {
-                for (DateTimeRange range : shiftExceptionService.getShiftWorkDateTimes(productionLine, shift, dateOfDay)) {
+                for (DateTimeRange range : shiftExceptionService.getShiftWorkDateTimes(productionLine, shift, dateOfDay, true)) {
                     if (dateFrom.after(dateOfDay.toDate())) {
                         range = range.trimBefore(dateFromDT);
                     }
@@ -363,6 +363,33 @@ public class ShiftsServiceImpl implements ShiftsService {
         }
 
         return Date.from(dateFrom.toInstant().plusSeconds(seconds));
+    }
+
+    @Override
+    public long getTotalAvailableTimeForProductionLine(final Date dateFrom, final Date dateTo, final Entity productionLine) {
+        if (getShiftDataDefinition().find().list().getTotalNumberOfEntities() == 0) {
+            return (dateTo.getTime() - dateFrom.getTime()) / 1000;
+        }
+
+        long totalAvailableTime = 0;
+
+        List<Shift> shifts = findAll(productionLine);
+        DateTime dateOfDay = new DateTime(dateFrom);
+        int loopCount = 0;
+        while (!dateOfDay.isAfter(new DateTime(dateTo))) {
+            if (loopCount > MAX_LOOPS) {
+                return (dateTo.getTime() - dateFrom.getTime()) / 1000;
+            }
+            for (Shift shift : shifts) {
+                for (DateTimeRange range : shiftExceptionService.getShiftWorkDateTimes(productionLine, shift, dateOfDay, false)) {
+                    totalAvailableTime += range.durationMillis();
+                }
+            }
+            loopCount++;
+            dateOfDay = dateOfDay.plusDays(1);
+        }
+
+        return totalAvailableTime / 1000;
     }
 
     @Override
@@ -411,7 +438,7 @@ public class ShiftsServiceImpl implements ShiftsService {
         updateDayFieldsState(viewDefinitionState);
     }
 
-    public void updateDayFieldsState(final ViewDefinitionState viewDefinitionState) {
+    private void updateDayFieldsState(final ViewDefinitionState viewDefinitionState) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity shift = form.getEntity();
 
@@ -420,7 +447,7 @@ public class ShiftsServiceImpl implements ShiftsService {
         }
     }
 
-    public void updateDayFieldState(final String day, final ViewDefinitionState viewDefinitionState, final Entity shift) {
+    private void updateDayFieldState(final String day, final ViewDefinitionState viewDefinitionState, final Entity shift) {
         FieldComponent dayHours = (FieldComponent) viewDefinitionState.getComponentByReference(day + HOURS_LITERAL);
 
         if (!shift.getBooleanField(day + WORKING_LITERAL)) {
@@ -704,7 +731,7 @@ public class ShiftsServiceImpl implements ShiftsService {
     }
 
     @Override
-    public List<Shift> findAll(Entity productionLine) {
+    public List<Shift> findAll(final Entity productionLine) {
         List<Entity> shifts = Collections.emptyList();
         if (productionLine != null) {
             shifts = productionLine.getHasManyField(SHIFTS);
@@ -719,15 +746,24 @@ public class ShiftsServiceImpl implements ShiftsService {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SHIFT);
     }
 
-    /**
-     * @deprecated Use Shift#worksAt
-     */
-    @Override
-    @Deprecated
-    public boolean checkIfShiftWorkAtDate(final Date date, final Entity shift) {
-        List<Entity> shifts = getShiftsWorkingAtDate(date);
+    public List<DateTime> getDaysBetweenGivenDates(final DateTime dateFrom, final DateTime dateTo) {
+        List<DateTime> days = new LinkedList<>();
 
-        return shifts.contains(shift);
+        DateTime nextDay = dateFrom;
+        int numberOfDays = Days.daysBetween(dateFrom.toDateMidnight(), dateTo.toDateMidnight()).getDays();
+        days.add(nextDay);
+
+        int oneDay = 1;
+        while (numberOfDays != 0) {
+            nextDay = nextDay.plusDays(oneDay).toDateTime();
+            days.add(nextDay);
+            numberOfDays--;
+        }
+        return days;
+    }
+
+    public int getNumberOfDaysBetweenGivenDates(final DateTime dateFrom, final DateTime dateTo) {
+        return Days.daysBetween(dateFrom.toDateMidnight(), dateTo.toDateMidnight()).getDays();
     }
 
     private String getDayOfWeekName(final Date date) {
@@ -801,14 +837,9 @@ public class ShiftsServiceImpl implements ShiftsService {
                 return false;
             }
             if (dateTo == null) {
-                if (other.dateTo != null) {
-                    return false;
-                }
-            } else if (!dateTo.equals(other.dateTo)) {
-                return false;
-            }
-
-            return true;
+                return other.dateTo == null;
+            } else
+                return dateTo.equals(other.dateTo);
         }
 
     }

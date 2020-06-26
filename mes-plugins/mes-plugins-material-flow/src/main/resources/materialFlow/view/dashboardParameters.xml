@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view name="dashboardParameters" modelPlugin="basic" modelName="parameter"
+      defaultAuthorizationRole="ROLE_PARAMETERS"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
+    <component type="window" name="window">
+
+        <ribbon>
+            <group name="actions" hasLabel="false">
+                <bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;"/>
+            </group>
+        </ribbon>
+
+        <windowTab name="main" reference="main">
+            <component type="form" name="dashboardParameters" reference="form">
+                <component type="flowGridLayout" name="dashboardGridLayout" columns="3" rows="4">
+                    <layoutElement column="1" row="1">
+                        <component type="checkbox" name="showChartOnDashboard" field="showChartOnDashboard"
+                                   reference="showChartOnDashboard" hasDescription="true">
+                            <option type="labelWidth" value="60"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="select" name="whatToShowOnDashboard" field="whatToShowOnDashboard"
+                                   reference="whatToShowOnDashboard" hasDescription="true">
+                            <option type="labelWidth" value="60" />
+
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.view.api.listeners.RerenderListener"
+                                      method="onChangeRerender"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
+                        <component type="borderLayout" name="dashboardOrdersBorderLayout"
+                                   reference="dashboardButtonsBorderLayout">
+                            <option type="label" value="dashboardButtonsLabel" />
+
+                            <component type="gridLayout" name="gridLayout" columns="1"
+                                       rows="3">
+                                <layoutElement column="1" row="1">
+                                    <component type="lookup" name="dashboardOperation" field="dashboardOperation"
+                                               reference="dashboardOperation" hasDescription="true">
+                                        <option type="column" name="name" fields="name" link="true"/>
+
+                                        <option type="searchable" value="number,name"/>
+                                        <option type="orderable" value="number,name"/>
+
+                                        <option type="expression" value="#number + ' - ' + #name"/>
+                                        <option type="fieldCode" value="number"/>
+
+                                        <option type="labelWidth" value="60"/>
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="1" row="2">
+                                    <component type="lookup" name="dashboardComponentsLocation" field="dashboardComponentsLocation"
+                                               reference="dashboardComponentsLocation" hasDescription="true">
+                                        <option type="column" name="name" fields="name"/>
+
+                                        <option type="searchable" value="number,name"/>
+                                        <option type="orderable" value="number,name"/>
+
+                                        <option type="expression" value="#number + ' - ' + #name"/>
+                                        <option type="fieldCode" value="number"/>
+
+                                        <option type="labelWidth" value="60"/>
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="1" row="3">
+                                    <component type="lookup" name="dashboardProductsInputLocation" field="dashboardProductsInputLocation"
+                                               reference="dashboardProductsInputLocation" hasDescription="true">
+                                        <option type="column" name="name" fields="name"/>
+
+                                        <option type="searchable" value="number,name"/>
+                                        <option type="orderable" value="number,name"/>
+
+                                        <option type="expression" value="#number + ' - ' + #name"/>
+                                        <option type="fieldCode" value="number"/>
+
+                                        <option type="labelWidth" value="60"/>
+                                    </component>
+                                </layoutElement>
+                            </component>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="1" width="2" minHeight="4">
+                        <component type="grid" name="dashboardButtons" source="dashboardButtons"
+                                   reference="dashboardButtons">
+                            <option type="column" name="succession" fields="succession" link="true" width="5"/>
+                            <option type="column" name="identifier" fields="identifier" expression="'@' + #identifier" link="true" width="85"/>
+                            <option type="column" name="active" fields="active" link="true" width="10"/>
+
+                            <option type="order" column="succession" direction="asc"/>
+
+                            <option type="searchable" value="succession,active"/>
+                            <option type="orderable" value="succession,active"/>
+
+                            <option type="correspondingView" value="materialFlow/dashboardButtonDetails" />
+                            <option type="correspondingViewInModal" value="true" />
+                            <option type="correspondingComponent" value="form" />
+
+                            <option type="paginable" value="true"/>
+                            <option type="multiselect" value="false"/>
+                            <option type="creatable" value="false"/>
+                            <option type="deletable" value="false"/>
+
+                            <option type="fullscreen" value="true"/>
+                            <option type="fixedHeight" value="true"/>
+                        </component>
+                    </layoutElement>
+                </component>
+
+                <option type="header" value="true"/>
+                <option type="expression" value=""/>
+            </component>
+        </windowTab>
+    </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.materialFlow.hooks.DashboardParametersHooks"
+                      method="onBeforeRender"/>
+    </hooks>
+</view>

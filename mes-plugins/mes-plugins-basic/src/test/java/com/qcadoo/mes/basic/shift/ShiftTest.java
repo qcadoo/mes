@@ -23,24 +23,6 @@
  */
 package com.qcadoo.mes.basic.shift;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-
-import java.util.List;
-
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalTime;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -51,6 +33,21 @@ import com.qcadoo.mes.basic.constants.ShiftTimetableExceptionFields;
 import com.qcadoo.mes.basic.constants.TimetableExceptionType;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+
+import java.util.List;
+
+import static org.junit.Assert.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 public class ShiftTest {
 
@@ -92,12 +89,6 @@ public class ShiftTest {
         assertTrue(shift.worksAt(DateTimeConstants.MONDAY, new LocalTime(10, 30)));
         assertFalse(shift.worksAt(DateTimeConstants.SUNDAY, new LocalTime(12, 0)));
         assertFalse(shift.worksAt(DateTimeConstants.MONDAY, new LocalTime(12, 01)));
-
-        assertFalse(shift.worksAt(freeTimeBegin.plusHours(1).toDate()));
-        assertTrue(shift.worksAt(freeTimeBegin.minusHours(1).toDate()));
-
-        assertTrue(shift.worksAt(workTimeBegin.plusHours(1).toDate()));
-        assertFalse(shift.worksAt(workTimeBegin.minusHours(1).toDate()));
 
         assertEquals(Optional.of(new DateRange(mondayMidnight.plusHours(6).toDate(), mondayMidnight.plusHours(12).toDate())),
                 shift.findWorkTimeAt(mondayMidnight.plusHours(7).toDate()));

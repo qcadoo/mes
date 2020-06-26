@@ -26,7 +26,6 @@ package com.qcadoo.mes.productionPerShift.report;
 import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.commons.dateTime.TimeRange;
 import com.qcadoo.mes.basic.ShiftsService;
-import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.mes.lineChangeoverNorms.ChangeoverNormsService;
 import com.qcadoo.mes.lineChangeoverNormsForOrders.LineChangeoverNormsForOrdersService;
@@ -39,12 +38,14 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.UserService;
 import org.joda.time.DateTime;
-import org.joda.time.Days;
 import org.joda.time.LocalTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
 
@@ -71,7 +72,7 @@ public class PPSReportXlsHelper {
     public List<Entity> getProductionPerShiftForReport(final Entity goodFoodReport) {
         DateTime dateFrom = new DateTime(goodFoodReport.getDateField(PPSReportFields.DATE_FROM));
 
-        List<Entity> shifts = getShifts();
+        List<Entity> shifts = shiftsService.getShifts();
         Shift shiftFirst = new Shift(shifts.get(0), dateFrom, false);
         List<TimeRange> ranges = shiftFirst.findWorkTimeAt(dateFrom.toLocalDate());
         LocalTime startTime = ranges.get(0).getFrom();
@@ -132,40 +133,6 @@ public class PPSReportXlsHelper {
         }
 
         return Optional.empty();
-    }
-
-    public List<Entity> getShifts() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SHIFT).find().list()
-                .getEntities();
-    }
-
-    public List<DateTime> getDaysBetweenGivenDates(final Entity goodFoodReport) {
-        List<DateTime> days = new LinkedList<DateTime>();
-
-        DateTime dateFrom = new DateTime(goodFoodReport.getDateField(PPSReportFields.DATE_FROM));
-        DateTime dateTo = new DateTime(goodFoodReport.getDateField(PPSReportFields.DATE_TO));
-        DateTime nextDay = dateFrom;
-
-        int numberOfDays = Days.daysBetween(dateFrom.toDateMidnight(), dateTo.toDateMidnight()).getDays();
-
-        days.add(nextDay);
-
-        int oneDay = 1;
-
-        while (numberOfDays != 0) {
-            nextDay = nextDay.plusDays(oneDay).toDateTime();
-            days.add(nextDay);
-            numberOfDays--;
-        }
-
-        return days;
-    }
-
-    public int getNumberOfDaysBetweenGivenDates(final Entity goodFoodReport) {
-        DateTime dateFrom = new DateTime(goodFoodReport.getField(PPSReportFields.DATE_FROM));
-        DateTime dateTo = new DateTime(goodFoodReport.getField(PPSReportFields.DATE_TO));
-
-        return Days.daysBetween(dateFrom.toDateMidnight(), dateTo.toDateMidnight()).getDays();
     }
 
     public Entity getDailyProgress(final Entity productionPerShift, final Date day, final Entity shift) {

@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.productionPerShift.hooks;
 
-import com.qcadoo.mes.productionPerShift.report.PPSReportXlsHelper;
+import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.FieldDefinition;
@@ -43,7 +43,7 @@ public class PPSReportHooksTest {
     private PPSReportHooks hooks;
 
     @Mock
-    private PPSReportXlsHelper ppsReportXlsHelper;
+    private ShiftsService shiftsService;
 
     @Mock
     private DataDefinition reportDD;
@@ -57,13 +57,13 @@ public class PPSReportHooksTest {
 
         MockitoAnnotations.initMocks(this);
 
-        ReflectionTestUtils.setField(hooks, "ppsReportXlsHelper", ppsReportXlsHelper);
+        ReflectionTestUtils.setField(hooks, "shiftsService", shiftsService);
     }
 
     @Test
     public void shouldReturnFalseWhenCheckIfIsMoreThatFiveDays() {
         // given
-        given(ppsReportXlsHelper.getNumberOfDaysBetweenGivenDates(report)).willReturn(10);
+        given(shiftsService.getNumberOfDaysBetweenGivenDates(Mockito.anyObject(), Mockito.anyObject())).willReturn(10);
 
         // when
         boolean result = hooks.checkIfIsMoreThatFiveDays(reportDD, report);
@@ -77,7 +77,7 @@ public class PPSReportHooksTest {
     @Test
     public void shouldReturnTrueWhenCheckIfIsMoreThatFiveDays() {
         // given
-        given(ppsReportXlsHelper.getNumberOfDaysBetweenGivenDates(report)).willReturn(3);
+        given(shiftsService.getNumberOfDaysBetweenGivenDates(Mockito.anyObject(), Mockito.anyObject())).willReturn(3);
 
         // when
         boolean result = hooks.checkIfIsMoreThatFiveDays(reportDD, report);

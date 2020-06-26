@@ -2,7 +2,7 @@ package com.qcadoo.mes.basic.product;
 
 import com.google.common.base.Strings;
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.BasicLookupController;
+import com.qcadoo.mes.basic.controllers.BasicLookupController;
 import com.qcadoo.mes.basic.LookupUtils;
 import com.qcadoo.mes.basic.constants.GlobalTypeOfMaterial;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;

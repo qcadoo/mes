@@ -26,13 +26,12 @@ package com.qcadoo.mes.basic;
 import com.qcadoo.mes.basic.ShiftsServiceImpl.ShiftHour;
 import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.model.api.Entity;
+import org.joda.time.DateTime;
+import org.joda.time.LocalTime;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-
-import org.joda.time.DateTime;
-import org.joda.time.LocalTime;
 
 //FIXME maku: replace bounded time/date ranges with JodaTime's intervals.
 public interface ShiftsService {
@@ -52,15 +51,11 @@ public interface ShiftsService {
     // FIXME maku: ugly coupling - interface uses type defined within one of concrete implementations
     List<ShiftHour> getHoursForAllShifts(final Date dateFrom, final Date dateTo);
 
-    Date findDateToForProductionLine(final Date dateFrom, final long seconds, Entity productionLine);
+    Date findDateToForProductionLine(final Date dateFrom, final long seconds, final Entity productionLine);
+
+    long getTotalAvailableTimeForProductionLine(final Date dateFrom, final Date dateTo, final Entity productionLine);
 
     List<ShiftHour> getHoursForShift(final Entity shift, final Date dateFrom, final Date dateTo);
-
-    /**
-     * @deprecated use {@link Shift#worksAt(int)} instead.
-     */
-    @Deprecated
-    boolean checkIfShiftWorkAtDate(final Date date, final Entity shift);
 
     String getWeekDayName(final DateTime dateTime);
 
@@ -68,4 +63,7 @@ public interface ShiftsService {
 
     Optional<DateTime> getNearestWorkingDate(final DateTime dateFrom, final Entity productionLine);
 
+    List<DateTime> getDaysBetweenGivenDates(final DateTime dateFrom, final DateTime dateTo);
+
+    int getNumberOfDaysBetweenGivenDates(final DateTime dateFrom, final DateTime dateTo);
 }

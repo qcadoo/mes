@@ -54,10 +54,6 @@ import java.util.List;
 @Service
 public class AssignmentToShiftDetailsHooks {
 
-
-
-    
-
     public static final String L_ACTIONS = "actions";
 
     public static final String L_STATUS = "status";

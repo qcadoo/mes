@@ -23,33 +23,37 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.ProductService;
+import com.qcadoo.mes.basic.ShiftsService;
+import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.mes.orders.OperationalTasksService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.OrderStateChangeReasonService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
-import com.qcadoo.mes.orders.constants.*;
+import com.qcadoo.mes.orders.constants.OperationalTaskFields;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.constants.OrderStartDateBasedOn;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeDescriber;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
 import com.qcadoo.mes.orders.util.OrderDatesService;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyType;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.utils.TimeConverterService;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
@@ -57,6 +61,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderHooks {
@@ -102,6 +113,9 @@ public class OrderHooks {
     @Autowired
     private OperationalTasksService operationalTasksService;
 
+    @Autowired
+    private ShiftsService shiftsService;
+
     public boolean validatesWith(final DataDefinition orderDD, final Entity order) {
         Entity parameter = parameterService.getParameter();
 
@@ -122,6 +136,38 @@ public class OrderHooks {
         order.setField(OrderFields.TECHNOLOGY, order.getField(OrderFields.TECHNOLOGY_PROTOTYPE));
         if (Objects.isNull(order.getField(OrderFields.EXTERNAL_SYNCHRONIZED))) {
             order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
+        }
+        fillStartDateFromParameters(order);
+    }
+
+    private void fillStartDateFromParameters(final Entity order) {
+        if (Objects.isNull(order.getId())
+                && parameterService.getParameter().getBooleanField(ParameterFieldsO.ADVISE_START_DATE_OF_THE_ORDER)
+                && Objects.isNull(order.getDateField(OrderFields.START_DATE))) {
+            String basedOn = parameterService.getParameter().getStringField("orderStartDateBasedOn");
+            if (OrderStartDateBasedOn.CURRENT_DATE.getStringValue().equals(basedOn)) {
+                order.setField(OrderFields.START_DATE, new Date());
+            } else if (OrderStartDateBasedOn.BEGINNING_FIRST_SHIFT_NEXT_DAY.getStringValue().equals(basedOn)) {
+                if (Objects.nonNull(order.getBelongsToField(OrderFields.PRODUCTION_LINE))) {
+                    DateTime nextDate = DateTime.now().plusDays(1);
+                    List<Entity> shifts = shiftsService.getShiftsWorkingAtDate(nextDate.toDate());
+                    Shift shift = new Shift(shifts.get(0), nextDate, false);
+                    Optional<DateTime> maybeDate = shiftsService.getNearestWorkingDate(new DateTime(shift.getShiftStartDate()),
+                            order.getBelongsToField(OrderFields.PRODUCTION_LINE));
+                    maybeDate.ifPresent(dateTime -> order.setField(OrderFields.START_DATE, dateTime.toDate()));
+                }
+            } else if (OrderStartDateBasedOn.END_DATE_LAST_ORDER_ON_THE_LINE.getStringValue().equals(basedOn)) {
+                if (Objects.nonNull(order.getBelongsToField(OrderFields.PRODUCTION_LINE))) {
+                    Optional<Entity> maybeLastOrder = orderService.findLastOrder(order);
+                    if (maybeLastOrder.isPresent()) {
+                        Entity lastOrder = maybeLastOrder.get();
+                        Optional<DateTime> maybeDate = shiftsService.getNearestWorkingDate(
+                                new DateTime(lastOrder.getDateField(OrderFields.FINISH_DATE)),
+                                order.getBelongsToField(OrderFields.PRODUCTION_LINE));
+                        maybeDate.ifPresent(dateTime -> order.setField(OrderFields.START_DATE, dateTime.toDate()));
+                    }
+                }
+            }
         }
     }
 
@@ -181,10 +227,10 @@ public class OrderHooks {
     }
 
     public void setRemainingQuantity(final Entity order) {
-        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils
-                .convertNullToZero(order.getDecimalField(OrderFields.PLANNED_QUANTITY))
-                .subtract(BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
-                        numberService.getMathContext());
+        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils.convertNullToZero(
+                order.getDecimalField(OrderFields.PLANNED_QUANTITY)).subtract(
+                BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
+                numberService.getMathContext());
         order.setField(OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE, remainingAmountOfProductToProduce);
     }
 
@@ -271,8 +317,8 @@ public class OrderHooks {
                         "orders.validate.global.error.operationalTasks.productChange");
                 return false;
             }
-            if (!order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE)
-                    .equals(orderFromDB.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE))) {
+            if (!order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE).equals(
+                    orderFromDB.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE))) {
                 order.addError(orderDD.getField(OrderFields.TECHNOLOGY_PROTOTYPE),
                         "orders.validate.global.error.operationalTasks.technologyChange");
                 return false;
@@ -366,8 +412,8 @@ public class OrderHooks {
 
             if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM)
                     && differenceForDateFrom > 0L) {
-                final String differenceAsString = TimeConverterService
-                        .convertTimeToString(String.valueOf(Math.abs(differenceForDateFrom)));
+                final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
+                        .abs(differenceForDateFrom)));
 
                 checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_FROM,
                         OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START,
@@ -375,8 +421,8 @@ public class OrderHooks {
             }
             if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM)
                     && differenceForDateFrom < 0L) {
-                final String differenceAsString = TimeConverterService
-                        .convertTimeToString(String.valueOf(Math.abs(differenceForDateFrom)));
+                final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
+                        .abs(differenceForDateFrom)));
 
                 checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_FROM,
                         OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START,
@@ -385,12 +431,11 @@ public class OrderHooks {
         }
 
         // EFFECTIVE_DATE_TO
-        if (OrderState.COMPLETED.getStringValue().equals(orderState)
-                || OrderState.ABANDONED.getStringValue().equals(orderState)) {
+        if (OrderState.COMPLETED.getStringValue().equals(orderState) || OrderState.ABANDONED.getStringValue().equals(orderState)) {
             if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO)
                     && differenceForDateTo > 0L) {
-                final String differenceAsString = TimeConverterService
-                        .convertTimeToString(String.valueOf(Math.abs(differenceForDateTo)));
+                final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
+                        .abs(differenceForDateTo)));
 
                 checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_TO,
                         OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END,
@@ -398,8 +443,8 @@ public class OrderHooks {
             }
             if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO)
                     && differenceForDateTo < 0L) {
-                final String differenceAsString = TimeConverterService
-                        .convertTimeToString(String.valueOf(Math.abs(differenceForDateTo)));
+                final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
+                        .abs(differenceForDateTo)));
                 checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_TO,
                         OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END,
                         "orders.order.reasonNeededWhenEarlierEffectiveDateTo.isRequired", differenceAsString);
@@ -443,8 +488,8 @@ public class OrderHooks {
         if (OrderState.PENDING.getStringValue().equals(state) && !startDate.equals(startDateDB)) {
             order.setField(OrderFields.DATE_FROM, startDate);
         }
-        if ((OrderState.IN_PROGRESS.getStringValue().equals(state) || OrderState.COMPLETED.getStringValue().equals(state)
-                || OrderState.ABANDONED.getStringValue().equals(state)) && !startDate.equals(startDateDB)) {
+        if ((OrderState.IN_PROGRESS.getStringValue().equals(state) || OrderState.COMPLETED.getStringValue().equals(state) || OrderState.ABANDONED
+                .getStringValue().equals(state)) && !startDate.equals(startDateDB)) {
             order.setField(OrderFields.EFFECTIVE_DATE_FROM, startDate);
         }
         if (OrderState.ACCEPTED.getStringValue().equals(state) && !startDateDB.equals(startDate)) {
@@ -566,12 +611,10 @@ public class OrderHooks {
         String typeOfProductionRecording = order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING);
 
         if (StringUtils.isEmpty(typeOfProductionRecording)) {
-            if (BigDecimalUtils.convertNullToZero(doneQuantity)
-                    .compareTo(BigDecimalUtils.convertNullToZero(doneQuantityFromDB)) != 0) {
-                order.setField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED,
-                        numberService.setScaleWithDefaultMathContext(doneQuantity));
-            } else if (BigDecimalUtils.convertNullToZero(amountOfProductProduced)
-                    .compareTo(BigDecimalUtils.convertNullToZero(amountOfProductProducedFromDB)) != 0) {
+            if (BigDecimalUtils.convertNullToZero(doneQuantity).compareTo(BigDecimalUtils.convertNullToZero(doneQuantityFromDB)) != 0) {
+                order.setField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED, numberService.setScaleWithDefaultMathContext(doneQuantity));
+            } else if (BigDecimalUtils.convertNullToZero(amountOfProductProduced).compareTo(
+                    BigDecimalUtils.convertNullToZero(amountOfProductProducedFromDB)) != 0) {
                 order.setField(OrderFields.DONE_QUANTITY, numberService.setScaleWithDefaultMathContext(amountOfProductProduced));
             }
         } else {
@@ -601,8 +644,8 @@ public class OrderHooks {
             BigDecimal commissionedCorrectedQuantityFromDB = orderFromDB
                     .getDecimalField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY);
 
-            if ((BigDecimalUtils.convertNullToZero(commissionedCorrectedQuantity)
-                    .compareTo(BigDecimalUtils.convertNullToZero(commissionedCorrectedQuantityFromDB)) != 0)
+            if ((BigDecimalUtils.convertNullToZero(commissionedCorrectedQuantity).compareTo(
+                    BigDecimalUtils.convertNullToZero(commissionedCorrectedQuantityFromDB)) != 0)
                     && order.getHasManyField(OrderFields.TYPE_OF_CORRECTION_CAUSES).isEmpty()) {
                 order.addGlobalError("orders.order.correctingQuantity.missingTypeOfCorrectionCauses");
             }
@@ -610,8 +653,8 @@ public class OrderHooks {
     }
 
     public boolean neededWhenCorrectingTheRequestedVolume() {
-        return parameterService.getParameter()
-                .getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_THE_REQUESTED_VOLUME);
+        return parameterService.getParameter().getBooleanField(
+                ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_THE_REQUESTED_VOLUME);
     }
 
     public void setCommissionedPlannedQuantity(final DataDefinition orderDD, final Entity order) {
@@ -666,38 +709,6 @@ public class OrderHooks {
             order.setField(OrderFields.TECHNOLOGY, null);
             order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
         }
-    }
-
-    private Optional<Entity> copyTechnology(final Entity order) {
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        if (technology == null) {
-            return Optional.absent();
-        }
-        String number = generateTechnologyNumberFor(order).orNull();
-        Entity copyOfTechnology = technology.getDataDefinition().copy(technology.getId()).get(0);
-        copyOfTechnology.setField(TechnologyFields.NUMBER, number);
-        copyOfTechnology.setField(TechnologyFields.TECHNOLOGY_TYPE, TechnologyType.WITH_PATTERN_TECHNOLOGY.getStringValue());
-        Entity prototype = technology.getBelongsToField(TechnologyFields.TECHNOLOGY_PROTOTYPE);
-        if (prototype == null) {
-            copyOfTechnology.setField(TechnologyFields.TECHNOLOGY_PROTOTYPE, technology);
-        } else {
-            copyOfTechnology.setField(TechnologyFields.TECHNOLOGY_PROTOTYPE, prototype);
-        }
-        copyOfTechnology = copyOfTechnology.getDataDefinition().save(copyOfTechnology);
-        if (OrderType.of(order) == OrderType.WITH_PATTERN_TECHNOLOGY) {
-            technologyServiceO.changeTechnologyStateToChecked(copyOfTechnology);
-        }
-        return Optional.of(copyOfTechnology);
-    }
-
-    private Optional<String> generateTechnologyNumberFor(final Entity order) {
-        OrderType orderType = OrderType.of(order);
-        Optional<Entity> maybeTechnologyPrototype = Optional.absent();
-        if (OrderType.WITH_PATTERN_TECHNOLOGY == orderType) {
-            maybeTechnologyPrototype = Optional.fromNullable(order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE));
-        }
-        return Optional
-                .fromNullable(technologyServiceO.generateNumberForTechnologyInOrder(order, maybeTechnologyPrototype.orNull()));
     }
 
 }

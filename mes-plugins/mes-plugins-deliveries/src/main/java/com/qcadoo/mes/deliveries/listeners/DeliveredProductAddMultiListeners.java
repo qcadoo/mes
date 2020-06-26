@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
+import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
@@ -58,7 +59,7 @@ import java.util.*;
 @Component
 public class DeliveredProductAddMultiListeners {
 
-    
+
 
     private static final String L_OFFER = "offer";
 
@@ -365,6 +366,8 @@ public class DeliveredProductAddMultiListeners {
                     .findFieldComponentByName(DeliveredProductMultiPositionFields.ADDITIONAL_CODE);
             LookupComponent batchLookup = (LookupComponent) deliveredProductMultiPositionsFormComponent
                     .findFieldComponentByName(DeliveredProductMultiPositionFields.BATCH);
+            FieldComponent conversionField = deliveredProductMultiPositionsFormComponent
+                    .findFieldComponentByName(DeliveredProductMultiPositionFields.CONVERSION);
 
             if (productLookup.getUuid().equals(state.getUuid())) {
                 deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_CODE, null);
@@ -378,9 +381,7 @@ public class DeliveredProductAddMultiListeners {
                     String unit = product.getStringField(ProductFields.UNIT);
                     deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.UNIT, unit);
                     String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
-
-                    FieldComponent conversionField = deliveredProductMultiPositionsFormComponent
-                            .findFieldComponentByName(DeliveredProductMultiPositionFields.CONVERSION);
+                    Entity batch = batchLookup.getEntity();
 
                     if (Objects.nonNull(additionalUnit)) {
                         conversionField.setEnabled(true);
@@ -396,6 +397,12 @@ public class DeliveredProductAddMultiListeners {
 
                         deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT, unit);
                         deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.CONVERSION, BigDecimal.ONE);
+                    }
+
+                    if (Objects.nonNull(batch)) {
+                        if (!product.getId().equals(batch.getBelongsToField(BatchFields.PRODUCT).getId())) {
+                            deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.BATCH, null);
+                        }
                     }
 
                     deliveredProductMultiPositionsFormComponent.setEntity(deliveredProductMultiPosition);
