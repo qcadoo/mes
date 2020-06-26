@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.avgLaborCostCalcForOrder.listeners;
 
-import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.avgLaborCostCalcForOrder.AverageCostService;
 import com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderConstants;
 import com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderFields;
@@ -36,14 +35,11 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
 import java.util.List;
 
 import static com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderFields.*;
@@ -91,26 +87,11 @@ public class AvgLaborCostCalcForOrderDetailsListeners {
     public void generateAssignmentWorkerToShiftAndAverageCost(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
         state.performEvent(view, "save", args);
-        FieldComponent startDate = (FieldComponent) view.getComponentByReference(START_DATE);
-        FieldComponent finishDate = (FieldComponent) view.getComponentByReference(FINISH_DATE);
-        FieldComponent averageLaborHourlyCost = (FieldComponent) view.getComponentByReference(AVERAGE_LABOR_HOURLY_COST);
-
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Entity avgLaborCostCalcForOrder = form.getEntity().getDataDefinition().get(form.getEntityId());
+        Entity avgLaborCostCalcForOrder = form.getPersistedEntityWithIncludedFormValues();
 
-        LookupComponent lookup = (LookupComponent) view.getComponentByReference("productionLine");
-        Entity productionLine = lookup.getEntity();
-
-        Date start = DateUtils.parseDate(startDate.getFieldValue());
-        Date finish = DateUtils.parseDate(finishDate.getFieldValue());
-
-        avgLaborCostCalcForOrder = averageCostService.generateAssignmentWorkerToShiftAndAverageCost(avgLaborCostCalcForOrder,
-                start, finish, productionLine);
+        avgLaborCostCalcForOrder = averageCostService.generateAssignmentWorkerToShiftAndAverageCost(avgLaborCostCalcForOrder);
         form.setEntity(avgLaborCostCalcForOrder);
-        state.performEvent(view, "save", args);
-        // TODO ALBR why refresh actions on field or form doesn't work?
-        averageLaborHourlyCost.setFieldValue(avgLaborCostCalcForOrder.getDecimalField(AVERAGE_LABOR_HOURLY_COST));
-        averageLaborHourlyCost.requestComponentUpdateState();
     }
 
     public void copyToOperationsNorms(final ViewDefinitionState view, final ComponentState state, final String[] args) {

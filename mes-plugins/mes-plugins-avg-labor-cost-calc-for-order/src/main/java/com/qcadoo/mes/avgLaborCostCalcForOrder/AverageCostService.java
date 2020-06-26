@@ -33,7 +33,6 @@ import com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AssignmentWorkerToShift
 import com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderConstants;
 import com.qcadoo.mes.avgLaborCostCalcForOrder.constants.AvgLaborCostCalcForOrderFields;
 import com.qcadoo.mes.basic.ShiftsService;
-import com.qcadoo.mes.basic.ShiftsServiceImpl.ShiftHour;
 import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -42,12 +41,14 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import org.joda.time.DateTime;
-import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import static com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftFields.SHIFT;
@@ -67,44 +68,34 @@ public class AverageCostService {
     @Autowired
     private ShiftsService shiftsService;
 
-    public Entity generateAssignmentWorkerToShiftAndAverageCost(final Entity entity, final Date start, final Date finish,
-            final Entity productionLine) {
-        Entity avgLaborCostCalcForOrder = entity.getDataDefinition().get(entity.getId());
-        Map<Entity, BigDecimal> workersWithHoursWorked = generateMapWorkersWithHoursWorked(start, finish, productionLine);
-        BigDecimal averageCost = countAverageCost(workersWithHoursWorked);
-        if (averageCost == null) {
-            avgLaborCostCalcForOrder.addError(entity.getDataDefinition().getField(AVERAGE_LABOR_HOURLY_COST),
-                    "avgLaborCostCalcForOrder.avgLaborCostCalcForOrder.averageLaborHourlyCost.isZero");
-            avgLaborCostCalcForOrder.addError(entity.getDataDefinition().getField(AvgLaborCostCalcForOrderFields.START_DATE),
-                    "avgLaborCostCalcForOrder.avgLaborCostCalcForOrder.averageLaborHourlyCost.isZero");
-            avgLaborCostCalcForOrder.addError(entity.getDataDefinition().getField(AvgLaborCostCalcForOrderFields.FINISH_DATE),
-                    "avgLaborCostCalcForOrder.avgLaborCostCalcForOrder.averageLaborHourlyCost.isZero");
-        } else {
-            avgLaborCostCalcForOrder.setField(AVERAGE_LABOR_HOURLY_COST, averageCost);
-            avgLaborCostCalcForOrder.setField(AvgLaborCostCalcForOrderFields.ASSIGNMENT_WORKER_TO_SHIFTS,
-                    createAssignmentWorkerToShift(workersWithHoursWorked));
-        }
-        return avgLaborCostCalcForOrder;
+    public Entity generateAssignmentWorkerToShiftAndAverageCost(Entity entity) {
+        Map<Entity, BigDecimal> workersWithHoursWorked = generateMapWorkersWithHoursWorked(entity);
+        entity.setField(AVERAGE_LABOR_HOURLY_COST, null);
+        entity = createAssignmentWorkerToShift(entity, workersWithHoursWorked);
+        entity = countAverageCost(entity, workersWithHoursWorked);
+        return entity;
     }
 
-    private Map<Entity, BigDecimal> generateMapWorkersWithHoursWorked(final Date start, final Date finish,
-            final Entity productionLine) {
+    private Map<Entity, BigDecimal> generateMapWorkersWithHoursWorked(final Entity entity) {
         Map<Entity, BigDecimal> workersWithHours = new HashMap<>();
         List<Shift> shifts = shiftsService.findAll();
-        List<DateTime> days = shiftsService.getDaysBetweenGivenDates(new DateTime(start), new DateTime(finish));
+        List<DateTime> days = shiftsService.getDaysBetweenGivenDates(
+                new DateTime(entity.getDateField(AvgLaborCostCalcForOrderFields.START_DATE)),
+                new DateTime(entity.getDateField(AvgLaborCostCalcForOrderFields.FINISH_DATE)));
         for (DateTime day : days) {
             for (Shift shift : shifts) {
                 Entity assignmentToShift = getAssignmentToShift(shift, day);
                 if (assignmentToShift == null) {
                     continue;
                 }
-                List<Entity> staffs = getStaffAssignmentToShiftDependOnAssignmentToShiftState(assignmentToShift, productionLine);
+                List<Entity> staffs = getStaffAssignmentToShiftDependOnAssignmentToShiftState(assignmentToShift,
+                        entity.getBelongsToField(AvgLaborCostCalcForOrderFields.PRODUCTION_LINE));
                 for (Entity staff : staffs) {
                     if (workersWithHours.containsKey(staff)) {
-                        BigDecimal countHours = workersWithHours.get(staff).add(getWorkedHoursOfWorker(shift.getEntity(), day));
+                        BigDecimal countHours = workersWithHours.get(staff).add(shiftsService.getWorkedHoursOfWorker(shift, day));
                         workersWithHours.put(staff, countHours);
                     } else {
-                        workersWithHours.put(staff, getWorkedHoursOfWorker(shift.getEntity(), day));
+                        workersWithHours.put(staff, shiftsService.getWorkedHoursOfWorker(shift, day));
                     }
                 }
             }
@@ -112,32 +103,30 @@ public class AverageCostService {
         return workersWithHours;
     }
 
-    private BigDecimal countAverageCost(final Map<Entity, BigDecimal> workersWithHoursWorked) {
-        BigDecimal averageCost = BigDecimal.ZERO;
+    private Entity countAverageCost(Entity entity, final Map<Entity, BigDecimal> workersWithHoursWorked) {
+        BigDecimal costOfWorkersHours = BigDecimal.ZERO;
         BigDecimal countHours = BigDecimal.ZERO;
         for (Entry<Entity, BigDecimal> workerWithHours : workersWithHoursWorked.entrySet()) {
             BigDecimal quantityOfHours = workerWithHours.getValue();
-            BigDecimal costOfWorkerHours = workerWithHours.getKey().getBelongsToField(StaffAssignmentToShiftFields.WORKER)
-                    .getDecimalField("laborHourlyCost").multiply(quantityOfHours);
-            averageCost = averageCost.add(costOfWorkerHours);
+            BigDecimal laborHourlyCost = workerWithHours.getKey().getBelongsToField(StaffAssignmentToShiftFields.WORKER)
+                    .getDecimalField("laborHourlyCost");
+            if (laborHourlyCost == null) {
+                entity.addGlobalError("avgLaborCostCalcForOrder.avgLaborCostCalcForOrder.laborHourlyCost.isEmpty");
+                return entity;
+            }
+            BigDecimal costOfWorkerHours = laborHourlyCost.multiply(quantityOfHours);
+            costOfWorkersHours = costOfWorkersHours.add(costOfWorkerHours);
             countHours = countHours.add(quantityOfHours);
         }
         if (countHours.equals(BigDecimal.ZERO)) {
-            return null;
+            entity.addGlobalError("avgLaborCostCalcForOrder.avgLaborCostCalcForOrder.averageLaborHourlyCost.isZero");
+            return entity;
         }
-        return numberService.setScaleWithDefaultMathContext(averageCost.divide(countHours, numberService.getMathContext()));
-    }
-
-    private BigDecimal getWorkedHoursOfWorker(final Entity shift, final DateTime dateOfDay) {
-        BigDecimal hours = BigDecimal.ZERO;
-        List<ShiftHour> workedHours = shiftsService.getHoursForShift(shift, dateOfDay.toDate(), dateOfDay.plusDays(1).toDate());
-        for (ShiftHour shiftHour : workedHours) {
-            DateTime dateFrom = new DateTime(shiftHour.getDateFrom());
-            DateTime dateTo = new DateTime(shiftHour.getDateTo());
-            Period p = new Period(dateFrom, dateTo);
-            hours = hours.add(new BigDecimal(p.getHours()));
-        }
-        return hours;
+        BigDecimal averageCost = numberService
+                .setScaleWithDefaultMathContext(costOfWorkersHours.divide(countHours, numberService.getMathContext()));
+        entity.setField(AVERAGE_LABOR_HOURLY_COST, averageCost);
+        entity = entity.getDataDefinition().save(entity);
+        return entity;
     }
 
     private Entity getAssignmentToShift(final Shift shift, final DateTime date) {
@@ -173,8 +162,8 @@ public class AverageCostService {
         return staffAssignmentToShifts;
     }
 
-    private List<Entity> createAssignmentWorkerToShift(final Map<Entity, BigDecimal> workersWithHoursWorked) {
-        Map<Long, Entity> workers = new HashMap<Long, Entity>();
+    private Entity createAssignmentWorkerToShift(Entity entity, final Map<Entity, BigDecimal> workersWithHoursWorked) {
+        Map<Long, Entity> workers = new HashMap<>();
         for (Entry<Entity, BigDecimal> workerWithHours : workersWithHoursWorked.entrySet()) {
             Entity worker = workerWithHours.getKey().getBelongsToField(WORKER);
             Long workerId = worker.getId();
@@ -193,6 +182,8 @@ public class AverageCostService {
             }
             workers.put(worker.getId(), assignmentWorkerToShift);
         }
-        return Lists.newArrayList(workers.values());
+        entity.setField(AvgLaborCostCalcForOrderFields.ASSIGNMENT_WORKER_TO_SHIFTS, Lists.newArrayList(workers.values()));
+        entity = entity.getDataDefinition().save(entity);
+        return entity;
     }
 }

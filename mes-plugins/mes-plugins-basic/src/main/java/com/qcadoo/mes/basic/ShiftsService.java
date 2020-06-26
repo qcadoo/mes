@@ -23,17 +23,18 @@
  */
 package com.qcadoo.mes.basic;
 
-import com.qcadoo.mes.basic.ShiftsServiceImpl.ShiftHour;
 import com.qcadoo.mes.basic.shift.Shift;
+import com.qcadoo.mes.basic.util.DateTimeRange;
 import com.qcadoo.model.api.Entity;
 import org.joda.time.DateTime;
+import org.joda.time.Interval;
 import org.joda.time.LocalTime;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-//FIXME maku: replace bounded time/date ranges with JodaTime's intervals.
 public interface ShiftsService {
 
     List<Shift> findAll();
@@ -48,14 +49,11 @@ public interface ShiftsService {
 
     Entity getShiftFromDateWithTime(final Date date);
 
-    // FIXME maku: ugly coupling - interface uses type defined within one of concrete implementations
-    List<ShiftHour> getHoursForAllShifts(final Date dateFrom, final Date dateTo);
+    List<DateTimeRange> getDateTimeRanges(final List<Shift> shifts, final Date dateFrom, final Date dateTo);
 
     Date findDateToForProductionLine(final Date dateFrom, final long seconds, final Entity productionLine);
 
     long getTotalAvailableTimeForProductionLine(final Date dateFrom, final Date dateTo, final Entity productionLine);
-
-    List<ShiftHour> getHoursForShift(final Entity shift, final Date dateFrom, final Date dateTo);
 
     String getWeekDayName(final DateTime dateTime);
 
@@ -66,4 +64,10 @@ public interface ShiftsService {
     List<DateTime> getDaysBetweenGivenDates(final DateTime dateFrom, final DateTime dateTo);
 
     int getNumberOfDaysBetweenGivenDates(final DateTime dateFrom, final DateTime dateTo);
+
+    BigDecimal getWorkedHoursOfWorker(final Shift shift, final DateTime dateOfDay);
+
+    List<Interval> mergeIntervals(List<Interval> intervals);
+
+    long sumIntervals(List<Interval> intervals);
 }

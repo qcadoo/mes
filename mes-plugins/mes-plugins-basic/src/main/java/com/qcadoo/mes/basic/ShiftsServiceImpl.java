@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.basic;
 
-import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -66,10 +66,6 @@ public class ShiftsServiceImpl implements ShiftsService {
     private static final String L_TUESDAY = "tuesday";
 
     private static final String L_MONDAY = "monday";
-
-    private static final String TYPE_FIELD = "type";
-
-    private static final String TIMETABLE_EXCEPTIONS_FIELD = "timetableExceptions";
 
     private static final String HOURS_LITERAL = "Hours";
 
@@ -393,40 +389,23 @@ public class ShiftsServiceImpl implements ShiftsService {
     }
 
     @Override
-    public List<ShiftHour> getHoursForAllShifts(final Date dateFrom, final Date dateTo) {
-        List<Entity> shifts = getShifts();
+    public List<DateTimeRange> getDateTimeRanges(final List<Shift> shifts, final Date dateFrom, final Date dateTo) {
+        List<DateTimeRange> ranges = Lists.newArrayList();
 
-        List<ShiftHour> hours = Lists.newArrayList();
-
-        for (Entity shift : shifts) {
-            hours.addAll(getHoursForShift(shift, dateFrom, dateTo));
+        DateTime dateOfDay = new DateTime(dateFrom);
+        int loopCount = 0;
+        while (!dateOfDay.isAfter(new DateTime(dateTo))) {
+            if (loopCount > MAX_LOOPS) {
+                return ranges;
+            }
+            for (Shift shift : shifts) {
+                ranges.addAll(shiftExceptionService.getShiftWorkDateTimes(null, shift, dateOfDay, true));
+            }
+            loopCount++;
+            dateOfDay = dateOfDay.plusDays(1);
         }
 
-        hours.sort(new ShiftHoursComparator());
-
-        return mergeOverlappedHours(hours);
-    }
-
-    @Override
-    public List<ShiftHour> getHoursForShift(final Entity shift, final Date dateFrom, final Date dateTo) {
-        List<ShiftHour> hours = Lists.newArrayList();
-
-        hours.addAll(getHourForDay(shift, dateFrom, dateTo, L_MONDAY, 1));
-        hours.addAll(getHourForDay(shift, dateFrom, dateTo, L_TUESDAY, 2));
-        hours.addAll(getHourForDay(shift, dateFrom, dateTo, L_WENSDAY, 3));
-        hours.addAll(getHourForDay(shift, dateFrom, dateTo, L_THURSDAY, 4));
-        hours.addAll(getHourForDay(shift, dateFrom, dateTo, L_FRIDAY, 5));
-        hours.addAll(getHourForDay(shift, dateFrom, dateTo, L_SATURDAY, 6));
-        hours.addAll(getHourForDay(shift, dateFrom, dateTo, L_SUNDAY, 7));
-
-        List<Entity> exceptions = shift.getHasManyField(TIMETABLE_EXCEPTIONS_FIELD);
-
-        addWorkTimeExceptions(hours, exceptions);
-        removeFreeTimeExceptions(hours, exceptions);
-
-        hours.sort(new ShiftHoursComparator());
-
-        return removeHoursOutOfRange(mergeOverlappedHours(hours), dateFrom, dateTo);
+        return ranges;
     }
 
     public void onDayCheckboxChange(final ViewDefinitionState viewDefinitionState, final ComponentState state,
@@ -456,145 +435,6 @@ public class ShiftsServiceImpl implements ShiftsService {
         } else {
             dayHours.setEnabled(true);
             dayHours.setRequired(true);
-        }
-    }
-
-    private List<ShiftHour> removeHoursOutOfRange(final List<ShiftHour> hours, final Date dateFrom, final Date dateTo) {
-        List<ShiftHour> list = Lists.newArrayList();
-
-        for (ShiftHour hour : hours) {
-            if (hour.getDateTo().compareTo(dateFrom) <= 0 || hour.getDateFrom().compareTo(dateTo) >= 0) {
-                continue;
-            }
-            if (hour.getDateFrom().compareTo(dateFrom) >= 0 && hour.getDateTo().compareTo(dateTo) <= 0) {
-                list.add(hour);
-            } else if (hour.getDateFrom().compareTo(dateFrom) < 0 && hour.getDateTo().compareTo(dateTo) > 0) {
-                list.add(new ShiftHour(dateFrom, dateTo));
-            } else if (hour.getDateFrom().compareTo(dateFrom) < 0 && hour.getDateTo().compareTo(dateTo) <= 0) {
-                list.add(new ShiftHour(dateFrom, hour.getDateTo()));
-            } else if (hour.getDateFrom().compareTo(dateFrom) >= 0 && hour.getDateTo().compareTo(dateTo) > 0) {
-                list.add(new ShiftHour(hour.getDateFrom(), dateTo));
-            }
-        }
-
-        return list;
-    }
-
-    private void removeFreeTimeExceptions(final List<ShiftHour> hours, final List<Entity> exceptions) {
-        for (Entity exception : exceptions) {
-            if (!"01freeTime".equals(exception.getStringField(TYPE_FIELD))) {
-                continue;
-            }
-
-            Date from = (Date) exception.getField(FROM_DATE_FIELD);
-            Date to = (Date) exception.getField(TO_DATE_FIELD);
-
-            List<ShiftHour> hoursToRemove = Lists.newArrayList();
-            List<ShiftHour> hoursToAdd = Lists.newArrayList();
-
-            for (ShiftHour hour : hours) {
-                if (hour.getDateFrom().compareTo(to) >= 0) {
-                    continue;
-                }
-                if (hour.getDateTo().compareTo(from) <= 0) {
-                    continue;
-                }
-                if (hour.getDateTo().compareTo(to) <= 0 && hour.getDateFrom().compareTo(from) >= 0) {
-                    hoursToRemove.add(hour);
-
-                    continue;
-                }
-                if (hour.getDateTo().compareTo(to) >= 0 && hour.getDateFrom().compareTo(from) >= 0) {
-                    hoursToRemove.add(hour);
-                    hoursToAdd.add(new ShiftHour(to, hour.getDateTo()));
-
-                    continue;
-                }
-                if (hour.getDateTo().compareTo(to) <= 0 && hour.getDateFrom().compareTo(from) <= 0) {
-                    hoursToRemove.add(hour);
-                    hoursToAdd.add(new ShiftHour(hour.getDateFrom(), from));
-
-                    continue;
-                }
-                if (hour.getDateTo().compareTo(to) >= 0 && hour.getDateFrom().compareTo(from) <= 0) {
-                    hoursToRemove.add(hour);
-                    hoursToAdd.add(new ShiftHour(hour.getDateFrom(), from));
-                    hoursToAdd.add(new ShiftHour(to, hour.getDateTo()));
-
-                }
-            }
-
-            hours.removeAll(hoursToRemove);
-            hours.addAll(hoursToAdd);
-        }
-    }
-
-    private void addWorkTimeExceptions(final List<ShiftHour> hours, final List<Entity> exceptions) {
-        for (Entity exception : exceptions) {
-            if (!"02workTime".equals(exception.getStringField(TYPE_FIELD))) {
-                continue;
-            }
-
-            Date from = (Date) exception.getField(FROM_DATE_FIELD);
-            Date to = (Date) exception.getField(TO_DATE_FIELD);
-
-            hours.add(new ShiftHour(from, to));
-        }
-    }
-
-    private List<ShiftHour> mergeOverlappedHours(final List<ShiftHour> hours) {
-        if (hours.size() < 2) {
-            return hours;
-        }
-
-        List<ShiftHour> mergedHours = Lists.newArrayList();
-
-        ShiftHour currentHour = hours.get(0);
-
-        for (int i = 1; i < hours.size(); i++) {
-            if (currentHour.getDateTo().before(hours.get(i).getDateFrom())) {
-                mergedHours.add(currentHour);
-                currentHour = hours.get(i);
-            } else if (currentHour.getDateTo().before(hours.get(i).getDateTo())) {
-                currentHour = new ShiftHour(currentHour.getDateFrom(), hours.get(i).getDateTo());
-            }
-        }
-
-        mergedHours.add(currentHour);
-
-        return mergedHours;
-    }
-
-    private Collection<ShiftHour> getHourForDay(final Entity shift, final Date dateFrom, final Date dateTo, final String day,
-            final int offset) {
-        if ((Boolean) shift.getField(day + WORKING_LITERAL) && StringUtils.hasText(shift.getStringField(day + HOURS_LITERAL))) {
-            List<ShiftHour> hours = Lists.newArrayList();
-
-            LocalTime[][] dayHours = convertDayHoursToInt(shift.getStringField(day + HOURS_LITERAL));
-
-            DateTime from = new DateTime(dateFrom).withSecondOfMinute(0);
-            DateTime to = new DateTime(dateTo);
-
-            DateTime current = from.plusDays(offset - from.getDayOfWeek());
-
-            if (current.compareTo(from) < 0) {
-                current = current.plusDays(7);
-            }
-
-            while (current.compareTo(to) <= 0) {
-                for (LocalTime[] dayHour : dayHours) {
-                    hours.add(new ShiftHour(
-                            current.withHourOfDay(dayHour[0].getHourOfDay()).withMinuteOfHour(dayHour[0].getMinuteOfHour())
-                                    .toDate(),
-                            current.withHourOfDay(dayHour[1].getHourOfDay()).withMinuteOfHour(dayHour[1].getMinuteOfHour())
-                                    .toDate()));
-                }
-                current = current.plusDays(7);
-            }
-
-            return hours;
-        } else {
-            return Collections.emptyList();
         }
     }
 
@@ -644,26 +484,6 @@ public class ShiftsServiceImpl implements ShiftsService {
         } catch (NumberFormatException e) {
             throw new IllegalStateException("Invalid time " + string + ", should be hh:mm", e);
         }
-    }
-
-    public static class ShiftHoursComparator implements Comparator<ShiftHour>, Serializable {
-
-        /**
-         *
-         */
-        private static final long serialVersionUID = -3204783429616635555L;
-
-        @Override
-        public int compare(final ShiftHour o1, final ShiftHour o2) {
-            int i = o1.getDateFrom().compareTo(o2.getDateFrom());
-
-            if (i == 0) {
-                return o1.getDateTo().compareTo(o2.getDateTo());
-            } else {
-                return i;
-            }
-        }
-
     }
 
     @Override
@@ -727,7 +547,7 @@ public class ShiftsServiceImpl implements ShiftsService {
 
     @Override
     public List<Shift> findAll() {
-        return getShifts().stream().map(Shift::new).collect(Collectors.toList());
+        return findAll(null);
     }
 
     @Override
@@ -775,73 +595,50 @@ public class ShiftsServiceImpl implements ShiftsService {
         return DAY_OF_WEEK.get(day);
     }
 
-    // TODO replace this class with Interval or our DateRange/TimeRange
-    public static class ShiftHour {
-
-        private final Date dateTo;
-
-        private final Date dateFrom;
-
-        ShiftHour(final Date dateFrom, final Date dateTo) {
-            this.dateFrom = new Date(dateFrom.getTime());
-            if (dateFrom.after(dateTo)) {
-                Calendar cal = Calendar.getInstance();
-                cal.setTime(dateTo);
-                cal.add(Calendar.DATE, 1);
-
-                this.dateTo = new Date(cal.getTime().getTime());
-            } else {
-                this.dateTo = new Date(dateTo.getTime());
-            }
+    @Override
+    public BigDecimal getWorkedHoursOfWorker(final Shift shift, final DateTime dateOfDay) {
+        BigDecimal hours = BigDecimal.ZERO;
+        List<DateTimeRange> dateTimeRanges = getDateTimeRanges(Collections.singletonList(shift), dateOfDay.toDate(),
+                dateOfDay.plusDays(1).toDate());
+        for (DateTimeRange dateTimeRange : dateTimeRanges) {
+            Period p = new Period(dateTimeRange.getFrom(), dateTimeRange.getTo());
+            hours = hours.add(new BigDecimal(p.getHours()));
         }
-
-        public Date getDateTo() {
-            return new Date(dateTo.getTime());
-        }
-
-        public Date getDateFrom() {
-            return new Date(dateFrom.getTime());
-        }
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-
-            int result = 1;
-
-            result = prime * result + ((dateFrom == null) ? 0 : dateFrom.hashCode());
-            result = prime * result + ((dateTo == null) ? 0 : dateTo.hashCode());
-
-            return result;
-        }
-
-        @Override
-        public boolean equals(final Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (obj == null) {
-                return false;
-            }
-            if (!(obj instanceof ShiftHour)) {
-                return false;
-            }
-
-            ShiftHour other = (ShiftHour) obj;
-
-            if (dateFrom == null) {
-                if (other.dateFrom != null) {
-                    return false;
-                }
-            } else if (!dateFrom.equals(other.dateFrom)) {
-                return false;
-            }
-            if (dateTo == null) {
-                return other.dateTo == null;
-            } else
-                return dateTo.equals(other.dateTo);
-        }
-
+        return hours;
     }
 
+    @Override
+    public List<Interval> mergeIntervals(List<Interval> intervals) {
+        if (intervals.size() <= 1)
+            return intervals;
+
+        Interval first = intervals.get(0);
+        long start = first.getStartMillis();
+        long end = first.getEndMillis();
+
+        List<Interval> result = new ArrayList<>();
+
+        for (int i = 1; i < intervals.size(); i++) {
+            Interval current = intervals.get(i);
+            if (current.getStartMillis() <= end) {
+                end = Math.max(current.getEndMillis(), end);
+            } else {
+                result.add(new Interval(start, end));
+                start = current.getStartMillis();
+                end = current.getEndMillis();
+            }
+        }
+
+        result.add(new Interval(start, end));
+        return result;
+    }
+
+    @Override
+    public long sumIntervals(List<Interval> intervals) {
+        long time = 0;
+        for (Interval interval : intervals) {
+            time += interval.toDurationMillis();
+        }
+        return time / 1000;
+    }
 }

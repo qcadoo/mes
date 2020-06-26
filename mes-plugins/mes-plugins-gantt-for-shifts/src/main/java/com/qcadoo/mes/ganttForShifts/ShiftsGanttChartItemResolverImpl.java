@@ -23,31 +23,22 @@
  */
 package com.qcadoo.mes.ganttForShifts;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
+import com.qcadoo.mes.basic.ShiftsServiceImpl;
+import com.qcadoo.mes.basic.constants.ShiftFields;
+import com.qcadoo.mes.basic.shift.Shift;
+import com.qcadoo.mes.basic.util.DateTimeRange;
+import com.qcadoo.view.api.components.ganttChart.GanttChartItem;
+import com.qcadoo.view.api.components.ganttChart.GanttChartScale;
 import org.joda.time.LocalTime;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.mes.basic.ShiftsServiceImpl;
-import com.qcadoo.mes.basic.ShiftsServiceImpl.ShiftHour;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.components.ganttChart.GanttChartItem;
-import com.qcadoo.view.api.components.ganttChart.GanttChartScale;
+import java.util.*;
 
 @Service
 public class ShiftsGanttChartItemResolverImpl implements ShiftsGanttChartItemResolver {
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private ShiftsServiceImpl shiftsService;
@@ -55,33 +46,30 @@ public class ShiftsGanttChartItemResolverImpl implements ShiftsGanttChartItemRes
     @Override
     @Transactional
     public Map<String, List<GanttChartItem>> resolve(final GanttChartScale scale, final JSONObject context, final Locale locale) {
-        List<Entity> shifts = dataDefinitionService.get("basic", "shift").find().list().getEntities();
-        Map<String, List<GanttChartItem>> items = new LinkedHashMap<String, List<GanttChartItem>>();
+        List<Shift> shifts = shiftsService.findAll();
+        Map<String, List<GanttChartItem>> items = new LinkedHashMap<>();
 
-        for (Entity shift : shifts) {
-            items.put(shift.getStringField("name"), getItemsForShift(shift, scale));
+        for (Shift shift : shifts) {
+            items.put(shift.getEntity().getStringField(ShiftFields.NAME), getItemsForShift(shift, scale));
         }
 
         return items;
     }
 
-    @Override
-    public List<GanttChartItem> getItemsForShift(final Entity shift, final GanttChartScale scale) {
-        String shiftName = shift.getStringField("name");
+    private List<GanttChartItem> getItemsForShift(final Shift shift, final GanttChartScale scale) {
+        String shiftName = shift.getEntity().getStringField(ShiftFields.NAME);
 
-        List<ShiftHour> hours = shiftsService.getHoursForShift(shift, scale.getDateFrom(), scale.getDateTo());
+        List<DateTimeRange> timeRanges = shiftsService.getDateTimeRanges(Collections.singletonList(shift), scale.getDateFrom(),
+                scale.getDateTo());
 
-        List<GanttChartItem> items = new ArrayList<GanttChartItem>();
+        List<GanttChartItem> items = new ArrayList<>();
 
-        for (ShiftHour hour : hours) {
-            items.add(scale.createGanttChartItem(shiftName, shiftName, null, hour.getDateFrom(), hour.getDateTo()));
+        for (DateTimeRange timeRange : timeRanges) {
+            items.add(scale.createGanttChartItem(shiftName, shiftName, null, timeRange.getFrom().toDate(),
+                    timeRange.getTo().toDate()));
         }
 
         return items;
-    }
-
-    public List<ShiftsServiceImpl.ShiftHour> getHoursForAllShifts(final Date dateFrom, final Date dateTo) {
-        return shiftsService.getHoursForAllShifts(dateFrom, dateTo);
     }
 
     public LocalTime[][] convertDayHoursToInt(final String string) {

@@ -23,31 +23,26 @@
  */
 package com.qcadoo.mes.timeGapsPreview.provider;
 
-import static com.qcadoo.mes.basic.ShiftsServiceImpl.ShiftHour;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
+import com.qcadoo.mes.basic.ShiftsService;
+import com.qcadoo.mes.basic.shift.Shift;
+import com.qcadoo.mes.basic.util.DateTimeRange;
+import com.qcadoo.mes.timeGapsPreview.TimeGapsContext;
+import com.qcadoo.mes.timeGapsPreview.util.TimeGapsBuilder;
+import com.qcadoo.mes.timeGapsPreview.util.TimeGapsBuilderImpl;
+import org.joda.time.Interval;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-import org.joda.time.Interval;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
-import com.qcadoo.mes.basic.ShiftsService;
-import com.qcadoo.mes.timeGapsPreview.TimeGapsContext;
-import com.qcadoo.mes.timeGapsPreview.provider.helper.ShiftIntervalsModelHelper;
-import com.qcadoo.mes.timeGapsPreview.util.TimeGapsBuilder;
-import com.qcadoo.mes.timeGapsPreview.util.TimeGapsBuilderImpl;
-
 @Service
 public class ShiftIntervalsProvider implements IntervalsProvider {
-
-    @Autowired
-    private ShiftIntervalsModelHelper shiftIntervalsModelHelper;
 
     @Autowired
     private ShiftsService shiftsService;
@@ -73,10 +68,11 @@ public class ShiftIntervalsProvider implements IntervalsProvider {
         Interval searchInterval = context.getInterval();
         Date fromDate = searchInterval.getStart().toDate();
         Date toDate = searchInterval.getEnd().toDate();
-        List<ShiftHour> shiftHours = shiftsService.getHoursForAllShifts(fromDate, toDate);
+        List<Shift> shifts = shiftsService.findAll();
+        List<DateTimeRange> dateTimeRanges = shiftsService.getDateTimeRanges(shifts, fromDate, toDate);
         Set<Interval> shiftWorkTimeIntervals = Sets.newHashSet();
-        for (ShiftHour shiftHour : shiftHours) {
-            Interval shiftWorkTimeInterval = new Interval(shiftHour.getDateFrom().getTime(), shiftHour.getDateTo().getTime());
+        for (DateTimeRange dateTimeRange : dateTimeRanges) {
+            Interval shiftWorkTimeInterval = new Interval(dateTimeRange.getFrom(), dateTimeRange.getTo());
             shiftWorkTimeIntervals.add(shiftWorkTimeInterval);
         }
         return shiftWorkTimeIntervals;
