@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.advancedGenealogy.criteriaModifier;
 
+import java.util.Objects;
+
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
@@ -61,13 +63,17 @@ public class BatchCriteriaModifier {
     }
 
     public void putProductFilterValue(final LookupComponent batchLookup, final Entity product) {
-        if (product != null) {
-            FilterValueHolder filterValueHolder = batchLookup.getFilterValue();
+        FilterValueHolder filterValueHolder = batchLookup.getFilterValue();
 
+        if (Objects.nonNull(product)) {
             filterValueHolder.put(BatchCriteriaModifier.PRODUCT_ID_FILTER_VAL_KEY, product.getId());
-
-            batchLookup.setFilterValue(filterValueHolder);
+        } else {
+            if (filterValueHolder.has(BatchCriteriaModifier.PRODUCT_ID_FILTER_VAL_KEY)) {
+                filterValueHolder.remove(BatchCriteriaModifier.PRODUCT_ID_FILTER_VAL_KEY);
+            }
         }
+
+        batchLookup.setFilterValue(filterValueHolder);
     }
 
 }
