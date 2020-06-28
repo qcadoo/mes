@@ -37,7 +37,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
@@ -186,24 +185,6 @@ public class MasterOrderValidators {
         return false;
     }
 
-    public boolean checkIfCanChangeType(final DataDefinition masterOrderDD, final FieldDefinition fieldDefinition,
-            final Entity masterOrder, final Object fieldOldValue, final Object fieldNewValue) {
-        if (isNewlyCreated(masterOrder)) {
-            return true;
-        }
-
-        MasterOrderType fromType = MasterOrderType.parseString((String) fieldOldValue);
-        MasterOrderType toType = MasterOrderType.parseString((String) fieldNewValue);
-
-        if (fromType != toType && masterOrderHasAnyOrders(masterOrder)) {
-            masterOrder.addError(fieldDefinition, "masterOrders.masterOrder.alreadyHaveOrder");
-
-            return false;
-        }
-
-        return true;
-    }
-
     private boolean masterOrderHasAnyOrders(final Entity masterOrder) {
         return masterOrderOrdersDataProvider.countBelongingOrders(masterOrder, null) > 0;
     }
@@ -217,10 +198,6 @@ public class MasterOrderValidators {
 
     private boolean isNewlyCreated(final Entity masterOrder) {
         return masterOrder.getId() == null;
-    }
-
-    private boolean isNotOfOneProductType(final Entity masterOrder) {
-        return MasterOrderType.of(masterOrder) != MasterOrderType.ONE_PRODUCT;
     }
 
     private boolean areSame(final Object newValue, final Object oldValue) {

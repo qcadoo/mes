@@ -47,7 +47,7 @@ public final class MasterOrderFields {
 
     public static final String FINISH_DATE = "finishDate";
 
-    public static final String DATE_OF_RECIPT = "dateOfReceipt";
+    public static final String DATE_OF_RECEIPT = "dateOfReceipt";
 
     public static final String ADD_MASTER_PREFIX_TO_NUMBER = "addMasterPrefixToNumber";
 

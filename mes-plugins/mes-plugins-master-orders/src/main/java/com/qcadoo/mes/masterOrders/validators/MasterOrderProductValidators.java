@@ -23,8 +23,6 @@
  */
 package com.qcadoo.mes.masterOrders.validators;
 
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.id;
 import static com.qcadoo.model.api.search.SearchRestrictions.and;
 import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
 import static com.qcadoo.model.api.search.SearchRestrictions.not;
@@ -37,7 +35,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -121,10 +118,6 @@ public class MasterOrderProductValidators {
 
         Entity masterOrder = masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
 
-        if (MasterOrderType.of(masterOrder) != MasterOrderType.MANY_PRODUCTS) {
-            return true;
-        }
-
         Entity oldTechnology = (Entity) fieldOldValue;
         Entity newTechnology = (Entity) fieldNewValue;
 
@@ -154,10 +147,6 @@ public class MasterOrderProductValidators {
         }
 
         Entity masterOrder = masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
-
-        if (MasterOrderType.of(masterOrder) != MasterOrderType.MANY_PRODUCTS) {
-            return true;
-        }
 
         Entity oldProductValue = (Entity) fieldOldValue;
         Entity newProductValue = (Entity) fieldNewValue;
