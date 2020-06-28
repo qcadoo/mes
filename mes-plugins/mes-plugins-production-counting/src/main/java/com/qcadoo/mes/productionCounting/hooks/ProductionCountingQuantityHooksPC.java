@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
@@ -36,35 +31,67 @@ import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStat
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductionCountingQuantityHooksPC {
 
-    private static final String L_TRACKING_OPERATION_IN_QUANTITY_QUERY = "SELECT '' AS nullResultProtector, t.usedQuantity AS usedQuantity FROM #productionCounting_productionTracking pt, #productionCounting_trackingOperationProductInComponent t WHERE t.productionTracking.id = pt.id AND pt.id = %s AND t.product.id = %s";
+    private static final String L_TRACKING_OPERATION_IN_QUANTITY_QUERY = "SELECT '' AS nullResultProtector, t.id as id, t.usedQuantity AS usedQuantity FROM #productionCounting_productionTracking pt, #productionCounting_trackingOperationProductInComponent t WHERE t.productionTracking.id = pt.id AND pt.id = %s AND t.product.id = %s";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     public boolean onDelete(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
+
+        boolean canRemove = true;
         Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
+        Entity toc = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
         Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
 
-        List<Entity> productionTrackings = dataDefinitionService
+
+        SearchCriteriaBuilder criteriaBuilder = dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_TRACKING).find()
-                .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order)).list().getEntities();
+                .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order));
+
+        if(Objects.nonNull(toc)) {
+            criteriaBuilder.add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc));
+        }
+
+        List<Entity> productionTrackings = criteriaBuilder.list().getEntities();
+
+
         for (Entity tracking : productionTrackings) {
             String state = tracking.getStringField(ProductionTrackingFields.STATE);
             if (!ProductionTrackingState.DECLINED.getStringValue().equals(state)) {
                 Entity trackingInComponent = getTrackingOperationProductInComponent(tracking, product);
-                if (trackingInComponent != null
+                if (canRemove && trackingInComponent != null
                         && trackingInComponent.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY) != null) {
                     productionCountingQuantity.addGlobalError("productionCounting.productionCountingQuantity.onDelete.error");
-                    return false;
+                    canRemove = false;
                 }
             }
         }
-        return true;
+
+        if (canRemove) {
+            for (Entity tracking : productionTrackings) {
+                String state = tracking.getStringField(ProductionTrackingFields.STATE);
+                if (ProductionTrackingState.DRAFT.getStringValue().equals(state)) {
+                    Entity trackingInComponent = getTrackingOperationProductInComponent(tracking, product);
+                    dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                            ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT).delete(
+                            trackingInComponent.getLongField("id"));
+                }
+            }
+        }
+
+        return canRemove;
     }
 
     private Entity getTrackingOperationProductInComponent(final Entity productionTracking, final Entity product) {
