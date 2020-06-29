@@ -152,6 +152,8 @@
                                  method="onSave"/>
         </model:model-hook>
 
+        <model:model-enum-value plugin="basic" model="log" enum="logType" value="masterOrderImport"/>
+
         <menu:menu-item name="masterOrders" category="orders"
                         view="masterOrdersList" defaultAuthorizationRole="ROLE_PLANNING"/>
 
@@ -161,6 +163,7 @@
         <view:view resource="view/masterOrdersList.xml"/>
         <view:view resource="view/masterOrderDetails.xml"/>
 
+        <view:view resource="view/masterOrdersImport.xml"/>
         <view:view resource="view/masterOrderProductDetails.xml"/>
 
         <view:view resource="view/masterOrderDefinitionDetails.xml"/>
@@ -190,6 +193,8 @@
                         type="beforeRender"
                         class="com.qcadoo.mes.masterOrders.hooks.OrderDetailsHooksMO"
                         method="fillMasterOrderFields"/>
+
+        <view:resource uri="public/**/*"/>
 
     </modules>
 

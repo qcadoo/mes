@@ -29,8 +29,6 @@ public final class MasterOrderFields {
 
     }
 
-    public static final String ADDRESS = "address";
-
     public static final String MASTER_ORDER_DEFINITION = "masterOrderDefinition";
 
     public static final String NUMBER = "number";
@@ -40,6 +38,8 @@ public final class MasterOrderFields {
     public static final String DESCRIPTION = "description";
 
     public static final String EXTERNAL_NUMBER = "externalNumber";
+
+    public static final String EXTERNAL_PRODUCTION_ORDER_ID = "externalProductionOrderID";
 
     public static final String DEADLINE = "deadline";
 
@@ -51,13 +51,13 @@ public final class MasterOrderFields {
 
     public static final String ADD_MASTER_PREFIX_TO_NUMBER = "addMasterPrefixToNumber";
 
-    public static final String MASTER_ORDER_QUANTITY = "masterOrderQuantity";
-
-    public static final String MASTER_ORDER_TYPE = "masterOrderType";
-
     public static final String MASTER_ORDER_STATE = "masterOrderState";
 
     public static final String COMPANY = "company";
+
+    public static final String COMPANY_PAYER = "companyPayer";
+
+    public static final String ADDRESS = "address";
 
     public static final String EXTERNAL_SYNCHRONIZED = "externalSynchronized";
 
@@ -65,8 +65,20 @@ public final class MasterOrderFields {
 
     public static final String MASTER_ORDER_PRODUCTS = "masterOrderProducts";
 
-    public static final String EXTERNAL_PRODUCTION_ORDER_ID = "externalProductionOrderID";
+    public static final String MASTER_ORDER_PRODUCTS_DTO = "masterOrderProductsDto";
+
+    public static final String ORDERS_DTO = "ordersDto";
 
     public static final String STATE = "state";
+
+    public static final String PRODUCT = "product";
+
+    public static final String MASTER_ORDER_QUANTITY = "masterOrderQuantity";
+
+    public static final String TECHNOLOGY = "technology";
+
+    public static final String COMMENTS = "comments";
+
+    public static final String MASTER_ORDER_POSITION_STATUS = "masterOrderPositionStatus";
 
 }
