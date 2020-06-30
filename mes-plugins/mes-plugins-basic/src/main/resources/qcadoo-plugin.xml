@@ -218,8 +218,6 @@
         <security:role identifier="ROLE_SUBCONTRACTOR"/>
         <security:role identifier="ROLE_LOGS"/>
 
-        <security:role identifier="ROLE_ZMBAK"/>
-
         <security:role identifier="ROLE_PRODUCTION_COUNTING_FROM_PRODUCTION_TRACKING"/>
 
         <security:role identifier="ROLE_DOCUMENTS_NOTIFICATION"/>
