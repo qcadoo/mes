@@ -194,7 +194,6 @@ public class MultitransferListeners {
             Date time = DateUtils.parseDate(timeField.getFieldValue());
 
             if (materialFlowResourcesService.shouldValidateDateWhenTransferToWarehouse()
-                    && materialFlowResourcesService.areLocationsWarehouses(locationFrom, locationTo)
                     && !materialFlowResourcesService.isDateGraterThanResourcesDate(time)) {
                 timeField.addMessage("materialFlowResources.validate.global.error.dateEarlierThanResourcesDate",
                         MessageType.FAILURE);

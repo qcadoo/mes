@@ -99,14 +99,6 @@
 
                                                 <option type="expression" value="#number + ' - ' + #name"/>
                                                 <option type="fieldCode" value="number"/>
-
-                                                <criteriaModifier
-                                                        class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
-                                                        method="showWarehousesOnly"/>
-
-                                                <listener event="onSelectedEntityChange"
-                                                          class="com.qcadoo.mes.orderSupplies.listeners.GenerateMaterialRequirementCoverageListeners"
-                                                          method="checkIfCoverageLocationsAreWarehouses"/>
                                             </component>
                                         </layoutElement>
                                     </component>

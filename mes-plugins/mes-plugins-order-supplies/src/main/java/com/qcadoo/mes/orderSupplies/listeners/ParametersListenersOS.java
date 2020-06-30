@@ -37,11 +37,6 @@ public class ParametersListenersOS {
     @Autowired
     private OrderSuppliesService orderSuppliesService;
 
-    public void checkIfCoverageLocationsAreWarehouses(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
-        orderSuppliesService.checkIfCoverageLocationsAreWarehouses(view, ParameterFieldsOS.COVERAGE_LOCATIONS);
-    }
-
     public void checkIfBelongsToFamilyIsProductsFamily(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
         orderSuppliesService.checkIfBelongsToFamilyIsProductsFamily(view, ParameterFieldsOS.BELONGS_TO_FAMILY);

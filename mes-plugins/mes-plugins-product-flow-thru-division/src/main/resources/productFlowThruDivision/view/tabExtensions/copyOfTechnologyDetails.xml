@@ -172,17 +172,12 @@
                 <component type="lookup" name="componentsLocation"
                            field="#{form}.componentsLocation" reference="componentsLocation">
                     <option type="column" name="name" fields="name"/>
-                    <option type="column" name="type" fields="type"/>
 
-                    <option type="searchable" value="number,name,type"/>
-                    <option type="orderable" value="number,name,type"/>
+                    <option type="searchable" value="number,name"/>
+                    <option type="orderable" value="number,name"/>
 
                     <option type="expression" value="#number + ' - ' + #name"/>
                     <option type="fieldCode" value="number"/>
-
-                    <criteriaModifier
-                            class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
-                            method="showWarehousesOnly"/>
                 </component>
             </layoutElement>
 
@@ -190,17 +185,12 @@
                 <component type="lookup" name="componentsOutputLocation"
                            field="#{form}.componentsOutputLocation" reference="componentsOutputLocation">
                     <option type="column" name="name" fields="name"/>
-                    <option type="column" name="type" fields="type"/>
 
-                    <option type="searchable" value="number,name,type"/>
-                    <option type="orderable" value="number,name,type"/>
+                    <option type="searchable" value="number,name"/>
+                    <option type="orderable" value="number,name"/>
 
                     <option type="expression" value="#number + ' - ' + #name"/>
                     <option type="fieldCode" value="number"/>
-
-                    <criteriaModifier
-                            class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
-                            method="showWarehousesOnly"/>
                 </component>
             </layoutElement>
 
@@ -218,34 +208,24 @@
                 <component type="lookup" name="productsFlowLocation"
                            field="#{form}.productsFlowLocation" reference="productsFlowLocation">
                     <option type="column" name="name" fields="name"/>
-                    <option type="column" name="type" fields="type"/>
 
-                    <option type="searchable" value="number,name,type"/>
-                    <option type="orderable" value="number,name,type"/>
+                    <option type="searchable" value="number,name"/>
+                    <option type="orderable" value="number,name"/>
 
                     <option type="expression" value="#number + ' - ' + #name"/>
                     <option type="fieldCode" value="number"/>
-
-                    <criteriaModifier
-                            class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
-                            method="showWarehousesOnly"/>
                 </component>
             </layoutElement>
             <layoutElement column="1" row="5" width="2">
                 <component type="lookup" name="productsInputLocation"
                            field="#{form}.productsInputLocation" reference="productsInputLocation">
                     <option type="column" name="name" fields="name"/>
-                    <option type="column" name="type" fields="type"/>
 
-                    <option type="searchable" value="number,name,type"/>
-                    <option type="orderable" value="number,name,type"/>
+                    <option type="searchable" value="number,name"/>
+                    <option type="orderable" value="number,name"/>
 
                     <option type="expression" value="#number + ' - ' + #name"/>
                     <option type="fieldCode" value="number"/>
-
-                    <criteriaModifier
-                            class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
-                            method="showWarehousesOnly"/>
                 </component>
             </layoutElement>
             <layoutElement column="1" row="6" width="4">

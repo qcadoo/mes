@@ -83,9 +83,6 @@
                                         <option type="orderable" value="number,name"/>
                                         <option type="expression" value="#number + ' - ' + #name"/>
                                         <option type="fieldCode" value="number"/>
-                                        <criteriaModifier
-                                                class="com.qcadoo.mes.basic.criteriaModifiers.LocationCriteriaModifiersB"
-                                                method="showWarehousesOnly"/>
                                     </component>
                                 </layoutElement>
                             </component>

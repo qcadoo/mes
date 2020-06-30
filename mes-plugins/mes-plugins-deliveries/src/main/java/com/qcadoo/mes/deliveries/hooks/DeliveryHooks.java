@@ -32,25 +32,18 @@ import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateChangeDescriber;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
 import com.qcadoo.mes.deliveries.util.DeliveryPricesAndQuantities;
-import com.qcadoo.mes.materialFlow.constants.LocationType;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.NumberService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.Objects;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERY_ADDRESS;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DESCRIPTION;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.EXTERNAL_NUMBER;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.EXTERNAL_SYNCHRONIZED;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.LOCATION;
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.*;
 import static com.qcadoo.mes.deliveries.states.constants.DeliveryState.DRAFT;
-import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
 
 @Service
 public class DeliveryHooks {
@@ -132,20 +125,6 @@ public class DeliveryHooks {
         if (location == null) {
             delivery.setField(LOCATION, parameterService.getParameter().getBelongsToField(LOCATION));
         }
-    }
-
-    public boolean checkIfLocationIsWarehouse(final DataDefinition deliveryDD, final Entity delivery) {
-        Entity location = delivery.getBelongsToField(LOCATION);
-
-        if ((location != null) && !isLocationIsWarehouse(location)) {
-            delivery.addError(deliveryDD.getField(LOCATION), "delivery.validate.global.error.locationIsNotWarehouse");
-            return false;
-        }
-        return true;
-    }
-
-    private boolean isLocationIsWarehouse(final Entity location) {
-        return ((location != null) && LocationType.WAREHOUSE.getStringValue().equals(location.getStringField(TYPE)));
     }
 
     public boolean validate(final DataDefinition deliveryDD, final Entity delivery) {

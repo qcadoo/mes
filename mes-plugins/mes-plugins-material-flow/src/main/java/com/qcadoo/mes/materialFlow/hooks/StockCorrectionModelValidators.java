@@ -23,34 +23,14 @@
  */
 package com.qcadoo.mes.materialFlow.hooks;
 
-import static com.qcadoo.mes.materialFlow.constants.LocationType.CONTROL_POINT;
-import static com.qcadoo.mes.materialFlow.constants.StockCorrectionFields.LOCATION;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
-
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.stereotype.Service;
+
+import static com.qcadoo.mes.materialFlow.constants.StockCorrectionFields.LOCATION;
 
 @Service
 public class StockCorrectionModelValidators {
-
-    public boolean validateStockCorrection(final DataDefinition stockCorrectionDD, final Entity stockCorrection) {
-        Entity location = stockCorrection.getBelongsToField(LOCATION);
-
-        if (location != null) {
-            String locationType = location.getStringField(TYPE);
-
-            if (!CONTROL_POINT.getStringValue().equals(locationType)) {
-                stockCorrection.addError(stockCorrectionDD.getField(LOCATION),
-                        "materialFlow.validate.global.error.locationIsNotSimpleControlPoint");
-
-                return false;
-            }
-        }
-
-        return true;
-    }
 
     public boolean checkIfLocationHasExternalNumber(final DataDefinition stockCorrectionDD, final Entity stockCorrection) {
         if (stockCorrection.getBelongsToField(LOCATION).getStringField("externalNumber") != null) {

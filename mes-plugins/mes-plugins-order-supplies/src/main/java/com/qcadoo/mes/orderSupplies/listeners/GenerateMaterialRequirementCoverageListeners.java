@@ -39,7 +39,6 @@ import com.qcadoo.mes.orderSupplies.OrderSuppliesService;
 import com.qcadoo.mes.orderSupplies.constants.*;
 import com.qcadoo.mes.orderSupplies.coverage.MaterialRequirementCoverageService;
 import com.qcadoo.mes.orderSupplies.print.MaterialRequirementCoverageReportPdfService;
-import com.qcadoo.mes.productCatalogNumbers.ProductCatalogNumbersService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -76,8 +75,6 @@ import static com.qcadoo.mes.deliveries.constants.DeliveryFields.*;
 @Service
 public class GenerateMaterialRequirementCoverageListeners {
 
-    
-
     private static final String L_GRID = "coverageProducts";
 
     public static final String L_REQUIRE_SUPPLIER_IDENTIFICATION = "requireSupplierIdentification";
@@ -105,9 +102,6 @@ public class GenerateMaterialRequirementCoverageListeners {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
-
-    @Autowired
-    private ProductCatalogNumbersService productCatalogNumbersService;
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -260,11 +254,6 @@ public class GenerateMaterialRequirementCoverageListeners {
             final String[] args) {
         String url = "../page/orderSupplies/materialRequirementCoveragesList.html";
         view.redirectTo(url, false, true);
-    }
-
-    public void checkIfCoverageLocationsAreWarehouses(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
-        orderSuppliesService.checkIfCoverageLocationsAreWarehouses(view, MaterialRequirementCoverageFields.COVERAGE_LOCATIONS);
     }
 
     public void checkIfBelongsToFamilyIsProductsFamily(final ViewDefinitionState view, final ComponentState state,

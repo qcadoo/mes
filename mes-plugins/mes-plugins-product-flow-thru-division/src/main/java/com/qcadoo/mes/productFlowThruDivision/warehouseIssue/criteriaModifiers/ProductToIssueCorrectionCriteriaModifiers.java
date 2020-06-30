@@ -1,12 +1,9 @@
 package com.qcadoo.mes.productFlowThruDivision.warehouseIssue.criteriaModifiers;
 
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.materialFlow.constants.LocationFields;
-import com.qcadoo.mes.materialFlow.constants.LocationType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductToIssueCorrectionCriteriaModifiers {
@@ -18,7 +15,6 @@ public class ProductToIssueCorrectionCriteriaModifiers {
         if (filter.has("locationTo")) {
             scb.add(SearchRestrictions.ne("id", filter.getLong("locationTo")));
         }
-        scb.add(SearchRestrictions.eq(LocationFields.TYPE, LocationType.WAREHOUSE.getStringValue()));
     }
 
 }

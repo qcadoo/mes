@@ -15,36 +15,27 @@
  */
 package com.qcadoo.mes.materialFlowResources.validators;
 
-import static com.qcadoo.model.api.search.SearchOrders.asc;
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.rowCount;
+import com.google.common.collect.Lists;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.materialFlowResources.constants.*;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
-import com.google.common.collect.Lists;
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.materialFlow.constants.LocationFields;
-import com.qcadoo.mes.materialFlow.constants.LocationType;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentPositionParametersItemValues;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import static com.qcadoo.model.api.search.SearchOrders.asc;
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.rowCount;
 
 @Service
 public class LocationValidators {
@@ -61,8 +52,7 @@ public class LocationValidators {
     private DataDefinitionService dataDefinitionService;
 
     public boolean hasAlgorithm(final DataDefinition dataDefinition, final Entity entity) {
-        if (LocationType.WAREHOUSE.equals(LocationType.parseString(entity.getStringField(LocationFields.TYPE)))
-                && StringUtils.isEmpty(entity.getStringField(LocationFieldsMFR.ALGORITHM))) {
+        if (StringUtils.isEmpty(entity.getStringField(LocationFieldsMFR.ALGORITHM))) {
             entity.addError(dataDefinition.getField(LocationFieldsMFR.ALGORITHM), "qcadooView.validate.field.error.missing");
             return false;
         }

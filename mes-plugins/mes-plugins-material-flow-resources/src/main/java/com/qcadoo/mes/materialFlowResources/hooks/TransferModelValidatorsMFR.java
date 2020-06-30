@@ -23,23 +23,17 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.PRODUCT;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.QUANTITY;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TYPE;
-import static com.qcadoo.mes.materialFlow.constants.TransferType.PRODUCTION;
+import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Date;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.*;
+import static com.qcadoo.mes.materialFlow.constants.TransferType.PRODUCTION;
 
 @Service
 public class TransferModelValidatorsMFR {
@@ -50,11 +44,7 @@ public class TransferModelValidatorsMFR {
     public boolean validateTransferDate(final DataDefinition transferDD, final Entity transfer) {
         Date time = (Date) transfer.getField(TIME);
 
-        Entity locationFrom = transfer.getBelongsToField(LOCATION_FROM);
-        Entity locationTo = transfer.getBelongsToField(LOCATION_TO);
-
         if (materialFlowResourcesService.shouldValidateDateWhenTransferToWarehouse()
-                && materialFlowResourcesService.areLocationsWarehouses(locationFrom, locationTo)
                 && !materialFlowResourcesService.isDateGraterThanResourcesDate(time)) {
             transfer.addError(transferDD.getField(TIME),
                     "materialFlowResources.validate.global.error.dateEarlierThanResourcesDate");

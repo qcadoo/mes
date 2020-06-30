@@ -23,27 +23,22 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_FROM;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.LOCATION_TO;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.PRODUCT;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.QUANTITY;
-import static com.qcadoo.mes.materialFlow.constants.TransferFields.TIME;
-import static com.qcadoo.mes.materialFlow.constants.TransferType.CONSUMPTION;
-import static com.qcadoo.mes.materialFlow.constants.TransferType.PRODUCTION;
-import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSFERS_CONSUMPTION;
-import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSFERS_PRODUCTION;
+import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.FieldDefinition;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.FieldDefinition;
+import static com.qcadoo.mes.materialFlow.constants.TransferFields.*;
+import static com.qcadoo.mes.materialFlow.constants.TransferType.CONSUMPTION;
+import static com.qcadoo.mes.materialFlow.constants.TransferType.PRODUCTION;
+import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSFERS_CONSUMPTION;
+import static com.qcadoo.mes.materialFlow.constants.TransformationsFields.TRANSFERS_PRODUCTION;
 
 @Service
 public class TransformationsModelValidatorsMFR {
@@ -54,11 +49,7 @@ public class TransformationsModelValidatorsMFR {
     public boolean checkIfTransformationsDateIsValid(final DataDefinition transformationsDD, final Entity transformations) {
         Date time = (Date) transformations.getField(TIME);
 
-        Entity locationFrom = transformations.getBelongsToField(LOCATION_FROM);
-        Entity locationTo = transformations.getBelongsToField(LOCATION_TO);
-
         if (materialFlowResourcesService.shouldValidateDateWhenTransferToWarehouse()
-                && materialFlowResourcesService.areLocationsWarehouses(locationFrom, locationTo)
                 && !materialFlowResourcesService.isDateGraterThanResourcesDate(time)) {
             transformations.addError(transformationsDD.getField(TIME),
                     "materialFlowResources.validate.global.error.dateEarlierThanResourcesDate");
