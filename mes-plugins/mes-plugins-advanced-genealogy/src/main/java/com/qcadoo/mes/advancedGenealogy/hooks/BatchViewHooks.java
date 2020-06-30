@@ -23,8 +23,15 @@
  */
 package com.qcadoo.mes.advancedGenealogy.hooks;
 
+import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
+import com.qcadoo.mes.advancedGenealogy.states.constants.BatchStateChangeFields;
 import com.qcadoo.mes.advancedGenealogy.states.constants.BatchStateStringValues;
 import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
@@ -35,17 +42,9 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import static com.qcadoo.mes.orders.states.constants.OrderStateChangeFields.STATUS;
-import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
 
 @Service
 public final class BatchViewHooks {
-
-    
 
     private static final String L_LOGGINGS_GRID = "loggingsGrid";
 
@@ -86,8 +85,8 @@ public final class BatchViewHooks {
     private void filterStateChangeHistory(final ViewDefinitionState view) {
         GridComponent loggingsGrid = (GridComponent) view.getComponentByReference(L_LOGGINGS_GRID);
 
-        CustomRestriction onlySuccessfulRestriction = stateChangeHistoryService.buildStatusRestriction(STATUS,
-                Lists.newArrayList(SUCCESSFUL.getStringValue()));
+        CustomRestriction onlySuccessfulRestriction = stateChangeHistoryService
+                .buildStatusRestriction(BatchStateChangeFields.STATUS, Lists.newArrayList(SUCCESSFUL.getStringValue()));
 
         loggingsGrid.setCustomRestriction(onlySuccessfulRestriction);
     }

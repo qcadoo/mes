@@ -23,9 +23,15 @@
  */
 package com.qcadoo.mes.advancedGenealogy.hooks;
 
+import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.advancedGenealogy.constants.AdvancedGenealogyConstants;
 import com.qcadoo.mes.advancedGenealogy.constants.TrackingRecordFields;
+import com.qcadoo.mes.advancedGenealogy.states.constants.TrackingRecordStateChangeFields;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -40,18 +46,15 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import static com.qcadoo.mes.orders.states.constants.OrderStateChangeFields.STATUS;
-import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
 
 @Service
 public class TrackingRecordSimpleViewHooks {
 
-    private static final String L_TYPE_01SIMPLE = "01simple";
+    private static final String L_LOGGINGS_GRID = "loggingsGrid";
 
     private static final String L_ENTITY_TYPE = "entityType";
+
+    private static final String L_TYPE_01SIMPLE = "01simple";
 
     private static final String L_PRODUCT = "product";
 
@@ -70,14 +73,13 @@ public class TrackingRecordSimpleViewHooks {
 
     public void generateOrderNumber(final ViewDefinitionState state) {
         numberGeneratorService.generateAndInsertNumber(state, AdvancedGenealogyConstants.PLUGIN_IDENTIFIER,
-                AdvancedGenealogyConstants.MODEL_TRACKING_RECORD, QcadooViewConstants.L_FORM,
-                TrackingRecordFields.NUMBER);
+                AdvancedGenealogyConstants.MODEL_TRACKING_RECORD, QcadooViewConstants.L_FORM, TrackingRecordFields.NUMBER);
     }
 
     public void filterStateChangeHistory(final ViewDefinitionState view) {
-        final GridComponent historyGrid = (GridComponent) view.getComponentByReference("loggingsGrid");
-        final CustomRestriction onlySuccessfulRestriction = stateChangeHistoryService.buildStatusRestriction(STATUS,
-                Lists.newArrayList(SUCCESSFUL.getStringValue()));
+        final GridComponent historyGrid = (GridComponent) view.getComponentByReference(L_LOGGINGS_GRID);
+        final CustomRestriction onlySuccessfulRestriction = stateChangeHistoryService
+                .buildStatusRestriction(TrackingRecordStateChangeFields.STATUS, Lists.newArrayList(SUCCESSFUL.getStringValue()));
         historyGrid.setCustomRestriction(onlySuccessfulRestriction);
     }
 
@@ -100,11 +102,11 @@ public class TrackingRecordSimpleViewHooks {
         }
 
         Long batchId = Long.valueOf(batchLookup.getFieldValue().toString());
-        Entity batch = getDataDef(AdvancedGenealogyConstants.PLUGIN_IDENTIFIER, AdvancedGenealogyConstants.MODEL_BATCH).get(
-                batchId);
+        Entity batch = getDataDef(AdvancedGenealogyConstants.PLUGIN_IDENTIFIER, AdvancedGenealogyConstants.MODEL_BATCH)
+                .get(batchId);
         Entity trakingRecord = getDataDef(AdvancedGenealogyConstants.PLUGIN_IDENTIFIER,
                 AdvancedGenealogyConstants.MODEL_TRACKING_RECORD).get(form.getEntityId());
-        Entity savedBatch = trakingRecord.getBelongsToField("producedBatch");
+        Entity savedBatch = trakingRecord.getBelongsToField(TrackingRecordFields.PRODUCED_BATCH);
 
         if (batch == null) {
             unitField.setFieldValue(null);
@@ -151,4 +153,5 @@ public class TrackingRecordSimpleViewHooks {
         FieldComponent batchLookup = getFieldComponent(view, L_BATCH_LOOKUP);
         batchLookup.setRequired(true);
     }
+
 }

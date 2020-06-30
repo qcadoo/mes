@@ -23,7 +23,14 @@
  */
 package com.qcadoo.mes.advancedGenealogy.tree;
 
-import static com.qcadoo.mes.advancedGenealogy.constants.BatchFields.*;
+import static com.qcadoo.mes.advancedGenealogy.constants.BatchFields.ENTITY_TYPE;
+import static com.qcadoo.mes.advancedGenealogy.constants.BatchFields.GENEALOGY_TREE_NODE_LABEL;
+import static com.qcadoo.mes.advancedGenealogy.constants.BatchFields.NUMBER;
+import static com.qcadoo.mes.advancedGenealogy.constants.BatchFields.PARENT;
+import static com.qcadoo.mes.advancedGenealogy.constants.BatchFields.PRIORITY;
+import static com.qcadoo.mes.advancedGenealogy.constants.BatchFields.PRODUCT;
+import static com.qcadoo.mes.advancedGenealogy.constants.BatchFields.SUPPLIER;
+import static com.qcadoo.mes.advancedGenealogy.constants.BatchFields.TRACKING_RECORDS;
 import static com.qcadoo.mes.advancedGenealogy.constants.TrackingRecordFields.STATE;
 import static com.qcadoo.mes.advancedGenealogy.constants.TrackingRecordFields.USED_BATCHES_SIMPLE;
 
@@ -37,11 +44,14 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.advancedGenealogy.constants.*;
+import com.qcadoo.mes.advancedGenealogy.constants.AdvancedGenealogyConstants;
+import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
+import com.qcadoo.mes.advancedGenealogy.constants.TrackingRecordFields;
+import com.qcadoo.mes.advancedGenealogy.constants.TrackingRecordType;
+import com.qcadoo.mes.advancedGenealogy.constants.UsedBatchSimpleFields;
 import com.qcadoo.mes.advancedGenealogy.states.constants.TrackingRecordState;
 import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -53,9 +63,11 @@ public class AdvancedGenealogyTreeService {
 
     private static final String L_BATCH = "batch";
 
-    public static final String ORDER = "order";
+    private static final String L_ORDER = "order";
 
-    public static final String ADVANCED_GENEALOGY_FOR_ORDERS = "advancedGenealogyForOrders";
+    private static final String L_NUMBER = "number";
+
+    private static final String L_ADVANCED_GENEALOGY_FOR_ORDERS = "advancedGenealogyForOrders";
 
     @Autowired
     private PluginAccessor pluginAccessor;
@@ -184,7 +196,7 @@ public class AdvancedGenealogyTreeService {
                             }
                         }
                     }
-                } else if (TrackingRecordType.FOR_ORDER.equals(entityType) && isEnabled(ADVANCED_GENEALOGY_FOR_ORDERS)) {
+                } else if (TrackingRecordType.FOR_ORDER.equals(entityType) && isEnabled(L_ADVANCED_GENEALOGY_FOR_ORDERS)) {
                     EntityList genealogyProductInComponents = trackingRecord.getHasManyField("genealogyProductInComponents");
                     for (Entity genealogyProductInComponent : genealogyProductInComponents) {
                         EntityList productInBatches = genealogyProductInComponent.getHasManyField("productInBatches");
@@ -235,7 +247,7 @@ public class AdvancedGenealogyTreeService {
                         generateProducedFromTree(batch, tree, includeDrafts, makeIdsUnique);
                     }
                 }
-            } else if (TrackingRecordType.FOR_ORDER.equals(type) && isEnabled(ADVANCED_GENEALOGY_FOR_ORDERS)) {
+            } else if (TrackingRecordType.FOR_ORDER.equals(type) && isEnabled(L_ADVANCED_GENEALOGY_FOR_ORDERS)) {
                 EntityList genealogyProductInComponents = trackingRecord.getHasManyField("genealogyProductInComponents");
                 for (Entity genealogyProductInComponent : genealogyProductInComponents) {
                     EntityList productInBatches = genealogyProductInComponent.getHasManyField("productInBatches");
@@ -263,11 +275,12 @@ public class AdvancedGenealogyTreeService {
     }
 
     public String getOrdersForBatch(Entity batch) {
-        if (isEnabled(ADVANCED_GENEALOGY_FOR_ORDERS)) {
-            return batch.getHasManyField(TRACKING_RECORDS).stream().map(e -> e.getBelongsToField(ORDER)).filter(Objects::nonNull)
-                    .map(e -> e.getStringField(OrderFields.NUMBER)).distinct().collect(Collectors.joining(", "));
+        if (isEnabled(L_ADVANCED_GENEALOGY_FOR_ORDERS)) {
+            return batch.getHasManyField(TRACKING_RECORDS).stream().map(e -> e.getBelongsToField(L_ORDER))
+                    .filter(Objects::nonNull).map(e -> e.getStringField(L_NUMBER)).distinct().collect(Collectors.joining(", "));
         } else {
             return "";
         }
     }
+
 }
