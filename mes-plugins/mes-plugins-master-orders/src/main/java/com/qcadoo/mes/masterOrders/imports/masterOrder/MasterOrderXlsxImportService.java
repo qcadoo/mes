@@ -157,7 +157,7 @@ public class MasterOrderXlsxImportService extends XlsxImportService {
         String masterOrderPositionStatus = masterOrder.getStringField(MasterOrderFields.MASTER_ORDER_POSITION_STATUS);
 
         if (Objects.isNull(masterOrderPositionStatus)) {
-            masterOrder.setField(MasterOrderFields.MASTER_ORDER_POSITION_STATUS, MasterOrderPositionStatus.NEW.getStringValue());
+            masterOrder.setField(MasterOrderFields.MASTER_ORDER_POSITION_STATUS, MasterOrderPositionStatus.NEW.getText());
         }
     }
 
