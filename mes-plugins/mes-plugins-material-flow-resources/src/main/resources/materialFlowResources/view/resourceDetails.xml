@@ -276,9 +276,9 @@
 
 
     <hooks>
-        <beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowResourcesService"
+        <beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowResourcesServiceImpl"
                       method="fillUnitFieldValues"/>
-        <beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowResourcesService"
+        <beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowResourcesServiceImpl"
                       method="fillCurrencyFieldValues"/>
         <beforeRender class="com.qcadoo.mes.materialFlowResources.hooks.ResourceDetailsHooks"
                       method="onBeforeRender"/>
