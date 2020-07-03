@@ -14,6 +14,14 @@
 
 	<name>Qcadoo MES :: Plugins :: Tech subcontracting</name>
 
+	<dependencies>
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-material-requirements</artifactId>
+			<version>1.5-SNAPSHOT-DEV</version>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<plugins>
 			<plugin>
