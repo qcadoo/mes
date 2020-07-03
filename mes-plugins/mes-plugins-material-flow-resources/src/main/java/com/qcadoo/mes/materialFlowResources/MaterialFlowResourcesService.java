@@ -27,13 +27,10 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 
 import java.math.BigDecimal;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 public interface MaterialFlowResourcesService {
-
-    boolean areResourcesSufficient(final Entity location, final Entity product, final BigDecimal quantity);
 
     BigDecimal getResourcesQuantityForLocationAndProduct(final Entity location, final Entity product);
 
@@ -42,32 +39,12 @@ public interface MaterialFlowResourcesService {
     Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location,
             final boolean withoutBlockedForQualityControl);
 
-    void manageResources(final Entity transfer);
-
-    void addResource(final Entity locationTo, final Entity product, final BigDecimal quantity, final Date time,
-            final BigDecimal price, final Entity batch);
-
-    void addResource(final Entity locationTo, final Entity product, final BigDecimal quantity, final Date time,
-            final BigDecimal price);
-
-    void updateResource(final Entity locationFrom, final Entity product, BigDecimal quantity);
-
-    void moveResource(final Entity locationFrom, final Entity locationTo, final Entity product, BigDecimal quantity,
-            final Date time, final BigDecimal price);
-
     List<Entity> getWarehouseLocationsFromDB();
 
     List<Entity> getResourcesForLocationAndProduct(final Entity location, final Entity product);
 
-    Map<Entity, BigDecimal> groupResourcesByProduct(final Entity location);
+    void fillUnitFieldValues(final ViewDefinitionState view);
 
-    BigDecimal calculatePrice(final Entity location, final Entity product);
+    void fillCurrencyFieldValues(final ViewDefinitionState view);
 
-    boolean canChangeDateWhenTransferToWarehouse();
-
-    boolean shouldValidateDateWhenTransferToWarehouse();
-
-    boolean isDateGraterThanResourcesDate(final Date time);
-
-    void disableDateField(final ViewDefinitionState view);
 }

@@ -34,6 +34,7 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 public class LocationCriteriaModifiersMFR {
 
     public void showWarehousesOnly(final SearchCriteriaBuilder scb) {
+        //for aspect only
     }
 
     public void showWarehousesWithoutExternalNumber(final SearchCriteriaBuilder scb) {

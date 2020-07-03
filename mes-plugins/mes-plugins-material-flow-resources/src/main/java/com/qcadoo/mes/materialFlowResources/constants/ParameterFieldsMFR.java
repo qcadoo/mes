@@ -29,8 +29,6 @@ public final class ParameterFieldsMFR {
 
     }
 
-    public static final String CHANGE_DATE_WHEN_TRANSFER_TO_WAREHOUSE_TYPE = "changeDateWhenTransferToWarehouseType";
-
     public static final String DOCUMENT_POSITION_PARAMETERS = "documentPositionParameters";
 
 }

@@ -71,11 +71,8 @@
                             <option type="fieldCode" value="number"/>
 
                             <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.materialFlow.MaterialFlowService"
-                                      method="fillUnitFieldValues"/>
-                            <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.materialFlow.MaterialFlowService"
-                                      method="fillCurrencyFieldValues"/>
+                                      class="com.qcadoo.view.api.listeners.RerenderListener"
+                                      method="onChangeRerender"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="4" width="5">
@@ -279,9 +276,9 @@
 
 
     <hooks>
-        <beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService"
+        <beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowResourcesService"
                       method="fillUnitFieldValues"/>
-        <beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowService"
+        <beforeRender class="com.qcadoo.mes.materialFlow.MaterialFlowResourcesService"
                       method="fillCurrencyFieldValues"/>
         <beforeRender class="com.qcadoo.mes.materialFlowResources.hooks.ResourceDetailsHooks"
                       method="onBeforeRender"/>

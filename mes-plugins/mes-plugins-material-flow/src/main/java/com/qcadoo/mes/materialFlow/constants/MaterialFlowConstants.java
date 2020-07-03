@@ -27,18 +27,6 @@ public interface MaterialFlowConstants {
 
     String PLUGIN_IDENTIFIER = "materialFlow";
 
-    // MODEL
-
     String MODEL_LOCATION = "location";
-
-    String MODEL_MATERIALS_IN_LOCATION = "materialsInLocation";
-
-    String MODEL_MATERIALS_IN_LOCATION_COMPONENT = "materialsInLocationComponent";
-
-    String MODEL_STOCK_CORRECTION = "stockCorrection";
-
-    String MODEL_TRANSFER = "transfer";
-
-    String MODEL_TRANSFORMATIONS = "transformations";
 
 }

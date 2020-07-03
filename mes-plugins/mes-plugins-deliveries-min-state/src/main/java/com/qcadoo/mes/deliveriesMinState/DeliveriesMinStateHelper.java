@@ -23,17 +23,6 @@
  */
 package com.qcadoo.mes.deliveriesMinState;
 
-import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -54,18 +43,24 @@ import com.qcadoo.mes.deliveriesMinState.notifications.constants.StaffNotificati
 import com.qcadoo.mes.deliveriesMinState.notifications.service.MailingService;
 import com.qcadoo.mes.emailNotifications.constants.EmailNotificationsConstants;
 import com.qcadoo.mes.emailNotifications.constants.StaffNotificationFields;
-import com.qcadoo.mes.materialFlow.MaterialFlowService;
+import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.warehouseMinimalState.WarehouseMinimalStateHelper;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class DeliveriesMinStateHelper {
@@ -80,9 +75,6 @@ public class DeliveriesMinStateHelper {
 
     @Autowired
     private DeliveriesService deliveriesService;
-
-    @Autowired
-    private MaterialFlowService flowService;
 
     @Autowired
     private ParameterService parameterService;
@@ -211,7 +203,11 @@ public class DeliveriesMinStateHelper {
     }
 
     private String createDelivery(Long warehouseId, Long supplierId, Collection<Entity> minimalStates) {
-        Entity warehouse = flowService.getLocationById(warehouseId);
+        Entity warehouse = null;
+        if (warehouseId != null) {
+            warehouse = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_LOCATION)
+                    .get(warehouseId);
+        }
         Entity supplier = companyService.getCompany(supplierId);
         return createDeliveries(warehouse, supplier, Lists.newArrayList(minimalStates));
     }

@@ -44,17 +44,7 @@
         <integer name="numberOfMonthsForPositionsData" default="1">
             <validatesRange from="0" exclusively="true"/>
         </integer>
-        <enum name="changeDateWhenTransferToWarehouseType"
-                        values="01never,02validateWithResources" default="01never"/>
-
         <boolean name="fillResourceIrrespectiveOfConversion" default="false"/>
     </fields>
-    <hooks>
-        <validatesWith
-                class="com.qcadoo.mes.materialFlowResources.validators.DocumentPositionParametersValidators"
-                method="checkIfChangeDateWhenTransferToWarehouseTypeIsSelected"/>
-        <onCreate
-                class="com.qcadoo.mes.materialFlowResources.hooks.ParameterHooksMFR"
-                method="setChangeDateWhenTransferToWarehouseTypeDefaultValue"/>
-    </hooks>
+    <hooks/>
 </model>
