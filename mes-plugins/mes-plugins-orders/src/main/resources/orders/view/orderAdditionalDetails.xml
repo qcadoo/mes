@@ -48,9 +48,26 @@
 
         </ribbon>
 
-        <windowTab name="additionalTabs" reference="additionalTabs" >
+        <windowTab name="additionalTabs" reference="additionalTabs">
 
-            <component type="form" name="order" reference="form">
+            <component type="form" name="form" reference="form">
+                <component type="gridLayout" name="gridLayout" columns="3"
+                           rows="5">
+                    <layoutElement column="1" row="1">
+                        <component type="input" name="number" reference="number"
+                                   field="number" defaultEnabled="never">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2" height="2">
+                        <component type="textarea" name="name" field="name"
+                                   reference="name" defaultEnabled="never"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="4" height="2">
+                        <component type="textarea" name="description" field="description"
+                                   reference="description" defaultEnabled="never"/>
+                    </layoutElement>
+                </component>
                 <option type="header" value="true"/>
                 <option type="expression"
                         value="#number"/>
