@@ -415,6 +415,11 @@
         </model:model-hook>
 
         <model:model-hook model="order" plugin="orders">
+            <model:onSave class="com.qcadoo.mes.productionCounting.hooks.OrderHooksPC"
+                            method="onSave"/>
+        </model:model-hook>
+
+        <model:model-hook model="order" plugin="orders">
             <model:validatesWith class="com.qcadoo.mes.productionCounting.hooks.OrderHooksPC"
                                  method="validatesWith"/>
         </model:model-hook>
@@ -515,10 +520,7 @@
                         type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.ProductDetailsHooksPC"
                         method="updateButtonsState"/>
 
-        <view:view-hook plugin="orders" view="orderDetails"
-                        type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.OrderDetailsHooksPC"
-                        method="setOrderDefaultValues"/>
-        <view:view-hook plugin="orders" view="orderDetails"
+        <view:view-hook plugin="orders" view="orderAdditionalDetails"
                         type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.OrderDetailsHooksPC"
                         method="checkTypeOfProductionRecording"/>
         <view:view-hook plugin="orders" view="orderDetails"
@@ -547,16 +549,6 @@
                             class="com.qcadoo.mes.productionCounting.listeners.ProductDetailsListenersPC"
                             method="showProductionTrackingsForProductGrouped"/>
 
-        <view:view-listener plugin="orders" view="orderDetails"
-                            component="technologyPrototype"
-                            event="onSelectedEntityChange"
-                            class="com.qcadoo.mes.productionCounting.listeners.OrderDetailsListenersPC"
-                            method="fillPCParameters"/>
-        <view:view-listener plugin="orders" view="orderDetails"
-                            component="product"
-                            event="onSelectedEntityChange"
-                            class="com.qcadoo.mes.productionCounting.listeners.OrderDetailsListenersPC"
-                            method="fillPCParameters"/>
 
     </modules>
 

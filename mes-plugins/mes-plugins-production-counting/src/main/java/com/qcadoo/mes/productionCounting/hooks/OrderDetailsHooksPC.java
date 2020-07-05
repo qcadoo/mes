@@ -29,18 +29,15 @@ import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.constants.QcadooViewConstants;
+
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 @Service
 public class OrderDetailsHooksPC {
-
-
 
     private static final List<String> L_ORDER_FIELD_NAMES = Lists.newArrayList(OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT,
             OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT, OrderFieldsPC.REGISTER_PRODUCTION_TIME,
@@ -52,40 +49,6 @@ public class OrderDetailsHooksPC {
 
     @Autowired
     private ParameterService parameterService;
-
-    public void setOrderDefaultValues(final ViewDefinitionState view) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        FieldComponent typeOfProductionRecordingField = (FieldComponent) view
-                .getComponentByReference(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
-
-        if (orderForm.getEntityId() != null) {
-            return;
-        }
-
-        for (String fieldComponentName : L_ORDER_FIELD_NAMES) {
-            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(fieldComponentName);
-
-            if (fieldComponent.getFieldValue() == null) {
-                fieldComponent.setFieldValue(getDefaultValueForProductionCountingFromParameter(fieldComponentName));
-                fieldComponent.requestComponentUpdateState();
-            }
-
-            fieldComponent.setEnabled(false);
-        }
-
-        if (typeOfProductionRecordingField.getFieldValue() == null) {
-            typeOfProductionRecordingField
-                    .setFieldValue(getDefaultValueForTypeOfProductionRecordingParameter(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING));
-        }
-    }
-
-    private boolean getDefaultValueForProductionCountingFromParameter(final String fieldName) {
-        return parameterService.getParameter().getBooleanField(fieldName);
-    }
-
-    private String getDefaultValueForTypeOfProductionRecordingParameter(final String fieldName) {
-        return parameterService.getParameter().getStringField(fieldName);
-    }
 
     public void checkTypeOfProductionRecording(final ViewDefinitionState view) {
         FieldComponent typeOfProductionRecordingField = (FieldComponent) view

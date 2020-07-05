@@ -23,19 +23,7 @@
  */
 package com.qcadoo.mes.productionCounting;
 
-import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
-
-import java.math.BigDecimal;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
@@ -59,6 +47,16 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
 
 @Service
 public class ProductionCountingServiceImpl implements ProductionCountingService {
@@ -217,8 +215,6 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
     @Override
     public void changeDoneQuantityAndAmountOfProducedQuantityFieldState(final ViewDefinitionState view) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        FieldComponent typeOfProductionRecordingField = (FieldComponent) view
-                .getComponentByReference(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 
         FieldComponent doneQuantityField = (FieldComponent) view.getComponentByReference(OrderFields.DONE_QUANTITY);
         FieldComponent amountOfProductProducedField = (FieldComponent) view
@@ -234,12 +230,12 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
             return;
         }
 
-        Entity order = orderForm.getEntity();
+        Entity order = orderForm.getEntity().getDataDefinition().get(orderId);
 
         String state = order.getStringField(OrderFields.STATE);
 
         if (OrderStateStringValues.IN_PROGRESS.equals(state) || OrderStateStringValues.INTERRUPTED.equals(state)) {
-            String typeOfProductionRecording = (String) typeOfProductionRecordingField.getFieldValue();
+            String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 
             if (checkIfTypeOfProductionRecordingIsEmptyOrBasic(typeOfProductionRecording)) {
                 doneQuantityField.setEnabled(true);

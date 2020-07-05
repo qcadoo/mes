@@ -468,6 +468,11 @@
                         class="com.qcadoo.mes.productFlowThruDivision.hooks.TechnologyDetailsHooksPFTD"
                         method="onBeforeRender"/>
 
+        <view:view-hook plugin="orders" view="orderAdditionalDetails"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.productFlowThruDivision.hooks.OrderDetailsHooksPFTD"
+                        method="onBeforeRenderAdditionalForm"/>
+
         <view:view-hook plugin="orders" view="orderDetails"
                         type="beforeRender"
                         class="com.qcadoo.mes.productFlowThruDivision.hooks.OrderDetailsHooksPFTD"

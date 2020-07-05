@@ -23,18 +23,21 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderHooksPC {
@@ -44,14 +47,50 @@ public class OrderHooksPC {
             OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT, OrderFieldsPC.JUST_ONE, OrderFieldsPC.ALLOW_TO_CLOSE,
             OrderFieldsPC.AUTO_CLOSE_ORDER, OrderFieldsPC.REGISTER_PRODUCTION_TIME);
 
+    private static final List<String> L_TECHNOLOGY_FIELD_NAMES = Lists.newArrayList(
+            TechnologyFieldsPC.REGISTER_QUANTITY_IN_PRODUCT, TechnologyFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT,
+            TechnologyFieldsPC.REGISTER_PRODUCTION_TIME, TechnologyFieldsPC.REGISTER_PIECEWORK, TechnologyFieldsPC.JUST_ONE,
+            TechnologyFieldsPC.ALLOW_TO_CLOSE, TechnologyFieldsPC.AUTO_CLOSE_ORDER);
+
     @Autowired
     private ParameterService parameterService;
+    @Autowired
+    private OrderService orderService;
 
-    public void onCreate(final DataDefinition orderDD, final Entity order) {
-        setOrderWithDefaultProductionCountingValues(orderDD, order);
+    public void onSave(final DataDefinition orderDD, final Entity order) {
+        if(Objects.nonNull(order.getId())) {
+            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+            Entity orderFromDB = orderService.getOrder(order.getId());
+            Entity technologyDB = orderFromDB.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+
+            if (Objects.nonNull(technology) && Objects.nonNull(technologyDB) && !technology.getId().equals(technologyDB.getId())) {
+                setOrderWithTechnologyProductionCountingValues(orderDD, order, technology);
+            }
+        }
     }
 
-    public void setOrderWithDefaultProductionCountingValues(final DataDefinition orderDD, final Entity order) {
+    public void onCreate(final DataDefinition orderDD, final Entity order) {
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+        if (Objects.nonNull(technology)) {
+            setOrderWithTechnologyProductionCountingValues(orderDD, order, technology);
+        } else {
+            setOrderWithDefaultProductionCountingValues(orderDD, order);
+        }
+    }
+
+    private void setOrderWithTechnologyProductionCountingValues(final DataDefinition orderDD, final Entity order,
+            final Entity technology) {
+        order.setField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING, technology.getField(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING));
+        order.setField(OrderFieldsPC.REGISTER_PIECEWORK, technology.getField(TechnologyFieldsPC.REGISTER_PIECEWORK));
+        order.setField(OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT, technology.getField(TechnologyFieldsPC.REGISTER_QUANTITY_IN_PRODUCT));
+        order.setField(OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT, technology.getField(TechnologyFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT));
+        order.setField(OrderFieldsPC.JUST_ONE, technology.getField(TechnologyFieldsPC.JUST_ONE));
+        order.setField(OrderFieldsPC.ALLOW_TO_CLOSE, technology.getField(TechnologyFieldsPC.ALLOW_TO_CLOSE));
+        order.setField(OrderFieldsPC.AUTO_CLOSE_ORDER, technology.getField(TechnologyFieldsPC.AUTO_CLOSE_ORDER));
+        order.setField(OrderFieldsPC.REGISTER_PRODUCTION_TIME, technology.getField(TechnologyFieldsPC.REGISTER_PRODUCTION_TIME));
+    }
+
+    private void setOrderWithDefaultProductionCountingValues(final DataDefinition orderDD, final Entity order) {
         for (String fieldName : L_ORDER_FIELD_NAMES) {
             if (order.getField(fieldName) == null) {
                 order.setField(fieldName, parameterService.getParameter().getField(fieldName));
@@ -65,8 +104,8 @@ public class OrderHooksPC {
                     "qcadooView.validate.field.error.missing");
             return false;
         }
-        if (!TypeOfProductionRecording.FOR_EACH.getStringValue()
-                .equals(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))
+        if (!TypeOfProductionRecording.FOR_EACH.getStringValue().equals(
+                order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))
                 && !order.getHasManyField(OrderFields.OPERATIONAL_TASKS).isEmpty()) {
             order.addError(parameterDD.getField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING),
                     "orders.order.typeOfProductionRecording.error.hasOperationalTasks");

@@ -24,20 +24,16 @@
 package com.qcadoo.mes.productionCounting.listeners;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;
-import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderDetailsListenersPC {
@@ -47,11 +43,6 @@ public class OrderDetailsListenersPC {
             OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT, OrderFieldsPC.REGISTER_PRODUCTION_TIME,
             OrderFieldsPC.REGISTER_PIECEWORK, OrderFieldsPC.JUST_ONE, OrderFieldsPC.ALLOW_TO_CLOSE,
             OrderFieldsPC.AUTO_CLOSE_ORDER);
-
-    private static final List<String> L_TECHNOLOGY_FIELD_NAMES = Lists.newArrayList(TechnologyFieldsPC.REGISTER_QUANTITY_IN_PRODUCT,
-            TechnologyFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT, TechnologyFieldsPC.REGISTER_PRODUCTION_TIME,
-            TechnologyFieldsPC.REGISTER_PIECEWORK, TechnologyFieldsPC.JUST_ONE, TechnologyFieldsPC.ALLOW_TO_CLOSE,
-            TechnologyFieldsPC.AUTO_CLOSE_ORDER);
 
     @Autowired
     private ProductionCountingService productionCountingService;
@@ -66,37 +57,6 @@ public class OrderDetailsListenersPC {
                 || productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording)) {
             productionCountingService.setComponentsState(view, L_ORDER_FIELD_NAMES, true, true);
         }
-
-        productionCountingService.changeDoneQuantityAndAmountOfProducedQuantityFieldState(view);
     }
 
-    public void fillPCParameters(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent order = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-
-        Entity orderEntity = order.getPersistedEntityWithIncludedFormValues();
-        Entity technology = orderEntity.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-
-        for (String fieldComponentName : L_TECHNOLOGY_FIELD_NAMES) {
-            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(fieldComponentName);
-
-            if(technology != null) {
-                fieldComponent.setFieldValue(getDefaultValueForProductionCounting(technology, fieldComponentName));
-                fieldComponent.requestComponentUpdateState();
-            }
-
-            fieldComponent.setEnabled(false);
-        }
-        if(technology != null) {
-            FieldComponent typeOfProductionRecordingField = (FieldComponent) view.getComponentByReference(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
-            typeOfProductionRecordingField.setFieldValue(getDefaultValueForTypeOfProductionRecording(technology, TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING));
-        }
-    }
-
-    private boolean getDefaultValueForProductionCounting(final Entity technology, final String fieldName) {
-        return technology.getBooleanField(fieldName);
-    }
-
-    private String getDefaultValueForTypeOfProductionRecording(final Entity technology, final String fieldName) {
-        return technology.getStringField(fieldName);
-    }
 }
