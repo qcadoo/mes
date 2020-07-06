@@ -36,7 +36,9 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,7 +59,48 @@ public class ProductionCountingQuantityValidators {
         boolean isValid = true;
         isValid = isValid && checkTypeOfProductionRecording(productionCountingQuantityDD, productionCountingQuantity);
         isValid = isValid && checkRoleAndTypeOfMaterial(productionCountingQuantityDD, productionCountingQuantity);
+        isValid = isValid && checkIfMaterialExists(productionCountingQuantityDD, productionCountingQuantity);
         return isValid;
+    }
+
+    private boolean checkIfMaterialExists(final DataDefinition productionCountingQuantityDD,
+            final Entity productionCountingQuantity) {
+        String typeOfProductionRecording = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER)
+                .getStringField(L_TYPE_OF_PRODUCTION_RECORDING);
+        if (L_FOR_EACH.equals(typeOfProductionRecording)
+                && Objects.nonNull(productionCountingQuantity
+                        .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT))) {
+            List<Entity> productionCountingQuantities = productionCountingQuantityDD
+                    .find()
+                    .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER,
+                            productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER)))
+                    .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT,
+                            productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT)))
+                    .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT,
+                            productionCountingQuantity
+                                    .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT))).list()
+                    .getEntities();
+
+            if (productionCountingQuantities.isEmpty()) {
+                return true;
+            }
+
+            if (Objects.isNull(productionCountingQuantity.getId())) {
+                productionCountingQuantity
+                        .addGlobalError("basicProductionCounting.productionCountingQuantity.error.materialForOperationExists");
+                return false;
+            }
+
+            List<Entity> filteredProductionCountingQuantities = productionCountingQuantities.stream()
+                    .filter(pq -> !pq.getId().equals(productionCountingQuantity.getId())).collect(Collectors.toList());
+
+            if(!filteredProductionCountingQuantities.isEmpty()) {
+                productionCountingQuantity
+                        .addGlobalError("basicProductionCounting.productionCountingQuantity.error.materialForOperationExists");
+                return false;
+            }
+        }
+        return true;
     }
 
     private boolean checkTypeOfProductionRecording(DataDefinition productionCountingQuantityDD, Entity productionCountingQuantity) {
