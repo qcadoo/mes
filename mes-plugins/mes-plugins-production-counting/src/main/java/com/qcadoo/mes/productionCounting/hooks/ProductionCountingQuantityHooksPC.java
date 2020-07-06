@@ -45,6 +45,8 @@ public class ProductionCountingQuantityHooksPC {
 
     private static final String L_TRACKING_OPERATION_IN_QUANTITY_QUERY = "SELECT '' AS nullResultProtector, t.id as id, t.usedQuantity AS usedQuantity FROM #productionCounting_productionTracking pt, #productionCounting_trackingOperationProductInComponent t WHERE t.productionTracking.id = pt.id AND pt.id = %s AND t.product.id = %s";
 
+    public static final String L_ID = "id";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -52,20 +54,19 @@ public class ProductionCountingQuantityHooksPC {
 
         boolean canRemove = true;
         Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
-        Entity toc = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
+        Entity toc = productionCountingQuantity
+                .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
         Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
-
 
         SearchCriteriaBuilder criteriaBuilder = dataDefinitionService
                 .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_TRACKING).find()
                 .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order));
 
-        if(Objects.nonNull(toc)) {
+        if (Objects.nonNull(toc)) {
             criteriaBuilder.add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc));
         }
 
         List<Entity> productionTrackings = criteriaBuilder.list().getEntities();
-
 
         for (Entity tracking : productionTrackings) {
             String state = tracking.getStringField(ProductionTrackingFields.STATE);
@@ -84,9 +85,11 @@ public class ProductionCountingQuantityHooksPC {
                 String state = tracking.getStringField(ProductionTrackingFields.STATE);
                 if (ProductionTrackingState.DRAFT.getStringValue().equals(state)) {
                     Entity trackingInComponent = getTrackingOperationProductInComponent(tracking, product);
-                    dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                            ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT).delete(
-                            trackingInComponent.getLongField("id"));
+                    if (Objects.nonNull(trackingInComponent) && Objects.nonNull(trackingInComponent.getLongField(L_ID))) {
+                        dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                                ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT).delete(
+                                trackingInComponent.getLongField(L_ID));
+                    }
                 }
             }
         }
