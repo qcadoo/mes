@@ -101,9 +101,9 @@
                                     <div class="card bg-warning text-white" style="display: none;"
                                         onclick="goToMenuPosition('${categoryName}.${itemName}')">
                                         <div class="card-body">
-                                            <img class="img float-left" src="${icon}" alt="${translationsMap[identifier]}"/>
                                             <span class="glyphicon glyphicon-chevron-right float-right"></span>
-                                            <h5 class="card-title">${translationsMap[identifier]}</h5>
+                                            <h4 class="glyphicon ${icon} float-left"></45>
+                                            <h5 class="card-title float-left">${translationsMap[identifier]}</h5>
                                         </div>
                                     </div>
                                 </c:if>
