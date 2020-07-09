@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.hooks;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
@@ -53,15 +44,15 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 @Service
 public class TechnologyDetailsHooksPFTD {
@@ -95,7 +86,6 @@ public class TechnologyDetailsHooksPFTD {
         // flow
         setFieldsRequiredOnFlowTab(view);
         disableOneDivisionSections(view);
-        fillFieldsForOneDivisionRange(view, false);
         changeRibbonState(view);
         hideFlowTableForManyDivision(view);
         fillFlowLocationForCumulatedProductionRecording(view);
@@ -177,6 +167,7 @@ public class TechnologyDetailsHooksPFTD {
 
             if (Objects.nonNull(division)) {
                 divisionLookup.setFieldValue(division.getId());
+                fillFieldsForOneDivisionRange(view);
             } else {
                 divisionLookup.setFieldValue(null);
             }
@@ -360,11 +351,7 @@ public class TechnologyDetailsHooksPFTD {
         }
     }
 
-    public void fillFieldsForOneDivisionRange(final ViewDefinitionState view, final boolean isDivisionChange) {
-        if (!isDivisionChange) {
-            return;
-        }
-
+    public void fillFieldsForOneDivisionRange(final ViewDefinitionState view) {
         LookupComponent divisionLookupComponent = (LookupComponent) view.getComponentByReference(TechnologyFieldsPFTD.DIVISION);
 
         if (Objects.isNull(divisionLookupComponent.getEntity())) {

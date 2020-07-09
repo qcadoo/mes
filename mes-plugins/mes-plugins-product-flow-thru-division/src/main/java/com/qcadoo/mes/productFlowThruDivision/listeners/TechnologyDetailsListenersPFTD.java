@@ -23,28 +23,12 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.listeners;
 
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.qcadoo.mes.productFlowThruDivision.OperationComponentDataProvider;
-import com.qcadoo.mes.productFlowThruDivision.constants.DivisionFieldsPFTD;
-import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductInComponentFieldsPFTD;
-import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductOutComponentFieldsPFTD;
-import com.qcadoo.mes.productFlowThruDivision.constants.ProductionFlowComponent;
-import com.qcadoo.mes.productFlowThruDivision.constants.Range;
-import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
+import com.qcadoo.mes.productFlowThruDivision.constants.*;
 import com.qcadoo.mes.productFlowThruDivision.hooks.TechnologyDetailsHooksPFTD;
 import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
-import com.qcadoo.mes.technologies.constants.OperationFields;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -57,6 +41,12 @@ import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class TechnologyDetailsListenersPFTD {
@@ -319,10 +309,6 @@ public class TechnologyDetailsListenersPFTD {
         }
     }
 
-    public void onRangeChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-
-    }
-
     public void onProductionFlowComponentChange(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
@@ -343,7 +329,7 @@ public class TechnologyDetailsListenersPFTD {
     }
 
     public void onDivisionChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-        technologyDetailsHooksPFTD.fillFieldsForOneDivisionRange(view, true);
+        technologyDetailsHooksPFTD.fillFieldsForOneDivisionRange(view);
     }
 
     private void setFieldsVisible(final ViewDefinitionState view, final List<String> references, final boolean isVisible) {

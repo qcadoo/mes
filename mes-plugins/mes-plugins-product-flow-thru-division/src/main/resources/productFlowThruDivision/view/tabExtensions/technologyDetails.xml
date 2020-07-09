@@ -40,8 +40,8 @@
                                    reference="range">
 
                             <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.productFlowThruDivision.listeners.TechnologyDetailsListenersPFTD"
-                                      method="onRangeChange"/>
+                                      class="com.qcadoo.view.api.listeners.RerenderListener"
+                                      method="onChangeRerender"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
