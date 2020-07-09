@@ -24,9 +24,12 @@
 package com.qcadoo.mes.productionCounting.hooks;
 
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
+import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -59,10 +62,14 @@ public class ProductionCountingQuantityHooksPC {
         Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
 
         SearchCriteriaBuilder criteriaBuilder = dataDefinitionService
-                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_TRACKING).find()
-                .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order));
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_TRACKING)
+                .find()
+                .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, OrdersConstants.PLUGIN_IDENTIFIER,
+                        OrdersConstants.MODEL_ORDER, order.getId()));
 
-        if (Objects.nonNull(toc)) {
+        String type = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
+
+        if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(type) && Objects.nonNull(toc)) {
             criteriaBuilder.add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc));
         }
 
