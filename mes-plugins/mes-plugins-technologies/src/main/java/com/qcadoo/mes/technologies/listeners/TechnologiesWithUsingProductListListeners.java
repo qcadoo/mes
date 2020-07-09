@@ -19,10 +19,6 @@ import java.util.stream.Collectors;
 @Service
 public class TechnologiesWithUsingProductListListeners {
 
-
-
-
-
     @Autowired
     private DataDefinitionService dataDefinitionService;
 

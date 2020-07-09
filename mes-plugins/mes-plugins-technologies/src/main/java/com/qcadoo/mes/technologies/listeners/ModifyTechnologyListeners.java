@@ -1,17 +1,5 @@
 package com.qcadoo.mes.technologies.listeners;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
@@ -29,6 +17,17 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class ModifyTechnologyListeners {
@@ -52,8 +51,6 @@ public class ModifyTechnologyListeners {
     public static final String L_SAVE = "save";
 
     public static final String L_GENERATED = "generated";
-
-
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -233,23 +230,4 @@ public class ModifyTechnologyListeners {
         return newOpic;
     }
 
-    public void onRemoveProduct(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-
-    }
-
-    public void fillProductUnit(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-
-    }
-
-    public void fillReplaceProductUnit(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-
-    }
-
-    public void onAddNewProduct(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-
-    }
-
-    public void onReplaceProduct(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
-
-    }
 }

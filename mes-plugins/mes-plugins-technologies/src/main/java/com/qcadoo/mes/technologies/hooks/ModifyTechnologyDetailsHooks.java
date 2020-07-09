@@ -1,14 +1,5 @@
 package com.qcadoo.mes.technologies.hooks;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.constants.ModifyTechnologyHelperFields;
@@ -19,6 +10,14 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ModifyTechnologyDetailsHooks {
@@ -105,9 +104,8 @@ public class ModifyTechnologyDetailsHooks {
                 Entity product = addEntity.getBelongsToField(PRODUCT);
                 if (Objects.nonNull(product)) {
                     addEntity.setField(L_UNIT, product.getStringField(ProductFields.UNIT));
+                    fc.setEntity(addEntity);
                 }
-                fc.setEntity(addEntity);
-
             });
         } else {
             addProductAdl.setEnabled(false);
