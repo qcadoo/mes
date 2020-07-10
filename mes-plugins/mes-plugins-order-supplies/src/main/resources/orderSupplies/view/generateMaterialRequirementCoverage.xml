@@ -335,6 +335,10 @@
                         width="35"/>
                 <option type="column" name="companyName" fields="companyName"
                         width="75"/>
+                <option type="column" name="deliveryBuffer" fields="deliveryBuffer"
+                        width="30"/>
+                <option type="column" name="orderAtLatest" fields="orderAtLatest"
+                        width="75"/>
                 <option type="column" name="productUnit" fields="productUnit"
                         width="30"/>
                 <option type="column" name="locationsQuantity" fields="locationsQuantity"
@@ -348,9 +352,9 @@
                 <option type="order" column="state" direction="desc"/>
 
                 <option type="searchable"
-                        value="productNumber,productName,replacement,companyName,state,lackFromDate,demandQuantity,coveredQuantity,reserveMissingQuantity,productUnit,locationsQuantity,deliveredQuantity,produceQuantity,productParent,company"/>
+                        value="productNumber,productName,replacement,companyName,state,lackFromDate,demandQuantity,coveredQuantity,reserveMissingQuantity,productUnit,locationsQuantity,deliveredQuantity,produceQuantity,productParent,deliveryBuffer,orderAtLatest"/>
                 <option type="orderable"
-                        value="productNumber,productName,replacement,companyName,state,lackFromDate,demandQuantity,coveredQuantity,reserveMissingQuantity,productUnit,locationsQuantity,deliveredQuantity,produceQuantity,productParent,company"/>
+                        value="productNumber,productName,replacement,companyName,state,lackFromDate,demandQuantity,coveredQuantity,reserveMissingQuantity,productUnit,locationsQuantity,deliveredQuantity,produceQuantity,productParent,deliveryBuffer,orderAtLatest"/>
 
                 <option type="correspondingView" value="orderSupplies/coverageProductLoggingDetails"/>
                 <option type="correspondingComponent" value="form"/>
