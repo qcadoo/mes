@@ -41,8 +41,8 @@
 		<string name="workstationNumber" />
 		<integer name="workstationId"/>
 		<integer name="orderId"/>
-		<integer name="tocId"/>
 		<string name="orderNumber"/>
+		<integer name="tocId"/>
 		<string name="technologyOperationComponentNodeNumber"/>
 		<string name="productNumber"/>
 		<string name="productName"/>

@@ -38,8 +38,9 @@
     };
 
     QCD.translations = {};
+
     <c:forEach items="${translationsMap}" var="translation">
-    QCD.translations['<c:out value="${translation.key}" />'] = '<c:out value="${fn:replace(translation.value, '\\\'','\\\\\\'')}" escapeXml="false" />';
+        QCD.translations['<c:out value="${translation.key}" />'] = '<c:out value="${fn:replace(translation.value, '\\\'','\\\\\\'')}" escapeXml="false" />';
     </c:forEach>
 </script>
 
@@ -67,52 +68,127 @@
 	<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/core/lib/bootstrap.min.js?ver=${buildNumber}"></script>
 </head>
 
-<body>
-	<div id="windowContainer">
-		<div id="windowContainerContentBody">
-			<div id="contentWrapperMiddle">
-				<div id="dashboardContentWrapper">
-					<div id="descriptionElement">
-						<div id="descriptionHeader">
-							${translationsMap['basic.dashboard.header']}
-						</div>
-					</div>
-				</div>
-				<div class="clear"></div>
-                <c:if test="${showChartOnDashboard}">
-                    <div id="chartElement" class="chart-container">
-                        <canvas id="chart"></canvas>
-                    </div>
-                </c:if>
-                <c:if test="${dashboardButtons.size() > 0}">
-                    <div id="buttonsElement">
-                        <div class="card-columns">
-                            <c:forEach items="${dashboardButtons}" var="dashboardButton">
-                                <c:set var = "identifier" value = "${dashboardButton.getStringField('identifier')}" />
-                                <c:set var = "item" value = "${dashboardButton.getBelongsToField('item')}" />
-                                <c:set var = "icon" value = "${dashboardButton.getStringField('icon')}" />
+<body id="documentBody" role="document">
+    <div class="container" role="main">
+        <div id="dashboardDescription">
+            <div class="description-header">
+                ${translationsMap['basic.dashboard.header']}
+            </div>
+        </div>
+        <div class="clear"></div>
+        <c:if test="${showChartOnDashboard}">
+            <div id="dashboardChart" class="chart-container">
+                <canvas id="chart"></canvas>
+            </div>
+        </c:if>
+        <c:if test="${dashboardButtons.size() > 0}">
+            <div id="dashboardButtons">
+                <div class="card-columns">
+                    <c:forEach items="${dashboardButtons}" var="dashboardButton">
+                        <c:set var = "identifier" value = "${dashboardButton.getStringField('identifier')}" />
+                        <c:set var = "item" value = "${dashboardButton.getBelongsToField('item')}" />
+                        <c:set var = "icon" value = "${dashboardButton.getStringField('icon')}" />
 
-                                <c:if test="${item != null}">
-                                    <c:set var = "category" value = "${item.getBelongsToField('category')}" />
+                        <c:if test="${item != null}">
+                            <c:set var = "category" value = "${item.getBelongsToField('category')}" />
 
-                                    <c:set var = "categoryName" value = "${category.getStringField('name')}" />
-                                    <c:set var = "itemName" value = "${item.getStringField('name')}" />
+                            <c:set var = "categoryName" value = "${category.getStringField('name')}" />
+                            <c:set var = "itemName" value = "${item.getStringField('name')}" />
 
-                                    <div class="card bg-warning text-white" style="display: none;"
-                                        onclick="goToMenuPosition('${categoryName}.${itemName}')">
-                                        <div class="card-body">
-                                            <span class="glyphicon glyphicon-chevron-right float-right"></span>
-                                            <h4 class="glyphicon ${icon} float-left"></45>
-                                            <h5 class="card-title float-left">${translationsMap[identifier]}</h5>
-                                        </div>
+                            <div class="card bg-success text-white" style="display: none;"
+                                onclick="goToMenuPosition('${categoryName}.${itemName}')">
+                                <div class="card-body">
+                                    <span class="glyphicon glyphicon-chevron-right float-right"></span>
+                                    <h4 class="glyphicon ${icon} float-left"></45>
+                                    <h5 class="card-title float-left">${translationsMap[identifier]}</h5>
+                                </div>
+                            </div>
+                        </c:if>
+                    </c:forEach>
+                </div>
+            </div>
+        </c:if>
+        <div class="clear"></div>
+        <c:if test="${whatToShowOnDashboard != null}">
+            <c:choose>
+                <c:when test="${whatToShowOnDashboard == '01orders'}">
+                    <div id="dashboardKanban">
+                        <div class="row">
+                            <div class="col">
+                                <div class="card bg-light" style="display: none;">
+                                    <div class="card-body p-3">
+                                        <button id="addOrder" class="btn btn-primary btn-sm float-right"
+                                            onclick="addOrder()">${translationsMap['basic.dashboard.orders.addNew.label']}</button>
+                                        <h6 class="card-title text-uppercase text-truncate py-2">${translationsMap['basic.dashboard.orders.pending.label']}</h6>
+                                        <div id="ordersPending" class="items"></div>
                                     </div>
-                                </c:if>
-                            </c:forEach>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="card bg-light" style="display: none;">
+                                    <div class="card-body p-3">
+                                        <h6 class="card-title text-uppercase text-truncate py-2">${translationsMap['basic.dashboard.orders.inProgress.label']}</h6>
+                                        <div id="ordersInProgress" class="items"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="card bg-light" style="display: none;">
+                                    <div class="card-body p-3">
+                                        <h6 class="card-title text-uppercase text-truncate py-2">${translationsMap['basic.dashboard.orders.completed.label']}</h6>
+                                        <div id="ordersCompleted" class="items"></div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </c:if>
-			</div>
-		</div>
+                </c:when>
+                <c:when test="${whatToShowOnDashboard == '02operationalTasks'}">
+                    <div id="dashboardKanban">
+                        <div class="row">
+                            <div class="col">
+                                <div class="card bg-light" style="display: none;">
+                                    <div class="card-body p-3">
+                                        <button id="addOperationalTask" class="btn btn-primary btn-sm float-right"
+                                            onclick="addOperationalTask()">${translationsMap['basic.dashboard.operationalTasks.addNew.label']}</button>
+                                        <h6 class="card-title text-uppercase text-truncate py-2">${translationsMap['basic.dashboard.operationalTasks.pending.label']}</h6>
+                                        <div id="operationalTasksPending" class="items"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="card bg-light" style="display: none;">
+                                    <div class="card-body">
+                                        <h6 class="card-title text-uppercase text-truncate py-2">${translationsMap['basic.dashboard.operationalTasks.inProgress.label']}</h6>
+                                        <div id="operationalTasksInProgress" class="items"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="card bg-light" style="display: none;">
+                                    <div class="card-body">
+                                        <h6 class="card-title text-uppercase text-truncate py-2">${translationsMap['basic.dashboard.operationalTasks.completed.label']}</h6>
+                                        <div id="operationalTasksCompleted" class="items">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </c:when>
+            </c:choose>
+        </c:if>
+
+         <div id="loader" class="modal" tabindex="-1" role="dialog" data-backdrop="static">
+            <div class="modal-dialog modal-sm" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <img src="/qcadooView/public/img/core/loading_indicator32.gif"/>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 	</div>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/basic/public/js/dashboard.js?ver=${buildNumber}"></script>
 </body>

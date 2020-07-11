@@ -78,6 +78,7 @@ public class DashboardViewMF implements DashboardView {
         mav.addObject("translationsMap", translationService.getMessagesGroup("dashboard", locale));
         mav.addObject("useCompressedStaticResources", useCompressedStaticResources);
         mav.addObject("showChartOnDashboard", getShowChartOnDashboard(parameter));
+        mav.addObject("whatToShowOnDashboard", getWhatToShowOnDashboard(parameter));
         mav.addObject("dashboardButtons", filterDashboardButtons(getDashboardButtons(parameter), currentUser));
 
         return mav;
@@ -85,6 +86,10 @@ public class DashboardViewMF implements DashboardView {
 
     private boolean getShowChartOnDashboard(final Entity parameter) {
         return parameter.getBooleanField(ParameterFieldsMF.SHOW_CHART_ON_DASHBOARD);
+    }
+
+    private String getWhatToShowOnDashboard(final Entity parameter) {
+        return parameter.getStringField(ParameterFieldsMF.WHAT_TO_SHOW_ON_DASHBOARD);
     }
 
     private LinkedList<Entity> getDashboardButtons(final Entity parameter) {
