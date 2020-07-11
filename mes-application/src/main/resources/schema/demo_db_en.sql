@@ -4517,7 +4517,6 @@ CREATE TABLE materialflow_location (
     id bigint NOT NULL,
     number character varying(255),
     name character varying(255),
-    type character varying(255) DEFAULT '01controlPoint'::character varying,
     externalnumber character varying(255),
     algorithm character varying(255) DEFAULT '01fifo'::character varying,
     requireprice boolean,
@@ -7531,50 +7530,6 @@ CREATE SEQUENCE arch_repairs_repairorderworktime_id_seq
 --
 
 ALTER SEQUENCE arch_repairs_repairorderworktime_id_seq OWNED BY arch_repairs_repairorderworktime.id;
-
-
---
--- Name: simplematerialbalance_simplematerialbalanceorderscomponent; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE simplematerialbalance_simplematerialbalanceorderscomponent (
-    id bigint NOT NULL,
-    simplematerialbalance_id bigint,
-    order_id bigint,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: simplematerialbalance_simplematerialbalanceorderscomponent_id_s; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE simplematerialbalance_simplematerialbalanceorderscomponent_id_s
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: simplematerialbalance_simplematerialbalanceorderscomponent_id_s; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE simplematerialbalance_simplematerialbalanceorderscomponent_id_s OWNED BY simplematerialbalance_simplematerialbalanceorderscomponent.id;
-
-
---
--- Name: arch_simplematerialbalance_simplematerialbalanceorderscomponent; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE arch_simplematerialbalance_simplematerialbalanceorderscomponent (
-    id bigint DEFAULT nextval('simplematerialbalance_simplematerialbalanceorderscomponent_id_s'::regclass) NOT NULL,
-    simplematerialbalance_id bigint,
-    order_id bigint,
-    entityversion bigint DEFAULT 0,
-    archived boolean DEFAULT false
-);
 
 
 --
@@ -15235,185 +15190,6 @@ ALTER SEQUENCE materialflow_location_id_seq OWNED BY materialflow_location.id;
 
 
 --
--- Name: materialflow_materialsinlocation; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE materialflow_materialsinlocation (
-    id bigint NOT NULL,
-    name character varying(1024),
-    materialflowfordate timestamp without time zone,
-    "time" timestamp without time zone,
-    worker character varying(255),
-    generated boolean,
-    filename character varying(255),
-    active boolean DEFAULT true,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: materialflow_materialsinlocation_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE materialflow_materialsinlocation_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: materialflow_materialsinlocation_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE materialflow_materialsinlocation_id_seq OWNED BY materialflow_materialsinlocation.id;
-
-
---
--- Name: materialflow_materialsinlocationcomponent; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE materialflow_materialsinlocationcomponent (
-    id bigint NOT NULL,
-    materialsinlocation_id bigint,
-    location_id bigint,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: materialflow_materialsinlocationcomponent_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE materialflow_materialsinlocationcomponent_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: materialflow_materialsinlocationcomponent_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE materialflow_materialsinlocationcomponent_id_seq OWNED BY materialflow_materialsinlocationcomponent.id;
-
-
---
--- Name: materialflow_stockcorrection; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE materialflow_stockcorrection (
-    id bigint NOT NULL,
-    number character varying(255),
-    stockcorrectiondate timestamp without time zone,
-    location_id bigint,
-    product_id bigint,
-    found numeric(12,5),
-    staff_id bigint,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: materialflow_stockcorrection_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE materialflow_stockcorrection_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: materialflow_stockcorrection_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE materialflow_stockcorrection_id_seq OWNED BY materialflow_stockcorrection.id;
-
-
---
--- Name: materialflow_transfer; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE materialflow_transfer (
-    id bigint NOT NULL,
-    number character varying(255),
-    type character varying(255),
-    "time" timestamp without time zone,
-    locationfrom_id bigint,
-    locationto_id bigint,
-    product_id bigint,
-    quantity numeric(12,5),
-    staff_id bigint,
-    transformationsconsumption_id bigint,
-    transformationsproduction_id bigint,
-    fromdelivery_id bigint,
-    price numeric(12,5) DEFAULT (0)::numeric,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: materialflow_transfer_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE materialflow_transfer_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: materialflow_transfer_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE materialflow_transfer_id_seq OWNED BY materialflow_transfer.id;
-
-
---
--- Name: materialflow_transformations; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE materialflow_transformations (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(1024),
-    "time" date,
-    locationfrom_id bigint,
-    locationto_id bigint,
-    staff_id bigint,
-    operation_id bigint,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: materialflow_transformations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE materialflow_transformations_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: materialflow_transformations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE materialflow_transformations_id_seq OWNED BY materialflow_transformations.id;
-
-
---
 -- Name: materialflow_userlocation; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -15441,71 +15217,6 @@ CREATE SEQUENCE materialflow_userlocation_id_seq
 --
 
 ALTER SEQUENCE materialflow_userlocation_id_seq OWNED BY materialflow_userlocation.id;
-
-
---
--- Name: materialflowmultitransfers_productquantity; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE materialflowmultitransfers_productquantity (
-    id bigint NOT NULL,
-    product_id bigint,
-    quantity numeric(10,3),
-    transfer_id bigint,
-    price numeric(12,5) DEFAULT (0)::numeric,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: materialflowmultitransfers_productquantity_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE materialflowmultitransfers_productquantity_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: materialflowmultitransfers_productquantity_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE materialflowmultitransfers_productquantity_id_seq OWNED BY materialflowmultitransfers_productquantity.id;
-
-
---
--- Name: materialflowmultitransfers_transfertemplate; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE materialflowmultitransfers_transfertemplate (
-    id bigint NOT NULL,
-    locationfrom_id bigint,
-    locationto_id bigint,
-    product_id bigint,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: materialflowmultitransfers_transfertemplate_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE materialflowmultitransfers_transfertemplate_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: materialflowmultitransfers_transfertemplate_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE materialflowmultitransfers_transfertemplate_id_seq OWNED BY materialflowmultitransfers_transfertemplate.id;
 
 
 --
@@ -15766,7 +15477,6 @@ CREATE TABLE materialflowresources_documentpositionparameters (
     presenttotalamountandrest boolean DEFAULT false,
     pallettoshift integer,
     palletwithfreeplace integer,
-    changedatewhentransfertowarehousetype character varying(255) DEFAULT '01never'::character varying,
     fillresourceirrespectiveofconversion boolean DEFAULT false,
     numberofmonthsforpositionsdata integer DEFAULT 1
 );
@@ -18021,6 +17731,7 @@ CREATE VIEW orders_orderlistdto AS
     ordersorder.workplandelivered,
     ordersorder.deadline,
     ordersorder.ordercategory,
+    ordersorder.typeofproductionrecording,
     COALESCE(ordersorder.plannedquantityforadditionalunit, ordersorder.plannedquantity) AS plannedquantityforadditionalunit,
     COALESCE(product.additionalunit, product.unit) AS unitforadditionalunit,
     product.number AS productnumber,
@@ -18038,15 +17749,17 @@ CREATE VIEW orders_orderlistdto AS
         END AS existsrepairorders,
     (masterorder.id)::integer AS masterorderid,
     ordersgroup.number AS ordersgroupnumber,
+    productionline.number AS productionlinenumber,
     ''::character varying(255) AS annotation
-   FROM (((((((orders_order ordersorder
+   FROM ((((((((orders_order ordersorder
      JOIN basic_product product ON ((product.id = ordersorder.product_id)))
      LEFT JOIN technologies_technology technology ON ((technology.id = ordersorder.technology_id)))
      LEFT JOIN basic_company company ON ((company.id = ordersorder.company_id)))
      LEFT JOIN masterorders_masterorder masterorder ON ((masterorder.id = ordersorder.masterorder_id)))
      LEFT JOIN masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
      LEFT JOIN ordersgroups_ordersgroup ordersgroup ON ((ordersorder.ordersgroup_id = ordersgroup.id)))
-     LEFT JOIN basic_division division ON ((division.id = ordersorder.division_id)));
+     LEFT JOIN basic_division division ON ((division.id = ordersorder.division_id)))
+     LEFT JOIN productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)));
 
 
 --
@@ -19063,7 +18776,9 @@ CREATE VIEW ordersupplies_coverageproductdto AS
                FROM basic_substitutecomponent
               WHERE (basic_substitutecomponent.baseproduct_id = _product.id)) > 0) THEN true
             ELSE false
-        END AS replacement
+        END AS replacement,
+    _company.buffer AS deliverybuffer,
+    (coverageproduct.lackfromdate - make_interval(days => _company.buffer)) AS orderatlatest
    FROM (((ordersupplies_coverageproduct coverageproduct
      JOIN basic_product _product ON ((_product.id = coverageproduct.product_id)))
      LEFT JOIN basic_product _parent ON ((_parent.id = _product.parent_id)))
@@ -22733,14 +22448,16 @@ CREATE VIEW qualitycontrol_qualitycontroldto AS
     o.number AS "order",
     (((stf.name)::text || ' '::text) || (stf.surname)::text) AS staff,
     (count(qualitycontrolattachment.id) <> 0) AS attachmentsexists,
-    qc.description
-   FROM (((((qualitycontrol_qualitycontrol qc
+    qc.description,
+    d.number AS delivery
+   FROM ((((((qualitycontrol_qualitycontrol qc
      JOIN basic_product p ON ((p.id = qc.product_id)))
      LEFT JOIN qualitycontrol_qualitycontrolattachment qualitycontrolattachment ON ((qualitycontrolattachment.qualitycontrol_id = qc.id)))
      LEFT JOIN advancedgenealogy_batch b ON ((b.id = qc.batch_id)))
      LEFT JOIN orders_order o ON ((o.id = qc.order_id)))
+     LEFT JOIN deliveries_delivery d ON ((d.id = qc.delivery_id)))
      LEFT JOIN basic_staff stf ON ((stf.id = qc.staff_id)))
-  GROUP BY qc.id, qc.number, qc.date, qc.controltype, qc.state, qc.qualityrating, p.number, b.number, o.number, (((stf.name)::text || ' '::text) || (stf.surname)::text), qc.description;
+  GROUP BY qc.id, qc.number, qc.date, qc.controltype, qc.state, qc.qualityrating, p.number, b.number, o.number, (((stf.name)::text || ' '::text) || (stf.surname)::text), qc.description, d.number;
 
 
 --
@@ -23044,72 +22761,6 @@ CREATE SEQUENCE repairs_repairorderworktime_id_seq
 --
 
 ALTER SEQUENCE repairs_repairorderworktime_id_seq OWNED BY repairs_repairorderworktime.id;
-
-
---
--- Name: simplematerialbalance_simplematerialbalance; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE simplematerialbalance_simplematerialbalance (
-    id bigint NOT NULL,
-    name character varying(1024),
-    date timestamp without time zone,
-    worker character varying(255),
-    mrpalgorithm character varying(255) DEFAULT '01onlyComponents'::character varying,
-    generated boolean,
-    filename character varying(255),
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: simplematerialbalance_simplematerialbalance_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE simplematerialbalance_simplematerialbalance_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: simplematerialbalance_simplematerialbalance_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE simplematerialbalance_simplematerialbalance_id_seq OWNED BY simplematerialbalance_simplematerialbalance.id;
-
-
---
--- Name: simplematerialbalance_simplematerialbalancelocationscomponent; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE simplematerialbalance_simplematerialbalancelocationscomponent (
-    id bigint NOT NULL,
-    simplematerialbalance_id bigint,
-    location_id bigint,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: simplematerialbalance_simplematerialbalancelocationscomponent_i; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE simplematerialbalance_simplematerialbalancelocationscomponent_i
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: simplematerialbalance_simplematerialbalancelocationscomponent_i; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE simplematerialbalance_simplematerialbalancelocationscomponent_i OWNED BY simplematerialbalance_simplematerialbalancelocationscomponent.id;
 
 
 --
@@ -25628,178 +25279,6 @@ ALTER SEQUENCE workplans_workplanordercolumn_id_seq OWNED BY workplans_workplano
 
 
 --
--- Name: zmbak_meatcuttingindicator; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE zmbak_meatcuttingindicator (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(2048),
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: zmbak_meatcuttingindicator_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE zmbak_meatcuttingindicator_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: zmbak_meatcuttingindicator_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE zmbak_meatcuttingindicator_id_seq OWNED BY zmbak_meatcuttingindicator.id;
-
-
---
--- Name: zmbak_meatcuttingindicatorcomponent; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE zmbak_meatcuttingindicatorcomponent (
-    id bigint NOT NULL,
-    meatcuttingindicator_id bigint,
-    parent_id bigint,
-    product_id bigint,
-    nodenumber character varying(255),
-    priority integer,
-    yieldindicator numeric(12,5),
-    entitytype character varying(255),
-    priceindicator numeric(12,5),
-    twinsdiscriminator boolean DEFAULT false,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: zmbak_meatcuttingindicatorcomponent_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE zmbak_meatcuttingindicatorcomponent_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: zmbak_meatcuttingindicatorcomponent_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE zmbak_meatcuttingindicatorcomponent_id_seq OWNED BY zmbak_meatcuttingindicatorcomponent.id;
-
-
---
--- Name: zmbak_parameter; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE zmbak_parameter (
-    id bigint NOT NULL,
-    slaughterlocation_id bigint,
-    freezerlocation_id bigint,
-    meatcuttinglocation_id bigint,
-    slaughteroperation_id bigint,
-    meatcuttingoperation_id bigint,
-    acceptableloss numeric(12,5),
-    errormargin numeric(12,5),
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: zmbak_parameter_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE zmbak_parameter_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: zmbak_parameter_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE zmbak_parameter_id_seq OWNED BY zmbak_parameter.id;
-
-
---
--- Name: zmbak_tpcreport; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE zmbak_tpcreport (
-    id bigint NOT NULL,
-    name character varying(1024),
-    datefrom timestamp without time zone,
-    overhead numeric(12,5),
-    margin numeric(12,5),
-    dateto timestamp without time zone,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: zmbak_tpcreport_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE zmbak_tpcreport_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: zmbak_tpcreport_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE zmbak_tpcreport_id_seq OWNED BY zmbak_tpcreport.id;
-
-
---
--- Name: zmbak_tpctable; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE zmbak_tpctable (
-    id bigint NOT NULL,
-    product_id bigint,
-    quantity numeric(12,5),
-    price numeric(12,5),
-    date timestamp without time zone,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: zmbak_tpctable_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE zmbak_tpctable_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: zmbak_tpctable_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE zmbak_tpctable_id_seq OWNED BY zmbak_tpctable.id;
-
-
---
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -27553,56 +27032,7 @@ ALTER TABLE ONLY materialflow_location ALTER COLUMN id SET DEFAULT nextval('mate
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY materialflow_materialsinlocation ALTER COLUMN id SET DEFAULT nextval('materialflow_materialsinlocation_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflow_materialsinlocationcomponent ALTER COLUMN id SET DEFAULT nextval('materialflow_materialsinlocationcomponent_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflow_stockcorrection ALTER COLUMN id SET DEFAULT nextval('materialflow_stockcorrection_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflow_transfer ALTER COLUMN id SET DEFAULT nextval('materialflow_transfer_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflow_transformations ALTER COLUMN id SET DEFAULT nextval('materialflow_transformations_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY materialflow_userlocation ALTER COLUMN id SET DEFAULT nextval('materialflow_userlocation_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflowmultitransfers_productquantity ALTER COLUMN id SET DEFAULT nextval('materialflowmultitransfers_productquantity_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflowmultitransfers_transfertemplate ALTER COLUMN id SET DEFAULT nextval('materialflowmultitransfers_transfertemplate_id_seq'::regclass);
 
 
 --
@@ -28575,27 +28005,6 @@ ALTER TABLE ONLY repairs_repairorderworktime ALTER COLUMN id SET DEFAULT nextval
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY simplematerialbalance_simplematerialbalance ALTER COLUMN id SET DEFAULT nextval('simplematerialbalance_simplematerialbalance_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY simplematerialbalance_simplematerialbalancelocationscomponent ALTER COLUMN id SET DEFAULT nextval('simplematerialbalance_simplematerialbalancelocationscomponent_i'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY simplematerialbalance_simplematerialbalanceorderscomponent ALTER COLUMN id SET DEFAULT nextval('simplematerialbalance_simplematerialbalanceorderscomponent_id_s'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY states_message ALTER COLUMN id SET DEFAULT nextval('states_message_id_seq'::regclass);
 
 
@@ -29073,41 +28482,6 @@ ALTER TABLE ONLY workplans_workplan ALTER COLUMN id SET DEFAULT nextval('workpla
 --
 
 ALTER TABLE ONLY workplans_workplanordercolumn ALTER COLUMN id SET DEFAULT nextval('workplans_workplanordercolumn_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY zmbak_meatcuttingindicator ALTER COLUMN id SET DEFAULT nextval('zmbak_meatcuttingindicator_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY zmbak_meatcuttingindicatorcomponent ALTER COLUMN id SET DEFAULT nextval('zmbak_meatcuttingindicatorcomponent_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY zmbak_parameter ALTER COLUMN id SET DEFAULT nextval('zmbak_parameter_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY zmbak_tpcreport ALTER COLUMN id SET DEFAULT nextval('zmbak_tpcreport_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY zmbak_tpctable ALTER COLUMN id SET DEFAULT nextval('zmbak_tpctable_id_seq'::regclass);
 
 
 --
@@ -30742,14 +30116,6 @@ SELECT pg_catalog.setval('arch_repairs_repairorderworktime_id_seq', 1, false);
 
 
 --
--- Data for Name: arch_simplematerialbalance_simplematerialbalanceorderscomponent; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY arch_simplematerialbalance_simplematerialbalanceorderscomponent (id, simplematerialbalance_id, order_id, entityversion, archived) FROM stdin;
-\.
-
-
---
 -- Data for Name: arch_states_message; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -31546,17 +30912,17 @@ SELECT pg_catalog.setval('basic_currency_id_seq', 182, true);
 --
 
 COPY basic_dashboardbutton (id, parameter_id, identifier, item_id, icon, succession, active) FROM stdin;
-1	1	basic.dashboardButton.identifier.orders.ordersPlanningList	47	/qcadooView/public/css/core/images/dashboard/define.png	1	f
-2	1	basic.dashboardButton.identifier.orders.operationalTasksList	46	/qcadooView/public/css/core/images/dashboard/define.png	2	f
-3	1	basic.dashboardButton.identifier.orders.schedulesList	149	/qcadooView/public/css/core/images/dashboard/define.png	3	f
-4	1	basic.dashboardButton.identifier.technology.technologiesList	39	/qcadooView/public/css/core/images/dashboard/define.png	4	f
-5	1	basic.dashboardButton.identifier.requirements.generateMaterialRequirementCoverage	100	/qcadooView/public/css/core/images/dashboard/define.png	5	f
-6	1	basic.dashboardButton.identifier.requirements.deliveriesList	62	/qcadooView/public/css/core/images/dashboard/define.png	6	f
-7	1	basic.dashboardButton.identifier.materialFlow.warehouseStocksList	72	/qcadooView/public/css/core/images/dashboard/define.png	7	f
-8	1	basic.dashboardButton.identifier.materialFlow.resourcesList	75	/qcadooView/public/css/core/images/dashboard/define.png	8	f
-9	1	basic.dashboardButton.identifier.materialFlow.documentsList	73	/qcadooView/public/css/core/images/dashboard/define.png	9	f
-10	1	basic.dashboardButton.identifier.ordersTracking.productionTrackingsList	96	/qcadooView/public/css/core/images/dashboard/define.png	10	f
-11	1	basic.dashboardButton.identifier.ordersTracking.productionBalancesList	95	/qcadooView/public/css/core/images/dashboard/define.png	11	f
+6	1	basic.dashboardButton.identifier.requirements.deliveriesList	62	glyphicon-transfer	6	f
+8	1	basic.dashboardButton.identifier.materialFlow.resourcesList	75	glyphicon glyphicon-th	8	f
+7	1	basic.dashboardButton.identifier.materialFlow.warehouseStocksList	72	glyphicon-equalizer	7	f
+9	1	basic.dashboardButton.identifier.materialFlow.documentsList	73	glyphicon-file	9	f
+2	1	basic.dashboardButton.identifier.orders.operationalTasksList	46	glyphicon-tasks	2	f
+1	1	basic.dashboardButton.identifier.orders.ordersPlanningList	47	glyphicon-calendar	1	f
+10	1	basic.dashboardButton.identifier.ordersTracking.productionTrackingsList	96	glyphicon-search	10	f
+11	1	basic.dashboardButton.identifier.ordersTracking.productionBalancesList	95	glyphicon-stats	11	f
+4	1	basic.dashboardButton.identifier.technology.technologiesList	39	glyphicon-tree-conifer	4	f
+3	1	basic.dashboardButton.identifier.orders.schedulesList	149	glyphicon-random	3	f
+5	1	basic.dashboardButton.identifier.requirements.generateMaterialRequirementCoverage	100	glyphicon-scale	5	f
 \.
 
 
@@ -34106,7 +33472,7 @@ SELECT pg_catalog.setval('masterorders_masterorderproduct_id_seq', 1, false);
 -- Data for Name: materialflow_location; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY materialflow_location (id, number, name, type, externalnumber, algorithm, requireprice, requirebatch, requireproductiondate, requireexpirationdate, entityversion, warehousenumberinoptima, draftmakesreservation, realizationlocation_id) FROM stdin;
+COPY materialflow_location (id, number, name, externalnumber, algorithm, requireprice, requirebatch, requireproductiondate, requireexpirationdate, entityversion, warehousenumberinoptima, draftmakesreservation, realizationlocation_id) FROM stdin;
 \.
 
 
@@ -34115,81 +33481,6 @@ COPY materialflow_location (id, number, name, type, externalnumber, algorithm, r
 --
 
 SELECT pg_catalog.setval('materialflow_location_id_seq', 1, false);
-
-
---
--- Data for Name: materialflow_materialsinlocation; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY materialflow_materialsinlocation (id, name, materialflowfordate, "time", worker, generated, filename, active, entityversion) FROM stdin;
-\.
-
-
---
--- Name: materialflow_materialsinlocation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('materialflow_materialsinlocation_id_seq', 1, false);
-
-
---
--- Data for Name: materialflow_materialsinlocationcomponent; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY materialflow_materialsinlocationcomponent (id, materialsinlocation_id, location_id, entityversion) FROM stdin;
-\.
-
-
---
--- Name: materialflow_materialsinlocationcomponent_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('materialflow_materialsinlocationcomponent_id_seq', 1, false);
-
-
---
--- Data for Name: materialflow_stockcorrection; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY materialflow_stockcorrection (id, number, stockcorrectiondate, location_id, product_id, found, staff_id, entityversion) FROM stdin;
-\.
-
-
---
--- Name: materialflow_stockcorrection_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('materialflow_stockcorrection_id_seq', 1, false);
-
-
---
--- Data for Name: materialflow_transfer; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY materialflow_transfer (id, number, type, "time", locationfrom_id, locationto_id, product_id, quantity, staff_id, transformationsconsumption_id, transformationsproduction_id, fromdelivery_id, price, entityversion) FROM stdin;
-\.
-
-
---
--- Name: materialflow_transfer_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('materialflow_transfer_id_seq', 1, false);
-
-
---
--- Data for Name: materialflow_transformations; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY materialflow_transformations (id, number, name, "time", locationfrom_id, locationto_id, staff_id, operation_id, entityversion) FROM stdin;
-\.
-
-
---
--- Name: materialflow_transformations_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('materialflow_transformations_id_seq', 1, false);
 
 
 --
@@ -34205,36 +33496,6 @@ COPY materialflow_userlocation (id, location_id, user_id) FROM stdin;
 --
 
 SELECT pg_catalog.setval('materialflow_userlocation_id_seq', 1, false);
-
-
---
--- Data for Name: materialflowmultitransfers_productquantity; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY materialflowmultitransfers_productquantity (id, product_id, quantity, transfer_id, price, entityversion) FROM stdin;
-\.
-
-
---
--- Name: materialflowmultitransfers_productquantity_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('materialflowmultitransfers_productquantity_id_seq', 1, false);
-
-
---
--- Data for Name: materialflowmultitransfers_transfertemplate; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY materialflowmultitransfers_transfertemplate (id, locationfrom_id, locationto_id, product_id, entityversion) FROM stdin;
-\.
-
-
---
--- Name: materialflowmultitransfers_transfertemplate_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('materialflowmultitransfers_transfertemplate_id_seq', 1, false);
 
 
 --
@@ -34328,8 +33589,8 @@ SELECT pg_catalog.setval('materialflowresources_documentdto_id_seq', 1, false);
 -- Data for Name: materialflowresources_documentpositionparameters; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY materialflowresources_documentpositionparameters (id, suggestresource, acceptanceofdocumentbeforeprinting, notshowprices, presenttotalamountandrest, pallettoshift, palletwithfreeplace, changedatewhentransfertowarehousetype, fillresourceirrespectiveofconversion, numberofmonthsforpositionsdata) FROM stdin;
-1	t	t	\N	\N	\N	\N	01never	f	1
+COPY materialflowresources_documentpositionparameters (id, suggestresource, acceptanceofdocumentbeforeprinting, notshowprices, presenttotalamountandrest, pallettoshift, palletwithfreeplace, fillresourceirrespectiveofconversion, numberofmonthsforpositionsdata) FROM stdin;
+1	t	t	\N	\N	\N	\N	f	1
 \.
 
 
@@ -36478,7 +35739,6 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 20	urcTechnologies	1.5.0	DISABLED	f	0	technologies	Commercial
 78	nutritionFacts	1.5.0	DISABLED	f	0	framework	Commercial
 79	walusiak	1.5.0	DISABLED	f	0	other	Commercial
-80	zmbak	1.5.0	DISABLED	f	0	other	Commercial
 22	qcadooModel	1.5.0	ENABLED	t	0	framework	AGPL
 23	qcadooSecurity	1.5.0	ENABLED	t	0	framework	AGPL
 24	qcadooView	1.5.0	ENABLED	t	0	framework	AGPL
@@ -36499,7 +35759,6 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 40	costNormsForOperation	1.5.0	ENABLED	f	0	technologies	AGPL
 42	orders	1.5.0	ENABLED	f	0	planning	AGPL
 45	costNormsForOperationInOrder	1.5.0	ENABLED	f	0	planning	AGPL
-46	simpleMaterialBalance	1.5.0	ENABLED	f	0	supplies	AGPL
 47	deliveries	1.5.0	ENABLED	f	0	supplies	AGPL
 48	stoppage	1.5.0	ENABLED	f	0	other	AGPL
 50	materialFlowResources	1.5.0	ENABLED	f	0	flow	AGPL
@@ -36552,7 +35811,6 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 125	costCalculation	1.5.0	ENABLED	f	0	calculations	AGPL
 126	lineChangeoverNormsForOrders	1.5.0	ENABLED	f	0	planning	AGPL
 127	productionScheduling	1.5.0	ENABLED	f	0	planning	AGPL
-128	materialFlowMultitransfers	1.5.0	ENABLED	f	0	flow	AGPL
 129	operationalTasksForOrders	1.5.0	ENABLED	f	0	planning	AGPL
 130	catNumbersInDeliveries	1.5.0	ENABLED	f	0	supplies	AGPL
 132	techSubcontrForOperTasks	1.5.0	ENABLED	f	0	planning	AGPL
@@ -36746,7 +36004,6 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 103	ROLE_PLANNING_MASTER_ORDERS	\N	0
 104	ROLE_TERMINAL_CARTON_LABELS	\N	0
 105	ROLE_ANALYSIS_VIEWER	\N	0
-106	ROLE_ZMBAK	\N	0
 107	ROLE_PRODUCTION_COUNTING_FROM_PRODUCTION_TRACKING	\N	0
 108	ROLE_DOCUMENTS_NOTIFICATION	\N	0
 109	ROLE_PALLET_LIST_EDIT	\N	0
@@ -36873,10 +36130,6 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 38	technologies	operations	t	5	38	3	ROLE_TECHNOLOGIES	0
 39	technologies	technologies	t	5	39	4	ROLE_TECHNOLOGIES	0
 40	technologiesGenerator	technologiesGenerator	t	5	40	5	\N	0
-41	materialFlow	transformations	f	6	41	1	ROLE_MATERIAL_FLOW	0
-42	materialFlow	transfers	f	6	42	2	ROLE_MATERIAL_FLOW	0
-43	materialFlow	stockCorrections	f	6	43	3	ROLE_MATERIAL_FLOW	0
-44	materialFlow	materialsInLocations	f	6	44	4	ROLE_MATERIAL_FLOW	0
 45	materialFlow	locations	t	6	45	5	ROLE_MATERIAL_FLOW	0
 47	orders	productionOrdersPlanning	t	7	47	2	ROLE_PLANNING	0
 48	orders	productionOrders	t	7	48	3	ROLE_PLANNING	0
@@ -36923,8 +36176,6 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 85	cmmsMachineParts	events	t	13	85	4	ROLE_EVENTS	0
 86	cmmsMachineParts	sourceCostList	t	13	86	5	ROLE_SOURCE_COST	0
 87	timeGapsPreview	timeGaps	t	7	87	6	ROLE_TIME_GAPS	0
-88	materialFlowMultitransfers	transferTemplates	f	6	88	15	ROLE_MATERIAL_FLOW	0
-89	materialFlowMultitransfers	multitransfer	f	6	89	16	ROLE_MATERIAL_FLOW	0
 90	assignmentToShift	assignmentToShiftReportList	t	7	90	7	ROLE_ASSIGNMENT_TO_SHIFT	0
 91	assignmentToShift	assignmentToShift	t	7	91	8	ROLE_ASSIGNMENT_TO_SHIFT	0
 98	productionPerShift	ppsReports	t	7	98	10	ROLE_PLANNING	0
@@ -36998,6 +36249,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 163	oee	oeeList	t	15	162	7	ROLE_OEE	0
 95	productionCounting	productionBalance	t	15	95	5	ROLE_PRODUCTION_COUNTING	0
 107	productionPerShift	balancePerShift	t	15	106	8	\N	0
+164	productionCounting	employeeWorkingTimeSettlement	t	15	163	9	ROLE_ANALYSIS_VIEWER	0
 \.
 
 
@@ -37005,7 +36257,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 163, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 164, true);
 
 
 --
@@ -37053,10 +36305,6 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 38	technologies	operationsList	operationsList	\N	0
 39	technologies	technologiesList	technologiesList	\N	0
 40	technologiesGenerator	recentlyGeneratedTechnologiesList	recentlyGeneratedTechnologiesList	\N	0
-41	materialFlow	transformationsList	transformationsList	\N	0
-42	materialFlow	transfersList	transfersList	\N	0
-43	materialFlow	stockCorrectionsList	stockCorrectionsList	\N	0
-44	materialFlow	materialsInLocationsList	materialsInLocationsList	\N	0
 45	materialFlow	locationsList	locationsList	\N	0
 47	orders	ordersPlanningList	ordersPlanningList	\N	0
 48	orders	ordersList	ordersList	\N	0
@@ -37095,8 +36343,6 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 85	cmmsMachineParts	eventsList	eventsList	\N	0
 86	cmmsMachineParts	sourceCostList	sourceCostList	\N	0
 87	timeGapsPreview	generateTimeGaps	generateTimeGaps	\N	0
-88	materialFlowMultitransfers	transferTemplatesList	transferTemplatesList	\N	0
-89	materialFlowMultitransfers	multitransfer	multitransfer	\N	0
 90	assignmentToShift	assignmentToShiftReportList	assignmentToShiftReportList	\N	0
 91	assignmentToShift	assignmentToShiftList	assignmentToShiftList	\N	0
 98	productionPerShift	ppsReportsList	ppsReportsList	\N	0
@@ -37169,6 +36415,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 160	basic	formsList	formsList	\N	0
 161	advancedGenealogyForOrders	genealogyAnalysis	\N	/genealogyAnalysis.html	0
 162	oee	oeeList	oeeList	\N	0
+163	productionCounting	employeeWorkingTimeSettlement	\N	/employeeWorkingTimeSettlement.html	0
 \.
 
 
@@ -37176,7 +36423,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 162, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 163, true);
 
 
 --
@@ -37474,51 +36721,6 @@ COPY repairs_repairorderworktime (id, repairorder_id, staff_id, labortime, effec
 --
 
 SELECT pg_catalog.setval('repairs_repairorderworktime_id_seq', 1, false);
-
-
---
--- Data for Name: simplematerialbalance_simplematerialbalance; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY simplematerialbalance_simplematerialbalance (id, name, date, worker, mrpalgorithm, generated, filename, entityversion) FROM stdin;
-\.
-
-
---
--- Name: simplematerialbalance_simplematerialbalance_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('simplematerialbalance_simplematerialbalance_id_seq', 1, false);
-
-
---
--- Data for Name: simplematerialbalance_simplematerialbalancelocationscomponent; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY simplematerialbalance_simplematerialbalancelocationscomponent (id, simplematerialbalance_id, location_id, entityversion) FROM stdin;
-\.
-
-
---
--- Name: simplematerialbalance_simplematerialbalancelocationscomponent_i; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('simplematerialbalance_simplematerialbalancelocationscomponent_i', 1, false);
-
-
---
--- Data for Name: simplematerialbalance_simplematerialbalanceorderscomponent; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY simplematerialbalance_simplematerialbalanceorderscomponent (id, simplematerialbalance_id, order_id, entityversion) FROM stdin;
-\.
-
-
---
--- Name: simplematerialbalance_simplematerialbalanceorderscomponent_id_s; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('simplematerialbalance_simplematerialbalanceorderscomponent_id_s', 1, false);
 
 
 --
@@ -38686,81 +37888,6 @@ SELECT pg_catalog.setval('workplans_workplanordercolumn_id_seq', 1, false);
 
 
 --
--- Data for Name: zmbak_meatcuttingindicator; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY zmbak_meatcuttingindicator (id, number, name, entityversion) FROM stdin;
-\.
-
-
---
--- Name: zmbak_meatcuttingindicator_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('zmbak_meatcuttingindicator_id_seq', 1, false);
-
-
---
--- Data for Name: zmbak_meatcuttingindicatorcomponent; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY zmbak_meatcuttingindicatorcomponent (id, meatcuttingindicator_id, parent_id, product_id, nodenumber, priority, yieldindicator, entitytype, priceindicator, twinsdiscriminator, entityversion) FROM stdin;
-\.
-
-
---
--- Name: zmbak_meatcuttingindicatorcomponent_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('zmbak_meatcuttingindicatorcomponent_id_seq', 1, false);
-
-
---
--- Data for Name: zmbak_parameter; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY zmbak_parameter (id, slaughterlocation_id, freezerlocation_id, meatcuttinglocation_id, slaughteroperation_id, meatcuttingoperation_id, acceptableloss, errormargin, entityversion) FROM stdin;
-\.
-
-
---
--- Name: zmbak_parameter_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('zmbak_parameter_id_seq', 1, false);
-
-
---
--- Data for Name: zmbak_tpcreport; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY zmbak_tpcreport (id, name, datefrom, overhead, margin, dateto, entityversion) FROM stdin;
-\.
-
-
---
--- Name: zmbak_tpcreport_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('zmbak_tpcreport_id_seq', 1, false);
-
-
---
--- Data for Name: zmbak_tpctable; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY zmbak_tpctable (id, product_id, quantity, price, date, entityversion) FROM stdin;
-\.
-
-
---
--- Name: zmbak_tpctable_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('zmbak_tpctable_id_seq', 1, false);
-
-
---
 -- Name: advancedgenealogy_batch_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -39654,14 +38781,6 @@ ALTER TABLE ONLY arch_repairs_repairorderstatechange
 
 ALTER TABLE ONLY arch_repairs_repairorderworktime
     ADD CONSTRAINT arch_repairs_repairorderworktime_pkey PRIMARY KEY (id);
-
-
---
--- Name: arch_simplematerialbalance_simplematerialbalanceorderscomp_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY arch_simplematerialbalance_simplematerialbalanceorderscomponent
-    ADD CONSTRAINT arch_simplematerialbalance_simplematerialbalanceorderscomp_pkey PRIMARY KEY (id);
 
 
 --
@@ -41281,67 +40400,11 @@ ALTER TABLE ONLY materialflow_location
 
 
 --
--- Name: materialflow_materialsinlocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflow_materialsinlocation
-    ADD CONSTRAINT materialflow_materialsinlocation_pkey PRIMARY KEY (id);
-
-
---
--- Name: materialflow_materialsinstockareascomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflow_materialsinlocationcomponent
-    ADD CONSTRAINT materialflow_materialsinstockareascomponent_pkey PRIMARY KEY (id);
-
-
---
--- Name: materialflow_stockcorrection_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflow_stockcorrection
-    ADD CONSTRAINT materialflow_stockcorrection_pkey PRIMARY KEY (id);
-
-
---
--- Name: materialflow_transfer_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflow_transfer
-    ADD CONSTRAINT materialflow_transfer_pkey PRIMARY KEY (id);
-
-
---
--- Name: materialflow_transformations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflow_transformations
-    ADD CONSTRAINT materialflow_transformations_pkey PRIMARY KEY (id);
-
-
---
 -- Name: materialflow_userlocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY materialflow_userlocation
     ADD CONSTRAINT materialflow_userlocation_pkey PRIMARY KEY (id);
-
-
---
--- Name: materialflowmultitransfers_productquantity_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflowmultitransfers_productquantity
-    ADD CONSTRAINT materialflowmultitransfers_productquantity_pkey PRIMARY KEY (id);
-
-
---
--- Name: materialflowmultitransfers_transfertemplate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflowmultitransfers_transfertemplate
-    ADD CONSTRAINT materialflowmultitransfers_transfertemplate_pkey PRIMARY KEY (id);
 
 
 --
@@ -42497,30 +41560,6 @@ ALTER TABLE ONLY materialflowresources_resource
 
 
 --
--- Name: simplematerialbalance_simplematerialbalance_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY simplematerialbalance_simplematerialbalance
-    ADD CONSTRAINT simplematerialbalance_simplematerialbalance_pkey PRIMARY KEY (id);
-
-
---
--- Name: simplematerialbalance_simplematerialbalanceorderscomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY simplematerialbalance_simplematerialbalanceorderscomponent
-    ADD CONSTRAINT simplematerialbalance_simplematerialbalanceorderscomponent_pkey PRIMARY KEY (id);
-
-
---
--- Name: simplematerialbalance_simplematerialbalancestockareascompo_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY simplematerialbalance_simplematerialbalancelocationscomponent
-    ADD CONSTRAINT simplematerialbalance_simplematerialbalancestockareascompo_pkey PRIMARY KEY (id);
-
-
---
 -- Name: states_message_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -43078,46 +42117,6 @@ ALTER TABLE ONLY workplans_workplan
 
 ALTER TABLE ONLY workplans_workplanordercolumn
     ADD CONSTRAINT workplans_workplanordercolumn_pkey PRIMARY KEY (id);
-
-
---
--- Name: zmbak_meatcuttingindicator_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY zmbak_meatcuttingindicator
-    ADD CONSTRAINT zmbak_meatcuttingindicator_pkey PRIMARY KEY (id);
-
-
---
--- Name: zmbak_meatcuttingindicatorcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY zmbak_meatcuttingindicatorcomponent
-    ADD CONSTRAINT zmbak_meatcuttingindicatorcomponent_pkey PRIMARY KEY (id);
-
-
---
--- Name: zmbak_parameter_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY zmbak_parameter
-    ADD CONSTRAINT zmbak_parameter_pkey PRIMARY KEY (id);
-
-
---
--- Name: zmbak_tpcreport_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY zmbak_tpcreport
-    ADD CONSTRAINT zmbak_tpcreport_pkey PRIMARY KEY (id);
-
-
---
--- Name: zmbak_tpctable_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY zmbak_tpctable
-    ADD CONSTRAINT zmbak_tpctable_pkey PRIMARY KEY (id);
 
 
 --
@@ -45853,14 +44852,6 @@ ALTER TABLE ONLY arch_goodfood_confectionprotocol
 
 ALTER TABLE ONLY arch_goodfood_confectionremainderinputproduct
     ADD CONSTRAINT basic_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
--- Name: basic_product_pkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflowmultitransfers_productquantity
-    ADD CONSTRAINT basic_product_pkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
 
 
 --
@@ -49272,30 +48263,6 @@ ALTER TABLE ONLY arch_productflowthrudivision_materialavailability
 
 
 --
--- Name: materialflowmultitransfers_transfertemplate_locationfrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflowmultitransfers_transfertemplate
-    ADD CONSTRAINT materialflowmultitransfers_transfertemplate_locationfrom_fkey FOREIGN KEY (locationfrom_id) REFERENCES materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: materialflowmultitransfers_transfertemplate_locationto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflowmultitransfers_transfertemplate
-    ADD CONSTRAINT materialflowmultitransfers_transfertemplate_locationto_fkey FOREIGN KEY (locationto_id) REFERENCES materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: materialflowmultitransfers_transfertemplate_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflowmultitransfers_transfertemplate
-    ADD CONSTRAINT materialflowmultitransfers_transfertemplate_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
 -- Name: materialrequirement_order_materialrequirement_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -49397,46 +48364,6 @@ ALTER TABLE ONLY ordersupplies_materialrequirementcoverage
 
 ALTER TABLE ONLY arch_ordersupplies_materialrequirementcoverage
     ADD CONSTRAINT materialrequirementcoverage_product_fkey FOREIGN KEY (belongstofamily_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
--- Name: materialsinlocationcomponent_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflow_materialsinlocationcomponent
-    ADD CONSTRAINT materialsinlocationcomponent_location_fkey FOREIGN KEY (location_id) REFERENCES materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: materialsinlocationcomponent_materialsinlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflow_materialsinlocationcomponent
-    ADD CONSTRAINT materialsinlocationcomponent_materialsinlocation_fkey FOREIGN KEY (materialsinlocation_id) REFERENCES materialflow_materialsinlocation(id) DEFERRABLE;
-
-
---
--- Name: meatcuttingindicatorcomponent_b_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY zmbak_meatcuttingindicatorcomponent
-    ADD CONSTRAINT meatcuttingindicatorcomponent_b_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
--- Name: meatcuttingindicatorcomponent_mci_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY zmbak_meatcuttingindicatorcomponent
-    ADD CONSTRAINT meatcuttingindicatorcomponent_mci_fkey FOREIGN KEY (meatcuttingindicator_id) REFERENCES zmbak_meatcuttingindicator(id) DEFERRABLE;
-
-
---
--- Name: meatcuttingindicatorcomponent_mcic_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY zmbak_meatcuttingindicatorcomponent
-    ADD CONSTRAINT meatcuttingindicatorcomponent_mcic_fkey FOREIGN KEY (parent_id) REFERENCES zmbak_meatcuttingindicatorcomponent(id) DEFERRABLE;
 
 
 --
@@ -51000,14 +49927,6 @@ ALTER TABLE ONLY basic_parameter
 
 
 --
--- Name: parameter_freezerlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY zmbak_parameter
-    ADD CONSTRAINT parameter_freezerlocation_fkey FOREIGN KEY (freezerlocation_id) REFERENCES materialflow_location(id) DEFERRABLE;
-
-
---
 -- Name: parameter_issuelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -51021,22 +49940,6 @@ ALTER TABLE ONLY basic_parameter
 
 ALTER TABLE ONLY basic_parameter
     ADD CONSTRAINT parameter_location_fkey FOREIGN KEY (location_id) REFERENCES materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: parameter_meatcuttinglocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY zmbak_parameter
-    ADD CONSTRAINT parameter_meatcuttinglocation_fkey FOREIGN KEY (meatcuttinglocation_id) REFERENCES materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: parameter_meatcuttingoperation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY zmbak_parameter
-    ADD CONSTRAINT parameter_meatcuttingoperation_fkey FOREIGN KEY (meatcuttingoperation_id) REFERENCES technologies_operation(id) DEFERRABLE;
 
 
 --
@@ -51077,22 +49980,6 @@ ALTER TABLE ONLY jointable_parameter_productionline
 
 ALTER TABLE ONLY jointable_parameter_productionline
     ADD CONSTRAINT parameter_productionline_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES productionlines_productionline(id) DEFERRABLE;
-
-
---
--- Name: parameter_slaughterlocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY zmbak_parameter
-    ADD CONSTRAINT parameter_slaughterlocation_fkey FOREIGN KEY (slaughterlocation_id) REFERENCES materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: parameter_slaughteroperation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY zmbak_parameter
-    ADD CONSTRAINT parameter_slaughteroperation_fkey FOREIGN KEY (slaughteroperation_id) REFERENCES technologies_operation(id) DEFERRABLE;
 
 
 --
@@ -52501,14 +51388,6 @@ ALTER TABLE ONLY productioncounting_productiontracking
 
 ALTER TABLE ONLY arch_productioncounting_productiontracking
     ADD CONSTRAINT productiontracking_workstation_fkey FOREIGN KEY (workstation_id) REFERENCES basic_workstation(id) DEFERRABLE;
-
-
---
--- Name: productquantity_transfer_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflowmultitransfers_productquantity
-    ADD CONSTRAINT productquantity_transfer_fkey FOREIGN KEY (transfer_id) REFERENCES materialflow_transfer(id) DEFERRABLE;
 
 
 --
@@ -54128,54 +53007,6 @@ ALTER TABLE ONLY arch_productflowthrudivision_warehouseissuestatechange
 
 
 --
--- Name: simplematerialbalancelocationscomponent_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY simplematerialbalance_simplematerialbalancelocationscomponent
-    ADD CONSTRAINT simplematerialbalancelocationscomponent_location_fkey FOREIGN KEY (location_id) REFERENCES materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: simplematerialbalancelocationscomponent_smb_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY simplematerialbalance_simplematerialbalancelocationscomponent
-    ADD CONSTRAINT simplematerialbalancelocationscomponent_smb_fkey FOREIGN KEY (simplematerialbalance_id) REFERENCES simplematerialbalance_simplematerialbalance(id) DEFERRABLE;
-
-
---
--- Name: simplematerialbalanceorderscomponent_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY simplematerialbalance_simplematerialbalanceorderscomponent
-    ADD CONSTRAINT simplematerialbalanceorderscomponent_order_fkey FOREIGN KEY (order_id) REFERENCES orders_order(id) DEFERRABLE;
-
-
---
--- Name: simplematerialbalanceorderscomponent_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY arch_simplematerialbalance_simplematerialbalanceorderscomponent
-    ADD CONSTRAINT simplematerialbalanceorderscomponent_order_fkey FOREIGN KEY (order_id) REFERENCES arch_orders_order(id) DEFERRABLE;
-
-
---
--- Name: simplematerialbalanceorderscomponent_smb_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY simplematerialbalance_simplematerialbalanceorderscomponent
-    ADD CONSTRAINT simplematerialbalanceorderscomponent_smb_fkey FOREIGN KEY (simplematerialbalance_id) REFERENCES simplematerialbalance_simplematerialbalance(id) DEFERRABLE;
-
-
---
--- Name: simplematerialbalanceorderscomponent_smb_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY arch_simplematerialbalance_simplematerialbalanceorderscomponent
-    ADD CONSTRAINT simplematerialbalanceorderscomponent_smb_fkey FOREIGN KEY (simplematerialbalance_id) REFERENCES simplematerialbalance_simplematerialbalance(id) DEFERRABLE;
-
-
---
 -- Name: sourcecost_factory_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -54309,30 +53140,6 @@ ALTER TABLE ONLY integrationbaselinker_statusesfordocument
 
 ALTER TABLE ONLY integrationbaselinker_statusesformasterorder
     ADD CONSTRAINT statusesformasterorder_baselinkerparameters_fkey FOREIGN KEY (baselinkerparameters_id) REFERENCES integrationbaselinker_baselinkerparameters(id) DEFERRABLE;
-
-
---
--- Name: stockcorrection_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflow_stockcorrection
-    ADD CONSTRAINT stockcorrection_location_fkey FOREIGN KEY (location_id) REFERENCES materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: stockcorrection_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflow_stockcorrection
-    ADD CONSTRAINT stockcorrection_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
--- Name: stockcorrection_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflow_stockcorrection
-    ADD CONSTRAINT stockcorrection_staff_fkey FOREIGN KEY (staff_id) REFERENCES basic_staff(id) DEFERRABLE;
 
 
 --
@@ -55064,14 +53871,6 @@ ALTER TABLE ONLY timegapspreview_timegapscontext
 
 
 --
--- Name: tpctable_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY zmbak_tpctable
-    ADD CONSTRAINT tpctable_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
 -- Name: trackinginproductreplacementhelper_basicproduct_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -55237,94 +54036,6 @@ ALTER TABLE ONLY advancedgenealogy_trackingrecord
 
 ALTER TABLE ONLY arch_advancedgenealogy_trackingrecord
     ADD CONSTRAINT trackingrecord_producedbatch_fkey FOREIGN KEY (producedbatch_id) REFERENCES advancedgenealogy_batch(id) DEFERRABLE;
-
-
---
--- Name: transfer_delivery_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflow_transfer
-    ADD CONSTRAINT transfer_delivery_fkey FOREIGN KEY (fromdelivery_id) REFERENCES deliveries_delivery(id) DEFERRABLE;
-
-
---
--- Name: transfer_locationfrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflow_transfer
-    ADD CONSTRAINT transfer_locationfrom_fkey FOREIGN KEY (locationfrom_id) REFERENCES materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: transfer_locationto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflow_transfer
-    ADD CONSTRAINT transfer_locationto_fkey FOREIGN KEY (locationto_id) REFERENCES materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: transfer_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflow_transfer
-    ADD CONSTRAINT transfer_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
--- Name: transfer_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflow_transfer
-    ADD CONSTRAINT transfer_staff_fkey FOREIGN KEY (staff_id) REFERENCES basic_staff(id) DEFERRABLE;
-
-
---
--- Name: transfer_transformationsconsumption_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflow_transfer
-    ADD CONSTRAINT transfer_transformationsconsumption_fkey FOREIGN KEY (transformationsconsumption_id) REFERENCES materialflow_transformations(id) DEFERRABLE;
-
-
---
--- Name: transfer_transformationsproduction_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflow_transfer
-    ADD CONSTRAINT transfer_transformationsproduction_fkey FOREIGN KEY (transformationsproduction_id) REFERENCES materialflow_transformations(id) DEFERRABLE;
-
-
---
--- Name: transformations_locationfrom_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflow_transformations
-    ADD CONSTRAINT transformations_locationfrom_fkey FOREIGN KEY (locationfrom_id) REFERENCES materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: transformations_locationto_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflow_transformations
-    ADD CONSTRAINT transformations_locationto_fkey FOREIGN KEY (locationto_id) REFERENCES materialflow_location(id) DEFERRABLE;
-
-
---
--- Name: transformations_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflow_transformations
-    ADD CONSTRAINT transformations_operation_fkey FOREIGN KEY (operation_id) REFERENCES technologies_operation(id) DEFERRABLE;
-
-
---
--- Name: transformations_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialflow_transformations
-    ADD CONSTRAINT transformations_staff_fkey FOREIGN KEY (staff_id) REFERENCES basic_staff(id) DEFERRABLE;
 
 
 --
