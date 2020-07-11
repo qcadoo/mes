@@ -23,15 +23,8 @@
  */
 package com.qcadoo.mes.ganttForShifts;
 
-import java.util.List;
-
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.components.ganttChart.GanttChartItem;
 import com.qcadoo.view.api.components.ganttChart.GanttChartItemResolver;
-import com.qcadoo.view.api.components.ganttChart.GanttChartScale;
 
 public interface ShiftsGanttChartItemResolver extends GanttChartItemResolver {
-
-    List<GanttChartItem> getItemsForShift(final Entity shift, final GanttChartScale scale);
 
 }

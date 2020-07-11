@@ -23,44 +23,20 @@
  */
 package com.qcadoo.mes.orderSupplies.validators;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.orderSupplies.constants.CoverageLocationFields;
 import com.qcadoo.mes.orderSupplies.constants.MaterialRequirementCoverageFields;
 import com.qcadoo.mes.orderSupplies.constants.ParameterFieldsOS;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class CoverageLocationValidators {
 
-    @Autowired
-    private MaterialFlowResourcesService materialFlowResourcesService;
-
     public boolean validatesWith(final DataDefinition coverageLocationDD, final Entity coverageLocation) {
-        boolean isValid = true;
-
-        isValid = isValid && checkIfCoverageLocationTypeIsWarehouse(coverageLocationDD, coverageLocation);
-        isValid = isValid && checkIfCoverageLocationIsNotAlreadyUsed(coverageLocationDD, coverageLocation);
-
-        return isValid;
-    }
-
-    private boolean checkIfCoverageLocationTypeIsWarehouse(final DataDefinition coverageLocationDD, final Entity coverageLocation) {
-        Entity location = coverageLocation.getBelongsToField(CoverageLocationFields.LOCATION);
-
-        if (!materialFlowResourcesService.isLocationIsWarehouse(location)) {
-            coverageLocation.addError(coverageLocationDD.getField(CoverageLocationFields.LOCATION),
-                    "orderSupplies.materialRequirementCoverage.coverageLocation.isNotWarehouse");
-
-            return false;
-        }
-
-        return true;
+        return checkIfCoverageLocationIsNotAlreadyUsed(coverageLocationDD, coverageLocation);
     }
 
     private boolean checkIfCoverageLocationIsNotAlreadyUsed(final DataDefinition coverageLocationDD, final Entity coverageLocation) {

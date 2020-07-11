@@ -126,6 +126,7 @@ public class ParametersHooksO {
             orderStartDateBasedOn.setEnabled(true);
         } else {
             orderStartDateBasedOn.setEnabled(false);
+            orderStartDateBasedOn.setFieldValue(null);
         }
     }
 

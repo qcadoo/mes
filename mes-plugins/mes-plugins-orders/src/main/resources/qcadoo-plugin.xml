@@ -344,6 +344,7 @@
         <view:view resource="view/ordersImport.xml"/>
         <view:view resource="view/ordersPlanningList.xml"/>
         <view:view resource="view/orderDetails.xml"/>
+        <view:view resource="view/orderAdditionalDetails.xml"/>
 
         <view:view resource="view/schedulesList.xml"/>
         <view:view resource="view/scheduleDetails.xml"/>

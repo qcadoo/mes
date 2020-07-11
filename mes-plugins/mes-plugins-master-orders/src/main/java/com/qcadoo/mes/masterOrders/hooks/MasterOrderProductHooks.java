@@ -27,7 +27,6 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -143,9 +142,7 @@ public class MasterOrderProductHooks {
             return true;
         }
         Entity masterOrder = masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
-        if (MasterOrderType.of(masterOrder) != MasterOrderType.MANY_PRODUCTS) {
-            return true;
-        }
+
         Entity product = masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT);
         long numOfBelongingOrdersMatchingProduct = masterOrderOrdersDataProvider.countBelongingOrders(masterOrder,
                 SearchRestrictions.belongsTo(OrderFields.PRODUCT, product));

@@ -2,6 +2,7 @@ package com.qcadoo.mes.masterOrders;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 
@@ -11,10 +12,14 @@ import org.springframework.context.i18n.LocaleContextHolder;
 
 public class GenerationOrderResult {
 
-    private TranslationService translationService;
+    private static final String PARAMETER_AUTOMATICALLY_GENERATE_ORDERS_FOR_COMPONENTS = "automaticallyGenerateOrdersForComponents";
 
-    public GenerationOrderResult(TranslationService translationService) {
+    private TranslationService translationService;
+    private ParameterService parameterService;
+
+    public GenerationOrderResult(TranslationService translationService, ParameterService parameterService) {
         this.translationService = translationService;
+        this.parameterService = parameterService;
     }
 
     private List<MasterOrderProductErrorContainer> productOrderErrors = Lists.newArrayList();
@@ -91,7 +96,7 @@ public class GenerationOrderResult {
                     ComponentState.MessageType.INFO, false, String.join(", ", ordersWithGeneratedSubOrders));
         }
 
-        if (!ordersWithNoGeneratedSubOrders.isEmpty()) {
+        if (!ordersWithNoGeneratedSubOrders.isEmpty() && parameterService.getParameter().getBooleanField(PARAMETER_AUTOMATICALLY_GENERATE_ORDERS_FOR_COMPONENTS)) {
             view.addMessage("masterOrders.masterOrder.generationOrder.ordersWithNoGeneratedSubOrders",
                     ComponentState.MessageType.INFO, false, String.join(", ", ordersWithNoGeneratedSubOrders));
         }

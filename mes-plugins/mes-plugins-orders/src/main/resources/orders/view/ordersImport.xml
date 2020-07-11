@@ -63,7 +63,7 @@
                         </script>
 
                         <listener event="onInputChange"
-                                  class="com.qcadoo.mes.basic.listeners.ProductsImportListeners"
+                                  class="com.qcadoo.mes.orders.listeners.OrdersImportListeners"
                                   method="onInputChange"/>
                     </component>
                 </layoutElement>

@@ -203,6 +203,17 @@ public class OrderDetailsListeners {
         }
     }
 
+    public void showOrderParameters(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        Long orderId = (Long) state.getFieldValue();
+
+        if (orderId != null) {
+            Map<String, Object> parameters = Maps.newHashMap();
+            parameters.put("form.id", orderId);
+            String url = "/page/orders/orderAdditionalDetails.html";
+            view.redirectTo(url, false, true, parameters);
+        }
+    }
+
     private void copyDate(final ViewDefinitionState view, final String fromNameField, final String toNameField) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent fromField = (FieldComponent) view.getComponentByReference(fromNameField);

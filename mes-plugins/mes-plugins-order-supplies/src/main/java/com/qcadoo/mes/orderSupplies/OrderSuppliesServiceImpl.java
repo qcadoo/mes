@@ -26,9 +26,7 @@ package com.qcadoo.mes.orderSupplies;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ProductService;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
-import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.orderSupplies.constants.ColumnForCoveragesFields;
-import com.qcadoo.mes.orderSupplies.constants.CoverageLocationFields;
 import com.qcadoo.mes.orderSupplies.constants.MaterialRequirementCoverageFields;
 import com.qcadoo.mes.orderSupplies.constants.OrderSuppliesConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -41,8 +39,6 @@ import com.qcadoo.tenant.api.MultiTenantCallback;
 import com.qcadoo.tenant.api.MultiTenantService;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
-import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,9 +66,6 @@ public class OrderSuppliesServiceImpl implements OrderSuppliesService {
 
     @Autowired
     private ProductService productService;
-
-    @Autowired
-    private MaterialFlowResourcesService materialFlowResourcesService;
 
     @Autowired
     private MultiTenantService multiTenantService;
@@ -153,26 +146,6 @@ public class OrderSuppliesServiceImpl implements OrderSuppliesService {
         }
 
         return false;
-    }
-
-    @Override
-    public void checkIfCoverageLocationsAreWarehouses(final ViewDefinitionState view, final String adlcName) {
-        AwesomeDynamicListComponent adlc = (AwesomeDynamicListComponent) view.getComponentByReference(adlcName);
-
-        List<FormComponent> formComponents = adlc.getFormComponents();
-
-        if (!formComponents.isEmpty()) {
-            for (FormComponent formComponent : formComponents) {
-                Entity coverageLocation = formComponent.getEntity();
-
-                Entity location = coverageLocation.getBelongsToField(CoverageLocationFields.LOCATION);
-
-                if (!materialFlowResourcesService.isLocationIsWarehouse(location)) {
-                    formComponent.findFieldComponentByName(CoverageLocationFields.LOCATION).addMessage(
-                            "orderSupplies.materialRequirementCoverage.coverageLocation.isNotWarehouse", MessageType.FAILURE);
-                }
-            }
-        }
     }
 
     @Override

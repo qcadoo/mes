@@ -88,6 +88,9 @@
 
         <enum name="allProductsType" values="01component,02intermediate,01component_02intermediate"/>
 
+        <integer name="deliveryBuffer"/>
+
+        <datetime name="orderAtLatest"/>
     </fields>
 
     <hooks/>

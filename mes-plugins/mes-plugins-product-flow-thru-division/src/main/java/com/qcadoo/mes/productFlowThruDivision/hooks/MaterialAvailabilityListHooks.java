@@ -48,9 +48,6 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
-import static com.qcadoo.mes.materialFlow.constants.LocationType.WAREHOUSE;
-
 @Service
 public class MaterialAvailabilityListHooks {
 
@@ -71,26 +68,26 @@ public class MaterialAvailabilityListHooks {
         List<Entity> replacements = product.getDataDefinition().get(product.getId())
                 .getHasManyField(ProductFields.SUBSTITUTE_COMPONENTS).stream()
                 .map(sc -> sc.getBelongsToField(SubstituteComponentFields.PRODUCT)).collect(Collectors.toList());
-        List<Entity> warehouses = Lists.newArrayList();
+        List<Entity> warehouses;
         if (context.has(L_WINDOW_MAIN_TAB_AVAILABILITY_COMPONENT_FORM_GRID_LAYOUT_LOCATIONS_IDS)) {
             List<Long> ids = Lists.newArrayList();
-            for(int i = 0; i < context.getJSONArray(L_WINDOW_MAIN_TAB_AVAILABILITY_COMPONENT_FORM_GRID_LAYOUT_LOCATIONS_IDS).length(); i++){
+            for (int i = 0; i < context.getJSONArray(L_WINDOW_MAIN_TAB_AVAILABILITY_COMPONENT_FORM_GRID_LAYOUT_LOCATIONS_IDS)
+                    .length(); i++) {
                 ids.add(context.getJSONArray(L_WINDOW_MAIN_TAB_AVAILABILITY_COMPONENT_FORM_GRID_LAYOUT_LOCATIONS_IDS).getLong(i));
             }
             warehouses = dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_LOCATION)
-                    .find().add(SearchRestrictions.eq(TYPE, WAREHOUSE.getStringValue())).add(SearchRestrictions.in("id", ids))
-                    .list().getEntities();
+                    .find().add(SearchRestrictions.in("id", ids)).list().getEntities();
         } else {
             warehouses = materialFlowResourcesService.getWarehouseLocationsFromDB();
         }
         List<Entity> materialAvailabilityList = Lists.newArrayList();
 
-        DataDefinition orderMaterialAvailabilityDD = dataDefinitionService.get(
-                ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER, ProductFlowThruDivisionConstants.MODEL_MATERIAL_AVAILABILITY);
+        DataDefinition orderMaterialAvailabilityDD = dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
+                ProductFlowThruDivisionConstants.MODEL_MATERIAL_AVAILABILITY);
 
         for (Entity warehouse : warehouses) {
-            Map<Long, BigDecimal> availableQuantities = materialFlowResourcesService.getQuantitiesForProductsAndLocation(
-                    replacements, warehouse);
+            Map<Long, BigDecimal> availableQuantities = materialFlowResourcesService
+                    .getQuantitiesForProductsAndLocation(replacements, warehouse);
             for (Entity replacement : replacements) {
                 if (Objects.nonNull(availableQuantities.get(replacement.getId()))
                         && BigDecimal.ZERO.compareTo(availableQuantities.get(replacement.getId())) < 0) {
@@ -104,10 +101,10 @@ public class MaterialAvailabilityListHooks {
                 }
             }
         }
-        grid.setEntities(materialAvailabilityList
-                .stream()
-                .sorted(Comparator.comparing(e -> e.getBelongsToField(MaterialAvailabilityFields.PRODUCT).getStringField(
-                        LocationFields.NUMBER))).collect(Collectors.toList()));
+        grid.setEntities(materialAvailabilityList.stream()
+                .sorted(Comparator.comparing(
+                        e -> e.getBelongsToField(MaterialAvailabilityFields.PRODUCT).getStringField(LocationFields.NUMBER)))
+                .collect(Collectors.toList()));
     }
 
     public void fillInAvailableQuantity(final ViewDefinitionState state) {
@@ -119,12 +116,12 @@ public class MaterialAvailabilityListHooks {
         List<Entity> warehouses = materialFlowResourcesService.getWarehouseLocationsFromDB();
         List<Entity> materialAvailabilityList = Lists.newArrayList();
 
-        DataDefinition orderMaterialAvailabilityDD = dataDefinitionService.get(
-                ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER, ProductFlowThruDivisionConstants.MODEL_MATERIAL_AVAILABILITY);
+        DataDefinition orderMaterialAvailabilityDD = dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
+                ProductFlowThruDivisionConstants.MODEL_MATERIAL_AVAILABILITY);
 
         for (Entity warehouse : warehouses) {
-            Map<Long, BigDecimal> availableQuantities = materialFlowResourcesService.getQuantitiesForProductsAndLocation(
-                    Collections.singletonList(product), warehouse);
+            Map<Long, BigDecimal> availableQuantities = materialFlowResourcesService
+                    .getQuantitiesForProductsAndLocation(Collections.singletonList(product), warehouse);
             if (Objects.nonNull(availableQuantities.get(product.getId()))
                     && BigDecimal.ZERO.compareTo(availableQuantities.get(product.getId())) < 0) {
                 Entity materialAvailability = orderMaterialAvailabilityDD.create();
@@ -136,9 +133,9 @@ public class MaterialAvailabilityListHooks {
                 materialAvailabilityList.add(materialAvailability);
             }
         }
-        grid.setEntities(materialAvailabilityList
-                .stream()
-                .sorted(Comparator.comparing(e -> e.getBelongsToField(MaterialAvailabilityFields.LOCATION).getStringField(
-                        LocationFields.NAME))).collect(Collectors.toList()));
+        grid.setEntities(materialAvailabilityList.stream()
+                .sorted(Comparator.comparing(
+                        e -> e.getBelongsToField(MaterialAvailabilityFields.LOCATION).getStringField(LocationFields.NAME)))
+                .collect(Collectors.toList()));
     }
 }

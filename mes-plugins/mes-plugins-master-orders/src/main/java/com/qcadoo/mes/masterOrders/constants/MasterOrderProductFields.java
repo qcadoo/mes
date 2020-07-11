@@ -29,9 +29,7 @@ public final class MasterOrderProductFields {
 
     }
 
-    public static final String PRODUCED_ORDER_QUANTITY = "producedOrderQuantity";
-
-    public static final String CUMULATED_ORDER_QUANTITY = "cumulatedOrderQuantity";
+    public static final String NUMBER = "number";
 
     public static final String PRODUCT = "product";
 
@@ -41,15 +39,22 @@ public final class MasterOrderProductFields {
 
     public static final String MASTER_ORDER_QUANTITY = "masterOrderQuantity";
 
-    public static final String DEFAULT_TECHNOLOGY = "defaultTechnology";
+    public static final String CUMULATED_ORDER_QUANTITY = "cumulatedOrderQuantity";
+
+    public static final String PRODUCED_ORDER_QUANTITY = "producedOrderQuantity";
 
     public static final String LEFT_TO_RELASE = "leftToRelease";
+
+    public static final String QUANTITY_TAKEN_FROM_WAREHOUSE = "quantityTakenFromWarehouse";
+
+    public static final String QUANTITY_REMAINING_TO_ORDER = "quantityRemainingToOrder";
+
+    public static final String DEFAULT_TECHNOLOGY = "defaultTechnology";
 
     public static final String COMMENTS = "comments";
 
     public static final String MASTER_ORDER_POSITION_STATUS = "masterOrderPositionStatus";
 
-    public static final String QUANTITY_REMAINING_TO_ORDER = "quantityRemainingToOrder";
+    public static final String ORDERS = "orders";
 
-    public static final String QUANTITY_TAKEN_FROM_WAREHOUSE = "quantityTakenFromWarehouse";
 }

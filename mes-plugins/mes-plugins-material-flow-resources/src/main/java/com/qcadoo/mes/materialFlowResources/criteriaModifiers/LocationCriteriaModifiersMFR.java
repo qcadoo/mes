@@ -23,12 +23,9 @@
  */
 package com.qcadoo.mes.materialFlowResources.criteriaModifiers;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
-import com.qcadoo.mes.materialFlow.constants.LocationType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -36,24 +33,15 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 @Service
 public class LocationCriteriaModifiersMFR {
 
-    @Autowired
-    private ParameterService parameterService;
-
     public void showWarehousesOnly(final SearchCriteriaBuilder scb) {
-        scb.add(createCriteriaForWarehouse());
-    }
-
-    private SearchCriterion createCriteriaForWarehouse() {
-        return SearchRestrictions.eq(LocationFields.TYPE, LocationType.WAREHOUSE.getStringValue());
+        //for aspect only
     }
 
     public void showWarehousesWithoutExternalNumber(final SearchCriteriaBuilder scb) {
-        scb.add(createCriteriaForWarehouse());
         scb.add(createCriteriaForExternalNumber());
     }
 
-	private SearchCriterion createCriteriaForExternalNumber() {
-		return SearchRestrictions.isNull(LocationFields.EXTERNAL_NUMBER);
-	}
-
+    private SearchCriterion createCriteriaForExternalNumber() {
+        return SearchRestrictions.isNull(LocationFields.EXTERNAL_NUMBER);
+    }
 }

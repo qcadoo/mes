@@ -41,8 +41,6 @@ public class LocationDetailsViewHooks {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    
-
     public void disableLocationFormForExternalItems(final ViewDefinitionState state) {
         FormComponent form = (FormComponent) state.getComponentByReference(QcadooViewConstants.L_FORM);
         if (form.getEntityId() == null) {
@@ -62,18 +60,6 @@ public class LocationDetailsViewHooks {
             form.setFormEnabled(false);
         }
         enableFields(state);
-
-    }
-
-    public void disableTypeEdit(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        if (form.getEntityId() == null) {
-            return;
-        } else {
-            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference("type");
-            fieldComponent.setEnabled(false);
-        }
-        enableFields(view);
     }
 
     private void enableFields(final ViewDefinitionState view) {

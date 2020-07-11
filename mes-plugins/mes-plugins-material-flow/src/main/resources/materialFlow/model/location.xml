@@ -32,9 +32,6 @@
             <validatesLength max="255"/>
         </string>
         <string name="name" required="true"/>
-        <enum name="type" values="01controlPoint,02warehouse" default="02warehouse" required="true"/>
-        <hasMany name="materialsInLocations" plugin="materialFlow" model="materialsInLocationComponent"
-                 joinField="location"/>
         <string name="externalNumber" unique="true"/>
 
         <hasMany name="dashboardComponentsLocations" plugin="basic" model="parameter"

@@ -79,10 +79,6 @@
                                     value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                             <option type="fieldCode" value="number"/>
                             <option type="labelWidth" value="60"/>
-
-                            <criteriaModifier
-                                    class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
-                                    method="showWarehousesOnly"/>
                         </component>
             </layoutElement>
 

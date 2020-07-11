@@ -26,6 +26,7 @@ package com.qcadoo.mes.materialFlow;
 import java.util.LinkedList;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,6 +45,8 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.security.api.UserService;
+import com.qcadoo.view.constants.MenuItemFields;
 
 @Service
 @Primary
@@ -56,6 +59,9 @@ public class DashboardViewMF implements DashboardView {
     private SecurityService securityService;
 
     @Autowired
+    private UserService userService;
+
+    @Autowired
     private ParameterService parameterService;
 
     @Value("${useCompressedStaticResources}")
@@ -65,13 +71,15 @@ public class DashboardViewMF implements DashboardView {
         ModelAndView mav = new ModelAndView();
 
         Entity parameter = parameterService.getParameter();
+        Entity currentUser = userService.getCurrentUserEntity();
 
         mav.setViewName("basic/dashboard");
 
         mav.addObject("translationsMap", translationService.getMessagesGroup("dashboard", locale));
         mav.addObject("useCompressedStaticResources", useCompressedStaticResources);
         mav.addObject("showChartOnDashboard", getShowChartOnDashboard(parameter));
-        mav.addObject("dashboardButtons", gerDashboardButtons(parameter));
+        mav.addObject("whatToShowOnDashboard", getWhatToShowOnDashboard(parameter));
+        mav.addObject("dashboardButtons", filterDashboardButtons(getDashboardButtons(parameter), currentUser));
 
         return mav;
     }
@@ -80,10 +88,33 @@ public class DashboardViewMF implements DashboardView {
         return parameter.getBooleanField(ParameterFieldsMF.SHOW_CHART_ON_DASHBOARD);
     }
 
-    private LinkedList<Entity> gerDashboardButtons(final Entity parameter) {
+    private String getWhatToShowOnDashboard(final Entity parameter) {
+        return parameter.getStringField(ParameterFieldsMF.WHAT_TO_SHOW_ON_DASHBOARD);
+    }
+
+    private LinkedList<Entity> getDashboardButtons(final Entity parameter) {
         return Lists.newLinkedList(parameter.getHasManyField(ParameterFields.DASHBOARD_BUTTONS).find()
                 .add(SearchRestrictions.eq(DashboardButtonFields.ACTIVE, true))
                 .addOrder(SearchOrders.asc(DashboardButtonFields.SUCCESSION)).list().getEntities());
+    }
+
+    private LinkedList<Entity> filterDashboardButtons(final LinkedList<Entity> dashboardButtons, final Entity currentUser) {
+        LinkedList<Entity> filteredDashboardButtons = Lists.newLinkedList();
+
+        dashboardButtons.forEach(dashboardButton -> {
+                    Entity item = dashboardButton.getBelongsToField(DashboardButtonFields.ITEM);
+
+                    if (Objects.nonNull(item)) {
+                        String authRole = item.getStringField(MenuItemFields.AUTH_ROLE);
+
+                        if (securityService.hasRole(currentUser, authRole)) {
+                            filteredDashboardButtons.add(dashboardButton);
+                        }
+                    }
+                }
+        );
+
+        return filteredDashboardButtons;
     }
 
 }

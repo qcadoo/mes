@@ -121,11 +121,11 @@
 				<option type="column" name="workerLaborHourlyCost" fields="worker"
 					expression="#worker['laborHourlyCost']"  />
 				<option type="column" name="workerWageGroup" fields="worker"
-					expression="#worker['wageGroup'] ==null ? '' : #worker['wageGroup'].get('number')" />
+					expression="#worker['wageGroup']?.get('number')" />
 				<option type="column" name="workedHours" fields="workedHours"  />
 				<option type="order" column="workerNumber" direction="desc" />
-				<option type="searchable" value="workerNumber,workerName" />
-				<option type="orderable" value="workerNumber,workerName" />
+				<option type="searchable" value="workerNumber,workerName,workerSurname,workerLaborHourlyCost,workerWageGroup,workedHours" />
+				<option type="orderable" value="workerNumber,workerName,workerSurname,workerLaborHourlyCost,workerWageGroup,workedHours" />
 				<option type="paginable" value="false" />
 				<option type="fullscreen" value="true" />
 			</component>

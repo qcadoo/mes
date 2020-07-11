@@ -68,13 +68,6 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="3" row="1">
-                        <component type="select" name="changeDateWhenTransferToWarehouseType"
-                                   field="changeDateWhenTransferToWarehouseType" reference="changeDateWhenTransferToWarehouseType"
-                                   hasDescription="true">
-                            <option type="labelWidth" value="60" />
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="3" row="2">
                         <component type="checkbox" name="fillResourceIrrespectiveOfConversion"
                                    field="fillResourceIrrespectiveOfConversion" reference="fillResourceIrrespectiveOfConversion"
                                    hasDescription="true">

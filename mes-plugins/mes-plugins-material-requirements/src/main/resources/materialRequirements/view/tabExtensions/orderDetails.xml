@@ -27,7 +27,7 @@
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
-	plugin="orders" view="orderDetails">
+	plugin="orders" view="orderAdditionalDetails">
 
 	<windowTab name="materialRequirementsTab" reference="materialRequirementsTab">
 		<component type="gridLayout" name="materialRequirementsGridLayout"

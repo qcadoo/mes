@@ -23,10 +23,6 @@
  */
 package com.qcadoo.mes.materialRequirements.hooks;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.materialRequirements.constants.OrderFieldsMR;
 import com.qcadoo.mes.materialRequirements.constants.ParameterFieldsMR;
@@ -35,10 +31,12 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 @Service
 public class OrderDetailsHooksMR {
-
-    
 
     @Autowired
     private ParameterService parameterService;

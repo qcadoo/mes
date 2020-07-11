@@ -57,7 +57,7 @@
 
     <dependencies>
         <dependency>
-            <plugin>orders</plugin>
+            <plugin>states</plugin>
             <version>[0.4.0</version>
         </dependency>
     </dependencies>

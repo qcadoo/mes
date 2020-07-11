@@ -105,8 +105,8 @@
                             <option type="labelWidth" value="35"/>
 
                             <listener event="onChange"
-                                      class="com.qcadoo.mes.technologies.listeners.ModifyTechnologyListeners"
-                                      method="onRemoveProduct"/>
+                                      class="com.qcadoo.view.api.listeners.RerenderListener"
+                                      method="onChangeRerender"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="3" width="16">
@@ -116,8 +116,8 @@
                             <option type="labelWidth" value="35"/>
 
                             <listener event="onChange"
-                                      class="com.qcadoo.mes.technologies.listeners.ModifyTechnologyListeners"
-                                      method="onAddNewProduct"/>
+                                      class="com.qcadoo.view.api.listeners.RerenderListener"
+                                      method="onChangeRerender"/>
                         </component>
                     </layoutElement>
 
@@ -153,8 +153,8 @@
                                                                 value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                                                         <option type="fieldCode" value="number"/>
                                                         <listener event="onSelectedEntityChange"
-                                                                  class="com.qcadoo.mes.technologies.listeners.ModifyTechnologyListeners"
-                                                                  method="fillProductUnit"/>
+                                                                  class="com.qcadoo.view.api.listeners.RerenderListener"
+                                                                  method="onChangeRerender"/>
                                                     </component>
                                                 </layoutElement>
                                                 <layoutElement column="6" row="1" width="5">
@@ -183,8 +183,8 @@
                             <option type="labelWidth" value="35"/>
 
                             <listener event="onChange"
-                                      class="com.qcadoo.mes.technologies.listeners.ModifyTechnologyListeners"
-                                      method="onReplaceProduct"/>
+                                      class="com.qcadoo.view.api.listeners.RerenderListener"
+                                      method="onChangeRerender"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="6" width="15">
@@ -204,8 +204,8 @@
                                             value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                                     <option type="fieldCode" value="number"/>
                                     <listener event="onSelectedEntityChange"
-                                              class="com.qcadoo.mes.technologies.listeners.ModifyTechnologyListeners"
-                                              method="fillReplaceProductUnit"/>
+                                              class="com.qcadoo.view.api.listeners.RerenderListener"
+                                              method="onChangeRerender"/>
                                 </component>
                             </layoutElement>
                             <layoutElement column="6" row="1" width="5">

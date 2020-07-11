@@ -40,9 +40,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Set;
 
-@Service public class MaterialRequirementCoverageDetailsListeners {
-
-    
+@Service
+public class MaterialRequirementCoverageDetailsListeners {
 
     @Autowired private OrderSuppliesService orderSuppliesService;
 
@@ -74,11 +73,6 @@ import java.util.Set;
         } else {
             state.addMessage("orderSupplies.materialRequirementCoverage.report.componentFormError", MessageType.FAILURE);
         }
-    }
-
-    public void checkIfCoverageLocationsAreWarehouses(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
-        orderSuppliesService.checkIfCoverageLocationsAreWarehouses(view, MaterialRequirementCoverageFields.COVERAGE_LOCATIONS);
     }
 
     public void checkIfBelongsToFamilyIsProductsFamily(final ViewDefinitionState view, final ComponentState state,

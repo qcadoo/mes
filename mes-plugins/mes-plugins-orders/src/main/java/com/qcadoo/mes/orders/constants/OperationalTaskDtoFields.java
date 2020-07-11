@@ -37,28 +37,46 @@ public final class OperationalTaskDtoFields {
 
     public static final String TYPE = "type";
 
+    public static final String STATE = "state";
+
     public static final String START_DATE = "startDate";
 
     public static final String FINISH_DATE = "finishDate";
 
+    public static final String STAFF_NAME = "staffName";
+
+    public static final String PRODUCTION_LINE_NAME = "productionLineName";
+
+    public static final String WORKSTATION_NUMBER = "workstationNumber";
+
+    public static final String WORKSTATION_ID = "workstationId";
+
+    public static final String ORDER_ID = "orderId";
+
     public static final String ORDER_NUMBER = "orderNumber";
+
+    public static final String TOC_ID = "tocId";
+
+    public static final String TECHNOLOGY_OPERATION_COMPONENT_NODE_NUMBER = "technologyOperationComponentNodeNumber";
 
     public static final String PRODUCT_NUMBER = "productNumber";
 
-    public static final String TECHNOLOGY_OPERATION_COMPONENT_NODE_NUMBER = "technologyOperationComponentNodeNumber";
+    public static final String PRODUCT_NAME = "productName";
+
+    public static final String PRODUCT_UNIT = "productUnit";
 
     public static final String PLANNED_QUANTITY = "plannedQuantity";
 
     public static final String USED_QUANTITY = "usedQuantity";
 
+    public static final String REMAINING_QUANTITY = "remainingQuantity";
+
     public static final String DONE_IN_PERCENTAGE = "doneInPercentage";
 
-    public static final String WORKSTATION_ID = "workstationId";
+    public static final String OPER_TASK_FLAG_PERCENT_EXECUTION_WITH_COLOR = "operTaskFlagPercentExecutionWithColor";
 
-    public static final String STATE = "state";
+    public static final String PERCENTAGE_OF_EXECUTION_CELL_COLOR = "percentageOfExecutionCellColor";
 
-    public static final String STAFF_NAME = "staffName";
-
-    public static final String PRODUCTION_LINE_NAME = "productionLineName";
+    public static final String ORDER_PRODUCT_NUMBER = "orderProductNumber";
 
 }

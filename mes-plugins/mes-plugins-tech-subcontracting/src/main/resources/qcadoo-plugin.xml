@@ -55,8 +55,8 @@
 
 	<dependencies>
 		<dependency>
-			<plugin>simpleMaterialBalance</plugin>
-			<version>[1.1.7</version>
+			<plugin>materialRequirements</plugin>
+			<version>[0.4.0</version>
 		</dependency>
 	</dependencies>
 
@@ -93,10 +93,6 @@
 			model="materialRequirement" enum="mrpAlgorithm"
 			value="03componentsAndSubcontractorsProducts" />
 
-		<model:model-enum-value plugin="simpleMaterialBalance"
-			model="simpleMaterialBalance" enum="mrpAlgorithm"
-			value="03componentsAndSubcontractorsProducts" />
-
 		<model:model-hook plugin="technologies" model="technologyOperationComponent">
 			<model:onCreate
 				class="com.qcadoo.mes.techSubcontracting.hooks.TechnologyOperationComponentHooksTS"
@@ -110,10 +106,7 @@
 		<view:view-hook plugin="materialRequirements" view="materialRequirementDetails" type="beforeRender"
 			class="com.qcadoo.mes.techSubcontracting.hooks.MaterialRequirementDetailsHooksTS"
 			method="setMrpAlgoritmValue" />	
-		<view:view-hook plugin="simpleMaterialBalance" view="simpleMaterialBalanceDetails" type="beforeRender"
-			class="com.qcadoo.mes.techSubcontracting.hooks.SimpleMaterialBalanceDetailsHooksTS"
-			method="setMrpAlgoritmValue" />	
-				
+
 		<view:view-tab resource="view/tabExtensions/operationDetails.xml" />
 		
 		<view:view-tab

@@ -23,27 +23,18 @@
  */
 package com.qcadoo.mes.materialFlowResources.validators;
 
-import static com.qcadoo.mes.materialFlow.constants.LocationFields.TYPE;
-import static com.qcadoo.mes.materialFlow.constants.LocationType.WAREHOUSE;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.materialFlowResources.constants.*;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Maps;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
-import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class DocumentValidators {
@@ -125,12 +116,6 @@ public class DocumentValidators {
 
         if (location == null) {
             document.addError(documentDD.getField(warehouseField), "materialFlow.error.document.warehouse.required");
-
-            return false;
-        }
-        if (!WAREHOUSE.getStringValue().equals(location.getStringField(TYPE))) {
-            document.addError(documentDD.getField(warehouseField),
-                    "materialFlow.document.validate.global.error.locationIsNotWarehouse");
 
             return false;
         }

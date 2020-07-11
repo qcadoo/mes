@@ -78,6 +78,8 @@
 
     <modules>
         <localization:translation path="locales"/>
+        <localization:translation-group name="employeeWorkingTimeSettlement"
+                                        prefix="productionCounting.validate.global.error.employeeWorkingTimeSettlement"/>
 
         <model:model model="productionTracking" resource="model/productionTracking.xml"/>
         <model:model model="productionTrackingStateChange" resource="model/productionTrackingStateChange.xml"/>
@@ -415,6 +417,11 @@
         </model:model-hook>
 
         <model:model-hook model="order" plugin="orders">
+            <model:onSave class="com.qcadoo.mes.productionCounting.hooks.OrderHooksPC"
+                            method="onSave"/>
+        </model:model-hook>
+
+        <model:model-hook model="order" plugin="orders">
             <model:validatesWith class="com.qcadoo.mes.productionCounting.hooks.OrderHooksPC"
                                  method="validatesWith"/>
         </model:model-hook>
@@ -432,6 +439,10 @@
 
         <menu:menu-item name="beforeAdditionalActionsAnalysis" category="analysis"
                         view="beforeAdditionalActionsAnalysisGenerator"
+                        defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
+
+        <menu:menu-item name="employeeWorkingTimeSettlement" category="analysis"
+                        view="employeeWorkingTimeSettlement"
                         defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
         <menu:menu-item name="productionBalance" category="analysis"
@@ -495,6 +506,8 @@
 
         <view:view resource="view/usedBatchDetails.xml"/>
 
+        <view:view resource="view/employeeWorkingTimeSettlement.xml"/>
+
 
         <view:view-tab resource="view/tabExtensions/parameters.xml"/>
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
@@ -515,10 +528,7 @@
                         type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.ProductDetailsHooksPC"
                         method="updateButtonsState"/>
 
-        <view:view-hook plugin="orders" view="orderDetails"
-                        type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.OrderDetailsHooksPC"
-                        method="setOrderDefaultValues"/>
-        <view:view-hook plugin="orders" view="orderDetails"
+        <view:view-hook plugin="orders" view="orderAdditionalDetails"
                         type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.OrderDetailsHooksPC"
                         method="checkTypeOfProductionRecording"/>
         <view:view-hook plugin="orders" view="orderDetails"
@@ -547,16 +557,6 @@
                             class="com.qcadoo.mes.productionCounting.listeners.ProductDetailsListenersPC"
                             method="showProductionTrackingsForProductGrouped"/>
 
-        <view:view-listener plugin="orders" view="orderDetails"
-                            component="technologyPrototype"
-                            event="onSelectedEntityChange"
-                            class="com.qcadoo.mes.productionCounting.listeners.OrderDetailsListenersPC"
-                            method="fillPCParameters"/>
-        <view:view-listener plugin="orders" view="orderDetails"
-                            component="product"
-                            event="onSelectedEntityChange"
-                            class="com.qcadoo.mes.productionCounting.listeners.OrderDetailsListenersPC"
-                            method="fillPCParameters"/>
 
     </modules>
 

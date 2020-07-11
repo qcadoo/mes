@@ -78,9 +78,6 @@
                                     value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                             <option type="fieldCode" value="number"/>
 
-                            <criteriaModifier
-                                    class="com.qcadoo.mes.materialFlow.criteriaModifiers.LocationCriteriaModifiers"
-                                    method="showWarehousesOnly"/>
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.listeners.ProductsToIssueDetailsListeners"
                                       method="onLocationSelect"/>

@@ -26,7 +26,6 @@ package com.qcadoo.mes.masterOrders.hooks;
 import com.google.common.base.Preconditions;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderType;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.masterOrders.util.MasterOrderProductsDataService;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -58,7 +57,7 @@ public class MasterOrderHooks {
     }
 
     public void onSave(final DataDefinition dataDefinition, final Entity masterOrder) {
-        onTypeTransitionFromManyToOther(masterOrder);
+
     }
 
     public void onUpdate(final DataDefinition dataDefinition, final Entity masterOrder) {
@@ -110,25 +109,6 @@ public class MasterOrderHooks {
             masterOrder.setField(MasterOrderFields.ORDERS, allOrders);
         }
 
-    }
-
-    private void onTypeTransitionFromManyToOther(final Entity masterOrder) {
-        if (masterOrder.getId() == null || isNotLeavingType(masterOrder, MasterOrderType.MANY_PRODUCTS)) {
-            return;
-        }
-        // remove sales order's products when leaving 'many products' mode
-        masterOrderProductsDataService.deleteExistingMasterOrderProducts(masterOrder);
-    }
-
-    private boolean isTransitionToManyProducts(final Entity masterOrder) {
-        return MasterOrderType.of(masterOrder) == MasterOrderType.MANY_PRODUCTS;
-    }
-
-    private boolean isNotLeavingType(final Entity masterOrder, final MasterOrderType type) {
-        Entity masterOrderFromDB = masterOrder.getDataDefinition().get(masterOrder.getId());
-        MasterOrderType existingMasterOrderType = MasterOrderType.of(masterOrderFromDB);
-        MasterOrderType newMasterOrderType = MasterOrderType.of(masterOrder);
-        return existingMasterOrderType != type || newMasterOrderType == type;
     }
 
     private void clearExternalFields(final Entity masterOrder) {

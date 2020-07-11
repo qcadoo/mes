@@ -59,8 +59,6 @@ public final class MasterOrderPositionDtoFields {
 
     public static final String MASTER_ORDER_ID = "masterOrderId";
 
-    public static final String MASTER_ORDER_TYPE = "masterOrderType";
-
     public static final String PRODUCT_ID = "productId";
 
     public static final String MASTER_ORDER_PRODUCT_ID = "masterOrderProductId";

@@ -29,15 +29,7 @@ public final class DocumentPositionParametersFields {
 
     }
 
-    public static final String ACCEPTANCE_OF_DOCUMENT_BEFORE_PRINTING = "acceptanceOfDocumentBeforePrinting";
-
-    public static final String CHANGE_DATE_WHEN_TRANSFER_TO_WAREHOUSE_TYPE = "changeDateWhenTransferToWarehouseType";
-
     public static final String FILL_RESOURCE_IRRESPECTIVE_OF_CONVERSION = "fillResourceIrrespectiveOfConversion";
-
-    public static final String ITEMS = "items";
-
-    public static final String NOT_SHOW_PRICES = "notShowPrices";
 
     public static final String PALLET_TO_SHIFT = "palletToShift";
 

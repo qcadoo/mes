@@ -121,7 +121,7 @@ public class OrdersFromMOProductsGenerationService {
     private DictionaryService dictionaryService;
 
     public GenerationOrderResult generateOrders(List<Entity> masterOrderProducts, Date start, Date finish, boolean generatePPS) {
-        GenerationOrderResult result = new GenerationOrderResult(translationService);
+        GenerationOrderResult result = new GenerationOrderResult(translationService, parameterService);
         boolean automaticPps = parameterService.getParameter().getBooleanField(PPS_IS_AUTOMATIC);
 
         List<Entity> masterOrderProductsEntities = Lists.newArrayList();
@@ -293,20 +293,25 @@ public class OrdersFromMOProductsGenerationService {
                 for (Entity ord : orders) {
 
                     Date calculatedOrderStartDate = null;
-                    if (Objects.isNull(ord.getDateField(OrderFields.DATE_FROM))) {
-                        Optional<Entity> maybeOrder = orderService.findLastOrder(ord);
-                        if (maybeOrder.isPresent()) {
-                            calculatedOrderStartDate = ord.getDateField(OrderFields.FINISH_DATE);
-                        } else {
-                            calculatedOrderStartDate = new DateTime().toDate();
-                        }
-                    } else {
-                        Optional<Entity> maybeOrder = findPreviousOrder(ord);
-                        if (maybeOrder.isPresent()) {
-                            calculatedOrderStartDate = maybeOrder.get().getDateField(OrderFields.FINISH_DATE);
 
+                    if(parameterService.getParameter().getBooleanField(ParameterFieldsO.ADVISE_START_DATE_OF_THE_ORDER)) {
+                        calculatedOrderStartDate = order.getDateField(OrderFields.START_DATE);
+                    } else {
+                        if (Objects.isNull(ord.getDateField(OrderFields.DATE_FROM))) {
+                            Optional<Entity> maybeOrder = orderService.findLastOrder(ord);
+                            if (maybeOrder.isPresent()) {
+                                calculatedOrderStartDate = ord.getDateField(OrderFields.FINISH_DATE);
+                            } else {
+                                calculatedOrderStartDate = new DateTime().toDate();
+                            }
                         } else {
-                            calculatedOrderStartDate = ord.getDateField(OrderFields.FINISH_DATE);
+                            Optional<Entity> maybeOrder = findPreviousOrder(ord);
+                            if (maybeOrder.isPresent()) {
+                                calculatedOrderStartDate = maybeOrder.get().getDateField(OrderFields.FINISH_DATE);
+
+                            } else {
+                                calculatedOrderStartDate = ord.getDateField(OrderFields.FINISH_DATE);
+                            }
                         }
                     }
 
@@ -457,7 +462,8 @@ public class OrdersFromMOProductsGenerationService {
         Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
         Entity nextOrder = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find()
                 .add(SearchRestrictions.belongsTo(OrderFields.PRODUCTION_LINE, productionLine))
-                .add(SearchRestrictions.isNotNull(OrderFields.START_DATE)).addOrder(SearchOrders.desc(OrderFields.START_DATE))
+                .add(SearchRestrictions.isNotNull(OrderFields.START_DATE))
+                .addOrder(SearchOrders.desc(OrderFields.START_DATE))
                 .setMaxResults(1).uniqueResult();
         return Optional.ofNullable(nextOrder);
     }

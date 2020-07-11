@@ -23,11 +23,11 @@
  */
 package com.qcadoo.mes.orderSupplies;
 
-import java.util.List;
-
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+
+import java.util.List;
 
 public interface OrderSuppliesService {
 
@@ -124,18 +124,6 @@ public interface OrderSuppliesService {
      * @return boolean
      */
     boolean checkIfMaterialRequirementCoverageIsSaved(final Long materialRequirementCoverageId);
-
-    /**
-     * Checks if coverage locations are warehouses
-     * 
-     * @param view
-     *            view
-     * 
-     * @param adlcName
-     *            coverage locations adlc name
-     * 
-     */
-    void checkIfCoverageLocationsAreWarehouses(final ViewDefinitionState view, final String adlcName);
 
     /**
      * Checks if selected product is products family

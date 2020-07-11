@@ -118,7 +118,7 @@
 			class="com.qcadoo.mes.materialRequirements.listeners.OrdersPlanningListListenersMR"
 			method="printMaterialRequirementForOrder" />
 
-		<view:view-hook view="orderDetails" type="beforeRender"
+		<view:view-hook view="orderAdditionalDetails" type="beforeRender"
 			plugin="orders"
 			class="com.qcadoo.mes.materialRequirements.hooks.OrderDetailsHooksMR"
 			method="setInputProductsRequiredForTypeFromParameters" />

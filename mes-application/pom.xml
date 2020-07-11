@@ -92,11 +92,6 @@
         </dependency>
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
-            <artifactId>mes-plugins-material-flow-multitransfers</artifactId>
-            <version>1.5-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-time-norms-for-operations</artifactId>
             <version>1.5-SNAPSHOT</version>
         </dependency>
@@ -113,11 +108,6 @@
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-cost-calculation</artifactId>
-            <version>1.5-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.qcadoo.mes</groupId>
-            <artifactId>mes-plugins-simple-material-balance</artifactId>
             <version>1.5-SNAPSHOT</version>
         </dependency>
         <dependency>

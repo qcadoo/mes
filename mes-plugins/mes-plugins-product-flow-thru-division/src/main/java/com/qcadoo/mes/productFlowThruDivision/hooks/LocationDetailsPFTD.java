@@ -25,8 +25,6 @@ package com.qcadoo.mes.productFlowThruDivision.hooks;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.materialFlow.constants.LocationFields;
-import com.qcadoo.mes.materialFlow.constants.LocationType;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -37,8 +35,6 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class LocationDetailsPFTD {
-
-
 
     private static final String L_LOCATION = "location";
 
@@ -66,9 +62,8 @@ public class LocationDetailsPFTD {
         ComponentState divisionsTab = view.getComponentByReference(L_DIVISIONS_TAB);
 
         Entity location = locationForm.getEntity();
-        String type = location.getStringField(LocationFields.TYPE);
 
-        boolean isVisible = ((location.getId() != null) && (LocationType.WAREHOUSE.getStringValue().equals(type)));
+        boolean isVisible = location.getId() != null;
 
         divisionsGrid.setVisible(isVisible);
         divisionsTab.setVisible(isVisible);
