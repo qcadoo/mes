@@ -23,30 +23,13 @@
  */
 package com.qcadoo.mes.materialRequirementCoverageForOrder.print;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
-import com.lowagie.text.Chunk;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.Rectangle;
+import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.columnExtension.ColumnExtensionService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
@@ -60,6 +43,15 @@ import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @Service
 public class MaterialRequirementCoverageForOrderReportPdfService extends PdfDocumentService {
@@ -187,21 +179,12 @@ public class MaterialRequirementCoverageForOrderReportPdfService extends PdfDocu
                 "orderSupplies.materialRequirementCoverage.report.onlyProductsInCoverage.title", locale), FontUtils
                 .getDejavuBold10Dark()));
 
-        PdfPTable rightPanelOptions = new PdfPTable(3);
+        PdfPTable rightPanelOptions = new PdfPTable(1);
 
         rightPanelOptions.getDefaultCell().setBorder(Rectangle.NO_BORDER);
         rightPanelOptions.getDefaultCell().setPadding(0);
         rightPanelOptions.getDefaultCell().setVerticalAlignment(PdfPCell.ALIGN_TOP);
 
-        pdfHelper.addTableCellAsOneColumnTable(
-                rightPanelOptions,
-                translationService.translate("orderSupplies.materialRequirementCoverage.report.productsExtracted", locale),
-                translationService.translate("orderSupplies.materialRequirementCoverage.productExtracted.value."
-                        + materialRequirementCoverage.getStringField(CoverageForOrderFields.PRODUCT_EXTRACTED), locale));
-        pdfHelper.addTableCellAsOneColumnTable(rightPanelOptions, translationService.translate(
-                "orderSupplies.materialRequirementCoverage.report.belongsToFamily", locale), (materialRequirementCoverage
-                .getBelongsToField(CoverageForOrderFields.BELONGS_TO_FAMILY) == null) ? "" : materialRequirementCoverage
-                .getBelongsToField(CoverageForOrderFields.BELONGS_TO_FAMILY).getStringField(ProductFields.NAME));
         pdfHelper.addTableCellAsOneColumnTable(
                 rightPanelOptions,
                 translationService.translate("orderSupplies.materialRequirementCoverage.report.coverageType", locale),

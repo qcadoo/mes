@@ -24,8 +24,6 @@
 package com.qcadoo.mes.orderSupplies;
 
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.ProductService;
-import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.orderSupplies.constants.ColumnForCoveragesFields;
 import com.qcadoo.mes.orderSupplies.constants.MaterialRequirementCoverageFields;
 import com.qcadoo.mes.orderSupplies.constants.OrderSuppliesConstants;
@@ -37,9 +35,6 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.RunIfEnabled;
 import com.qcadoo.tenant.api.MultiTenantCallback;
 import com.qcadoo.tenant.api.MultiTenantService;
-import com.qcadoo.view.api.ComponentState.MessageType;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.LookupComponent;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -63,9 +58,6 @@ public class OrderSuppliesServiceImpl implements OrderSuppliesService {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private ProductService productService;
 
     @Autowired
     private MultiTenantService multiTenantService;
@@ -146,19 +138,6 @@ public class OrderSuppliesServiceImpl implements OrderSuppliesService {
         }
 
         return false;
-    }
-
-    @Override
-    public void checkIfBelongsToFamilyIsProductsFamily(final ViewDefinitionState view, final String referenceName) {
-        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(referenceName);
-
-        Entity product = productLookup.getEntity();
-
-        if ((product != null)
-                && !productService.checkIfProductEntityTypeIsCorrect(product, ProductFamilyElementType.PRODUCTS_FAMILY)) {
-            productLookup.addMessage("orderSupplies.materialRequirementCoverage.belongToFamily.isNotProductsFamily",
-                    MessageType.FAILURE);
-        }
     }
 
     @Override

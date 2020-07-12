@@ -25,7 +25,6 @@ package com.qcadoo.mes.orderSupplies;
 
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ViewDefinitionState;
 
 import java.util.List;
 
@@ -124,18 +123,6 @@ public interface OrderSuppliesService {
      * @return boolean
      */
     boolean checkIfMaterialRequirementCoverageIsSaved(final Long materialRequirementCoverageId);
-
-    /**
-     * Checks if selected product is products family
-     * 
-     * @param view
-     *            view
-     * 
-     * @param referenceName
-     *            coverage locations reference name
-     * 
-     */
-    void checkIfBelongsToFamilyIsProductsFamily(final ViewDefinitionState view, final String referenceName);
 
     /**
      * Deletes unsaved material requirement coverages if not modified since 24 h

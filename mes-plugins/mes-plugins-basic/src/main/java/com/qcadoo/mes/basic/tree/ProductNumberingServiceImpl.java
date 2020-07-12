@@ -236,18 +236,6 @@ public class ProductNumberingServiceImpl implements ProductNumberingService {
     }
 
     @Override
-    public boolean checkIfProductBelongsToProductsFamily(final Entity productsFamily, final Entity product) {
-        String productsFamilyNodeNumber = productsFamily.getStringField(NODE_NUMBER);
-        String productNodeNumber = product.getStringField(NODE_NUMBER);
-
-        if (StringUtils.isEmpty(productNodeNumber)) {
-            return false;
-        } else {
-            return productNodeNumber.startsWith(productsFamilyNodeNumber);
-        }
-    }
-
-    @Override
     public List<Entity> getProductRoots(final Entity product) {
         Entity parent = product.getBelongsToField(PARENT);
         String productNodeNumber = product.getStringField(NODE_NUMBER);

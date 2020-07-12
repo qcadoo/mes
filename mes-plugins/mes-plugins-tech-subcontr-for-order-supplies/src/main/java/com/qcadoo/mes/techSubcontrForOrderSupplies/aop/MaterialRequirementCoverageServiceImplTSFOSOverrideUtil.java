@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.techSubcontrForOrderSupplies.aop;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.google.common.collect.Lists;
 import com.qcadoo.mes.orderSupplies.constants.CoverageProductFields;
 import com.qcadoo.mes.orderSupplies.constants.CoverageProductLoggingEventType;
 import com.qcadoo.mes.orderSupplies.constants.CoverageProductLoggingFields;
@@ -37,7 +31,6 @@ import com.qcadoo.mes.orderSupplies.coverage.CoverageProductForOrder;
 import com.qcadoo.mes.techSubcontrForDeliveries.constants.OrderedProductFieldsTSFD;
 import com.qcadoo.mes.techSubcontrForOrderSupplies.constants.CoverageProductFieldsTSFOS;
 import com.qcadoo.mes.techSubcontrForOrderSupplies.constants.CoverageProductLoggingFieldsTSFOS;
-import com.qcadoo.mes.techSubcontrForOrderSupplies.constants.ProductExtractedTSFOS;
 import com.qcadoo.mes.techSubcontrForOrderSupplies.constants.TechSubcontrForOrderSuppliesConstants;
 import com.qcadoo.mes.techSubcontracting.constants.TechnologyOperationComponentFieldsTS;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
@@ -45,6 +38,10 @@ import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginStateResolver;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class MaterialRequirementCoverageServiceImplTSFOSOverrideUtil {
@@ -88,23 +85,6 @@ public class MaterialRequirementCoverageServiceImplTSFOSOverrideUtil {
         }
 
         return null;
-    }
-
-    public List<Entity> filterCoverageProductsWithProductExtracted(final List<Entity> coverageProducts,
-            final String productExtracted) {
-        List<Entity> filteredCoverageProducts = Lists.newArrayList();
-
-        for (Entity coverageProduct : coverageProducts) {
-            if (ProductExtractedTSFOS.FROM_DELIVERERS.getStringValue().equals(productExtracted)
-                    && coverageProduct.getBooleanField(CoverageProductFieldsTSFOS.IS_PURCHASED)) {
-                filteredCoverageProducts.add(coverageProduct);
-            } else if (ProductExtractedTSFOS.FROM_SUBCONCTRACTORS.getStringValue().equals(productExtracted)
-                    && coverageProduct.getBooleanField(CoverageProductFieldsTSFOS.IS_SUBCONTRACTED)) {
-                filteredCoverageProducts.add(coverageProduct);
-            }
-        }
-
-        return filteredCoverageProducts;
     }
 
     public void fillIsSubcontractedAndIsPurchased(final List<Entity> coverageProducts) {

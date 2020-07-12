@@ -248,20 +248,6 @@ public class GenerateMaterialRequirementCoverageHooks {
 
         Entity parameter = parameterService.getParameter();
 
-        if (StringUtils.isNotEmpty(parameter.getStringField(ParameterFieldsOS.PRODUCT_EXTRACTED))) {
-            FieldComponent field = (FieldComponent) view.getComponentByReference(ParameterFieldsOS.PRODUCT_EXTRACTED);
-
-            field.setFieldValue(parameter.getStringField(ParameterFieldsOS.PRODUCT_EXTRACTED));
-            field.requestComponentUpdateState();
-        }
-
-        if (parameter.getBelongsToField(ParameterFieldsOS.BELONGS_TO_FAMILY) != null) {
-            LookupComponent field = (LookupComponent) view.getComponentByReference(ParameterFieldsOS.BELONGS_TO_FAMILY);
-
-            field.setFieldValue(parameter.getBelongsToField(ParameterFieldsOS.BELONGS_TO_FAMILY).getId());
-            field.requestComponentUpdateState();
-        }
-
         if (StringUtils.isNotEmpty(parameter.getStringField(ParameterFieldsOS.COVERAGE_TYPE))) {
             FieldComponent field = (FieldComponent) view.getComponentByReference(ParameterFieldsOS.COVERAGE_TYPE);
 

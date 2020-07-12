@@ -54,7 +54,7 @@
             <component type="form" name="materialRequirementCoverageForm"
                        reference="form">
                 <component type="gridLayout" name="mainTabGridLayout"
-                           columns="3" rows="8">
+                           columns="3" rows="7">
                     <layoutElement column="1" row="1">
                         <component type="hidden" name="generated" reference="generated"
                                    field="generated" defaultVisible="true"/>
@@ -114,40 +114,11 @@
                         <component type="input" name="generatedBy" field="generatedBy"
                                    reference="generatedBy" defaultEnabled="never"/>
                     </layoutElement>
-                    <layoutElement column="2" row="4" height="3">
-                        <component type="borderLayout" name="onlyProductsInCoverageBorderLayout"
-                                   reference="onlyProductsInCoverageBorderLayout">
-                            <option type="label" value="onlyProductsInCoverageLabel"/>
-                            <component type="gridLayout" name="onlyProductsInCoverageGridLayout"
-                                       columns="1" rows="3">
-                                <layoutElement column="1" row="1">
-                                    <component type="select" name="productExtracted"
-                                               field="productExtracted" reference="productExtracted"/>
-                                </layoutElement>
-                                <layoutElement column="1" row="2">
-                                    <component type="lookup" name="belongsToFamily"
-                                               field="belongsToFamily" reference="belongsToFamily">
-                                        <option type="column" fields="name" name="name" link="true"/>
-
-                                        <option type="searchable" value="number,name"/>
-                                        <option type="orderable" value="number,name"/>
-
-                                        <option type="expression" value="#number + ' - ' + #name"/>
-                                        <option type="fieldCode" value="number"/>
-
-                                        <criteriaModifier
-                                                class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
-                                                method="showProductFamilyOnly"/>
-                                    </component>
-                                </layoutElement>
-                                <layoutElement column="1" row="3">
-                                    <component type="select" name="coverageType" field="coverageType"
-                                               reference="coverageType"/>
-                                </layoutElement>
-                            </component>
-                        </component>
+                    <layoutElement column="2" row="4">
+                        <component type="select" name="coverageType" field="coverageType"
+                                   reference="coverageType"/>
                     </layoutElement>
-                    <layoutElement column="2" row="7">
+                    <layoutElement column="2" row="5">
                         <component type="borderLayout" name="includedInCoverageBorderLayout"
                                    reference="includedInCoverageBorderLayout">
                             <component type="gridLayout" name="includedInCoverageGridLayout"

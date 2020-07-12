@@ -124,18 +124,10 @@
                            plugin="orderSupplies"/>
         </model:model-field>
         <model:model-field plugin="basic" model="parameter">
-            <model:belongsTo name="belongsToFamily" model="product"
-                             plugin="basic"/>
-        </model:model-field>
-        <model:model-field plugin="basic" model="parameter">
             <model:boolean name="includeDraftDeliveries"/>
         </model:model-field>
         <model:model-field plugin="basic" model="parameter">
             <model:boolean name="automaticSaveCoverage"/>
-        </model:model-field>
-        <model:model-field plugin="basic" model="parameter">
-            <model:enum values="01all,02fromDeliverers,03fromSubcontractors"
-                        name="productExtracted" default="01all"/>
         </model:model-field>
         <model:model-field plugin="basic" model="parameter">
             <model:enum

@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.materialRequirementCoverageForOrder.listeners;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.PageSize;
 import com.qcadoo.localization.api.utils.DateUtils;
@@ -49,6 +39,15 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 @Service
 public class GenerateMRCForOrderListeners {
@@ -172,7 +171,7 @@ public class GenerateMRCForOrderListeners {
                         LocaleContextHolder.getLocale()).format(new Date()));
                 mRCForOrder.setField(CoverageForOrderFields.GENERATED_BY, securityService.getCurrentUserName());
 
-                mRCForOrderService.estimateProductCoverageInTime(mRCForOrder, false);
+                mRCForOrderService.estimateProductCoverageInTime(mRCForOrder);
 
                 state.performEvent(view, "reset", new String[0]);
 

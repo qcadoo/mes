@@ -46,9 +46,6 @@
             <validatesLength max="1024"/>
         </string>
 
-        <belongsTo name="belongsToFamily" model="product" plugin="basic"/>
-        <enum name="productExtracted" values="01all,02fromDeliverers,03fromSubcontractors" default="01all"
-              required="true"/>
         <enum name="coverageType"
               values="01all,02withoutProductsFromWarehouse,03onlyShorcomingsAndDelays" default="01all" required="true"/>
 
@@ -59,10 +56,10 @@
         <hasMany name="coverageProducts" joinField="materialRequirementCoverage"
                  model="coverageProduct" cascade="delete" copyable="true"/>
         <hasMany name="coverageProductsDto" joinField="materialRequirementCoverage" model="coverageProductDto"
-                 cascade="nullify" copyable="false" persistent="false" />
+                 persistent="false" />
 
         <manyToMany name="coverageOrders" joinField="materialRequirementCoverages" model="order"
-                    cascade="nullify" plugin="orders"/>
+                    plugin="orders"/>
 
         <hasMany name="coverageOrderStates" model="coverageOrderState" plugin="orderSupplies"
                  joinField="materialRequirementCoverage" cascade="delete" copyable="true"/>

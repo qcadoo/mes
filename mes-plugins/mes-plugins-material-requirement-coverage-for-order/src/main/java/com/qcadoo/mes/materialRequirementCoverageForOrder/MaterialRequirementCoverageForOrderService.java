@@ -31,7 +31,7 @@ import java.util.Optional;
 
 public interface MaterialRequirementCoverageForOrderService {
 
-    void estimateProductCoverageInTime(final Entity coverageForOrder, final Boolean automatic);
+    void estimateProductCoverageInTime(final Entity coverageForOrder);
 
     Entity getMRCForOrder(final Long mRCId);
 

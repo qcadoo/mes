@@ -23,35 +23,24 @@
  */
 package com.qcadoo.mes.materialRequirementCoverageForOrder.validators;
 
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.basic.ProductService;
-import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageForOrderFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class CoverageForOrderValidators {
 
-    @Autowired
-    private ProductService productService;
-
     public boolean validatesWith(final DataDefinition materialRequirementCoverageDD, final Entity materialRequirementCoverage) {
-        boolean isValid = true;
-
-        isValid = isValid && checkCoverageDates(materialRequirementCoverageDD, materialRequirementCoverage);
+        boolean isValid = checkCoverageDates(materialRequirementCoverageDD, materialRequirementCoverage);
         isValid = isValid && checkCoverageLocations(materialRequirementCoverage);
-        isValid = isValid && checkIfBelongsToFamilyIsProductsFamily(materialRequirementCoverageDD, materialRequirementCoverage);
         isValid = isValid
                 && checkIfCoverageToDateIsBeforeStartOrderDate(materialRequirementCoverageDD, materialRequirementCoverage);
-
         return isValid;
     }
 
@@ -60,8 +49,8 @@ public class CoverageForOrderValidators {
         Entity order = materialRequirementCoverage.getBelongsToField(CoverageForOrderFields.ORDER);
         Date coverageToDate = materialRequirementCoverage.getDateField(CoverageForOrderFields.COVERAGE_TO_DATE);
 
-        Date orderStartDate = materialRequirementCoverage.getBelongsToField(CoverageForOrderFields.ORDER).getDateField(
-                OrderFields.START_DATE);
+        Date orderStartDate = materialRequirementCoverage.getBelongsToField(CoverageForOrderFields.ORDER)
+                .getDateField(OrderFields.START_DATE);
         if (OrderState.PENDING.getStringValue().equals(order.getStringField(OrderFields.STATE)) && orderStartDate == null) {
             return true;
         }
@@ -102,21 +91,4 @@ public class CoverageForOrderValidators {
 
         return true;
     }
-
-    private boolean checkIfBelongsToFamilyIsProductsFamily(final DataDefinition materialRequirementCoverageDD,
-            final Entity materialRequirementCoverage) {
-        Entity belongsToFamily = materialRequirementCoverage.getBelongsToField(CoverageForOrderFields.BELONGS_TO_FAMILY);
-
-        if ((belongsToFamily != null)
-                && !productService.checkIfProductEntityTypeIsCorrect(belongsToFamily, ProductFamilyElementType.PRODUCTS_FAMILY)) {
-            materialRequirementCoverage.addError(
-                    materialRequirementCoverageDD.getField(CoverageForOrderFields.BELONGS_TO_FAMILY),
-                    "materialRequirementCoverageForOrder.coverageForOrder.belongToFamily.isNotProductsFamily");
-
-            return false;
-        }
-
-        return true;
-    }
-
 }

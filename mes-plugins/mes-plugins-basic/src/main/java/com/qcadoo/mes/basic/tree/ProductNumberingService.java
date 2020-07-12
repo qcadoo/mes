@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.basic.tree;
 
-import java.util.List;
-
 import com.qcadoo.model.api.Entity;
+
+import java.util.List;
 
 public interface ProductNumberingService {
 
@@ -57,13 +57,6 @@ public interface ProductNumberingService {
      * 
      */
     void updateNodeNumber(final Entity product);
-
-    /**
-     * Checks if product belongs to products family
-     * 
-     * @return boolean
-     */
-    boolean checkIfProductBelongsToProductsFamily(final Entity productsFamily, final Entity product);
 
     /**
      * Get product roots

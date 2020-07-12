@@ -23,11 +23,8 @@
  */
 package com.qcadoo.mes.orderSupplies.validators;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.ProductService;
-import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.orderSupplies.constants.ParameterFieldsOS;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -35,26 +32,8 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class ParameterValidatorsOS {
 
-    @Autowired
-    private ProductService productService;
-
     public boolean validatesWith(final DataDefinition parameterDD, final Entity parameter) {
-        return checkIfBelongsToFamilyIsProductsFamily(parameterDD, parameter)
-                && checkIfOrdersIncludePeriodFilled(parameterDD, parameter);
-    }
-
-    private boolean checkIfBelongsToFamilyIsProductsFamily(final DataDefinition parameterDD, final Entity parameter) {
-        Entity belongsToFamily = parameter.getBelongsToField(ParameterFieldsOS.BELONGS_TO_FAMILY);
-
-        if ((belongsToFamily != null)
-                && !productService.checkIfProductEntityTypeIsCorrect(belongsToFamily, ProductFamilyElementType.PRODUCTS_FAMILY)) {
-            parameter.addError(parameterDD.getField(ParameterFieldsOS.BELONGS_TO_FAMILY),
-                    "basic.parameter.belongToFamily.isNotProductsFamily");
-
-            return false;
-        }
-
-        return true;
+        return checkIfOrdersIncludePeriodFilled(parameterDD, parameter);
     }
 
     private boolean checkIfOrdersIncludePeriodFilled(final DataDefinition parameterDD, final Entity parameter) {
@@ -72,5 +51,4 @@ public class ParameterValidatorsOS {
 
         return true;
     }
-
 }
