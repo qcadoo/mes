@@ -114,17 +114,8 @@
                                    reference="coverageType"/>
                     </layoutElement>
                     <layoutElement column="2" row="5">
-                        <component type="borderLayout" name="includedInCoverageBorderLayout"
-                                   reference="includedInCoverageBorderLayout">
-                            <option type="label" value="includedInCoverageLabel"/>
-                            <component type="gridLayout" name="includedInCoverageGridLayout"
-                                       columns="1" rows="1">
-                                <layoutElement column="1" row="1">
-                                    <component type="checkbox" name="includeDraftDeliveries"
-                                               field="includeDraftDeliveries" reference="includeDraftDeliveries"/>
-                                </layoutElement>
-                            </component>
-                        </component>
+                        <component type="checkbox" name="includeDraftDeliveries"
+                                   field="includeDraftDeliveries" reference="includeDraftDeliveries"/>
                     </layoutElement>
                     <layoutElement column="3" row="1" height="3">
                         <component type="borderLayout" name="orderStatesBorderLayout">
@@ -165,8 +156,6 @@
                        columns="1" rows="8">
 
                 <layoutElement column="1" row="1" height="8">
-                    <component type="borderLayout" name="ordersBorderLayout">
-
                         <component type="lookup" name="coverageOrdersLookup" reference="coverageOrdersLookup"
                                    field="#{form}.coverageOrders" defaultVisible="false" persistent="false"
                                    hasLabel="false">
@@ -212,8 +201,6 @@
                             <option type="correspondingLookup" value="coverageOrdersLookup"/>
 
                         </component>
-                        <option type="label" value="orderForCoveragesLabel"/>
-                    </component>
                 </layoutElement>
 
             </component>

@@ -119,18 +119,8 @@
                                    reference="coverageType"/>
                     </layoutElement>
                     <layoutElement column="2" row="5">
-                        <component type="borderLayout" name="includedInCoverageBorderLayout"
-                                   reference="includedInCoverageBorderLayout">
-                            <component type="gridLayout" name="includedInCoverageGridLayout"
-                                       columns="1" rows="1">
-                                <layoutElement column="1" row="1">
-                                    <component type="checkbox" name="includeDraftDeliveries"
-                                               field="includeDraftDeliveries" reference="includeDraftDeliveries"/>
-                                </layoutElement>
-                            </component>
-
-                            <option type="label" value="includedInCoverageLabel"/>
-                        </component>
+                        <component type="checkbox" name="includeDraftDeliveries"
+                                   field="includeDraftDeliveries" reference="includeDraftDeliveries"/>
                     </layoutElement>
                 </component>
 

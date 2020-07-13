@@ -231,7 +231,7 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
     private void estimateProductDemandInTime(final Map<Long, Entity> productAndCoverageProducts, final List<Entity> orders,
             final Date coverageToDate, final Entity coveredOrder) {
         for (Entity order : orders) {
-            String sql_coveredOrdersProducts = "select toc.id as tocId, parentToc.id as parentId, inputProd.id as prodId, opic.id as opicId, "
+            String coveredOrdersProductsSql = "select toc.id as tocId, parentToc.id as parentId, inputProd.id as prodId, opic.id as opicId, "
                     + "(select count(*) from #technologies_technology t where t.product = inputProd and t.master = true) "
                     + "as prodTechId from  #technologies_operationProductInComponent opic "
                     + "left join opic.product as inputProd left join opic.operationComponent toc "
@@ -240,7 +240,7 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
                     + "left join toc.parent as parentToc where tech.id = :technologyID ";
             List<Entity> coveredOrderProducts = dataDefinitionService
                     .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
-                    .find(sql_coveredOrdersProducts)
+                    .find(coveredOrdersProductsSql)
                     .setLong("technologyID", order.getBelongsToField(OrderFields.TECHNOLOGY).getId()).list().getEntities();
 
             StringBuilder coveredOrdersProductsToSql = new StringBuilder(
