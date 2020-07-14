@@ -23,10 +23,10 @@
  */
 package com.qcadoo.mes.orders.controllers.dao;
 
-import java.math.BigDecimal;
-
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import java.math.BigDecimal;
 
 public class OperationalTaskHolder {
 
@@ -55,6 +55,8 @@ public class OperationalTaskHolder {
     private String staffName;
 
     private String orderProductNumber;
+
+    private Long orderId;
 
     public Long getId() {
         return id;
@@ -177,14 +179,21 @@ public class OperationalTaskHolder {
                 .append(usedQuantity, that.usedQuantity).append(orderNumber, that.orderNumber)
                 .append(workstationNumber, that.workstationNumber).append(productNumber, that.productNumber)
                 .append(productUnit, that.productUnit).append(staffName, that.staffName)
-                .append(orderProductNumber, that.orderProductNumber).isEquals();
+                .append(orderProductNumber, that.orderProductNumber).append(orderId, that.orderId).isEquals();
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(id).append(number).append(name).append(state).append(type).append(plannedQuantity)
                 .append(usedQuantity).append(orderNumber).append(workstationNumber).append(productNumber).append(productUnit)
-                .append(staffName).append(orderProductNumber).toHashCode();
+                .append(staffName).append(orderProductNumber).append(orderId).toHashCode();
     }
 
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
+    }
 }

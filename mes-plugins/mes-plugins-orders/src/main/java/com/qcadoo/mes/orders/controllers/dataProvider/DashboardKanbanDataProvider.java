@@ -1,14 +1,5 @@
 package com.qcadoo.mes.orders.controllers.dataProvider;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -18,6 +9,14 @@ import com.qcadoo.mes.orders.controllers.dao.OperationalTaskHolder;
 import com.qcadoo.mes.orders.controllers.dao.OrderHolder;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class DashboardKanbanDataProvider {
@@ -207,6 +206,7 @@ public class DashboardKanbanDataProvider {
         query.append("operationaltaskdto.productnumber AS productNumber, ");
         query.append("operationaltaskdto.productUnit AS productUnit, ");
         query.append("operationaltaskdto.staffname AS staffName, ");
+        query.append("operationaltaskdto.orderid AS orderId, ");
         query.append("product.number AS orderProductNumber ");
         query.append("FROM orders_operationaltaskdto operationaltaskdto ");
         query.append("LEFT JOIN orders_order ordersorder ");
@@ -237,6 +237,7 @@ public class DashboardKanbanDataProvider {
         operationalTaskHolder.setProductUnit((String) stringObjectMap.get(OperationalTaskDtoFields.PRODUCT_UNIT));
         operationalTaskHolder.setStaffName((String) stringObjectMap.get(OperationalTaskDtoFields.STAFF_NAME));
         operationalTaskHolder.setOrderProductNumber((String) stringObjectMap.get(OperationalTaskDtoFields.ORDER_PRODUCT_NUMBER));
+        operationalTaskHolder.setOrderId(((Integer) stringObjectMap.get(OperationalTaskDtoFields.ORDER_ID)).longValue());
 
         return operationalTaskHolder;
     }

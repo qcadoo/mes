@@ -195,7 +195,7 @@ QCD.dashboard = (function () {
                 '</div>' +
                  '<div class="card-body py-2">' +
                      '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.name.label") + ':</span> ' + operationalTask.name + '<br/>' +
-                     ((operationalTask.type == "02executionOperationInOrder" && operationalTask.orderNumber) ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.orderNumber.label") + ':</span> ' + operationalTask.orderNumber + '<br/>' : '') +
+                     ((operationalTask.type == "02executionOperationInOrder" && operationalTask.orderNumber) ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.orderNumber.label") + ':</span> <a href="#" onclick="goToOrderDetails(' + operationalTask.orderId + ')">' + operationalTask.orderNumber + '</a><br/>' : '') +
                      (operationalTask.workstationNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.workstationNumber.label") + ':</span> ' + operationalTask.workstationNumber + '<br/>' : '') +
                      ((operationalTask.type == "02executionOperationInOrder" && operationalTask.orderProductNumber) ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.orderProductNumber.label") + ':</span> ' + operationalTask.orderProductNumber + '<br/>' : '') +
                      (operationalTask.productNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.productNumber.label") + ':</span> ' + operationalTask.productNumber + '<br/>' : '') +
@@ -432,6 +432,22 @@ function goToMenuPosition(position) {
     }
 }
 
+function encodeParams(url) {
+    if(url.indexOf("context=") != -1){
+        url = url.substring(0, url.indexOf("context=") + 8) + encodeURIComponent(url.substring(url.indexOf("context=") + 8, url.length));
+    }
+    return url;
+}
+
+function goToPage(url) {
+    url = encodeParams(url);
+    if (window.parent.goToPage) {
+        window.parent.goToPage(url, null, true);
+    } else {
+        window.location = "/main.html"
+    }
+}
+
 function addOrder() {
     goToMenuPosition('orders.productionOrdersPlanning');
 }
@@ -441,11 +457,17 @@ function addOperationalTask() {
 }
 
 function goToOrderDetails(id) {
-    goToMenuPosition('orders.productionOrdersPlanning');
+    goToPage("orders/orderDetails.html?context=" + JSON.stringify({
+        "form.id": id,
+        "form.undefined": null
+    }));
 }
 
 function goToOperationalTaskDetails(id) {
-    goToMenuPosition('orders.operationalTasks');
+    goToPage("orders/operationalTaskDetails.html?context=" + JSON.stringify({
+        "form.id": id,
+        "form.undefined": null
+    }));
 }
 
 function goToProductionTrackingTerminal(id) {
