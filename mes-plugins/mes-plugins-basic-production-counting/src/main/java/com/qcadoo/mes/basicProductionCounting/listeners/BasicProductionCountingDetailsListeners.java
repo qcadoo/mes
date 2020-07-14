@@ -40,8 +40,6 @@ import java.math.BigDecimal;
 @Service
 public class BasicProductionCountingDetailsListeners {
 
-    
-
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
 

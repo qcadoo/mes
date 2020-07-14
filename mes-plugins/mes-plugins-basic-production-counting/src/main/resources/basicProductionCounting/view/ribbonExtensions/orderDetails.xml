@@ -30,13 +30,13 @@
 	plugin="orders" view="orderDetails">
 
      <group name="basicProductionCounting">
-          <bigButton name="productionCounting" icon="iconProducts24.png" state="disabled">
+          <bigButton name="productionProgress" icon="iconProducts24.png" state="disabled">
           	<script>
 				<![CDATA[
 					this.addOnChangeListener({
 						onClick: function() {
 								if(window.canClose()) {
-									#{form}.performEvent('showProductionCounting', []);
+									#{form}.performEvent('showProductionProgress', []);
 								}
 						}
 					});	
@@ -86,6 +86,63 @@
 					});					
 				]]>
 			</script>	
-          </bigButton>          
-     </group>
+          </bigButton>
+		 <bigButton name="productionCounting" icon="iconProducts24.png" state="disabled">
+			 <script>
+				 <![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+								if(window.canClose()) {
+									#{form}.performEvent('showProductionCounting', []);
+								}
+						}
+					});
+					#{form}.addOnChangeListener({
+						onSetValue: function(value) {
+							if (!value || !value.content) {
+								return;
+							}
+							if (!value.content.entityId) {
+								this.disable();
+							} else {
+								this.enable();
+							}
+						}
+					});
+
+					#{typeOfProductionRecording}.addOnChangeListener({
+						onSetValue: function(value) {
+							var typeOfProductionRecording = #{typeOfProductionRecording}.getValue().content.value;
+							if (typeOfProductionRecording == ""){
+								this.disable();
+							} else {
+								this.enable();
+							}
+						}
+					});
+
+					#{form}.addOnChangeListener({
+						onSetValue: function(value) {
+							if (! value || ! value.content) {
+								return;
+							}
+							if (! value.content.entityId) {
+								this.disable();
+								return;
+							} else {
+								this.enable();
+							}
+						var typeOfProductionRecording = #{typeOfProductionRecording}.getValue().content.value;
+							if (typeOfProductionRecording == ""){
+								this.disable();
+							} else {
+								this.enable();
+							}
+
+						}
+					});
+				]]>
+			 </script>
+		 </bigButton>
+	 </group>
 </ribbonExtension>
