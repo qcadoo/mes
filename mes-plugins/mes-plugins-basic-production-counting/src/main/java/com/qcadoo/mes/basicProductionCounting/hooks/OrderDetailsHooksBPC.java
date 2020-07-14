@@ -54,6 +54,8 @@ public class OrderDetailsHooksBPC {
     public void disabledButtonForAppropriateState(final ViewDefinitionState view) {
         orderDetailsRibbonHelper.setButtonEnabled(view, BasicProductionCountingConstants.VIEW_RIBBON_ACTION_ITEM_GROUP,
                 BasicProductionCountingConstants.VIEW_RIBBON_ACTION_ITEM_NAME, NOT_DECLINED_OR_PENDING);
+        orderDetailsRibbonHelper.setButtonEnabled(view, BasicProductionCountingConstants.VIEW_RIBBON_ACTION_ITEM_GROUP,
+                "productionProgress", NOT_DECLINED_OR_PENDING);
     }
 
 }
