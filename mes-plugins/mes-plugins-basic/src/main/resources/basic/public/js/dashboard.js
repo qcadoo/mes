@@ -175,7 +175,7 @@ QCD.dashboard = (function () {
                      (order.plannedQuantity ? '<br/>' : '') +
                      (order.companyName ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.companyName.label") + ':</span> ' + order.companyName + '<br/>' : '') +
                      (order.masterOrderNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.masterOrderNumber.label") + ':</span> ' + order.masterOrderNumber + '<br/>' : '') +
-                     ((order.state == "03inProgress" && order.typeOfProductionRecording == "02cumulated") ? '<a href="#" class="badge badge-success float-right" onclick="goToProductionTrackingTerminal()">' + QCD.translate("basic.dashboard.orders.showTerminal.label") + '</a>' : '') +
+                     ((order.state == "03inProgress" && order.typeOfProductionRecording == "02cumulated") ? '<a href="#" class="badge badge-success float-right" onclick="goToProductionTrackingTerminal(' + order.id + ', null, null)">' + QCD.translate("basic.dashboard.orders.showTerminal.label") + '</a>' : '') +
                  '</div>' +
                  ((order.plannedQuantity > order.doneQuantity && doneInPercent > 0) ? '<div class="card-footer">' + '<div class="progress">' + '<div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: ' + doneInPercent + '%;" aria-valuenow="' + doneInPercent + '" aria-valuemin="0" aria-valuemax="100">' + doneInPercent + '%</div>' + '</div>' + '</div>' : '') +
              '</div>' +
@@ -203,7 +203,7 @@ QCD.dashboard = (function () {
                      ((operationalTask.usedQuantity && operationalTask.productUnit && (operationalTask.state == "02started" || operationalTask.state == "03finished")) ? '<span class="float-right"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.usedQuantity.label") + ':</span> ' + operationalTask.usedQuantity + ' ' + operationalTask.productUnit + '</span>' : '') +
                      (operationalTask.plannedQuantity ? '<br/>' : '') +
                      (operationalTask.staffName ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.staffName.label") + ':</span> ' + operationalTask.staffName + '<br/>' : '') +
-                     ((operationalTask.state == "02started") ? '<a href="#" class="badge badge-success float-right" onclick="goToProductionTrackingTerminal()">' + QCD.translate("basic.dashboard.operationalTasks.showTerminal.label") + '</a>' : '') +
+                     ((operationalTask.state == "02started") ? '<a href="#" class="badge badge-success float-right" onclick="goToProductionTrackingTerminal(null, ' + operationalTask.id + ', ' + (operationalTask.workstationNumber ? '\'' + operationalTask.workstationNumber + '\'' : null) + ')">' + QCD.translate("basic.dashboard.operationalTasks.showTerminal.label") + '</a>' : '') +
                  '</div>' +
                  ((operationalTask.plannedQuantity > operationalTask.usedQuantity && doneInPercent > 0) ? '<div class="card-footer">' + '<div class="progress">' + '<div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: ' + doneInPercent + '%;" aria-valuenow="' + doneInPercent + '" aria-valuemin="0" aria-valuemax="100">' + doneInPercent + '%</div>' + '</div>' + '</div>' : '') +
             '</div>' +
@@ -439,10 +439,10 @@ function encodeParams(url) {
     return url;
 }
 
-function goToPage(url) {
+function goToPage(url, isPage) {
     url = encodeParams(url);
     if (window.parent.goToPage) {
-        window.parent.goToPage(url, null, true);
+        window.parent.goToPage(url, null, isPage);
     } else {
         window.location = "/main.html"
     }
@@ -460,16 +460,25 @@ function goToOrderDetails(id) {
     goToPage("orders/orderDetails.html?context=" + JSON.stringify({
         "form.id": id,
         "form.undefined": null
-    }));
+    }), true);
 }
 
 function goToOperationalTaskDetails(id) {
     goToPage("orders/operationalTaskDetails.html?context=" + JSON.stringify({
         "form.id": id,
         "form.undefined": null
-    }));
+    }), true);
 }
 
-function goToProductionTrackingTerminal(id) {
-    window.location = "/productionRegistrationTerminal.html";
+function goToProductionTrackingTerminal(orderId, operationalTaskId, workstationNumber) {
+    let url = "/productionRegistrationTerminal.html";
+    if (orderId) {
+        url += "?orderId=" + orderId;
+    } else if (operationalTaskId) {
+        url += "?operationalTaskId=" + operationalTaskId;
+        if (workstationNumber) {
+            url += '&workstationNumber=' + workstationNumber;
+        }
+    }
+    goToPage(url, false);
 }

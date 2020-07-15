@@ -45,4 +45,5 @@ public final class BasicProductionCountingConstants {
 
     public static final String VIEW_RIBBON_ACTION_ITEM_NAME = "productionCounting";
 
+    public static final String VIEW_RIBBON_ACTION_PRODUCTION_PROGRESS = "productionProgress";
 }

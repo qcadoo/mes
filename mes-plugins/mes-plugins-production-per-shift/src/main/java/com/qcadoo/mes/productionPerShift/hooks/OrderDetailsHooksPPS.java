@@ -25,7 +25,6 @@ package com.qcadoo.mes.productionPerShift.hooks;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.dates.OrderDates;
@@ -75,9 +74,8 @@ public class OrderDetailsHooksPPS {
     private PpsTimeHelper ppsTimeHelper;
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        Predicate<Entity> technologyPredicate = Predicates.and(
-                OrderDetailsRibbonHelper.HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY);
-        Predicate<Entity> datePredicate = Predicates.and(HAS_DEFINED_PLANNED_START_DATE);
+        java.util.function.Predicate<Entity> technologyPredicate = ((java.util.function.Predicate<Entity>) OrderDetailsRibbonHelper.HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY::test);
+        java.util.function.Predicate<Entity> datePredicate = ((java.util.function.Predicate<Entity>) HAS_DEFINED_PLANNED_START_DATE::apply);
         orderDetailsRibbonHelper.setButtonEnabled(view, "orderProgressPlans", "productionPerShift", technologyPredicate,
                 Optional.of("orders.ribbon.message.mustChangeTechnologyState"));
         orderDetailsRibbonHelper.setButtonEnabled(view, "orderProgressPlans", "productionPerShift", datePredicate,

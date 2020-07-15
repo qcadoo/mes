@@ -39,19 +39,7 @@
 									#{form}.performEvent('showProductionProgress', []);
 								}
 						}
-					});	
-					#{form}.addOnChangeListener({
-						onSetValue: function(value) {
-							if (!value || !value.content) {
-								return;
-							}
-							if (!value.content.entityId) {
-								this.disable();
-							} else {
-								this.enable();
-							}
-						}
-					});				
+					});
 					
 					#{typeOfProductionRecording}.addOnChangeListener({
 						onSetValue: function(value) {
@@ -75,13 +63,12 @@
 							} else {
 								this.enable();
 							}
-						var typeOfProductionRecording = #{typeOfProductionRecording}.getValue().content.value;
+							var typeOfProductionRecording = #{typeOfProductionRecording}.getValue().content.value;
 							if (typeOfProductionRecording == ""){
 								this.disable();
 							} else {
 								this.enable();
 							}
-						
 						}
 					});					
 				]]>
@@ -95,18 +82,6 @@
 								if(window.canClose()) {
 									#{form}.performEvent('showProductionCounting', []);
 								}
-						}
-					});
-					#{form}.addOnChangeListener({
-						onSetValue: function(value) {
-							if (!value || !value.content) {
-								return;
-							}
-							if (!value.content.entityId) {
-								this.disable();
-							} else {
-								this.enable();
-							}
 						}
 					});
 
@@ -132,13 +107,12 @@
 							} else {
 								this.enable();
 							}
-						var typeOfProductionRecording = #{typeOfProductionRecording}.getValue().content.value;
+							var typeOfProductionRecording = #{typeOfProductionRecording}.getValue().content.value;
 							if (typeOfProductionRecording == ""){
 								this.disable();
 							} else {
 								this.enable();
 							}
-
 						}
 					});
 				]]>

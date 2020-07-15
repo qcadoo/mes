@@ -24,33 +24,29 @@
 package com.qcadoo.mes.lineChangeoverNormsForOrders.hooks;
 
 import com.google.common.base.Optional;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.google.common.base.Predicate;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.util.OrderDetailsRibbonHelper;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.function.Predicate;
 
 @Service
 public class OrderDetailsHooksLCNFO {
 
-    private static final Predicate<Entity> HAS_PATTERN_TECHNOLOGY_AND_PRODUCTION_LINE = new Predicate<Entity>() {
-
-        @Override
-        public boolean apply(final Entity order) {
-            if (order == null) {
-                return false;
-            }
-            OrderType orderType = OrderType.of(order);
-            if (orderType != OrderType.WITH_PATTERN_TECHNOLOGY || order.getBelongsToField(OrderFields.PRODUCTION_LINE) == null) {
-                return false;
-            }
-            Entity patternTechnology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-            return patternTechnology != null;
+    private static final Predicate<Entity> HAS_PATTERN_TECHNOLOGY_AND_PRODUCTION_LINE = order -> {
+        if (order == null) {
+            return false;
         }
+        OrderType orderType = OrderType.of(order);
+        if (orderType != OrderType.WITH_PATTERN_TECHNOLOGY || order.getBelongsToField(OrderFields.PRODUCTION_LINE) == null) {
+            return false;
+        }
+        Entity patternTechnology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+        return patternTechnology != null;
     };
 
     @Autowired

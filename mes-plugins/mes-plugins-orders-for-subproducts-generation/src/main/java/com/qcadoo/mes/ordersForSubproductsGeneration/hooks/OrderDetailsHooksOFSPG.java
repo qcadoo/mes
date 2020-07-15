@@ -58,7 +58,7 @@ public class OrderDetailsHooksOFSPG {
     public final void onBeforeRender(final ViewDefinitionState view) {
         disableNumberFieldForSubOrder(view);
         orderDetailsRibbonHelper.setButtonEnabled(view, "ordersForSubproducts", "ordersForSubproducts",
-                OrderDetailsRibbonHelper.HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY);
+                OrderDetailsRibbonHelper.HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY::test);
         fillRelatedOrders(view);
     }
 

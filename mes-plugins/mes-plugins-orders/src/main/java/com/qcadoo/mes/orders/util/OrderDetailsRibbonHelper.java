@@ -24,7 +24,6 @@
 package com.qcadoo.mes.orders.util;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableSet;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -38,11 +37,11 @@ import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
-
-import java.util.Set;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Set;
+import java.util.function.Predicate;
 
 @Service
 public class OrderDetailsRibbonHelper {
@@ -50,48 +49,36 @@ public class OrderDetailsRibbonHelper {
     private static final Set<TechnologyState> SUPPORTED_TECHNOLOGY_STATES = ImmutableSet.of(TechnologyState.ACCEPTED,
             TechnologyState.CHECKED);
 
-    public static final Predicate<Entity> HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY = new Predicate<Entity>() {
-
-        @Override
-        public boolean apply(final Entity order) {
-            if (order == null) {
-                return false;
-            }
-            Entity orderTechnology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-            return orderTechnology != null && SUPPORTED_TECHNOLOGY_STATES.contains(TechnologyState.of(orderTechnology));
+    public static final Predicate<Entity> HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY = order -> {
+        if (order == null) {
+            return false;
         }
+        Entity orderTechnology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        return orderTechnology != null && SUPPORTED_TECHNOLOGY_STATES.contains(TechnologyState.of(orderTechnology));
     };
 
-    public static final Predicate<Entity> DIFFERENT_STATE_THAN_PENDING = new Predicate<Entity>() {
-
-        @Override
-        public boolean apply(final Entity order) {
-            if (order == null) {
-                return false;
-            }
-            return !OrderStateStringValues.PENDING.equals(order.getStringField(OrderFields.STATE));
+    public static final Predicate<Entity> DIFFERENT_STATE_THAN_PENDING = order -> {
+        if (order == null) {
+            return false;
         }
+        return !OrderStateStringValues.PENDING.equals(order.getStringField(OrderFields.STATE));
     };
 
     public static final String FOR_EACH = "03forEach";
 
     public static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
 
-    public static final Predicate<Entity> CAN_NOT_GENERATE_OPERATIONAL_TASKS = new Predicate<Entity>() {
-
-        @Override
-        public boolean apply(final Entity order) {
-            if (order == null) {
-                return false;
-            }
-            if(!OrderStateStringValues.ACCEPTED.equals(order.getStringField(OrderFields.STATE))) {
-                return false;
-            }
-            if(!FOR_EACH.equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
-                return false;
-            }
-            return order.getHasManyField(OrderFields.OPERATIONAL_TASKS).isEmpty();
+    public static final Predicate<Entity> CAN_NOT_GENERATE_OPERATIONAL_TASKS = order -> {
+        if (order == null) {
+            return false;
         }
+        if(!OrderStateStringValues.ACCEPTED.equals(order.getStringField(OrderFields.STATE))) {
+            return false;
+        }
+        if(!FOR_EACH.equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
+            return false;
+        }
+        return order.getHasManyField(OrderFields.OPERATIONAL_TASKS).isEmpty();
     };
 
     @Autowired
@@ -103,10 +90,10 @@ public class OrderDetailsRibbonHelper {
     }
 
     public void setButtonEnabled(final ViewDefinitionState view, final String ribbonGroupName, final String ribbonItemName,
-            final Predicate<Entity> predicate, final Optional<String> message) {
+                                 final Predicate<Entity> predicate, final Optional<String> message) {
         RibbonActionItem ribbonItem = getRibbonItem(view, ribbonGroupName, ribbonItemName);
         Entity order = getOrderEntity(view);
-        boolean enabled = order != null && predicate.apply(order);
+        boolean enabled = order != null && predicate.test(order);
         if (ribbonItem == null) {
             return;
         }

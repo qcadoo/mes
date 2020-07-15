@@ -89,7 +89,7 @@ public class OrderDetailsHookLCNFOTest {
 
         // then
         verify(orderDetailsRibbonHelper).setButtonEnabled(any(ViewDefinitionState.class), eq("changeover"), eq("showChangeover"),
-                predicateCaptor.capture(),Optional.of("test"));
+                predicateCaptor.capture()::apply,Optional.of("test"));
         Predicate<Entity> predicate = predicateCaptor.getValue();
 
         assertFalse(predicate.apply(null));
