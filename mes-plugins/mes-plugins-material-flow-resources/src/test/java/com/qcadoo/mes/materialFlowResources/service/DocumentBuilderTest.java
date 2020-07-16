@@ -1,9 +1,11 @@
 package com.qcadoo.mes.materialFlowResources.service;
 
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.verify;
-
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.exception.EntityRuntimeException;
+import com.qcadoo.security.api.UserService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,12 +18,9 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.exception.EntityRuntimeException;
-import com.qcadoo.security.api.UserService;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.anyObject;
+import static org.mockito.Mockito.verify;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(TransactionAspectSupport.class)
@@ -73,8 +72,8 @@ public class DocumentBuilderTest {
 
         given(currentUser.getId()).willReturn(1L);
 
-        documentBuilder = new DocumentBuilder(dataDefinitionService, resourceManagementService, userService,
-                receiptDocumentForReleaseHelper);
+        documentBuilder = new DocumentBuilder(dataDefinitionService, resourceManagementService, receiptDocumentForReleaseHelper,
+                userService.getCurrentUserEntity());
     }
 
     @Test
