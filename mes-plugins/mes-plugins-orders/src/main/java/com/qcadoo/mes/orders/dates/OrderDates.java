@@ -23,17 +23,16 @@
  */
 package com.qcadoo.mes.orders.dates;
 
-import java.util.Date;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.joda.time.DateTime;
-
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.Entity;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.joda.time.DateTime;
+
+import java.util.Date;
 
 public final class OrderDates {
 
@@ -43,11 +42,11 @@ public final class OrderDates {
 
     private final ThreeLevelDate end;
 
-    public static Optional<OrderDates> of(final Entity order) {
+    public static java.util.Optional<OrderDates> of(final Entity order) {
         if (hasPlannedDatesDefined(order)) {
-            return Optional.of(OrderDates.of(order, Optional.<DateTime> absent(), Optional.<DateTime> absent()));
+            return java.util.Optional.of(OrderDates.of(order, Optional.<DateTime> absent(), Optional.<DateTime> absent()));
         } else {
-            return Optional.absent();
+            return java.util.Optional.empty();
         }
     }
 

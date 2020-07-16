@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.lineChangeoverNormsForOrders.hooks;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
@@ -39,6 +38,8 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.Optional;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -89,7 +90,7 @@ public class OrderDetailsHookLCNFOTest {
 
         // then
         verify(orderDetailsRibbonHelper).setButtonEnabled(any(ViewDefinitionState.class), eq("changeover"), eq("showChangeover"),
-                predicateCaptor.capture()::apply,Optional.of("test"));
+                predicateCaptor.capture()::apply, Optional.of("test"));
         Predicate<Entity> predicate = predicateCaptor.getValue();
 
         assertFalse(predicate.apply(null));

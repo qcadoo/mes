@@ -73,10 +73,11 @@ QCD.dashboard = (function () {
                     data: {
                         datasets: [{
                             data: data,
+                            borderColor: '#d3d3d3',
                             backgroundColor: [
-                                '#6c757d',
-                                '#ffc107',
-                                '#28a745'
+                                '#E2A927',
+                                '#FCF8BA',
+                                '#ABD7A2'
                             ]
                         }],
                         labels: [
@@ -90,12 +91,13 @@ QCD.dashboard = (function () {
                             display: true,
                             text: QCD.translate('basic.dashboard.dailyProductionChart.header'),
                             fontSize: 16,
-                            fontColor: 'white'
+                            fontFamily: '"Helvetica Neue"',
+                            fontColor: 'black'
                         },
                         legend: {
                             position: 'bottom',
                             labels: {
-                                fontColor: 'white'
+                                fontColor: 'black'
                             }
                         }
                     }
@@ -112,9 +114,9 @@ QCD.dashboard = (function () {
 
             $("#dashboardButtons .card").hover(
                 function() {
-                    $(this).removeClass('bg-success').addClass('shadow-sm').addClass('bg-secondary');
+                    $(this).removeClass('bg-secondary').addClass('shadow-sm').addClass('bg-success');
                 }, function() {
-                    $(this).addClass('bg-success').removeClass('shadow-sm').removeClass('bg-secondary');
+                    $(this).addClass('bg-secondary').removeClass('shadow-sm').removeClass('bg-success');
                 }
             );
         }

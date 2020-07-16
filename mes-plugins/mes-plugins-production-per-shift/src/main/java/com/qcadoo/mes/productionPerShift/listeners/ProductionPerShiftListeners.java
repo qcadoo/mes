@@ -65,6 +65,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -224,7 +225,7 @@ public class ProductionPerShiftListeners {
         Entity pps = productionPerShiftForm.getPersistedEntityWithIncludedFormValues();
         for (Entity order : getEntityFromLookup(view, ORDER_LOOKUP_REF).asSet()) {
             progressQuantitiesDeviationNotifier.compareAndNotify(view, pps, detailsHooks.isCorrectedPlan(view));
-            for (OrderDates orderDates : OrderDates.of(order).asSet()) {
+            for (OrderDates orderDates : OrderDates.of(order).map(Collections::singleton).orElse(Collections.emptySet())) {
                 nonWorkingShiftsNotifier.checkAndNotify(view, orderDates.getStart().effectiveWithFallback(), pps,
                         detailsHooks.resolveProgressType(view));
             }

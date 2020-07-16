@@ -70,11 +70,6 @@
 
 <body id="documentBody" role="document">
     <div class="container" role="main">
-        <div id="dashboardDescription">
-            <div class="description-header">
-                ${translationsMap['basic.dashboard.header']}
-            </div>
-        </div>
         <div class="clear"></div>
         <c:if test="${showChartOnDashboard}">
             <div id="dashboardChart" class="chart-container">
@@ -95,7 +90,7 @@
                             <c:set var = "categoryName" value = "${category.getStringField('name')}" />
                             <c:set var = "itemName" value = "${item.getStringField('name')}" />
 
-                            <div class="card bg-success text-white" style="display: none;"
+                            <div class="card bg-secondary text-white" style="display: none;"
                                 onclick="goToMenuPosition('${categoryName}.${itemName}')">
                                 <div class="card-body">
                                     <span class="glyphicon glyphicon-chevron-right float-right"></span>
@@ -117,7 +112,7 @@
                             <div class="col">
                                 <div class="card bg-light" style="display: none;">
                                     <div class="card-body p-3">
-                                        <button id="addOrder" class="btn btn-primary btn-sm float-right"
+                                        <button id="addOrder" class="btn btn-success btn-sm float-right"
                                             onclick="addOrder()">${translationsMap['basic.dashboard.orders.addNew.label']}</button>
                                         <h6 class="card-title text-uppercase text-truncate py-2">${translationsMap['basic.dashboard.orders.pending.label']}</h6>
                                         <div id="ordersPending" class="items"></div>
@@ -149,7 +144,7 @@
                             <div class="col">
                                 <div class="card bg-light" style="display: none;">
                                     <div class="card-body p-3">
-                                        <button id="addOperationalTask" class="btn btn-primary btn-sm float-right"
+                                        <button id="addOperationalTask" class="btn btn-success btn-sm float-right"
                                             onclick="addOperationalTask()">${translationsMap['basic.dashboard.operationalTasks.addNew.label']}</button>
                                         <h6 class="card-title text-uppercase text-truncate py-2">${translationsMap['basic.dashboard.operationalTasks.pending.label']}</h6>
                                         <div id="operationalTasksPending" class="items"></div>

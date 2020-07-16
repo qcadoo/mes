@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.orders.util;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -40,6 +39,7 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -86,7 +86,7 @@ public class OrderDetailsRibbonHelper {
 
     public void setButtonEnabled(final ViewDefinitionState view, final String ribbonGroupName, final String ribbonItemName,
             final Predicate<Entity> predicate) {
-        setButtonEnabled(view, ribbonGroupName, ribbonItemName, predicate, Optional.<String> absent());
+        setButtonEnabled(view, ribbonGroupName, ribbonItemName, predicate, Optional.<String>empty());
     }
 
     public void setButtonEnabled(final ViewDefinitionState view, final String ribbonGroupName, final String ribbonItemName,
