@@ -62,6 +62,8 @@ public class ParameterHooksPFTD {
                 "qcadooView.validate.field.error.missing");
         addErrorIfNull(parameter, dataDefinition, ParameterFieldsPFTD.DRAWN_DOCUMENTS,
                 "basic.parameter.error.drawndocuments.isRequired");
+        addErrorIfNull(parameter, dataDefinition, ParameterFieldsPFTD.MOMENT_OF_VALIDATION,
+                "basic.parameter.error.momentofvalidation.isRequired");
         addErrorIfNull(parameter, dataDefinition, ParameterFieldsPFTD.DOCUMENTS_STATUS,
                 "basic.parameter.error.documentsStatus.isRequired");
     }
