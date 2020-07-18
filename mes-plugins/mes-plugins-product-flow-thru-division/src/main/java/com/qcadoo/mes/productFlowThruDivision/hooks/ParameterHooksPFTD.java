@@ -23,17 +23,18 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.hooks;
 
-import com.qcadoo.mes.productFlowThruDivision.constants.*;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.productFlowThruDivision.constants.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class ParameterHooksPFTD {
 
-    public void onCreate(final DataDefinition orderDD, final Entity parameter) {
+    public void onCreate(final DataDefinition parameterDD, final Entity parameter) {
         setIfNull(parameter, ParameterFieldsPFTD.IGNORE_MISSING_COMPONENTS, true);
+        setIfNull(parameter, ParameterFieldsPFTD.MOMENT_OF_VALIDATION, MomentOfValidation.ORDER_ACCEPTANCE.getStrValue());
         setIfNull(parameter, ParameterFieldsPFTD.WAREHOUSE_ISSUE_PRODUCTS_SOURCE,
                 WarehouseIssueProductsSource.ORDER.getStrValue());
         setIfNull(parameter, ParameterFieldsPFTD.DRAWN_DOCUMENTS, DrawnDocuments.TRANSFER.getStrValue());

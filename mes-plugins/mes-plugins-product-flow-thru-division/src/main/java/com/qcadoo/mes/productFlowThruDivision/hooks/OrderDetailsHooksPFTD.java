@@ -26,6 +26,7 @@ package com.qcadoo.mes.productFlowThruDivision.hooks;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.util.OrderDetailsRibbonHelper;
 import com.qcadoo.mes.productFlowThruDivision.constants.OrderFieldsPFTD;
+import com.qcadoo.mes.productFlowThruDivision.constants.ParameterFieldsPFTD;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
@@ -58,7 +59,7 @@ public class OrderDetailsHooksPFTD {
 
         if (form.getEntityId() == null) {
             ignoreMissingProductsField.setFieldValue(parameterService.getParameter().getBooleanField(
-                    OrderFieldsPFTD.IGNORE_MISSING_COMPONENTS));
+                    ParameterFieldsPFTD.IGNORE_MISSING_COMPONENTS));
             ignoreMissingProductsField.requestComponentUpdateState();
         }
 

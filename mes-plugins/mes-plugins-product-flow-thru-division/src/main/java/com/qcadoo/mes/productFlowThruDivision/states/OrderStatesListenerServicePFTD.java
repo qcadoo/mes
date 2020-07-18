@@ -23,27 +23,6 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.states;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.commons.collections.MultiHashMap;
-import org.apache.commons.collections.MultiMap;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
-import com.google.common.base.Function;
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -57,28 +36,20 @@ import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuanti
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
 import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.OrderMaterialsCostDataGenerator;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
 import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productFlowThruDivision.OrderMaterialAvailability;
-import com.qcadoo.mes.productFlowThruDivision.constants.AvailabilityOfMaterialAvailability;
-import com.qcadoo.mes.productFlowThruDivision.constants.DocumentFieldsPFTD;
-import com.qcadoo.mes.productFlowThruDivision.constants.MaterialAvailabilityFields;
-import com.qcadoo.mes.productFlowThruDivision.constants.OrderFieldsPFTD;
-import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
-import com.qcadoo.mes.productFlowThruDivision.constants.ProductionCountingQuantityFieldsPFTD;
+import com.qcadoo.mes.productFlowThruDivision.constants.*;
 import com.qcadoo.mes.productFlowThruDivision.realProductionCost.RealProductionCostService;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.PriceBasedOn;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.states.StateChangeContext;
+import com.qcadoo.mes.states.StateEnum;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -90,6 +61,19 @@ import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.model.api.validators.ErrorMessage;
+import org.apache.commons.collections.MultiHashMap;
+import org.apache.commons.collections.MultiMap;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class OrderStatesListenerServicePFTD {
@@ -164,9 +148,9 @@ public class OrderStatesListenerServicePFTD {
         String priceBasedOn = parameterService.getParameter().getStringField(ParameterFieldsPC.PRICE_BASED_ON);
         boolean isNominalProductCost = priceBasedOn != null
                 && priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue());
-        Optional<BigDecimal> price = Optional.absent();
+        Optional<BigDecimal> price = Optional.empty();
         if (!isNominalProductCost) {
-            price = Optional.fromNullable(order.getDecimalField("productPricePerUnit"));
+            price = Optional.ofNullable(order.getDecimalField("productPricePerUnit"));
         }
 
         for (Entity document : searchResult.getEntities()) {
@@ -343,9 +327,8 @@ public class OrderStatesListenerServicePFTD {
         scb.setLong("order_id", orderId);
         scb.setLong("product_id", productId);
         List<Entity> results = scb.list().getEntities();
-        BigDecimal quantitiesSum = results.stream().map(entity -> entity.getDecimalField("quantity"))
-                .filter(quantity -> quantity != null).reduce(BigDecimal.ZERO, BigDecimal::add);
-        return quantitiesSum;
+        return results.stream().map(entity -> entity.getDecimalField("quantity")).filter(Objects::nonNull).reduce(BigDecimal.ZERO,
+                BigDecimal::add);
     }
 
     private void fillInDocumentPositionsPrice(Entity document, Entity orderProduct, Optional<BigDecimal> price) {
@@ -354,9 +337,9 @@ public class OrderStatesListenerServicePFTD {
         for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
             if (orderProduct.getId().equals(position.getBelongsToField(PositionFields.PRODUCT).getId())) {
 
-                position.setField(PositionFields.PRICE, price.or(BigDecimal.ZERO));
+                position.setField(PositionFields.PRICE, price.orElse(BigDecimal.ZERO));
                 if (DocumentState.of(document) == DocumentState.ACCEPTED) {
-                    updatePriceInResource(position, price.or(BigDecimal.ZERO));
+                    updatePriceInResource(position, price.orElse(BigDecimal.ZERO));
                 }
                 position.getDataDefinition().save(position);
             }
@@ -375,29 +358,36 @@ public class OrderStatesListenerServicePFTD {
         }
     }
 
-    // @Transactional(propagation = Propagation.REQUIRES_NEW)
     private Entity acceptInboundDocument(Entity document) {
         document.setField(DocumentFields.STATE, DocumentState.ACCEPTED.getStringValue());
         document.setField(DocumentFields.TIME, new Date());
-        // document.getDataDefinition().save(document);
-        // document.setField(DocumentFields.NAME, document.getId()+""+System.currentTimeMillis());
-        // document.setField(DocumentFields.NUMBER, document.getId()+""+System.currentTimeMillis());
         Entity savedDocument = document.getDataDefinition().save(document);
         if (savedDocument.isValid()) {
             resourceManagementService.createResourcesForReceiptDocuments(savedDocument);
-            // if (!savedDocument.isValid()) {
-            // TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            // }
         }
         return savedDocument;
     }
 
     public void checkMaterialAvailability(StateChangeContext stateChangeContext) {
         Entity order = stateChangeContext.getOwner();
+        StateEnum targetState = stateChangeContext.getStateEnumValue(stateChangeContext.getDescriber().getTargetStateFieldName());
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
-        if ((order.getField(OrderFieldsPFTD.IGNORE_MISSING_COMPONENTS) != null)
-                && (!order.getBooleanField(OrderFieldsPFTD.IGNORE_MISSING_COMPONENTS)) && technology != null) {
+        String momentOfValidation = parameterService.getParameter().getStringField(ParameterFieldsPFTD.MOMENT_OF_VALIDATION);
+
+        String message = "productFlowThruDivision.order.state.accept.error.missingComponents";
+        String messageShort = "productFlowThruDivision.order.state.accept.error.missingComponentsShort";
+
+        if (MomentOfValidation.ORDER_STARTING.getStrValue().equals(momentOfValidation)) {
+            message = "productFlowThruDivision.order.state.inProgress.error.missingComponents";
+            messageShort = "productFlowThruDivision.order.state.inProgress.error.missingComponentsShort";
+        }
+        if (order.getField(OrderFieldsPFTD.IGNORE_MISSING_COMPONENTS) != null
+                && !order.getBooleanField(OrderFieldsPFTD.IGNORE_MISSING_COMPONENTS) && technology != null
+                && (OrderState.ACCEPTED == targetState
+                        && MomentOfValidation.ORDER_ACCEPTANCE.getStrValue().equals(momentOfValidation)
+                        || OrderState.IN_PROGRESS == targetState
+                                && MomentOfValidation.ORDER_STARTING.getStrValue().equals(momentOfValidation))) {
 
             List<Entity> entries = orderMaterialAvailability.generateMaterialAvailabilityForOrder(order);
             List<Entity> notAvailableProducts = entries.stream()
@@ -406,23 +396,13 @@ public class OrderStatesListenerServicePFTD {
                     .map(entity -> entity.getBelongsToField(MaterialAvailabilityFields.PRODUCT)).collect(Collectors.toList());
 
             if (!notAvailableProducts.isEmpty()) {
-
-                String missingProductNames = StringUtils
-                        .join(Lists.transform(notAvailableProducts, new Function<Entity, String>() {
-
-                            @Override
-                            public String apply(Entity product) {
-                                return product.getStringField(ProductFields.NAME);
-                            }
-
-                        }), ", ");
+                String missingProductNames = StringUtils.join(notAvailableProducts.stream()
+                        .map(product -> product.getStringField(ProductFields.NAME)).collect(Collectors.toList()), ", ");
 
                 if (missingProductNames.length() < 255) {
-                    stateChangeContext.addMessage("productFlowThruDivision.order.state.accept.error.missingComponents",
-                            StateMessageType.FAILURE, false, missingProductNames);
+                    stateChangeContext.addMessage(message, StateMessageType.FAILURE, false, missingProductNames);
                 } else {
-                    stateChangeContext.addMessage("productFlowThruDivision.order.state.accept.error.missingComponentsShort",
-                            StateMessageType.FAILURE, false);
+                    stateChangeContext.addMessage(messageShort, StateMessageType.FAILURE, false);
                 }
             }
         }

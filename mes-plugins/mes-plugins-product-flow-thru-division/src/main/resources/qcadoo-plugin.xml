@@ -104,25 +104,25 @@
         <model:model-field plugin="materialFlow" model="location">
             <model:hasMany name="componentsLocationDivisions"
                            model="division" plugin="basic" joinField="componentsLocation"
-                           cascade="nullify"/>
+            />
         </model:model-field>
 
         <model:model-field plugin="materialFlow" model="location">
             <model:hasMany name="componentsOutputLocationDivisions"
                            model="division" plugin="basic" joinField="componentsOutputLocation"
-                           cascade="nullify"/>
+            />
         </model:model-field>
 
         <model:model-field plugin="materialFlow" model="location">
             <model:hasMany name="productsInputLocationDivisions"
                            model="division" plugin="basic" joinField="productsInputLocation"
-                           cascade="nullify"/>
+            />
         </model:model-field>
 
         <model:model-field plugin="materialFlow" model="location">
             <model:hasMany name="productsFlowLocations"
                            model="division" plugin="basic" joinField="productsFlowLocation"
-                           cascade="nullify"/>
+            />
         </model:model-field>
 
         <model:model-field plugin="materialFlowResources" model="reservation">
@@ -241,6 +241,11 @@
 
         <model:model-field plugin="basic" model="parameter">
             <model:boolean name="ignoreMissingComponents" default="true"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:enum name="momentOfValidation" values="01orderAcceptance,02orderStarting"
+                        default="01orderAcceptance" required="true"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">

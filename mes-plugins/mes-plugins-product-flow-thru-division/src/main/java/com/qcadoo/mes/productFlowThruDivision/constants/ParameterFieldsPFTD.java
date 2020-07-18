@@ -31,6 +31,8 @@ public final class ParameterFieldsPFTD {
 
     public static final String IGNORE_MISSING_COMPONENTS = "ignoreMissingComponents";
 
+    public static final String MOMENT_OF_VALIDATION = "momentOfValidation";
+
     public static final String GENERATE_WAREHOUSE_ISSUES_TO_ORDERS = "generateWarehouseIssuesToOrders";
 
     public static final String DAYS_BEFORE_ORDER_START = "daysBeforeOrderStart";
