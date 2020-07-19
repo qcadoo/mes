@@ -21,14 +21,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.orders.controllers.dao;
-
-import java.math.BigDecimal;
+package com.qcadoo.mes.orders.controllers.dto;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-public class OrderHolder {
+import java.math.BigDecimal;
+
+public class OperationalTaskHolder {
 
     private Long id;
 
@@ -38,21 +38,25 @@ public class OrderHolder {
 
     private String state;
 
-    private String typeOfProductionRecording;
+    private String type;
 
     private BigDecimal plannedQuantity;
 
-    private BigDecimal doneQuantity;
+    private BigDecimal usedQuantity;
 
-    private String masterOrderNumber;
+    private String orderNumber;
 
-    private String productionLineNumber;
+    private String workstationNumber;
 
     private String productNumber;
 
     private String productUnit;
 
-    private String companyName;
+    private String staffName;
+
+    private String orderProductNumber;
+
+    private Long orderId;
 
     public Long getId() {
         return id;
@@ -86,20 +90,12 @@ public class OrderHolder {
         this.state = state;
     }
 
-    public String getTypeOfProductionRecording() {
-        return typeOfProductionRecording;
+    public String getType() {
+        return type;
     }
 
-    public void setTypeOfProductionRecording(final String typeOfProductionRecording) {
-        this.typeOfProductionRecording = typeOfProductionRecording;
-    }
-
-    public String getProductionLineNumber() {
-        return productionLineNumber;
-    }
-
-    public void setProductionLineNumber(final String productionLineNumber) {
-        this.productionLineNumber = productionLineNumber;
+    public void setType(final String type) {
+        this.type = type;
     }
 
     public BigDecimal getPlannedQuantity() {
@@ -110,20 +106,28 @@ public class OrderHolder {
         this.plannedQuantity = plannedQuantity;
     }
 
-    public BigDecimal getDoneQuantity() {
-        return doneQuantity;
+    public BigDecimal getUsedQuantity() {
+        return usedQuantity;
     }
 
-    public void setDoneQuantity(final BigDecimal doneQuantity) {
-        this.doneQuantity = doneQuantity;
+    public void setUsedQuantity(final BigDecimal usedQuantity) {
+        this.usedQuantity = usedQuantity;
     }
 
-    public String getMasterOrderNumber() {
-        return masterOrderNumber;
+    public String getOrderNumber() {
+        return orderNumber;
     }
 
-    public void setMasterOrderNumber(final String masterOrderNumber) {
-        this.masterOrderNumber = masterOrderNumber;
+    public void setOrderNumber(final String orderNumber) {
+        this.orderNumber = orderNumber;
+    }
+
+    public String getWorkstationNumber() {
+        return workstationNumber;
+    }
+
+    public void setWorkstationNumber(final String workstationNumber) {
+        this.workstationNumber = workstationNumber;
     }
 
     public String getProductNumber() {
@@ -142,12 +146,20 @@ public class OrderHolder {
         this.productUnit = productUnit;
     }
 
-    public String getCompanyName() {
-        return companyName;
+    public String getStaffName() {
+        return staffName;
     }
 
-    public void setCompanyName(final String companyName) {
-        this.companyName = companyName;
+    public void setStaffName(final String staffName) {
+        this.staffName = staffName;
+    }
+
+    public String getOrderProductNumber() {
+        return orderProductNumber;
+    }
+
+    public void setOrderProductNumber(final String orderProductNumber) {
+        this.orderProductNumber = orderProductNumber;
     }
 
     @Override
@@ -160,21 +172,28 @@ public class OrderHolder {
             return false;
         }
 
-        OrderHolder that = (OrderHolder) o;
+        OperationalTaskHolder that = (OperationalTaskHolder) o;
 
         return new EqualsBuilder().append(id, that.id).append(number, that.number).append(name, that.name)
-                .append(state, that.state).append(typeOfProductionRecording, that.typeOfProductionRecording)
-                .append(plannedQuantity, that.plannedQuantity).append(doneQuantity, that.doneQuantity)
-                .append(masterOrderNumber, that.masterOrderNumber).append(productionLineNumber, that.productionLineNumber)
-                .append(productNumber, that.productNumber).append(productUnit, that.productUnit)
-                .append(companyName, that.companyName).isEquals();
+                .append(state, that.state).append(type, that.type).append(plannedQuantity, that.plannedQuantity)
+                .append(usedQuantity, that.usedQuantity).append(orderNumber, that.orderNumber)
+                .append(workstationNumber, that.workstationNumber).append(productNumber, that.productNumber)
+                .append(productUnit, that.productUnit).append(staffName, that.staffName)
+                .append(orderProductNumber, that.orderProductNumber).append(orderId, that.orderId).isEquals();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(id).append(number).append(name).append(state).append(typeOfProductionRecording)
-                .append(plannedQuantity).append(doneQuantity).append(masterOrderNumber).append(productionLineNumber)
-                .append(productNumber).append(productUnit).append(companyName).toHashCode();
+        return new HashCodeBuilder().append(id).append(number).append(name).append(state).append(type).append(plannedQuantity)
+                .append(usedQuantity).append(orderNumber).append(workstationNumber).append(productNumber).append(productUnit)
+                .append(staffName).append(orderProductNumber).append(orderId).toHashCode();
     }
 
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(Long orderId) {
+        this.orderId = orderId;
+    }
 }

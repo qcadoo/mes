@@ -23,34 +23,6 @@
  */
 package com.qcadoo.mes.orders;
 
-import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.CORRECTED_DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
-import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.OrderFields.EFFECTIVE_DATE_TO;
-import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DELAYED_EFFECTIVE_DATE_FROM_TIME;
-import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DELAYED_EFFECTIVE_DATE_TO_TIME;
-import static com.qcadoo.mes.orders.constants.ParameterFieldsO.EARLIER_EFFECTIVE_DATE_FROM_TIME;
-import static com.qcadoo.mes.orders.constants.ParameterFieldsO.EARLIER_EFFECTIVE_DATE_TO_TIME;
-import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_CHANGING_STATE_TO_ABANDONED;
-import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_CHANGING_STATE_TO_DECLINED;
-import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_CHANGING_STATE_TO_INTERRUPTED;
-import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_DATE_TO;
-import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO;
-import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM;
-import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO;
-
-import java.util.Date;
-
-import org.joda.time.DateTime;
-import org.joda.time.Seconds;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
@@ -60,6 +32,16 @@ import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.utils.TimeConverterService;
+import org.joda.time.DateTime;
+import org.joda.time.Seconds;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+
+import static com.qcadoo.mes.orders.constants.OrderFields.*;
+import static com.qcadoo.mes.orders.constants.ParameterFieldsO.*;
 
 @Service
 public class OrderStateChangeReasonService {
@@ -203,8 +185,8 @@ public class OrderStateChangeReasonService {
     public void showReasonForm(final StateChangeContext stateChangeContext, final ViewContextHolder viewContext) {
         final Entity order = stateChangeContext.getOwner();
         final Entity parameter = parameterService.getParameter();
-        Long differenceForDateFrom = getEffectiveDateFromDifference(parameter, order);
-        Long differenceForDateTo = getEffectiveDateToDifference(parameter, order);
+        long differenceForDateFrom = getEffectiveDateFromDifference(parameter, order);
+        long differenceForDateTo = getEffectiveDateToDifference(parameter, order);
         final Entity stateChangeEntity = stateChangeContext.getStateChangeEntity();
         String additionalInfoKey = null;
         String additionalInfo = null;

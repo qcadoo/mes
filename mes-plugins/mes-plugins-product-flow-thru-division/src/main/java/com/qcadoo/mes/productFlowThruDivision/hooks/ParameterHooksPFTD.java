@@ -50,7 +50,7 @@ public class ParameterHooksPFTD {
     }
 
     public void onSave(final DataDefinition dataDefinition, final Entity parameter) {
-        if (parameter.getBooleanField(ParameterFieldsPFTD.GENERATE_WAREHOUSE_ISSUES_TO_ORDERS) == true) {
+        if (parameter.getBooleanField(ParameterFieldsPFTD.GENERATE_WAREHOUSE_ISSUES_TO_ORDERS)) {
             addErrorIfNull(parameter, dataDefinition, ParameterFieldsPFTD.ISSUE_LOCATION,
                     "basic.parameter.error.issueLocation.isRequired");
             addErrorIfNull(parameter, dataDefinition, ParameterFieldsPFTD.DAYS_BEFORE_ORDER_START,
