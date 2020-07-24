@@ -48,7 +48,7 @@ public class BasicProductionCountingListListeners {
             throw new IllegalStateException(e);
         }
 
-        String url = "../page/basicProductionCounting/detailedProductionCountingAndProgressList.html?context=" + json.toString();
+        String url = "/page/basicProductionCounting/detailedProductionCountingAndProgressList.html?context=" + json.toString();
         view.redirectTo(url, false, true);
     }
 

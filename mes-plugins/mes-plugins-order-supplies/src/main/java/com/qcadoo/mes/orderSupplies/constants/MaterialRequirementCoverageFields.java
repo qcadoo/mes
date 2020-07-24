@@ -47,10 +47,6 @@ public final class MaterialRequirementCoverageFields {
 
     public static final String FILE_NAME = "fileName";
 
-    public static final String BELONGS_TO_FAMILY = "belongsToFamily";
-
-    public static final String PRODUCT_EXTRACTED = "productExtracted";
-
     public static final String COVERAGE_TYPE = "coverageType";
 
     public static final String INCLUDE_DRAFT_DELIVERIES = "includeDraftDeliveries";

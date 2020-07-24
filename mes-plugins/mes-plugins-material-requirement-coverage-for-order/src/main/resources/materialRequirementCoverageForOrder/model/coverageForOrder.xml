@@ -43,25 +43,17 @@
             <validatesLength max="1024"/>
         </string>
 
-        <belongsTo name="belongsToFamily" model="product" plugin="basic"/>
-        <enum name="productExtracted" values="01all" default="01all" required="true"/>
         <enum name="coverageType"
               values="01all,02withoutProductsFromWarehouse,03onlyShorcomingsAndDelays" default="01all" required="true"/>
 
         <boolean name="includeDraftDeliveries"/>
 
         <hasMany name="coverageLocations" joinField="coverageForOrder"
-                 model="coverageLocation" cascade="delete" copyable="false"/>
+                 model="coverageLocation" cascade="delete"/>
         <hasMany name="coverageProducts" joinField="coverageForOrder"
-                 model="coverageProduct" cascade="delete" copyable="false"/>
+                 model="coverageProduct" cascade="delete"/>
 
         <belongsTo name="order" model="order" plugin="orders"/>
-
-        <!--
-        <manyToMany name="includedOrders" joinField="orderMaterialRequirementCoverages"
-            plugin="orders" model="order" copyable="true" />
-        <manyToMany name="includedDeliveries" joinField="deliveryMaterialRequirementCoverages"
-            plugin="deliveries" model="delivery" copyable="true" /> -->
     </fields>
     <hooks>
         <validatesWith

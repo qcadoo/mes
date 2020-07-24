@@ -23,33 +23,20 @@
  */
 package com.qcadoo.mes.orderSupplies.validators;
 
-import java.util.Date;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.basic.ProductService;
-import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.orderSupplies.constants.MaterialRequirementCoverageFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class MaterialRequirementCoverageValidators {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MaterialRequirementCoverageValidators.class);
-
-    @Autowired
-    private ProductService productService;
-
     public boolean validatesWith(final DataDefinition materialRequirementCoverageDD, final Entity materialRequirementCoverage) {
-        boolean isValid = true;
-        isValid = isValid && checkCoverageDates(materialRequirementCoverageDD, materialRequirementCoverage);
+        boolean isValid = checkCoverageDates(materialRequirementCoverageDD, materialRequirementCoverage);
         isValid = isValid && checkCoverageLocations(materialRequirementCoverage);
-        isValid = isValid && checkIfBelongsToFamilyIsProductsFamily(materialRequirementCoverageDD, materialRequirementCoverage);
         return isValid;
     }
 
@@ -81,22 +68,4 @@ public class MaterialRequirementCoverageValidators {
 
         return true;
     }
-
-    private boolean checkIfBelongsToFamilyIsProductsFamily(final DataDefinition materialRequirementCoverageDD,
-            final Entity materialRequirementCoverage) {
-        Entity belongsToFamily = materialRequirementCoverage
-                .getBelongsToField(MaterialRequirementCoverageFields.BELONGS_TO_FAMILY);
-
-        if ((belongsToFamily != null)
-                && !productService.checkIfProductEntityTypeIsCorrect(belongsToFamily, ProductFamilyElementType.PRODUCTS_FAMILY)) {
-            materialRequirementCoverage.addError(
-                    materialRequirementCoverageDD.getField(MaterialRequirementCoverageFields.BELONGS_TO_FAMILY),
-                    "orderSupplies.materialRequirementCoverage.belongToFamily.isNotProductsFamily");
-
-            return false;
-        }
-
-        return true;
-    }
-
 }

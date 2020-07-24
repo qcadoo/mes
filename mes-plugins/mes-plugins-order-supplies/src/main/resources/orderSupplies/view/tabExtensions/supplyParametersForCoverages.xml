@@ -31,7 +31,7 @@
 
     <windowTab name="coverageTab" reference="coverageTab">
         <component type="gridLayout" name="coverageParametersGridLayout"
-                   columns="3" rows="5">
+                   columns="3" rows="6">
             <layoutElement column="1" row="1">
                 <component type="gridLayout" name="gridLayoutDefaultCoverageFromDays"
                            hasBorders="false" columns="4" rows="1">
@@ -47,7 +47,7 @@
                     </layoutElement>
                 </component>
             </layoutElement>
-            <layoutElement column="1" row="2">
+            <layoutElement column="1" row="2" height="5">
                 <component type="borderLayout" name="locationBorderLayout">
                     <component type="awesomeDynamicList" name="coverageLocations"
                                source="#{form}.coverageLocations" reference="coverageLocations">
@@ -76,59 +76,15 @@
                     <option type="label" value="locationForCoveragesLabel"/>
                 </component>
             </layoutElement>
-            <layoutElement column="2" row="1" height="3">
-                <component type="borderLayout" name="onlyProductsInCoverageBorderLayout"
-                           reference="onlyProductsInCoverageBorderLayout">
-                    <component type="gridLayout" name="onlyProductsInCoverageGridLayout"
-                               columns="1" rows="3">
-                        <layoutElement column="1" row="1">
-                            <component type="select" name="productExtracted"
-                                       field="#{form}.productExtracted" reference="productExtracted"/>
-                        </layoutElement>
-                        <layoutElement column="1" row="2">
-                            <component type="lookup" name="belongsToFamily" field="#{form}.belongsToFamily"
-                                       reference="belongsToFamily">
-                                <option type="column" fields="name" name="name" link="true"/>
-                                <option type="column" fields="entityType" name="entityType"/>
-
-                                <option type="searchable" value="number,name,entityType"/>
-                                <option type="orderable" value="number,name,entityType"/>
-
-                                <option type="expression" value="#number + ' '+ #name"/>
-                                <option type="fieldCode" value="number"/>
-
-                                <criteriaModifier
-                                        class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
-                                        method="showProductFamilyOnly"/>
-
-                                <listener event="onSelectedEntityChange"
-                                          class="com.qcadoo.mes.orderSupplies.listeners.ParametersListenersOS"
-                                          method="checkIfBelongsToFamilyIsProductsFamily"/>
-                            </component>
-                        </layoutElement>
-                        <layoutElement column="1" row="3">
-                            <component type="select" name="coverageType" field="#{form}.coverageType"
-                                       reference="coverageType"/>
-                        </layoutElement>
-                    </component>
-
-                    <option type="label" value="onlyProductsInCoverageLabel"/>
-                </component>
+            <layoutElement column="2" row="1">
+                <component type="select" name="coverageType" field="#{form}.coverageType"
+                           reference="coverageType"/>
             </layoutElement>
-            <layoutElement column="2" row="4">
-                <component type="borderLayout" name="includedInCoverageBorderLayout"
-                           reference="includedInCoverageBorderLayout">
-                    <option type="label" value="includedInCoverageLabel"/>
-                    <component type="gridLayout" name="includedInCoverageGridLayout"
-                               columns="1" rows="1">
-                        <layoutElement column="1" row="1">
-                            <component type="checkbox" name="includeDraftDeliveries"
-                                       field="#{form}.includeDraftDeliveries" reference="includeDraftDeliveries"/>
-                        </layoutElement>
-                    </component>
-                </component>
+            <layoutElement column="2" row="2">
+                <component type="checkbox" name="includeDraftDeliveries"
+                           field="#{form}.includeDraftDeliveries" reference="includeDraftDeliveries"/>
             </layoutElement>
-            <layoutElement column="2" row="5">
+            <layoutElement column="2" row="3">
                 <component type="checkbox" name="automaticSaveCoverage"
                            field="#{form}.automaticSaveCoverage" reference="automaticSaveCoverage"/>
             </layoutElement>

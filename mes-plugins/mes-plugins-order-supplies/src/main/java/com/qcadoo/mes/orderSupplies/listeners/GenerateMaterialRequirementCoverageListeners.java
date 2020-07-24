@@ -256,11 +256,6 @@ public class GenerateMaterialRequirementCoverageListeners {
         view.redirectTo(url, false, true);
     }
 
-    public void checkIfBelongsToFamilyIsProductsFamily(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
-        orderSuppliesService.checkIfBelongsToFamilyIsProductsFamily(view, MaterialRequirementCoverageFields.BELONGS_TO_FAMILY);
-    }
-
     public void showReplacementsAvailability(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent materialRequirementCoverageForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long materialRequirementCoverageId = materialRequirementCoverageForm.getEntityId();

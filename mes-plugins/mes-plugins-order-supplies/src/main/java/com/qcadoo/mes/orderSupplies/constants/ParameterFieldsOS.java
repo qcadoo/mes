@@ -31,11 +31,7 @@ public final class ParameterFieldsOS {
 
     public static final String COVERAGE_ORDER_STATES = "coverageOrderStates";
 
-    public static final String BELONGS_TO_FAMILY = "belongsToFamily";
-
     public static final String INCLUDE_DRAFT_DELIVERIES = "includeDraftDeliveries";
-
-    public static final String PRODUCT_EXTRACTED = "productExtracted";
 
     public static final String COVERAGE_TYPE = "coverageType";
 

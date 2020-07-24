@@ -26,11 +26,11 @@ package com.qcadoo.mes.productFlowThruDivision.hooks;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.util.OrderDetailsRibbonHelper;
 import com.qcadoo.mes.productFlowThruDivision.constants.OrderFieldsPFTD;
+import com.qcadoo.mes.productFlowThruDivision.constants.ParameterFieldsPFTD;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,9 +45,9 @@ public class OrderDetailsHooksPFTD {
 
     public void onBeforeRender(final ViewDefinitionState view) {
 
-        orderDetailsRibbonHelper.setButtonEnabled(view, "warehouseIssues", "warehouseIssues",  OrderDetailsRibbonHelper.HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY);
+        orderDetailsRibbonHelper.setButtonEnabled(view, "warehouseIssues", "warehouseIssues", OrderDetailsRibbonHelper.HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY::test);
 
-        orderDetailsRibbonHelper.setButtonEnabled(view, "materialFlow", "componentAvailability", OrderDetailsRibbonHelper.HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY);
+        orderDetailsRibbonHelper.setButtonEnabled(view, "materialFlow", "componentAvailability", OrderDetailsRibbonHelper.HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY::test);
 
     }
 
@@ -59,7 +59,7 @@ public class OrderDetailsHooksPFTD {
 
         if (form.getEntityId() == null) {
             ignoreMissingProductsField.setFieldValue(parameterService.getParameter().getBooleanField(
-                    OrderFieldsPFTD.IGNORE_MISSING_COMPONENTS));
+                    ParameterFieldsPFTD.IGNORE_MISSING_COMPONENTS));
             ignoreMissingProductsField.requestComponentUpdateState();
         }
 

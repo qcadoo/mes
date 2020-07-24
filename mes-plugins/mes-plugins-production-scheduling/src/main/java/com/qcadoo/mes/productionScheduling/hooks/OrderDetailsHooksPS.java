@@ -23,12 +23,12 @@
  */
 package com.qcadoo.mes.productionScheduling.hooks;
 
+import com.qcadoo.mes.orders.util.OrderDetailsRibbonHelper;
+import com.qcadoo.view.api.ViewDefinitionState;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Optional;
-import com.qcadoo.mes.orders.util.OrderDetailsRibbonHelper;
-import com.qcadoo.view.api.ViewDefinitionState;
+import java.util.Optional;
 
 @Service
 public class OrderDetailsHooksPS {

@@ -23,20 +23,18 @@
  */
 package com.qcadoo.mes.orders.dates;
 
-import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
-import static com.qcadoo.testing.model.EntityTestUtils.stubDateField;
-
-import java.util.Date;
-
+import com.google.common.base.Optional;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.model.api.Entity;
 import junit.framework.Assert;
-
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.junit.Test;
 
-import com.google.common.base.Optional;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.model.api.Entity;
+import java.util.Date;
+
+import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
+import static com.qcadoo.testing.model.EntityTestUtils.stubDateField;
 
 public class OrderDatesTest {
 
@@ -73,7 +71,7 @@ public class OrderDatesTest {
                 END_DATE_2.toDate(), END_DATE_3.toDate());
 
         // when
-        Optional<OrderDates> maybeOrderDates = OrderDates.of(order);
+        java.util.Optional<OrderDates> maybeOrderDates = OrderDates.of(order);
 
         // then
         Assert.assertTrue(maybeOrderDates.isPresent());
@@ -101,7 +99,7 @@ public class OrderDatesTest {
                 null);
 
         // when
-        Optional<OrderDates> maybeOrderDates = OrderDates.of(order);
+        java.util.Optional<OrderDates> maybeOrderDates = OrderDates.of(order);
 
         // then
         Assert.assertTrue(maybeOrderDates.isPresent());
@@ -128,7 +126,7 @@ public class OrderDatesTest {
         Entity order = mockOrder(START_DATE_1.toDate(), null, null, END_DATE_1.toDate(), null, null);
 
         // when
-        Optional<OrderDates> maybeOrderDates = OrderDates.of(order);
+        java.util.Optional<OrderDates> maybeOrderDates = OrderDates.of(order);
 
         // then
         Assert.assertTrue(maybeOrderDates.isPresent());
@@ -155,7 +153,7 @@ public class OrderDatesTest {
         Entity order = mockOrder(null, null, null, null, null, null);
 
         // when
-        Optional<OrderDates> maybeOrderDates = OrderDates.of(order);
+        java.util.Optional<OrderDates> maybeOrderDates = OrderDates.of(order);
 
         // then
         Assert.assertFalse(maybeOrderDates.isPresent());

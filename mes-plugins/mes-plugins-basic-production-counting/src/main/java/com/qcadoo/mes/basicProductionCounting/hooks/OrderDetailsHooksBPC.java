@@ -23,37 +23,35 @@
  */
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.google.common.base.Predicate;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.util.OrderDetailsRibbonHelper;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.function.Predicate;
 
 @Service
 public class OrderDetailsHooksBPC {
 
-    private static final Predicate<Entity> NOT_DECLINED_OR_PENDING = new Predicate<Entity>() {
-
-        @Override
-        public boolean apply(final Entity order) {
-            if (order == null) {
-                return false;
-            }
-            OrderState orderState = OrderState.of(order);
-            return orderState != OrderState.DECLINED && orderState != OrderState.PENDING;
-        }
-    };
-
     @Autowired
     private OrderDetailsRibbonHelper orderDetailsRibbonHelper;
+
+    private static final Predicate<Entity> NOT_DECLINED_OR_PENDING = order -> {
+        if (order == null) {
+            return false;
+        }
+        OrderState orderState = OrderState.of(order);
+        return orderState != OrderState.DECLINED && orderState != OrderState.PENDING;
+    };
 
     public void disabledButtonForAppropriateState(final ViewDefinitionState view) {
         orderDetailsRibbonHelper.setButtonEnabled(view, BasicProductionCountingConstants.VIEW_RIBBON_ACTION_ITEM_GROUP,
                 BasicProductionCountingConstants.VIEW_RIBBON_ACTION_ITEM_NAME, NOT_DECLINED_OR_PENDING);
+        orderDetailsRibbonHelper.setButtonEnabled(view, BasicProductionCountingConstants.VIEW_RIBBON_ACTION_ITEM_GROUP,
+                BasicProductionCountingConstants.VIEW_RIBBON_ACTION_PRODUCTION_PROGRESS, NOT_DECLINED_OR_PENDING);
     }
 
 }

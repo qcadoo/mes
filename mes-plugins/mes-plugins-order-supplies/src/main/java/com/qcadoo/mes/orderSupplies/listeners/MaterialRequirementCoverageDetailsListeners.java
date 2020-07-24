@@ -25,7 +25,6 @@ package com.qcadoo.mes.orderSupplies.listeners;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.orderSupplies.OrderSuppliesService;
-import com.qcadoo.mes.orderSupplies.constants.MaterialRequirementCoverageFields;
 import com.qcadoo.mes.orderSupplies.constants.OrderSuppliesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.report.api.ReportService;
@@ -73,11 +72,6 @@ public class MaterialRequirementCoverageDetailsListeners {
         } else {
             state.addMessage("orderSupplies.materialRequirementCoverage.report.componentFormError", MessageType.FAILURE);
         }
-    }
-
-    public void checkIfBelongsToFamilyIsProductsFamily(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
-        orderSuppliesService.checkIfBelongsToFamilyIsProductsFamily(view, MaterialRequirementCoverageFields.BELONGS_TO_FAMILY);
     }
 
     public final void deleteCoverage(final ViewDefinitionState view, final ComponentState state, final String[] args) {

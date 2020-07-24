@@ -23,17 +23,26 @@
  */
 package com.qcadoo.mes.orderSupplies.coverage;
 
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import com.google.common.collect.ComparisonChain;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
+import com.qcadoo.mes.materialFlow.constants.LocationFields;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.orderSupplies.OrderSuppliesService;
+import com.qcadoo.mes.orderSupplies.constants.*;
+import com.qcadoo.mes.orderSupplies.register.RegisterService;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.states.constants.TechnologyState;
+import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.search.SearchQueryBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,43 +53,10 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.ComparisonChain;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.tree.ProductNumberingServiceImpl;
-import com.qcadoo.mes.deliveries.DeliveriesService;
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
-import com.qcadoo.mes.materialFlow.constants.LocationFields;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.orderSupplies.OrderSuppliesService;
-import com.qcadoo.mes.orderSupplies.constants.CoverageLocationFields;
-import com.qcadoo.mes.orderSupplies.constants.CoverageOrderStateFields;
-import com.qcadoo.mes.orderSupplies.constants.CoverageProductFields;
-import com.qcadoo.mes.orderSupplies.constants.CoverageProductLoggingEventType;
-import com.qcadoo.mes.orderSupplies.constants.CoverageProductLoggingFields;
-import com.qcadoo.mes.orderSupplies.constants.CoverageProductLoggingState;
-import com.qcadoo.mes.orderSupplies.constants.CoverageProductState;
-import com.qcadoo.mes.orderSupplies.constants.CoverageRegisterFields;
-import com.qcadoo.mes.orderSupplies.constants.CoverageType;
-import com.qcadoo.mes.orderSupplies.constants.MaterialRequirementCoverageFields;
-import com.qcadoo.mes.orderSupplies.constants.OrderSuppliesConstants;
-import com.qcadoo.mes.orderSupplies.constants.ProductExtracted;
-import com.qcadoo.mes.orderSupplies.constants.ProductType;
-import com.qcadoo.mes.orderSupplies.register.RegisterService;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.states.constants.TechnologyState;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchQueryBuilder;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 @Service
 public class MaterialRequirementCoverageServiceImpl implements MaterialRequirementCoverageService {
@@ -106,9 +82,6 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
     private OrderSuppliesService orderSuppliesService;
 
     @Autowired
-    private ProductNumberingServiceImpl productNumberingServiceImpl;
-
-    @Autowired
     private RegisterService registerService;
 
     @Autowired
@@ -122,9 +95,6 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
         Date coverageToDate = materialRequirementCoverage.getDateField(MaterialRequirementCoverageFields.COVERAGE_TO_DATE);
         Date actualDate = materialRequirementCoverage.getDateField(MaterialRequirementCoverageFields.ACTUAL_DATE);
 
-        String productExtracted = materialRequirementCoverage.getStringField(MaterialRequirementCoverageFields.PRODUCT_EXTRACTED);
-        Entity belongsToFamily = materialRequirementCoverage
-                .getBelongsToField(MaterialRequirementCoverageFields.BELONGS_TO_FAMILY);
         String coverageType = materialRequirementCoverage.getStringField(MaterialRequirementCoverageFields.COVERAGE_TYPE);
 
         boolean includeDraftDeliveries = materialRequirementCoverage
@@ -150,8 +120,9 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
         Entity assignedOrder = materialRequirementCoverage.getBelongsToField(L_ORDER);
 
         if (!orderStates.isEmpty() && Objects.nonNull(assignedOrder)) {
-            Optional<Entity> maybeState = orderStates.stream()
-                    .filter(state -> state.equals(assignedOrder.getStringField(OrderFields.STATE))).findAny();
+            Optional<Entity> maybeState = orderStates.stream().filter(state -> state
+                    .getStringField(CoverageOrderStateFields.STATE).equals(assignedOrder.getStringField(OrderFields.STATE)))
+                    .findAny();
             if (!maybeState.isPresent()) {
                 fillFromRegistryAssignedOrder(productAndCoverageProducts, assignedOrder, coverageToDate, actualDate);
             }
@@ -160,7 +131,7 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
         estimateProductLocationsInTime(materialRequirementCoverage, productAndCoverageProducts, coverageLocations, actualDate);
 
         estimateProductDeliveriesInTime(materialRequirementCoverage, productAndCoverageProducts, includedDeliveries, actualDate,
-                coverageToDate, belongsToFamily, includeDraftDeliveries);
+                coverageToDate, includeDraftDeliveries);
 
         estimateProductProducedInTime(productAndCoverageProducts, coverageToDate, actualDate, orderStates);
 
@@ -172,8 +143,7 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
 
         materialRequirementCoverage.getDataDefinition().save(materialRequirementCoverage);
 
-        saveCoverage(materialRequirementCoverage,
-                filterCoverageProducts(productAndCoverageProducts, productExtracted, coverageType));
+        saveCoverage(materialRequirementCoverage, filterCoverageProducts(productAndCoverageProducts, coverageType));
 
         LOG.info("Finish generation material requirement - id : " + materialRequirementCoverage.getId());
     }
@@ -444,7 +414,7 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
     }
 
     private List<Long> getIdsFromCoverageOrders(final List<Entity> selectedOrders) {
-        return selectedOrders.stream().map(order -> order.getId()).collect(Collectors.toList());
+        return selectedOrders.stream().map(Entity::getId).collect(Collectors.toList());
     }
 
     private List<Long> getIdsFromRegisterProduct(final List<Entity> registerProducts) {
@@ -484,7 +454,7 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
 
         for (Entity reg : regs) {
             if (BigDecimal.ZERO.compareTo(reg.getDecimalField(CoverageRegisterFields.QUANTITY)) < 0) {
-                Entity coverageProductLogging = createCoverageProductLoggingForOrder(reg, actualDate, coverageToDate);
+                Entity coverageProductLogging = createCoverageProductLoggingForOrder(reg, actualDate);
 
                 fillCoverageProductForOrder(productAndCoverageProducts, reg.getBelongsToField("product"),
                         reg.getStringField("productType"), coverageProductLogging);
@@ -494,13 +464,10 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
 
     private void fillFromRegistryAssignedOrder(final Map<Long, Entity> productAndCoverageProducts, final Entity assignedOrder,
             final Date coverageToDate, final Date actualDate) {
-        StringBuilder query = new StringBuilder();
-
-        query.append("SELECT registry FROM #orderSupplies_coverageRegister AS registry ");
-        query.append("WHERE registry.date <= :dateTo AND eventType IN ('04orderInput','03operationInput') ");
-        query.append("AND order_id = :orderId ");
-
-        SearchQueryBuilder queryBuilder = getCoverageRegisterDD().find(query.toString()).setParameter("dateTo", coverageToDate);
+        String query = "SELECT registry FROM #orderSupplies_coverageRegister AS registry " +
+                "WHERE registry.date <= :dateTo AND eventType IN ('04orderInput','03operationInput') " +
+                "AND order_id = :orderId ";
+        SearchQueryBuilder queryBuilder = getCoverageRegisterDD().find(query).setParameter("dateTo", coverageToDate);
 
         queryBuilder.setParameter("orderId", assignedOrder.getId());
 
@@ -508,19 +475,18 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
 
         for (Entity reg : regs) {
             if (BigDecimal.ZERO.compareTo(reg.getDecimalField(CoverageRegisterFields.QUANTITY)) < 0) {
-                Entity coverageProductLogging = createCoverageProductLoggingForOrder(reg, actualDate, coverageToDate);
+                Entity coverageProductLogging = createCoverageProductLoggingForOrder(reg, actualDate);
                 fillCoverageProductForOrder(productAndCoverageProducts, reg.getBelongsToField("product"),
                         reg.getStringField("productType"), coverageProductLogging);
             }
         }
     }
 
-    private Entity createCoverageProductLoggingForOrder(final Entity registerEntry, final Date actualDate,
-            final Date coverageToDate) {
+    private Entity createCoverageProductLoggingForOrder(final Entity registerEntry, final Date actualDate) {
         Entity coverageProductLogging = orderSuppliesService.getCoverageProductLoggingDD().create();
 
         coverageProductLogging.setField(CoverageProductLoggingFields.DATE,
-                getCoverageProductLoggingDateForOrder(registerEntry, actualDate, coverageToDate));
+                getCoverageProductLoggingDateForOrder(registerEntry, actualDate));
         coverageProductLogging.setField(CoverageProductLoggingFields.ORDER, registerEntry.getBelongsToField("order"));
         coverageProductLogging.setField(CoverageProductLoggingFields.OPERATION, registerEntry.getBelongsToField("operation"));
         coverageProductLogging.setField(CoverageProductLoggingFields.CHANGES,
@@ -530,10 +496,9 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
         return coverageProductLogging;
     }
 
-    private Date getCoverageProductLoggingDateForOrder(final Entity registerEntry, final Date actualDate,
-            final Date coverageToDate) {
-        Date coverageDate = null;
+    private Date getCoverageProductLoggingDateForOrder(final Entity registerEntry, final Date actualDate) {
         Date startDate = registerEntry.getDateField("date");
+        Date coverageDate;
 
         if (startDate.before(actualDate)) {
             coverageDate = new DateTime(actualDate).plusSeconds(3).toDate();
@@ -546,7 +511,7 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
 
     private void estimateProductDeliveriesInTime(final Entity materialRequirementCoverage,
             final Map<Long, Entity> productAndCoverageProducts, final List<Entity> includedDeliveries, final Date actualDate,
-            final Date coverageToDate, final Entity belongsToFamily, final Boolean includeDraftDeliveries) {
+            final Date coverageToDate, final Boolean includeDraftDeliveries) {
         for (Entity delivery : includedDeliveries) {
             Date coverageDate = getCoverageProductLoggingDateForDelivery(delivery, actualDate);
 
@@ -560,15 +525,14 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
 
             for (Entity deliveryProduct : deliveryProducts) {
                 estimateProductDelivery(productAndCoverageProducts,
-                        new CoverageProductForDelivery(coverageDate, delivery, deliveryProduct), belongsToFamily);
+                        new CoverageProductForDelivery(coverageDate, delivery, deliveryProduct));
             }
         }
     }
 
     private void estimateProductDelivery(final Map<Long, Entity> productAndCoverageProducts,
-            final CoverageProductForDelivery coverageProductForDelivery, final Entity belongsToFamily) {
-        if (checkIfProductShouldBeAdded(belongsToFamily, coverageProductForDelivery.getProduct())
-                && productAndCoverageProducts.containsKey(coverageProductForDelivery.getProduct().getId())) {
+            final CoverageProductForDelivery coverageProductForDelivery) {
+        if (productAndCoverageProducts.containsKey(coverageProductForDelivery.getProduct().getId())) {
             BigDecimal quantity = coverageProductForDelivery.getDeliveryQuantity();
 
             coverageProductForDelivery.setQuantity(quantity);
@@ -882,30 +846,13 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
         coverageProductLogging.setField(CoverageProductLoggingFields.STATE, state);
     }
 
-    private List<Entity> filterCoverageProducts(final Map<Long, Entity> productAndCoverageProducts, final String productExtracted,
-            final String coverageType) {
-        return filterCoverageProductsWithCoverageType(
-                filterCoverageProductsWithProductExtracted(getCoverageProducts(productAndCoverageProducts), productExtracted),
-                coverageType);
+    private List<Entity> filterCoverageProducts(final Map<Long, Entity> productAndCoverageProducts, final String coverageType) {
+        return filterCoverageProductsWithCoverageType(getCoverageProducts(productAndCoverageProducts), coverageType);
     }
 
     private List<Entity> getCoverageProducts(final Map<Long, Entity> productAndCoverageProducts) {
-        List<Entity> coverageProducts = Lists.newArrayList(productAndCoverageProducts.values());
 
-        return coverageProducts;
-    }
-
-    private List<Entity> filterCoverageProductsWithProductExtracted(final List<Entity> coverageProducts,
-            final String productExtracted) {
-        List<Entity> filteredCoverageProducts = Lists.newArrayList();
-
-        for (Entity coverageProduct : coverageProducts) {
-            if (ProductExtracted.ALL.getStringValue().equals(productExtracted)) {
-                filteredCoverageProducts.add(coverageProduct);
-            }
-        }
-
-        return filteredCoverageProducts;
+        return Lists.newArrayList(productAndCoverageProducts.values());
     }
 
     private List<Entity> filterCoverageProductsWithCoverageType(final List<Entity> coverageProducts, final String coverageType) {
@@ -932,11 +879,6 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
         }
 
         return filteredCoverageProducts;
-    }
-
-    private boolean checkIfProductShouldBeAdded(final Entity belongsToFamily, final Entity product) {
-        return ((belongsToFamily == null)
-                || productNumberingServiceImpl.checkIfProductBelongsToProductsFamily(belongsToFamily, product));
     }
 
     private List<Entity> getDeliveriesFromDB(final Date coverageToDate, final boolean includeDraftDeliveries) {

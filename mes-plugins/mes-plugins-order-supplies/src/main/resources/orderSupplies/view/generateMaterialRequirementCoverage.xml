@@ -65,7 +65,7 @@
             <component type="form" name="materialRequirementCoverageForm"
                        reference="form">
                 <component type="gridLayout" name="mainTabGridLayout"
-                           columns="3" rows="8">
+                           columns="3" rows="7">
                     <layoutElement column="1" row="1">
                         <component type="hidden" name="generated" reference="generated"
                                    field="generated" defaultVisible="true"/>
@@ -125,58 +125,15 @@
                         <component type="input" name="generatedBy" field="generatedBy"
                                    reference="generatedBy" defaultEnabled="never"/>
                     </layoutElement>
-                    <layoutElement column="2" row="4" height="3">
-                        <component type="borderLayout" name="onlyProductsInCoverageBorderLayout"
-                                   reference="onlyProductsInCoverageBorderLayout">
-                            <option type="label" value="onlyProductsInCoverageLabel"/>
-                            <component type="gridLayout" name="onlyProductsInCoverageGridLayout"
-                                       columns="1" rows="3">
-                                <layoutElement column="1" row="1">
-                                    <component type="select" name="productExtracted"
-                                               field="productExtracted" reference="productExtracted"/>
-                                </layoutElement>
-                                <layoutElement column="1" row="2">
-                                    <component type="lookup" name="belongsToFamily"
-                                               field="belongsToFamily" reference="belongsToFamily">
-                                        <option type="column" fields="name" name="name" link="true"/>
-
-                                        <option type="searchable" value="number,name"/>
-                                        <option type="orderable" value="number,name"/>
-
-                                        <option type="expression" value="#number + ' - ' + #name"/>
-                                        <option type="fieldCode" value="number"/>
-
-                                        <criteriaModifier
-                                                class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
-                                                method="showProductFamilyOnly"/>
-
-                                        <listener event="onSelectedEntityChange"
-                                                  class="com.qcadoo.mes.orderSupplies.listeners.GenerateMaterialRequirementCoverageListeners"
-                                                  method="checkIfBelongsToFamilyIsProductsFamily"/>
-                                    </component>
-                                </layoutElement>
-                                <layoutElement column="1" row="3">
-                                    <component type="select" name="coverageType" field="coverageType"
-                                               reference="coverageType"/>
-                                </layoutElement>
-                            </component>
-                        </component>
+                    <layoutElement column="2" row="4">
+                        <component type="select" name="coverageType" field="coverageType"
+                                   reference="coverageType"/>
                     </layoutElement>
-                    <layoutElement column="2" row="7">
-                        <component type="borderLayout" name="includedInCoverageBorderLayout"
-                                   reference="includedInCoverageBorderLayout">
-                            <component type="gridLayout" name="includedInCoverageGridLayout"
-                                       columns="1" rows="1">
-                                <layoutElement column="1" row="1">
-                                    <component type="checkbox" name="includeDraftDeliveries"
-                                               field="includeDraftDeliveries" reference="includeDraftDeliveries"/>
-                                </layoutElement>
-                            </component>
-
-                            <option type="label" value="includedInCoverageLabel"/>
-                        </component>
+                    <layoutElement column="2" row="5">
+                        <component type="checkbox" name="includeDraftDeliveries"
+                                   field="includeDraftDeliveries" reference="includeDraftDeliveries"/>
                     </layoutElement>
-                    <layoutElement column="2" row="8">
+                    <layoutElement column="2" row="6">
                         <component type="checkbox" name="automaticSaveCoverage"
                                    field="automaticSaveCoverage" reference="automaticSaveCoverage"/>
                     </layoutElement>
@@ -235,57 +192,55 @@
                        columns="1" rows="8">
 
                 <layoutElement column="1" row="1" height="8">
-                    <component type="borderLayout" name="ordersBorderLayout">
-                        <component type="lookup" name="coverageOrdersLookup" reference="coverageOrdersLookup"
-                                   field="#{form}.coverageOrders" defaultVisible="false" persistent="false"
-                                   hasLabel="false">
+                    <component type="lookup" name="coverageOrdersLookup" reference="coverageOrdersLookup"
+                               field="#{form}.coverageOrders" defaultVisible="false" persistent="false"
+                               hasLabel="false">
 
-                            <option type="column" name="name" fields="name"/>
-                            <option type="column" name="productionLine" fields="productionLine" expression="#productionLine['number']"/>
-                            <option type="column" name="division" fields="division" expression="#division['number']"/>
+                        <option type="column" name="name" fields="name"/>
+                        <option type="column" name="productionLine" fields="productionLine" expression="#productionLine['number']"/>
+                        <option type="column" name="division" fields="division" expression="#division['number']"/>
 
-                            <option type="expression" value="#number"/>
-                            <option type="fieldCode" value="number"/>
-                            <option type="multiselect" value="true"/>
+                        <option type="expression" value="#number"/>
+                        <option type="fieldCode" value="number"/>
+                        <option type="multiselect" value="true"/>
 
-                            <option type="searchable" value="number,name,productionLine,division"/>
-                            <option type="orderable" value="number,name,productionLine,division"/>
-                            <criteriaModifier
-                                    class="com.qcadoo.mes.orderSupplies.criteriaModifiers.OrdersCriteriaModifiersOS"
-                                    method="hideFinishedAndDeclinedOrders"/>
-                        </component>
+                        <option type="searchable" value="number,name,productionLine,division"/>
+                        <option type="orderable" value="number,name,productionLine,division"/>
+                        <criteriaModifier
+                                class="com.qcadoo.mes.orderSupplies.criteriaModifiers.OrdersCriteriaModifiersOS"
+                                method="hideFinishedAndDeclinedOrders"/>
+                    </component>
 
-                        <component type="grid" name="coverageOrders" source="#{form}.coverageOrders"
-                                   reference="coverageOrders">
-                            <option type="column" name="number" fields="number" width="100"/>
-                            <option type="column" name="name" fields="name" width="150"/>
-                            <option type="column" name="productNumber" fields="product"
-                                    expression="#product['number']" width="100"/>
-                            <option type="column" name="technologyNumber" fields="technology"
-                                    expression="#technology['number']" width="100"/>
+                    <component type="grid" name="coverageOrders" source="#{form}.coverageOrders"
+                               reference="coverageOrders">
+                        <option type="column" name="number" fields="number" width="100"/>
+                        <option type="column" name="name" fields="name" width="150"/>
+                        <option type="column" name="productNumber" fields="product"
+                                expression="#product['number']" width="100"/>
+                        <option type="column" name="technologyNumber" fields="technology"
+                                expression="#technology['number']" width="100"/>
 
-                            <option type="column" name="plannedQuantity" fields="plannedQuantity" width="40"/>
+                        <option type="column" name="plannedQuantity" fields="plannedQuantity" width="40"/>
 
-                            <option type="column" name="dateFrom" fields="startDate" width="50"/>
-                            <option type="column" name="dateTo" fields="finishDate" width="50"/>
-                            <option type="column" name="state" fields="state" width="50"/>
+                        <option type="column" name="dateFrom" fields="startDate" width="50"/>
+                        <option type="column" name="dateTo" fields="finishDate" width="50"/>
+                        <option type="column" name="state" fields="state" width="50"/>
 
-                            <option type="searchable"
-                                    value="number,name,state,productNumber,technologyNumber,plannedQuantity,dateFrom,dateTo"/>
-                            <option type="orderable"
-                                    value="number,name,state,productNumber,technologyNumber,plannedQuantity,dateFrom,dateTo"/>
+                        <option type="searchable"
+                                value="number,name,state,productNumber,technologyNumber,plannedQuantity,dateFrom,dateTo"/>
+                        <option type="orderable"
+                                value="number,name,state,productNumber,technologyNumber,plannedQuantity,dateFrom,dateTo"/>
 
-                            <option type="order" column="number" direction="desc"/>
+                        <option type="order" column="number" direction="desc"/>
 
-                            <option type="fullscreen" value="true"/>
-                            <option type="multiselect" value="true"/>
-                            <option type="creatable" value="true"/>
-                            <option type="deletable" value="true"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
 
-                            <option type="weakRelation" value="true"/>
-                            <option type="correspondingLookup" value="coverageOrdersLookup"/>
+                        <option type="weakRelation" value="true"/>
+                        <option type="correspondingLookup" value="coverageOrdersLookup"/>
 
-                        </component>
                     </component>
                 </layoutElement>
 

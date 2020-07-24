@@ -58,8 +58,6 @@ import java.util.Set;
 @Service
 public class WarehouseIssueDetailHooks {
 
-
-
     private static final String L_PRODUCTS_TO_ISSUES = "productsToIssues";
 
     @Autowired

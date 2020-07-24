@@ -26,16 +26,12 @@ package com.qcadoo.mes.materialFlowResources.service;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.exceptions.DocumentBuildException;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.security.api.UserService;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -43,8 +39,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
-
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 public class DocumentBuilder {
 
@@ -57,14 +51,6 @@ public class DocumentBuilder {
     private final Entity document;
 
     private final List<Entity> positions = Lists.newArrayList();
-
-    DocumentBuilder(final DataDefinitionService dataDefinitionService, final ResourceManagementService resourceManagementService,
-            final UserService userService, final ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper) {
-        this.dataDefinitionService = dataDefinitionService;
-        this.resourceManagementService = resourceManagementService;
-        this.receiptDocumentForReleaseHelper = receiptDocumentForReleaseHelper;
-        this.document = createDocument(userService);
-    }
 
     DocumentBuilder(final DataDefinitionService dataDefinitionService, final ResourceManagementService resourceManagementService,
             final ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper, final Entity user) {
@@ -396,15 +382,7 @@ public class DocumentBuilder {
         }
     }
 
-    public Entity createDocument(final UserService userService) {
-        Entity newDocument = createDocument();
-
-        newDocument.setField(DocumentFields.USER, userService.getCurrentUserEntity().getId());
-
-        return newDocument;
-    }
-
-    private Entity createDocument(final Entity user) {
+    public Entity createDocument(final Entity user) {
         Entity newDocument = createDocument();
 
         newDocument.setField(DocumentFields.USER, user.getId());

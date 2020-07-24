@@ -137,9 +137,14 @@
 			method="disabledButtonForAppropriateState" />
 
 		<view:view-listener plugin="orders" view="orderDetails"
-			component="form" event="showProductionCounting"
+			component="form" event="showProductionProgress"
 			class="com.qcadoo.mes.basicProductionCounting.listeners.OrderDetailsListenersBPC"
-			method="showProductionCounting" />
+			method="showProductionProgress" />
+
+		<view:view-listener plugin="orders" view="orderDetails"
+							component="form" event="showProductionCounting"
+							class="com.qcadoo.mes.basicProductionCounting.listeners.OrderDetailsListenersBPC"
+							method="showProductionCounting" />
 			
 		<view:view-listener plugin="orders" view="ordersParameters" 
 			component="allowQuantityChangeInAcceptedOrder" event="onChange"

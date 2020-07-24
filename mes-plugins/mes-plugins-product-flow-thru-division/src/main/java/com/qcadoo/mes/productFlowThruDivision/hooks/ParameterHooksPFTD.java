@@ -23,17 +23,18 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.hooks;
 
-import com.qcadoo.mes.productFlowThruDivision.constants.*;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.productFlowThruDivision.constants.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class ParameterHooksPFTD {
 
-    public void onCreate(final DataDefinition orderDD, final Entity parameter) {
+    public void onCreate(final DataDefinition parameterDD, final Entity parameter) {
         setIfNull(parameter, ParameterFieldsPFTD.IGNORE_MISSING_COMPONENTS, true);
+        setIfNull(parameter, ParameterFieldsPFTD.MOMENT_OF_VALIDATION, MomentOfValidation.ORDER_ACCEPTANCE.getStrValue());
         setIfNull(parameter, ParameterFieldsPFTD.WAREHOUSE_ISSUE_PRODUCTS_SOURCE,
                 WarehouseIssueProductsSource.ORDER.getStrValue());
         setIfNull(parameter, ParameterFieldsPFTD.DRAWN_DOCUMENTS, DrawnDocuments.TRANSFER.getStrValue());
@@ -49,7 +50,7 @@ public class ParameterHooksPFTD {
     }
 
     public void onSave(final DataDefinition dataDefinition, final Entity parameter) {
-        if (parameter.getBooleanField(ParameterFieldsPFTD.GENERATE_WAREHOUSE_ISSUES_TO_ORDERS) == true) {
+        if (parameter.getBooleanField(ParameterFieldsPFTD.GENERATE_WAREHOUSE_ISSUES_TO_ORDERS)) {
             addErrorIfNull(parameter, dataDefinition, ParameterFieldsPFTD.ISSUE_LOCATION,
                     "basic.parameter.error.issueLocation.isRequired");
             addErrorIfNull(parameter, dataDefinition, ParameterFieldsPFTD.DAYS_BEFORE_ORDER_START,
@@ -61,6 +62,8 @@ public class ParameterHooksPFTD {
                 "qcadooView.validate.field.error.missing");
         addErrorIfNull(parameter, dataDefinition, ParameterFieldsPFTD.DRAWN_DOCUMENTS,
                 "basic.parameter.error.drawndocuments.isRequired");
+        addErrorIfNull(parameter, dataDefinition, ParameterFieldsPFTD.MOMENT_OF_VALIDATION,
+                "basic.parameter.error.momentofvalidation.isRequired");
         addErrorIfNull(parameter, dataDefinition, ParameterFieldsPFTD.DOCUMENTS_STATUS,
                 "basic.parameter.error.documentsStatus.isRequired");
     }

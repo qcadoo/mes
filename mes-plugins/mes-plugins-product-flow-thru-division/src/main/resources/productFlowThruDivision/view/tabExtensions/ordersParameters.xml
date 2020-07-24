@@ -37,6 +37,12 @@
                            reference="ignoreMissingComponents" field="#{form}.ignoreMissingComponents">
                 </component>
             </layoutElement>
+            <layoutElement column="1" row="2">
+                <component type="select" name="momentOfValidation"
+                           reference="momentOfValidation" field="#{form}.momentOfValidation"
+                           hasDescription="true">
+                </component>
+            </layoutElement>
         </component>
     </windowTab>
 

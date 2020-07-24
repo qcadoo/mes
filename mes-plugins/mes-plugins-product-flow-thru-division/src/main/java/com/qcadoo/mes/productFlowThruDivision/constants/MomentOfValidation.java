@@ -21,25 +21,32 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.orderSupplies.listeners;
+package com.qcadoo.mes.productFlowThruDivision.constants;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.apache.commons.lang3.StringUtils;
 
-import com.qcadoo.mes.orderSupplies.OrderSuppliesService;
-import com.qcadoo.mes.orderSupplies.constants.ParameterFieldsOS;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
 
-@Service
-public class ParametersListenersOS {
+public enum MomentOfValidation {
 
-    @Autowired
-    private OrderSuppliesService orderSuppliesService;
+    ORDER_ACCEPTANCE("01orderAcceptance"), ORDER_STARTING("02orderStarting");
 
-    public void checkIfBelongsToFamilyIsProductsFamily(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
-        orderSuppliesService.checkIfBelongsToFamilyIsProductsFamily(view, ParameterFieldsOS.BELONGS_TO_FAMILY);
+    private final String strValue;
+
+    private MomentOfValidation(final String strValue) {
+        this.strValue = strValue;
     }
 
+    public String getStrValue() {
+        return strValue;
+    }
+
+    public static MomentOfValidation parseString(final String stringValue) {
+        for (MomentOfValidation momentOfValidation : values()) {
+            if (StringUtils.equalsIgnoreCase(stringValue, momentOfValidation.getStrValue())) {
+                return momentOfValidation;
+            }
+        }
+        throw new IllegalArgumentException(String.format("Can't parse MomentOfValidation enum instance from '%s'",
+                stringValue));
+    }
 }

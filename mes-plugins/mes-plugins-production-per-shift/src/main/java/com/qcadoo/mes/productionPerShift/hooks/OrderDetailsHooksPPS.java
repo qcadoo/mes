@@ -23,9 +23,6 @@
  */
 package com.qcadoo.mes.productionPerShift.hooks;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.dates.OrderDates;
@@ -49,18 +46,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Set;
+import java.util.function.Predicate;
 
 @Service
 public class OrderDetailsHooksPPS {
 
-    private static final Predicate<Entity> HAS_DEFINED_PLANNED_START_DATE = new Predicate<Entity>() {
-
-        @Override
-        public boolean apply(final Entity order) {
-            return order.getDateField(OrderFields.DATE_FROM) != null;
-        }
-    };
+    private static final Predicate<Entity> HAS_DEFINED_PLANNED_START_DATE = order -> order.getDateField(OrderFields.DATE_FROM) != null;
 
     @Autowired
     private OrderDetailsRibbonHelper orderDetailsRibbonHelper;
@@ -75,12 +68,10 @@ public class OrderDetailsHooksPPS {
     private PpsTimeHelper ppsTimeHelper;
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        Predicate<Entity> technologyPredicate = Predicates.and(
-                OrderDetailsRibbonHelper.HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY);
-        Predicate<Entity> datePredicate = Predicates.and(HAS_DEFINED_PLANNED_START_DATE);
+        Predicate<Entity> technologyPredicate = OrderDetailsRibbonHelper.HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY;
         orderDetailsRibbonHelper.setButtonEnabled(view, "orderProgressPlans", "productionPerShift", technologyPredicate,
                 Optional.of("orders.ribbon.message.mustChangeTechnologyState"));
-        orderDetailsRibbonHelper.setButtonEnabled(view, "orderProgressPlans", "productionPerShift", datePredicate,
+        orderDetailsRibbonHelper.setButtonEnabled(view, "orderProgressPlans", "productionPerShift", HAS_DEFINED_PLANNED_START_DATE,
                 Optional.of("orders.ribbon.message.mustFillPlannedStartDate"));
 
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
@@ -104,7 +95,7 @@ public class OrderDetailsHooksPPS {
             Set<Long> progressForDayIds = productionPerShiftDataProvider.findIdsOfEffectiveProgressForDay(pps, shouldBeCorrected);
             DataDefinition progressForDayDD = dataDefinitionService.get(ProductionPerShiftConstants.PLUGIN_IDENTIFIER,
                     ProductionPerShiftConstants.MODEL_PROGRESS_FOR_DAY);
-            Optional<OrderDates> maybeOrderDates = null;
+            Optional<OrderDates> maybeOrderDates;
             try {
                 maybeOrderDates = OrderDates.of(order);
             } catch (IllegalArgumentException e) {
