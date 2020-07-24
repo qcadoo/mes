@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.advancedGenealogy.hooks;
 
-import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.advancedGenealogy.constants.AdvancedGenealogyConstants;
 import com.qcadoo.mes.advancedGenealogy.constants.TrackingRecordFields;
@@ -37,7 +32,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.CustomRestriction;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -46,6 +40,10 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
 
 @Service
 public class TrackingRecordSimpleViewHooks {
@@ -102,22 +100,18 @@ public class TrackingRecordSimpleViewHooks {
         }
 
         Long batchId = Long.valueOf(batchLookup.getFieldValue().toString());
-        Entity batch = getDataDef(AdvancedGenealogyConstants.PLUGIN_IDENTIFIER, AdvancedGenealogyConstants.MODEL_BATCH)
+        Entity batch = getDataDef(AdvancedGenealogyConstants.MODEL_BATCH)
                 .get(batchId);
-        Entity trakingRecord = getDataDef(AdvancedGenealogyConstants.PLUGIN_IDENTIFIER,
+        Entity trackingRecord = getDataDef(
                 AdvancedGenealogyConstants.MODEL_TRACKING_RECORD).get(form.getEntityId());
-        Entity savedBatch = trakingRecord.getBelongsToField(TrackingRecordFields.PRODUCED_BATCH);
+        Entity savedBatch = trackingRecord.getBelongsToField(TrackingRecordFields.PRODUCED_BATCH);
 
         if (batch == null) {
             unitField.setFieldValue(null);
             return;
         }
 
-        if (savedBatch != null && batchId != null && batchId.equals(savedBatch.getId())) {
-            grid.setEditable(true);
-        } else {
-            grid.setEditable(false);
-        }
+        grid.setEditable(savedBatch != null && batchId.equals(savedBatch.getId()));
 
         Entity product = batch.getBelongsToField(L_PRODUCT);
         unitField.setFieldValue(product.getField(L_UNIT));
@@ -125,14 +119,7 @@ public class TrackingRecordSimpleViewHooks {
 
     public final void addDiscriminatorRestrictionToGrid(final ViewDefinitionState view) {
         GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
-        grid.setCustomRestriction(new CustomRestriction() {
-
-            @Override
-            public void addRestriction(final SearchCriteriaBuilder searchBuilder) {
-                searchBuilder.add(SearchRestrictions.eq(L_ENTITY_TYPE, L_TYPE_01SIMPLE));
-            }
-
-        });
+        grid.setCustomRestriction(searchBuilder -> searchBuilder.add(SearchRestrictions.eq(L_ENTITY_TYPE, L_TYPE_01SIMPLE)));
     }
 
     public final void setEntityTypeToSimple(final ViewDefinitionState view) {
@@ -145,13 +132,8 @@ public class TrackingRecordSimpleViewHooks {
         return (FieldComponent) view.getComponentByReference(name);
     }
 
-    private DataDefinition getDataDef(final String pluginName, final String modelName) {
-        return dataDefinitionService.get(pluginName, modelName);
-    }
-
-    public void setBatchLookupRequired(final ViewDefinitionState view) {
-        FieldComponent batchLookup = getFieldComponent(view, L_BATCH_LOOKUP);
-        batchLookup.setRequired(true);
+    private DataDefinition getDataDef(final String modelName) {
+        return dataDefinitionService.get(AdvancedGenealogyConstants.PLUGIN_IDENTIFIER, modelName);
     }
 
 }

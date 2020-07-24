@@ -23,41 +23,29 @@
  */
 package com.qcadoo.mes.advancedGenealogy.print;
 
-import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.collect.Maps.newLinkedHashMap;
-
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.google.common.collect.Maps;
-import com.lowagie.text.Chunk;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
+import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.advancedGenealogy.constants.AdvancedGenealogyConstants;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.mes.advancedGenealogy.constants.TrackingRecordFields;
+import com.qcadoo.model.api.*;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.*;
+
+import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.Maps.newLinkedHashMap;
 
 @Component(value = "trackingRecordPdfView")
 public class TrackingRecordPdfView extends ReportPdfView {
@@ -67,8 +55,6 @@ public class TrackingRecordPdfView extends ReportPdfView {
     private static final String L_DATE_AND_TIME = "dateAndTime";
 
     private static final String L_BATCH = "batch";
-
-    private static final String L_PRODUCED_BATCH = "producedBatch";
 
     private static final String L_QUANTITY = "quantity";
 
@@ -104,35 +90,33 @@ public class TrackingRecordPdfView extends ReportPdfView {
 
         Entity trackingRecord = trackingRecordDD.get(Long.valueOf(model.get("id").toString()));
 
-        Entity producedBatch = trackingRecord.getBelongsToField(L_PRODUCED_BATCH);
+        Entity producedBatch = trackingRecord.getBelongsToField(TrackingRecordFields.PRODUCED_BATCH);
 
-        if (producedBatch != null) {
-            String producedBatchNumber = producedBatch.getStringField(L_NUMBER);
-            String producedBatchProductNumber = producedBatch.getBelongsToField(L_PRODUCT).getStringField(L_NUMBER);
-            String producedBatchProductName = producedBatch.getBelongsToField(L_PRODUCT).getStringField(L_NAME);
-            String producedBatchProductNameNumber = " - " + producedBatchProductName + "(" + producedBatchProductNumber + ")";
-            String producedBatchSupplierName = (producedBatch.getBelongsToField(L_SUPPLIER) == null) ? " " : " - "
-                    + producedBatch.getBelongsToField(L_SUPPLIER).getStringField(L_NAME);
+        String producedBatchNumber = producedBatch.getStringField(L_NUMBER);
+        String producedBatchProductNumber = producedBatch.getBelongsToField(L_PRODUCT).getStringField(L_NUMBER);
+        String producedBatchProductName = producedBatch.getBelongsToField(L_PRODUCT).getStringField(L_NAME);
+        String producedBatchProductNameNumber = " - " + producedBatchProductName + "(" + producedBatchProductNumber + ")";
+        String producedBatchSupplierName = (producedBatch.getBelongsToField(L_SUPPLIER) == null) ? " " : " - "
+                + producedBatch.getBelongsToField(L_SUPPLIER).getStringField(L_NAME);
 
-            String documentTitle = translationService.translate("advancedGenealogy.trackingRecordSimpleDetails.report.title",
-                    locale) + " " + producedBatchNumber + producedBatchProductNameNumber + producedBatchSupplierName;
-            String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
+        String documentTitle = translationService.translate("advancedGenealogy.trackingRecordSimpleDetails.report.title",
+                locale) + " " + producedBatchNumber + producedBatchProductNameNumber + producedBatchSupplierName;
+        String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
 
-            pdfHelper.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date());
+        pdfHelper.addDocumentHeader(document, "", documentTitle, documentAuthor, new Date());
 
-            createInfoTable(document, locale, trackingRecord);
+        createInfoTable(document, locale, trackingRecord);
 
-            createUsedBatchesTable(document, locale, trackingRecord);
+        createUsedBatchesTable(document, locale, trackingRecord);
 
-            createLoggingsTable(document, locale, trackingRecord);
-        }
+        createLoggingsTable(document, locale, trackingRecord);
 
         return translationService.translate("advancedGenealogy.trackingRecordSimpleDetails.report.fileName", locale);
     }
 
     private void createInfoTable(final Document document, final Locale locale, final Entity trackingRecord)
             throws DocumentException {
-        Entity producedBatch = trackingRecord.getBelongsToField(L_PRODUCED_BATCH);
+        Entity producedBatch = trackingRecord.getBelongsToField(TrackingRecordFields.PRODUCED_BATCH);
 
         String producedBatchNumber = producedBatch.getStringField(L_NUMBER);
         String producedBatchProductNumber = producedBatch.getBelongsToField(L_PRODUCT).getStringField(L_NUMBER);
