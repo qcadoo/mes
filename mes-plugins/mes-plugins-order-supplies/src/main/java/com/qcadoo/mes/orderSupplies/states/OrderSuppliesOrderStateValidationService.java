@@ -43,8 +43,7 @@ public class OrderSuppliesOrderStateValidationService {
 
         if (InputProductsRequiredForType.START_OPERATIONAL_TASK.getStringValue().equals(inputProductsRequiredForType)
                 && !TypeOfProductionRecording.FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
-            stateChangeContext.addFieldValidationError(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING,
-                    "orders.order.typeOfProductionRecording.error.typeIsntForEach");
+            stateChangeContext.addValidationError("orders.order.typeOfProductionRecording.error.typeIsntForEach");
         }
     }
 

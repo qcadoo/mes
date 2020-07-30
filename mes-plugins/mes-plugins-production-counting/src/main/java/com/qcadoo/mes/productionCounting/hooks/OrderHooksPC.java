@@ -102,6 +102,7 @@ public class OrderHooksPC {
         if (order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING) == null) {
             order.addError(parameterDD.getField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING),
                     "qcadooView.validate.field.error.missing");
+            order.addGlobalError("orders.order.typeOfProductionRecording.error.empty");
             return false;
         }
         if (!TypeOfProductionRecording.FOR_EACH.getStringValue().equals(
@@ -109,6 +110,7 @@ public class OrderHooksPC {
                 && !order.getHasManyField(OrderFields.OPERATIONAL_TASKS).isEmpty()) {
             order.addError(parameterDD.getField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING),
                     "orders.order.typeOfProductionRecording.error.hasOperationalTasks");
+            order.addGlobalError("orders.order.typeOfProductionRecording.error.hasOperationalTasks");
             return false;
         }
         return true;

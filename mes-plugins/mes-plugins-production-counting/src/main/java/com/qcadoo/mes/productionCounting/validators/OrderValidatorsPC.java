@@ -23,13 +23,13 @@
  */
 package com.qcadoo.mes.productionCounting.validators;
 
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 public class OrderValidatorsPC {
@@ -39,6 +39,7 @@ public class OrderValidatorsPC {
                 && StringUtils.hasText(order.getStringField(OrderFields.EXTERNAL_NUMBER))) {
             order.addError(orderDD.getField(OrderFieldsPC.AUTO_CLOSE_ORDER),
                     "productionCounting.order.externalNumber.cannotBeAutoClose");
+            order.addGlobalError("productionCounting.order.externalNumber.cannotBeAutoClose");
             return false;
         }
         return true;
