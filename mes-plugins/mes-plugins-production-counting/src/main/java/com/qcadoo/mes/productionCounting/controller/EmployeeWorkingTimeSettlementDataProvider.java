@@ -44,6 +44,8 @@ public class EmployeeWorkingTimeSettlementDataProvider {
 
     private static final String L_WORKSTATION_NUMBER = "workstationNumber";
 
+    private static final String L_TIME_PART = " 23:59:59";
+
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -103,7 +105,7 @@ public class EmployeeWorkingTimeSettlementDataProvider {
         query.append("s.name as \"shiftNumber\", ");
         query.append("to_char(pt.shiftstartday, 'YYYY-MM-DD') AS \"shiftStartDate\", ");
         query.append("o.number AS \"orderNumber\", ");
-        query.append("op.number AS \"operationNumber\", ");
+        query.append("(((toc.nodenumber)::text || ' '::text) || (op.number)::text) AS \"operationNumber\", ");
         query.append("p.number AS \"productNumber\", ");
         query.append("d.number AS \"divisionNumber\", ");
         query.append("pl.number AS \"productionLineNumber\", ");
@@ -119,8 +121,8 @@ public class EmployeeWorkingTimeSettlementDataProvider {
         query.append("LEFT JOIN basic_workstation w ON pt.workstation_id = w.id ");
         query.append("LEFT JOIN basic_shift s ON pt.shift_id = s.id ");
         query.append("LEFT JOIN basic_division d ON pt.division_id = d.id ");
-        query.append("WHERE (pt.shiftstartday BETWEEN '").append(dateFrom).append("' AND '").append(dateTo).append("'  ");
-        query.append(" OR ").append("pt.createdate BETWEEN '").append(dateFrom).append("' AND '").append(dateTo).append("'  ");
+        query.append("WHERE (pt.shiftstartday BETWEEN '").append(dateFrom).append("' AND '").append(dateTo + L_TIME_PART).append("'  ");
+        query.append(" OR ").append("pt.createdate BETWEEN '").append(dateFrom).append("' AND '").append(dateTo + L_TIME_PART).append("'  ");
         query.append(") ");
 
         if (filters.length() > 0) {
@@ -156,7 +158,7 @@ public class EmployeeWorkingTimeSettlementDataProvider {
                         query.append("AND UPPER(o.number) LIKE '%").append(value).append("%' ");
                         break;
                     case L_OPERATION_NUMBER:
-                        query.append("AND UPPER(op.number) LIKE '%").append(value).append("%' ");
+                        query.append("AND UPPER(toc.nodenumber || ' ' || op.number) LIKE '%").append(value).append("%' ");
                         break;
                     case L_PRODUCT_NUMBER:
                         query.append("AND UPPER(p.number) LIKE '%").append(value).append("%' ");
