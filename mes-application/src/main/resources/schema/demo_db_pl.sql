@@ -5038,8 +5038,6 @@ CREATE TABLE arch_materialrequirementcoveragefororder_coveragefororder (
     generated boolean,
     saved boolean,
     filename character varying(1024),
-    belongstofamily_id bigint,
-    productextracted character varying(255) DEFAULT '01all'::character varying,
     coveragetype character varying(255) DEFAULT '01all'::character varying,
     includedraftdeliveries boolean,
     order_id bigint,
@@ -6505,8 +6503,6 @@ CREATE TABLE arch_ordersupplies_materialrequirementcoverage (
     generatedby character varying(255),
     generated boolean,
     saved boolean,
-    belongstofamily_id bigint,
-    productextracted character varying(255),
     coveragetype character varying(255),
     includedraftdeliveries boolean,
     createdate timestamp without time zone,
@@ -8849,9 +8845,7 @@ CREATE TABLE basic_parameter (
     batchnumberuniqueness character varying(255) DEFAULT '01globally'::character varying,
     defaultcoveragefromdays integer,
     includedraftdeliveries boolean,
-    productextracted character varying(255) DEFAULT '01all'::character varying,
     coveragetype character varying(255) DEFAULT '01all'::character varying,
-    belongstofamily_id bigint,
     hideemptycolumnsforoffers boolean,
     hideemptycolumnsforrequests boolean,
     validateproductionrecordtimes boolean,
@@ -8981,7 +8975,8 @@ CREATE TABLE basic_parameter (
     whattoshowondashboard character varying(255) DEFAULT '01orders'::character varying,
     dashboardoperation_id bigint,
     dashboardcomponentslocation_id bigint,
-    dashboardproductsinputlocation_id bigint
+    dashboardproductsinputlocation_id bigint,
+    momentofvalidation character varying(255) DEFAULT '01orderAcceptance'::character varying
 );
 
 
@@ -16800,8 +16795,6 @@ CREATE TABLE materialrequirementcoveragefororder_coveragefororder (
     generated boolean,
     saved boolean,
     filename character varying(1024),
-    belongstofamily_id bigint,
-    productextracted character varying(255) DEFAULT '01all'::character varying,
     coveragetype character varying(255) DEFAULT '01all'::character varying,
     includedraftdeliveries boolean,
     order_id bigint,
@@ -17739,7 +17732,7 @@ CREATE VIEW orders_orderlistdto AS
     product.unit,
     masterorder.number AS masterordernumber,
     division.name AS divisionname,
-    company.number AS companyname,
+    company.name AS companyname,
     masterorderdefinition.number AS masterorderdefinitionnumber,
         CASE
             WHEN (EXISTS ( SELECT repairoder.id
@@ -18947,8 +18940,6 @@ CREATE TABLE ordersupplies_materialrequirementcoverage (
     generatedby character varying(255),
     generated boolean,
     saved boolean,
-    belongstofamily_id bigint,
-    productextracted character varying(255),
     coveragetype character varying(255),
     includedraftdeliveries boolean,
     createdate timestamp without time zone,
@@ -29378,7 +29369,7 @@ SELECT pg_catalog.setval('arch_materialflowresources_reservation_id_seq', 1, fal
 -- Data for Name: arch_materialrequirementcoveragefororder_coveragefororder; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY arch_materialrequirementcoveragefororder_coveragefororder (id, number, coveragetodate, actualdate, generateddate, generatedby, generated, saved, filename, belongstofamily_id, productextracted, coveragetype, includedraftdeliveries, order_id, createdate, updatedate, createuser, updateuser, generatedorders, entityversion, archived) FROM stdin;
+COPY arch_materialrequirementcoveragefororder_coveragefororder (id, number, coveragetodate, actualdate, generateddate, generatedby, generated, saved, filename, coveragetype, includedraftdeliveries, order_id, createdate, updatedate, createuser, updateuser, generatedorders, entityversion, archived) FROM stdin;
 \.
 
 
@@ -29707,7 +29698,7 @@ SELECT pg_catalog.setval('arch_ordersupplies_coverageregister_id_seq', 1, false)
 -- Data for Name: arch_ordersupplies_materialrequirementcoverage; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY arch_ordersupplies_materialrequirementcoverage (id, number, coveragetodate, actualdate, generateddate, generatedby, generated, saved, belongstofamily_id, productextracted, coveragetype, includedraftdeliveries, createdate, updatedate, createuser, updateuser, filename, automaticsavecoverage, order_id, entityversion, ordergenerationinprogress, forordersgroup_id, ordersgroupsgenerated, archived) FROM stdin;
+COPY arch_ordersupplies_materialrequirementcoverage (id, number, coveragetodate, actualdate, generateddate, generatedby, generated, saved, coveragetype, includedraftdeliveries, createdate, updatedate, createuser, updateuser, filename, automaticsavecoverage, order_id, entityversion, ordergenerationinprogress, forordersgroup_id, ordersgroupsgenerated, archived) FROM stdin;
 \.
 
 
@@ -31073,8 +31064,8 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, productextracted, coveragetype, belongstofamily_id, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, allowtechnologytreechangeinpendingorder, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, enableoperationgroupingworkplan, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id) FROM stdin;
-1	167	124	szt.	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01globally	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	50	3000	f	f	f	f	f	f	f	f	t	t	t	f	t	t	f	f	f	f	f	f	f	f	f	f	f	\N	\N	f	f	f	f	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	f	\N	t	01orders	\N	\N	\N
+COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, allowtechnologytreechangeinpendingorder, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, enableoperationgroupingworkplan, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation) FROM stdin;
+1	167	124	szt.	\N	1	t	\N	\N	\N	\N	\N	\N	f	1	\N	\N	\N	\N	\N	f	t	\N	t	\N	\N	02cumulated	f	\N	f	\N	\N	f	f	f	01startOrder	\N	\N	\N	\N	f	\N	0005900125	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	01globally	\N	\N	\N	\N	\N	\N	\N	\N	f	\N	t	\N	\N	\N	01nominalProductCost	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	\N	0	\N	\N	\N	\N	\N	\N	\N	\N	\N	f	1	\N	\N	01transfer	\N	\N	01accepted	01order	01allInputProducts	\N	t	\N	\N	\N	f	\N	\N	\N	\N	\N	\N	\N	150	\N	\N	f	\N	f	\N	t	\N	f	f	f	f	f	f	f	\N	f	f	f	f	f	f	f	50	3000	f	f	f	f	f	f	f	f	t	t	t	f	t	t	f	f	f	f	f	f	f	f	f	f	f	\N	\N	f	f	f	f	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	f	\N	t	01orders	\N	\N	\N	01orderAcceptance
 \.
 
 
@@ -34056,7 +34047,7 @@ SELECT pg_catalog.setval('materialrequirementcoveragefororder_columnforcoverages
 -- Data for Name: materialrequirementcoveragefororder_coveragefororder; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY materialrequirementcoveragefororder_coveragefororder (id, number, coveragetodate, actualdate, generateddate, generatedby, generated, saved, filename, belongstofamily_id, productextracted, coveragetype, includedraftdeliveries, order_id, createdate, updatedate, createuser, updateuser, generatedorders, entityversion) FROM stdin;
+COPY materialrequirementcoveragefororder_coveragefororder (id, number, coveragetodate, actualdate, generateddate, generatedby, generated, saved, filename, coveragetype, includedraftdeliveries, order_id, createdate, updatedate, createuser, updateuser, generatedorders, entityversion) FROM stdin;
 \.
 
 
@@ -34781,7 +34772,7 @@ SELECT pg_catalog.setval('ordersupplies_coverageregister_id_seq', 1, false);
 -- Data for Name: ordersupplies_materialrequirementcoverage; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY ordersupplies_materialrequirementcoverage (id, number, coveragetodate, actualdate, generateddate, generatedby, generated, saved, belongstofamily_id, productextracted, coveragetype, includedraftdeliveries, createdate, updatedate, createuser, updateuser, filename, automaticsavecoverage, order_id, entityversion, ordergenerationinprogress, forordersgroup_id, ordersgroupsgenerated) FROM stdin;
+COPY ordersupplies_materialrequirementcoverage (id, number, coveragetodate, actualdate, generateddate, generatedby, generated, saved, coveragetype, includedraftdeliveries, createdate, updatedate, createuser, updateuser, filename, automaticsavecoverage, order_id, entityversion, ordergenerationinprogress, forordersgroup_id, ordersgroupsgenerated) FROM stdin;
 \.
 
 
@@ -48279,22 +48270,6 @@ ALTER TABLE ONLY jointable_materialrequirement_order
 
 
 --
--- Name: materialrequirementcoverage_belongstofamily_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY materialrequirementcoveragefororder_coveragefororder
-    ADD CONSTRAINT materialrequirementcoverage_belongstofamily_fkey FOREIGN KEY (belongstofamily_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
--- Name: materialrequirementcoverage_belongstofamily_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY arch_materialrequirementcoveragefororder_coveragefororder
-    ADD CONSTRAINT materialrequirementcoverage_belongstofamily_fkey FOREIGN KEY (belongstofamily_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
 -- Name: materialrequirementcoverage_forder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -48348,22 +48323,6 @@ ALTER TABLE ONLY ordersupplies_materialrequirementcoverage
 
 ALTER TABLE ONLY arch_ordersupplies_materialrequirementcoverage
     ADD CONSTRAINT materialrequirementcoverage_ordersgroup_fkey FOREIGN KEY (forordersgroup_id) REFERENCES arch_ordersgroups_ordersgroup(id) DEFERRABLE;
-
-
---
--- Name: materialrequirementcoverage_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY ordersupplies_materialrequirementcoverage
-    ADD CONSTRAINT materialrequirementcoverage_product_fkey FOREIGN KEY (belongstofamily_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
--- Name: materialrequirementcoverage_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY arch_ordersupplies_materialrequirementcoverage
-    ADD CONSTRAINT materialrequirementcoverage_product_fkey FOREIGN KEY (belongstofamily_id) REFERENCES basic_product(id) DEFERRABLE;
 
 
 --
@@ -49956,14 +49915,6 @@ ALTER TABLE ONLY basic_parameter
 
 ALTER TABLE ONLY basic_parameter
     ADD CONSTRAINT parameter_ordersganttparameters_fkey FOREIGN KEY (ordersganttparameters_id) REFERENCES ordersgantt_ordersganttparameters(id) DEFERRABLE;
-
-
---
--- Name: parameter_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY basic_parameter
-    ADD CONSTRAINT parameter_product_fkey FOREIGN KEY (belongstofamily_id) REFERENCES basic_product(id) DEFERRABLE;
 
 
 --
@@ -51947,7 +51898,7 @@ ALTER TABLE ONLY qualitycontrol_qualitydeliveredproduct
 --
 
 ALTER TABLE ONLY qualitycontrol_qualitydeliveredproduct
-    ADD CONSTRAINT qualitydeliveredproduct_orderedproduct_fkey FOREIGN KEY (orderedproduct_id) REFERENCES technologies_qualitycard(id) DEFERRABLE;
+    ADD CONSTRAINT qualitydeliveredproduct_orderedproduct_fkey FOREIGN KEY (orderedproduct_id) REFERENCES deliveries_orderedproduct(id) DEFERRABLE;
 
 
 --
@@ -51963,7 +51914,7 @@ ALTER TABLE ONLY qualitycontrol_qualitydeliveredproduct
 --
 
 ALTER TABLE ONLY qualitycontrol_qualitydeliveredproduct
-    ADD CONSTRAINT qualitydeliveredproduct_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES deliveries_orderedproduct(id) DEFERRABLE;
+    ADD CONSTRAINT qualitydeliveredproduct_qualitycard_fkey FOREIGN KEY (qualitycard_id) REFERENCES technologies_qualitycard(id) DEFERRABLE;
 
 
 --
