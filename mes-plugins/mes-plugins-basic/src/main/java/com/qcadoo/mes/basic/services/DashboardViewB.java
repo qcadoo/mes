@@ -23,17 +23,16 @@
  */
 package com.qcadoo.mes.basic.services;
 
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.security.api.SecurityService;
+
 import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
-
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.security.api.SecurityService;
 
 @Service
 public class DashboardViewB implements DashboardView {
@@ -51,7 +50,7 @@ public class DashboardViewB implements DashboardView {
         ModelAndView mav = new ModelAndView();
 
         mav.setViewName("basic/dashboard");
-
+        mav.addObject("locale", locale.getLanguage());
         mav.addObject("translationsMap", translationService.getMessagesGroup("dashboard", locale));
         mav.addObject("useCompressedStaticResources", useCompressedStaticResources);
 

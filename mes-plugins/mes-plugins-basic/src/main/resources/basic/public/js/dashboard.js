@@ -30,6 +30,8 @@ QCD.dashboardContext.getOperationalTasksCompleted = function getOperationalTasks
     return QCD.dashboardContext.operationalTasksCompleted;
 }
 
+var messagesController = new QCD.MessagesController();
+
 QCD.dashboard = (function () {
 	function init() {
 	    initDailyProductionChart();
@@ -114,9 +116,9 @@ QCD.dashboard = (function () {
 
             $("#dashboardButtons .card").hover(
                 function() {
-                    $(this).removeClass('bg-secondary').addClass('shadow-sm').addClass('bg-success');
+                    $(this).removeClass('bg-secondary').addClass('shadow-sm').addClass('bg-success').addClass('card-hover');
                 }, function() {
-                    $(this).addClass('bg-secondary').removeClass('shadow-sm').removeClass('bg-success');
+                    $(this).addClass('bg-secondary').removeClass('shadow-sm').removeClass('bg-success').removeClass('card-hover');
                 }
             );
         }
@@ -328,7 +330,8 @@ QCD.dashboard = (function () {
     }
 
 	return {
-		init: init
+		init: init,
+		initOrders: initOrders
 	};
 
 })();
@@ -473,7 +476,8 @@ function goToPage(url, isPage) {
 }
 
 function addOrder() {
-    goToMenuPosition('orders.productionOrdersPlanning');
+    QCD.orderDefinitionWizard.init();
+    //goToMenuPosition('orders.productionOrdersPlanning');
 }
 
 function addOperationalTask() {
@@ -506,3 +510,13 @@ function goToProductionTrackingTerminal(orderId, operationalTaskId, workstationN
     }
     goToPage(url, false);
 }
+
+	function showMessage(type, title, content, autoClose) {
+		messagesController.addMessage({
+			type : type,
+			title : title,
+			content : content,
+			autoClose : autoClose,
+			extraLarge : false
+		});
+	}

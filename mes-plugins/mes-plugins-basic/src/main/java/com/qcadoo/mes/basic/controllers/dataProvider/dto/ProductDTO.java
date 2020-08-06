@@ -16,6 +16,8 @@ public class ProductDTO implements AbstractDTO {
 
     private String category;
 
+    private String unit;
+
     public Long getId() {
         return id;
     }
@@ -72,4 +74,11 @@ public class ProductDTO implements AbstractDTO {
         this.category = category;
     }
 
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
 }

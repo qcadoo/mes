@@ -50,7 +50,7 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/ChartJS/Chart.min.css?ver=${buildNumber}" type="text/css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/core/lib/bootstrap.min.css?ver=${buildNumber}" type="text/css" />
     <link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/css/core/lib/bootstrap-glyphicons.css?ver=${buildNumber}" type="text/css" />
-
+    <link href="${pageContext.request.contextPath}/qcadooView/public/css/core/notification.css?ver=${buildNumber}" rel="stylesheet" />
 	<c:choose>
 		<c:when test="${useCompressedStaticResources}">
 			<link rel="stylesheet" href="${pageContext.request.contextPath}/qcadooView/public/qcadoo-min.css?ver=${buildNumber}" type="text/css" />
@@ -62,13 +62,18 @@
 	</c:choose>
 
     <script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/core/lib/jquery-3.2.1.min.js?ver=${buildNumber}"></script>
+
 	<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/core/lib/moment-with-locales.js?ver=${buildNumber}"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/ChartJS/Chart.min.js?ver=${buildNumber}"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/core/lib/popper.min.js?ver=${buildNumber}"></script>
 	<script type="text/javascript" src="${pageContext.request.contextPath}/qcadooView/public/js/core/lib/bootstrap.min.js?ver=${buildNumber}"></script>
+	<script type="text/javascript"
+        src="${pageContext.request.contextPath}/qcadooView/public/js/core/lib/jquery.pnotify.js?ver=${buildNumber}"></script>
+    <script type="text/javascript"
+        src="${pageContext.request.contextPath}/qcadooView/public/js/core/qcd/core/messagesController.js?ver=${buildNumber}"></script>
 </head>
 
-<body id="documentBody" role="document">
+<body id="documentBody" class="dashboardColorBackground" role="document">
     <div class="container" role="main">
         <div class="clear"></div>
         <c:if test="${showChartOnDashboard}">
@@ -185,6 +190,7 @@
         </div>
 
 	</div>
+	<jsp:include page="orderDefinitionWizard.jsp" />
 	<script type="text/javascript" src="${pageContext.request.contextPath}/basic/public/js/dashboard.js?ver=${buildNumber}"></script>
 </body>
 

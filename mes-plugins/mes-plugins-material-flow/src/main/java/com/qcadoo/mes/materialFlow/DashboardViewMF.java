@@ -23,17 +23,6 @@
  */
 package com.qcadoo.mes.materialFlow;
 
-import java.util.LinkedList;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.ModelAndView;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
@@ -47,6 +36,17 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.constants.MenuItemFields;
+
+import java.util.LinkedList;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.ModelAndView;
 
 @Service
 @Primary
@@ -74,6 +74,7 @@ public class DashboardViewMF implements DashboardView {
         Entity currentUser = userService.getCurrentUserEntity();
 
         mav.setViewName("basic/dashboard");
+        mav.addObject("locale", locale.getLanguage());
 
         mav.addObject("translationsMap", translationService.getMessagesGroup("dashboard", locale));
         mav.addObject("useCompressedStaticResources", useCompressedStaticResources);
