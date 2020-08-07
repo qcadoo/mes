@@ -2,6 +2,8 @@ package com.qcadoo.mes.orders.controllers;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.qcadoo.commons.functional.Either;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.orders.OrderService;
@@ -21,11 +23,13 @@ import com.qcadoo.mes.states.service.StateChangeContextBuilder;
 import com.qcadoo.mes.technologies.TechnologyNameAndNumberGenerator;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
+import com.qcadoo.mes.technologies.constants.ParameterFieldsT;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.states.aop.TechnologyStateChangeAspect;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
+import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
@@ -55,7 +59,6 @@ public class OrderCreationService {
             "nextOperationAfterProducedType", "nextOperationAfterProducedQuantity", "nextOperationAfterProducedQuantityUNIT",
             "timeNextOperation", "machineUtilization", "laborUtilization", "productionInOneCycleUNIT",
             "areProductQuantitiesDivisible", "isTjDivisible");
-
 
     private static final String NEXT_OPERATION_AFTER_PRODUCED_TYPE = "nextOperationAfterProducedType";
 
@@ -87,12 +90,23 @@ public class OrderCreationService {
     @Autowired
     private TechnologyNameAndNumberGenerator technologyNameAndNumberGenerator;
 
+    @Autowired
+    private TranslationService translationService;
 
     public OrderCreationResponse createOrder(OrderCreationRequest orderCreationRequest) {
+
         Entity parameter = parameterService.getParameter();
+        if (!isParameterSet(parameter)) {
+            return new OrderCreationResponse(translationService.translate(
+                    "basic.dashboard.orderDefinitionWizard.createOrder.parameterNotSet", LocaleContextHolder.getLocale()));
+        }
         Entity product = getProduct(orderCreationRequest.getProductId());
         Entity productionLine = getProductionLine(orderCreationRequest.getProductionLineId());
-        Entity technology = getOrCreateTechnology(orderCreationRequest);
+        Either<String, Entity> isTechnology = getOrCreateTechnology(orderCreationRequest);
+        if (isTechnology.isLeft()) {
+            return new OrderCreationResponse(isTechnology.getLeft());
+        }
+        Entity technology = isTechnology.getRight();
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).create();
 
         order.setField(OrderFields.NUMBER,
@@ -121,12 +135,31 @@ public class OrderCreationService {
             final StateChangeContext orderStateChangeContext = stateChangeContextBuilder.build(
                     orderStateChangeAspect.getChangeEntityDescriber(), order, OrderState.ACCEPTED.getStringValue());
             orderStateChangeAspect.changeState(orderStateChangeContext);
-
+            order = order.getDataDefinition().get(order.getId());
+            if (!order.getStringField(OrderFields.STATE).equals(OrderStateStringValues.ACCEPTED)) {
+                return new OrderCreationResponse(translationService.translate(
+                        "basic.dashboard.orderDefinitionWizard.createOrder.acceptError", LocaleContextHolder.getLocale()));
+            }
+        } else {
+            return new OrderCreationResponse(translationService.translate(
+                    "basic.dashboard.orderDefinitionWizard.createOrder.validationError", LocaleContextHolder.getLocale()));
         }
         return new OrderCreationResponse(OrderCreationResponse.StatusCode.OK);
     }
 
-    public String buildDescription(Entity parameter, String description, Entity technology) {
+    private boolean isParameterSet(final Entity parameter) {
+        Entity operation = parameter.getBelongsToField(L_DASHBOARD_OPERATION);
+        Entity dashboardComponentsLocation = parameter.getBelongsToField("dashboardComponentsLocation");
+        Entity dashboardProductsInputLocation = parameter.getBelongsToField("dashboardProductsInputLocation");
+        if (Objects.isNull(operation) || Objects.isNull(dashboardComponentsLocation)
+                || Objects.isNull(dashboardProductsInputLocation) || !parameter.getBooleanField(
+                ParameterFieldsT.COMPLETE_WAREHOUSES_FLOW_WHILE_CHECKING)) {
+            return false;
+        }
+        return true;
+    }
+
+    private String buildDescription(Entity parameter, String description, Entity technology) {
         boolean fillOrderDescriptionBasedOnTechnology = parameter
                 .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);
 
@@ -146,16 +179,16 @@ public class OrderCreationService {
         return descriptionBuilder.toString();
     }
 
-    private Entity getOrCreateTechnology(OrderCreationRequest orderCreationRequest) {
+    private Either<String, Entity> getOrCreateTechnology(OrderCreationRequest orderCreationRequest) {
         if (Objects.isNull(orderCreationRequest.getTechnologyId())) {
             return createTechnology(orderCreationRequest);
         } else {
-            return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY)
-                    .get(orderCreationRequest.getTechnologyId());
+            return Either.right(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_TECHNOLOGY).get(orderCreationRequest.getTechnologyId()));
         }
     }
 
-    private Entity createTechnology(OrderCreationRequest orderCreationRequest) {
+    private Either<String, Entity> createTechnology(OrderCreationRequest orderCreationRequest) {
         Entity product = getProduct(orderCreationRequest.getProductId());
         Entity parameter = parameterService.getParameter();
         Entity operation = parameter.getBelongsToField(L_DASHBOARD_OPERATION);
@@ -183,18 +216,16 @@ public class OrderCreationService {
         Entity topoc = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT).create();
         topoc.setField(OperationProductOutComponentFields.PRODUCT, product);
-        //topoc.setField(OperationProductOutComponentFields.OPERATION_COMPONENT, toc);
         topoc.setField(OperationProductOutComponentFields.QUANTITY, BigDecimal.ONE);
         toc.setField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS, Lists.newArrayList(topoc));
 
         List<Entity> topics = Lists.newArrayList();
-        for(MaterialDto material : orderCreationRequest.getMaterials()) {
+        for (MaterialDto material : orderCreationRequest.getMaterials()) {
             Entity inProduct = getProduct(material.getProductId());
 
             Entity topic = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).create();
             topic.setField(OperationProductInComponentFields.PRODUCT, inProduct);
-            //topic.setField(OperationProductInComponentFields.OPERATION_COMPONENT, toc);
             topic.setField(OperationProductInComponentFields.QUANTITY, material.getQuantityPerUnit());
             topics.add(topic);
         }
@@ -212,13 +243,21 @@ public class OrderCreationService {
         technology.setField("componentsLocation", dashboardComponentsLocation);
         technology.setField("productsInputLocation", dashboardProductsInputLocation);
         technology = technology.getDataDefinition().save(technology);
-        if(technology.isValid()) {
-            final StateChangeContext technologyStateChangeContext = stateChangeContextBuilder.build(
-                    technologyStateChangeAspect.getChangeEntityDescriber(), technology, TechnologyState.ACCEPTED.getStringValue());
+        if (technology.isValid()) {
+            final StateChangeContext technologyStateChangeContext = stateChangeContextBuilder
+                    .build(technologyStateChangeAspect.getChangeEntityDescriber(), technology,
+                            TechnologyState.ACCEPTED.getStringValue());
             technologyStateChangeAspect.changeState(technologyStateChangeContext);
             technology = technology.getDataDefinition().get(technology.getId());
+            if (!technology.getStringField(TechnologyFields.STATE).equals(TechnologyStateStringValues.ACCEPTED)) {
+                return Either.left(translationService.translate(
+                        "basic.dashboard.orderDefinitionWizard.createTechnology.acceptError", LocaleContextHolder.getLocale()));
+            }
+        } else {
+            return Either.left(translationService.translate(
+                    "basic.dashboard.orderDefinitionWizard.createTechnology.validationError", LocaleContextHolder.getLocale()));
         }
-        return technology;
+        return Either.right(technology);
     }
 
     private Entity getProductionLine(Long productionLineId) {

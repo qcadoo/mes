@@ -1,7 +1,7 @@
 var QCD = QCD || {};
 
 QCD.orderDefinitionWizardContext = {};
-QCD.orderDefinitionWizardContext.orderDefinitionWizardBody
+QCD.orderDefinitionWizardContext.orderDefinitionWizardBody;
 QCD.orderDefinitionWizardContext.order = {};
 QCD.orderDefinitionWizardContext.order.product = null;
 QCD.orderDefinitionWizardContext.order.technology = null;
@@ -16,6 +16,9 @@ QCD.orderDefinitionWizardContext.order.productEvents = [];
 QCD.orderDefinitionWizard = (function() {
 
     function init() {
+
+        cleanContext();
+
         $("#selectProduct").prop('disabled', true);
         $("#selectTechnology").prop('disabled', true);
 
@@ -35,8 +38,6 @@ QCD.orderDefinitionWizard = (function() {
         $('#technologies').on('uncheck.bs.table', function(row, $element) {
             $("#selectTechnology").prop('disabled', true);
         });
-
-
 
         QCD.orderDefinitionWizardContext.orderDefinitionWizardBody = $('#orderDefinitionWizard').clone();
 
@@ -489,7 +490,7 @@ QCD.orderDefinitionWizard = (function() {
                 data: JSON.stringify(product),
                 contentType: "application/json",
                 beforeSend: function() {
-
+                    $("#loader").appendTo("body").modal('show');
                 },
                 success: function(data) {
                     if (!QCD.orderDefinitionWizardContext.order.lastMaterialIndex) {
@@ -531,6 +532,8 @@ QCD.orderDefinitionWizard = (function() {
                                 false);
                         }
                     }
+                                        $("#loader").modal('hide');
+
                 },
                 error: function(data) {
                     QCD.terminalView.showMessage('failure', QCD
@@ -539,7 +542,7 @@ QCD.orderDefinitionWizard = (function() {
 
                 },
                 complete: function() {
-
+                    $("#loader").modal('hide');
                 }
             });
 
@@ -685,7 +688,7 @@ QCD.orderDefinitionWizard = (function() {
                 data: JSON.stringify(productionLine),
                 contentType: "application/json",
                 beforeSend: function() {
-
+                    $("#loader").appendTo("body").modal('show');
                 },
                 success: function(data) {
                     if (data.code === 'OK') {
@@ -711,7 +714,7 @@ QCD.orderDefinitionWizard = (function() {
 
                 },
                 complete: function() {
-
+                    $("#loader").modal('hide');
                 }
             });
 
@@ -788,7 +791,7 @@ QCD.orderDefinitionWizard = (function() {
             $materialsTable.bootstrapTable('load', QCD.orderDefinitionWizardContext.order.materials);
         });
 
-
+        $('[data-toggle="tooltip"]').tooltip();
 
     }
 
@@ -944,7 +947,8 @@ QCD.orderDefinitionWizard = (function() {
             type: "GET",
             async: false,
             beforeSend: function(data) {
-                // $("#loader").modal('show');
+                				$("#loader").appendTo("body").modal('show');
+
             },
             success: function(data) {
                 $("#productUnit").empty();
@@ -967,7 +971,7 @@ QCD.orderDefinitionWizard = (function() {
                     QCD.translate(data.message), false);
             },
             complete: function() {
-                // $("#loader").modal('hide');
+                $("#loader").modal('hide');
             }
         });
     }
@@ -1055,7 +1059,7 @@ QCD.orderDefinitionWizard = (function() {
             data: JSON.stringify(order),
             contentType: "application/json",
             beforeSend: function() {
-
+                $("#loader").appendTo("body").modal('show');
             },
             success: function(data) {
                 if (data.code === 'OK') {
@@ -1078,7 +1082,7 @@ QCD.orderDefinitionWizard = (function() {
 
             },
             complete: function() {
-
+                $("#loader").modal('hide');
             }
         });
     }
@@ -1100,7 +1104,7 @@ QCD.orderDefinitionWizard = (function() {
                     type: "GET",
                     async: false,
                     beforeSend: function(data) {
-                        // $("#loader").modal('show');
+                        $("#loader").appendTo("body").modal('show');
                     },
                     success: function(data) {
                       QCD.orderDefinitionWizardContext.order.materials = data;
@@ -1113,9 +1117,21 @@ QCD.orderDefinitionWizard = (function() {
                             QCD.translate(data.message), false);
                     },
                     complete: function() {
-                        // $("#loader").modal('hide');
+                        $("#loader").modal('hide');
                     }
                 });
+    }
+
+    function cleanContext() {
+        QCD.orderDefinitionWizardContext.order = {};
+        QCD.orderDefinitionWizardContext.order.product = null;
+        QCD.orderDefinitionWizardContext.order.technology = null;
+        QCD.orderDefinitionWizardContext.order.description = null;
+        QCD.orderDefinitionWizardContext.order.productionLine = null;
+        QCD.orderDefinitionWizardContext.order.materials = [];
+        QCD.orderDefinitionWizardContext.order.currentMaterialIndex = null;
+        QCD.orderDefinitionWizardContext.order.lastMaterialIndex = null;
+        QCD.orderDefinitionWizardContext.order.productEvents = [];
     }
 
     return {
