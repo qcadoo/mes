@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.qcadoo.mes</groupId>
         <artifactId>mes-plugins</artifactId>
-        <version>1.5-SNAPSHOT</version>
+        <version>1.5-SNAPSHOT-DEV</version>
     </parent>
 
     <artifactId>mes-plugins-order-supplies</artifactId>
@@ -19,47 +19,47 @@
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-orders</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.5-SNAPSHOT-DEV</version>
         </dependency>
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-production-counting</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.5-SNAPSHOT-DEV</version>
         </dependency>
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-material-flow-resources</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.5-SNAPSHOT-DEV</version>
         </dependency>
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-deliveries</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.5-SNAPSHOT-DEV</version>
         </dependency>
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-material-requirements</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.5-SNAPSHOT-DEV</version>
         </dependency>
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-product-catalog-numbers</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.5-SNAPSHOT-DEV</version>
         </dependency>
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-warehouse-minimal-state</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.5-SNAPSHOT-DEV</version>
         </dependency>
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-tech-subcontr-for-negot</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.5-SNAPSHOT-DEV</version>
         </dependency>
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-cat-numbers-in-negot</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.5-SNAPSHOT-DEV</version>
         </dependency>
     </dependencies>
 
