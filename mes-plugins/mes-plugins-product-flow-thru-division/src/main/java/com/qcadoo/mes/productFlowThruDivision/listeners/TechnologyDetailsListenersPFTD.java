@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.listeners;
 
-import com.qcadoo.mes.productFlowThruDivision.OperationComponentDataProvider;
+import com.qcadoo.mes.technologies.OperationComponentDataProvider;
 import com.qcadoo.mes.productFlowThruDivision.constants.*;
 import com.qcadoo.mes.productFlowThruDivision.hooks.TechnologyDetailsHooksPFTD;
 import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;

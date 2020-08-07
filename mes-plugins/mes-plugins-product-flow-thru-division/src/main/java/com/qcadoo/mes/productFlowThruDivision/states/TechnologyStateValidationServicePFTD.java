@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.states;
 
-import com.qcadoo.mes.productFlowThruDivision.OperationComponentDataProvider;
+import com.qcadoo.mes.technologies.OperationComponentDataProvider;
 import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductInComponentFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductOutComponentFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.Range;

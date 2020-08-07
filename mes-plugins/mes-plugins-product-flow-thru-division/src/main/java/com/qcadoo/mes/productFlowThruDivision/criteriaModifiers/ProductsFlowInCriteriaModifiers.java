@@ -23,16 +23,16 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.criteriaModifiers;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.productFlowThruDivision.OperationComponentDataProvider;
+import com.qcadoo.mes.technologies.OperationComponentDataProvider;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductsFlowInCriteriaModifiers {

@@ -358,6 +358,12 @@
                     method="onCreate"/>
         </model:model-hook>
 
+        <model:model-hook plugin="orders" model="order">
+            <model:onCreate
+                    class="com.qcadoo.mes.productFlowThruDivision.hooks.OrderHooksPFTD"
+                    method="onCreate"/>
+        </model:model-hook>
+
         <model:model-hook plugin="technologies" model="technology">
             <model:onCopy
                     class="com.qcadoo.mes.productFlowThruDivision.hooks.TechnologyHooksPFTD"
