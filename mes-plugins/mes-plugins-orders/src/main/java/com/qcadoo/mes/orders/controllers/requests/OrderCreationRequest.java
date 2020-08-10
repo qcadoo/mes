@@ -1,7 +1,7 @@
 package com.qcadoo.mes.orders.controllers.requests;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.orders.controllers.dto.MaterialDto;
+import com.qcadoo.mes.technologies.controller.dataProvider.MaterialDto;
 
 import java.math.BigDecimal;
 import java.util.Date;

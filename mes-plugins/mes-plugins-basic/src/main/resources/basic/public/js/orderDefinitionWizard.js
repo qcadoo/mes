@@ -111,52 +111,51 @@ QCD.orderDefinitionWizard = (function() {
                 } else if (currentIndex == 2) {
                     var materials = QCD.orderDefinitionWizardContext.order.materials;
                     $.each(materials, function(i, material) {
-                        if(!material.productInId) {
-                        if (material.product == null || material.product === '' || material.productId == null) {
-                            $('#product-' + material.index).addClass('is-invalid');
-                            invalid = true;
+                        if (!material.productInId) {
+                            if (material.product == null || material.product === '' || material.productId == null) {
+                                $('#product-' + material.index).addClass('is-invalid');
+                                invalid = true;
 
-                        } else {
-                            $('#product-' + material.index).removeClass('is-invalid');
-                        }
-
-                        if (material.quantity == null || material.quantity === '') {
-                            $('#quantity-' + material.index).addClass('is-invalid');
-                            invalid = true;
-
-                        } else {
-                            $('#quantity-' + material.index).removeClass('is-invalid');
-                            invalid = !validQuantity("quantity-" + material.index);
-                            if (invalid) {
-                                return !invalid;
+                            } else {
+                                $('#product-' + material.index).removeClass('is-invalid');
                             }
-                        }
 
-                        if (material.quantityPerUnit == null || material.quantityPerUnit === '') {
-                            $('#quantityPerUnit-' + material.index).addClass('is-invalid');
-                            invalid = true;
+                            if (material.quantity == null || material.quantity === '') {
+                                $('#quantity-' + material.index).addClass('is-invalid');
+                                invalid = true;
 
-                        } else {
-                            $('#quantityPerUnit-' + material.index).removeClass('is-invalid');
-                            invalid = !validQuantity("quantityPerUnit-" + material.index);
-                            if (invalid) {
-                                return !invalid;
+                            } else {
+                                $('#quantity-' + material.index).removeClass('is-invalid');
+                                invalid = !validQuantity("quantity-" + material.index);
+                                if (invalid) {
+                                    return !invalid;
+                                }
                             }
-                        }
+
+                            if (material.quantityPerUnit == null || material.quantityPerUnit === '') {
+                                $('#quantityPerUnit-' + material.index).addClass('is-invalid');
+                                invalid = true;
+
+                            } else {
+                                $('#quantityPerUnit-' + material.index).removeClass('is-invalid');
+                                invalid = !validQuantity("quantityPerUnit-" + material.index);
+                                if (invalid) {
+                                    return !invalid;
+                                }
+                            }
                         }
 
                     });
-                    if(materials.length < 1) {
-                    showMessage(
-                                            'failure',
-                                            QCD.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
-                                            QCD.translate("basic.dashboard.orderDefinitionWizard.error.validationError.materialsNotDefined"),
-                                            false);
-                                                                        invalid = true;
+                    if (materials.length < 1) {
+                        showMessage(
+                            'failure',
+                            QCD.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
+                            QCD.translate("basic.dashboard.orderDefinitionWizard.error.validationError.materialsNotDefined"),
+                            false);
+                        invalid = true;
 
                     }
-                } else if (currentIndex == 3) {
-                }
+                } else if (currentIndex == 3) {}
                 if (invalid) {
                     showMessage(
                         'failure',
@@ -230,6 +229,21 @@ QCD.orderDefinitionWizard = (function() {
             $("#unit").val(QCD.orderDefinitionWizardContext.order.product.unit);
             $("#technology").prop('disabled', false);
             $("#getTechnology").prop('disabled', false);
+            QCD.orderDefinitionWizardContext.order.technology = null;
+            $("#technology").val("");
+            $.getJSON(
+                'rest/technologies', {
+                    query: "",
+                    productId: QCD.orderDefinitionWizardContext.order.product.id
+                },
+                function(data) {
+                    $.each(data.technologies, function(i, tech) {
+                        if (tech.master) {
+                            QCD.orderDefinitionWizardContext.order.technology = tech;
+                            $("#technology").val(QCD.orderDefinitionWizardContext.order.technology.number);
+                        }
+                    });
+                });
 
         });
 
@@ -361,6 +375,21 @@ QCD.orderDefinitionWizard = (function() {
                 $("#unit").val(QCD.orderDefinitionWizardContext.order.product.unit);
                 $("#technology").prop('disabled', false);
                 $("#getTechnology").prop('disabled', false);
+                QCD.orderDefinitionWizardContext.order.technology = null;
+                $("#technology").val("");
+                $.getJSON(
+                    'rest/technologies', {
+                        query: "",
+                        productId: QCD.orderDefinitionWizardContext.order.product.id
+                    },
+                    function(data) {
+                        $.each(data.technologies, function(i, tech) {
+                            if (tech.master) {
+                                QCD.orderDefinitionWizardContext.order.technology = tech;
+                                $("#technology").val(QCD.orderDefinitionWizardContext.order.technology.number);
+                            }
+                        });
+                    });
             }
 
         });
@@ -503,6 +532,8 @@ QCD.orderDefinitionWizard = (function() {
                             $("#productDefinitionModal").modal('hide');
                             $("#product").val(QCD.orderDefinitionWizardContext.order.product.number);
                             $("#unit").val(QCD.orderDefinitionWizardContext.order.product.unit);
+                            QCD.orderDefinitionWizardContext.order.technology = null;
+                            $("#technology").val("");
                         } else {
                             showMessage(
                                 'failure',
@@ -532,7 +563,7 @@ QCD.orderDefinitionWizard = (function() {
                                 false);
                         }
                     }
-                                        $("#loader").modal('hide');
+                    $("#loader").modal('hide');
 
                 },
                 error: function(data) {
@@ -947,7 +978,7 @@ QCD.orderDefinitionWizard = (function() {
             type: "GET",
             async: false,
             beforeSend: function(data) {
-                				$("#loader").appendTo("body").modal('show');
+                $("#loader").appendTo("body").modal('show');
 
             },
             success: function(data) {
@@ -1051,6 +1082,7 @@ QCD.orderDefinitionWizard = (function() {
             usedMaterial.productId = material.productId;
             usedMaterial.quantity = material.quantity;
             usedMaterial.quantityPerUnit = material.quantityPerUnit;
+            usedMaterial.productInId = material.productInId;
             order.materials.push(usedMaterial);
         });
         $.ajax({
@@ -1098,28 +1130,29 @@ QCD.orderDefinitionWizard = (function() {
                 .toDate();
         }
     }
-    function fillMaterialsForTechnology(element) {
-         $.ajax({
-                    url: "rest/technology/"+QCD.orderDefinitionWizardContext.order.technology.id+"/materials",
-                    type: "GET",
-                    async: false,
-                    beforeSend: function(data) {
-                        $("#loader").appendTo("body").modal('show');
-                    },
-                    success: function(data) {
-                      QCD.orderDefinitionWizardContext.order.materials = data;
-                      $("#materials").bootstrapTable('load', QCD.orderDefinitionWizardContext.order.materials);
 
-                    },
-                    error: function(data) {
-                        QCD.terminalView.showMessage('failure', QCD
-                            .translate(failureMessage),
-                            QCD.translate(data.message), false);
-                    },
-                    complete: function() {
-                        $("#loader").modal('hide');
-                    }
-                });
+    function fillMaterialsForTechnology(element) {
+        $.ajax({
+            url: "rest/technology/" + QCD.orderDefinitionWizardContext.order.technology.id + "/materials",
+            type: "GET",
+            async: false,
+            beforeSend: function(data) {
+                $("#loader").appendTo("body").modal('show');
+            },
+            success: function(data) {
+                QCD.orderDefinitionWizardContext.order.materials = data;
+                $("#materials").bootstrapTable('load', QCD.orderDefinitionWizardContext.order.materials);
+
+            },
+            error: function(data) {
+                QCD.terminalView.showMessage('failure', QCD
+                    .translate(failureMessage),
+                    QCD.translate(data.message), false);
+            },
+            complete: function() {
+                $("#loader").modal('hide');
+            }
+        });
     }
 
     function cleanContext() {
@@ -1205,75 +1238,75 @@ function validateDecimalWithPrecisionAndScale(value, precision, scale) {
 }
 
 function productFormatter(value, row) {
-     if(row.productInId) {
-    return '<div class="input-group">' +
-        '<input type="text" disabled class="form-control q-auto-complete" tabindex="1"  onkeypress="QCD.orderDefinitionWizard.addProductTypeahead(' + new String(row.index) + ')" id="product-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
-        '<div class="input-group-append">' +
-        '<button type="button" disabled class="btn btn-outline-secondary bg-primary text-white" onclick="QCD.orderDefinitionWizard.openMaterialsLookup(' + new String(row.index) + ')">' +
-        '<span class="glyphicon glyphicon-search"></span>' +
-        '</button>' +
-        '</div>' +
-        '<div class="input-group-append">' +
-        '<button type="button" disabled class="btn btn-outline-secondary bg-primary text-white" onclick="QCD.orderDefinitionWizard.openMaterialDefinition(' + new String(row.index) + ')">' +
-        '<span class="glyphicon glyphicon-plus"></span>' +
-        '</button>' +
-        '</div>' +
-        '</div>';
- } else {
-     return '<div class="input-group">' +
-         '<input type="text" class="form-control q-auto-complete" tabindex="1"  onkeypress="QCD.orderDefinitionWizard.addProductTypeahead(' + new String(row.index) + ')" id="product-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
-         '<div class="input-group-append">' +
-         '<button type="button" class="btn btn-outline-secondary bg-primary text-white" onclick="QCD.orderDefinitionWizard.openMaterialsLookup(' + new String(row.index) + ')">' +
-         '<span class="glyphicon glyphicon-search"></span>' +
-         '</button>' +
-         '</div>' +
-         '<div class="input-group-append">' +
-         '<button type="button" class="btn btn-outline-secondary bg-primary text-white" onclick="QCD.orderDefinitionWizard.openMaterialDefinition(' + new String(row.index) + ')">' +
-         '<span class="glyphicon glyphicon-plus"></span>' +
-         '</button>' +
-         '</div>' +
-         '</div>';
- }
+    if (row.productInId) {
+        return '<div class="input-group">' +
+            '<input type="text" disabled class="form-control q-auto-complete" tabindex="1"  onkeypress="QCD.orderDefinitionWizard.addProductTypeahead(' + new String(row.index) + ')" id="product-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
+            '<div class="input-group-append">' +
+            '<button type="button" disabled class="btn btn-outline-secondary bg-primary text-white" onclick="QCD.orderDefinitionWizard.openMaterialsLookup(' + new String(row.index) + ')">' +
+            '<span class="glyphicon glyphicon-search"></span>' +
+            '</button>' +
+            '</div>' +
+            '<div class="input-group-append">' +
+            '<button type="button" disabled class="btn btn-outline-secondary bg-primary text-white" onclick="QCD.orderDefinitionWizard.openMaterialDefinition(' + new String(row.index) + ')">' +
+            '<span class="glyphicon glyphicon-plus"></span>' +
+            '</button>' +
+            '</div>' +
+            '</div>';
+    } else {
+        return '<div class="input-group">' +
+            '<input type="text" class="form-control q-auto-complete" tabindex="1"  onkeypress="QCD.orderDefinitionWizard.addProductTypeahead(' + new String(row.index) + ')" id="product-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
+            '<div class="input-group-append">' +
+            '<button type="button" class="btn btn-outline-secondary bg-primary text-white" onclick="QCD.orderDefinitionWizard.openMaterialsLookup(' + new String(row.index) + ')">' +
+            '<span class="glyphicon glyphicon-search"></span>' +
+            '</button>' +
+            '</div>' +
+            '<div class="input-group-append">' +
+            '<button type="button" class="btn btn-outline-secondary bg-primary text-white" onclick="QCD.orderDefinitionWizard.openMaterialDefinition(' + new String(row.index) + ')">' +
+            '<span class="glyphicon glyphicon-plus"></span>' +
+            '</button>' +
+            '</div>' +
+            '</div>';
+    }
 
 
 }
 
 function quantityFormatter(value, row) {
-     if(row.productInId) {
-    return '<div class="input-group">' +
-        '<input type="text" disabled class="form-control right " tabindex="1" onblur="QCD.orderDefinitionWizard.quantityOnBlur(' + new String(row.index) + ')" id="quantity-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
-        '</div>';
-} else {
-    return '<div class="input-group">' +
-        '<input type="text" class="form-control right " tabindex="1" onblur="QCD.orderDefinitionWizard.quantityOnBlur(' + new String(row.index) + ')" id="quantity-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
-        '</div>';
-}
+    if (row.productInId) {
+        return '<div class="input-group">' +
+            '<input type="text" disabled class="form-control right " tabindex="1" onblur="QCD.orderDefinitionWizard.quantityOnBlur(' + new String(row.index) + ')" id="quantity-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
+            '</div>';
+    } else {
+        return '<div class="input-group">' +
+            '<input type="text" class="form-control right " tabindex="1" onblur="QCD.orderDefinitionWizard.quantityOnBlur(' + new String(row.index) + ')" id="quantity-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
+            '</div>';
+    }
 
 }
 
 function quantityPerUnitFormatter(value, row) {
-     if(row.productInId) {
+    if (row.productInId) {
         return '<div class="input-group">' +
-                  '<input type="text" disabled class="form-control right " tabindex="1" onblur="QCD.orderDefinitionWizard.quantityPerUnitOnBlur(' + new String(row.index) + ')" id="quantityPerUnit-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
-                  '</div>';
-     } else {
+            '<input type="text" disabled class="form-control right " tabindex="1" onblur="QCD.orderDefinitionWizard.quantityPerUnitOnBlur(' + new String(row.index) + ')" id="quantityPerUnit-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
+            '</div>';
+    } else {
         return '<div class="input-group">' +
-             '<input type="text" class="form-control right " tabindex="1" onblur="QCD.orderDefinitionWizard.quantityPerUnitOnBlur(' + new String(row.index) + ')" id="quantityPerUnit-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
-             '</div>';
-     }
+            '<input type="text" class="form-control right " tabindex="1" onblur="QCD.orderDefinitionWizard.quantityPerUnitOnBlur(' + new String(row.index) + ')" id="quantityPerUnit-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
+            '</div>';
+    }
 
 }
 
 function unitFormatter(value, row) {
-     if(row.productInId) {
-    return '<div class="input-group">' +
-        '<input type="text" disabled class="form-control" disabled tabindex="1" id="unit-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
-        '</div>';
-} else {
-    return '<div class="input-group">' +
-        '<input type="text" class="form-control" disabled tabindex="1" id="unit-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
-        '</div>';
-}
+    if (row.productInId) {
+        return '<div class="input-group">' +
+            '<input type="text" disabled class="form-control" disabled tabindex="1" id="unit-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
+            '</div>';
+    } else {
+        return '<div class="input-group">' +
+            '<input type="text" class="form-control" disabled tabindex="1" id="unit-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
+            '</div>';
+    }
 
 }
 

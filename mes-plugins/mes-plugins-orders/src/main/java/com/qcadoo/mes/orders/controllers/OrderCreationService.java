@@ -11,7 +11,6 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
-import com.qcadoo.mes.orders.controllers.dto.MaterialDto;
 import com.qcadoo.mes.orders.controllers.requests.OrderCreationRequest;
 import com.qcadoo.mes.orders.controllers.responses.OrderCreationResponse;
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
@@ -27,17 +26,22 @@ import com.qcadoo.mes.technologies.constants.ParameterFieldsT;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.controller.dataProvider.MaterialDto;
 import com.qcadoo.mes.technologies.states.aop.TechnologyStateChangeAspect;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +69,40 @@ public class OrderCreationService {
     private static final String PRODUCTION_IN_ONE_CYCLE = "productionInOneCycle";
 
     private static final String NEXT_OPERATION_AFTER_PRODUCED_QUANTITY = "nextOperationAfterProducedQuantity";
+
+    private static final String L_PRODUCT = "product";
+
+    private static final String L_DASHBOARD_COMPONENTS_LOCATION = "dashboardComponentsLocation";
+
+    private static final String L_DASHBOARD_PRODUCTS_INPUT_LOCATION = "dashboardProductsInputLocation";
+
+    private static final String L_BASIC_PRODUCTION_COUNTING = "basicProductionCounting";
+
+    private static final String L_PRODUCTION_COUNTING_QUANTITY = "productionCountingQuantity";
+
+    public static final String L_ORDER = "order";
+
+    private static final String L_PLANNED_QUANTITY = "plannedQuantity";
+
+    private static final String L_ROLE = "role";
+
+    private static final String L_USED = "01used";
+
+    private static final String L_TYPE_OF_MATERIAL = "typeOfMaterial";
+
+    private static final String L_COMPONENT = "01component";
+
+    private static final String L_FLOW_FILLED = "flowFilled";
+
+    private static final String L_PRODUCTS_INPUT_LOCATION = "productsInputLocation";
+
+    private static final String L_COMPONENTS_LOCATION = "componentsLocation";
+
+    private static final String L_PRODUCTION_COUNTING_QUANTITIES = "productionCountingQuantities";
+
+    private static final String L_OPERATION = "operation";
+
+    private static final String L_ALL = "01all";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -147,13 +185,57 @@ public class OrderCreationService {
         return new OrderCreationResponse(OrderCreationResponse.StatusCode.OK);
     }
 
+    private void modifyProductionCountingQuantity(Entity order, List<MaterialDto> materials) {
+            Entity parameter = parameterService.getParameter();
+            List<MaterialDto> addedMaterials = materials.stream().filter(m -> Objects.isNull(m.getProductInId())).collect(Collectors.toList());
+            List<Long> technologyMaterials = materials.stream().filter(m -> Objects.nonNull(m.getProductInId())).map(m -> m.getProductId()).collect(Collectors.toList());
+            List<Entity> materialsFromOrderPCQ = getMaterialsFromOrder(order);
+
+            Map<Long, Entity> pacqByProductId = materialsFromOrderPCQ.stream()
+                    .collect(Collectors.toMap(pcq -> pcq.getBelongsToField(L_PRODUCT).getId(), pcq -> pcq));
+
+            for (Map.Entry<Long, Entity> entry : pacqByProductId.entrySet()) {
+                if (!technologyMaterials.contains(entry.getKey())) {
+                    Entity pcq = entry.getValue();
+                    pcq.getDataDefinition().delete(pcq.getId());
+                }
+            }
+            Entity dashboardComponentsLocation = parameter.getBelongsToField(L_DASHBOARD_COMPONENTS_LOCATION);
+            Entity dashboardProductsInputLocation = parameter.getBelongsToField(L_DASHBOARD_PRODUCTS_INPUT_LOCATION);
+            for (MaterialDto material : addedMaterials) {
+                Entity productionCountingQuantity = dataDefinitionService
+                        .get(L_BASIC_PRODUCTION_COUNTING, L_PRODUCTION_COUNTING_QUANTITY).create();
+                productionCountingQuantity.setField(L_ORDER, order.getId());
+
+                productionCountingQuantity.setField(L_PLANNED_QUANTITY, material.getQuantity());
+                productionCountingQuantity.setField(OrderCreationService.L_PRODUCT, material.getProductId());
+                productionCountingQuantity.setField(L_ROLE, L_USED);
+                productionCountingQuantity.setField(L_TYPE_OF_MATERIAL, L_COMPONENT);
+                productionCountingQuantity.setField(L_FLOW_FILLED, Boolean.TRUE);
+
+                productionCountingQuantity.setField(L_PRODUCTS_INPUT_LOCATION, dashboardProductsInputLocation);
+                productionCountingQuantity.setField(L_COMPONENTS_LOCATION, dashboardComponentsLocation);
+                productionCountingQuantity = productionCountingQuantity.getDataDefinition().save(productionCountingQuantity);
+                productionCountingQuantity.isValid();
+            }
+    }
+
+    private List<Entity> getMaterialsFromOrder(Entity order) {
+        SearchCriteriaBuilder scb = order.getHasManyField(L_PRODUCTION_COUNTING_QUANTITIES).find()
+                .add(SearchRestrictions.eq(OrderCreationService.L_ROLE, OrderCreationService.L_USED));
+
+        scb.add(SearchRestrictions.eq(OrderCreationService.L_TYPE_OF_MATERIAL, OrderCreationService.L_COMPONENT));
+
+        return scb.list().getEntities();
+    }
     private boolean isParameterSet(final Entity parameter) {
         Entity operation = parameter.getBelongsToField(L_DASHBOARD_OPERATION);
-        Entity dashboardComponentsLocation = parameter.getBelongsToField("dashboardComponentsLocation");
-        Entity dashboardProductsInputLocation = parameter.getBelongsToField("dashboardProductsInputLocation");
+        Entity dashboardComponentsLocation = parameter.getBelongsToField(OrderCreationService.L_DASHBOARD_COMPONENTS_LOCATION);
+        Entity dashboardProductsInputLocation = parameter.getBelongsToField(
+                OrderCreationService.L_DASHBOARD_PRODUCTS_INPUT_LOCATION);
         if (Objects.isNull(operation) || Objects.isNull(dashboardComponentsLocation)
-                || Objects.isNull(dashboardProductsInputLocation) || !parameter.getBooleanField(
-                ParameterFieldsT.COMPLETE_WAREHOUSES_FLOW_WHILE_CHECKING)) {
+                || Objects.isNull(dashboardProductsInputLocation)
+                || !parameter.getBooleanField(ParameterFieldsT.COMPLETE_WAREHOUSES_FLOW_WHILE_CHECKING)) {
             return false;
         }
         return true;
@@ -192,18 +274,19 @@ public class OrderCreationService {
         Entity product = getProduct(orderCreationRequest.getProductId());
         Entity parameter = parameterService.getParameter();
         Entity operation = parameter.getBelongsToField(L_DASHBOARD_OPERATION);
-        Entity dashboardComponentsLocation = parameter.getBelongsToField("dashboardComponentsLocation");
-        Entity dashboardProductsInputLocation = parameter.getBelongsToField("dashboardProductsInputLocation");
+        Entity dashboardComponentsLocation = parameter.getBelongsToField(OrderCreationService.L_DASHBOARD_COMPONENTS_LOCATION);
+        Entity dashboardProductsInputLocation = parameter.getBelongsToField(
+                OrderCreationService.L_DASHBOARD_PRODUCTS_INPUT_LOCATION);
 
         Entity toc = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).create();
         toc.setField(TechnologyOperationComponentFields.OPERATION, operation);
-        toc.setField(TechnologyOperationComponentFields.ENTITY_TYPE, "operation");
+        toc.setField(TechnologyOperationComponentFields.ENTITY_TYPE, L_OPERATION);
         for (String fieldName : FIELDS_OPERATION) {
             toc.setField(fieldName, operation.getField(fieldName));
         }
         if (operation.getField(NEXT_OPERATION_AFTER_PRODUCED_TYPE) == null) {
-            toc.setField(NEXT_OPERATION_AFTER_PRODUCED_TYPE, "01all");
+            toc.setField(NEXT_OPERATION_AFTER_PRODUCED_TYPE, L_ALL);
         }
 
         if (operation.getField(PRODUCTION_IN_ONE_CYCLE) == null) {

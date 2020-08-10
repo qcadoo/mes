@@ -23,7 +23,7 @@ public class DataProviderForTechnology {
 
     public TechnologiesResponse getTechnologies(String query, Long productId) {
         StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append("Select id as id, number as number From technologies_technology ");
+        queryBuilder.append("Select id as id, number as number, master as master From technologies_technology ");
         queryBuilder.append("WHERE product_id = :productId AND state = '02accepted' AND number ilike :query LIMIT 10 " );
 
         Map<String, Object> parameters = Maps.newHashMap();
