@@ -469,6 +469,10 @@
         <view:view resource="view/formsList.xml"/>
         <view:view resource="view/formDetails.xml"/>
 
+        <view:view-hook plugin="qcadooUsers" view="userDetails" type="beforeRender"
+                        class="com.qcadoo.mes.basic.hooks.UserDetailsHooksB"
+                        method="setFieldsEnabledForAdmin" />
+
         <menu:menu-item name="formsList" category="basic"
                         view="formsList" defaultAuthorizationRole="ROLE_BASIC"/>
 

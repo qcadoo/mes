@@ -31,4 +31,6 @@ public final class UserFields {
 
     public static final String STAFF = "staff";
 
+    public static final String FACTORY = "factory";
+
 }
