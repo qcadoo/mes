@@ -56,13 +56,6 @@ public class DashboardKanbanDataProvider {
         return (OrderHolder) jdbcTemplate.queryForObject(getOrderQuery(), params, new BeanPropertyRowMapper(OrderHolder.class));
     }
 
-    private String getOrderQuery() {
-        String query = getOrderQueryProjections();
-        query += "WHERE orderlistdto.id = :id ";
-
-        return query;
-    }
-
     private String getOrderQueryProjections() {
         return "SELECT orderlistdto.id, orderlistdto.number, orderlistdto.name,  "
                 + "orderlistdto.state, orderlistdto.typeofproductionrecording, "
@@ -71,56 +64,59 @@ public class DashboardKanbanDataProvider {
                 + "orderlistdto.productionlinenumber AS productionLineNumber, orderlistdto.productnumber AS productNumber, "
                 + "orderlistdto.unit AS productunit, orderlistdto.companyname AS companyName "
                 + "FROM orders_orderlistdto orderlistdto ";
+
     }
 
     private String getOrdersQuery() {
         String query = getOrderQueryProjections();
         query += "WHERE orderlistdto.state IN (:states) ";
-        query += "AND date_trunc('day', orderlistdto.startdate) <= current_date AND current_date <= date_trunc('day', orderlistdto.finishdate)";
+        query += "AND date_trunc('day', orderlistdto.startdate) <= current_date AND current_date <= date_trunc('day', orderlistdto.finishdate) ";
+        query += "ORDER BY orderlistdto.productionlinenumber, orderlistdto.datefrom";
+
+        return query;
+    }
+
+    private String getOrderQuery() {
+        String query = getOrderQueryProjections();
+        query += "WHERE orderlistdto.id = :id ";
 
         return query;
     }
 
     public List<OperationalTaskHolder> getOperationalTasksPending() {
-        String additionalRestrictions = "AND coalesce(operationaltaskdto.usedquantity, 0) = 0";
-
-        String query = getOperationalTasksQuery(additionalRestrictions);
+        String additionalRestrictions = "AND coalesce(operationaltaskdto.usedquantity, 0) = 0 ";
 
         Map<String, Object> params = Maps.newHashMap();
 
         params.put(L_STATES,
                 Sets.newHashSet(OperationalTaskStateStringValues.STARTED, OperationalTaskStateStringValues.FINISHED));
 
-        return jdbcTemplate.query(query, params, new BeanPropertyRowMapper(OperationalTaskHolder.class));
+        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions), params, new BeanPropertyRowMapper(OperationalTaskHolder.class));
     }
 
     public List<OperationalTaskHolder> getOperationalTasksInProgress() {
-        String additionalRestrictions = "AND operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity > 0 AND operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity < 100";
-
-        String query = getOperationalTasksQuery(additionalRestrictions);
+        String additionalRestrictions = "AND operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity > 0 AND operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity < 100 ";
 
         Map<String, Object> params = Maps.newHashMap();
 
         params.put(L_STATES,
                 Sets.newHashSet(OperationalTaskStateStringValues.STARTED, OperationalTaskStateStringValues.FINISHED));
 
-        return jdbcTemplate.query(query, params, new BeanPropertyRowMapper(OperationalTaskHolder.class));
+        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions), params, new BeanPropertyRowMapper(OperationalTaskHolder.class));
     }
 
     public List<OperationalTaskHolder> getOperationalTasksCompleted() {
-        String additionalRestrictions = "AND (operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity >= 100 OR operationaltaskdto.state = '03finished')";
-
-        String query = getOperationalTasksQuery(additionalRestrictions);
+        String additionalRestrictions = "AND (operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity >= 100 OR operationaltaskdto.state = '03finished') ";
 
         Map<String, Object> params = Maps.newHashMap();
 
         params.put(L_STATES,
                 Sets.newHashSet(OperationalTaskStateStringValues.STARTED, OperationalTaskStateStringValues.FINISHED));
 
-        return jdbcTemplate.query(query, params, new BeanPropertyRowMapper(OperationalTaskHolder.class));
+        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions), params, new BeanPropertyRowMapper(OperationalTaskHolder.class));
     }
 
-    private String getOperationalTasksQuery(final String additionalRestrictions) {
+    private String getOperationalTaskQueryProjections() {
         return "SELECT operationaltaskdto.id, operationaltaskdto.number, operationaltaskdto.name, "
                 + "operationaltaskdto.plannedquantity, operationaltaskdto.usedquantity, "
                 + "operationaltaskdto.state, operationaltaskdto.type, operationaltaskdto.ordernumber AS orderNumber, "
@@ -129,10 +125,17 @@ public class DashboardKanbanDataProvider {
                 + "operationaltaskdto.staffname AS staffName, operationaltaskdto.orderid AS orderId, "
                 + "product.number AS orderProductNumber FROM orders_operationaltaskdto operationaltaskdto "
                 + "LEFT JOIN orders_order ordersorder ON ordersorder.id = operationaltaskdto.orderid "
-                + "LEFT JOIN basic_product product ON product.id = ordersorder.product_id "
-                + "WHERE operationaltaskdto.state IN (:states) "
-                + "AND date_trunc('day', operationaltaskdto.startdate) <= current_date AND current_date <= date_trunc('day', operationaltaskdto.finishdate) "
-                + additionalRestrictions;
+                + "LEFT JOIN basic_product product ON product.id = ordersorder.product_id ";
+    }
+
+    private String getOperationalTasksQuery(final String additionalRestrictions) {
+        String query = getOperationalTaskQueryProjections();
+        query += "WHERE operationaltaskdto.state IN (:states) ";
+        query += "AND date_trunc('day', operationaltaskdto.startdate) <= current_date AND current_date <= date_trunc('day', operationaltaskdto.finishdate) ";
+        query += additionalRestrictions;
+        query += "ORDER BY operationaltaskdto.workstationnumber, operationaltaskdto.startdate";
+
+        return query;
     }
 
 }
