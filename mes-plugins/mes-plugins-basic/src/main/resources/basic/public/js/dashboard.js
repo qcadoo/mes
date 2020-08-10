@@ -171,6 +171,8 @@ QCD.dashboard = (function () {
     function appendOperationalTask(operationalTasksType, operationalTask) {
         let doneInPercent = Math.round(operationalTask.usedQuantity * 100 / operationalTask.plannedQuantity);
 
+        operationalTask.usedQuantity = operationalTask.usedQuantity ? operationalTask.usedQuantity : 0;
+
         $('#' + operationalTasksType).append(
             '<div class="card" id="operationalTask' + operationalTask.id + '">' +
                 '<div class="card-header bg-secondary py-2">' +
@@ -182,13 +184,13 @@ QCD.dashboard = (function () {
                      (operationalTask.workstationNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.workstationNumber.label") + ':</span> ' + operationalTask.workstationNumber + '<br/>' : '') +
                      ((operationalTask.type == "02executionOperationInOrder" && operationalTask.orderProductNumber) ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.orderProductNumber.label") + ':</span> ' + operationalTask.orderProductNumber + '<br/>' : '') +
                      (operationalTask.productNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.productNumber.label") + ':</span> ' + operationalTask.productNumber + '<br/>' : '') +
-                     ((operationalTask.plannedQuantity && operationalTask.productUnit)  ? '<span class="float-left"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.plannedQuantity.label") + ':</span> ' + operationalTask.plannedQuantity + ' ' + operationalTask.productUnit + '</span>' : '') +
-                     ((operationalTask.usedQuantity && operationalTask.productUnit && (operationalTask.state == "02started" || operationalTask.state == "03finished")) ? '<span class="float-right"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.usedQuantity.label") + ':</span> ' + operationalTask.usedQuantity + ' ' + operationalTask.productUnit + '</span>' : '') +
+                     ((operationalTask.plannedQuantity && operationalTask.productUnit) ? '<span class="float-left"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.plannedQuantity.label") + ':</span> ' + operationalTask.plannedQuantity + ' ' + operationalTask.productUnit + '</span>' : '') +
+                     ((operationalTask.state == "02started" || operationalTask.state == "03finished") ? '<span class="float-right"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.usedQuantity.label") + ':</span> ' + operationalTask.usedQuantity + ' ' + operationalTask.productUnit + '</span>' : '') +
                      (operationalTask.plannedQuantity ? '<br/>' : '') +
                      (operationalTask.staffName ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.staffName.label") + ':</span> ' + operationalTask.staffName + '<br/>' : '') +
                      ((operationalTask.state == "02started") ? '<a href="#" class="badge badge-success float-right" onclick="goToProductionTrackingTerminal(null, ' + operationalTask.id + ', ' + (operationalTask.workstationNumber ? '\'' + operationalTask.workstationNumber + '\'' : null) + ')">' + QCD.translate("basic.dashboard.operationalTasks.showTerminal.label") + '</a>' : '') +
                  '</div>' +
-                 ((operationalTask.plannedQuantity > operationalTask.usedQuantity && doneInPercent > 0) ? '<div class="card-footer">' + '<div class="progress">' + '<div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: ' + doneInPercent + '%;" aria-valuenow="' + doneInPercent + '" aria-valuemin="0" aria-valuemax="100">' + doneInPercent + '%</div>' + '</div>' + '</div>' : '') +
+                 '<div class="card-footer">' + '<div class="progress">' + '<div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: ' + doneInPercent + '%;" aria-valuenow="' + doneInPercent + '" aria-valuemin="0" aria-valuemax="100">' + doneInPercent + '%</div>' + '</div>' + '</div>' +
             '</div><div> &nbsp; </div>'
         );
     }
@@ -394,6 +396,9 @@ const drop = (event) => {
 
 function createOrderDiv(order) {
     let doneInPercent = Math.round(order.doneQuantity * 100 / order.plannedQuantity);
+
+    order.doneQuantity = order.doneQuantity ? order.doneQuantity : 0;
+
     return '<div class="card draggable" id="order' + order.id + '" draggable="true" ondragstart="drag(event)">' +
         '<div class="card-header bg-secondary py-2">' +
         '<a href="#" class="card-title text-white" onclick="goToOrderDetails(' + order.id + ')">' + order.number + '</a>' +
@@ -402,13 +407,13 @@ function createOrderDiv(order) {
         (order.productionLineNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.productionLineNumber.label") + ':</span> ' + order.productionLineNumber + '<br/>' : '') +
         (order.productNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.productNumber.label") + ':</span> ' + order.productNumber + '<br/>' : '') +
         ((order.plannedQuantity && order.productUnit) ? '<span class="float-left"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.plannedQuantity.label") + ':</span> ' + order.plannedQuantity + ' ' + order.productUnit + '</span>' : '') +
-        ((order.doneQuantity && order.productUnit && (order.state == "03inProgress" || order.state == "04completed")) ? '<span class="float-right"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.doneQuantity.label") + ':</span> ' + order.doneQuantity + ' ' + order.productUnit + '</span>' : '') +
+        ((order.state == "03inProgress" || order.state == "04completed") ? '<span class="float-right"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.doneQuantity.label") + ':</span> ' + order.doneQuantity + ' ' + order.productUnit + '</span>' : '') +
         (order.plannedQuantity ? '<br/>' : '') +
         (order.companyName ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.companyName.label") + ':</span> ' + order.companyName + '<br/>' : '') +
         (order.masterOrderNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.masterOrderNumber.label") + ':</span> ' + order.masterOrderNumber + '<br/>' : '') +
         ((order.state == "03inProgress" && order.typeOfProductionRecording == "02cumulated") ? '<a href="#" class="badge badge-success float-right" onclick="goToProductionTrackingTerminal(' + order.id + ', null, null)">' + QCD.translate("basic.dashboard.orders.showTerminal.label") + '</a>' : '') +
         '</div>' +
-        ((order.plannedQuantity > order.doneQuantity && doneInPercent > 0) ? '<div class="card-footer">' + '<div class="progress">' + '<div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: ' + doneInPercent + '%;" aria-valuenow="' + doneInPercent + '" aria-valuemin="0" aria-valuemax="100">' + doneInPercent + '%</div>' + '</div>' + '</div>' : '') +
+        '<div class="card-footer">' + '<div class="progress">' + '<div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: ' + doneInPercent + '%;" aria-valuenow="' + doneInPercent + '" aria-valuemin="0" aria-valuemax="100">' + doneInPercent + '%</div>' + '</div>' + '</div>' +
         '</div>';
 }
 
