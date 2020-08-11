@@ -429,14 +429,14 @@ QCD.orderDefinitionWizard = (function() {
             var value = $("#" + field).val();
             value = evaluateExpression(value);
 
-            $("#" + field).val(value);
+            $("#" + field).val(value).change();
 
             if ((value != null) && (value != '') &&
                 isNaN(value)) {
                 valid = false;
             }
 
-            if (valid && (value < 1)) {
+            if (valid && (value <= 0)) {
                 valid = false;
             }
 
@@ -1287,7 +1287,7 @@ function quantityFormatter(value, row) {
             '</div>';
     } else {
         return '<div class="input-group">' +
-            '<input type="text" class="form-control right " tabindex="1" onblur="QCD.orderDefinitionWizard.quantityOnBlur(' + new String(row.index) + ')" id="quantity-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
+            '<input type="text" class="form-control right " tabindex="1" onblur="QCD.orderDefinitionWizard.quantityOnBlur(' + new String(row.index) + ')" onchange="QCD.orderDefinitionWizard.quantityOnBlur(' + new String(row.index) + ')" id="quantity-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
             '</div>';
     }
 
@@ -1300,7 +1300,7 @@ function quantityPerUnitFormatter(value, row) {
             '</div>';
     } else {
         return '<div class="input-group">' +
-            '<input type="text" class="form-control right " tabindex="1" onblur="QCD.orderDefinitionWizard.quantityPerUnitOnBlur(' + new String(row.index) + ')" id="quantityPerUnit-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
+            '<input type="text" class="form-control right " tabindex="1" onchange="QCD.orderDefinitionWizard.quantityPerUnitOnBlur(' + new String(row.index) + ')" onblur="QCD.orderDefinitionWizard.quantityPerUnitOnBlur(' + new String(row.index) + ')" id="quantityPerUnit-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
             '</div>';
     }
 
