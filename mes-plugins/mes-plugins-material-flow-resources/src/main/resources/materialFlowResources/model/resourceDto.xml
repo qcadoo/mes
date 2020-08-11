@@ -57,6 +57,7 @@
         <boolean name="isCorrected"/>
         <boolean name="waste"/>
         <string name="deliveryNumber"/>
+        <string name="supplierNumber"/>
         <string name="documentNumber"/>
         <string name="mergedProductNumberAndAdditionalCode"/>
         <belongsTo name="positionAddMultiHelper" model="positionAddMultiHelper"/>

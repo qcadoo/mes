@@ -63,15 +63,16 @@
             <option type="column" name="isCorrected" fields="isCorrected" width="50"/>
             <option type="column" name="waste" fields="waste" width="50"/>
             <option type="column" name="deliveryNumber" fields="deliveryNumber" width="100"/>
+            <option type="column" name="supplierNumber" fields="supplierNumber" width="100"/>
             <option type="column" name="qualityRating" fields="qualityRating" width="50"/>
             <option type="column" name="blockedForQualityControl" fields="blockedForQualityControl" width="50"/>
 
             <option type="order" column="productNumber" direction="asc"/>
 
             <option type="searchable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,reservedQuantity,availableQuantity,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number,quantityInAdditionalUnit,givenUnit,additionalCode,conversion,palletNumber,typeOfPallet,userName,waste,deliveryNumber,value,qualityRating,blockedForQualityControl"/>
+                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,reservedQuantity,availableQuantity,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number,quantityInAdditionalUnit,givenUnit,additionalCode,conversion,palletNumber,typeOfPallet,userName,waste,deliveryNumber,supplierNumber,value,qualityRating,blockedForQualityControl"/>
             <option type="orderable"
-                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,reservedQuantity,availableQuantity,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number,quantityInAdditionalUnit,givenUnit,additionalCode,conversion,palletNumber,typeOfPallet,userName,waste,deliveryNumber,value,qualityRating,blockedForQualityControl"/>
+                    value="locationNumber,locationName,productNumber,productName,quantity,productUnit,reservedQuantity,availableQuantity,price,time,productionDate,expirationDate,batch,isCorrected,storageLocation,number,quantityInAdditionalUnit,givenUnit,additionalCode,conversion,palletNumber,typeOfPallet,userName,waste,deliveryNumber,supplierNumber,value,qualityRating,blockedForQualityControl"/>
 
             <option type="correspondingView" value="materialFlowResources/resourceDetails"/>
             <option type="correspondingViewInModal" value="true"/>
