@@ -3,7 +3,6 @@ package com.qcadoo.mes.basic.controllers;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ProductService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.GlobalTypeOfMaterial;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
@@ -74,7 +73,7 @@ public final class BasicApiController {
         productEntity.setField(ProductFields.NAME, product.getName());
         productEntity.setField(ProductFields.UNIT, product.getUnit());
         productEntity.setField(ProductFields.ENTITY_TYPE, ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue());
-        productEntity.setField(ProductFields.GLOBAL_TYPE_OF_MATERIAL, GlobalTypeOfMaterial.COMPONENT.getStringValue());
+        productEntity.setField(ProductFields.GLOBAL_TYPE_OF_MATERIAL, product.getGlobalTypeOfMaterial());
         productEntity = productEntity.getDataDefinition().save(productEntity);
         if(productEntity.isValid()) {
             ProductResponse productResponse = new ProductResponse(ProductResponse.StatusCode.OK);

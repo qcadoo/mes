@@ -15,6 +15,7 @@ QCD.orderDefinitionWizardContext.order.productEvents = [];
 
 QCD.orderDefinitionWizard = (function() {
 
+
     function init() {
 
         cleanContext();
@@ -183,6 +184,8 @@ QCD.orderDefinitionWizard = (function() {
             },
         });
 
+        $("#saveProduct").unbind();
+         $("#saveProductionLine").unbind();
 
         $("#getProduct").click(function() {
 
@@ -410,6 +413,7 @@ QCD.orderDefinitionWizard = (function() {
             $("#productName").val(null);
             $("#productUnit").val(null);
             QCD.orderDefinitionWizardContext.order.currentMaterialIndex = null;
+
             $('#productDefinitionModal').appendTo("body").modal('show');
             $("#orderDefinitionWizard").addClass('disableModal');
         });
@@ -513,6 +517,11 @@ QCD.orderDefinitionWizard = (function() {
             product.number = $("#productNumber").val();
             product.name = $("#productName").val();
             product.unit = $("#productUnit").val();
+            if (QCD.orderDefinitionWizardContext.order.lastMaterialIndex) {
+                 product.globalTypeOfMaterial = '01component';
+            } else {
+                  product.globalTypeOfMaterial = '03finalProduct';
+            }
             $.ajax({
                 url: "rest/product",
                 type: "POST",
