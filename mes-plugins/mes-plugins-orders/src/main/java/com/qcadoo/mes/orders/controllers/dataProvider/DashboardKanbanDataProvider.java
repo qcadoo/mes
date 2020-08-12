@@ -72,7 +72,7 @@ public class DashboardKanbanDataProvider {
         String query = getOrderQueryProjections();
         query += "WHERE orderlistdto.state IN (:states) ";
         query += "AND date_trunc('day', orderlistdto.startdate) <= current_date AND current_date <= date_trunc('day', orderlistdto.finishdate) ";
-        query += "ORDER BY orderlistdto.productionlinenumber, orderlistdto.datefrom";
+        query += "ORDER BY orderlistdto.productionlinenumber, orderlistdto.startdate";
 
         return query;
     }
