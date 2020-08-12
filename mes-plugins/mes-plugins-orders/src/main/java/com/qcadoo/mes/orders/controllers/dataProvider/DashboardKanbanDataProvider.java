@@ -96,7 +96,7 @@ public class DashboardKanbanDataProvider {
     }
 
     public List<OperationalTaskHolder> getOperationalTasksInProgress() {
-        String additionalRestrictions = "AND operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity > 0 AND operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity < 100 ";
+        String additionalRestrictions = "AND operationaltaskdto.plannedquantity > 0 AND operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity > 0 AND operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity < 100 ";
 
         Map<String, Object> params = Maps.newHashMap();
 
@@ -107,7 +107,7 @@ public class DashboardKanbanDataProvider {
     }
 
     public List<OperationalTaskHolder> getOperationalTasksCompleted() {
-        String additionalRestrictions = "AND (operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity >= 100 OR operationaltaskdto.state = '03finished') ";
+        String additionalRestrictions = "AND operationaltaskdto.plannedquantity > 0 AND (operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity >= 100 OR operationaltaskdto.state = '03finished') ";
 
         Map<String, Object> params = Maps.newHashMap();
 
