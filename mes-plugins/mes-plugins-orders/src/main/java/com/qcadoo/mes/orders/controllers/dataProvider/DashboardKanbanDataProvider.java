@@ -6,13 +6,14 @@ import com.qcadoo.mes.orders.controllers.dto.OperationalTaskHolder;
 import com.qcadoo.mes.orders.controllers.dto.OrderHolder;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
+
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class DashboardKanbanDataProvider {

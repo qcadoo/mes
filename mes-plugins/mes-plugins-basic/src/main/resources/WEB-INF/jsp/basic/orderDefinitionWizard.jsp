@@ -186,7 +186,7 @@
                </h3>
                <fieldset>
                   <div class="fieldset-content">
-                     <div class="form-group" style="width: 100%;">
+                     <div class="form-group" id="materials-group" style="width: 100%;">
                         <div id="materials-toolbar">
                            <button id="newMaterial" type="button" class="btn btn-outline-secondary bg-primary text-white insert-row-btn">${translationsMap['basic.dashboard.orderDefinitionWizard.materials.addMaterial']}</button>
                            <button id="removeMaterial" type="button" class="btn btn-outline-secondary bg-primary text-white  remove-row-btn">${translationsMap['basic.dashboard.orderDefinitionWizard.materials.removeMaterial']}</button>

@@ -78,9 +78,9 @@ QCD.orderDefinitionWizard = (function() {
                         invalid = true;
                     } else {
                         $("#quantity").removeClass('is-invalid');
-                        invalid = !validQuantity("quantity");
-                        if (invalid) {
-                            return !invalid;
+                        var validQ = validQuantity("quantity");
+                        if(!validQ) {
+                            return false;
                         }
                     }
 
@@ -243,6 +243,7 @@ QCD.orderDefinitionWizard = (function() {
                     $.each(data.technologies, function(i, tech) {
                         if (tech.master) {
                             QCD.orderDefinitionWizardContext.order.technology = tech;
+                            fillMaterialsForTechnology();
                             $("#technology").val(QCD.orderDefinitionWizardContext.order.technology.number);
                         }
                     });
@@ -332,7 +333,7 @@ QCD.orderDefinitionWizard = (function() {
                     singleSelect: true,
                     maintainSelected: true,
                     showFooter: false,
-                    height: 600,
+                    height: 500,
                     locale: (QCD.currentLang + '-' + QCD.currentLang
                         .toUpperCase())
                 });
@@ -389,6 +390,7 @@ QCD.orderDefinitionWizard = (function() {
                         $.each(data.technologies, function(i, tech) {
                             if (tech.master) {
                                 QCD.orderDefinitionWizardContext.order.technology = tech;
+                                fillMaterialsForTechnology();
                                 $("#technology").val(QCD.orderDefinitionWizardContext.order.technology.number);
                             }
                         });
@@ -663,7 +665,7 @@ QCD.orderDefinitionWizard = (function() {
                     singleSelect: true,
                     maintainSelected: true,
                     showFooter: false,
-                    height: 600,
+                    height: 500,
                     locale: (QCD.currentLang + '-' + QCD.currentLang
                         .toUpperCase())
                 });
@@ -786,7 +788,7 @@ QCD.orderDefinitionWizard = (function() {
                 sortName: 'index',
                 sortOrder: 'desc',
                 showFooter: false,
-                height: 350,
+                height: 320,
                 locale: (QCD.currentLang + '-' + QCD.currentLang
                     .toUpperCase())
             });
@@ -973,7 +975,7 @@ QCD.orderDefinitionWizard = (function() {
                 singleSelect: true,
                 maintainSelected: true,
                 showFooter: false,
-                height: 600,
+                height: 500,
                 locale: (QCD.currentLang + '-' + QCD.currentLang
                     .toUpperCase())
             });
@@ -1040,7 +1042,7 @@ QCD.orderDefinitionWizard = (function() {
                 singleSelect: true,
                 maintainSelected: true,
                 showFooter: false,
-                height: 600,
+                height: 500,
                 locale: (QCD.currentLang + '-' + QCD.currentLang
                     .toUpperCase())
             });
@@ -1106,7 +1108,10 @@ QCD.orderDefinitionWizard = (function() {
                 if (data.code === 'OK') {
 
                     $("#orderDefinitionWizard").modal('hide');
-                    location.reload();
+                    QCD.dashboard.appendOrder('ordersPending', data.order);
+                    showMessage('success',
+                        QCD.translate("basic.dashboard.orderDefinitionWizard.success"),
+                        data.message, false);
                 } else {
                     showMessage(
                         'failure',

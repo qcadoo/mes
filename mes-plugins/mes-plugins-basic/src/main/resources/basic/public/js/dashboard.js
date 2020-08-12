@@ -333,7 +333,8 @@ QCD.dashboard = (function () {
 
 	return {
 		init: init,
-		initOrders: initOrders
+		initOrders: initOrders,
+		appendOrder: appendOrder
 	};
 
 })();

@@ -11,6 +11,7 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
+import com.qcadoo.mes.orders.controllers.dataProvider.DashboardKanbanDataProvider;
 import com.qcadoo.mes.orders.controllers.requests.OrderCreationRequest;
 import com.qcadoo.mes.orders.controllers.responses.OrderCreationResponse;
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
@@ -131,6 +132,9 @@ public class OrderCreationService {
     @Autowired
     private TranslationService translationService;
 
+    @Autowired
+    private DashboardKanbanDataProvider dashboardKanbanDataProvider;
+
     public OrderCreationResponse createOrder(OrderCreationRequest orderCreationRequest) {
 
         Entity parameter = parameterService.getParameter();
@@ -182,42 +186,49 @@ public class OrderCreationService {
             return new OrderCreationResponse(translationService.translate(
                     "basic.dashboard.orderDefinitionWizard.createOrder.validationError", LocaleContextHolder.getLocale()));
         }
-        return new OrderCreationResponse(OrderCreationResponse.StatusCode.OK);
+
+        OrderCreationResponse response = new OrderCreationResponse(OrderCreationResponse.StatusCode.OK);
+        response.setMessage(translationService.translate("orders.orderCreationService.created", LocaleContextHolder.getLocale(),
+                order.getStringField(OrderFields.NUMBER)));
+        response.setOrder(dashboardKanbanDataProvider.getOrder(order.getId()));
+        return response;
     }
 
     private void modifyProductionCountingQuantity(Entity order, List<MaterialDto> materials) {
-            Entity parameter = parameterService.getParameter();
-            List<MaterialDto> addedMaterials = materials.stream().filter(m -> Objects.isNull(m.getProductInId())).collect(Collectors.toList());
-            List<Long> technologyMaterials = materials.stream().filter(m -> Objects.nonNull(m.getProductInId())).map(m -> m.getProductId()).collect(Collectors.toList());
-            List<Entity> materialsFromOrderPCQ = getMaterialsFromOrder(order);
+        Entity parameter = parameterService.getParameter();
+        List<MaterialDto> addedMaterials = materials.stream().filter(m -> Objects.isNull(m.getProductInId()))
+                .collect(Collectors.toList());
+        List<Long> technologyMaterials = materials.stream().filter(m -> Objects.nonNull(m.getProductInId()))
+                .map(m -> m.getProductId()).collect(Collectors.toList());
+        List<Entity> materialsFromOrderPCQ = getMaterialsFromOrder(order);
 
-            Map<Long, Entity> pacqByProductId = materialsFromOrderPCQ.stream()
-                    .collect(Collectors.toMap(pcq -> pcq.getBelongsToField(L_PRODUCT).getId(), pcq -> pcq));
+        Map<Long, Entity> pacqByProductId = materialsFromOrderPCQ.stream().collect(
+                Collectors.toMap(pcq -> pcq.getBelongsToField(L_PRODUCT).getId(), pcq -> pcq));
 
-            for (Map.Entry<Long, Entity> entry : pacqByProductId.entrySet()) {
-                if (!technologyMaterials.contains(entry.getKey())) {
-                    Entity pcq = entry.getValue();
-                    pcq.getDataDefinition().delete(pcq.getId());
-                }
+        for (Map.Entry<Long, Entity> entry : pacqByProductId.entrySet()) {
+            if (!technologyMaterials.contains(entry.getKey())) {
+                Entity pcq = entry.getValue();
+                pcq.getDataDefinition().delete(pcq.getId());
             }
-            Entity dashboardComponentsLocation = parameter.getBelongsToField(L_DASHBOARD_COMPONENTS_LOCATION);
-            Entity dashboardProductsInputLocation = parameter.getBelongsToField(L_DASHBOARD_PRODUCTS_INPUT_LOCATION);
-            for (MaterialDto material : addedMaterials) {
-                Entity productionCountingQuantity = dataDefinitionService
-                        .get(L_BASIC_PRODUCTION_COUNTING, L_PRODUCTION_COUNTING_QUANTITY).create();
-                productionCountingQuantity.setField(L_ORDER, order.getId());
+        }
+        Entity dashboardComponentsLocation = parameter.getBelongsToField(L_DASHBOARD_COMPONENTS_LOCATION);
+        Entity dashboardProductsInputLocation = parameter.getBelongsToField(L_DASHBOARD_PRODUCTS_INPUT_LOCATION);
+        for (MaterialDto material : addedMaterials) {
+            Entity productionCountingQuantity = dataDefinitionService.get(L_BASIC_PRODUCTION_COUNTING,
+                    L_PRODUCTION_COUNTING_QUANTITY).create();
+            productionCountingQuantity.setField(L_ORDER, order.getId());
 
-                productionCountingQuantity.setField(L_PLANNED_QUANTITY, material.getQuantity());
-                productionCountingQuantity.setField(OrderCreationService.L_PRODUCT, material.getProductId());
-                productionCountingQuantity.setField(L_ROLE, L_USED);
-                productionCountingQuantity.setField(L_TYPE_OF_MATERIAL, L_COMPONENT);
-                productionCountingQuantity.setField(L_FLOW_FILLED, Boolean.TRUE);
+            productionCountingQuantity.setField(L_PLANNED_QUANTITY, material.getQuantity());
+            productionCountingQuantity.setField(OrderCreationService.L_PRODUCT, material.getProductId());
+            productionCountingQuantity.setField(L_ROLE, L_USED);
+            productionCountingQuantity.setField(L_TYPE_OF_MATERIAL, L_COMPONENT);
+            productionCountingQuantity.setField(L_FLOW_FILLED, Boolean.TRUE);
 
-                productionCountingQuantity.setField(L_PRODUCTS_INPUT_LOCATION, dashboardProductsInputLocation);
-                productionCountingQuantity.setField(L_COMPONENTS_LOCATION, dashboardComponentsLocation);
-                productionCountingQuantity = productionCountingQuantity.getDataDefinition().save(productionCountingQuantity);
-                productionCountingQuantity.isValid();
-            }
+            productionCountingQuantity.setField(L_PRODUCTS_INPUT_LOCATION, dashboardProductsInputLocation);
+            productionCountingQuantity.setField(L_COMPONENTS_LOCATION, dashboardComponentsLocation);
+            productionCountingQuantity = productionCountingQuantity.getDataDefinition().save(productionCountingQuantity);
+            productionCountingQuantity.isValid();
+        }
     }
 
     private List<Entity> getMaterialsFromOrder(Entity order) {
@@ -228,11 +239,12 @@ public class OrderCreationService {
 
         return scb.list().getEntities();
     }
+
     private boolean isParameterSet(final Entity parameter) {
         Entity operation = parameter.getBelongsToField(L_DASHBOARD_OPERATION);
         Entity dashboardComponentsLocation = parameter.getBelongsToField(OrderCreationService.L_DASHBOARD_COMPONENTS_LOCATION);
-        Entity dashboardProductsInputLocation = parameter.getBelongsToField(
-                OrderCreationService.L_DASHBOARD_PRODUCTS_INPUT_LOCATION);
+        Entity dashboardProductsInputLocation = parameter
+                .getBelongsToField(OrderCreationService.L_DASHBOARD_PRODUCTS_INPUT_LOCATION);
         if (Objects.isNull(operation) || Objects.isNull(dashboardComponentsLocation)
                 || Objects.isNull(dashboardProductsInputLocation)
                 || !parameter.getBooleanField(ParameterFieldsT.COMPLETE_WAREHOUSES_FLOW_WHILE_CHECKING)) {
@@ -275,8 +287,8 @@ public class OrderCreationService {
         Entity parameter = parameterService.getParameter();
         Entity operation = parameter.getBelongsToField(L_DASHBOARD_OPERATION);
         Entity dashboardComponentsLocation = parameter.getBelongsToField(OrderCreationService.L_DASHBOARD_COMPONENTS_LOCATION);
-        Entity dashboardProductsInputLocation = parameter.getBelongsToField(
-                OrderCreationService.L_DASHBOARD_PRODUCTS_INPUT_LOCATION);
+        Entity dashboardProductsInputLocation = parameter
+                .getBelongsToField(OrderCreationService.L_DASHBOARD_PRODUCTS_INPUT_LOCATION);
 
         Entity toc = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).create();
