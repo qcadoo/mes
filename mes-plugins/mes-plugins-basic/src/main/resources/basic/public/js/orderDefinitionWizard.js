@@ -1027,6 +1027,8 @@ QCD.orderDefinitionWizard = (function () {
 				singleSelect: true,
 				maintainSelected: false,
 				showFooter: false,
+				sortName: 'number',
+                sortOrder: 'asc',
 				height: 500,
 				locale: (QCD.currentLang + '-' + QCD.currentLang
 					.toUpperCase())
