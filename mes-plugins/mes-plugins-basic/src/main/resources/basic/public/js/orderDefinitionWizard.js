@@ -290,7 +290,7 @@ QCD.orderDefinitionWizard = (function () {
 		$('#technology').change(function () {
 			var current = $('#technology').typeahead("getActive");
 			if (current) {
-				QCD.orderDefinitionWizardContext.technology = current;
+				QCD.orderDefinitionWizardContext.order.technology = current;
 				fillMaterialsForTechnology();
 			}
 
@@ -632,7 +632,7 @@ QCD.orderDefinitionWizard = (function () {
 						var resultList = data.productionLines.map(function (item) {
 							var aItem = {
 								id: item.id,
-								name: item.name,
+								name: item.number,
 								number: item.number
 							};
 							return aItem;

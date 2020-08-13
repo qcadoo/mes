@@ -1,6 +1,7 @@
 package com.qcadoo.mes.productionLines.controller;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.productionLines.controller.dataProvider.ProductionLineRequest;
@@ -36,6 +37,10 @@ public final class ProductionLinesApiController {
     @Autowired
     private TranslationService translationService;
 
+
+    @Autowired
+    private ShiftsService shiftsService;
+
     @ResponseBody
     @RequestMapping(value = "/productionLines", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ProductionLinesResponse getTechnologies(@RequestParam("query") String query) {
@@ -58,7 +63,9 @@ public final class ProductionLinesApiController {
         Entity productionLineEntity = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_PRODUCTION_LINE).create();
         productionLineEntity.setField(ProductionLineFields.NUMBER, productionLine.getNumber());
         productionLineEntity.setField(ProductionLineFields.NAME, productionLine.getName());
+        productionLineEntity.setField(ProductionLineFields.PRODUCTION, Boolean.TRUE);
         productionLineEntity.setField(ProductionLineFields.QUANTITY_FOR_OTHER_WORKSTATION_TYPES, 1);
+        productionLineEntity.setField(ProductionLineFields.SHIFTS, shiftsService.getShifts());
 
         productionLineEntity = productionLineEntity.getDataDefinition().save(productionLineEntity);
         if(productionLineEntity.isValid()) {

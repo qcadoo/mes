@@ -21,7 +21,7 @@ public class ProductionLinesDataProvider {
     public ProductionLinesResponse getProductionLines(String query) {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("Select id as id, number as number, name as name From productionlines_productionline ");
-        queryBuilder.append("WHERE number ilike :query LIMIT 10 " );
+        queryBuilder.append("WHERE active = true AND production = true AND number ilike :query LIMIT 10 " );
 
         Map<String, Object> parameters = Maps.newHashMap();
 
@@ -37,11 +37,11 @@ public class ProductionLinesDataProvider {
     public ProductionLinesGridResponse getTechnologiesResponse(int limit, int offset, String sort, String order, String search) {
         StringBuilder query = new StringBuilder();
         query.append("SELECT pl.id, pl.number, pl.name ");
-        query.append("FROM productionlines_productionline pl WHERE pl.active = true ");
+        query.append("FROM productionlines_productionline pl WHERE pl.production = true AND pl.active = true ");
 
         StringBuilder queryCount = new StringBuilder();
         queryCount.append("SELECT COUNT(*) ");
-        queryCount.append("FROM productionlines_productionline pl WHERE pl.active = true ");
+        queryCount.append("FROM productionlines_productionline pl WHERE pl.production = true AND pl.active = true ");
 
         appendConditions(search, query);
         appendConditions(search, queryCount);
