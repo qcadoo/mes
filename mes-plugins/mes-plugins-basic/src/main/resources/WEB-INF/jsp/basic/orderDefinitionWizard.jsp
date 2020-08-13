@@ -73,7 +73,7 @@
                            <div class="col-sm-2"></div>
                         </div>
                      </div>
-                     <div class="form-group">
+                     <div id="technology-form-group" class="form-group">
                         <div class="row">
                            <div class="col-sm-8">
                               <div class="input-group">
@@ -98,7 +98,7 @@
                                           <div class="col-sm-8">
                                              <div class="input-group">
                                                 <div class="input-group-prepend">
-                                                   <label class="form-label">${translationsMap['basic.dashboard.orderDefinitionWizard.form.technology.description']}</label>
+                                                   <label id="description-label" class="form-label">${translationsMap['basic.dashboard.orderDefinitionWizard.form.technology.description']}</label>
                                                 </div>
                                                 </div>
                                              </div>

@@ -843,3 +843,7 @@ margin-top: 0px;
 #materials-group .fixed-table-body {
     height: 270px;
 }
+
+#technology-form-group {
+    margin-bottom: 10px;
+}

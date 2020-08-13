@@ -526,3 +526,9 @@ function goToProductionTrackingTerminal(orderId, operationalTaskId, workstationN
 			extraLarge : false
 		});
 	}
+
+function logoutIfSessionExpired(data) {
+	if ($.trim(data) == "sessionExpired" || $.trim(data).substring(0, 20) == "<![CDATA[ERROR PAGE:") {
+		window.location = "/login.html?timeout=true";
+	}
+}
