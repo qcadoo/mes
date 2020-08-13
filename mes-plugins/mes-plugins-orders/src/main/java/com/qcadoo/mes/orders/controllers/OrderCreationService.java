@@ -180,7 +180,8 @@ public class OrderCreationService {
             order = order.getDataDefinition().get(order.getId());
             if (!order.getStringField(OrderFields.STATE).equals(OrderStateStringValues.ACCEPTED)) {
                 return new OrderCreationResponse(translationService.translate(
-                        "basic.dashboard.orderDefinitionWizard.createOrder.acceptError", LocaleContextHolder.getLocale()));
+                        "basic.dashboard.orderDefinitionWizard.createOrder.acceptError", LocaleContextHolder.getLocale(),
+                        order.getStringField(OrderFields.NUMBER)));
             }
         } else {
             return new OrderCreationResponse(translationService.translate(
