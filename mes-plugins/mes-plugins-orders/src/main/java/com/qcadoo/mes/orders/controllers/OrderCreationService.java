@@ -192,6 +192,7 @@ public class OrderCreationService {
         response.setMessage(translationService.translate("orders.orderCreationService.created", LocaleContextHolder.getLocale(),
                 order.getStringField(OrderFields.NUMBER)));
         response.setOrder(dashboardKanbanDataProvider.getOrder(order.getId()));
+        modifyProductionCountingQuantity(order, orderCreationRequest.getMaterials());
         return response;
     }
 
@@ -338,6 +339,7 @@ public class OrderCreationService {
         technology.setField(L_RANGE, range);
         technology.setField("componentsLocation", dashboardComponentsLocation);
         technology.setField("productsInputLocation", dashboardProductsInputLocation);
+        technology.setField("typeOfProductionRecording", "02cumulated");
         technology = technology.getDataDefinition().save(technology);
         if (technology.isValid()) {
             final StateChangeContext technologyStateChangeContext = stateChangeContextBuilder
@@ -349,6 +351,8 @@ public class OrderCreationService {
                 return Either.left(translationService.translate(
                         "basic.dashboard.orderDefinitionWizard.createTechnology.acceptError", LocaleContextHolder.getLocale()));
             }
+            technology.setField(TechnologyFields.MASTER, Boolean.TRUE);
+            technology.getDataDefinition().save(technology);
         } else {
             return Either.left(translationService.translate(
                     "basic.dashboard.orderDefinitionWizard.createTechnology.validationError", LocaleContextHolder.getLocale()));
