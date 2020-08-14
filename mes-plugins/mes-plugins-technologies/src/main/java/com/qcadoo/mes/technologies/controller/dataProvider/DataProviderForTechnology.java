@@ -24,15 +24,16 @@ public class DataProviderForTechnology {
     public TechnologiesResponse getTechnologies(String query, Long productId) {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("Select id as id, number as number, master as master From technologies_technology ");
-        queryBuilder.append("WHERE product_id = :productId AND state = '02accepted' AND number ilike :query LIMIT 10 " );
+        queryBuilder
+                .append("WHERE typeOfProductionRecording = '02cumulated' AND product_id = :productId AND state = '02accepted' AND number ilike :query LIMIT 10 ");
 
         Map<String, Object> parameters = Maps.newHashMap();
 
         String ilikeQuery = "%" + query + "%";
         parameters.put("query", ilikeQuery);
         parameters.put("productId", productId);
-        List<TechnologyDto> technologies =  jdbcTemplate.query(queryBuilder.toString(), parameters,
-                new BeanPropertyRowMapper(TechnologyDto.class));
+        List<TechnologyDto> technologies = jdbcTemplate.query(queryBuilder.toString(), parameters, new BeanPropertyRowMapper(
+                TechnologyDto.class));
         TechnologiesResponse technologiesResponse = new TechnologiesResponse();
         technologiesResponse.setTechnologies(technologies);
         return technologiesResponse;
@@ -42,16 +43,17 @@ public class DataProviderForTechnology {
             Long productId) {
         StringBuilder query = new StringBuilder();
         query.append("SELECT tech.id, tech.number, tech.name ");
-        query.append("FROM technologies_technology tech WHERE tech.active = true AND tech.product_id = :productID AND tech.state = '02accepted' ");
+        query.append("FROM technologies_technology tech WHERE tech.typeOfProductionRecording = '02cumulated' AND tech.active = true AND tech.product_id = :productID AND tech.state = '02accepted' ");
 
         StringBuilder queryCount = new StringBuilder();
         queryCount.append("SELECT COUNT(*) ");
-        queryCount.append("FROM technologies_technology tech WHERE tech.active = true AND tech.product_id = :productID AND tech.state = '02accepted' ");
+        queryCount
+                .append("FROM technologies_technology tech WHERE tech.typeOfProductionRecording = '02cumulated' AND tech.active = true AND tech.product_id = :productID AND tech.state = '02accepted' ");
 
         appendTechnologyConditions(search, query);
         appendTechnologyConditions(search, queryCount);
 
-        if(StringUtils.isNotEmpty(sort)) {
+        if (StringUtils.isNotEmpty(sort)) {
             query.append(" ORDER BY " + sort + " " + order);
         }
         query.append(String.format(" LIMIT %d OFFSET %d", limit, offset));
@@ -61,14 +63,14 @@ public class DataProviderForTechnology {
 
         Integer countRecords = jdbcTemplate.queryForObject(queryCount.toString(), parameters, Long.class).intValue();
 
-        List<TechnologyDto> products = jdbcTemplate.query(query.toString(), parameters,
-                new BeanPropertyRowMapper(TechnologyDto.class));
+        List<TechnologyDto> products = jdbcTemplate.query(query.toString(), parameters, new BeanPropertyRowMapper(
+                TechnologyDto.class));
 
         return new TechnologiesGridResponse(countRecords, products);
     }
 
     private void appendTechnologyConditions(String search, StringBuilder query) {
-        if(StringUtils.isNotEmpty(search)) {
+        if (StringUtils.isNotEmpty(search)) {
             query.append(" AND (");
             query.append("UPPER(tech.number) LIKE '%").append(search.toUpperCase()).append("%' OR ");
             query.append("UPPER(tech.name) LIKE '%").append(search.toUpperCase()).append("%' ");
@@ -86,7 +88,6 @@ public class DataProviderForTechnology {
         query.append("WHERE opic.id IN (:ids) ");
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("ids", ids);
-        return  jdbcTemplate.query(query.toString(), parameters,
-                new BeanPropertyRowMapper(MaterialDto.class));
+        return jdbcTemplate.query(query.toString(), parameters, new BeanPropertyRowMapper(MaterialDto.class));
     }
 }

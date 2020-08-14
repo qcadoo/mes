@@ -172,6 +172,8 @@ public class OrderCreationService {
 
         order.setField(IGNORE_MISSING_COMPONENTS, parameter.getBooleanField(IGNORE_MISSING_COMPONENTS));
 
+        order.setField("typeOfProductionRecording", orderCreationRequest.getTypeOfProductionRecording());
+
         order = order.getDataDefinition().save(order);
         if (order.isValid()) {
             final StateChangeContext orderStateChangeContext = stateChangeContextBuilder.build(

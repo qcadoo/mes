@@ -361,6 +361,8 @@ QCD.orderDefinitionWizard = (function () {
 					singleSelect: true,
 					maintainSelected: true,
 					showFooter: false,
+									sortName: 'number',
+                    				sortOrder: 'asc',
 					height: 500,
 					locale: (QCD.currentLang + '-' + QCD.currentLang
 						.toUpperCase())
@@ -1177,6 +1179,7 @@ QCD.orderDefinitionWizard = (function () {
 		}
 		order.productionLineId = QCD.orderDefinitionWizardContext.order.productionLine.id;
 		order.startDate = getDate("startDate");
+		order.typeOfProductionRecording = '02cumulated';
 		order.finishDate = getDate("finishDate");
 		order.materials = [];
 		var materials = QCD.orderDefinitionWizardContext.order.materials;

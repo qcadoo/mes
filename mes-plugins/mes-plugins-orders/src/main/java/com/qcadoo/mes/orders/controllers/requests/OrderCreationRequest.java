@@ -15,6 +15,8 @@ public class OrderCreationRequest {
 
     private String description;
 
+    private String typeOfProductionRecording;
+
     private Long technologyId;
 
     private Long productionLineId;
@@ -87,5 +89,13 @@ public class OrderCreationRequest {
 
     public void setMaterials(List<MaterialDto> materials) {
         this.materials = materials;
+    }
+
+    public String getTypeOfProductionRecording() {
+        return typeOfProductionRecording;
+    }
+
+    public void setTypeOfProductionRecording(String typeOfProductionRecording) {
+        this.typeOfProductionRecording = typeOfProductionRecording;
     }
 }
