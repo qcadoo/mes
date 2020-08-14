@@ -23,21 +23,6 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.orders.OrderService;
-import com.qcadoo.mes.orders.constants.ParameterFieldsO;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.security.api.SecurityService;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.CheckBoxComponent;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.GridComponent;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DELAYED_EFFECTIVE_DATE_FROM_TIME;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.DELAYED_EFFECTIVE_DATE_TO_TIME;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.EARLIER_EFFECTIVE_DATE_FROM_TIME;
@@ -46,6 +31,21 @@ import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHE
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM;
 import static com.qcadoo.mes.orders.constants.ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.orders.OrderService;
+import com.qcadoo.mes.orders.constants.ParameterFieldsO;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.GridComponent;
 
 @Service
 public class ParametersHooksO {
@@ -62,8 +62,6 @@ public class ParametersHooksO {
     @Autowired
     private SecurityService securityService;
 
-    private static final String ROLE_SUPERADMIN = "ROLE_SUPERADMIN";
-
     public void onSave(final DataDefinition parameterDD, final Entity parameter) {
         if (!parameter.getBooleanField(ParameterFieldsO.REALIZATION_FROM_STOCK)) {
             parameter.setField(ParameterFieldsO.REALIZATION_LOCATIONS, Lists.newArrayList());
@@ -72,18 +70,22 @@ public class ParametersHooksO {
 
     public boolean validatesWith(final DataDefinition parameterDD, final Entity parameter) {
         boolean isValid = true;
+
         if (parameter.getBooleanField(ParameterFieldsO.REALIZATION_FROM_STOCK)
                 && parameter.getHasManyField(ParameterFieldsO.REALIZATION_LOCATIONS).isEmpty()) {
             parameter.addGlobalError("orders.ordersParameters.window.mainTab.ordersParameters.realizationLocations.error.empty",
                     Boolean.FALSE);
+
             isValid = false;
         }
         if (parameter.getBooleanField(ParameterFieldsO.ADVISE_START_DATE_OF_THE_ORDER)
-                && StringUtils.isEmpty(parameter.getStringField(ParameterFieldsO.ORDER_START_BASED_ON))) {
-            parameter.addError(parameterDD.getField(ParameterFieldsO.ORDER_START_BASED_ON),
+                && StringUtils.isEmpty(parameter.getStringField(ParameterFieldsO.ORDER_START_DATE_BASED_ON))) {
+            parameter.addError(parameterDD.getField(ParameterFieldsO.ORDER_START_DATE_BASED_ON),
                     "qcadooView.validate.field.error.missing");
+
             isValid = false;
         }
+
         return isValid;
     }
 
@@ -93,6 +95,7 @@ public class ParametersHooksO {
         CheckBoxComponent alwaysOrderItemsWithPersonalizationComponent = (CheckBoxComponent) view
                 .getComponentByReference(L_ALWAYS_ORDER_ITEMS_WITH_PERSONALIZATION);
         GridComponent realizationLocationsGrid = (GridComponent) view.getComponentByReference(L_REALIZATION_LOCATIONS);
+
         if (realizationFromStockComponent.isChecked()) {
             alwaysOrderItemsWithPersonalizationComponent.setEnabled(true);
             realizationLocationsGrid.setEditable(true);
@@ -100,17 +103,19 @@ public class ParametersHooksO {
             alwaysOrderItemsWithPersonalizationComponent.setEnabled(false);
             realizationLocationsGrid.setEditable(false);
         }
+
         alwaysOrderItemsWithPersonalizationComponent.requestComponentUpdateState();
     }
 
     public void onBeforeRender(final ViewDefinitionState view) {
         showTimeFields(view);
-        hideTabs(view);
+
         CheckBoxComponent realizationFromStockComponent = (CheckBoxComponent) view
                 .getComponentByReference(L_REALIZATION_FROM_STOCK);
         CheckBoxComponent alwaysOrderItemsWithPersonalizationComponent = (CheckBoxComponent) view
                 .getComponentByReference(L_ALWAYS_ORDER_ITEMS_WITH_PERSONALIZATION);
         GridComponent realizationLocationsGrid = (GridComponent) view.getComponentByReference(L_REALIZATION_LOCATIONS);
+
         if (realizationFromStockComponent.isChecked()) {
             alwaysOrderItemsWithPersonalizationComponent.setEnabled(true);
             realizationLocationsGrid.setEditable(true);
@@ -118,10 +123,13 @@ public class ParametersHooksO {
             alwaysOrderItemsWithPersonalizationComponent.setEnabled(false);
             realizationLocationsGrid.setEditable(false);
         }
+
         alwaysOrderItemsWithPersonalizationComponent.requestComponentUpdateState();
+
         CheckBoxComponent adviseStartDateOfTheOrder = (CheckBoxComponent) view
                 .getComponentByReference(ParameterFieldsO.ADVISE_START_DATE_OF_THE_ORDER);
-        FieldComponent orderStartDateBasedOn = (FieldComponent) view.getComponentByReference("orderStartDateBasedOn");
+        FieldComponent orderStartDateBasedOn = (FieldComponent) view.getComponentByReference(ParameterFieldsO.ORDER_START_DATE_BASED_ON);
+
         if (adviseStartDateOfTheOrder.isChecked()) {
             orderStartDateBasedOn.setEnabled(true);
         } else {
@@ -135,13 +143,6 @@ public class ParametersHooksO {
         orderService.changeFieldState(view, REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM, EARLIER_EFFECTIVE_DATE_FROM_TIME);
         orderService.changeFieldState(view, REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO, DELAYED_EFFECTIVE_DATE_TO_TIME);
         orderService.changeFieldState(view, REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO, EARLIER_EFFECTIVE_DATE_TO_TIME);
-    }
-
-    public void hideTabs(final ViewDefinitionState view) {
-        ComponentState pktTab = view.getComponentByReference("pktTab");
-        if (!securityService.hasCurrentUserRole(ROLE_SUPERADMIN)) {
-            pktTab.setVisible(false);
-        }
     }
 
 }
