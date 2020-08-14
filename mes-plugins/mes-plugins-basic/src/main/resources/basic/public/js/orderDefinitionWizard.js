@@ -40,6 +40,7 @@ QCD.orderDefinitionWizard = (function () {
 			$("#selectTechnology").prop('disabled', true);
 		});
 
+
 		QCD.orderDefinitionWizardContext.orderDefinitionWizardBody = $('#orderDefinitionWizard').clone();
 
 		$("#orderDefinitionWizard").on('hidden.bs.modal', function () {
@@ -84,7 +85,7 @@ QCD.orderDefinitionWizard = (function () {
 						}
 					}
 
-
+                    $("#startDate").val(moment(new Date()).format('YYYY-MM-DD HH:mm:ss'));
 				} else if (currentIndex == 1) {
 					var invalid = false;
 					if ($("#productionLine").val() == null || $("#productionLine").val() === '' || QCD.orderDefinitionWizardContext.order.productionLine == null) {
@@ -108,6 +109,20 @@ QCD.orderDefinitionWizard = (function () {
 					} else {
 						$("#finishDate").removeClass('is-invalid');
 
+					}
+
+                    if(!invalid){
+					if(getDate("startDate") >= getDate("finishDate")) {
+                        showMessage(
+							'failure',
+							QCD.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
+							QCD.translate("basic.dashboard.orderDefinitionWizard.error.finishDate"),
+							false);
+								$("#finishDate").addClass('is-invalid');
+                            						invalid = true;
+					} else {
+					    $("#finishDate").removeClass('is-invalid');
+					}
 					}
 				} else if (currentIndex == 2) {
 					var materials = QCD.orderDefinitionWizardContext.order.materials;
@@ -650,8 +665,8 @@ QCD.orderDefinitionWizard = (function () {
 			var current = $('#productionLine').typeahead("getActive");
 			if (current) {
 				QCD.orderDefinitionWizardContext.order.productionLine = current;
+				fillFinishDate();
 			}
-
 		});
 
 		$('#productionLine').keyup(function () {
@@ -700,6 +715,8 @@ QCD.orderDefinitionWizard = (function () {
 					clickToSelect: true,
 					singleSelect: true,
 					maintainSelected: true,
+					sortName: 'number',
+                    sortOrder: 'asc',
 					showFooter: false,
 					height: 500,
 					locale: (QCD.currentLang + '-' + QCD.currentLang
@@ -713,7 +730,16 @@ QCD.orderDefinitionWizard = (function () {
 			QCD.orderDefinitionWizardContext.order.productionLine = selectedProductionLines[0];
 			$("#productionLinesLookup").modal('hide');
 			$("#productionLine").val(QCD.orderDefinitionWizardContext.order.productionLine.number);
+			fillFinishDate();
 		});
+
+		$('#productionLines').on('check.bs.table', function (row, $element) {
+			$("#selectProductionLine").prop('disabled', false);
+		});
+		$('#productionLines').on('uncheck.bs.table', function (row, $element) {
+			$("#selectProductionLine").prop('disabled', true);
+		});
+
 		$('#productionLinesLookup').on('hidden.bs.modal', function (e) {
 			$("#selectProductionLine").prop('disabled', true);
 		});
@@ -779,7 +805,7 @@ QCD.orderDefinitionWizard = (function () {
 						QCD.orderDefinitionWizardContext.order.productionLine.name = data.name;
 						$("#productionLineDefinitionModal").modal('hide');
 						$("#productionLine").val(QCD.orderDefinitionWizardContext.order.productionLine.number);
-
+                        fillFinishDate();
 					} else {
 						showMessage(
 							'failure',
@@ -1229,6 +1255,45 @@ QCD.orderDefinitionWizard = (function () {
 				logoutIfSessionExpired(data);
 				QCD.orderDefinitionWizardContext.order.materials = data;
 				$("#materials").bootstrapTable('load', QCD.orderDefinitionWizardContext.order.materials);
+
+			},
+			error: function (data) {
+				logoutIfSessionExpired(data);
+				if (data.status == 401) {
+					window.location = "/login.html?timeout=true";
+				}
+				showMessage('failure',
+					QCD.translate("basic.dashboard.orderDefinitionWizard.error"),
+					QCD.translate("basic.dashboard.orderDefinitionWizard.error.internalError"),
+					false);
+			},
+			complete: function () {
+				$("#loader").modal('hide');
+			}
+		});
+	}
+
+	function fillFinishDate() {
+	    if (getDate("finishDate")) {
+	        return;
+	    }
+	    var _startDate = getDate("startDate");
+	    if(_startDate == null) {
+	        return;
+	    }
+		$.ajax({
+			url: "rest/productionLine/" + QCD.orderDefinitionWizardContext.order.productionLine.id + "/shiftWorkingDate",
+			type: "GET",
+			data: {
+                date: getDate("startDate")
+            },
+			async: false,
+			beforeSend: function (data) {
+				$("#loader").appendTo("body").modal('show');
+			},
+			success: function (data) {
+				logoutIfSessionExpired(data);
+				$("#finishDate").val(moment(new Date(data.finish)).format('YYYY-MM-DD HH:mm:ss'));
 
 			},
 			error: function (data) {
