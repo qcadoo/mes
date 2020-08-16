@@ -5,6 +5,7 @@ import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
+import com.qcadoo.mes.productionLines.controller.dataProvider.ProductionLineDto;
 import com.qcadoo.mes.productionLines.controller.dataProvider.ProductionLineRequest;
 import com.qcadoo.mes.productionLines.controller.dataProvider.ProductionLineResponse;
 import com.qcadoo.mes.productionLines.controller.dataProvider.ProductionLinesDataProvider;
@@ -51,6 +52,12 @@ public final class ProductionLinesApiController {
     @RequestMapping(value = "/productionLines", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ProductionLinesResponse getTechnologies(@RequestParam("query") String query) {
         return dataProvider.getProductionLines(query);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/productionLines/default", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ProductionLineDto getDefaultProductionLine() {
+        return dataProvider.getDefaultProductionLine();
     }
 
     @ResponseBody

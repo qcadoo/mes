@@ -1,9 +1,14 @@
 package com.qcadoo.mes.productionLines.controller.dataProvider;
 
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.productionLines.constants.ParameterFieldsPL;
+import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
+import com.qcadoo.model.api.Entity;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +19,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProductionLinesDataProvider {
 
-
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private ParameterService parameterService;
 
     public ProductionLinesResponse getProductionLines(String query) {
         StringBuilder queryBuilder = new StringBuilder();
@@ -68,5 +75,19 @@ public class ProductionLinesDataProvider {
             query.append("UPPER(pl.name) LIKE '%").append(search.toUpperCase()).append("%' ");
             query.append(") ");
         }
+    }
+
+    public ProductionLineDto getDefaultProductionLine() {
+
+        Entity productionLine = parameterService.getParameter().getBelongsToField(ParameterFieldsPL.DEFAULT_PRODUCTION_LINE);
+        if(Objects.nonNull(productionLine)) {
+            ProductionLineDto pl = new ProductionLineDto();
+            pl.setId(productionLine.getId());
+            pl.setName(productionLine.getStringField(ProductionLineFields.NAME));
+            pl.setNumber(productionLine.getStringField(ProductionLineFields.NUMBER));
+            return pl;
+        }
+        return new ProductionLineDto();
+
     }
 }

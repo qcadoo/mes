@@ -85,7 +85,8 @@ QCD.orderDefinitionWizard = (function () {
 						}
 					}
 
-                    $("#startDate").val(moment(new Date()).format('YYYY-MM-DD HH:mm:ss'));
+					$("#startDate").val(moment(new Date()).format('YYYY-MM-DD HH:mm:ss'));
+					fillProductionLineForTechnology();
 				} else if (currentIndex == 1) {
 					var invalid = false;
 					if ($("#productionLine").val() == null || $("#productionLine").val() === '' || QCD.orderDefinitionWizardContext.order.productionLine == null) {
@@ -111,18 +112,18 @@ QCD.orderDefinitionWizard = (function () {
 
 					}
 
-                    if(!invalid){
-					if(getDate("startDate") >= getDate("finishDate")) {
-                        showMessage(
-							'failure',
-							QCD.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
-							QCD.translate("basic.dashboard.orderDefinitionWizard.error.finishDate"),
-							false);
-								$("#finishDate").addClass('is-invalid');
-                            						invalid = true;
-					} else {
-					    $("#finishDate").removeClass('is-invalid');
-					}
+					if (!invalid) {
+						if (getDate("startDate") >= getDate("finishDate")) {
+							showMessage(
+								'failure',
+								QCD.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
+								QCD.translate("basic.dashboard.orderDefinitionWizard.error.finishDate"),
+								false);
+							$("#finishDate").addClass('is-invalid');
+							invalid = true;
+						} else {
+							$("#finishDate").removeClass('is-invalid');
+						}
 					}
 				} else if (currentIndex == 2) {
 					var materials = QCD.orderDefinitionWizardContext.order.materials;
@@ -260,6 +261,7 @@ QCD.orderDefinitionWizard = (function () {
 							QCD.orderDefinitionWizardContext.order.technology = tech;
 							fillMaterialsForTechnology();
 							$("#technology").val(QCD.orderDefinitionWizardContext.order.technology.number);
+							fillProductionLineForTechnology();
 						}
 					});
 				});
@@ -307,6 +309,7 @@ QCD.orderDefinitionWizard = (function () {
 			if (current) {
 				QCD.orderDefinitionWizardContext.order.technology = current;
 				fillMaterialsForTechnology();
+				fillProductionLineForTechnology();
 			}
 
 		});
@@ -361,8 +364,8 @@ QCD.orderDefinitionWizard = (function () {
 					singleSelect: true,
 					maintainSelected: true,
 					showFooter: false,
-									sortName: 'number',
-                    				sortOrder: 'asc',
+					sortName: 'number',
+					sortOrder: 'asc',
 					height: 500,
 					locale: (QCD.currentLang + '-' + QCD.currentLang
 						.toUpperCase())
@@ -376,10 +379,23 @@ QCD.orderDefinitionWizard = (function () {
 			fillMaterialsForTechnology();
 			$("#technologiesLookup").modal('hide');
 			$("#technology").val(QCD.orderDefinitionWizardContext.order.technology.number);
+			fillProductionLineForTechnology();
 		});
+
+
 		$('#technologiesLookup').on('hidden.bs.modal', function (e) {
 			$("#selectTechnology").prop('disabled', true);
 		});
+
+		$("#technology").blur(function () {
+			var technologyVal = $("#technology").val();
+			if (technologyVal == null || technologyVal === '') {
+				QCD.orderDefinitionWizardContext.order.technology = null;
+				QCD.orderDefinitionWizardContext.order.materials = [];
+				$("#materials").bootstrapTable('load', QCD.orderDefinitionWizardContext.order.materials);
+			}
+		});
+
 		$('#product').typeahead({
 			minLength: 3,
 			source: function (query, process) {
@@ -430,6 +446,7 @@ QCD.orderDefinitionWizard = (function () {
 								QCD.orderDefinitionWizardContext.order.technology = tech;
 								fillMaterialsForTechnology();
 								$("#technology").val(QCD.orderDefinitionWizardContext.order.technology.number);
+								fillProductionLineForTechnology();
 							}
 						});
 					});
@@ -718,7 +735,7 @@ QCD.orderDefinitionWizard = (function () {
 					singleSelect: true,
 					maintainSelected: true,
 					sortName: 'number',
-                    sortOrder: 'asc',
+					sortOrder: 'asc',
 					showFooter: false,
 					height: 500,
 					locale: (QCD.currentLang + '-' + QCD.currentLang
@@ -807,7 +824,7 @@ QCD.orderDefinitionWizard = (function () {
 						QCD.orderDefinitionWizardContext.order.productionLine.name = data.name;
 						$("#productionLineDefinitionModal").modal('hide');
 						$("#productionLine").val(QCD.orderDefinitionWizardContext.order.productionLine.number);
-                        fillFinishDate();
+						fillFinishDate();
 					} else {
 						showMessage(
 							'failure',
@@ -903,6 +920,20 @@ QCD.orderDefinitionWizard = (function () {
 			material.index = new Date().getTime();
 			QCD.orderDefinitionWizardContext.order.materials.push(material);
 			$materialsTable.bootstrapTable('load', QCD.orderDefinitionWizardContext.order.materials);
+		});
+
+		$("#selectMaterial").prop('disabled', true);
+
+		$('#materialsItem').on('check.bs.table', function (row, $element) {
+			$("#selectMaterial").prop('disabled', false);
+		});
+
+		$('#materialsItem').on('uncheck.bs.table', function (row, $element) {
+			$("#selectMaterial").prop('disabled', true);
+		});
+
+		$('#materialsLookup').on('hidden.bs.modal', function (e) {
+			$("#selectMaterial").prop('disabled', true);
 		});
 
 		$('[data-toggle="tooltip"]').tooltip();
@@ -1056,7 +1087,7 @@ QCD.orderDefinitionWizard = (function () {
 				maintainSelected: false,
 				showFooter: false,
 				sortName: 'number',
-                sortOrder: 'asc',
+				sortOrder: 'asc',
 				height: 500,
 				locale: (QCD.currentLang + '-' + QCD.currentLang
 					.toUpperCase())
@@ -1276,20 +1307,98 @@ QCD.orderDefinitionWizard = (function () {
 		});
 	}
 
+	function fillProductionLineForTechnology() {
+		if (QCD.orderDefinitionWizardContext.order.technology) {
+
+			$.ajax({
+				url: "rest/technology/" + QCD.orderDefinitionWizardContext.order.technology.id + "/productionLine",
+				type: "GET",
+				async: false,
+				beforeSend: function (data) {
+					$("#loader").appendTo("body").modal('show');
+				},
+				success: function (data) {
+					logoutIfSessionExpired(data);
+					if (data.id) {
+
+						QCD.orderDefinitionWizardContext.order.productionLine = {};
+						QCD.orderDefinitionWizardContext.order.productionLine.id = data.id;
+						QCD.orderDefinitionWizardContext.order.productionLine.number = data.number;
+						QCD.orderDefinitionWizardContext.order.productionLine.name = data.name;
+						$("#productionLine").val(QCD.orderDefinitionWizardContext.order.productionLine.number);
+						$("#startDate").val(moment(new Date()).format('YYYY-MM-DD HH:mm:ss'));
+						fillFinishDate();
+					}
+
+				},
+				error: function (data) {
+					logoutIfSessionExpired(data);
+					if (data.status == 401) {
+						window.location = "/login.html?timeout=true";
+					}
+					showMessage('failure',
+						QCD.translate("basic.dashboard.orderDefinitionWizard.error"),
+						QCD.translate("basic.dashboard.orderDefinitionWizard.error.internalError"),
+						false);
+				},
+				complete: function () {
+					$("#loader").modal('hide');
+				}
+			});
+		} else {
+
+			$.ajax({
+				url: "rest/productionLines/default",
+				type: "GET",
+				async: false,
+				beforeSend: function (data) {
+					$("#loader").appendTo("body").modal('show');
+				},
+				success: function (data) {
+					logoutIfSessionExpired(data);
+
+					if (data.id) {
+						QCD.orderDefinitionWizardContext.order.productionLine = {};
+						QCD.orderDefinitionWizardContext.order.productionLine.id = data.id;
+						QCD.orderDefinitionWizardContext.order.productionLine.number = data.number;
+						QCD.orderDefinitionWizardContext.order.productionLine.name = data.name;
+						$("#productionLine").val(QCD.orderDefinitionWizardContext.order.productionLine.number);
+						$("#startDate").val(moment(new Date()).format('YYYY-MM-DD HH:mm:ss'));
+						fillFinishDate();
+					}
+				},
+				error: function (data) {
+					logoutIfSessionExpired(data);
+					if (data.status == 401) {
+						window.location = "/login.html?timeout=true";
+					}
+					showMessage('failure',
+						QCD.translate("basic.dashboard.orderDefinitionWizard.error"),
+						QCD.translate("basic.dashboard.orderDefinitionWizard.error.internalError"),
+						false);
+				},
+				complete: function () {
+					$("#loader").modal('hide');
+				}
+			});
+		}
+	}
+
+
 	function fillFinishDate() {
-	    if (getDate("finishDate")) {
-	        return;
-	    }
-	    var _startDate = getDate("startDate");
-	    if(_startDate == null) {
-	        return;
-	    }
+		if (getDate("finishDate")) {
+			return;
+		}
+		var _startDate = getDate("startDate");
+		if (_startDate == null) {
+			return;
+		}
 		$.ajax({
 			url: "rest/productionLine/" + QCD.orderDefinitionWizardContext.order.productionLine.id + "/shiftWorkingDate",
 			type: "GET",
 			data: {
-                date: getDate("startDate")
-            },
+				date: getDate("startDate")
+			},
 			async: false,
 			beforeSend: function (data) {
 				$("#loader").appendTo("body").modal('show');

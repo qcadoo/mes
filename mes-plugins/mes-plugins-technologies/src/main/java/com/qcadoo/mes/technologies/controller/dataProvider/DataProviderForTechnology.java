@@ -1,10 +1,16 @@
 package com.qcadoo.mes.technologies.controller.dataProvider;
 
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
+import com.qcadoo.mes.productionLines.controller.dataProvider.ProductionLineDto;
 import com.qcadoo.mes.technologies.OperationComponentDataProvider;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +26,9 @@ public class DataProviderForTechnology {
 
     @Autowired
     private OperationComponentDataProvider operationComponentDataProvider;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public TechnologiesResponse getTechnologies(String query, Long productId) {
         StringBuilder queryBuilder = new StringBuilder();
@@ -89,5 +98,21 @@ public class DataProviderForTechnology {
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("ids", ids);
         return jdbcTemplate.query(query.toString(), parameters, new BeanPropertyRowMapper(MaterialDto.class));
+    }
+
+    public ProductionLineDto getTechnologyProductionLine(Long technologyId) {
+        Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyId);
+        if (technology.getStringField("range").equals("01oneDivision")) {
+            Entity productionLine = technology.getBelongsToField("productionLine");
+            if (Objects.nonNull(productionLine)) {
+                ProductionLineDto pl = new ProductionLineDto();
+                pl.setId(productionLine.getId());
+                pl.setName(productionLine.getStringField(ProductionLineFields.NAME));
+                pl.setNumber(productionLine.getStringField(ProductionLineFields.NUMBER));
+                return pl;
+            }
+        }
+        return new ProductionLineDto();
     }
 }
