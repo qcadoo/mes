@@ -168,6 +168,12 @@ QCD.dashboard = (function () {
         );
     }
 
+    function prependOrder(ordersType, order) {
+        $('#' + ordersType).prepend(
+            createOrderDiv(order)
+        );
+    }
+
     function appendOperationalTask(operationalTasksType, operationalTask) {
         let doneInPercent = Math.round(operationalTask.usedQuantity * 100 / operationalTask.plannedQuantity);
 
@@ -334,7 +340,8 @@ QCD.dashboard = (function () {
 	return {
 		init: init,
 		initOrders: initOrders,
-		appendOrder: appendOrder
+		appendOrder: appendOrder,
+		prependOrder: prependOrder
 	};
 
 })();
