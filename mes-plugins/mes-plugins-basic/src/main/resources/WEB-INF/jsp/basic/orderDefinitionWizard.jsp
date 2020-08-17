@@ -50,7 +50,7 @@
                                  <div class="input-group-prepend">
                                     <label class="form-label required " for="quantity">${translationsMap['basic.dashboard.orderDefinitionWizard.form.quantity']}</label>
                                  </div>
-                                 <input type="text" class="form-control right" tabindex="2" id="quantity" name="quantity" autocomplete="off"/>
+                                 <input type="text" class="form-control right decimal" tabindex="2" id="quantity" name="quantity" autocomplete="off"/>
                               </div>
                            </div>
                            <div class="col-sm-2">

@@ -35,12 +35,14 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.validators.GlobalMessage;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -149,6 +151,8 @@ public class OrderCreationService {
             return new OrderCreationResponse(isTechnology.getLeft());
         }
         Entity technology = isTechnology.getRight();
+        OrderCreationResponse response = new OrderCreationResponse(OrderCreationResponse.StatusCode.OK);
+
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).create();
 
         order.setField(OrderFields.NUMBER,
@@ -176,6 +180,14 @@ public class OrderCreationService {
 
         order = order.getDataDefinition().save(order);
         if (order.isValid()) {
+            if (!order.getGlobalMessages().isEmpty()) {
+                Optional<GlobalMessage> message = order.getGlobalMessages().stream()
+                        .filter(gm -> gm.getMessage().equals("orders.order.message.plannedQuantityChanged")).findFirst();
+                message.ifPresent(m -> {
+                    response.setAdditionalInformation(translationService.translate(m.getMessage(),
+                            LocaleContextHolder.getLocale(), m.getVars()[0], m.getVars()[1]));
+                });
+            }
             final StateChangeContext orderStateChangeContext = stateChangeContextBuilder.build(
                     orderStateChangeAspect.getChangeEntityDescriber(), order, OrderState.ACCEPTED.getStringValue());
             orderStateChangeAspect.changeState(orderStateChangeContext);
@@ -190,10 +202,10 @@ public class OrderCreationService {
                     "basic.dashboard.orderDefinitionWizard.createOrder.validationError", LocaleContextHolder.getLocale()));
         }
 
-        OrderCreationResponse response = new OrderCreationResponse(OrderCreationResponse.StatusCode.OK);
         response.setMessage(translationService.translate("orders.orderCreationService.created", LocaleContextHolder.getLocale(),
                 order.getStringField(OrderFields.NUMBER)));
         response.setOrder(dashboardKanbanDataProvider.getOrder(order.getId()));
+
         modifyProductionCountingQuantity(order, orderCreationRequest.getMaterials());
         return response;
     }

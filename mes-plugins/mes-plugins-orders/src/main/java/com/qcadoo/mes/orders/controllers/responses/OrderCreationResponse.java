@@ -10,6 +10,8 @@ public class OrderCreationResponse {
 
     private String message;
 
+    private String additionalInformation;
+
     private OrderHolder order;
 
     public enum StatusCode {
@@ -55,5 +57,13 @@ public class OrderCreationResponse {
 
     public void setOrder(OrderHolder order) {
         this.order = order;
+    }
+
+    public String getAdditionalInformation() {
+        return additionalInformation;
+    }
+
+    public void setAdditionalInformation(String additionalInformation) {
+        this.additionalInformation = additionalInformation;
     }
 }
