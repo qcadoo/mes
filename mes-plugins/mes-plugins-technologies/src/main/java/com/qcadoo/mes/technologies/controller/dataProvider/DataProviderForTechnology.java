@@ -34,7 +34,7 @@ public class DataProviderForTechnology {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("Select id as id, number as number, master as master From technologies_technology ");
         queryBuilder
-                .append("WHERE typeOfProductionRecording = '02cumulated' AND product_id = :productId AND state = '02accepted' AND number ilike :query LIMIT 10 ");
+                .append("WHERE typeOfProductionRecording = '02cumulated' AND product_id = :productId AND state = '02accepted' AND number ilike :query ORDER BY number ASC LIMIT 10 ");
 
         Map<String, Object> parameters = Maps.newHashMap();
 

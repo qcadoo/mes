@@ -846,4 +846,10 @@ margin-top: 0px;
 
 #technology-form-group {
     margin-bottom: 10px;
+
+}
+
+#technology-form-group .dropdown-menu {
+        overflow-y: scroll;
+        height: 120px;
 }

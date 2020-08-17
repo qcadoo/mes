@@ -28,7 +28,7 @@ public class ProductionLinesDataProvider {
     public ProductionLinesResponse getProductionLines(String query) {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("Select id as id, number as number, name as name From productionlines_productionline ");
-        queryBuilder.append("WHERE active = true AND production = true AND number ilike :query LIMIT 10 " );
+        queryBuilder.append("WHERE active = true AND production = true AND number ilike :query ORDER BY number ASC LIMIT 10 " );
 
         Map<String, Object> parameters = Maps.newHashMap();
 

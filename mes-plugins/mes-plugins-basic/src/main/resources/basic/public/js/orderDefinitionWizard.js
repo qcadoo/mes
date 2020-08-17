@@ -400,7 +400,7 @@ QCD.orderDefinitionWizard = (function () {
 			minLength: 3,
 			source: function (query, process) {
 				return $.getJSON(
-					'rest/products', {
+					'rest/productsTypeahead', {
 						query: $("#product").val()
 					},
 					function (data) {
@@ -998,7 +998,7 @@ QCD.orderDefinitionWizard = (function () {
 				minLength: 3,
 				source: function (query, process) {
 					return $.getJSON(
-						'rest/products', {
+						'rest/productsTypeahead', {
 							query: $('#product-' + element).val()
 						},
 						function (data) {
@@ -1368,6 +1368,41 @@ QCD.orderDefinitionWizard = (function () {
 						$("#productionLine").val(QCD.orderDefinitionWizardContext.order.productionLine.number);
 						$("#startDate").val(moment(new Date()).format('YYYY-MM-DD HH:mm:ss'));
 						fillFinishDate();
+					} else {
+					$.ajax({
+                    				url: "rest/productionLines/default",
+                    				type: "GET",
+                    				async: false,
+                    				beforeSend: function (data) {
+                    					$("#loader").appendTo("body").modal('show');
+                    				},
+                    				success: function (data) {
+                    					logoutIfSessionExpired(data);
+
+                    					if (data.id) {
+                    						QCD.orderDefinitionWizardContext.order.productionLine = {};
+                    						QCD.orderDefinitionWizardContext.order.productionLine.id = data.id;
+                    						QCD.orderDefinitionWizardContext.order.productionLine.number = data.number;
+                    						QCD.orderDefinitionWizardContext.order.productionLine.name = data.name;
+                    						$("#productionLine").val(QCD.orderDefinitionWizardContext.order.productionLine.number);
+                    						$("#startDate").val(moment(new Date()).format('YYYY-MM-DD HH:mm:ss'));
+                    						fillFinishDate();
+                    					}
+                    				},
+                    				error: function (data) {
+                    					logoutIfSessionExpired(data);
+                    					if (data.status == 401) {
+                    						window.location = "/login.html?timeout=true";
+                    					}
+                    					showMessage('failure',
+                    						QCD.translate("basic.dashboard.orderDefinitionWizard.error"),
+                    						QCD.translate("basic.dashboard.orderDefinitionWizard.error.internalError"),
+                    						false);
+                    				},
+                    				complete: function () {
+                    					$("#loader").modal('hide');
+                    				}
+                    			});
 					}
 
 				},

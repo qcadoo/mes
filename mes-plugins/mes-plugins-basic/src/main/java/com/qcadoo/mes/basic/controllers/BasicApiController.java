@@ -56,6 +56,12 @@ public final class BasicApiController {
     }
 
     @ResponseBody
+    @RequestMapping(value = "/productsTypeahead", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public DataResponse getProductsTypeahead(@RequestParam("query") String query) {
+        return dataProvider.getProductsTypeahead(query);
+    }
+
+    @ResponseBody
     @RequestMapping(value = "/productsByPage", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public ProductsGridResponse getProducts(@RequestParam(value = "limit") int limit, @RequestParam(value = "offset") int offset,
             @RequestParam(value = "sort", required = false) String sort,

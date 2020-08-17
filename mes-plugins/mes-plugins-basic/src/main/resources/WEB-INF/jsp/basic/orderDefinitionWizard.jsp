@@ -429,7 +429,7 @@
                         <div class="input-group-prepend">
                            <label class="form-label required" for="productNumber"  data-toggle="tooltip" title=${translationsMap['basic.dashboard.orderDefinitionWizard.form.product.number']}>${translationsMap['basic.dashboard.orderDefinitionWizard.form.product.number']}</label>
                         </div>
-                        <input type="text" class="form-control right" tabindex="1" id="productNumber" name="productNumber"  autocomplete="off"/>
+                        <input type="text" class="form-control right" tabindex="101" id="productNumber" name="productNumber"  autocomplete="off"/>
                      </div>
                   </div>
                </div>
@@ -443,7 +443,7 @@
                         <div class="input-group-prepend">
                            <label class="form-label required" for="productName"  data-toggle="tooltip" title=${translationsMap['basic.dashboard.orderDefinitionWizard.form.product.name']}>${translationsMap['basic.dashboard.orderDefinitionWizard.form.product.name']}</label>
                         </div>
-                        <input type="text" class="form-control" tabindex="2" id="productName" name="productName"  autocomplete="off"/>
+                        <input type="text" class="form-control" tabindex="102" id="productName" name="productName"  autocomplete="off"/>
                      </div>
                   </div>
                </div>
@@ -457,7 +457,7 @@
                         <div class="input-group-prepend">
                            <label class="form-label required" for="productUnit"  data-toggle="tooltip" title=${translationsMap['basic.dashboard.orderDefinitionWizard.form.product.unit']}>${translationsMap['basic.dashboard.orderDefinitionWizard.form.product.unit']}</label>
                         </div>
-                        <select type="text" tabindex="3" class="form-control custom-select" id="productUnit" name="productUnit"  autocomplete="off"></select>
+                        <select type="text" tabindex="103" class="form-control custom-select" id="productUnit" name="productUnit"  autocomplete="off"></select>
                      </div>
                   </div>
                </div>
@@ -467,8 +467,8 @@
          </div>
          <div class="modal-footer">
             <div class="btn-toolbar justify-content-between">
-               <button type="button" class="btn btn-primary mr-2" id="saveProduct">${translationsMap['basic.dashboard.orderDefinitionWizard.productsLookup.save']}</button>
-               <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal">${translationsMap['basic.dashboard.orderDefinitionWizard.productsLookup.cancelButton']}</button>
+               <button type="button" tabindex="104" class="btn btn-primary mr-2" id="saveProduct">${translationsMap['basic.dashboard.orderDefinitionWizard.productsLookup.save']}</button>
+               <button type="button" tabindex="105" class="btn btn-secondary mr-2" data-dismiss="modal">${translationsMap['basic.dashboard.orderDefinitionWizard.productsLookup.cancelButton']}</button>
             </div>
          </div>
       </div>
@@ -553,7 +553,7 @@
                         <div class="input-group-prepend">
                            <label class="form-label required" for="productionLineNumber"  data-toggle="tooltip" title=${translationsMap['basic.dashboard.orderDefinitionWizard.form.productionLine.number']}>${translationsMap['basic.dashboard.orderDefinitionWizard.form.productionLine.number']}</label>
                         </div>
-                        <input type="text" class="form-control right" tabindex="1" id="productionLineNumber" name="productionLineNumber"  autocomplete="off"/>
+                        <input type="text" class="form-control right" tabindex="201" id="productionLineNumber" name="productionLineNumber"  autocomplete="off"/>
                      </div>
                   </div>
                </div>
@@ -567,7 +567,7 @@
                         <div class="input-group-prepend">
                            <label class="form-label required" for="productionLineName"  data-toggle="tooltip" title=${translationsMap['basic.dashboard.orderDefinitionWizard.form.productionLine.name']}>${translationsMap['basic.dashboard.orderDefinitionWizard.form.productionLine.name']}</label>
                         </div>
-                        <input type="text" class="form-control" tabindex="2" id="productionLineName" name="productionLineName"  autocomplete="off"/>
+                        <input type="text" class="form-control" tabindex="202" id="productionLineName" name="productionLineName"  autocomplete="off"/>
                      </div>
                   </div>
                </div>
@@ -577,8 +577,8 @@
          </div>
          <div class="modal-footer">
             <div class="btn-toolbar justify-content-between">
-               <button type="button" class="btn btn-primary mr-2" id="saveProductionLine">${translationsMap['basic.dashboard.orderDefinitionWizard.productsLookup.save']}</button>
-               <button type="button" class="btn btn-secondary mr-2" data-dismiss="modal">${translationsMap['basic.dashboard.orderDefinitionWizard.productsLookup.cancelButton']}</button>
+               <button type="button" tabindex="203" class="btn btn-primary mr-2" id="saveProductionLine">${translationsMap['basic.dashboard.orderDefinitionWizard.productsLookup.save']}</button>
+               <button type="button" tabindex="204" class="btn btn-secondary mr-2" data-dismiss="modal">${translationsMap['basic.dashboard.orderDefinitionWizard.productsLookup.cancelButton']}</button>
             </div>
          </div>
       </div>
