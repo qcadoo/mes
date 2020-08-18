@@ -1012,7 +1012,12 @@ QCD.orderDefinitionWizard = (function () {
 		var data = QCD.orderDefinitionWizardContext.order.materials;
 		$.each(data, function (i, e) {
 			if (e.index == element) {
-				e.quantityPerUnit = $('#quantityPerUnit-' + element).val();
+				e.quantityPerUnit =evaluateExpression( $('#quantityPerUnit-' + element).val());
+				if(e.quantityPerUnit) {
+                				    var calculatedQuantity= e.quantityPerUnit * $('#quantity').val();
+                				    e.quantity = parseFloat(calculatedQuantity.toFixed(5));
+                				    $('#quantity-' + element).val(e.quantity);
+                				}
 			}
 		});
 	}
@@ -1021,7 +1026,12 @@ QCD.orderDefinitionWizard = (function () {
 		var data = QCD.orderDefinitionWizardContext.order.materials;
 		$.each(data, function (i, e) {
 			if (e.index == element) {
-				e.quantity = $('#quantity-' + element).val();
+				e.quantity = evaluateExpression($('#quantity-' + element).val());
+				if(e.quantity) {
+				    var calculatedQuantityPerUnit= e.quantity / $('#quantity').val();
+				    e.quantityPerUnit = parseFloat(calculatedQuantityPerUnit.toFixed(5));
+				    $('#quantityPerUnit-' + element).val(e.quantityPerUnit);
+				}
 			}
 		});
 	}
@@ -1704,18 +1714,18 @@ function productFormatter(value, row) {
 function quantityFormatter(value, row) {
 	if (row.productInId) {
 		return '<div class="input-group">' +
-			'<input type="text" disabled class="form-control right decimal" tabindex="1" onblur="QCD.orderDefinitionWizard.quantityOnBlur(' + new String(row.index) + ')" id="quantity-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
+			'<input type="text" disabled class="form-control right decimal " tabindex="1" onblur="QCD.orderDefinitionWizard.quantityOnBlur(' + new String(row.index) + ')" id="quantity-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
 			'</div>';
 	} else {
 		return '<div class="input-group">' +
-			'<input type="text" class="form-control right decimal" tabindex="1" onblur="QCD.orderDefinitionWizard.quantityOnBlur(' + new String(row.index) + ')" onchange="QCD.orderDefinitionWizard.quantityOnBlur(' + new String(row.index) + ')" id="quantity-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
+			'<input type="text" class="form-control right decimal " tabindex="1" onblur="QCD.orderDefinitionWizard.quantityOnBlur(' + new String(row.index) + ')" onchange="QCD.orderDefinitionWizard.quantityOnBlur(' + new String(row.index) + ')" id="quantity-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
 			'</div>';
 	}
 
 }
 
 function quantityPerUnitFormatter(value, row) {
-	if (row.productInId) {
+	if (row.productInId || QCD.orderDefinitionWizardContext.order.technology) {
 		return '<div class="input-group">' +
 			'<input type="text" disabled class="form-control right decimal" tabindex="1" onblur="QCD.orderDefinitionWizard.quantityPerUnitOnBlur(' + new String(row.index) + ')" id="quantityPerUnit-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
 			'</div>';
