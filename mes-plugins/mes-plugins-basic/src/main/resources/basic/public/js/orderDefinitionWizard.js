@@ -85,8 +85,12 @@ QCD.orderDefinitionWizard = (function () {
 						}
 					}
 
-					$("#startDate").val(moment(new Date()).format('YYYY-MM-DD HH:mm:ss'));
 					fillProductionLineForTechnology();
+					var _startDate = getDate("startDate");
+					if (_startDate == null) {
+						$("#startDate").val(moment(new Date()).format('YYYY-MM-DD HH:mm:ss'));
+						fillFinishDate();
+					}
 					if (invalid) {
 						showMessage(
 							'failure',
@@ -1413,114 +1417,126 @@ QCD.orderDefinitionWizard = (function () {
 	}
 
 	function fillProductionLineForTechnology() {
-		if (QCD.orderDefinitionWizardContext.order.technology) {
+		if (!QCD.orderDefinitionWizardContext.order.productionLine) {
+			if (QCD.orderDefinitionWizardContext.order.technology) {
 
-			$.ajax({
-				url: "rest/technology/" + QCD.orderDefinitionWizardContext.order.technology.id + "/productionLine",
-				type: "GET",
-				async: false,
-				beforeSend: function (data) {
-					$("#loader").appendTo("body").modal('show');
-				},
-				success: function (data) {
-					logoutIfSessionExpired(data);
-					if (data.id) {
+				$.ajax({
+					url: "rest/technology/" + QCD.orderDefinitionWizardContext.order.technology.id + "/productionLine",
+					type: "GET",
+					async: false,
+					beforeSend: function (data) {
+						$("#loader").appendTo("body").modal('show');
+					},
+					success: function (data) {
+						logoutIfSessionExpired(data);
+						if (data.id) {
 
-						QCD.orderDefinitionWizardContext.order.productionLine = {};
-						QCD.orderDefinitionWizardContext.order.productionLine.id = data.id;
-						QCD.orderDefinitionWizardContext.order.productionLine.number = data.number;
-						QCD.orderDefinitionWizardContext.order.productionLine.name = data.name;
-						$("#productionLine").val(QCD.orderDefinitionWizardContext.order.productionLine.number);
-						$("#startDate").val(moment(new Date()).format('YYYY-MM-DD HH:mm:ss'));
-						fillFinishDate();
-					} else {
-						$.ajax({
-							url: "rest/productionLines/default",
-							type: "GET",
-							async: false,
-							beforeSend: function (data) {
-								$("#loader").appendTo("body").modal('show');
-							},
-							success: function (data) {
-								logoutIfSessionExpired(data);
-
-								if (data.id) {
-									QCD.orderDefinitionWizardContext.order.productionLine = {};
-									QCD.orderDefinitionWizardContext.order.productionLine.id = data.id;
-									QCD.orderDefinitionWizardContext.order.productionLine.number = data.number;
-									QCD.orderDefinitionWizardContext.order.productionLine.name = data.name;
-									$("#productionLine").val(QCD.orderDefinitionWizardContext.order.productionLine.number);
-									$("#startDate").val(moment(new Date()).format('YYYY-MM-DD HH:mm:ss'));
-									fillFinishDate();
-								}
-							},
-							error: function (data) {
-								logoutIfSessionExpired(data);
-								if (data.status == 401) {
-									window.location = "/login.html?timeout=true";
-								}
-								showMessage('failure',
-									QCD.translate("basic.dashboard.orderDefinitionWizard.error"),
-									QCD.translate("basic.dashboard.orderDefinitionWizard.error.internalError"),
-									false);
-							},
-							complete: function () {
-								$("#loader").modal('hide');
+							QCD.orderDefinitionWizardContext.order.productionLine = {};
+							QCD.orderDefinitionWizardContext.order.productionLine.id = data.id;
+							QCD.orderDefinitionWizardContext.order.productionLine.number = data.number;
+							QCD.orderDefinitionWizardContext.order.productionLine.name = data.name;
+							$("#productionLine").val(QCD.orderDefinitionWizardContext.order.productionLine.number);
+							var _startDate = getDate("startDate");
+							if (_startDate == null) {
+								$("#startDate").val(moment(new Date()).format('YYYY-MM-DD HH:mm:ss'));
+								fillFinishDate();
 							}
-						});
-					}
 
-				},
-				error: function (data) {
-					logoutIfSessionExpired(data);
-					if (data.status == 401) {
-						window.location = "/login.html?timeout=true";
-					}
-					showMessage('failure',
-						QCD.translate("basic.dashboard.orderDefinitionWizard.error"),
-						QCD.translate("basic.dashboard.orderDefinitionWizard.error.internalError"),
-						false);
-				},
-				complete: function () {
-					$("#loader").modal('hide');
-				}
-			});
-		} else {
+						} else {
+							$.ajax({
+								url: "rest/productionLines/default",
+								type: "GET",
+								async: false,
+								beforeSend: function (data) {
+									$("#loader").appendTo("body").modal('show');
+								},
+								success: function (data) {
+									logoutIfSessionExpired(data);
 
-			$.ajax({
-				url: "rest/productionLines/default",
-				type: "GET",
-				async: false,
-				beforeSend: function (data) {
-					$("#loader").appendTo("body").modal('show');
-				},
-				success: function (data) {
-					logoutIfSessionExpired(data);
+									if (data.id) {
+										QCD.orderDefinitionWizardContext.order.productionLine = {};
+										QCD.orderDefinitionWizardContext.order.productionLine.id = data.id;
+										QCD.orderDefinitionWizardContext.order.productionLine.number = data.number;
+										QCD.orderDefinitionWizardContext.order.productionLine.name = data.name;
+										$("#productionLine").val(QCD.orderDefinitionWizardContext.order.productionLine.number);
+										var _startDate = getDate("startDate");
+										if (_startDate == null) {
+											$("#startDate").val(moment(new Date()).format('YYYY-MM-DD HH:mm:ss'));
+											fillFinishDate();
+										}
+									}
+								},
+								error: function (data) {
+									logoutIfSessionExpired(data);
+									if (data.status == 401) {
+										window.location = "/login.html?timeout=true";
+									}
+									showMessage('failure',
+										QCD.translate("basic.dashboard.orderDefinitionWizard.error"),
+										QCD.translate("basic.dashboard.orderDefinitionWizard.error.internalError"),
+										false);
+								},
+								complete: function () {
+									$("#loader").modal('hide');
+								}
+							});
+						}
 
-					if (data.id) {
-						QCD.orderDefinitionWizardContext.order.productionLine = {};
-						QCD.orderDefinitionWizardContext.order.productionLine.id = data.id;
-						QCD.orderDefinitionWizardContext.order.productionLine.number = data.number;
-						QCD.orderDefinitionWizardContext.order.productionLine.name = data.name;
-						$("#productionLine").val(QCD.orderDefinitionWizardContext.order.productionLine.number);
-						$("#startDate").val(moment(new Date()).format('YYYY-MM-DD HH:mm:ss'));
-						fillFinishDate();
+					},
+					error: function (data) {
+						logoutIfSessionExpired(data);
+						if (data.status == 401) {
+							window.location = "/login.html?timeout=true";
+						}
+						showMessage('failure',
+							QCD.translate("basic.dashboard.orderDefinitionWizard.error"),
+							QCD.translate("basic.dashboard.orderDefinitionWizard.error.internalError"),
+							false);
+					},
+					complete: function () {
+						$("#loader").modal('hide');
 					}
-				},
-				error: function (data) {
-					logoutIfSessionExpired(data);
-					if (data.status == 401) {
-						window.location = "/login.html?timeout=true";
+				});
+			} else {
+
+				$.ajax({
+					url: "rest/productionLines/default",
+					type: "GET",
+					async: false,
+					beforeSend: function (data) {
+						$("#loader").appendTo("body").modal('show');
+					},
+					success: function (data) {
+						logoutIfSessionExpired(data);
+
+						if (data.id) {
+							QCD.orderDefinitionWizardContext.order.productionLine = {};
+							QCD.orderDefinitionWizardContext.order.productionLine.id = data.id;
+							QCD.orderDefinitionWizardContext.order.productionLine.number = data.number;
+							QCD.orderDefinitionWizardContext.order.productionLine.name = data.name;
+							$("#productionLine").val(QCD.orderDefinitionWizardContext.order.productionLine.number);
+							var _startDate = getDate("startDate");
+							if (_startDate == null) {
+								$("#startDate").val(moment(new Date()).format('YYYY-MM-DD HH:mm:ss'));
+								fillFinishDate();
+							}
+						}
+					},
+					error: function (data) {
+						logoutIfSessionExpired(data);
+						if (data.status == 401) {
+							window.location = "/login.html?timeout=true";
+						}
+						showMessage('failure',
+							QCD.translate("basic.dashboard.orderDefinitionWizard.error"),
+							QCD.translate("basic.dashboard.orderDefinitionWizard.error.internalError"),
+							false);
+					},
+					complete: function () {
+						$("#loader").modal('hide');
 					}
-					showMessage('failure',
-						QCD.translate("basic.dashboard.orderDefinitionWizard.error"),
-						QCD.translate("basic.dashboard.orderDefinitionWizard.error.internalError"),
-						false);
-				},
-				complete: function () {
-					$("#loader").modal('hide');
-				}
-			});
+				});
+			}
 		}
 	}
 
