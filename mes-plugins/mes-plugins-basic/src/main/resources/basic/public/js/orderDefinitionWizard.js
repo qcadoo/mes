@@ -340,9 +340,12 @@ QCD.orderDefinitionWizard = (function () {
 
 		});
 
-		$('#technology').keyup(function () {
-			$('#technology').removeData("active");
-			QCD.orderDefinitionWizardContext.order.technology = null;
+		$('#technology').keyup(function (e) {
+			if (e.keyCode != 13) {
+
+				$('#technology').removeData("active");
+				QCD.orderDefinitionWizardContext.order.technology = null;
+			}
 		});
 
 		$("#getTechnology").click(function () {
@@ -480,12 +483,14 @@ QCD.orderDefinitionWizard = (function () {
 			}
 
 		});
-		$('#product').keyup(function () {
-			$('#product').removeData("active");
-			QCD.orderDefinitionWizardContext.order.product = null;
-			$("#unit").val("");
-			$("#technology").prop('disabled', true);
-			$("#getTechnology").prop('disabled', true);
+		$('#product').keyup(function (e) {
+			if (e.keyCode != 13) {
+				$('#product').removeData("active");
+				QCD.orderDefinitionWizardContext.order.product = null;
+				$("#unit").val("");
+				$("#technology").prop('disabled', true);
+				$("#getTechnology").prop('disabled', true);
+			}
 		});
 
 		$("#addProduct").click(function () {
@@ -724,9 +729,12 @@ QCD.orderDefinitionWizard = (function () {
 			}
 		});
 
-		$('#productionLine').keyup(function () {
-			$('#productionLine').removeData("active");
-			QCD.orderDefinitionWizardContext.order.productionLine = null;
+		$('#productionLine').keyup(function (e) {
+			if (e.keyCode != 13) {
+
+				$('#productionLine').removeData("active");
+				QCD.orderDefinitionWizardContext.order.productionLine = null;
+			}
 		});
 
 		$("#getProductionLine").click(function () {
@@ -1089,23 +1097,27 @@ QCD.orderDefinitionWizard = (function () {
 				}
 			});
 
-			$('#product-' + element).keyup(function () {
-				$('#product-' + element).removeData("active");
-				var data = QCD.orderDefinitionWizardContext.order.materials;
+			$('#product-' + element).keyup(function (e) {
+				if (e.keyCode != 13) {
 
-				$.each(data, function (i, e) {
-					if (e.index == QCD.orderDefinitionWizardContext.order.lastMaterialIndex) {
-						e.productId = null;
-						e.productNumber = null;
-						e.product = "";
-						e.unit = null;
+					$('#product-' + element).removeData("active");
+					var data = QCD.orderDefinitionWizardContext.order.materials;
 
-						$('#unit-' + QCD.orderDefinitionWizardContext.order.lastMaterialIndex).val("");
+					$.each(data, function (i, e) {
+						if (e.index == QCD.orderDefinitionWizardContext.order.lastMaterialIndex) {
+							e.productId = null;
+							e.productNumber = null;
+							e.product = "";
+							e.unit = null;
 
-					}
-				});
+							$('#unit-' + QCD.orderDefinitionWizardContext.order.lastMaterialIndex).val("");
+
+						}
+					});
+				}
 			});
 			QCD.orderDefinitionWizardContext.order.productEvents.push(element);
+
 		}
 	}
 
