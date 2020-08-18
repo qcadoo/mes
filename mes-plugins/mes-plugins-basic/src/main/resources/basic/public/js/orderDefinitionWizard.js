@@ -143,7 +143,7 @@ QCD.orderDefinitionWizard = (function () {
 					return !invalid;
 
 				} else if (currentIndex == 2) {
-									var invalid = false;
+					var invalid = false;
 
 					var materials = QCD.orderDefinitionWizardContext.order.materials;
 					$.each(materials, function (i, material) {
@@ -199,7 +199,7 @@ QCD.orderDefinitionWizard = (function () {
 							false);
 					}
 					if (!invalid) {
-					    preparePreview();
+						preparePreview();
 					}
 					return !invalid;
 				}
@@ -1045,17 +1045,38 @@ QCD.orderDefinitionWizard = (function () {
 			$('#product-' + element).change(function () {
 				var current = $('#product-' + element).typeahead("getActive");
 				if (current) {
+
+					$('#product-' + element).removeClass('is-invalid');
+					var exist = false;
+
 					var data = QCD.orderDefinitionWizardContext.order.materials;
 					$.each(data, function (i, e) {
-						if (e.index == QCD.orderDefinitionWizardContext.order.lastMaterialIndex) {
-							e.productId = current.id;
-							e.productNumber = current.number;
-							e.product = current.number;
-							e.unit = current.unit;
-							$('#unit-' + QCD.orderDefinitionWizardContext.order.lastMaterialIndex).val(current.unit);
+						if ($('#product-' + element).val() !== '' && (e.productId == current.id || QCD.orderDefinitionWizardContext.order.product.id == current.id)) {
 
+							$('#product-' + element).addClass('is-invalid');
+							$('#product-' + element).val("");
+							showMessage(
+								'failure',
+								QCD.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
+								QCD.translate("basic.dashboard.orderDefinitionWizard.error.productAlreadySelected"),
+								false);
+							exist = true;
+							return false;
 						}
 					});
+					if (!exist) {
+
+						$.each(data, function (i, e) {
+							if (e.index == QCD.orderDefinitionWizardContext.order.lastMaterialIndex) {
+								e.productId = current.id;
+								e.productNumber = current.number;
+								e.product = current.number;
+								e.unit = current.unit;
+								$('#unit-' + QCD.orderDefinitionWizardContext.order.lastMaterialIndex).val(current.unit);
+
+							}
+						});
+					}
 				} else {
 					$('#product-' + element).val("");
 				}
@@ -1064,6 +1085,7 @@ QCD.orderDefinitionWizard = (function () {
 			$('#product-' + element).keyup(function () {
 				$('#product-' + element).removeData("active");
 				var data = QCD.orderDefinitionWizardContext.order.materials;
+
 				$.each(data, function (i, e) {
 					if (e.index == QCD.orderDefinitionWizardContext.order.lastMaterialIndex) {
 						e.productId = null;
@@ -1084,17 +1106,37 @@ QCD.orderDefinitionWizard = (function () {
 		var selectedMaterials = $("#materialsItem").bootstrapTable('getSelections');
 		$("#materialsLookup").modal('hide');
 		$('#product-' + QCD.orderDefinitionWizardContext.order.currentMaterialIndex).val(selectedMaterials[0].number);
-		var data = QCD.orderDefinitionWizardContext.order.materials;
-		$.each(data, function (i, e) {
-			if (e.index == QCD.orderDefinitionWizardContext.order.currentMaterialIndex) {
-				e.productId = selectedMaterials[0].id;
-				e.productNumber = selectedMaterials[0].number;
-				e.product = selectedMaterials[0].number;
-				e.unit = selectedMaterials[0].unit;
-				$('#unit-' + QCD.orderDefinitionWizardContext.order.currentMaterialIndex).val(selectedMaterials[0].unit);
+		$('#product-' + QCD.orderDefinitionWizardContext.order.currentMaterialIndex).removeClass('is-invalid');
 
+		var data = QCD.orderDefinitionWizardContext.order.materials;
+		var exist = false;
+		$.each(data, function (i, e) {
+			if ((e.productId && e.productId == selectedMaterials[0].id) || QCD.orderDefinitionWizardContext.order.product.id == selectedMaterials[0].id) {
+
+				$('#product-' + QCD.orderDefinitionWizardContext.order.currentMaterialIndex).addClass('is-invalid');
+				$('#product-' + QCD.orderDefinitionWizardContext.order.currentMaterialIndex).val("");
+				showMessage(
+					'failure',
+					QCD.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
+					QCD.translate("basic.dashboard.orderDefinitionWizard.error.productAlreadySelected"),
+					false);
+				exist = true;
+				return false;
 			}
 		});
+
+		if (!exist) {
+			$.each(data, function (i, e) {
+				if (e.index == QCD.orderDefinitionWizardContext.order.currentMaterialIndex) {
+					e.productId = selectedMaterials[0].id;
+					e.productNumber = selectedMaterials[0].number;
+					e.product = selectedMaterials[0].number;
+					e.unit = selectedMaterials[0].unit;
+					$('#unit-' + QCD.orderDefinitionWizardContext.order.currentMaterialIndex).val(selectedMaterials[0].unit);
+
+				}
+			});
+		}
 	}
 
 
