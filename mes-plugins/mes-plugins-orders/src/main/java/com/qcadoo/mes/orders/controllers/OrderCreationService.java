@@ -21,6 +21,7 @@ import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.service.StateChangeContextBuilder;
 import com.qcadoo.mes.technologies.TechnologyNameAndNumberGenerator;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.ParameterFieldsT;
@@ -107,6 +108,8 @@ public class OrderCreationService {
 
     private static final String L_ALL = "01all";
 
+    public static final String L_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -130,6 +133,9 @@ public class OrderCreationService {
 
     @Autowired
     private TechnologyNameAndNumberGenerator technologyNameAndNumberGenerator;
+
+    @Autowired
+    private TechnologyService technologyService;
 
     @Autowired
     private TranslationService translationService;
@@ -233,6 +239,8 @@ public class OrderCreationService {
             Entity productionCountingQuantity = dataDefinitionService.get(L_BASIC_PRODUCTION_COUNTING,
                     L_PRODUCTION_COUNTING_QUANTITY).create();
             productionCountingQuantity.setField(L_ORDER, order.getId());
+            Entity toc = order.getBelongsToField(OrderFields.TECHNOLOGY).getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
+            productionCountingQuantity.setField(L_TECHNOLOGY_OPERATION_COMPONENT, toc.getId());
 
             productionCountingQuantity.setField(L_PLANNED_QUANTITY, material.getQuantity());
             productionCountingQuantity.setField(OrderCreationService.L_PRODUCT, material.getProductId());
