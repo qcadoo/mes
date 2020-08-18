@@ -30,11 +30,14 @@ public class DataProviderForTechnology {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public TechnologiesResponse getTechnologies(String query, Long productId) {
+    public TechnologiesResponse getTechnologies(String query, Long productId, Boolean master) {
         StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append("Select id as id, number as number, master as master From technologies_technology ");
+        queryBuilder.append("Select id as id, number as number, master as master From technologies_technology WHERE ");
+        if (master) {
+            queryBuilder.append(" master = true AND ");
+        }
         queryBuilder
-                .append("WHERE typeOfProductionRecording = '02cumulated' AND product_id = :productId AND state = '02accepted' AND number ilike :query ORDER BY number ASC LIMIT 10 ");
+                .append(" typeOfProductionRecording = '02cumulated' AND product_id = :productId AND state = '02accepted' AND number ilike :query ORDER BY number ASC LIMIT 10 ");
 
         Map<String, Object> parameters = Maps.newHashMap();
 

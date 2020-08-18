@@ -25,8 +25,8 @@ public final class TechnologyApiController {
 
     @ResponseBody
     @RequestMapping(value = "/technologies", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public TechnologiesResponse getTechnologies(@RequestParam("query") String query, @RequestParam("productId") Long productId) {
-        return dataProvider.getTechnologies(query, productId);
+    public TechnologiesResponse getTechnologies(@RequestParam("query") String query, @RequestParam("productId") Long productId, @RequestParam(value = "master", required = false, defaultValue = "false") Boolean master) {
+        return dataProvider.getTechnologies(query, productId, master);
     }
 
     @ResponseBody

@@ -273,6 +273,7 @@ QCD.orderDefinitionWizard = (function () {
 			$.getJSON(
 				'rest/technologies', {
 					query: "",
+					master: true,
 					productId: QCD.orderDefinitionWizardContext.order.product.id
 				},
 				function (data) {
@@ -457,6 +458,7 @@ QCD.orderDefinitionWizard = (function () {
 				$.getJSON(
 					'rest/technologies', {
 						query: "",
+						master: true,
 						productId: QCD.orderDefinitionWizardContext.order.product.id
 					},
 					function (data) {
