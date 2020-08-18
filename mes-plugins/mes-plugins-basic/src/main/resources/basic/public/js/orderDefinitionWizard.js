@@ -203,6 +203,7 @@ QCD.orderDefinitionWizard = (function () {
 					}
 					return !invalid;
 				}
+				return true;
 			},
 			onFinishing: function (event, currentIndex) {
 				return true;
