@@ -68,44 +68,46 @@ QCD.dashboard = (function () {
     }
 
     function initDailyProductionChart() {
-        $.get("/rest/dailyProductionChart/data",
-            function (data) {
-                new Chart('chart', {
-                    type: 'pie',
-                    data: {
-                        datasets: [{
-                            data: data,
-                            borderWidth: 0,
-                            backgroundColor: [
-                                '#C7D1D9',
-                                '#D9AFA0',
-                                '#639AA6'
+        if ($('#dashboardChart').length) {
+            $.get("/rest/dailyProductionChart/data",
+                function (data) {
+                    new Chart('chart', {
+                        type: 'pie',
+                        data: {
+                            datasets: [{
+                                data: data,
+                                borderWidth: 0,
+                                backgroundColor: [
+                                    '#C7D1D9',
+                                    '#D9AFA0',
+                                    '#639AA6'
+                                ]
+                            }],
+                            labels: [
+                                QCD.translate('basic.dashboard.dailyProductionChart.pending.label'),
+                                QCD.translate('basic.dashboard.dailyProductionChart.inProgress.label'),
+                                QCD.translate('basic.dashboard.dailyProductionChart.done.label')
                             ]
-                        }],
-                        labels: [
-                            QCD.translate('basic.dashboard.dailyProductionChart.pending.label'),
-                            QCD.translate('basic.dashboard.dailyProductionChart.inProgress.label'),
-                            QCD.translate('basic.dashboard.dailyProductionChart.done.label')
-                        ]
-                    },
-                    options: {
-                        title: {
-                            display: true,
-                            text: QCD.translate('basic.dashboard.dailyProductionChart.header'),
-                            fontSize: 16,
-                            fontFamily: '"Helvetica Neue"',
-                            fontColor: 'black'
                         },
-                        legend: {
-                            position: 'bottom',
-                            labels: {
+                        options: {
+                            title: {
+                                display: true,
+                                text: QCD.translate('basic.dashboard.dailyProductionChart.header'),
+                                fontSize: 16,
+                                fontFamily: '"Helvetica Neue"',
                                 fontColor: 'black'
+                            },
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    fontColor: 'black'
+                                }
                             }
                         }
-                    }
-                });
-            }
-        );
+                    });
+                }
+            );
+        }
     }
 
     function registerButtons() {
