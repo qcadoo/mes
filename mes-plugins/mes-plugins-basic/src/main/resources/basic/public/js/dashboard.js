@@ -426,9 +426,10 @@ function createOrderDiv(order) {
 }
 
 const allowDrop = (event) => {
+    let path = event.composedPath();
     if (hasClass(event.target, "dropzone")
-        && (event.path[1].id === 'ordersInProgress' && document.getElementById(event.dataTransfer.types[1]).parentElement.id === 'ordersPending'
-            || event.path[1].id === 'ordersCompleted' && document.getElementById(event.dataTransfer.types[1]).parentElement.id === 'ordersInProgress'
+        && (path[1].id === 'ordersInProgress' && document.getElementById(event.dataTransfer.types[1]).parentElement.id === 'ordersPending'
+            || path[1].id === 'ordersCompleted' && document.getElementById(event.dataTransfer.types[1]).parentElement.id === 'ordersInProgress'
         )) {
         event.preventDefault();
         addClass(event.target, "droppable");
