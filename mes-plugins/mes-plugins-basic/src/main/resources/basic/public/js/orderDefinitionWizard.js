@@ -98,6 +98,20 @@ QCD.orderDefinitionWizard = (function () {
 							QCD.translate("basic.dashboard.orderDefinitionWizard.error.validationError.emptyField"),
 							false);
 					}
+					if (!invalid) {
+						if (!QCD.orderDefinitionWizardContext.order.technology) {
+							var data = QCD.orderDefinitionWizardContext.order.materials;
+							$.each(data, function (i, e) {
+
+								if (e.quantityPerUnit) {
+									var calculatedQuantity = e.quantityPerUnit * $('#quantity').val();
+									e.quantity = parseFloat(calculatedQuantity.toFixed(5));
+									$('#quantity-' + e.index).val(e.quantity);
+								}
+
+							});
+						}
+					}
 					return !invalid;
 				} else if (currentIndex == 1) {
 					var invalid = false;
@@ -693,7 +707,6 @@ QCD.orderDefinitionWizard = (function () {
 
 		});
 
-
 		// step 2
 		$('#productionLine').typeahead({
 			minLength: 3,
@@ -1006,18 +1019,19 @@ QCD.orderDefinitionWizard = (function () {
 			characterDataOldValue: false
 		});
 
+
 	}
 
 	function quantityPerUnitOnBlur(element) {
 		var data = QCD.orderDefinitionWizardContext.order.materials;
 		$.each(data, function (i, e) {
 			if (e.index == element) {
-				e.quantityPerUnit =evaluateExpression( $('#quantityPerUnit-' + element).val());
-				if(e.quantityPerUnit) {
-                				    var calculatedQuantity= e.quantityPerUnit * $('#quantity').val();
-                				    e.quantity = parseFloat(calculatedQuantity.toFixed(5));
-                				    $('#quantity-' + element).val(e.quantity);
-                				}
+				e.quantityPerUnit = evaluateExpression($('#quantityPerUnit-' + element).val());
+				if (e.quantityPerUnit) {
+					var calculatedQuantity = e.quantityPerUnit * $('#quantity').val();
+					e.quantity = parseFloat(calculatedQuantity.toFixed(5));
+					$('#quantity-' + element).val(e.quantity);
+				}
 			}
 		});
 	}
@@ -1027,10 +1041,10 @@ QCD.orderDefinitionWizard = (function () {
 		$.each(data, function (i, e) {
 			if (e.index == element) {
 				e.quantity = evaluateExpression($('#quantity-' + element).val());
-				if(e.quantity) {
-				    var calculatedQuantityPerUnit= e.quantity / $('#quantity').val();
-				    e.quantityPerUnit = parseFloat(calculatedQuantityPerUnit.toFixed(5));
-				    $('#quantityPerUnit-' + element).val(e.quantityPerUnit);
+				if (e.quantity) {
+					var calculatedQuantityPerUnit = e.quantity / $('#quantity').val();
+					e.quantityPerUnit = parseFloat(calculatedQuantityPerUnit.toFixed(5));
+					$('#quantityPerUnit-' + element).val(e.quantityPerUnit);
 				}
 			}
 		});
