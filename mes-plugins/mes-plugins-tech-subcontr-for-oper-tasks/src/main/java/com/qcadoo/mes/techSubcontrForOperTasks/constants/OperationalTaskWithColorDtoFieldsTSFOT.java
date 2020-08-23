@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.techSubcontrForOperTasks.constants;
 
-public final class OperationalTaskDtoFieldsTSFOT {
+public final class OperationalTaskWithColorDtoFieldsTSFOT {
 
-    private OperationalTaskDtoFieldsTSFOT() {
+    private OperationalTaskWithColorDtoFieldsTSFOT() {
 
     }
 

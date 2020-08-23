@@ -90,7 +90,7 @@ public class DashboardKanbanDataProvider {
         Map<String, Object> params = Maps.newHashMap();
 
         params.put(L_STATES,
-                Sets.newHashSet(OperationalTaskStateStringValues.STARTED, OperationalTaskStateStringValues.FINISHED));
+                Sets.newHashSet(OperationalTaskStateStringValues.STARTED));
 
         return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions), params, new BeanPropertyRowMapper(OperationalTaskHolder.class));
     }
@@ -107,7 +107,7 @@ public class DashboardKanbanDataProvider {
     }
 
     public List<OperationalTaskHolder> getOperationalTasksCompleted() {
-        String additionalRestrictions = "AND operationaltaskdto.plannedquantity > 0 AND (operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity >= 100 OR operationaltaskdto.state = '03finished') ";
+        String additionalRestrictions = "AND (operationaltaskdto.plannedquantity > 0 AND (operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity >= 100) OR operationaltaskdto.state = '03finished' ";
 
         Map<String, Object> params = Maps.newHashMap();
 
