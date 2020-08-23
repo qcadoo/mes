@@ -228,7 +228,7 @@
 
 				<option type="header" value="true" />
 				<option type="expression"
-					value="(#producedBatch == null) ? '' : (#producedBatch.get('supplier') == null) ? #producedBatch.get('number') + ' - ' + #producedBatch.get('product').get('name') + ' (' + #producedBatch.get('product').get('number') + ')' : #producedBatch.get('number') + ' - ' + #producedBatch.get('product').get('name') + ' (' + #producedBatch.get('product').get('number') + ') - ' + #producedBatch.get('supplier').get('name')" />
+					value="(#producedBatch.get('supplier') == null) ? #producedBatch.get('number') + ' - ' + #producedBatch.get('product').get('name') + ' (' + #producedBatch.get('product').get('number') + ')' : #producedBatch.get('number') + ' - ' + #producedBatch.get('product').get('name') + ' (' + #producedBatch.get('product').get('number') + ') - ' + #producedBatch.get('supplier').get('name')" />
 
 				<listener event="printTrackingRecordReport"
 					class="com.qcadoo.mes.advancedGenealogy.print.TrackingRecordReportService"
@@ -270,7 +270,5 @@
 		<beforeRender
 			class="com.qcadoo.mes.advancedGenealogy.hooks.TrackingRecordSimpleViewHooks"
 			method="setEntityTypeToSimple" />
-		<beforeRender class="com.qcadoo.mes.advancedGenealogy.hooks.TrackingRecordSimpleViewHooks"
-			method="setBatchLookupRequired" />
 	</hooks>
 </view>

@@ -71,6 +71,8 @@ public class ResourcesAttributesDataProvider {
                 translationService.translate("materialFlowResources.resource.productionDate.label", locale)));
         columns.add(new ColumnDTO(ResourceFields.BATCH,
                 translationService.translate("materialFlowResources.resource.batch.label", locale)));
+        columns.add(new ColumnDTO(ResourceFields.DELIVERY_NUMBER,
+                translationService.translate("materialFlowResources.resource.deliveryNumber.label", locale)));
         String query = "SELECT a.number AS id, a.name, a.unit, a.valuetype AS dataType "
                 + "FROM basic_attribute a WHERE a.active = TRUE AND a.forresource = TRUE ORDER BY a.number";
 
@@ -80,7 +82,7 @@ public class ResourcesAttributesDataProvider {
     }
 
     public List<Map<String, Object>> getRecords() {
-        String query = "SELECT r.id, r.number, p.number AS productNumber, p.name AS productName, r.availablequantity, "
+        String query = "SELECT r.id, r.number, r.deliveryNumber, p.number AS productNumber, p.name AS productName, r.availablequantity, "
                 + "l.number AS warehouseNumber, p.unit AS productUnit, r.price, (r.quantity * r.price) AS value, "
                 + "to_char(r.\"time\", 'YYYY-MM-DD HH24:MI:SS') AS \"time\", "
                 + "r.productiondate, r.expirationdate, b.number AS batch, a.number AS attributeNumber, rav.value AS attributeValue "
@@ -116,6 +118,7 @@ public class ResourcesAttributesDataProvider {
                 row.put(ResourceFields.PRODUCTION_DATE, attribute.get(ResourceFields.PRODUCTION_DATE));
                 row.put(ResourceFields.EXPIRATION_DATE, attribute.get(ResourceFields.EXPIRATION_DATE));
                 row.put(ResourceFields.BATCH, attribute.get(ResourceFields.BATCH));
+                row.put(ResourceFields.DELIVERY_NUMBER, attribute.get(ResourceFields.DELIVERY_NUMBER));
             }
             if (!Objects.isNull(attribute.get(ATTRIBUTE_NUMBER))) {
                 String attributeValue = (String) row.get(attribute.get(ATTRIBUTE_NUMBER));

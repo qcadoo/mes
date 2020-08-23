@@ -391,12 +391,12 @@ fieldset {
 .content {
   overflow: hidden; }
   .content .current {
-    padding-top: 60px; }
+    padding-top: 40px; }
   .content h3 {
     display: none; }
 
 .fieldset-content {
-  height: 465px;
+  height: 380px;
   border-bottom: 1px solid #ebebeb;
 }
 
@@ -817,6 +817,39 @@ fieldset {
 }
 
 .prev {
-    height: 450px;
+    height: 380px;
     overflow-x: auto;
+}
+
+#materials-toolbar {
+margin-top: 0px;
+}
+
+.fixed-table-toolbar .bs-bars,
+.fixed-table-toolbar .search,
+.fixed-table-toolbar .columns {
+    position: relative;
+    margin-top: 0px;
+    margin-bottom: 10px;
+    line-height: 34px;
+}
+#orderDefinitionForm-p-2 {
+                            padding-top: 20px;
+                        }
+#orderDefinitionForm-p-2 .fieldset-content {
+    height: 400px;
+    border-bottom: 1px solid #ebebeb;
+}
+#materials-group .fixed-table-body {
+    height: 270px;
+}
+
+#technology-form-group {
+    margin-bottom: 10px;
+
+}
+
+#technology-form-group .dropdown-menu {
+        overflow-y: scroll;
+        height: 120px;
 }

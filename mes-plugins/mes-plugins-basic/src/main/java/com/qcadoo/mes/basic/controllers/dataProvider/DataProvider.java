@@ -145,6 +145,23 @@ public class DataProvider {
         return products;
     }
 
+
+    public DataResponse getProductsTypeahead(String query) {
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("SELECT product.id AS id, product.number AS code, product.number AS number, product.unit AS unit, product.name AS name ");
+        queryBuilder
+                .append("FROM basic_product product WHERE product.active = true AND product.number ilike :query ORDER BY product.number ASC LIMIT 10 ");
+
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        String ilikeQuery = "%" + query + "%";
+        parameters.put("query", ilikeQuery);
+
+        List<ProductDTO> products = jdbcTemplate.query(queryBuilder.toString(), parameters, new BeanPropertyRowMapper(
+                ProductDTO.class));
+        return new DataResponse(products, products.size());
+    }
+
     public ProductsGridResponse getProductsResponse(int limit, int offset, String sort, String order, String search) {
         StringBuilder query = new StringBuilder();
         query.append("SELECT product.id, product.number AS code, product.number, product.name, product.unit, product.ean, product.globaltypeofmaterial, product.category ");

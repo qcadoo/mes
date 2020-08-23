@@ -23,19 +23,19 @@
  */
 package com.qcadoo.mes.advancedGenealogy.hooks;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.qcadoo.mes.advancedGenealogy.states.constants.BatchState.BLOCKED;
-
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import com.qcadoo.mes.advancedGenealogy.constants.TrackingRecordFields;
+import com.qcadoo.mes.advancedGenealogy.constants.TrackingRecordType;
 import com.qcadoo.mes.advancedGenealogy.states.constants.BatchState;
-import com.qcadoo.mes.advancedGenealogy.states.constants.TrackingRecordState;
 import com.qcadoo.mes.advancedGenealogy.tree.AdvancedGenealogyTreeService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.mes.advancedGenealogy.states.constants.BatchState.BLOCKED;
 
 @Service
 public class TrackingRecordModelValidators {
@@ -44,80 +44,23 @@ public class TrackingRecordModelValidators {
 
     private static final String L_USED_BATCHES_SIMPLE = "usedBatchesSimple";
 
-    private static final String L_TECHNOLOGY_BATCH_REQUIRED = "technologyBatchRequired";
-
-    private static final String L_TECHNOLOGY = "technology";
-
-    private static final String L_ORDER = "order";
-
     private static final String L_TRACKING_RECORD = "trackingRecord";
 
     private static final String L_ENTITY_TYPE = "entityType";
 
     private static final String L_STATE = "state";
 
-    private static final String L_PRODUCED_BATCH = "producedBatch";
-
     @Autowired
     private AdvancedGenealogyTreeService treeService;
 
-    public final boolean checkIfTheresOrderTechnologyAndProducedBatchIsNotNull(final DataDefinition trackingRecordDD,
-            final Entity trackingRecord) {
-        Entity producedBatch = trackingRecord.getBelongsToField(L_PRODUCED_BATCH);
-        if (isTrackingRecordSimple(trackingRecord)) {
-            if (producedBatch == null) {
-                trackingRecord.addError(trackingRecordDD.getField(L_PRODUCED_BATCH),
-                        "advancedGenealogy.trackingRecord.message.producedBatchIsNull");
-
-                return false;
-            }
-        }
-        if (!TrackingRecordState.ACCEPTED.getStringValue().equals(trackingRecord.getStringField("state"))) {
-            return true;
-        }
-        if (isTrackingRecordForOrder(trackingRecord)) {
-            Entity order = trackingRecord.getBelongsToField(L_ORDER);
-
-            if (order == null) {
-                trackingRecord.addGlobalError("advancedGenealogy.trackingRecord.message.noOrder");
-                return false;
-            }
-
-            Entity technology = order.getBelongsToField(L_TECHNOLOGY);
-            if (technology == null) {
-                trackingRecord.addGlobalError("advancedGenealogy.trackingRecord.message.orderDoesntContainTechnology");
-                return false;
-            }
-
-            if (isProducedBatchRequiredForOrder(order) && producedBatch == null) {
-                trackingRecord.addError(trackingRecordDD.getField(L_PRODUCED_BATCH),
-                        "advancedGenealogy.trackingRecord.message.producedBatchIsNull");
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private boolean isProducedBatchRequiredForOrder(final Entity order) {
-        if (order == null) {
-            return false;
-        }
-        Entity technology = order.getBelongsToField(L_TECHNOLOGY);
-        return technology.getBooleanField(L_TECHNOLOGY_BATCH_REQUIRED);
-    }
-
     public final boolean checkIfProducedBatchIsNotBlocked(final DataDefinition trackingRecordDD, final Entity trackingRecord) {
-        Entity producedBatch = trackingRecord.getBelongsToField(L_PRODUCED_BATCH);
+        Entity producedBatch = trackingRecord.getBelongsToField(TrackingRecordFields.PRODUCED_BATCH);
 
-        if (producedBatch == null) {
-            return true;
-        } else {
-            if (BatchState.BLOCKED.getStringValue().equals(producedBatch.getStringField(L_STATE))) {
-                trackingRecord.addError(trackingRecordDD.getField(L_PRODUCED_BATCH),
-                        "advancedGenealogy.trackingRecord.message.producedBatchIsBlocked");
+        if (BatchState.BLOCKED.getStringValue().equals(producedBatch.getStringField(L_STATE))) {
+            trackingRecord.addError(trackingRecordDD.getField(TrackingRecordFields.PRODUCED_BATCH),
+                    "advancedGenealogy.trackingRecord.message.producedBatchIsBlocked");
 
-                return false;
-            }
+            return false;
         }
 
         return true;
@@ -128,8 +71,8 @@ public class TrackingRecordModelValidators {
             return true;
         }
 
-        Entity producedBatch = trackingRecord.getBelongsToField(L_PRODUCED_BATCH);
-        if (producedBatch != null && BLOCKED.getStringValue().equals(producedBatch.getStringField(L_STATE))) {
+        Entity producedBatch = trackingRecord.getBelongsToField(TrackingRecordFields.PRODUCED_BATCH);
+        if (BLOCKED.getStringValue().equals(producedBatch.getStringField(L_STATE))) {
             trackingRecord.addGlobalError("advancedGenealogy.trackingRecord.message.producedBatchIsBlocked");
             return false;
         }
@@ -153,8 +96,8 @@ public class TrackingRecordModelValidators {
             return true;
         }
 
-        Entity producedBatch = trackingRecord.getBelongsToField(L_PRODUCED_BATCH);
-        if (producedBatch != null && BLOCKED.getStringValue().equals(producedBatch.getStringField(L_STATE))) {
+        Entity producedBatch = trackingRecord.getBelongsToField(TrackingRecordFields.PRODUCED_BATCH);
+        if (BLOCKED.getStringValue().equals(producedBatch.getStringField(L_STATE))) {
             trackingRecord.addGlobalError("advancedGenealogy.trackingRecord.message.producedBatchIsBlocked");
             return false;
         }
@@ -179,26 +122,22 @@ public class TrackingRecordModelValidators {
             return true;
         }
 
-        Entity producedBatch = trackingRecord.getBelongsToField(L_PRODUCED_BATCH);
+        Entity producedBatch = trackingRecord.getBelongsToField(TrackingRecordFields.PRODUCED_BATCH);
         List<Entity> usedBatches = trackingRecord.getHasManyField(L_USED_BATCHES_SIMPLE);
 
-        if (producedBatch == null) {
+        if (usedBatches == null) {
             return true;
         } else {
-            if (usedBatches == null) {
-                return true;
-            } else {
-                for (Entity usedBatch : usedBatches) {
-                    Entity batch = usedBatch.getBelongsToField(L_BATCH);
+            for (Entity usedBatch : usedBatches) {
+                Entity batch = usedBatch.getBelongsToField(L_BATCH);
 
-                    List<Entity> tree = treeService.getProducedFromTree(batch, true, false);
+                List<Entity> tree = treeService.getProducedFromTree(batch, true, false);
 
-                    if (tree.contains(producedBatch)) {
-                        trackingRecord.addError(usedBatchDD.getField(L_PRODUCED_BATCH),
-                                "advancedGenealogy.trackingRecord.message.usedBatchTrackingRecordContainsProducedBatch");
+                if (tree.contains(producedBatch)) {
+                    trackingRecord.addError(usedBatchDD.getField(TrackingRecordFields.PRODUCED_BATCH),
+                            "advancedGenealogy.trackingRecord.message.usedBatchTrackingRecordContainsProducedBatch");
 
-                        return false;
-                    }
+                    return false;
                 }
             }
         }
@@ -208,12 +147,12 @@ public class TrackingRecordModelValidators {
 
     public static final boolean isTrackingRecordSimple(final Entity trackingRecord) {
         checkArgument(L_TRACKING_RECORD.equals(trackingRecord.getDataDefinition().getName()));
-        return "01simple".equals(trackingRecord.getStringField(L_ENTITY_TYPE));
+        return TrackingRecordType.SIMPLE.equals(trackingRecord.getStringField(L_ENTITY_TYPE));
     }
 
     public static final boolean isTrackingRecordForOrder(final Entity trackingRecord) {
         checkArgument(L_TRACKING_RECORD.equals(trackingRecord.getDataDefinition().getName()));
-        return "02forOrder".equals(trackingRecord.getStringField(L_ENTITY_TYPE));
+        return TrackingRecordType.FOR_ORDER.equals(trackingRecord.getStringField(L_ENTITY_TYPE));
     }
 
 }

@@ -44,8 +44,6 @@ import java.util.List;
 @Service
 public class CompanyDetailsHooks {
 
-
-
     private static final String L_ORDER_PRODUCTION = "orderProduction";
 
     private static final String L_REDIRECT_TO_FILTERED_ORDER_PRODUCTION_LIST = "redirectToFilteredOrderProductionList";
@@ -54,7 +52,7 @@ public class CompanyDetailsHooks {
 
     private static final String L_ACTIONS = "actions";
 
-    private static final List<String> L_COMPANY_FIELDS = Arrays.asList(CompanyFields.NUMBER, CompanyFields.NAME,
+    public static final List<String> L_COMPANY_FIELDS = Arrays.asList(CompanyFields.NUMBER, CompanyFields.NAME,
             CompanyFields.TAX_COUNTRY_CODE, CompanyFields.TAX, CompanyFields.PHONE, CompanyFields.EMAIL, CompanyFields.WEBSITE,
             CompanyFields.STREET, CompanyFields.HOUSE, CompanyFields.FLAT, CompanyFields.ZIP_CODE, CompanyFields.CITY,
             CompanyFields.STATE, CompanyFields.COUNTRY, CompanyFields.CONTACT_PERSON, CompanyFields.IS_SUPPLIER,

@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.orders.constants;
 
-public final class OperationalTaskDtoFields {
+public final class OperationalTaskWithColorDtoFields {
 
-    private OperationalTaskDtoFields() {
+    private OperationalTaskWithColorDtoFields() {
 
     }
 
@@ -72,6 +72,10 @@ public final class OperationalTaskDtoFields {
     public static final String REMAINING_QUANTITY = "remainingQuantity";
 
     public static final String DONE_IN_PERCENTAGE = "doneInPercentage";
+
+    public static final String OPER_TASK_FLAG_PERCENT_EXECUTION_WITH_COLOR = "operTaskFlagPercentExecutionWithColor";
+
+    public static final String PERCENTAGE_OF_EXECUTION_CELL_COLOR = "percentageOfExecutionCellColor";
 
     public static final String ORDER_PRODUCT_NUMBER = "orderProductNumber";
 

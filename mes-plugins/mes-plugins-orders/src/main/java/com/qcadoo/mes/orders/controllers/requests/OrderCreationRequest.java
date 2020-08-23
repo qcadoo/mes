@@ -1,7 +1,7 @@
 package com.qcadoo.mes.orders.controllers.requests;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.orders.controllers.dto.MaterialDto;
+import com.qcadoo.mes.technologies.controller.dataProvider.MaterialDto;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -14,6 +14,8 @@ public class OrderCreationRequest {
     private BigDecimal quantity;
 
     private String description;
+
+    private String typeOfProductionRecording;
 
     private Long technologyId;
 
@@ -87,5 +89,13 @@ public class OrderCreationRequest {
 
     public void setMaterials(List<MaterialDto> materials) {
         this.materials = materials;
+    }
+
+    public String getTypeOfProductionRecording() {
+        return typeOfProductionRecording;
+    }
+
+    public void setTypeOfProductionRecording(String typeOfProductionRecording) {
+        this.typeOfProductionRecording = typeOfProductionRecording;
     }
 }

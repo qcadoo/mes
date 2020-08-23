@@ -89,6 +89,7 @@
         <model:model model="ordersGenerationHelper" resource="model/ordersGenerationHelper.xml"/>
         <model:model model="operationalTask" resource="model/operationalTask.xml"/>
         <model:model model="operationalTaskDto" resource="model/operationalTaskDto.xml"/>
+        <model:model model="operationalTaskWithColorDto" resource="model/operationalTaskWithColorDto.xml"/>
         <model:model model="operationalTaskStateChange" resource="model/operationalTaskStateChange.xml"/>
         <model:model model="setCategory" resource="model/setCategory.xml"/>
 

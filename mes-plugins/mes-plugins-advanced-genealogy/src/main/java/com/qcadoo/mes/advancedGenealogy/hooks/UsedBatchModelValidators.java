@@ -23,21 +23,19 @@
  */
 package com.qcadoo.mes.advancedGenealogy.hooks;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import com.qcadoo.mes.advancedGenealogy.constants.TrackingRecordFields;
 import com.qcadoo.mes.advancedGenealogy.states.constants.BatchState;
 import com.qcadoo.mes.advancedGenealogy.tree.AdvancedGenealogyTreeService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UsedBatchModelValidators {
-
-    private static final String L_PRODUCED_BATCH = "producedBatch";
 
     private static final String L_USED_BATCHES_SIMPLE = "usedBatchesSimple";
 
@@ -96,9 +94,9 @@ public class UsedBatchModelValidators {
     public final boolean checkIfUsedBatchIsNotProducedBatch(final DataDefinition usedBatchDD, final Entity usedBatch) {
         Entity batch = usedBatch.getBelongsToField(L_BATCH);
         Entity trackingRecord = usedBatch.getBelongsToField(L_TRACKING_RECORD);
-        Entity producedBatch = trackingRecord.getBelongsToField(L_PRODUCED_BATCH);
+        Entity producedBatch = trackingRecord.getBelongsToField(TrackingRecordFields.PRODUCED_BATCH);
 
-        if (batch == null || producedBatch == null) {
+        if (batch == null) {
             return true;
         } else {
             if (producedBatch.getId().equals(batch.getId())) {
@@ -116,19 +114,16 @@ public class UsedBatchModelValidators {
             final Entity usedBatch) {
         Entity batch = usedBatch.getBelongsToField(L_BATCH);
         Entity trackingRecord = usedBatch.getBelongsToField(L_TRACKING_RECORD);
-        Entity producedBatch = trackingRecord.getBelongsToField(L_PRODUCED_BATCH);
+        Entity producedBatch = trackingRecord.getBelongsToField(TrackingRecordFields.PRODUCED_BATCH);
 
-        if (producedBatch == null) {
-            return true;
-        } else {
-            List<Entity> tree = treeService.getProducedFromTree(batch, true, false);
 
-            if (tree.contains(producedBatch)) {
-                usedBatch.addError(usedBatchDD.getField(L_BATCH),
-                        "advancedGenealogy.usedBatchSimple.message.usedBatchTrackingRecordContainsProducedBatch");
+        List<Entity> tree = treeService.getProducedFromTree(batch, true, false);
 
-                return false;
-            }
+        if (tree.contains(producedBatch)) {
+            usedBatch.addError(usedBatchDD.getField(L_BATCH),
+                    "advancedGenealogy.usedBatchSimple.message.usedBatchTrackingRecordContainsProducedBatch");
+
+            return false;
         }
 
         return true;

@@ -161,13 +161,13 @@
 			</script>
 			<option type="column" name="numberName" fields="number" link="true" />
 			<option type="column" name="producedBatchName" fields="producedBatch"
-				expression="(#producedBatch == null) ? ' ' : #producedBatch.get('number')"
+				expression="#producedBatch['number']"
 				link="true" />
 			<option type="column" name="productName" fields="producedBatch"
-				expression="(#producedBatch == null) ? ' ' : #producedBatch.get('product').get('name')"
+				expression="#producedBatch['product'].get('name')"
 				link="true" />
 			<option type="column" name="productNumber" fields="producedBatch"
-				expression="(#producedBatch == null) ? ' ' : #producedBatch.get('product').get('number')"
+				expression=" #producedBatch['product'].get('number')"
 				link="true" />
 			<option type="column" name="state" fields="state" expression="#state" />
 			<option type="column" name="createDate" fields="createDate" />

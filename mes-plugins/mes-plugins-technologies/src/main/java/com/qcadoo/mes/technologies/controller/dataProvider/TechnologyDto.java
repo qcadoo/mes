@@ -8,6 +8,8 @@ public class TechnologyDto {
 
     private String name;
 
+    private Boolean master;
+
     public Long getId() {
         return id;
     }
@@ -30,5 +32,13 @@ public class TechnologyDto {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Boolean getMaster() {
+        return master;
+    }
+
+    public void setMaster(Boolean master) {
+        this.master = master;
     }
 }

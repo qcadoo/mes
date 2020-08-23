@@ -99,7 +99,7 @@
                                 onclick="goToMenuPosition('${categoryName}.${itemName}')">
                                 <div class="card-body">
                                     <span class="glyphicon glyphicon-chevron-right float-right"></span>
-                                    <h4 class="glyphicon ${icon} float-left"></45>
+                                    <img src="${icon}" class="float-left"/>
                                     <h5 class="card-title float-left">${translationsMap[identifier]}</h5>
                                 </div>
                             </div>

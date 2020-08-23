@@ -8,6 +8,8 @@ public class ProductRequest {
 
     private String unit;
 
+    private String globalTypeOfMaterial;
+
     public String getNumber() {
         return number;
     }
@@ -30,5 +32,13 @@ public class ProductRequest {
 
     public void setUnit(String unit) {
         this.unit = unit;
+    }
+
+    public String getGlobalTypeOfMaterial() {
+        return globalTypeOfMaterial;
+    }
+
+    public void setGlobalTypeOfMaterial(String globalTypeOfMaterial) {
+        this.globalTypeOfMaterial = globalTypeOfMaterial;
     }
 }

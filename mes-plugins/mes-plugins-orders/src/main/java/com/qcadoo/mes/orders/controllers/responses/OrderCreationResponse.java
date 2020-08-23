@@ -1,5 +1,6 @@
 package com.qcadoo.mes.orders.controllers.responses;
 
+import com.qcadoo.mes.orders.controllers.dto.OrderHolder;
 
 public class OrderCreationResponse {
 
@@ -8,6 +9,10 @@ public class OrderCreationResponse {
     private String number;
 
     private String message;
+
+    private String additionalInformation;
+
+    private OrderHolder order;
 
     public enum StatusCode {
         OK, ERROR;
@@ -40,5 +45,25 @@ public class OrderCreationResponse {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public void setCode(StatusCode code) {
+        this.code = code;
+    }
+
+    public OrderHolder getOrder() {
+        return order;
+    }
+
+    public void setOrder(OrderHolder order) {
+        this.order = order;
+    }
+
+    public String getAdditionalInformation() {
+        return additionalInformation;
+    }
+
+    public void setAdditionalInformation(String additionalInformation) {
+        this.additionalInformation = additionalInformation;
     }
 }

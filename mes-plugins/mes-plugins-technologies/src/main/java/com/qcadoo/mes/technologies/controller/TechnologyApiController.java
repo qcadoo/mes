@@ -1,5 +1,6 @@
 package com.qcadoo.mes.technologies.controller;
 
+import com.qcadoo.mes.productionLines.controller.dataProvider.ProductionLineDto;
 import com.qcadoo.mes.technologies.controller.dataProvider.DataProviderForTechnology;
 import com.qcadoo.mes.technologies.controller.dataProvider.MaterialDto;
 import com.qcadoo.mes.technologies.controller.dataProvider.TechnologiesGridResponse;
@@ -24,14 +25,20 @@ public final class TechnologyApiController {
 
     @ResponseBody
     @RequestMapping(value = "/technologies", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public TechnologiesResponse getTechnologies(@RequestParam("query") String query, @RequestParam("productId") Long productId) {
-        return dataProvider.getTechnologies(query, productId);
+    public TechnologiesResponse getTechnologies(@RequestParam("query") String query, @RequestParam("productId") Long productId, @RequestParam(value = "master", required = false, defaultValue = "false") Boolean master) {
+        return dataProvider.getTechnologies(query, productId, master);
     }
 
     @ResponseBody
     @RequestMapping(value = "/technology/{technologyId}/materials", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<MaterialDto> getTechnologyMaterials(@PathVariable Long technologyId) {
         return dataProvider.getTechnologyMaterials(technologyId);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/technology/{technologyId}/productionLine", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ProductionLineDto getTechnologyProductionLine(@PathVariable Long technologyId) {
+        return dataProvider.getTechnologyProductionLine(technologyId);
     }
 
     @ResponseBody

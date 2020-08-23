@@ -50,6 +50,8 @@ public class OperationXlsxImportService extends XlsxImportService {
 
     private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM = "qcadooView.validate.field.error.custom";
 
+    private static final String L_TECHNOLOGIES_OPERATIONS_IMPORT_WORKSTATION_PRODUCTION_LINE_NOT_SAME = "technologies.operationsImport.workstation.productionLine.notSame";
+
     private static final String L_PRODUCTION_IN_ONE_CYCLE = "productionInOneCycle";
 
     public static final String L_PRODUCTION_IN_ONE_CYCLE_UNIT = "productionInOneCycleUNIT";
@@ -111,9 +113,9 @@ public class OperationXlsxImportService extends XlsxImportService {
             } else {
                 Entity workstationProductionLine = workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE);
 
-                if (!workstationProductionLine.getId().equals(productionLine.getId())) {
+                if (Objects.isNull(workstationProductionLine) || !workstationProductionLine.getId().equals(productionLine.getId())) {
                     operation.addError(operationDD.getField(OperationFields.WORKSTATION),
-                            L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_CUSTOM);
+                            L_TECHNOLOGIES_OPERATIONS_IMPORT_WORKSTATION_PRODUCTION_LINE_NOT_SAME);
                 }
             }
 

@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<model name="operationalTaskDto" auditable="false" deletable="false" insertable="false" updatable="false"
+<model name="operationalTaskWithColorDto" auditable="false" deletable="false" insertable="false" updatable="false"
 	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	   xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
@@ -51,6 +51,8 @@
 		<decimal name="usedQuantity"/>
 		<decimal name="remainingQuantity"/>
 		<decimal name="doneInPercentage"/>
+		<decimal name="operTaskFlagPercentExecutionWithColor"/>
+		<string name="percentageOfExecutionCellColor"/>
 	</fields>
 
 	<hooks />

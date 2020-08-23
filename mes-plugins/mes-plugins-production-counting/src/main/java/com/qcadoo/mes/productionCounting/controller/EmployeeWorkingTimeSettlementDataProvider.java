@@ -129,7 +129,7 @@ public class EmployeeWorkingTimeSettlementDataProvider {
         query.append("s.name as \"shiftNumber\", ");
         query.append("to_char(pt.shiftstartday, 'YYYY-MM-DD') AS \"shiftStartDate\", ");
         query.append("o.number AS \"orderNumber\", ");
-        query.append("(((toc.nodenumber)::text || ' '::text) || (op.number)::text) AS \"operationNumber\", ");
+        query.append("(((toc.nodenumber)::text || ' '::text) || (op.name)::text) AS \"operationNumber\", ");
         query.append("p.number AS \"productNumber\", ");
         query.append("d.number AS \"divisionNumber\", ");
         query.append("pl.number AS \"productionLineNumber\", ");
@@ -181,7 +181,7 @@ public class EmployeeWorkingTimeSettlementDataProvider {
                         query.append("AND UPPER(o.number) LIKE '%").append(value).append("%' ");
                         break;
                     case L_OPERATION_NUMBER:
-                        query.append("AND UPPER(toc.nodenumber || ' ' || op.number) LIKE '%").append(value).append("%' ");
+                        query.append("AND UPPER(toc.nodenumber || ' ' || op.name) LIKE '%").append(value).append("%' ");
                         break;
                     case L_PRODUCT_NUMBER:
                         query.append("AND UPPER(p.number) LIKE '%").append(value).append("%' ");

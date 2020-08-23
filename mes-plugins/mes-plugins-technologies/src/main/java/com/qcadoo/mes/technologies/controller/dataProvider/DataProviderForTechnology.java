@@ -1,10 +1,16 @@
 package com.qcadoo.mes.technologies.controller.dataProvider;
 
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
+import com.qcadoo.mes.productionLines.controller.dataProvider.ProductionLineDto;
 import com.qcadoo.mes.technologies.OperationComponentDataProvider;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,18 +27,25 @@ public class DataProviderForTechnology {
     @Autowired
     private OperationComponentDataProvider operationComponentDataProvider;
 
-    public TechnologiesResponse getTechnologies(String query, Long productId) {
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    public TechnologiesResponse getTechnologies(String query, Long productId, Boolean master) {
         StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append("Select id as id, number as number From technologies_technology ");
-        queryBuilder.append("WHERE product_id = :productId AND state = '02accepted' AND number ilike :query LIMIT 10 " );
+        queryBuilder.append("Select id as id, number as number, master as master From technologies_technology WHERE ");
+        if (master) {
+            queryBuilder.append(" master = true AND ");
+        }
+        queryBuilder
+                .append(" typeOfProductionRecording = '02cumulated' AND product_id = :productId AND state = '02accepted' AND number ilike :query ORDER BY number ASC LIMIT 10 ");
 
         Map<String, Object> parameters = Maps.newHashMap();
 
         String ilikeQuery = "%" + query + "%";
         parameters.put("query", ilikeQuery);
         parameters.put("productId", productId);
-        List<TechnologyDto> technologies =  jdbcTemplate.query(queryBuilder.toString(), parameters,
-                new BeanPropertyRowMapper(TechnologyDto.class));
+        List<TechnologyDto> technologies = jdbcTemplate.query(queryBuilder.toString(), parameters, new BeanPropertyRowMapper(
+                TechnologyDto.class));
         TechnologiesResponse technologiesResponse = new TechnologiesResponse();
         technologiesResponse.setTechnologies(technologies);
         return technologiesResponse;
@@ -42,16 +55,17 @@ public class DataProviderForTechnology {
             Long productId) {
         StringBuilder query = new StringBuilder();
         query.append("SELECT tech.id, tech.number, tech.name ");
-        query.append("FROM technologies_technology tech WHERE tech.active = true AND tech.product_id = :productID AND tech.state = '02accepted' ");
+        query.append("FROM technologies_technology tech WHERE tech.typeOfProductionRecording = '02cumulated' AND tech.active = true AND tech.product_id = :productID AND tech.state = '02accepted' ");
 
         StringBuilder queryCount = new StringBuilder();
         queryCount.append("SELECT COUNT(*) ");
-        queryCount.append("FROM technologies_technology tech WHERE tech.active = true AND tech.product_id = :productID AND tech.state = '02accepted' ");
+        queryCount
+                .append("FROM technologies_technology tech WHERE tech.typeOfProductionRecording = '02cumulated' AND tech.active = true AND tech.product_id = :productID AND tech.state = '02accepted' ");
 
         appendTechnologyConditions(search, query);
         appendTechnologyConditions(search, queryCount);
 
-        if(StringUtils.isNotEmpty(sort)) {
+        if (StringUtils.isNotEmpty(sort)) {
             query.append(" ORDER BY " + sort + " " + order);
         }
         query.append(String.format(" LIMIT %d OFFSET %d", limit, offset));
@@ -61,14 +75,14 @@ public class DataProviderForTechnology {
 
         Integer countRecords = jdbcTemplate.queryForObject(queryCount.toString(), parameters, Long.class).intValue();
 
-        List<TechnologyDto> products = jdbcTemplate.query(query.toString(), parameters,
-                new BeanPropertyRowMapper(TechnologyDto.class));
+        List<TechnologyDto> products = jdbcTemplate.query(query.toString(), parameters, new BeanPropertyRowMapper(
+                TechnologyDto.class));
 
         return new TechnologiesGridResponse(countRecords, products);
     }
 
     private void appendTechnologyConditions(String search, StringBuilder query) {
-        if(StringUtils.isNotEmpty(search)) {
+        if (StringUtils.isNotEmpty(search)) {
             query.append(" AND (");
             query.append("UPPER(tech.number) LIKE '%").append(search.toUpperCase()).append("%' OR ");
             query.append("UPPER(tech.name) LIKE '%").append(search.toUpperCase()).append("%' ");
@@ -86,7 +100,22 @@ public class DataProviderForTechnology {
         query.append("WHERE opic.id IN (:ids) ");
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("ids", ids);
-        return  jdbcTemplate.query(query.toString(), parameters,
-                new BeanPropertyRowMapper(MaterialDto.class));
+        return jdbcTemplate.query(query.toString(), parameters, new BeanPropertyRowMapper(MaterialDto.class));
+    }
+
+    public ProductionLineDto getTechnologyProductionLine(Long technologyId) {
+        Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyId);
+        if (technology.getStringField("range").equals("01oneDivision")) {
+            Entity productionLine = technology.getBelongsToField("productionLine");
+            if (Objects.nonNull(productionLine)) {
+                ProductionLineDto pl = new ProductionLineDto();
+                pl.setId(productionLine.getId());
+                pl.setName(productionLine.getStringField(ProductionLineFields.NAME));
+                pl.setNumber(productionLine.getStringField(ProductionLineFields.NUMBER));
+                return pl;
+            }
+        }
+        return new ProductionLineDto();
     }
 }
