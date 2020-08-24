@@ -28,8 +28,7 @@ public class BaseAttributeValueHooks {
 
     private static final String VALUE = "value";
 
-    public boolean validate(final DataDefinition ownerAttributeValueDD, final Entity ownerAttributeValue, final String ownerName,
-            final String ownerAttributeValueCollectionName) {
+    public boolean validate(final DataDefinition ownerAttributeValueDD, final Entity ownerAttributeValue) {
         Entity attribute = ownerAttributeValue.getBelongsToField(ATTRIBUTE);
 
         if (StringUtils.isNoneEmpty(ownerAttributeValue.getStringField(VALUE))
