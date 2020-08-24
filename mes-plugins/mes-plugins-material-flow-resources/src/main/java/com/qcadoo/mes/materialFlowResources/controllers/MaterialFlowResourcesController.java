@@ -23,19 +23,39 @@
  */
 package com.qcadoo.mes.materialFlowResources.controllers;
 
+import com.google.common.collect.ImmutableMap;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.crud.CrudService;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @Controller
-@RequestMapping(value = MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, method = RequestMethod.GET)
 public class MaterialFlowResourcesController {
 
-    @RequestMapping(value = "document.pdf")
+    @Autowired
+    private CrudService crudService;
+
+    @Autowired
+    private ParameterService parameterService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    @RequestMapping(value = MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER + "/document.pdf", method = RequestMethod.GET)
     public final ModelAndView documentPdf(@RequestParam("id") final String id) {
         ModelAndView mav = new ModelAndView();
 
@@ -43,5 +63,36 @@ public class MaterialFlowResourcesController {
         mav.addObject("id", id);
 
         return mav;
+    }
+
+    @RequestMapping(value = "materialFlowResourcesParameters", method = RequestMethod.GET)
+    public ModelAndView getMaterialFlowResourcesParametersPageView(final Locale locale) {
+        DataDefinition parameterDD = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER);
+        DataDefinition documentPositionParametersDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_DOCUMENT_POSITION_PARAMETERS);
+
+        Entity parameter = parameterService.getParameter();
+        Entity documentPositionParameters = parameter.getBelongsToField("documentPositionParameters");
+
+        if (documentPositionParameters == null) {
+            List<Entity> entities = documentPositionParametersDD.find().setMaxResults(1).list().getEntities();
+            if (!entities.isEmpty()) {
+                documentPositionParameters = entities.get(0);
+            }
+            if (documentPositionParameters == null) {
+                documentPositionParameters = documentPositionParametersDD.create();
+                documentPositionParameters = documentPositionParametersDD.save(documentPositionParameters);
+            }
+
+            parameter.setField("documentPositionParameters", documentPositionParameters);
+            parameterDD.save(parameter);
+        }
+
+        JSONObject json = new JSONObject(ImmutableMap.of("form.id", documentPositionParameters.getId()));
+
+        Map<String, String> arguments = ImmutableMap.of("context", json.toString());
+
+        return crudService.prepareView(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, "materialFlowResourcesParameters",
+                arguments, locale);
     }
 }

@@ -44,13 +44,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.Iterator;
-import javax.servlet.http.HttpServletResponse;
 
-@Controller @RequestMapping("/deliveries") public class DeliveriesMultiUploadController {
+@Controller
+@RequestMapping("/deliveries")
+public class DeliveriesMultiUploadController {
 
     private static final Logger logger = LoggerFactory.getLogger(DeliveriesMultiUploadController.class);
 

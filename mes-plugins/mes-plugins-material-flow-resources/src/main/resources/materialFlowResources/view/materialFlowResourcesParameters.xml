@@ -33,7 +33,7 @@
     <component type="window" name="window">
 
         <ribbon>
-            <template name="standardFormTemplate" includeItems="navigation.back, actions.save"/>
+            <template name="standardFormTemplate" includeItems="actions.save"/>
             <group name="attributes">
                 <bigButton name="addColumnWithResourceAttribute" icon="generateIcon24.png" action="#{form}.fireEvent(addColumnWithResourceAttribute);"
                            state="enabled"/>

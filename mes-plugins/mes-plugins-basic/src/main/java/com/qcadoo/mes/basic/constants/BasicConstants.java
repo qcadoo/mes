@@ -114,8 +114,6 @@ public final class BasicConstants {
 
     public static final String VIEW_STAFF_DETAILS = "staffDetails";
 
-    public static final String VIEW_STAFFS_LIST = "staffsList";
-
     public static final String VIEW_COMPANY_DETAILS = "companyInAdministrationDetails";
 
     public static final String ROLE_TERMINAL_USER = "05terminalUser";

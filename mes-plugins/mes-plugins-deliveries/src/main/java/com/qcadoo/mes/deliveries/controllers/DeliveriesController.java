@@ -23,19 +23,31 @@
  */
 package com.qcadoo.mes.deliveries.controllers;
 
+import com.google.common.collect.ImmutableMap;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.view.api.crud.CrudService;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import java.util.Locale;
+import java.util.Map;
 
 @Controller
-@RequestMapping(value = DeliveriesConstants.PLUGIN_IDENTIFIER, method = RequestMethod.GET)
 public class DeliveriesController {
 
-    @RequestMapping(value = "deliveryReport.pdf")
+    @Autowired
+    private CrudService crudService;
+
+    @Autowired
+    private ParameterService parameterService;
+
+    @RequestMapping(value = DeliveriesConstants.PLUGIN_IDENTIFIER + "/deliveryReport.pdf", method = RequestMethod.GET)
     public final ModelAndView deliveryReportPdf(@RequestParam("id") final String id) {
         ModelAndView mav = new ModelAndView();
 
@@ -45,7 +57,7 @@ public class DeliveriesController {
         return mav;
     }
 
-    @RequestMapping(value = "orderReport.pdf")
+    @RequestMapping(value = DeliveriesConstants.PLUGIN_IDENTIFIER + "/orderReport.pdf", method = RequestMethod.GET)
     public final ModelAndView orderReportPdf(@RequestParam("id") final String id) {
         ModelAndView mav = new ModelAndView();
 
@@ -53,6 +65,15 @@ public class DeliveriesController {
         mav.addObject("id", id);
 
         return mav;
+    }
+
+    @RequestMapping(value = "supplyParameters", method = RequestMethod.GET)
+    public ModelAndView getSupplyParametersPageView(final Locale locale) {
+        JSONObject json = new JSONObject(ImmutableMap.of("form.id", parameterService.getParameterId().toString()));
+
+        Map<String, String> arguments = ImmutableMap.of("context", json.toString());
+
+        return crudService.prepareView(DeliveriesConstants.PLUGIN_IDENTIFIER, "supplyParameters", arguments, locale);
     }
 
 }

@@ -171,12 +171,6 @@
                     method="onDelete"/>
         </model:model-hook>
 
-        <!--
-            <model:model-field plugin="basic" model="workstationType">
-                <model:manyToMany name="operations" plugin="technologies"
-                    model="operation" joinField="workstationTypes" copyable="true" />
-            </model:model-field>-->
-
         <model:model-field plugin="basic" model="workstationType">
             <model:hasMany name="operations" plugin="technologies"
                            model="operation" joinField="workstationType" cascade="nullify"/>
@@ -241,6 +235,9 @@
         <menu:menu-item name="productsToProductGroupTechnology" category="technology"
                         view="productsToProductGroupTechnologyList" defaultAuthorizationRole="ROLE_TECHNOLOGIES"/>
 
+        <menu:menu-item-url name="technologiesParameters" category="parameters" url="/technologiesParameters.html"
+                            defaultAuthorizationRole="ROLE_PARAMETERS"/>
+
         <view:view resource="view/operationsList.xml"/>
         <view:view resource="view/operationsImport.xml"/>
         <view:view resource="view/operationDetails.xml"/>
@@ -270,7 +267,6 @@
         <view:view resource="view/productsToProductGroupTechnologyImport.xml"/>
         <view:view resource="view/productToProductGroupTechnologyDetails.xml"/>
 
-        <view:view-ribbon-group resource="view/ribbonExtensions/technologyParameters.xml" />
         <view:view resource="view/technologiesParameters.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
@@ -279,11 +275,6 @@
         <view:view-tab resource="view/tabExtensions/skillDetails.xml"/>
 
         <view:resource uri="public/**/*"/>
-
-        <view:view-listener plugin="basic" view="parameters"
-                            component="form" event="redirectToTechnologyParameters"
-                            class="com.qcadoo.mes.technologies.listeners.ParameterListenersT"
-                            method="redirectToTechnologyParameters" />
 
         <view:view-listener plugin="basic" view="productDetails"
                             component="form" event="showTechnologiesWithTechnologyGroup"
