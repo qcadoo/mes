@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.materialFlow.hooks;
 
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialFlow.constants.ParameterFieldsMF;
 import com.qcadoo.mes.materialFlow.constants.WhatToShowOnDashboard;
@@ -36,6 +31,11 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class DashboardParametersHooks {
@@ -57,10 +57,7 @@ public class DashboardParametersHooks {
                 .getComponentByReference(ParameterFieldsMF.WHAT_TO_SHOW_ON_DASHBOARD);
         LookupComponent dashboardOperationLookup = (LookupComponent) view
                 .getComponentByReference(ParameterFieldsMF.DASHBOARD_OPERATION);
-        LookupComponent dashboardComponentsLocationLookup = (LookupComponent) view
-                .getComponentByReference(ParameterFieldsMF.DASHBOARD_COMPONENTS_LOCATION);
-        LookupComponent dashboardProductsInputLocationLookup = (LookupComponent) view
-                .getComponentByReference(ParameterFieldsMF.DASHBOARD_PRODUCTS_INPUT_LOCATION);
+
 
         Long parameterId = parameterForm.getEntityId();
         String whatToShowOnDashboard = (String) whatToShowOnDashboardField.getFieldValue();
@@ -70,16 +67,10 @@ public class DashboardParametersHooks {
 
         if (!isOrders) {
             dashboardOperationLookup.setFieldValue(null);
-            dashboardComponentsLocationLookup.setFieldValue(null);
-            dashboardProductsInputLocationLookup.setFieldValue(null);
         }
 
         dashboardOperationLookup.setEnabled(isEnabled && isOrders);
         dashboardOperationLookup.requestComponentUpdateState();
-        dashboardComponentsLocationLookup.setEnabled(isEnabled && isOrders);
-        dashboardComponentsLocationLookup.requestComponentUpdateState();
-        dashboardProductsInputLocationLookup.setEnabled(isEnabled && isOrders);
-        dashboardProductsInputLocationLookup.requestComponentUpdateState();
     }
 
 }

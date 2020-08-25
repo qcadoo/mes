@@ -23,12 +23,12 @@
  */
 package com.qcadoo.mes.materialFlow.hooks;
 
-import org.springframework.stereotype.Component;
-
 import com.qcadoo.mes.materialFlow.constants.ParameterFieldsMF;
 import com.qcadoo.mes.materialFlow.constants.WhatToShowOnDashboard;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+
+import org.springframework.stereotype.Component;
 
 @Component
 public class ParameterHooksMF {
@@ -42,8 +42,6 @@ public class ParameterHooksMF {
 
         if (!WhatToShowOnDashboard.ORDERS.getStringValue().equals(whatToShowOnDashboard)) {
             parameter.setField(ParameterFieldsMF.DASHBOARD_OPERATION, null);
-            parameter.setField(ParameterFieldsMF.DASHBOARD_COMPONENTS_LOCATION, null);
-            parameter.setField(ParameterFieldsMF.DASHBOARD_PRODUCTS_INPUT_LOCATION, null);
         }
     }
 
