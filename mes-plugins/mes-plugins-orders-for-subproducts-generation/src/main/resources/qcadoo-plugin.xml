@@ -181,7 +181,7 @@
 
         <view:view-tab resource="view/tabExtensions/operationDurationDetailsInOrder.xml"/>
         <view:view-tab resource="view/tabExtensions/costCalculationDetails.xml"/>
-        <view:view-tab resource="view/tabExtensions/parameters.xml"/>
+        <view:view-tab resource="view/tabExtensions/ordersParameters.xml"/>
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/operationDurationDetailsInOrder.xml"/>
@@ -197,7 +197,7 @@
                         class="com.qcadoo.mes.ordersForSubproductsGeneration.hooks.CostCalculationDetailsHooksOFSPG"
                         method="onBeforeRender"/>
 
-        <view:view-hook plugin="basic" view="parameters" type="beforeRender"
+        <view:view-hook plugin="orders" view="ordersParameters" type="beforeRender"
                         class="com.qcadoo.mes.ordersForSubproductsGeneration.hooks.ParametersHooksOFSPG"
                         method="onBeforeRender"/>
 

@@ -354,8 +354,8 @@
                             category="basic" url="/page/qcadooDictionaries/dictionariesList.html"
                             defaultAuthorizationRole="ROLE_DICTIONARY_VIEW"/>
 
-        <menu:menu-item-url name="systemParameters"
-                            category="administration" url="/parameters.html"
+        <menu:menu-item-url name="generalParameters"
+                            category="parameters" url="/generalParameters.html"
                             defaultAuthorizationRole="ROLE_PARAMETERS"/>
 
         <menu:menu-item-url name="conversion" category="basic"
@@ -415,7 +415,7 @@
         <view:view resource="view/divisionsList.xml"/>
         <view:view resource="view/divisionDetails.xml"/>
 
-        <view:view resource="view/parameters.xml"/>
+        <view:view resource="view/generalParameters.xml"/>
 
         <view:view resource="view/workstationsList.xml"/>
         <view:view resource="view/workstationsImport.xml"/>

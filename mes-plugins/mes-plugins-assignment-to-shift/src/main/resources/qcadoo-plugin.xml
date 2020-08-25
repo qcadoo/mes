@@ -154,12 +154,7 @@
         <view:view resource="view/staffAssignmentToShiftDetails.xml"/>
         <view:view resource="view/multiAssignmentToShiftDetails.xml"/>
         <view:view resource="view/assignmentToShiftReportDetails.xml"/>
-        <view:view resource="view/assignmentToShiftParameters.xml"/>
-
-        <view:view-ribbon-group resource="view/ribbonExtensions/parameters.xml"/>
-        <view:view-listener plugin="basic" view="parameters" component="form" event="redirectToAssignmentToShiftParameters"
-                            class="com.qcadoo.mes.assignmentToShift.listeners.ParametersListenersATS"
-                            method="redirectToAssignmentToShiftParameters"/>
+        <view:view-tab resource="view/tabExtensions/planningParameters.xml"/>
 
         <view:resource uri="public/**/*"/>
         <custom:custom

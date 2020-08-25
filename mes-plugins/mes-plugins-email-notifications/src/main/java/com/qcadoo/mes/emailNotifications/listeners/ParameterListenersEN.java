@@ -43,17 +43,6 @@ public class ParameterListenersEN {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void redirectToEmailNotificationsParameters(final ViewDefinitionState view, final ComponentState componentState,
-                                                       final String[] args) {
-        Long parameterId = (Long) componentState.getFieldValue();
-
-        if (parameterId != null) {
-            String url = "../page/emailNotifications/emailNotificationsParameters.html?context={\"form.id\":\"" + parameterId
-                    + "\"}";
-            view.redirectTo(url, false, true);
-        }
-    }
-
     public void onSelectedStaffChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FieldComponent lookup = (FieldComponent) view.getComponentByReference(L_STAFF_NOTIFICATIONS_LOOKUP);
 

@@ -102,7 +102,7 @@ public final class BasicConstants {
 
     // VIEW
 
-    public static final String VIEW_PARAMETERS = "parameters";
+    public static final String VIEW_GENERAL_PARAMETERS = "generalParameters";
 
     public static final String VIEW_PRODUCT_DETAILS = "productDetails";
 

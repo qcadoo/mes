@@ -71,5 +71,4 @@ public class TechnologyController {
 
         return crudService.prepareView(TechnologiesConstants.PLUGIN_IDENTIFIER, "technologiesParameters", arguments, locale);
     }
-
 }

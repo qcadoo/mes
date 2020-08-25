@@ -27,7 +27,7 @@
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
-	plugin="basic" view="parameters">
+	plugin="basic" view="generalParameters">
 
 	<windowTab name="currencyTab" reference="currencyTab">
 		<component type="gridLayout" name="gridLayout" columns="2"

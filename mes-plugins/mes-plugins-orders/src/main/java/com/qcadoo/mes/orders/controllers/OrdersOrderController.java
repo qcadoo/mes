@@ -23,18 +23,31 @@
  */
 package com.qcadoo.mes.orders.controllers;
 
+import com.google.common.collect.ImmutableMap;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.view.api.crud.CrudService;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.Locale;
+import java.util.Map;
+
 @Controller
-@RequestMapping(value = OrdersConstants.PLUGIN_IDENTIFIER, method = RequestMethod.GET)
 public class OrdersOrderController {
 
-    @RequestMapping(value = "ordersOrderReport.pdf")
+    @Autowired
+    private CrudService crudService;
+
+    @Autowired
+    private ParameterService parameterService;
+
+    @RequestMapping(value = OrdersConstants.PLUGIN_IDENTIFIER + "/ordersOrderReport.pdf" , method = RequestMethod.GET)
     public final ModelAndView orderReportPdf(@RequestParam("id") final String id) {
         ModelAndView mav = new ModelAndView();
 
@@ -44,4 +57,12 @@ public class OrdersOrderController {
         return mav;
     }
 
+    @RequestMapping(value = "planningParameters", method = RequestMethod.GET)
+    public ModelAndView getTechnologiesParametersPageView(final Locale locale) {
+        JSONObject json = new JSONObject(ImmutableMap.of("form.id", parameterService.getParameterId().toString()));
+
+        Map<String, String> arguments = ImmutableMap.of("context", json.toString());
+
+        return crudService.prepareView(OrdersConstants.PLUGIN_IDENTIFIER, "planningParameters", arguments, locale);
+    }
 }
