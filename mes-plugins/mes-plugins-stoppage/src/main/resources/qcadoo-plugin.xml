@@ -75,10 +75,10 @@
 		</model:model-field>
 
 		<menu:menu-item name="stoppages" category="ordersTracking"
-			view="allStoppages" defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING"/>
+			view="allStoppages" defaultAuthorizationRole="ROLE_STOPPAGES"/>
 
 		<menu:menu-item name="stoppageReasonsList" category="basic"
-			view="stoppageReasonsList" defaultAuthorizationRole="ROLE_PRODUCTION_COUNTING"/>
+			view="stoppageReasonsList" defaultAuthorizationRole="ROLE_STOPPAGE_REASONS"/>
 
 		<view:view resource="view/allStoppages.xml" />
 		<view:view resource="view/stoppagesForOrderList.xml" />
