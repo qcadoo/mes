@@ -90,31 +90,31 @@ public class DashboardKanbanDataProvider {
         Map<String, Object> params = Maps.newHashMap();
 
         params.put(L_STATES,
-                Sets.newHashSet(OperationalTaskStateStringValues.STARTED));
+                Sets.newHashSet(OperationalTaskStateStringValues.FINISHED));
 
-        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions), params, new BeanPropertyRowMapper(OperationalTaskHolder.class));
+        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions, false), params, new BeanPropertyRowMapper(OperationalTaskHolder.class));
     }
 
     public List<OperationalTaskHolder> getOperationalTasksInProgress() {
-        String additionalRestrictions = "AND operationaltaskdto.plannedquantity > 0 AND operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity > 0 AND operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity < 100 ";
+        String additionalRestrictions = "AND (operationaltaskdto.plannedquantity > 0 AND operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity > 0 AND operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity < 100) ";
 
         Map<String, Object> params = Maps.newHashMap();
 
         params.put(L_STATES,
-                Sets.newHashSet(OperationalTaskStateStringValues.STARTED, OperationalTaskStateStringValues.FINISHED));
+                Sets.newHashSet(OperationalTaskStateStringValues.FINISHED));
 
-        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions), params, new BeanPropertyRowMapper(OperationalTaskHolder.class));
+        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions, false), params, new BeanPropertyRowMapper(OperationalTaskHolder.class));
     }
 
     public List<OperationalTaskHolder> getOperationalTasksCompleted() {
-        String additionalRestrictions = "AND (operationaltaskdto.plannedquantity > 0 AND operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity >= 100) OR operationaltaskdto.state = '03finished' ";
+        String additionalRestrictions = "AND ((operationaltaskdto.plannedquantity > 0 AND operationaltaskdto.usedquantity * 100 / operationaltaskdto.plannedquantity >= 100) OR operationaltaskdto.state = '03finished') ";
 
         Map<String, Object> params = Maps.newHashMap();
 
         params.put(L_STATES,
-                Sets.newHashSet(OperationalTaskStateStringValues.STARTED, OperationalTaskStateStringValues.FINISHED));
+                Sets.newHashSet(OperationalTaskStateStringValues.FINISHED));
 
-        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions), params, new BeanPropertyRowMapper(OperationalTaskHolder.class));
+        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions, true), params, new BeanPropertyRowMapper(OperationalTaskHolder.class));
     }
 
     private String getOperationalTaskQueryProjections() {
@@ -129,9 +129,13 @@ public class DashboardKanbanDataProvider {
                 + "LEFT JOIN basic_product product ON product.id = ordersorder.product_id ";
     }
 
-    private String getOperationalTasksQuery(final String additionalRestrictions) {
+    private String getOperationalTasksQuery(final String additionalRestrictions, final boolean in) {
         String query = getOperationalTaskQueryProjections();
-        query += "WHERE operationaltaskdto.state IN (:states) ";
+        if (in) {
+            query += "WHERE operationaltaskdto.state IN (:states) ";
+        } else {
+            query += "WHERE operationaltaskdto.state NOT IN (:states) ";
+        }
         query += "AND date_trunc('day', operationaltaskdto.startdate) <= current_date AND current_date <= date_trunc('day', operationaltaskdto.finishdate) ";
         query += additionalRestrictions;
         query += "ORDER BY operationaltaskdto.workstationnumber, operationaltaskdto.startdate";
