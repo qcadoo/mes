@@ -35,6 +35,11 @@
             <artifactId>mes-plugins-production-lines</artifactId>
             <version>1.5-SNAPSHOT-DEV</version>
         </dependency>
+        <dependency>
+            <groupId>org.codehaus.jettison</groupId>
+            <artifactId>jettison</artifactId>
+            <version>1.1</version>
+        </dependency>
     </dependencies>
 
     <build>
