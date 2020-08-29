@@ -1394,7 +1394,6 @@ CREATE FUNCTION list_tables() RETURNS TABLE(table_name text, count bigint)
 	BEGIN
 		FOR table_data IN SELECT * FROM information_schema.tables AS t
 			WHERE t.table_schema = 'public' AND t.table_type = 'BASE TABLE'
-				AND t.table_name NOT IN ('logdigger_errorlog')
 				AND t.table_name NOT LIKE 'jointable%'
 
 			ORDER BY t.table_name
