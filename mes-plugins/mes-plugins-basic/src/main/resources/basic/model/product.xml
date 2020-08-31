@@ -71,6 +71,9 @@
         <belongsTo name="producer" model="company" plugin="basic"/>
 
         <dictionary name="additionalUnit" dictionary="units"/>
+        <decimal name="conversion" persistent="false">
+            <validatesRange from="0" exclusively="true" />
+        </decimal>
         <hasMany name="additionalCodes" model="additionalCode" joinField="product" cascade="delete"/>
         <belongsTo name="assortment" model="assortment"/>
 

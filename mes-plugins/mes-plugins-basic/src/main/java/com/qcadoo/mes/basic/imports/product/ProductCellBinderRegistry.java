@@ -70,13 +70,14 @@ public class ProductCellBinderRegistry {
     @Autowired
     private CellParser booleanCellParser;
 
-
     @PostConstruct
     private void init() {
         cellBinderRegistry.setCellBinder(required(ProductFields.NUMBER));
         cellBinderRegistry.setCellBinder(required(ProductFields.NAME));
         cellBinderRegistry.setCellBinder(optional(ProductFields.GLOBAL_TYPE_OF_MATERIAL, globalTypeOfMaterialCellParser));
         cellBinderRegistry.setCellBinder(required(ProductFields.UNIT, dictionaryCellParsers.units()));
+        cellBinderRegistry.setCellBinder(optional(ProductFields.ADDITIONAL_UNIT, dictionaryCellParsers.units()));
+        cellBinderRegistry.setCellBinder(optional(ProductFields.CONVERSION, bigDecimalCellParser));
         cellBinderRegistry.setCellBinder(optional(ProductFields.EAN));
         cellBinderRegistry.setCellBinder(optional(ProductFields.CATEGORY, dictionaryCellParsers.productCategory()));
         cellBinderRegistry.setCellBinder(optional(ProductFields.DESCRIPTION));
