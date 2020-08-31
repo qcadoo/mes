@@ -41,7 +41,6 @@
 			classpath*:qcadoo-model-context.xml		
 			classpath*:qcadoo-security-context.xml
 			classpath*:qcadoo-view-context.xml
-			classpath*:qcadoo-shop-context.xml
 			classpath*:qcadoo-web-context.xml
 			classpath*:qcadoo-report-context.xml
 			classpath*:qcadoo-mail-context.xml
