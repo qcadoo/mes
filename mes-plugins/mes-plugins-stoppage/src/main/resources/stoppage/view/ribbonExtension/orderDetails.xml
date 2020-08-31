@@ -29,7 +29,7 @@
     plugin="orders"
     view="orderDetails">
 
-     <group name="stoppage">
+     <group name="stoppage" defaultAuthorizationRole="ROLE_STOPPAGES">
           <bigButton name="stoppage" action="#{form}.fireEvent(showStoppage);" state="disabled" icon="../../../../../stoppage/public/css/icons/iconStop24.png">
           	<script>
 				<![CDATA[
