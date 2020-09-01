@@ -37,7 +37,7 @@
                 <bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;"/>
             </group>
             <group name="parameters" defaultAuthorizationRole="ROLE_PLANNING">
-                <bigButton name="ordersParameters" icon="calendarIcon24.png">
+                <bigButton name="ordersParameters" icon="generateIcon24.png">
                     <script>
                         <![CDATA[
                             this.addOnChangeListener({

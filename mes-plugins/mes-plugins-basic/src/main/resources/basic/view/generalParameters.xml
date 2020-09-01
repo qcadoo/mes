@@ -35,7 +35,7 @@
                 <bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;"/>
             </group>
             <group name="company">
-                <bigButton name="redirectToCompany" icon="genealogyIcon24.png"
+                <bigButton name="redirectToCompany" icon="generateIcon24.png"
                            action="#{form}.fireEvent(redirectToCompany);"/>
             </group>
         </ribbon>

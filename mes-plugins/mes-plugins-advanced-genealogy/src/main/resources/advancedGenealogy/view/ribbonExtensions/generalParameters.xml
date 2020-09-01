@@ -29,7 +29,7 @@
 	plugin="basic"
 	view="generalParameters">
 	<group name="parameters" defaultAuthorizationRole="ROLE_PARAMETERS">
-		<bigButton name="genealogyParameters" icon="genealogyIcon24.png">
+		<bigButton name="genealogyParameters" icon="generateIcon24.png">
 			<script>
 				<![CDATA[
 					this.addOnChangeListener({
