@@ -161,8 +161,6 @@
 				copyable="true" />
 		</model:model-field>
 
-		<menu:menu-category name="requirements" />
-
 		<menu:menu-item name="requestsForQuotation" category="requirements"
 			view="requestForQuotationsList" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
 		<menu:menu-item name="offer" category="requirements"

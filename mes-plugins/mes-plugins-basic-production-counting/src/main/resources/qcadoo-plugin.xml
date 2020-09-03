@@ -169,6 +169,8 @@
 		<view:view resource="view/productionCountingQuantityAdvancedDetails.xml" />
 		<view:view resource="view/productionCountingQuantityList.xml" />
 
+		<menu:menu-category name="requirements" />
+
 		<menu:menu-item name="productionCountingQuantityList" category="requirements"
 						view="productionCountingQuantityList" defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY"/>
 	</modules>
