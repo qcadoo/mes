@@ -9,8 +9,12 @@
         </ribbon>
 
         <component type="grid" name="productionCountingQuantities" reference="grid">
-            <option type="column" name="orderNumber" fields="orderNumber" width="40"/>
-            <option type="column" name="operationalTaskNumber" fields="operationalTaskNumber" width="40"/>
+            <option type="column" name="orderNumber" fields="orderNumber" link="true"
+                    correspondingView="orders/orderDetails" correspondingField="orderId" width="40"/>
+            <option type="column" name="orderId" fields="orderId" hidden="true"/>
+            <option type="column" name="operationalTaskNumber" fields="operationalTaskNumber" link="true"
+                    correspondingView="orders/operationalTaskDetails" correspondingField="operationalTaskId" width="40"/>
+            <option type="column" name="operationalTaskId" fields="operationalTaskId" hidden="true"/>
             <option type="column" name="startDate" fields="startDate" width="70"/>
             <option type="column" name="nodeNumber" fields="nodeNumber"
                     width="40"/>
