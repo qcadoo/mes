@@ -1,14 +1,5 @@
 package com.qcadoo.mes.basic;
 
-import java.util.Date;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.BasicConstants;
@@ -18,14 +9,27 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.constants.QcadooSecurityConstants;
 import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.tenant.api.MultiTenantCallback;
 import com.qcadoo.tenant.api.MultiTenantService;
 
+import java.util.Date;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
 public class LogService {
+
+    private static final Logger LOGGER = Logger.getLogger(LogService.class);
 
     public static final String QCADOO_BOT = "qcadoo_bot";
 
@@ -157,7 +161,16 @@ public class LogService {
             userId = findBotUser().getId();
         }
         logEntity.setField(LogFields.USER, userId);
-        return logDD.save(logEntity);
+        Entity saved = logDD.save(logEntity);
+        if(!saved.isValid()) {
+            StringBuilder logErrors = new StringBuilder();
+            for (Map.Entry<String, ErrorMessage> errorEntry : saved.getErrors().entrySet()) {
+                logErrors.append(errorEntry.getKey() + " : " + errorEntry.getValue().getMessage());
+            }
+            LOGGER.warn(saved.toString());
+            LOGGER.warn(logErrors.toString());
+        }
+        return saved;
     }
 
     private DataDefinition getLogDD() {
