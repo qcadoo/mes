@@ -10126,6 +10126,104 @@ CREATE SEQUENCE basicproductioncounting_productioncountingquantitydto_id_seq
 
 
 --
+-- Name: orders_operationaltask; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE orders_operationaltask (
+    id bigint NOT NULL,
+    number character varying(256),
+    name character varying(1024),
+    description character varying(1024),
+    type character varying(255),
+    startdate timestamp without time zone,
+    finishdate timestamp without time zone,
+    productionline_id bigint,
+    order_id bigint,
+    entityversion bigint DEFAULT 0,
+    staff_id bigint,
+    workstation_id bigint,
+    state character varying(255) DEFAULT '01pending'::character varying,
+    technologyoperationcomponent_id bigint,
+    product_id bigint,
+    scheduleposition_id bigint
+);
+
+
+--
+-- Name: basicproductioncounting_productioncountingquantitylistdto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW basicproductioncounting_productioncountingquantitylistdto AS
+ SELECT pcq.id,
+    o.number AS ordernumber,
+    (o.id)::integer AS orderid,
+    ot.number AS operationaltasknumber,
+    (ot.id)::integer AS operationaltaskid,
+    COALESCE(ot.startdate, o.startdate) AS startdate,
+    product.number AS productnumber,
+    product.name AS productname,
+    product.unit AS productunit,
+    COALESCE(toc.nodenumber, ''::character varying) AS nodenumber,
+    COALESCE(op.number, ''::character varying) AS operationnumber,
+    COALESCE(op.name, ''::character varying) AS operationname,
+    pcq.role,
+    pcq.typeofmaterial,
+    pcq.plannedquantity,
+    NULL::numeric AS usedquantity,
+    NULL::numeric AS producedquantity,
+    replacementto.number AS replacementto
+   FROM ((((((basicproductioncounting_productioncountingquantity pcq
+     JOIN basic_product product ON ((product.id = pcq.product_id)))
+     JOIN orders_order o ON ((o.id = pcq.order_id)))
+     LEFT JOIN technologies_technologyoperationcomponent toc ON ((pcq.technologyoperationcomponent_id = toc.id)))
+     LEFT JOIN technologies_operation op ON ((op.id = toc.operation_id)))
+     LEFT JOIN orders_operationaltask ot ON (((ot.order_id = o.id) AND (ot.technologyoperationcomponent_id = toc.id))))
+     LEFT JOIN basic_product replacementto ON ((replacementto.id = pcq.replacementto_id)))
+  WHERE (((o.typeofproductionrecording)::text = '02cumulated'::text) AND ((o.state)::text = ANY ((ARRAY['02accepted'::character varying, '03inProgress'::character varying, '06interrupted'::character varying])::text[])))
+UNION
+ SELECT pcq.id,
+    o.number AS ordernumber,
+    (o.id)::integer AS orderid,
+    ot.number AS operationaltasknumber,
+    (ot.id)::integer AS operationaltaskid,
+    COALESCE(ot.startdate, o.startdate) AS startdate,
+    product.number AS productnumber,
+    product.name AS productname,
+    product.unit AS productunit,
+    toc.nodenumber,
+    op.number AS operationnumber,
+    op.name AS operationname,
+    pcq.role,
+    pcq.typeofmaterial,
+    pcq.plannedquantity,
+    COALESCE(uqh.usedquantity, (0)::numeric) AS usedquantity,
+    COALESCE(pqh.producedquantity, (0)::numeric) AS producedquantity,
+    replacementto.number AS replacementto
+   FROM ((((((((basicproductioncounting_productioncountingquantity pcq
+     JOIN basic_product product ON ((product.id = pcq.product_id)))
+     JOIN orders_order o ON ((o.id = pcq.order_id)))
+     JOIN technologies_technologyoperationcomponent toc ON ((pcq.technologyoperationcomponent_id = toc.id)))
+     JOIN technologies_operation op ON ((op.id = toc.operation_id)))
+     LEFT JOIN orders_operationaltask ot ON (((ot.order_id = o.id) AND (ot.technologyoperationcomponent_id = toc.id))))
+     LEFT JOIN basic_product replacementto ON ((replacementto.id = pcq.replacementto_id)))
+     LEFT JOIN basicproductioncounting_usedquantity_helper uqh ON (((uqh.order_id = pcq.order_id) AND (uqh.product_id = pcq.product_id) AND (uqh.technologyoperationcomponent_id = pcq.technologyoperationcomponent_id))))
+     LEFT JOIN basicproductioncounting_producedquantity_helper pqh ON (((pqh.order_id = pcq.order_id) AND (pqh.product_id = pcq.product_id) AND (pqh.technologyoperationcomponent_id = pcq.technologyoperationcomponent_id))))
+  WHERE (((o.typeofproductionrecording)::text = '03forEach'::text) AND ((o.state)::text = ANY ((ARRAY['02accepted'::character varying, '03inProgress'::character varying, '06interrupted'::character varying])::text[])));
+
+
+--
+-- Name: basicproductioncounting_productioncountingquantitylistdto_id_se; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE basicproductioncounting_productioncountingquantitylistdto_id_se
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
 -- Name: cdnrcgoodfood_highestmasterordernum; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -17325,30 +17423,6 @@ ALTER SEQUENCE orders_changedateshelper_id_seq OWNED BY orders_changedateshelper
 
 
 --
--- Name: orders_operationaltask; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE orders_operationaltask (
-    id bigint NOT NULL,
-    number character varying(256),
-    name character varying(1024),
-    description character varying(1024),
-    type character varying(255),
-    startdate timestamp without time zone,
-    finishdate timestamp without time zone,
-    productionline_id bigint,
-    order_id bigint,
-    entityversion bigint DEFAULT 0,
-    staff_id bigint,
-    workstation_id bigint,
-    state character varying(255) DEFAULT '01pending'::character varying,
-    technologyoperationcomponent_id bigint,
-    product_id bigint,
-    scheduleposition_id bigint
-);
-
-
---
 -- Name: orders_operationaltask_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -20700,6 +20774,14 @@ CREATE VIEW productioncounting_productiontrackingdto AS
     productiontracking.lasttracking,
     productiontracking.timerangefrom,
     productiontracking.timerangeto,
+        CASE
+            WHEN (productiontracking.shiftstartday IS NULL) THEN (productiontracking.createdate)::date
+            ELSE productiontracking.shiftstartday
+        END AS datefromforoee,
+        CASE
+            WHEN (productiontracking.shiftstartday IS NULL) THEN (productiontracking.createdate)::date
+            ELSE productiontracking.shiftstartday
+        END AS datetoforoee,
     productiontracking.active,
     (ordersorder.id)::integer AS order_id,
     ordersorder.number AS ordernumber,
@@ -31531,6 +31613,13 @@ SELECT pg_catalog.setval('basicproductioncounting_productioncountingquantitydto_
 
 
 --
+-- Name: basicproductioncounting_productioncountingquantitylistdto_id_se; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('basicproductioncounting_productioncountingquantitylistdto_id_se', 1, false);
+
+
+--
 -- Data for Name: cdnrcgoodfood_highestmasterordernum; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -33513,6 +33602,10 @@ COPY jointable_group_role (group_id, role_id) FROM stdin;
 3	118
 3	119
 3	120
+2	121
+4	121
+2	122
+4	122
 \.
 
 
@@ -36433,6 +36526,8 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 118	ROLE_NUMBER_PATTERN	\N	0
 119	ROLE_QUALITY_CONTROL	\N	0
 120	ROLE_OEE	\N	0
+121	ROLE_STOPPAGES	\N	0
+122	ROLE_STOPPAGE_REASONS	\N	0
 \.
 
 
@@ -36440,7 +36535,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 120, true);
+SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 122, true);
 
 
 --
@@ -36499,6 +36594,7 @@ COPY qcadooview_category (id, pluginidentifier, name, succession, authrole, enti
 14	subcontractorPortal	subcontractors	17	ROLE_SUBCONTRACTOR	0
 15	productionCounting	analysis	18	ROLE_ANALYSIS_VIEWER	0
 16	arch	archives	19	\N	0
+21	basic	parameters	20	\N	0
 \.
 
 
@@ -36506,7 +36602,7 @@ COPY qcadooview_category (id, pluginidentifier, name, succession, authrole, enti
 -- Name: qcadooview_category_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_category_id_seq', 20, true);
+SELECT pg_catalog.setval('qcadooview_category_id_seq', 21, true);
 
 
 --
@@ -36536,7 +36632,6 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 26	basic	countries	t	1	26	12	ROLE_COUNTRIES	0
 27	basic	companies	t	4	27	10	ROLE_COMPANY	0
 28	basic	conversion	t	4	28	11	ROLE_BASE_FUNCTIONALITY	0
-29	basic	systemParameters	t	1	29	13	ROLE_PARAMETERS	0
 30	basic	dictionariesInBasic	t	4	30	12	ROLE_DICTIONARY_VIEW	0
 31	basic	home	t	2	31	1	\N	0
 32	productionLines	productionLines	t	3	32	6	ROLE_COMPANY_STRUCTURE	0
@@ -36558,7 +36653,6 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 60	costCalculation	costCalculation	t	10	60	2	ROLE_CALCULATIONS	0
 61	deliveries	supplyItems	t	9	61	2	ROLE_REQUIREMENTS	0
 62	deliveries	deliveries	t	9	62	3	ROLE_REQUIREMENTS	0
-63	stoppage	stoppages	t	8	63	1	ROLE_PRODUCTION_COUNTING	0
 64	supplyNegotiations	negotiation	t	9	64	4	ROLE_REQUIREMENTS	0
 65	supplyNegotiations	offersItems	t	9	65	5	ROLE_REQUIREMENTS	0
 66	supplyNegotiations	offer	t	9	66	6	ROLE_REQUIREMENTS	0
@@ -36643,7 +36737,6 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 154	scheduleGantt	operationalTasksGantt	t	7	153	19	ROLE_PLANNING	0
 155	technologies	productsToProductGroupTechnology	t	5	154	7	ROLE_TECHNOLOGIES	0
 156	basic	numberPatternsList	t	1	155	16	ROLE_NUMBER_PATTERN	0
-157	stoppage	stoppageReasonsList	t	4	156	26	ROLE_PRODUCTION_COUNTING	0
 23	basic	shifts	t	17	23	7	ROLE_SHIFTS	0
 132	basic	exceptionsForLineList	t	17	131	20	ROLE_SHIFTS	0
 22	basic	products	t	19	22	6	ROLE_PRODUCTS	0
@@ -36665,6 +36758,15 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 95	productionCounting	productionBalance	t	15	95	5	ROLE_PRODUCTION_COUNTING	0
 107	productionPerShift	balancePerShift	t	15	106	8	\N	0
 164	productionCounting	employeeWorkingTimeSettlement	t	15	163	9	ROLE_ANALYSIS_VIEWER	0
+165	basic	generalParameters	t	21	164	\N	ROLE_PARAMETERS	0
+166	orders	planningParameters	t	21	165	\N	ROLE_PARAMETERS	0
+167	technologies	technologiesParameters	t	21	166	\N	ROLE_PARAMETERS	0
+168	deliveries	supplyParameters	t	21	167	\N	ROLE_PARAMETERS	0
+169	materialFlowResources	materialFlowResourcesParameters	t	21	168	\N	ROLE_PARAMETERS	0
+170	productionCounting	productionCountingParameters	t	21	169	\N	ROLE_PARAMETERS	0
+63	stoppage	stoppages	t	8	63	1	ROLE_STOPPAGES	0
+157	stoppage	stoppageReasonsList	t	4	156	26	ROLE_STOPPAGE_REASONS	0
+171	basicProductionCounting	productionCountingQuantityList	t	9	170	13	ROLE_BASE_FUNCTIONALITY	0
 \.
 
 
@@ -36672,7 +36774,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 164, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 171, true);
 
 
 --
@@ -36708,7 +36810,6 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 26	basic	countriesList	countriesList	\N	0
 27	basic	companiesList	companiesList	\N	0
 28	basic	conversion	\N	/unitConversions.html	0
-29	basic	systemParameters	\N	/parameters.html	0
 30	basic	dictionariesInBasic	\N	/page/qcadooDictionaries/dictionariesList.html	0
 31	basic	home	\N	/dashboard.html	0
 32	productionLines	productionLinesList	productionLinesList	\N	0
@@ -36831,6 +36932,13 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 161	advancedGenealogyForOrders	genealogyAnalysis	\N	/genealogyAnalysis.html	0
 162	oee	oeeList	oeeList	\N	0
 163	productionCounting	employeeWorkingTimeSettlement	\N	/employeeWorkingTimeSettlement.html	0
+164	basic	generalParameters	\N	/generalParameters.html	0
+165	orders	planningParameters	\N	/planningParameters.html	0
+166	technologies	technologiesParameters	\N	/technologiesParameters.html	0
+167	deliveries	supplyParameters	\N	/supplyParameters.html	0
+168	materialFlowResources	materialFlowResourcesParameters	\N	/materialFlowResourcesParameters.html	0
+169	productionCounting	productionCountingParameters	\N	/productionCountingParameters.html	0
+170	basicProductionCounting	productionCountingQuantityList	productionCountingQuantityList	\N	0
 \.
 
 
@@ -36838,7 +36946,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 163, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 170, true);
 
 
 --
