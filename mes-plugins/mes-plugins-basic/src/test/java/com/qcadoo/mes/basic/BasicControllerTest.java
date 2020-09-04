@@ -23,21 +23,20 @@
  */
 package com.qcadoo.mes.basic;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.springframework.test.util.ReflectionTestUtils.setField;
-
-import java.util.Locale;
-import java.util.Map;
-
-import org.junit.Test;
-import org.springframework.web.servlet.ModelAndView;
-
 import com.google.common.collect.ImmutableMap;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.controllers.BasicController;
 import com.qcadoo.view.api.crud.CrudService;
+import org.junit.Test;
+import org.springframework.web.servlet.ModelAndView;
+
+import java.util.Locale;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.springframework.test.util.ReflectionTestUtils.setField;
 
 public class BasicControllerTest {
 
@@ -48,7 +47,7 @@ public class BasicControllerTest {
         ModelAndView expectedMav = mock(ModelAndView.class);
         CrudService crudController = mock(CrudService.class);
         given(
-                crudController.prepareView(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.VIEW_PARAMETERS, arguments,
+                crudController.prepareView(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.VIEW_GENERAL_PARAMETERS, arguments,
                         Locale.ENGLISH)).willReturn(expectedMav);
 
         ParameterService parameterService = mock(ParameterService.class);
@@ -59,7 +58,7 @@ public class BasicControllerTest {
         setField(basicController, "parameterService", parameterService);
 
         // // when
-        ModelAndView mav = basicController.getParameterPageView(Locale.ENGLISH);
+        ModelAndView mav = basicController.getGeneralParameterPageView(Locale.ENGLISH);
 
         // // then
         assertEquals(expectedMav, mav);

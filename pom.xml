@@ -41,7 +41,7 @@
     </modules>
 
     <properties>
-        <qcadoo.buildVersionForUser>2.1.7</qcadoo.buildVersionForUser>
+        <qcadoo.buildVersionForUser>2.1.8</qcadoo.buildVersionForUser>
         <qcadoo.version>${project.version}</qcadoo.version>
         <qcadoo.plugin.version>1.5</qcadoo.plugin.version>
         <qcadoo.maven.plugin.version>1.5-SNAPSHOT</qcadoo.maven.plugin.version>
@@ -162,30 +162,6 @@
         <repository>
             <id>qcadoo-releases-repository</id>
             <url>http://nexus.qcadoo.org/content/repositories/releases</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>com.logdigger</id>
-            <url>http://maven.logdigger.com/repos</url>
-            <releases>
-                <enabled>true</enabled>
-                <updatePolicy>never</updatePolicy>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-                <updatePolicy>never</updatePolicy>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>atlassian</id>
-            <url>https://maven.atlassian.com/repository/public</url>
             <releases>
                 <enabled>true</enabled>
                 <updatePolicy>never</updatePolicy>

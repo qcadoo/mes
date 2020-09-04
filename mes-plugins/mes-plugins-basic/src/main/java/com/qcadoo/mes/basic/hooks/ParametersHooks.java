@@ -38,10 +38,6 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 @Service
 public class ParametersHooks {
 
-
-
-
-
     private static final String L_COMPANY = "company";
 
     private static final String L_REDIRECT_TO_COMPANY = "redirectToCompany";

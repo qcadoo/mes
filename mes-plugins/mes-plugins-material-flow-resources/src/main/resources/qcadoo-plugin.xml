@@ -330,6 +330,9 @@
         <menu:menu-item-url name="documentPositionsAttributes" category="materialFlow" url="/documentPositionsAttributes.html"
                             defaultAuthorizationRole="ROLE_DOCUMENT_POSITIONS"/>
 
+        <menu:menu-item-url name="materialFlowResourcesParameters" category="parameters" url="/materialFlowResourcesParameters.html"
+                            defaultAuthorizationRole="ROLE_PARAMETERS"/>
+
         <view:view resource="view/productsLookup.xml"/>
         <view:view resource="view/resourceDetails.xml"/>
         <view:view resource="view/resourcesList.xml"/>
@@ -379,13 +382,6 @@
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productsList.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
-
-        <view:view-ribbon-group resource="view/ribbonExtensions/parameters.xml"/>
-
-        <view:view-listener plugin="basic" view="parameters"
-                            component="form" event="redirectToMaterialFlowResourcesParameters"
-                            class="com.qcadoo.mes.materialFlowResources.listeners.ParameterListenersMFR"
-                            method="redirectToMaterialFlowResourcesParameters"/>
 
         <view:view-listener plugin="basic" view="productsList" component="window" event="updateProductCosts"
                             class="com.qcadoo.mes.materialFlowResources.listeners.ProductsListListenersMFR"

@@ -23,9 +23,10 @@
  */
 package com.qcadoo.mes.basic.controllers;
 
-import java.util.Locale;
-import java.util.Map;
-
+import com.google.common.collect.ImmutableMap;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.view.api.crud.CrudService;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -33,10 +34,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.google.common.collect.ImmutableMap;
-import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.view.api.crud.CrudService;
+import java.util.Locale;
+import java.util.Map;
 
 @Controller
 public class BasicController {
@@ -47,13 +46,13 @@ public class BasicController {
     @Autowired
     private ParameterService parameterService;
 
-    @RequestMapping(value = "parameters", method = RequestMethod.GET)
-    public ModelAndView getParameterPageView(final Locale locale) {
+    @RequestMapping(value = "generalParameters", method = RequestMethod.GET)
+    public ModelAndView getGeneralParameterPageView(final Locale locale) {
         JSONObject json = new JSONObject(ImmutableMap.of("form.id", parameterService.getParameterId().toString()));
 
         Map<String, String> arguments = ImmutableMap.of("context", json.toString());
 
-        return crudService.prepareView(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.VIEW_PARAMETERS, arguments, locale);
+        return crudService.prepareView(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.VIEW_GENERAL_PARAMETERS, arguments, locale);
     }
 
 }

@@ -127,7 +127,7 @@
         <menu:menu-item name="tree" category="advancedGenealogy"
                         view="genealogyTree" defaultAuthorizationRole="ROLE_ADVANCED_GENEALOGY"/>
 
-        <view:view-ribbon-group resource="view/ribbonExtensions/parameters.xml"/>
+        <view:view-ribbon-group resource="view/ribbonExtensions/generalParameters.xml"/>
 
         <view:view resource="view/batchesList.xml"/>
         <view:view resource="view/batchDetails.xml"/>
@@ -148,7 +148,7 @@
 
         <view:resource uri="public/**/*"/>
 
-        <view:view-listener plugin="basic" view="parameters"
+        <view:view-listener plugin="basic" view="generalParameters"
                             component="form" event="redirectToAdvancedGenealogyParameters"
                             class="com.qcadoo.mes.advancedGenealogy.listeners.ParametersListenersAGFO"
                             method="redirectToAdvancedGenealogyParameters"/>

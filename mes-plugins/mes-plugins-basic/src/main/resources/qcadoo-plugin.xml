@@ -234,6 +234,9 @@
 
         <security:role identifier="ROLE_OEE"/>
 
+        <security:role identifier="ROLE_STOPPAGES"/>
+        <security:role identifier="ROLE_STOPPAGE_REASONS"/>
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="crew" resource="model/crew.xml"/>
@@ -312,6 +315,7 @@
         <menu:menu-category name="staff"/>
         <menu:menu-category name="products"/>
         <menu:menu-category name="companyStructure" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE"/>
+        <menu:menu-category name="parameters" defaultAuthorizationRole="ROLE_PARAMETERS"/>
 
         <menu:menu-item-url name="home" category="home"
                             url="/dashboard.html"/>
@@ -353,8 +357,8 @@
                             category="basic" url="/page/qcadooDictionaries/dictionariesList.html"
                             defaultAuthorizationRole="ROLE_DICTIONARY_VIEW"/>
 
-        <menu:menu-item-url name="systemParameters"
-                            category="administration" url="/parameters.html"
+        <menu:menu-item-url name="generalParameters"
+                            category="parameters" url="/generalParameters.html"
                             defaultAuthorizationRole="ROLE_PARAMETERS"/>
 
         <menu:menu-item-url name="conversion" category="basic"
@@ -414,7 +418,7 @@
         <view:view resource="view/divisionsList.xml"/>
         <view:view resource="view/divisionDetails.xml"/>
 
-        <view:view resource="view/parameters.xml"/>
+        <view:view resource="view/generalParameters.xml"/>
 
         <view:view resource="view/workstationsList.xml"/>
         <view:view resource="view/workstationsImport.xml"/>

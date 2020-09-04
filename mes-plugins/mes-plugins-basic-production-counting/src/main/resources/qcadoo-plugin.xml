@@ -68,6 +68,7 @@
 		<model:model model="basicProductionCountingDto" resource="model/basicProductionCountingDto.xml" />
 		<model:model model="productionCountingQuantity" resource="model/productionCountingQuantity.xml" />
 		<model:model model="productionCountingQuantityDto" resource="model/productionCountingQuantityDto.xml" />
+		<model:model model="productionCountingQuantityListDto" resource="model/productionCountingQuantityListDto.xml" />
 		<model:model model="productionCountingOperationRun"
 			resource="model/productionCountingOperationRun.xml" />
 
@@ -166,6 +167,12 @@
 		<view:view resource="view/basicProductionCountingDetails.xml" />
 		<view:view resource="view/detailedProductionCountingAndProgressList.xml" />
 		<view:view resource="view/productionCountingQuantityAdvancedDetails.xml" />
+		<view:view resource="view/productionCountingQuantityList.xml" />
+
+		<menu:menu-category name="requirements" />
+
+		<menu:menu-item name="productionCountingQuantityList" category="requirements"
+						view="productionCountingQuantityList" defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY"/>
 	</modules>
 
 	<features>

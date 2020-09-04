@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<ribbonExtension plugin="basic" view="parameters"
+<ribbonExtension plugin="basic" view="generalParameters"
                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                  xmlns="http://schema.qcadoo.org/modules/ribbonExtension"
                  xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd">

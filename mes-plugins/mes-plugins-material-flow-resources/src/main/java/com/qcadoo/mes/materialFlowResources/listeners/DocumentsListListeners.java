@@ -54,8 +54,6 @@ public class DocumentsListListeners {
 
     private static final Logger LOG = LoggerFactory.getLogger(DocumentsListListeners.class);
 
-
-
     @Autowired
     private DataDefinitionService dataDefinitionService;
 

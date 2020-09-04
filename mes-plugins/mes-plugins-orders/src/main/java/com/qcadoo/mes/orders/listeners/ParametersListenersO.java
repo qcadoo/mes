@@ -127,14 +127,4 @@ public class ParametersListenersO {
             orderService.changeFieldState(view, REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO, EARLIER_EFFECTIVE_DATE_TO_TIME);
         }
     }
-
-    public void redirectToOperationalTasksParameters(final ViewDefinitionState view, final ComponentState componentState,
-            final String[] args) {
-        Long parameterId = (Long) componentState.getFieldValue();
-
-        if (parameterId != null) {
-            String url = "../page/orders/operationalTasksParameters.html?context={\"form.id\":\"" + parameterId + "\"}";
-            view.redirectTo(url, false, true);
-        }
-    }
 }

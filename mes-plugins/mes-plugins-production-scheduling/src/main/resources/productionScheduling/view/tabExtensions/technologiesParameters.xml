@@ -26,8 +26,8 @@
 -->
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/windowTabExtension" 
 	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd" 
-	plugin="basic"
-	view="parameters">
+	plugin="technologies"
+	view="technologiesParameters">
 	
 	<windowTab name="timeConsumptionForTechnologyTab" reference="timeConsumptionForTechnologyTab">
 		<component type="gridLayout" name="timeConsumptionForTechnologyLayout" columns="3" rows="2">

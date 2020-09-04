@@ -138,7 +138,7 @@
         <view:view resource="view/workTimeForUserList.xml"/>
         <view:view resource="view/addActionsForPlannedEvent.xml"/>
 
-        <view:view-tab resource="view/tabExtensions/parameters.xml"/>
+        <view:view-tab resource="view/tabExtensions/generalParameters.xml"/>
 
         <view:view-tab resource="view/tabExtensions/documentDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/factoryDetails.xml"/>

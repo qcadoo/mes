@@ -104,7 +104,7 @@ public class TechnologyExportService {
         });
     }
 
-    private void exportTechnologies() {
+    public void exportTechnologies() {
         Date exportDate = new Date();
         DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH_mm_ss", LocaleContextHolder.getLocale());
         String dateWithTime = dateFormat.format(exportDate);

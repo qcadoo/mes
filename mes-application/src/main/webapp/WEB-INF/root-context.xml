@@ -69,10 +69,6 @@
         </property>
     </bean>
 
-    <bean id="logdiggerFilter" class="com.logdigger.connector.servlet.LogDiggerConnectorFilter">
-        <property name="config" value="${logdigger}"/>
-    </bean>
-
     <task:annotation-driven executor="wrappedExecutor" mode="aspectj"/>
 
     <bean id="wrappedExecutor" class="com.qcadoo.commons.tasks.DefaultAsyncTaskExecutorWrapper">

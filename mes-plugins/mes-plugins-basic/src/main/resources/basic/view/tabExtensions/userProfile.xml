@@ -31,9 +31,22 @@
 
     <windowTab name="permissionsTab" reference="permissionsTab">
         <component type="gridLayout" name="staffGridLayout"
-                   columns="3" rows="2" hasBorders="false">
-
+                   columns="3" rows="4" hasBorders="false">
             <layoutElement column="1" row="1">
+                <component type="lookup" name="staff" reference="staff"
+                           field="#{form}.staff" defaultEnabled="never">
+                    <option type="column" name="name" fields="name" link="true"/>
+                    <option type="column" name="number" fields="number" link="true"/>
+
+                    <option type="searchable" value="name,number"/>
+                    <option type="orderable" value="name,number"/>
+
+                    <option type="expression"
+                            value="#number + ' - ' + #name + ' ' + #surname"/>
+                    <option type="fieldCode" value="surname"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="1" row="2">
                 <component type="lookup" name="factory" field="#{form}.factory"
                            reference="factory">
                     <option type="column" name="name" fields="name"/>
@@ -47,17 +60,25 @@
 
                 </component>
             </layoutElement>
-
-            <layoutElement column="1" row="2">
-                <component type="borderLayout" name="userLocationsBorderLayout" reference="userLocationsBorderLayout" defaultVisible="false">
-                    <component type="awesomeDynamicList" name="userLocations" source="#{form}.userLocations" reference="userLocations">
+            <layoutElement column="1" row="3">
+                <component type="checkbox" name="showOnlyMyRegistrationRecords" field="#{form}.showOnlyMyRegistrationRecords"
+                           reference="showOnlyMyRegistrationRecords" defaultEnabled="never">
+                    <option type="labelWidth" value="60"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="1" row="4">
+                <component type="borderLayout" name="userLocationsBorderLayout" reference="userLocationsBorderLayout"
+                           defaultVisible="false">
+                    <component type="awesomeDynamicList" name="userLocations" source="#{form}.userLocations"
+                               reference="userLocations">
                         <option type="hasBorder" value="false"/>
                         <option type="hasButtons" value="true"/>
 
                         <components>
                             <component type="gridLayout" name="userLocationsGridLayout" columns="1" rows="1" hasBorders="false">
                                 <layoutElement column="1" row="1">
-                                    <component type="lookup" name="location" field="location" reference="location" hasLabel="false">
+                                    <component type="lookup" name="location" field="location" reference="location"
+                                               hasLabel="false">
                                         <option type="column" fields="name" name="name" link="true"/>
                                         <option type="searchable" value="number,name"/>
                                         <option type="orderable" value="number,name"/>
@@ -71,7 +92,6 @@
                     <option type="label" value="userLocations"/>
                 </component>
             </layoutElement>
-
         </component>
     </windowTab>
 

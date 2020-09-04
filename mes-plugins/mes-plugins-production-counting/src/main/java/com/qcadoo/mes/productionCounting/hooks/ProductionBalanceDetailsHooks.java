@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.util.CurrencyService;
@@ -49,6 +42,12 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 @Service
 public class ProductionBalanceDetailsHooks {
@@ -59,8 +58,6 @@ public class ProductionBalanceDetailsHooks {
             ProductionBalanceFields.INCLUDE_ADDITIONAL_TIME);
 
     private static final List<String> L_FIELDS = L_FIELDS_AND_CHECKBOXES.subList(0, L_FIELDS_AND_CHECKBOXES.size() - 2);
-
-    
 
     private static final List<String> L_COST_FIELDS = Arrays.asList(ProductionBalanceFields.SOURCE_OF_MATERIAL_COSTS,
             ProductionBalanceFields.CALCULATE_MATERIAL_COSTS_MODE, ProductionBalanceFields.PRODUCTION_COST_MARGIN,
@@ -141,7 +138,7 @@ public class ProductionBalanceDetailsHooks {
         FieldComponent calculateMaterialCostsMode = (FieldComponent) viewDefinitionState
                 .getComponentByReference(ProductionBalanceFields.CALCULATE_MATERIAL_COSTS_MODE);
         if (SourceOfMaterialCosts.FROM_ORDERS_MATERIAL_COSTS.getStringValue().equals(
-                (String) sourceOfMaterialCosts.getFieldValue())) {
+                sourceOfMaterialCosts.getFieldValue())) {
             calculateMaterialCostsMode.setFieldValue(CalculateMaterialCostsMode.COST_FOR_ORDER.getStringValue());
         }
 

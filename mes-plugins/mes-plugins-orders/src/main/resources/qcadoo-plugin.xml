@@ -341,6 +341,9 @@
         <menu:menu-item name="operationalTasks" category="orders"
                         view="operationalTasksList" defaultAuthorizationRole="ROLE_PLANNING"/>
 
+        <menu:menu-item-url name="planningParameters" category="parameters" url="/planningParameters.html"
+                            defaultAuthorizationRole="ROLE_PARAMETERS"/>
+
         <view:view resource="view/ordersList.xml"/>
         <view:view resource="view/ordersImport.xml"/>
         <view:view resource="view/ordersPlanningList.xml"/>
@@ -363,22 +366,11 @@
         <view:view resource="view/ordersGenerationFromProducts.xml"/>
         <view:view resource="view/operationalTasksList.xml"/>
         <view:view resource="view/operationalTaskDetails.xml"/>
-        <view:view resource="view/operationalTasksParameters.xml"/>
+        <view:view resource="view/planningParameters.xml"/>
         <view:view resource="view/setCategory.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
-        <view:view-ribbon-group resource="view/ribbonExtensions/parameters.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/productsList.xml"/>
-
-        <view:view-listener plugin="basic" view="parameters"
-                            component="form" event="redirectToOrdersParameters"
-                            class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
-                            method="redirectToOrdersParameters"/>
-
-        <view:view-listener plugin="basic" view="parameters"
-                            component="form" event="redirectToOperationalTasksParameters"
-                            class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
-                            method="redirectToOperationalTasksParameters"/>
 
         <view:view-listener plugin="basic" view="productDetails"
                             component="form" event="showOrdersWithProductMain"

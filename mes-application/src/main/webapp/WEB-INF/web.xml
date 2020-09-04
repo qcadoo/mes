@@ -41,7 +41,6 @@
 			classpath*:qcadoo-model-context.xml		
 			classpath*:qcadoo-security-context.xml
 			classpath*:qcadoo-view-context.xml
-			classpath*:qcadoo-shop-context.xml
 			classpath*:qcadoo-web-context.xml
 			classpath*:qcadoo-report-context.xml
 			classpath*:qcadoo-mail-context.xml
@@ -103,20 +102,6 @@
 	<filter-mapping>
 		<filter-name>springSecurityFilterChain</filter-name>
 		<url-pattern>/j_spring_security_logout</url-pattern>
-	</filter-mapping>
-	
-    <filter>
-    	<filter-name>logdiggerFilter</filter-name>
-    	<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-    	<init-param>
-        	<param-name>targetFilterLifecycle</param-name>
-        	<param-value>true</param-value>
-    	</init-param>
-	</filter>
-	
-    <filter-mapping>
-    	<filter-name>logdiggerFilter</filter-name>
-    	<url-pattern>/*</url-pattern>
 	</filter-mapping>
 
 	<filter>

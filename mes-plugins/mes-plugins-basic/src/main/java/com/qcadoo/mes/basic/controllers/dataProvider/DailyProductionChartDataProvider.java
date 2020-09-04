@@ -23,10 +23,10 @@ public class DailyProductionChartDataProvider {
                 + "AND coalesce(o.donequantity, 0) = 0";
         String inProgressQuery = "SELECT coalesce(sum(o.plannedquantity), 0) FROM orders_order o "
                 + "WHERE o.state NOT IN ('05declined', '07abandoned','04completed') " + QUERY_DATE_PART
-                + "AND o.plannedquantity > 0 AND o.donequantity * 100 / o.plannedquantity > 0 AND o.donequantity * 100 / o.plannedquantity < 100";
+                + "AND (o.plannedquantity > 0 AND o.donequantity * 100 / o.plannedquantity > 0 AND o.donequantity * 100 / o.plannedquantity < 100)";
         String doneQuery = "SELECT coalesce(sum(o.donequantity), 0) FROM orders_order o "
                 + "WHERE o.state not in ('05declined', '07abandoned') " + QUERY_DATE_PART
-                + "AND (o.plannedquantity > 0 AND o.donequantity * 100 / o.plannedquantity >= 100) OR o.state = '04completed'";
+                + "AND ((o.plannedquantity > 0 AND o.donequantity * 100 / o.plannedquantity >= 100) OR o.state = '04completed')";
 
         data.add(jdbcTemplate.queryForObject(pendingQuery, Collections.emptyMap(), Long.class));
         data.add(jdbcTemplate.queryForObject(inProgressQuery, Collections.emptyMap(), Long.class));

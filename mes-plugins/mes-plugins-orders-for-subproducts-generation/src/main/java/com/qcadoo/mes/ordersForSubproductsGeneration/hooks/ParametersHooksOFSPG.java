@@ -14,11 +14,7 @@ public class ParametersHooksOFSPG {
         CheckBoxComponent ordersGeneratedByCoverage = (CheckBoxComponent) view
                 .getComponentByReference("ordersGeneratedByCoverage");
 
-        if (automaticallyGenerateOrdersForComponents.isChecked()) {
-            ordersGeneratedByCoverage.setEnabled(true);
-        } else {
-            ordersGeneratedByCoverage.setEnabled(false);
-        }
+        ordersGeneratedByCoverage.setEnabled(automaticallyGenerateOrdersForComponents.isChecked());
     }
 
     public void onChangeAutomaticallyGenerate(final ViewDefinitionState view, final ComponentState componentState,

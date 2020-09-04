@@ -27,7 +27,7 @@
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                     xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
                     xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
-                    plugin="orders" view="ordersParameters">
+                    plugin="orders" view="planningParameters">
 
     <windowTab name="masterOrderDefinitionsTab" reference="masterOrderDefinitionsTab">
         <component type="gridLayout" name="gridLayout" columns="2"

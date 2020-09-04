@@ -61,16 +61,9 @@
 			<model:hasMany name="staffNotifications" plugin="emailNotifications" model="staffNotification" joinField="parameter"/>
 		</model:model-field>
 
-		<view:view resource="view/emailNotificationsParameters.xml" />
+		<view:view-tab resource="view/tabExtensions/generalParameters.xml" />
 		<view:view resource="view/parameterStaffNotificationsDetails.xml" />
 		
-		<view:view-ribbon-group resource="view/ribbonExtensions/parameters.xml" />
-		
-		<view:view-listener plugin="basic" view="parameters"
-			component="form" event="redirectToEmailNotificationsParameters"
-			class="com.qcadoo.mes.emailNotifications.listeners.ParameterListenersEN"
-			method="redirectToEmailNotificationsParameters" />
-
 		<model:model model="staffNotification" resource="model/staffNotification.xml"/>
 
 	</modules>

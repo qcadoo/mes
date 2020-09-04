@@ -20,27 +20,6 @@
 			<version>${qcadoo.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>com.logdigger</groupId>
-			<artifactId>logdigger-connector-core</artifactId>
-			<version>3.0.2</version>
-		</dependency>
-		<dependency>
-			<groupId>com.logdigger</groupId>
-			<artifactId>logdigger-connector-jdbc</artifactId>
-			<version>3.0.2</version>
-		</dependency>
-		<dependency>
-			<groupId>com.atlassian.jira</groupId>
-			<artifactId>jira-rest-java-client</artifactId>
-			<version>0.6-m9</version>
-			<exclusions>
-				<exclusion>
-					<groupId>com.sun.xml.bind</groupId>
-					<artifactId>jaxb-impl</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
 			<groupId>com.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
 			<version>4.0</version>

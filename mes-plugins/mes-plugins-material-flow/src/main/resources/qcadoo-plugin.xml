@@ -121,7 +121,7 @@
 
 		<view:resource uri="public/**/*" />
 
-		<view:view-listener plugin="basic" view="parameters"
+		<view:view-listener plugin="basic" view="generalParameters"
 							component="form" event="redirectToDashboardParameters"
 							class="com.qcadoo.mes.materialFlow.listeners.ParametersListenersMF"
 							method="redirectToDashboardParameters"/>

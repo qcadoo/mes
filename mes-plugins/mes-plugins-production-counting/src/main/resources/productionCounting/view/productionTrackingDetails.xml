@@ -41,7 +41,7 @@
                         <![CDATA[
 					        this.addOnChangeListener({
 						        onClick: function() {
-							        if(window.canClose()) {
+							        if (window.canClose()) {
 							            if (window.confirm("#{translate(productionCounting.productionTrackingDetails.window.ribbon.status.acceptTracking.confirm)}")) {
 								            #{form}.performEvent('changeTrackingState', ['02accepted']);
 								        }
@@ -57,7 +57,7 @@
                         <![CDATA[
 					        this.addOnChangeListener({
 						        onClick: function() {
-							        if(window.canClose()) {
+							        if (window.canClose()) {
 							            if (window.confirm("#{translate(productionCounting.productionTrackingDetails.window.ribbon.status.declineTracking.confirm)}")) {
 								            #{form}.performEvent('changeTrackingState', ['03declined']);
 								        }
@@ -83,7 +83,7 @@
                         <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-									if(window.confirm("#{translate(productionCounting.productionTrackingDetails.window.ribbon.correction.confirm)}")) {
+									if (window.confirm("#{translate(productionCounting.productionTrackingDetails.window.ribbon.correction.confirm)}")) {
 										#{form}.performEvent('correct', []);
 									}
 								}
@@ -100,7 +100,7 @@
                         <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-									if(window.canClose()) {
+									if (window.canClose()) {
 										#{form}.performEvent('goToProductionCountingQuantities', []);
 									}
 								}
@@ -116,7 +116,7 @@
                         <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-									if(window.canClose()) {
+									if (window.canClose()) {
 										#{form}.performEvent('useReplacement', []);
 									}
 								}
@@ -132,7 +132,7 @@
                         <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
-									if(window.canClose()) {
+									if (window.canClose()) {
 										#{form}.performEvent('addToAnomaliesList', []);
 									}
 								}
@@ -163,12 +163,12 @@
 								var isDisabled = (#{isDisabled}.getValue().content.value == "1");
 								var itemsToDisable = ["actions.save","actions.saveNew","actions.saveBack"];
 					            var productionCountingQuantitiesBtn = #{window}.getRibbonItemOrNull("productionCountingQuantities.productionCountingQuantities");
-								if(productionCountingQuantitiesBtn) {
+								if (productionCountingQuantitiesBtn) {
 								    productionCountingQuantitiesBtn.disable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.productionCountingQuantities.label)}");
                                 }
 
                                 var addToAnomaliesListBtn = #{window}.getRibbonItemOrNull("anomalies.addToAnomaliesList");
-								if(addToAnomaliesListBtn) {
+								if (addToAnomaliesListBtn) {
 								    addToAnomaliesListBtn.disable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.addToAnomaliesList.label)}");
                                 }
 
@@ -193,10 +193,10 @@
 								    }
 								}
  								
-   								for(var elementKey in itemsToDisable){  
+   								for (var elementKey in itemsToDisable) {  
    									var ribbonItem = #{window}.getRibbonItem(itemsToDisable[elementKey]);
 
-   									if(isDisabled){  
+   									if (isDisabled) {  
    										ribbonItem.disable();  
  									} else {  
 										ribbonItem.enable();   
@@ -255,7 +255,6 @@
                         </component>
                         <component type="lookup" name="productionLine" field="#{order}.productionLine"
                                    reference="productionLine" defaultEnabled="never">
-
                             <option type="column" name="name" fields="name" link="true"
                                     width="300"/>
 
@@ -345,7 +344,7 @@
 											}
 											var isSaved = (#{form}.getValue().content && #{form}.getValue().content.entityId);
 											var state = newValue.content.value;
-											if(isSaved){
+											if (isSaved) {
 												updateRibbon(state);
 											}
 										}
@@ -360,7 +359,7 @@
 										],
 
 										toggleRibbonItemsLen = toggleRibbonItems.length,
-                                             idx = 0,
+                                        idx = 0,
 										elementKey = {},
 										ribbonItemName = "",
 										ribbonItem = {};
@@ -504,7 +503,6 @@
                 <listener event="useReplacement"
                           class="com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners"
                           method="useReplacement"/>
-
             </component>
         </windowTab>
 
@@ -518,22 +516,18 @@
                                source="#{form}.trackingOperationProductOutComponentDtos"
                                model="trackingOperationProductOutComponentDto"
                                defaultEnabled="false">
-
                         <option type="column" name="number" fields="productNumber"
                                 link="true" width="100"/>
                         <option type="column" name="name" fields="productName"
                                 link="true" width="220"/>
                         <option type="column" name="plannedQuantity" fields="plannedQuantity"
                                 width="100"/>
-
                         <option type="column" name="producedSum" fields="producedSum"
                                 width="100"/>
                         <option type="column" name="wastesSum" fields="wastesSum"
                                 width="100"/>
-
                         <option type="column" name="remainingQuantity" fields="remainingQuantity"
                                 width="100"/>
-
                         <option type="column" name="usedQuantity" fields="usedQuantity"
                                 width="100"/>
                         <option type="column" name="wastesQuantity" fields="wastesQuantity" width="70"/>
@@ -570,28 +564,26 @@
                             <![CDATA[
 							    var addToAnomaliesListBtn = #{window}.getRibbonItemOrNull("anomalies.addToAnomaliesList");
 							    var useReplacementBtn = #{window}.getRibbonItemOrNull("replacements.useReplacement");
-                                        var listener = {
-                                            onChange: function(selectedEntitiesArray) {
-                                                if (addToAnomaliesListBtn) {
-                                                    var state = #{state}.getValue().content.value;
-								                    if (state != "01draft") {
-								                        addToAnomaliesListBtn.disable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.addToAnomaliesList.label)}");
-								                    } else if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
-                                                        addToAnomaliesListBtn.disable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.addToAnomaliesList.label)}");
-                                                    } else {
-                                                        addToAnomaliesListBtn.enable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.addToAnomaliesList.label)}");
-                                                    }
-                                                }
-                                                if (useReplacementBtn && selectedEntitiesArray.length == 1 && selectedEntitiesArray[0].fields.replacement == 1) {
-                                                    useReplacementBtn.enable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.useReplacement.label)}");
-                                                } else {
-                                                    useReplacementBtn.disable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.useReplacement.label)}");
-                                                }
+                                var listener = {
+                                    onChange: function(selectedEntitiesArray) {
+                                        if (addToAnomaliesListBtn) {
+                                            var state = #{state}.getValue().content.value;
+                                            if (state != "01draft") {
+                                                addToAnomaliesListBtn.disable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.addToAnomaliesList.label)}");
+                                            } else if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+                                                addToAnomaliesListBtn.disable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.addToAnomaliesList.label)}");
+                                            } else {
+                                                addToAnomaliesListBtn.enable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.addToAnomaliesList.label)}");
                                             }
-
-                                         }
-                                    this.addOnChangeListener(listener);
-
+                                        }
+                                        if (useReplacementBtn && selectedEntitiesArray.length == 1 && selectedEntitiesArray[0].fields.replacement == 1) {
+                                            useReplacementBtn.enable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.useReplacement.label)}");
+                                        } else {
+                                            useReplacementBtn.disable("#{translate(productionCounting.productionTrackingDetails.window.ribbon.useReplacement.label)}");
+                                        }
+                                    }
+                                }
+                                this.addOnChangeListener(listener);
 							]]>
                         </script>
                         <option type="column" name="number" fields="productNumber"
@@ -686,6 +678,7 @@
                 </layoutElement>
             </component>
         </windowTab>
+
         <windowTab name="batchOrderedProduct">
             <component type="gridLayout" name="batchOrderedGridLayout"
                        columns="3" rows="5">
@@ -740,10 +733,10 @@
                        source="#{form}.stoppages">
                 <script>
                     <![CDATA[
-                                this.onNewButtonClicked = function () {
-                                    #{stoppages}.fireEvent(null,'addNew',[]);
-                                };
-                            ]]>
+                        this.onNewButtonClicked = function () {
+                            #{stoppages}.fireEvent(null,'addNew',[]);
+                        };
+                    ]]>
                 </script>
                 <option type="column" name="duration" fields="duration" expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#duration)" link="true"/>
                 <option type="column" name="dateFrom" fields="dateFrom" link="true"/>
@@ -767,7 +760,6 @@
 
                 <listener event="addNew"
                           class="com.qcadoo.mes.stoppage.listeners.AllStoppagesListeners" method="addNewFromProductionTracking"/>
-
             </component>
         </windowTab>
 

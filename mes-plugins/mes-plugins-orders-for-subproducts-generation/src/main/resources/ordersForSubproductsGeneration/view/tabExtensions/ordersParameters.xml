@@ -3,7 +3,7 @@
 
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo MES
+    Project: Qcadoo Framework
     Version: 1.4
 
     This file is part of Qcadoo.
@@ -27,30 +27,30 @@
 <windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                     xmlns="http://schema.qcadoo.org/modules/windowTabExtension"
                     xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd"
-                    plugin="basic"
-                    view="parameters">
+                    plugin="orders" view="ordersParameters">
 
-    <windowTab name="eventsTab" reference="eventsTab">
-        <component type="gridLayout" name="eventsGridLayout" columns="18" rows="2" hasBorders="false">
-            <layoutElement column="1" row="1" width="5">
-                <component type="input" name="possibleWorkTimeDeviation"
-                           field="#{form}.possibleWorkTimeDeviation" hasDescription="true"
-                           reference="possibleWorkTimeDeviation">
-                    <option type="alignment" value="right"/>
-                    <option type="labelWidth" value="60"/>
+    <windowTab name="includeComponentsTab">
+        <component type="gridLayout" name="includeComponentsGrid" reference="includeComponentsGrid"
+                   columns="1" rows="3">
+            <layoutElement column="1" row="1">
+                <component type="checkbox" name="includeComponents" reference="includeComponents"
+                           field="#{form}.includeComponents" hasDescription="true"/>
+            </layoutElement>
+            <layoutElement column="1" row="2">
+                <component type="checkbox" name="automaticallyGenerateOrdersForComponents"
+                           reference="automaticallyGenerateOrdersForComponents"
+                           field="#{form}.automaticallyGenerateOrdersForComponents" hasDescription="true">
+                <listener event="onChange"
+                          class="com.qcadoo.mes.ordersForSubproductsGeneration.hooks.ParametersHooksOFSPG"
+                          method="onChangeAutomaticallyGenerate"/>
                 </component>
             </layoutElement>
-            <layoutElement column="6" row="1">
-                <component type="input" name="percent" reference="percent" defaultEnabled="never">
-                    <option type="textRepresentationOnDisabled" value="true"/>
-                </component>
-            </layoutElement>
-            <layoutElement column="1" row="2" width="5">
-                <component type="checkbox" name="acceptanceEvents" field="#{form}.acceptanceEvents"
-                           reference="acceptanceEvents" hasDescription="true">
-                    <option type="labelWidth" value="60"/>
-                </component>
+            <layoutElement column="1" row="3">
+                <component type="checkbox" name="ordersGeneratedByCoverage" reference="ordersGeneratedByCoverage"
+                           field="#{form}.ordersGeneratedByCoverage" hasDescription="true"/>
             </layoutElement>
         </component>
     </windowTab>
+
+
 </windowTabExtension>

@@ -407,12 +407,9 @@
                 </layoutElement>
             </component>
         </windowTab>
-
-
     </component>
 
     <hooks>
         <beforeRender class="com.qcadoo.mes.orders.hooks.ParametersHooksO" method="onBeforeRender"/>
     </hooks>
-
 </view>

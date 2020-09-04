@@ -134,35 +134,6 @@
                         <component type="textarea" name="description" field="description"
                                    reference="description"/>
                     </layoutElement>
-                    <layoutElement column="2" row="1" height="4">
-                        <component type="borderLayout" name="parametersBorderLayout">
-                            <component type="gridLayout" name="parametersGidLayout"
-                                       columns="1" rows="4">
-                                <layoutElement column="1" row="1">
-                                    <component type="select" name="sourceOfOperationCostsPB"
-                                               field="sourceOfOperationCostsPB"
-                                               reference="sourceOfOperationCostsPB">
-                                    </component>
-                                </layoutElement>
-                                <layoutElement column="1" row="2">
-                                    <component type="checkbox" name="includeTPZ" field="includeTPZ"
-                                               reference="includeTPZ"/>
-                                </layoutElement>
-                                <layoutElement column="1" row="3">
-                                    <component type="checkbox" name="includeAdditionalTime"
-                                               field="includeAdditionalTime" reference="includeAdditionalTime"/>
-                                </layoutElement>
-
-                                <layoutElement column="1" row="4">
-                                    <component type="checkbox" name="includeWageGroups"
-                                               field="includeWageGroups" reference="includeWageGroups"
-                                               hasDescription="true"/>
-                                </layoutElement>
-                            </component>
-
-                            <option type="label" value="parameters"/>
-                        </component>
-                    </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>
@@ -248,7 +219,7 @@
 
         <windowTab name="inputDataForCostsTab" reference="inputDataForCostsTab">
             <component type="gridLayout" name="inputDataForCostsGridLayout"
-                       reference="inputDataForCostsGridLayout" columns="3" rows="3">
+                       reference="inputDataForCostsGridLayout" columns="3" rows="6">
                 <layoutElement column="1" row="1" height="2">
                     <component type="borderLayout" name="parametersBorderLayout"
                                reference="parametersBorderLayout">
@@ -274,10 +245,41 @@
                             </layoutElement>
                         </component>
 
-                        <option type="label" value="parameters"/>
+                        <option type="label" value="materialCostsParameters"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="2" row="1" height="3">
+                <layoutElement column="1" row="3" height="4">
+                    <component type="borderLayout" name="operationCostsParametersBorderLayout">
+                        <component type="gridLayout" name="operationCostsParametersGidLayout"
+                                   columns="1" rows="4">
+                            <layoutElement column="1" row="1">
+                                <component type="select" name="sourceOfOperationCostsPB"
+                                           field="#{form}.sourceOfOperationCostsPB"
+                                           reference="sourceOfOperationCostsPB">
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="2">
+                                <component type="checkbox" name="includeTPZ" field="#{form}.includeTPZ"
+                                           reference="includeTPZ"/>
+                            </layoutElement>
+                            <layoutElement column="1" row="3">
+                                <component type="checkbox" name="includeAdditionalTime"
+                                           field="#{form}.includeAdditionalTime"
+                                           reference="includeAdditionalTime"/>
+                            </layoutElement>
+
+                            <layoutElement column="1" row="4">
+                                <component type="checkbox" name="includeWageGroups"
+                                           field="#{form}.includeWageGroups"
+                                           reference="includeWageGroups"
+                                           hasDescription="true"/>
+                            </layoutElement>
+                        </component>
+
+                        <option type="label" value="operationCostsParameters"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="1" height="6">
                     <component type="borderLayout" name="overheadsBorderLayout"
                                reference="overheadsBorderLayout">
                         <component type="gridLayout" name="overheadsGridLayout"

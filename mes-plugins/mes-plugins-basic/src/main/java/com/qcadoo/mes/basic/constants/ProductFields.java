@@ -29,8 +29,6 @@ public final class ProductFields {
 
     }
 
-    public static final String ADDITIONAL_UNIT = "additionalUnit";
-
     public static final String NUMBER = "number";
 
     public static final String NAME = "name";
@@ -43,8 +41,12 @@ public final class ProductFields {
 
     public static final String UNIT = "unit";
 
+    public static final String SUBSTITUTES = "substitutes";
+
     public static final String SUBSTITUTE_COMPONENTS = "substituteComponents";
 
+    public static final String PRODUCTS_TO_SUBSTITUTE = "productsToSubstitute";
+    
     public static final String EXTERNAL_NUMBER = "externalNumber";
 
     public static final String DESCRIPTION = "description";
@@ -53,23 +55,35 @@ public final class ProductFields {
 
     public static final String PARENT = "parent";
 
+    public static final String CHILD = "child";
+    
     public static final String PRODUCT_FAMILY_CHILDRENS = "productFamilyChildrens";
 
     public static final String PRODUCT_FAMILY_CHILDREN_TREE = "productFamilyChildrenTree";
 
     public static final String PRIORITY = "priority";
 
-    public static final String PRODUCER = "producer";
-
     public static final String NODE_NUMBER = "nodeNumber";
 
     public static final String ENTITY_TYPE = "entityType";
+    
+    public static final String PRODUCER = "producer";
 
-    public static final String ASSORTMENT = "assortment";
+    public static final String ADDITIONAL_UNIT = "additionalUnit";
+
+    public static final String CONVERSION = "conversion";
 
     public static final String ADDITIONAL_CODES = "additionalCodes";
 
+    public static final String ASSORTMENT = "assortment";
+
+    public static final String PRODUCT_ATTACHMENTS = "productAttachments";
+    
     public static final String PRODUCT_ATTRIBUTE_VALUES = "productAttributeValues";
+
+    public static final String SHOW_IN_PRODUCT_DATA = "showInProductData";
+
+    public static final String PRODUCT_FORM = "productForm";
 
     public static final String SIZE = "size";
 
@@ -77,5 +91,4 @@ public final class ProductFields {
 
     public static final String BATCH_EVIDENCE = "batchEvidence";
 
-    public static final String PRODUCT_FORM = "productForm";
 }

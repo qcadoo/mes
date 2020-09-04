@@ -1,0 +1,53 @@
+<view defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="productionCountingQuantityList" modelName="productionCountingQuantityListDto" menuAccessible="true">
+
+    <component type="window" name="window">
+
+        <ribbon>
+            <template name="standardGridTemplate" excludeItems="actions.new,actions.copy,actions.delete" />
+        </ribbon>
+
+        <component type="grid" name="productionCountingQuantities" reference="grid">
+            <option type="column" name="orderNumber" fields="orderNumber" link="true"
+                    correspondingView="orders/orderDetails" correspondingField="orderId" width="40"/>
+            <option type="column" name="orderId" fields="orderId" hidden="true"/>
+            <option type="column" name="operationalTaskNumber" fields="operationalTaskNumber" link="true"
+                    correspondingView="orders/operationalTaskDetails" correspondingField="operationalTaskId" width="40"/>
+            <option type="column" name="operationalTaskId" fields="operationalTaskId" hidden="true"/>
+            <option type="column" name="startDate" fields="startDate" width="70"/>
+            <option type="column" name="nodeNumber" fields="nodeNumber"
+                    width="40"/>
+            <option type="column" name="operationNumber" fields="operationNumber"
+                    width="40"/>
+            <option type="column" name="operationName" fields="operationName"
+                    width="50"/>
+            <option type="column" name="productNumber" fields="productNumber"
+                    width="70"/>
+            <option type="column" name="productName" fields="productName"
+                    width="100"/>
+            <option type="column" name="role" fields="role" width="40"/>
+            <option type="column" name="typeOfMaterial" fields="typeOfMaterial"
+                    width="40"/>
+            <option type="column" name="plannedQuantity" fields="plannedQuantity" width="30"/>
+            <option type="column" name="usedQuantity" fields="usedQuantity" width="30"/>
+            <option type="column" name="producedQuantity" fields="producedQuantity" width="30"/>
+            <option type="column" name="productUnit" fields="productUnit"
+                    width="20"/>
+            <option type="column" name="replacementTo" fields="replacementTo" width="100"/>
+            <option type="order" column="orderNumber" direction="asc" />
+
+            <option type="searchable" value="orderNumber,operationalTaskNumber,startDate,productNumber,productName,replacementTo,
+                    nodeNumber,operationNumber,operationName,role,typeOfMaterial,plannedQuantity,usedQuantity,producedQuantity,productUnit" />
+            <option type="orderable" value="orderNumber,operationalTaskNumber,startDate,productNumber,productName,replacementTo,
+                    nodeNumber,operationNumber,operationName,role,typeOfMaterial,plannedQuantity,usedQuantity,producedQuantity,productUnit" />
+
+            <option type="fullscreen" value="true" />
+            <option type="multiselect" value="true" />
+        </component>
+
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
+    </component>
+
+</view>
