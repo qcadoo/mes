@@ -36356,6 +36356,7 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 68	advancedGenealogyForOrders	1.5.0	ENABLED	f	0	genealogy	Commercial
 155	qualityControl	1.5.0	DISABLED	f	0	\N	\N
 156	oee	1.5.0	DISABLED	f	0	\N	\N
+157	luxon	1.5.0	DISABLED	f	0	\N	\N
 \.
 
 
@@ -55006,4 +55007,3 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 --
 -- PostgreSQL database dump complete
 --
-
