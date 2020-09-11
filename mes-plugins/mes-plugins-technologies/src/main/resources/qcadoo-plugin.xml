@@ -209,6 +209,10 @@
             <model:boolean name="completeWarehousesFlowWhileChecking" default="false"/>
         </model:model-field>
 
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="moveProductsToSubsequentOperations" default="false"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="product">
             <model:manyToMany name="qualityCards" plugin="technologies" model="qualityCard" joinField="products"
                               cascade="nullify"/>

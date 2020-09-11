@@ -31,11 +31,11 @@ import com.qcadoo.mes.states.annotation.RunForStateTransition;
 import com.qcadoo.mes.states.annotation.RunForStateTransitions;
 import com.qcadoo.mes.states.annotation.RunInPhase;
 import com.qcadoo.mes.states.aop.AbstractStateListenerAspect;
-import com.qcadoo.mes.technologies.constants.ParameterFieldsT;
 import com.qcadoo.mes.technologies.states.aop.TechnologyStateChangeAspect;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangePhase;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.plugin.api.RunIfEnabled;
+
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -63,9 +63,7 @@ public class TechnologyStateValidationAspectPFTD extends AbstractStateListenerAs
             @RunForStateTransition(targetState = TechnologyStateStringValues.CHECKED) })
     @Before(PHASE_EXECUTION_POINTCUT)
     public void preValidationOnAccept(final StateChangeContext stateChangeContext, final int phase) {
-        if(parameterService.getParameter().getBooleanField(ParameterFieldsT.COMPLETE_WAREHOUSES_FLOW_WHILE_CHECKING)) {
-            technologyStateValidationServicePFTD.beforeValidationOnAccepted(stateChangeContext);
-        }
+        technologyStateValidationServicePFTD.beforeValidationOnAccepted(stateChangeContext);
         technologyStateValidationServicePFTD.validationOnAccepted(stateChangeContext);
     }
 

@@ -154,10 +154,10 @@ public class OrderCreationService {
     public OrderCreationResponse createOrder(OrderCreationRequest orderCreationRequest) {
 
         Entity parameter = parameterService.getParameter();
-        if (!isParameterSet(parameter)) {
+      /*  if (!isParameterSet(parameter)) {
             return new OrderCreationResponse(translationService.translate(
                     "basic.dashboard.orderDefinitionWizard.createOrder.parameterNotSet", LocaleContextHolder.getLocale()));
-        }
+        }*/
         Entity product = getProduct(orderCreationRequest.getProductId());
         Entity productionLine = getProductionLine(orderCreationRequest.getProductionLineId());
         Either<String, Entity> isTechnology = getOrCreateTechnology(orderCreationRequest);

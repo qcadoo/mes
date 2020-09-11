@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.states;
 
-import com.qcadoo.mes.technologies.OperationComponentDataProvider;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductInComponentFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductOutComponentFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.Range;
@@ -31,7 +31,9 @@ import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.listeners.TechnologyDetailsListenersPFTD;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
+import com.qcadoo.mes.technologies.OperationComponentDataProvider;
 import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.technologies.constants.ParameterFieldsT;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
@@ -61,9 +63,13 @@ public class TechnologyStateValidationServicePFTD {
     @Autowired
     private TechnologyDetailsListenersPFTD technologyDetailsListenersPFTD;
 
+    @Autowired
+    private ParameterService parameterService;
 
     public void beforeValidationOnAccepted(final StateChangeContext stateChangeContext) {
-        technologyDetailsListenersPFTD.fillLocationsInComponents(stateChangeContext.getOwner());
+        if (parameterService.getParameter().getBooleanField(ParameterFieldsT.COMPLETE_WAREHOUSES_FLOW_WHILE_CHECKING)) {
+            technologyDetailsListenersPFTD.fillLocationsInComponents(stateChangeContext.getOwner());
+        }
     }
 
     public void validationOnAccepted(final StateChangeContext stateChangeContext) {
