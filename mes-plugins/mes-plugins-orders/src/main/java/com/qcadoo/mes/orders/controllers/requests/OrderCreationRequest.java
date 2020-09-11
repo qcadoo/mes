@@ -1,6 +1,7 @@
 package com.qcadoo.mes.orders.controllers.requests;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.orders.controllers.dto.TechnologyOperationDto;
 import com.qcadoo.mes.technologies.controller.dataProvider.MaterialDto;
 
 import java.math.BigDecimal;
@@ -26,6 +27,8 @@ public class OrderCreationRequest {
     private Date finishDate;
 
     private List<MaterialDto> materials = Lists.newArrayList();
+
+    private List<TechnologyOperationDto> technologyOperations = Lists.newArrayList();
 
     public Long getProductId() {
         return productId;
@@ -97,5 +100,13 @@ public class OrderCreationRequest {
 
     public void setTypeOfProductionRecording(String typeOfProductionRecording) {
         this.typeOfProductionRecording = typeOfProductionRecording;
+    }
+
+    public List<TechnologyOperationDto> getTechnologyOperations() {
+        return technologyOperations;
+    }
+
+    public void setTechnologyOperations(List<TechnologyOperationDto> technologyOperations) {
+        this.technologyOperations = technologyOperations;
     }
 }

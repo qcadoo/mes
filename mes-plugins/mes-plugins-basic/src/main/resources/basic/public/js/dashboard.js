@@ -493,11 +493,10 @@ function goToPage(url, isPage) {
 
 function addOrder() {
     QCD.orderDefinitionWizard.init();
-    //goToMenuPosition('orders.productionOrdersPlanning');
 }
 
 function addOperationalTask() {
-    goToMenuPosition('orders.operationalTasks');
+    QCD.operationalTasksDefinitionWizard.init();
 }
 
 function goToOrderDetails(id) {

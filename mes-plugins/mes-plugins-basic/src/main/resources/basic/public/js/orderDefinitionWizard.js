@@ -17,7 +17,6 @@ QCD.orderDefinitionWizard = (function () {
 
 
 	function init() {
-
 		cleanContext();
 
 		$("#selectProduct").prop('disabled', true);
@@ -526,72 +525,6 @@ QCD.orderDefinitionWizard = (function () {
 		});
 
 
-		function validQuantity(field) {
-			var valid = true;
-
-			var value = $("#" + field).val();
-
-			if (value.includes(',') && value.includes('.')) {
-				valid = false;
-				$("#" + field).addClass('is-invalid');
-				return;
-			}
-
-
-			value = evaluateExpression(value);
-
-
-			$("#" + field).val(value).change();
-
-			if ((value != null) && (value != '') &&
-				isNaN(value)) {
-				valid = false;
-			}
-
-			if (valid && (value <= 0)) {
-				valid = false;
-			}
-
-			var validationResult;
-
-			if ((value != null) && (value != '') && valid) {
-				validationResult = validateDecimal(value);
-
-				if (!validationResult.validPrecision ||
-					!validationResult.validScale) {
-					valid = false;
-				}
-			}
-
-			if (!valid) {
-				isValid = false;
-
-				if ((typeof validationResult !== "undefined") &&
-					!validationResult.validPrecision) {
-					showMessage(
-						'failure',
-						QCD
-						.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
-						QCD
-						.translate("basic.dashboard.orderDefinitionWizard.error.validationError.wrongDecimalPrecision"),
-						false);
-				} else if ((typeof validationResult !== "undefined") &&
-					!validationResult.validScale) {
-					showMessage(
-						'failure',
-						QCD
-						.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
-						QCD
-						.translate("basic.dashboard.orderDefinitionWizard.error.validationError.wrongDecimalScale"),
-						false);
-				}
-
-				$("#" + field).addClass('is-invalid');
-			} else {
-				$("#" + field).removeClass('is-invalid');
-			}
-			return valid;
-		}
 
 		$("#saveProduct").click(function () {
 			var invalid = false;
@@ -1255,7 +1188,6 @@ QCD.orderDefinitionWizard = (function () {
 						'<option value="' + value.key + '">' + value.key +
 						'</option>');
 
-
 				}
 
 			},
@@ -1408,18 +1340,6 @@ QCD.orderDefinitionWizard = (function () {
 				$("#loader").modal('hide');
 			}
 		});
-	}
-
-	function getDate(element) {
-		var date = $("#" + element).val();
-
-		if (date == null ||
-			date == '') {
-			return null;
-		} else {
-			return moment(date, 'YYYY-MM-DD HH:mm:ss')
-				.toDate();
-		}
 	}
 
 	function fillMaterialsForTechnology(element) {
@@ -1772,3 +1692,82 @@ function nullToEmptyValue(value) {
 		return "";
 	}
 }
+		function validQuantity(field) {
+			var valid = true;
+
+			var value = $("#" + field).val();
+
+			if (value.includes(',') && value.includes('.')) {
+				valid = false;
+				$("#" + field).addClass('is-invalid');
+				return;
+			}
+
+
+			value = evaluateExpression(value);
+
+
+			$("#" + field).val(value).change();
+
+			if ((value != null) && (value != '') &&
+				isNaN(value)) {
+				valid = false;
+			}
+
+			if (valid && (value <= 0)) {
+				valid = false;
+			}
+
+			var validationResult;
+
+			if ((value != null) && (value != '') && valid) {
+				validationResult = validateDecimal(value);
+
+				if (!validationResult.validPrecision ||
+					!validationResult.validScale) {
+					valid = false;
+				}
+			}
+
+			if (!valid) {
+				isValid = false;
+
+				if ((typeof validationResult !== "undefined") &&
+					!validationResult.validPrecision) {
+					showMessage(
+						'failure',
+						QCD
+						.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
+						QCD
+						.translate("basic.dashboard.orderDefinitionWizard.error.validationError.wrongDecimalPrecision"),
+						false);
+				} else if ((typeof validationResult !== "undefined") &&
+					!validationResult.validScale) {
+					showMessage(
+						'failure',
+						QCD
+						.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
+						QCD
+						.translate("basic.dashboard.orderDefinitionWizard.error.validationError.wrongDecimalScale"),
+						false);
+				}
+
+				$("#" + field).addClass('is-invalid');
+			} else {
+				$("#" + field).removeClass('is-invalid');
+			}
+			return valid;
+		}
+
+
+	function getDate(element) {
+		var date = $("#" + element).val();
+
+		if (date == null ||
+			date == '') {
+			return null;
+		} else {
+			return moment(date, 'YYYY-MM-DD HH:mm:ss')
+				.toDate();
+		}
+	}

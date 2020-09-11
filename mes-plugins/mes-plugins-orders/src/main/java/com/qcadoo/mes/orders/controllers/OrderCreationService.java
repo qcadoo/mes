@@ -6,22 +6,29 @@ import com.qcadoo.commons.functional.Either;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.GlobalTypeOfMaterial;
+import com.qcadoo.mes.basic.constants.ParameterFields;
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.controllers.dataProvider.DashboardKanbanDataProvider;
+import com.qcadoo.mes.orders.controllers.dto.TechnologyOperationDto;
 import com.qcadoo.mes.orders.controllers.requests.OrderCreationRequest;
 import com.qcadoo.mes.orders.controllers.responses.OrderCreationResponse;
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
+import com.qcadoo.mes.productionLines.constants.ParameterFieldsPL;
 import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.service.StateChangeContextBuilder;
 import com.qcadoo.mes.technologies.TechnologyNameAndNumberGenerator;
 import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.ParameterFieldsT;
@@ -40,6 +47,7 @@ import com.qcadoo.model.api.validators.GlobalMessage;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -239,7 +247,8 @@ public class OrderCreationService {
             Entity productionCountingQuantity = dataDefinitionService.get(L_BASIC_PRODUCTION_COUNTING,
                     L_PRODUCTION_COUNTING_QUANTITY).create();
             productionCountingQuantity.setField(L_ORDER, order.getId());
-            Entity toc = order.getBelongsToField(OrderFields.TECHNOLOGY).getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
+            Entity toc = order.getBelongsToField(OrderFields.TECHNOLOGY).getTreeField(TechnologyFields.OPERATION_COMPONENTS)
+                    .getRoot();
             productionCountingQuantity.setField(L_TECHNOLOGY_OPERATION_COMPONENT, toc.getId());
 
             productionCountingQuantity.setField(L_PLANNED_QUANTITY, material.getQuantity());
@@ -299,11 +308,119 @@ public class OrderCreationService {
 
     private Either<String, Entity> getOrCreateTechnology(OrderCreationRequest orderCreationRequest) {
         if (Objects.isNull(orderCreationRequest.getTechnologyId())) {
-            return createTechnology(orderCreationRequest);
+            if (orderCreationRequest.getTechnologyOperations().isEmpty()) {
+                return createTechnology(orderCreationRequest);
+            } else {
+                return createTechnologyForEachOperation(orderCreationRequest);
+            }
         } else {
             return Either.right(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY).get(orderCreationRequest.getTechnologyId()));
         }
+    }
+
+    private Either<String, Entity> createTechnologyForEachOperation(OrderCreationRequest orderCreationRequest) {
+        Entity product = getProduct(orderCreationRequest.getProductId());
+        Entity parameter = parameterService.getParameter();
+        Entity dashboardComponentsLocation = parameter.getBelongsToField(OrderCreationService.L_DASHBOARD_COMPONENTS_LOCATION);
+        Entity dashboardProductsInputLocation = parameter
+                .getBelongsToField(OrderCreationService.L_DASHBOARD_PRODUCTS_INPUT_LOCATION);
+        orderCreationRequest.getTechnologyOperations().sort(Comparator.comparing(TechnologyOperationDto::getNode));
+
+        String range = parameter.getStringField(L_RANGE);
+        Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY).create();
+        technology.setField(TechnologyFields.NUMBER, technologyNameAndNumberGenerator.generateNumber(product));
+        technology.setField(TechnologyFields.NAME, technologyNameAndNumberGenerator.generateName(product));
+        technology.setField(TechnologyFields.PRODUCT, product);
+        technology.setField(TechnologyFields.EXTERNAL_SYNCHRONIZED, true);
+        technology.setField(L_RANGE, range);
+        technology.setField("componentsLocation", dashboardComponentsLocation);
+        technology.setField("productsInputLocation", dashboardProductsInputLocation);
+        technology.setField("typeOfProductionRecording", "02cumulated");
+        technology = technology.getDataDefinition().save(technology);
+        if (!technology.isValid()) {
+            return Either.left(translationService.translate(
+                    "basic.dashboard.orderDefinitionWizard.createTechnology.validationError", LocaleContextHolder.getLocale()));
+        }
+
+        Entity parent = null;
+        for (TechnologyOperationDto technologyOperation : orderCreationRequest.getTechnologyOperations()) {
+            Entity operation = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_OPERATION).get(technologyOperation.getOperationId());
+
+            Entity toc = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).create();
+            toc.setField(TechnologyOperationComponentFields.OPERATION, operation);
+            toc.setField(TechnologyOperationComponentFields.ENTITY_TYPE, L_OPERATION);
+            for (String fieldName : FIELDS_OPERATION) {
+                toc.setField(fieldName, operation.getField(fieldName));
+            }
+            if (operation.getField(NEXT_OPERATION_AFTER_PRODUCED_TYPE) == null) {
+                toc.setField(NEXT_OPERATION_AFTER_PRODUCED_TYPE, L_ALL);
+            }
+
+            if (operation.getField(PRODUCTION_IN_ONE_CYCLE) == null) {
+                toc.setField(PRODUCTION_IN_ONE_CYCLE, "1");
+            }
+
+            if (operation.getField(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY) == null) {
+                toc.setField(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY, "0");
+            }
+
+            if (Objects.isNull(parent)) {
+                Entity topoc = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                        TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT).create();
+                topoc.setField(OperationProductOutComponentFields.QUANTITY, BigDecimal.ONE);
+                topoc.setField(OperationProductOutComponentFields.PRODUCT, product);
+                toc.setField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS, Lists.newArrayList(topoc));
+            }
+
+            List<Entity> topics = Lists.newArrayList();
+            for (MaterialDto material : technologyOperation.getMaterials()) {
+                Entity inProduct = getProduct(material.getProductId());
+
+                Entity topic = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                        TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).create();
+                topic.setField(OperationProductInComponentFields.PRODUCT, inProduct);
+                topic.setField(OperationProductInComponentFields.QUANTITY, material.getQuantityPerUnit());
+                topics.add(topic);
+            }
+            toc.setField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS, topics);
+            if (Objects.nonNull(parent)) {
+                toc.setField(TechnologyOperationComponentFields.PARENT, parent.getId());
+            }
+            toc.setField(TechnologyOperationComponentFields.TECHNOLOGY, technology.getId());
+            toc = toc.getDataDefinition().save(toc);
+            if (toc.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS).isEmpty()) {
+                Entity topoc = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                        TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT).create();
+                topoc.setField(OperationProductOutComponentFields.QUANTITY, BigDecimal.ONE);
+                topoc.setField(OperationProductOutComponentFields.PRODUCT, getOrCreateProduct(operation));
+                topoc.setField(OperationProductOutComponentFields.OPERATION_COMPONENT, toc);
+                topoc.getDataDefinition().save(topoc);
+            }
+            parent = toc;
+
+        }
+
+        if (technology.isValid()) {
+            final StateChangeContext technologyStateChangeContext = stateChangeContextBuilder
+                    .build(technologyStateChangeAspect.getChangeEntityDescriber(), technology,
+                            TechnologyState.ACCEPTED.getStringValue());
+            technologyStateChangeAspect.changeState(technologyStateChangeContext);
+            technology = technology.getDataDefinition().get(technology.getId());
+            if (!technology.getStringField(TechnologyFields.STATE).equals(TechnologyStateStringValues.ACCEPTED)) {
+                return Either.left(translationService.translate(
+                        "basic.dashboard.orderDefinitionWizard.createTechnology.acceptError", LocaleContextHolder.getLocale()));
+            }
+            technology.setField(TechnologyFields.MASTER, Boolean.TRUE);
+            technology.getDataDefinition().save(technology);
+        } else {
+            return Either.left(translationService.translate(
+                    "basic.dashboard.orderDefinitionWizard.createTechnology.validationError", LocaleContextHolder.getLocale()));
+        }
+        return Either.right(technology);
     }
 
     private Either<String, Entity> createTechnology(OrderCreationRequest orderCreationRequest) {
@@ -383,11 +500,33 @@ public class OrderCreationService {
     }
 
     private Entity getProductionLine(Long productionLineId) {
-        return dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
-                ProductionLinesConstants.MODEL_PRODUCTION_LINE).get(productionLineId);
+        if (Objects.nonNull(productionLineId)) {
+            return dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
+                    ProductionLinesConstants.MODEL_PRODUCTION_LINE).get(productionLineId);
+        } else {
+            return parameterService.getParameter().getBelongsToField(ParameterFieldsPL.DEFAULT_PRODUCTION_LINE);
+        }
     }
 
     private Entity getProduct(Long productId) {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
+    }
+
+    private Entity getOrCreateProduct(Entity operation) {
+        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).find()
+                .add(SearchRestrictions.eq(ProductFields.NUMBER, operation.getStringField(OperationFields.NUMBER)))
+                .setMaxResults(1).uniqueResult();
+        if (Objects.nonNull(product)) {
+            return product;
+        } else {
+            Entity newProduct = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT)
+                    .create();
+            newProduct.setField(ProductFields.NUMBER, operation.getStringField(OperationFields.NUMBER));
+            newProduct.setField(ProductFields.NAME, operation.getStringField(OperationFields.NAME));
+            newProduct.setField(ProductFields.GLOBAL_TYPE_OF_MATERIAL, GlobalTypeOfMaterial.INTERMEDIATE.getStringValue());
+            newProduct.setField(ProductFields.ENTITY_TYPE, ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue());
+            newProduct.setField(ProductFields.UNIT, parameterService.getParameter().getStringField(ParameterFields.UNIT));
+            return newProduct.getDataDefinition().save(newProduct);
+        }
     }
 }

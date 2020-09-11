@@ -87,7 +87,7 @@ h2 {
   padding: 95px 0; }
 
 
-#orderDefinitionWizard .container {
+#orderDefinitionWizard .container, #operationalTasksDefinitionWizard .container{
   width: 850px;
   position: relative;
   margin: 0 auto;
@@ -290,37 +290,37 @@ fieldset {
   padding: 0px;
   margin: 0px; }
 
-#orderDefinitionWizard .steps {
+#orderDefinitionWizard .steps, #operationalTasksDefinitionWizard .steps  {
   border-top: 2px solid #ebebeb;
   border-bottom: 2px solid #ebebeb;
   padding: 12px 20px; }
-  #orderDefinitionWizard  .steps ul {
+  #orderDefinitionWizard  .steps ul, #operationalTasksDefinitionWizard  .steps ul {
     justify-content: space-around;
     -moz-justify-content: space-around;
     -webkit-justify-content: space-around;
     -o-justify-content: space-around;
     -ms-justify-content: space-around; }
-    #orderDefinitionWizard  .steps ul li {
+    #orderDefinitionWizard  .steps ul li,  #operationalTasksDefinitionWizard  .steps ul li {
       padding-left: 0px;
       position: relative; }
 
-      #orderDefinitionWizard  .steps ul li a {
+      #orderDefinitionWizard  .steps ul li a, #operationalTasksDefinitionWizard .steps ul li a {
         color: #999;
         text-decoration: none;
         font-weight: bold; }
-      #orderDefinitionWizard  .steps ul li:last-child:after {
+      #orderDefinitionWizard  .steps ul li:last-child:after, #operationalTasksDefinitionWizard  .steps ul li:last-child:after {
         width: 0px; }
-    #orderDefinitionWizard  .steps ul .current a {
+    #orderDefinitionWizard  .steps ul .current a, #operationalTasksDefinitionWizard  .steps ul .current a {
       color: #222; }
       .steps ul .current a .number {
         border: 2px solid #222; }
-    #orderDefinitionWizard  .steps ul .done a {
+    #orderDefinitionWizard  .steps ul .done a, #operationalTasksDefinitionWizard  .steps ul .done a {
       color: #639aa6; }
-      #orderDefinitionWizard  .steps ul .done a .number {
+      #orderDefinitionWizard  .steps ul .done a .number, #operationalTasksDefinitionWizard  .steps ul .done a .number {
         position: relative;
         font-size: 0px;
         border: 2px solid #639aa6; }
-        #orderDefinitionWizard .steps ul .done a .number:after {
+        #orderDefinitionWizard .steps ul .done a .number:after, #operationalTasksDefinitionWizard .steps ul .done a .number:after {
           position: absolute;
           left: 50%;
           top: 50%;
@@ -534,7 +534,18 @@ fieldset {
     color: white;
 }
 
-#productDefinitionModal .modal-header {
+#operationalTasksDefinitionWizard .modal-dialog {
+    max-width: 90%;
+    width: 80%;
+    margin: 15px auto;
+}
+
+#operationalTasksDefinitionWizard .modal-header {
+    background: #2F3640;
+    color: white;
+}
+
+.definition-modal .modal-header {
     background: #2F3640;
     color: white;
 }
@@ -544,6 +555,10 @@ fieldset {
     color: white;
 }
 
+.qLookup .modal-header {
+    background: #2F3640;
+    color: white;
+}
 #productsLookup .modal-header {
     background: #2F3640;
     color: white;
@@ -567,7 +582,11 @@ fieldset {
     color: white;
 }
 
-#productDefinitionModal .close {
+#operationalTasksDefinitionWizard .close {
+    color: white;
+}
+
+.definition-modal .close {
     color: white;
 }
 
@@ -576,6 +595,9 @@ fieldset {
 }
 
 #productsLookup .close {
+    color: white;
+}
+.qLookup .close {
     color: white;
 }
 #materialsLookup .close {
@@ -618,7 +640,40 @@ fieldset {
           border-color: #27606d;
           }
 
+#operationalTasksDefinitionWizard .title_text{
+    font-size: .9rem;
+    margin-left: 10px;
+    box-sizing: unset;
+}
+
+#operationalTasksDefinitionWizard .btn-group-sm>.btn, .btn-sm {
+    font-size: 1rem;
+        padding: .375rem .75rem;
+}
+
+#operationalTasksDefinitionWizard .row {
+    width: 100%;
+}
+
+.required {
+    font-weight: bold;
+}
+
+#operationalTasksDefinitionWizard .newButton {
+        background: #639aa6;
+        border-color: #639aa6;
+}
+#operationalTasksDefinitionWizard .newButton:hover {
+          background-color: #27606d;
+          border-color: #27606d;
+          }
+
 #productsLookup .modal-dialog {
+    max-width: 90%;
+    width: 70%;
+    margin: 15px auto;
+}
+.qLookup .modal-dialog {
     max-width: 90%;
     width: 70%;
     margin: 15px auto;
@@ -641,7 +696,7 @@ fieldset {
     margin: 15px auto;
 }
 
-#productDefinitionModal .modal-dialog {
+.definition-modal .modal-dialog {
     max-width: 90%;
     width: 70%;
     height: 600px;
@@ -655,6 +710,10 @@ fieldset {
 }
 
 #orderDefinitionWizard .unit {
+    background-color: rgba(254,254,254,1);
+    border: none;
+}
+#operationalTasksDefinitionWizard .unit {
     background-color: rgba(254,254,254,1);
     border: none;
 }
@@ -688,6 +747,36 @@ fieldset {
 }
 
 #productsLookup .btn-primary {
+    color: #fff;
+    background-color: #639aa6;
+    border-color: #639aa6;
+}
+.qLookup .page-item.active .page-link {
+    z-index: 1;
+    color: #fff;
+    background-color: #2f3640;
+    border-color: #21262d;
+}
+
+.qLookup .page-link {
+    color: #2f3640;;
+    background-color: #fff;
+    border: 1px solid #dee2e6;
+}
+
+.qLookup .page-link:hover {
+    color: #2f3640;
+    background-color: #dbdfe2;
+    border: 1px solid #dee2e6;
+}
+
+.qLookup .btn-primary:hover {
+    color: #fff;
+    background-color: #27606d;
+   border-color: #27606d;
+}
+
+.qLookup .btn-primary {
     color: #fff;
     background-color: #639aa6;
     border-color: #639aa6;
@@ -747,7 +836,7 @@ fieldset {
     border-color: #639aa6;
 }
 
-#productDefinitionModal .btn-primary:hover {
+.definition-modal .btn-primary:hover {
     color: #fff;
     background-color: #27606d;
    border-color: #27606d;
@@ -755,7 +844,7 @@ fieldset {
 
 }
 
-#productDefinitionModal .btn-primary {
+.definition-modal .btn-primary {
     color: #fff;
     background-color: #639aa6;
     border-color: #639aa6;
@@ -784,6 +873,13 @@ fieldset {
 }
 
 #orderDefinitionWizard .bg-primary:hover {
+    background-color: #27606d!important;
+}
+#operationalTasksDefinitionWizard .bg-primary {
+    background-color: #639aa6!important;
+}
+
+#operationalTasksDefinitionWizard .bg-primary:hover {
     background-color: #27606d!important;
 }
 
@@ -824,6 +920,9 @@ fieldset {
 #materials-toolbar {
 margin-top: 0px;
 }
+#technologyOperations-toolbar {
+margin-top: 0px;
+}
 
 .fixed-table-toolbar .bs-bars,
 .fixed-table-toolbar .search,
@@ -852,4 +951,64 @@ margin-top: 0px;
 #technology-form-group .dropdown-menu {
         overflow-y: scroll;
         height: 120px;
+}
+
+.no-margin {
+     margin-bottom: 0px;
+}
+
+.small-label {
+    width: 80px;
+}
+
+hr {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    border: 0;
+    border-top: 1px solid rgb(47 54 64);
+    width: 98%;
+}
+
+.grid-label {
+    display: inline-block;
+    width: 100px;
+    text-align: left;
+    margin-right: 27px;
+    display: inline-block;
+    margin-bottom: .5rem;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    padding: .375rem .75rem;
+    margin-bottom: 0;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    text-align: center;
+    white-space: nowrap;
+    border-radius: .25rem;
+}
+
+.grid-label30 {
+    display: inline-block;
+    width: 130px;
+    text-align: left;
+    margin-right: 27px;
+    display: inline-block;
+    margin-bottom: .5rem;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center;
+    padding: .375rem .75rem;
+    margin-bottom: 0;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    text-align: center;
+    white-space: nowrap;
+    border-radius: .25rem;
 }

@@ -22,4 +22,11 @@ public class OrdersApiController {
     public OrderCreationResponse saveOrder(@RequestBody OrderCreationRequest orderCreationRequest) {
         return orderCreationService.createOrder(orderCreationRequest);
     }
+
+    @ResponseBody
+    @RequestMapping(value = "/operationalTasks", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public OrderCreationResponse saveOrderWithOperationalTasks(@RequestBody OrderCreationRequest orderCreationRequest) {
+        return orderCreationService.createOrder(orderCreationRequest);
+
+    }
 }

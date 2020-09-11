@@ -103,6 +103,22 @@ public class DataProviderForTechnology {
         return jdbcTemplate.query(query.toString(), parameters, new BeanPropertyRowMapper(MaterialDto.class));
     }
 
+    public List<OperationMaterialDto> getTechnologyOperationMaterials(Long technologyId) {
+        List<Long> ids = operationComponentDataProvider.getComponentsForTechnology(technologyId);
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT opic.id as productInId, opic.id as index, p.id as productId, p.number as product, p.number as productNumber,  ");
+        query.append("p.name as productName, p.unit as unit, opic.quantity as quantityPerUnit, ");
+        query.append("toc.id as tocId, toc.nodenumber as node, op.number operationNumber, op.id as operationId ");
+        query.append("FROM technologies_operationproductincomponent opic ");
+        query.append("LEFT JOIN basic_product p ON opic.product_id = p.id ");
+        query.append("LEFT JOIN technologies_technologyoperationcomponent toc ON opic.operationcomponent_id = toc.id ");
+        query.append("LEFT JOIN technologies_operation op ON toc.operation_id = op.id ");
+        query.append("WHERE opic.id IN (:ids) ");
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("ids", ids);
+        return jdbcTemplate.query(query.toString(), parameters, new BeanPropertyRowMapper(OperationMaterialDto.class));
+    }
+
     public ProductionLineDto getTechnologyProductionLine(Long technologyId) {
         Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY).get(technologyId);
@@ -117,5 +133,13 @@ public class DataProviderForTechnology {
             }
         }
         return new ProductionLineDto();
+    }
+
+    public OperationsResponse getOperations() {
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT id, number ");
+        query.append("FROM technologies_operation ");
+        query.append("WHERE active = true ");
+        return new OperationsResponse(jdbcTemplate.query(query.toString(), Maps.newHashMap(), new BeanPropertyRowMapper(OperationDto.class)));
     }
 }
