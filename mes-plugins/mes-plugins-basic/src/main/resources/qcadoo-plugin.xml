@@ -237,6 +237,8 @@
         <security:role identifier="ROLE_STOPPAGES"/>
         <security:role identifier="ROLE_STOPPAGE_REASONS"/>
 
+        <security:role identifier="ROLE_WMS"/>
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="crew" resource="model/crew.xml"/>
