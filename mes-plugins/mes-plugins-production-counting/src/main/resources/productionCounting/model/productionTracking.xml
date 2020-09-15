@@ -96,6 +96,7 @@
 		<date name="expirationDate"/>
 
 		<boolean name="fromTerminal" default="false" persistent="false"/>
+		<boolean name="isCorrected" default="false"/>
 
 
 	</fields>

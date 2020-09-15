@@ -212,28 +212,28 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
     public Entity correct(Entity productionTracking) {
         DataDefinition productionTrackingDD = productionTracking.getDataDefinition();
         boolean last = productionTracking.getBooleanField(ProductionTrackingFields.LAST_TRACKING);
-        Entity clearedProductionTracking = clearLastProductionTracking(productionTracking);
+        productionTracking.setField(ProductionTrackingFields.IS_CORRECTED, true);
+        clearLastProductionTracking(productionTracking);
+
+        Entity clearedProductionTracking = productionTracking.getDataDefinition().save(productionTracking);
         Entity correctingProductionTracking = productionTrackingDD.copy(clearedProductionTracking.getId()).get(0);
 
         copyOtherFields(clearedProductionTracking, correctingProductionTracking);
         clearedProductionTracking.setField(ProductionTrackingFields.CORRECTION, correctingProductionTracking);
         correctingProductionTracking.setField(ProductionTrackingFields.IS_CORRECTION, true);
         correctingProductionTracking.setField(ProductionTrackingFields.LAST_TRACKING, last);
+        correctingProductionTracking.setField(ProductionTrackingFields.IS_CORRECTED, false);
+
         productionTrackingDD.save(correctingProductionTracking);
 
         changeState(clearedProductionTracking, ProductionTrackingState.CORRECTED);
         return correctingProductionTracking;
     }
 
-    private Entity clearLastProductionTracking(Entity productionTracking) {
+    private void clearLastProductionTracking(Entity productionTracking) {
         if (productionTracking.getBooleanField(ProductionTrackingFields.LAST_TRACKING)) {
             productionTracking.setField(ProductionTrackingFields.LAST_TRACKING, false);
-            productionTracking = productionTracking.getDataDefinition().save(productionTracking);
-            return productionTracking;
-        } else {
-            return productionTracking;
         }
-
     }
 
     private void copyOtherFields(Entity productionTracking, Entity correctingProductionTracking) {
