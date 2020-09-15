@@ -380,15 +380,19 @@ public class OrderDetailsListeners {
     public void generateOperationalTasks(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity order = orderForm.getEntity().getDataDefinition().get(orderForm.getEntityId());
+        createOperationalTasksForOrder(order);
+        orderForm.addMessage("orders.ordersDetails.info.operationalTasksCreated",
+                MessageType.SUCCESS);
+
+    }
+
+    public void createOperationalTasksForOrder(Entity order) {
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         List<Entity> technologyOperationComponents = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
 
         for (Entity technologyOperationComponent : technologyOperationComponents) {
             createOperationalTasks(order, technologyOperationComponent);
         }
-        orderForm.addMessage("orders.ordersDetails.info.operationalTasksCreated",
-                MessageType.SUCCESS);
-
     }
 
     private void createOperationalTasks(Entity order, Entity technologyOperationComponent) {

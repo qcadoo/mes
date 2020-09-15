@@ -11,6 +11,7 @@ import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.OrderService;
+import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -19,6 +20,7 @@ import com.qcadoo.mes.orders.controllers.dataProvider.DashboardKanbanDataProvide
 import com.qcadoo.mes.orders.controllers.dto.TechnologyOperationDto;
 import com.qcadoo.mes.orders.controllers.requests.OrderCreationRequest;
 import com.qcadoo.mes.orders.controllers.responses.OrderCreationResponse;
+import com.qcadoo.mes.orders.listeners.OrderDetailsListeners;
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
@@ -116,7 +118,7 @@ public class OrderCreationService {
 
     private static final String L_ALL = "01all";
 
-    public static final String L_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+    private static final String L_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -151,13 +153,17 @@ public class OrderCreationService {
     @Autowired
     private DashboardKanbanDataProvider dashboardKanbanDataProvider;
 
+    @Autowired
+    private OrderDetailsListeners orderDetailsListeners;
+
     public OrderCreationResponse createOrder(OrderCreationRequest orderCreationRequest) {
 
         Entity parameter = parameterService.getParameter();
-      /*  if (!isParameterSet(parameter)) {
+        boolean createOperationalTasks = !orderCreationRequest.getTechnologyOperations().isEmpty();
+        if (!isParameterSet(parameter, createOperationalTasks)) {
             return new OrderCreationResponse(translationService.translate(
                     "basic.dashboard.orderDefinitionWizard.createOrder.parameterNotSet", LocaleContextHolder.getLocale()));
-        }*/
+        }
         Entity product = getProduct(orderCreationRequest.getProductId());
         Entity productionLine = getProductionLine(orderCreationRequest.getProductionLineId());
         Either<String, Entity> isTechnology = getOrCreateTechnology(orderCreationRequest);
@@ -216,12 +222,70 @@ public class OrderCreationService {
                     "basic.dashboard.orderDefinitionWizard.createOrder.validationError", LocaleContextHolder.getLocale()));
         }
 
+
+        if (createOperationalTasks) {
+            createOperationalTasks(order, orderCreationRequest);
+            modifyProductionCountingQuantityForEach(order, orderCreationRequest.getTechnologyOperations());
+        } else {
+            modifyProductionCountingQuantity(order, orderCreationRequest.getMaterials());
+        }
+
+
         response.setMessage(translationService.translate("orders.orderCreationService.created", LocaleContextHolder.getLocale(),
                 order.getStringField(OrderFields.NUMBER)));
-        response.setOrder(dashboardKanbanDataProvider.getOrder(order.getId()));
-
-        modifyProductionCountingQuantity(order, orderCreationRequest.getMaterials());
+        if (createOperationalTasks) {
+            response.setOperationalTasks(dashboardKanbanDataProvider.getOperationalTasksPendingForOrder(order.getId()));
+        } else {
+            response.setOrder(dashboardKanbanDataProvider.getOrder(order.getId()));
+        }
         return response;
+    }
+
+    private void createOperationalTasks(Entity order, OrderCreationRequest orderCreationRequest) {
+        orderDetailsListeners.createOperationalTasksForOrder(order);
+        Map<Long, TechnologyOperationDto> operationsById = orderCreationRequest.getTechnologyOperations().stream()
+                .collect(Collectors.toMap(TechnologyOperationDto::getId, x -> x));
+        List<Entity> operationalTasks = order.getHasManyField(OrderFields.OPERATIONAL_TASKS);
+        for (Entity operationalTask : operationalTasks) {
+            Long workstation = operationsById.get(
+                    operationalTask.getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT).getId())
+                    .getWorkstationId();
+            if (Objects.nonNull(workstation)) {
+                operationalTask.setField(OperationalTaskFields.WORKSTATION, workstation);
+                operationalTask.getDataDefinition().save(operationalTask);
+            }
+
+        }
+    }
+
+    private void modifyProductionCountingQuantityForEach(Entity order, List<TechnologyOperationDto> technologyOperations) {
+        Entity parameter = parameterService.getParameter();
+
+        for (TechnologyOperationDto technologyOperation : technologyOperations) {
+            Entity toc = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                    TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(technologyOperation.getId());
+            List<Entity> materialsFromOrderPCQ = getMaterialsFromOrder(order, toc);
+            List<MaterialDto> materials = technologyOperation.getMaterials();
+            List<MaterialDto> addedMaterials = materials.stream().filter(m -> Objects.isNull(m.getProductInId()))
+                    .collect(Collectors.toList());
+            List<Long> technologyMaterials = materials.stream().filter(m -> Objects.nonNull(m.getProductInId()))
+                    .map(m -> m.getProductId()).collect(Collectors.toList());
+            Map<Long, Entity> pacqByProductId = materialsFromOrderPCQ.stream().collect(
+                    Collectors.toMap(pcq -> pcq.getBelongsToField(L_PRODUCT).getId(), pcq -> pcq));
+            for (Map.Entry<Long, Entity> entry : pacqByProductId.entrySet()) {
+                if (!technologyMaterials.contains(entry.getKey())) {
+                    Entity pcq = entry.getValue();
+                    pcq.getDataDefinition().delete(pcq.getId());
+                }
+            }
+            Entity dashboardComponentsLocation = parameter.getBelongsToField(L_DASHBOARD_COMPONENTS_LOCATION);
+            Entity dashboardProductsInputLocation = parameter.getBelongsToField(L_DASHBOARD_PRODUCTS_INPUT_LOCATION);
+            for (MaterialDto material : addedMaterials) {
+                createProductionCoutingQuantity(order, dashboardComponentsLocation, dashboardProductsInputLocation, material,
+                        toc);
+            }
+        }
+
     }
 
     private void modifyProductionCountingQuantity(Entity order, List<MaterialDto> materials) {
@@ -230,7 +294,7 @@ public class OrderCreationService {
                 .collect(Collectors.toList());
         List<Long> technologyMaterials = materials.stream().filter(m -> Objects.nonNull(m.getProductInId()))
                 .map(m -> m.getProductId()).collect(Collectors.toList());
-        List<Entity> materialsFromOrderPCQ = getMaterialsFromOrder(order);
+        List<Entity> materialsFromOrderPCQ = getMaterialsFromOrder(order, null);
 
         Map<Long, Entity> pacqByProductId = materialsFromOrderPCQ.stream().collect(
                 Collectors.toMap(pcq -> pcq.getBelongsToField(L_PRODUCT).getId(), pcq -> pcq));
@@ -244,46 +308,55 @@ public class OrderCreationService {
         Entity dashboardComponentsLocation = parameter.getBelongsToField(L_DASHBOARD_COMPONENTS_LOCATION);
         Entity dashboardProductsInputLocation = parameter.getBelongsToField(L_DASHBOARD_PRODUCTS_INPUT_LOCATION);
         for (MaterialDto material : addedMaterials) {
-            Entity productionCountingQuantity = dataDefinitionService.get(L_BASIC_PRODUCTION_COUNTING,
-                    L_PRODUCTION_COUNTING_QUANTITY).create();
-            productionCountingQuantity.setField(L_ORDER, order.getId());
             Entity toc = order.getBelongsToField(OrderFields.TECHNOLOGY).getTreeField(TechnologyFields.OPERATION_COMPONENTS)
                     .getRoot();
-            productionCountingQuantity.setField(L_TECHNOLOGY_OPERATION_COMPONENT, toc.getId());
-
-            productionCountingQuantity.setField(L_PLANNED_QUANTITY, material.getQuantity());
-            productionCountingQuantity.setField(OrderCreationService.L_PRODUCT, material.getProductId());
-            productionCountingQuantity.setField(L_ROLE, L_USED);
-            productionCountingQuantity.setField(L_TYPE_OF_MATERIAL, L_COMPONENT);
-            productionCountingQuantity.setField(L_FLOW_FILLED, Boolean.TRUE);
-
-            productionCountingQuantity.setField(L_PRODUCTS_INPUT_LOCATION, dashboardProductsInputLocation);
-            productionCountingQuantity.setField(L_COMPONENTS_LOCATION, dashboardComponentsLocation);
-            productionCountingQuantity = productionCountingQuantity.getDataDefinition().save(productionCountingQuantity);
-            productionCountingQuantity.isValid();
+            createProductionCoutingQuantity(order, dashboardComponentsLocation, dashboardProductsInputLocation, material, toc);
         }
     }
 
-    private List<Entity> getMaterialsFromOrder(Entity order) {
+    private void createProductionCoutingQuantity(Entity order, Entity dashboardComponentsLocation,
+            Entity dashboardProductsInputLocation, MaterialDto material, Entity toc) {
+        Entity productionCountingQuantity = dataDefinitionService.get(L_BASIC_PRODUCTION_COUNTING, L_PRODUCTION_COUNTING_QUANTITY)
+                .create();
+        productionCountingQuantity.setField(L_ORDER, order.getId());
+        productionCountingQuantity.setField(L_TECHNOLOGY_OPERATION_COMPONENT, toc.getId());
+
+        productionCountingQuantity.setField(L_PLANNED_QUANTITY, material.getQuantity());
+        productionCountingQuantity.setField(OrderCreationService.L_PRODUCT, material.getProductId());
+        productionCountingQuantity.setField(L_ROLE, L_USED);
+        productionCountingQuantity.setField(L_TYPE_OF_MATERIAL, L_COMPONENT);
+        productionCountingQuantity.setField(L_FLOW_FILLED, Boolean.TRUE);
+
+        productionCountingQuantity.setField(L_PRODUCTS_INPUT_LOCATION, dashboardProductsInputLocation);
+        productionCountingQuantity.setField(L_COMPONENTS_LOCATION, dashboardComponentsLocation);
+        productionCountingQuantity = productionCountingQuantity.getDataDefinition().save(productionCountingQuantity);
+    }
+
+    private List<Entity> getMaterialsFromOrder(Entity order, Entity toc) {
         SearchCriteriaBuilder scb = order.getHasManyField(L_PRODUCTION_COUNTING_QUANTITIES).find()
                 .add(SearchRestrictions.eq(OrderCreationService.L_ROLE, OrderCreationService.L_USED));
-
+        if (Objects.nonNull(toc)) {
+            scb.add(SearchRestrictions.belongsTo("technologyOperationComponent", toc));
+        }
         scb.add(SearchRestrictions.eq(OrderCreationService.L_TYPE_OF_MATERIAL, OrderCreationService.L_COMPONENT));
 
         return scb.list().getEntities();
     }
 
-    private boolean isParameterSet(final Entity parameter) {
+    private boolean isParameterSet(final Entity parameter, boolean createOperationalTasks) {
         Entity operation = parameter.getBelongsToField(L_DASHBOARD_OPERATION);
         Entity dashboardComponentsLocation = parameter.getBelongsToField(OrderCreationService.L_DASHBOARD_COMPONENTS_LOCATION);
         Entity dashboardProductsInputLocation = parameter
                 .getBelongsToField(OrderCreationService.L_DASHBOARD_PRODUCTS_INPUT_LOCATION);
-        if (Objects.isNull(operation) || Objects.isNull(dashboardComponentsLocation)
-                || Objects.isNull(dashboardProductsInputLocation)
-                || !parameter.getBooleanField(ParameterFieldsT.COMPLETE_WAREHOUSES_FLOW_WHILE_CHECKING)) {
-            return false;
+        if (createOperationalTasks) {
+            return !Objects.isNull(dashboardComponentsLocation) && !Objects.isNull(dashboardProductsInputLocation)
+                    && parameter.getBooleanField(ParameterFieldsT.COMPLETE_WAREHOUSES_FLOW_WHILE_CHECKING)
+                    && parameter.getBooleanField(ParameterFieldsT.MOVE_PRODUCTS_TO_SUBSEQUENT_OPERATIONS);
+        } else {
+            return !Objects.isNull(operation) && !Objects.isNull(dashboardComponentsLocation)
+                    && !Objects.isNull(dashboardProductsInputLocation)
+                    && parameter.getBooleanField(ParameterFieldsT.COMPLETE_WAREHOUSES_FLOW_WHILE_CHECKING);
         }
-        return true;
     }
 
     private String buildDescription(Entity parameter, String description, Entity technology) {
@@ -337,7 +410,7 @@ public class OrderCreationService {
         technology.setField(L_RANGE, range);
         technology.setField("componentsLocation", dashboardComponentsLocation);
         technology.setField("productsInputLocation", dashboardProductsInputLocation);
-        technology.setField("typeOfProductionRecording", "02cumulated");
+        technology.setField("typeOfProductionRecording", orderCreationRequest.getTypeOfProductionRecording());
         technology = technology.getDataDefinition().save(technology);
         if (!technology.isValid()) {
             return Either.left(translationService.translate(
@@ -392,6 +465,7 @@ public class OrderCreationService {
             }
             toc.setField(TechnologyOperationComponentFields.TECHNOLOGY, technology.getId());
             toc = toc.getDataDefinition().save(toc);
+            technologyOperation.setId(toc.getId());
             if (toc.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS).isEmpty()) {
                 Entity topoc = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                         TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT).create();

@@ -100,15 +100,22 @@ QCD.orderDefinitionWizard = (function () {
 					if (!invalid) {
 						if (!QCD.orderDefinitionWizardContext.order.technology) {
 							var data = QCD.orderDefinitionWizardContext.order.materials;
+							var reload = false;
 							$.each(data, function (i, e) {
 
 								if (e.quantityPerUnit) {
 									var calculatedQuantity = e.quantityPerUnit * $('#quantity').val();
 									e.quantity = parseFloat(calculatedQuantity.toFixed(5));
 									$('#quantity-' + e.index).val(e.quantity);
+									reload = true;
 								}
 
 							});
+							if(reload) {
+							    $("#materials").bootstrapTable('load', QCD.orderDefinitionWizardContext.order.materials);
+		                        $("#prev_materials").bootstrapTable('load', QCD.orderDefinitionWizardContext.order.materials);
+							}
+
 						}
 					}
 					return !invalid;

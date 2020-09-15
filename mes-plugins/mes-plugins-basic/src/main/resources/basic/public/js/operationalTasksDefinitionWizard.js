@@ -650,7 +650,7 @@ var data = QCD.operationalTasksDefinitionWizardContext.technologyOperations;
 			technologyOperation.operationId = null;
 			technologyOperation.operation = null;
 			QCD.operationalTasksDefinitionWizardContext.node = QCD.operationalTasksDefinitionWizardContext.node + 1;
-			technologyOperation.node = QCD.operationalTasksDefinitionWizardContext.node;
+			technologyOperation.node = QCD.operationalTasksDefinitionWizardContext.node + ".";
 			technologyOperation.index = new Date().getTime();
 			QCD.operationalTasksDefinitionWizardContext.technologyOperations.push(technologyOperation);
 			$technologyOperations.bootstrapTable('load', QCD.operationalTasksDefinitionWizardContext.technologyOperations);
@@ -666,7 +666,17 @@ var data = QCD.operationalTasksDefinitionWizardContext.technologyOperations;
 			})
 			$("#removeTechnologyOperation").prop('disabled', true);
 
+            var reIndex = 1;
+            $.each(QCD.operationalTasksDefinitionWizardContext.technologyOperations, function (i, toc) {
+                toc.node = reIndex + ".";
+                QCD.operationalTasksDefinitionWizardContext.node = reIndex;
+                reIndex = reIndex+1;
+            });
+            						$('#technologyOperations').bootstrapTable('load', QCD.operationalTasksDefinitionWizardContext.technologyOperations);
+
 		});
+
+
 
 		$('#operationDefinitionModal').on('hidden.bs.modal', function () {
 			$("#operationalTasksDefinitionWizard").removeClass('disableModal');
@@ -1884,8 +1894,11 @@ var data = QCD.operationalTasksDefinitionWizardContext.technologyOperations;
 				logoutIfSessionExpired(data);
 				if (data.code === 'OK') {
 
-					$("#orderDefinitionWizard").modal('hide');
-					QCD.dashboard.prependOrder('ordersPending', data.order);
+					$("#operationalTasksDefinitionWizard").modal('hide');
+					 $.each(data.operationalTasks, function (i, operationalTask) {
+					    QCD.dashboard.prependOperationalTask('operationalTasksPending', operationalTask);
+
+					 });
 					showMessage('success',
 						QCD.translate("basic.dashboard.orderDefinitionWizard.success"),
 						data.message, false);
@@ -1984,7 +1997,7 @@ function actionFormatter(value, row) {
 
 function nodeFormatter(value, row) {
 	return '<div class="input-group">' +
-		'<input type="text" class="form-control" disabled value="' + nullToEmptyValue(value) + '."/>' +
+		'<input type="text" class="form-control" disabled value="' + nullToEmptyValue(value) + '"/>' +
 		'</div>';
 }
 
