@@ -25,7 +25,12 @@ package com.qcadoo.mes.basicProductionCounting.hooks;
 
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
-import com.qcadoo.mes.basicProductionCounting.constants.*;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingDtoFields;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
+import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.hooks.util.ProductionProgressModifyLockHelper;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -38,10 +43,11 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class BasicProductionCountingDetailsHooks {
@@ -146,9 +152,22 @@ public class BasicProductionCountingDetailsHooks {
             return;
         }
         Entity basicProductionCounting = form.getEntity();
+        if(disableGrid(orderService.getOrder(basicProductionCounting.getBelongsToField(BasicProductionCountingFields.ORDER).getId()))) {
+            grid.setEnabled(false);
+        } else {
+            boolean isLocked = progressModifyLockHelper.isLocked(orderService
+                    .getOrder(basicProductionCounting.getBelongsToField(BasicProductionCountingFields.ORDER).getId()));
+            grid.setEnabled(!isLocked);
+        }
+    }
 
-        boolean isLocked = progressModifyLockHelper.isLocked(orderService.getOrder( basicProductionCounting.getBelongsToField(BasicProductionCountingFields.ORDER).getId()));
-        grid.setEnabled(!isLocked);
+
+    private boolean disableGrid(Entity order) {
+        String state = order.getStringField(OrderFields.STATE);
+
+        return OrderStateStringValues.COMPLETED.equals(state) || OrderStateStringValues.DECLINED.equals(state)
+                || OrderStateStringValues.ABANDONED
+                .equals(state);
     }
 
     private void fillUnitFields(final ViewDefinitionState view) {
