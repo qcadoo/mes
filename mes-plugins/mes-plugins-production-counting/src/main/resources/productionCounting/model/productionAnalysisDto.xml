@@ -62,6 +62,7 @@
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
+        <string name="causeOfWastes"/>
 
         <integer name="shift_id"/>
         <string name="shiftName"/>

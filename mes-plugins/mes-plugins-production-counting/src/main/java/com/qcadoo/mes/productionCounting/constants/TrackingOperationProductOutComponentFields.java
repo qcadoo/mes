@@ -29,24 +29,36 @@ public final class TrackingOperationProductOutComponentFields {
 
     }
 
-    public static final String TYPE_OF_MATERIAL = "typeOfMaterial";
-
-    public static final String WASTES_QUANTITY = "wastesQuantity";
-
     public static final String PRODUCTION_TRACKING = "productionTracking";
 
     public static final String PRODUCT = "product";
 
+    public static final String PLANNED_QUANTITY = "plannedQuantity";
+
     public static final String USED_QUANTITY = "usedQuantity";
+
+    public static final String BALANCE = "balance";
 
     public static final String GIVEN_QUANTITY = "givenQuantity";
 
+    public static final String PRODUCED_SUM = "producedSum";
+
+    public static final String WASTES_SUM = "wastesSum";
+
+    public static final String REMAINING_QUANTITY = "remainingQuantity";
+
+    public static final String WASTES_QUANTITY = "wastesQuantity";
+
     public static final String GIVEN_UNIT = "givenUnit";
+
+    public static final String TYPE_OF_MATERIAL = "typeOfMaterial";
 
     public static final String ENTERED_FROM_TERMINAL = "enteredFromTerminal";
 
     public static final String PROD_OUT_RESOURCE_ATTR_VALS = "prodOutResourceAttrVals";
 
     public static final String STORAGE_LOCATION = "storageLocation";
+
+    public static final String CAUSE_OF_WASTES = "causeOfWastes";
 
 }

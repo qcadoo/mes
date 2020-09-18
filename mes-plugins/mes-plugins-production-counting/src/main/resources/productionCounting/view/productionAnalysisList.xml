@@ -113,15 +113,16 @@
                     <option type="column" name="orderNumber" fields="orderNumber" width="100"/>
                     <option type="column" name="obtainedMasterOrderNumber" fields="obtainedMasterOrderNumber" width="100"/>
                     <option type="column" name="technologyGroupNumber" fields="technologyGroupNumber" width="100"/>
+                    <option type="column" name="causeOfWastes" fields="causeOfWastes" width="100"/>
 
                     <option type="order" column="productionLineNumber" direction="asc"/>
 
                     <option type="searchable"
-                            value="productionLineNumber,companyNumber,assortmentName,productNumber,productName,size,usedQuantity,wastesQuantity,doneQuantity,productUnit,staffName,shiftName,timeRangeFrom,timeRangeTo,generatorName,orderNumber,obtainedMasterOrderNumber,technologyGroupNumber"/>
+                            value="productionLineNumber,companyNumber,assortmentName,productNumber,productName,size,usedQuantity,wastesQuantity,doneQuantity,productUnit,staffName,shiftName,timeRangeFrom,timeRangeTo,generatorName,orderNumber,obtainedMasterOrderNumber,technologyGroupNumber,causeOfWastes"/>
                     <option type="multiSearch"
-                            value="productionLineNumber,companyNumber,assortmentName,productNumber,productName,size,usedQuantity,wastesQuantity,doneQuantity,productUnit,staffName,shiftName,timeRangeFrom,timeRangeTo,generatorName,orderNumber,obtainedMasterOrderNumber,technologyGroupNumber"/>
+                            value="productionLineNumber,companyNumber,assortmentName,productNumber,productName,size,usedQuantity,wastesQuantity,doneQuantity,productUnit,staffName,shiftName,timeRangeFrom,timeRangeTo,generatorName,orderNumber,obtainedMasterOrderNumber,technologyGroupNumber,causeOfWastes"/>
                     <option type="orderable"
-                            value="productionLineNumber,companyNumber,assortmentName,productNumber,productName,size,usedQuantity,wastesQuantity,doneQuantity,productUnit,staffName,shiftName,timeRangeFrom,timeRangeTo,generatorName,orderNumber,obtainedMasterOrderNumber,technologyGroupNumber"/>
+                            value="productionLineNumber,companyNumber,assortmentName,productNumber,productName,size,usedQuantity,wastesQuantity,doneQuantity,productUnit,staffName,shiftName,timeRangeFrom,timeRangeTo,generatorName,orderNumber,obtainedMasterOrderNumber,technologyGroupNumber,causeOfWastes"/>
 
                     <option type="footerRow" value="true"/>
                     <option type="columnsToSummary" value="usedQuantity,wastesQuantity,doneQuantity"/>

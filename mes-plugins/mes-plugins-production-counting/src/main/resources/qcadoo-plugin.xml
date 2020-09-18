@@ -81,6 +81,8 @@
         <localization:translation-group name="employeeWorkingTimeSettlement"
                                         prefix="productionCounting.validate.global.error.employeeWorkingTimeSettlement"/>
 
+        <model:dictionary name="causesOfWastes"/>
+
         <model:model model="productionTracking" resource="model/productionTracking.xml"/>
         <model:model model="productionTrackingStateChange" resource="model/productionTrackingStateChange.xml"/>
         <model:model model="productionBalance" resource="model/productionBalance.xml"/>
