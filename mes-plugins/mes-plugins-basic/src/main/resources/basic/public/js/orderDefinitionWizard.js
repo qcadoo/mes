@@ -17,7 +17,6 @@ QCD.orderDefinitionWizard = (function () {
 
 
 	function init() {
-
 		cleanContext();
 
 		$("#selectProduct").prop('disabled', true);
@@ -101,15 +100,22 @@ QCD.orderDefinitionWizard = (function () {
 					if (!invalid) {
 						if (!QCD.orderDefinitionWizardContext.order.technology) {
 							var data = QCD.orderDefinitionWizardContext.order.materials;
+							var reload = false;
 							$.each(data, function (i, e) {
 
 								if (e.quantityPerUnit) {
 									var calculatedQuantity = e.quantityPerUnit * $('#quantity').val();
 									e.quantity = parseFloat(calculatedQuantity.toFixed(5));
 									$('#quantity-' + e.index).val(e.quantity);
+									reload = true;
 								}
 
 							});
+							if (reload) {
+								$("#materials").bootstrapTable('load', QCD.orderDefinitionWizardContext.order.materials);
+								$("#prev_materials").bootstrapTable('load', QCD.orderDefinitionWizardContext.order.materials);
+							}
+
 						}
 					}
 					return !invalid;
@@ -209,12 +215,39 @@ QCD.orderDefinitionWizard = (function () {
 						invalid = true;
 
 					}
+					var exist = false;
+					if (!invalid) {
+						$.each(materials, function (i, material) {
+							if (material.productId == QCD.orderDefinitionWizardContext.order.product.id) {
+								$('#product-' + material.index).addClass('is-invalid');
+								exist = true;
+
+							}
+							$.each(materials, function (i, reMaterial) {
+								if (material.index != reMaterial.index && material.productId == reMaterial.productId) {
+									$('#product-' + material.index).addClass('is-invalid');
+									exist = true;
+
+								}
+							});
+						});
+
+					}
+
 					if (invalid) {
 						showMessage(
 							'failure',
 							QCD.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
 							QCD.translate("basic.dashboard.orderDefinitionWizard.error.validationError.emptyField"),
 							false);
+					}
+					if (exist) {
+						showMessage(
+							'failure',
+							QCD.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
+							QCD.translate("basic.dashboard.orderDefinitionWizard.error.productAlreadySelected"),
+							false);
+						invalid = true;
 					}
 					if (!invalid) {
 						preparePreview();
@@ -525,73 +558,6 @@ QCD.orderDefinitionWizard = (function () {
 			$("#orderDefinitionWizard").removeClass('disableModal');
 		});
 
-
-		function validQuantity(field) {
-			var valid = true;
-
-			var value = $("#" + field).val();
-
-			if (value.includes(',') && value.includes('.')) {
-				valid = false;
-				$("#" + field).addClass('is-invalid');
-				return;
-			}
-
-
-			value = evaluateExpression(value);
-
-
-			$("#" + field).val(value).change();
-
-			if ((value != null) && (value != '') &&
-				isNaN(value)) {
-				valid = false;
-			}
-
-			if (valid && (value <= 0)) {
-				valid = false;
-			}
-
-			var validationResult;
-
-			if ((value != null) && (value != '') && valid) {
-				validationResult = validateDecimal(value);
-
-				if (!validationResult.validPrecision ||
-					!validationResult.validScale) {
-					valid = false;
-				}
-			}
-
-			if (!valid) {
-				isValid = false;
-
-				if ((typeof validationResult !== "undefined") &&
-					!validationResult.validPrecision) {
-					showMessage(
-						'failure',
-						QCD
-						.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
-						QCD
-						.translate("basic.dashboard.orderDefinitionWizard.error.validationError.wrongDecimalPrecision"),
-						false);
-				} else if ((typeof validationResult !== "undefined") &&
-					!validationResult.validScale) {
-					showMessage(
-						'failure',
-						QCD
-						.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
-						QCD
-						.translate("basic.dashboard.orderDefinitionWizard.error.validationError.wrongDecimalScale"),
-						false);
-				}
-
-				$("#" + field).addClass('is-invalid');
-			} else {
-				$("#" + field).removeClass('is-invalid');
-			}
-			return valid;
-		}
 
 		$("#saveProduct").click(function () {
 			var invalid = false;
@@ -1084,38 +1050,18 @@ QCD.orderDefinitionWizard = (function () {
 			$('#product-' + element).change(function () {
 				var current = $('#product-' + element).typeahead("getActive");
 				if (current) {
-
 					$('#product-' + element).removeClass('is-invalid');
-					var exist = false;
-
 					var data = QCD.orderDefinitionWizardContext.order.materials;
 					$.each(data, function (i, e) {
-						if ($('#product-' + element).val() !== '' && (e.productId == current.id || QCD.orderDefinitionWizardContext.order.product.id == current.id)) {
+						if (e.index == QCD.orderDefinitionWizardContext.order.lastMaterialIndex) {
+							e.productId = current.id;
+							e.productNumber = current.number;
+							e.product = current.number;
+							e.unit = current.unit;
+							$('#unit-' + QCD.orderDefinitionWizardContext.order.lastMaterialIndex).val(current.unit);
 
-							$('#product-' + element).addClass('is-invalid');
-							$('#product-' + element).val("");
-							showMessage(
-								'failure',
-								QCD.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
-								QCD.translate("basic.dashboard.orderDefinitionWizard.error.productAlreadySelected"),
-								false);
-							exist = true;
-							return false;
 						}
 					});
-					if (!exist) {
-
-						$.each(data, function (i, e) {
-							if (e.index == QCD.orderDefinitionWizardContext.order.lastMaterialIndex) {
-								e.productId = current.id;
-								e.productNumber = current.number;
-								e.product = current.number;
-								e.unit = current.unit;
-								$('#unit-' + QCD.orderDefinitionWizardContext.order.lastMaterialIndex).val(current.unit);
-
-							}
-						});
-					}
 				} else {
 					$('#product-' + element).val("");
 				}
@@ -1254,7 +1200,6 @@ QCD.orderDefinitionWizard = (function () {
 					$("#productUnit").append(
 						'<option value="' + value.key + '">' + value.key +
 						'</option>');
-
 
 				}
 
@@ -1408,18 +1353,6 @@ QCD.orderDefinitionWizard = (function () {
 				$("#loader").modal('hide');
 			}
 		});
-	}
-
-	function getDate(element) {
-		var date = $("#" + element).val();
-
-		if (date == null ||
-			date == '') {
-			return null;
-		} else {
-			return moment(date, 'YYYY-MM-DD HH:mm:ss')
-				.toDate();
-		}
 	}
 
 	function fillMaterialsForTechnology(element) {
@@ -1770,5 +1703,85 @@ function nullToEmptyValue(value) {
 		return value;
 	} else {
 		return "";
+	}
+}
+
+function validQuantity(field) {
+	var valid = true;
+
+	var value = $("#" + field).val();
+
+	if (value.includes(',') && value.includes('.')) {
+		valid = false;
+		$("#" + field).addClass('is-invalid');
+		return;
+	}
+
+
+	value = evaluateExpression(value);
+
+
+	$("#" + field).val(value).change();
+
+	if ((value != null) && (value != '') &&
+		isNaN(value)) {
+		valid = false;
+	}
+
+	if (valid && (value <= 0)) {
+		valid = false;
+	}
+
+	var validationResult;
+
+	if ((value != null) && (value != '') && valid) {
+		validationResult = validateDecimal(value);
+
+		if (!validationResult.validPrecision ||
+			!validationResult.validScale) {
+			valid = false;
+		}
+	}
+
+	if (!valid) {
+		isValid = false;
+
+		if ((typeof validationResult !== "undefined") &&
+			!validationResult.validPrecision) {
+			showMessage(
+				'failure',
+				QCD
+				.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
+				QCD
+				.translate("basic.dashboard.orderDefinitionWizard.error.validationError.wrongDecimalPrecision"),
+				false);
+		} else if ((typeof validationResult !== "undefined") &&
+			!validationResult.validScale) {
+			showMessage(
+				'failure',
+				QCD
+				.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
+				QCD
+				.translate("basic.dashboard.orderDefinitionWizard.error.validationError.wrongDecimalScale"),
+				false);
+		}
+
+		$("#" + field).addClass('is-invalid');
+	} else {
+		$("#" + field).removeClass('is-invalid');
+	}
+	return valid;
+}
+
+
+function getDate(element) {
+	var date = $("#" + element).val();
+
+	if (date == null ||
+		date == '') {
+		return null;
+	} else {
+		return moment(date, 'YYYY-MM-DD HH:mm:ss')
+			.toDate();
 	}
 }

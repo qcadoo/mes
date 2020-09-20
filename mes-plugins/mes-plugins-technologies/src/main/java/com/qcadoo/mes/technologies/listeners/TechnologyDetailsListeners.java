@@ -26,7 +26,12 @@ package com.qcadoo.mes.technologies.listeners;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.qcadoo.mes.technologies.constants.*;
+import com.qcadoo.mes.technologies.constants.OperationFields;
+import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
 import com.qcadoo.mes.technologies.tree.RemoveTOCService;
 import com.qcadoo.model.api.DataDefinition;
@@ -41,15 +46,15 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.TreeComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT_STRUCTURE_TREE;
 
 @Service
@@ -129,6 +134,16 @@ public class TechnologyDetailsListeners {
 
         Entity technology = getTechnologyDD().get(technologyForm.getEntityId());
 
+        List<Entity> operationsWithManyOutProducts = fillProducts(technology);
+
+        if (!operationsWithManyOutProducts.isEmpty()) {
+            state.addMessage("technologies.technologyDetails.window.tooManyOutProductsInOperation", MessageType.INFO,
+                    operationsWithManyOutProducts.stream().map(o -> o.getStringField(OperationFields.NUMBER))
+                            .collect(Collectors.joining(", ")));
+        }
+    }
+
+    public List<Entity> fillProducts(Entity technology) {
         List<Entity> technologyOperationComponents = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
         List<Entity> operationsWithManyOutProducts = Lists.newArrayList();
 
@@ -153,12 +168,7 @@ public class TechnologyDetailsListeners {
                         .add(technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION));
             }
         }
-
-        if (!operationsWithManyOutProducts.isEmpty()) {
-            state.addMessage("technologies.technologyDetails.window.tooManyOutProductsInOperation", MessageType.INFO,
-                    operationsWithManyOutProducts.stream().map(o -> o.getStringField(OperationFields.NUMBER))
-                            .collect(Collectors.joining(", ")));
-        }
+        return operationsWithManyOutProducts;
     }
 
     public void openOperationProductInComponentsImportPage(final ViewDefinitionState view, final ComponentState state,

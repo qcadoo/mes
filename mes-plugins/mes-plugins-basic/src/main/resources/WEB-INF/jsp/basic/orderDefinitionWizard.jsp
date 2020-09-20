@@ -536,7 +536,7 @@
       </div>
    </div>
 </div>
-<div id="productionLineDefinitionModal" class="modal" tabindex="-1" role="dialog"  data-backdrop="static" data-keyboard="false">
+<div id="productionLineDefinitionModal" class="modal definition-modal" tabindex="-1" role="dialog"  data-backdrop="static" data-keyboard="false">
    <div class="modal-dialog modal-dialog-lg" role="document">
       <div class="modal-content">
          <div class="modal-header">

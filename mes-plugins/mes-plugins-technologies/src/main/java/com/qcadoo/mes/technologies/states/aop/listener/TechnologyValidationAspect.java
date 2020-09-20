@@ -23,18 +23,15 @@
  */
 package com.qcadoo.mes.technologies.states.aop.listener;
 
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.annotation.RunForStateTransition;
 import com.qcadoo.mes.states.annotation.RunForStateTransitions;
 import com.qcadoo.mes.states.annotation.RunInPhase;
 import com.qcadoo.mes.states.aop.AbstractStateListenerAspect;
+import com.qcadoo.mes.technologies.constants.ParameterFieldsT;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners;
 import com.qcadoo.mes.technologies.states.aop.TechnologyStateChangeAspect;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangePhase;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
@@ -43,6 +40,12 @@ import com.qcadoo.mes.technologies.validators.TechnologyTreeValidators;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.plugin.api.RunIfEnabled;
+
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
 
 @Aspect
 @Configurable
@@ -55,6 +58,12 @@ public class TechnologyValidationAspect extends AbstractStateListenerAspect {
     @Autowired
     private TechnologyTreeValidators technologyTreeValidators;
 
+    @Autowired
+    private ParameterService parameterService;
+
+    @Autowired
+    private TechnologyDetailsListeners technologyDetailsListeners;
+
     @Pointcut(TechnologyStateChangeAspect.SELECTOR_POINTCUT)
     protected void targetServicePointcut() {
     }
@@ -66,6 +75,9 @@ public class TechnologyValidationAspect extends AbstractStateListenerAspect {
     public void preValidationOnAcceptingOrChecking(final StateChangeContext stateChangeContext, final int phase) {
         if (!technologyValidationService.checkIfTechnologyTreeIsSet(stateChangeContext)) {
             return;
+        }
+        if (parameterService.getParameter().getBooleanField(ParameterFieldsT.MOVE_PRODUCTS_TO_SUBSEQUENT_OPERATIONS)) {
+            technologyDetailsListeners.fillProducts(stateChangeContext.getOwner());
         }
         technologyValidationService.checkIfEveryOperationHasInComponents(stateChangeContext);
         technologyValidationService.checkConsumingManyProductsFromOneSubOp(stateChangeContext);

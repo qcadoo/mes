@@ -203,6 +203,33 @@ QCD.dashboard = (function () {
         );
     }
 
+    function prependOperationalTask(operationalTasksType, operationalTask) {
+        let doneInPercent = Math.round(operationalTask.usedQuantity * 100 / operationalTask.plannedQuantity);
+
+        operationalTask.usedQuantity = operationalTask.usedQuantity ? operationalTask.usedQuantity : 0;
+
+        $('#' + operationalTasksType).prepend(
+            '<div class="card" id="operationalTask' + operationalTask.id + '">' +
+                '<div class="card-header bg-secondary py-2">' +
+                    '<a href="#" class="card-title text-white" onclick="goToOperationalTaskDetails(' + operationalTask.id + ')">' + operationalTask.number + '</a>' +
+                '</div>' +
+                 '<div class="card-body py-2">' +
+                     '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.name.label") + ':</span> ' + operationalTask.name + '<br/>' +
+                     ((operationalTask.type == "02executionOperationInOrder" && operationalTask.orderNumber) ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.orderNumber.label") + ':</span> <a href="#" onclick="goToOrderDetails(' + operationalTask.orderId + ')">' + operationalTask.orderNumber + '</a><br/>' : '') +
+                     (operationalTask.workstationNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.workstationNumber.label") + ':</span> ' + operationalTask.workstationNumber + '<br/>' : '') +
+                     ((operationalTask.type == "02executionOperationInOrder" && operationalTask.orderProductNumber) ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.orderProductNumber.label") + ':</span> ' + operationalTask.orderProductNumber + '<br/>' : '') +
+                     ((operationalTask.type == "02executionOperationInOrder" && operationalTask.productNumber) ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.productNumber.label") + ':</span> ' + operationalTask.productNumber + '<br/>' : '') +
+                     ((operationalTask.type == "02executionOperationInOrder" && operationalTask.plannedQuantity && operationalTask.productUnit) ? '<span class="float-left"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.plannedQuantity.label") + ':</span> ' + operationalTask.plannedQuantity + ' ' + operationalTask.productUnit + '</span>' : '') +
+                     ((operationalTask.type == "02executionOperationInOrder" && operationalTasksType != 'operationalTasksPending') ? '<span class="float-right"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.usedQuantity.label") + ':</span> ' + operationalTask.usedQuantity + ' ' + operationalTask.productUnit + '</span>' : '') +
+                     ((operationalTask.type == "02executionOperationInOrder" && operationalTask.plannedQuantity) ? '<br/>' : '') +
+                     (operationalTask.staffName ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.staffName.label") + ':</span> ' + operationalTask.staffName + '<br/>' : '') +
+                     ((operationalTask.type == "02executionOperationInOrder" && operationalTask.state == "02started") ? '<a href="#" class="badge badge-success float-right" onclick="goToProductionTrackingTerminal(null, ' + operationalTask.id + ', ' + (operationalTask.workstationNumber ? '\'' + operationalTask.workstationNumber + '\'' : null) + ')">' + QCD.translate("basic.dashboard.operationalTasks.showTerminal.label") + '</a>' : '') +
+                 '</div>' +
+                 (operationalTask.type == "02executionOperationInOrder" ? '<div class="card-footer">' + '<div class="progress">' + '<div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: ' + doneInPercent + '%;" aria-valuenow="' + doneInPercent + '" aria-valuemin="0" aria-valuemax="100">' + doneInPercent + '%</div>' + '</div>' + '</div>' : '') +
+            '</div><div> &nbsp; </div>'
+        );
+    }
+
     function initOrders() {
         if ($('#dashboardKanban #ordersPending').length) {
             getOrdersPending();
@@ -343,7 +370,8 @@ QCD.dashboard = (function () {
 		init: init,
 		initOrders: initOrders,
 		appendOrder: appendOrder,
-		prependOrder: prependOrder
+		prependOrder: prependOrder,
+		prependOperationalTask: prependOperationalTask
 	};
 
 })();
@@ -493,11 +521,10 @@ function goToPage(url, isPage) {
 
 function addOrder() {
     QCD.orderDefinitionWizard.init();
-    //goToMenuPosition('orders.productionOrdersPlanning');
 }
 
 function addOperationalTask() {
-    goToMenuPosition('orders.operationalTasks');
+    QCD.operationalTasksDefinitionWizard.init();
 }
 
 function goToOrderDetails(id) {

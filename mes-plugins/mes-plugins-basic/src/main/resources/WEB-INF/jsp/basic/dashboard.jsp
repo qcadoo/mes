@@ -191,6 +191,7 @@
 
 	</div>
 	<jsp:include page="orderDefinitionWizard.jsp" />
+	<jsp:include page="operationalTasksDefinitionWizard.jsp" />
 	<script type="text/javascript" src="${pageContext.request.contextPath}/basic/public/js/dashboard.js?ver=${buildNumber}"></script>
 </body>
 

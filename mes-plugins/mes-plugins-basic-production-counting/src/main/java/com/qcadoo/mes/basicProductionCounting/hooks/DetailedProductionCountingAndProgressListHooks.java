@@ -29,6 +29,8 @@ import com.qcadoo.mes.basicProductionCounting.ProductionTrackingUpdateService;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.hooks.util.ProductionProgressModifyLockHelper;
 import com.qcadoo.mes.orders.OrderService;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityOpResult;
 import com.qcadoo.model.api.validators.ErrorMessage;
@@ -38,14 +40,15 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.json.JSONException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class DetailedProductionCountingAndProgressListHooks {
@@ -88,9 +91,21 @@ public class DetailedProductionCountingAndProgressListHooks {
         if (orderId == null) {
             return;
         }
+        if(disable(orderService.getOrder(orderId))) {
+            grid.setEnabled(false);
+        } else {
+            boolean isLocked = progressModifyLockHelper.isLocked(orderService.getOrder(orderId));
+            grid.setEnabled(!isLocked);
+        }
+    }
 
-        boolean isLocked = progressModifyLockHelper.isLocked(orderService.getOrder(orderId));
-        grid.setEnabled(!isLocked);
+    private boolean disable(Entity order) {
+
+        String state = order.getStringField(OrderFields.STATE);
+
+        return OrderStateStringValues.COMPLETED.equals(state) || OrderStateStringValues.DECLINED.equals(state)
+                || OrderStateStringValues.ABANDONED
+                .equals(state);
     }
 
     public void onRemoveSelectedProductionCountingQuantities(final ViewDefinitionState view, final ComponentState state,

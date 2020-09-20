@@ -35,7 +35,10 @@
             <option type="column" name="productUnit" fields="productUnit"
                     width="20"/>
             <option type="column" name="replacementTo" fields="replacementTo" width="100"/>
+            
             <option type="order" column="orderNumber" direction="asc" />
+            <option type="footerRow" value="true"/>
+            <option type="columnsToSummary" value="plannedQuantity,usedQuantity,producedQuantity"/>
 
             <option type="searchable" value="orderNumber,operationalTaskNumber,startDate,productNumber,productName,replacementTo,
                     nodeNumber,operationNumber,operationName,role,typeOfMaterial,plannedQuantity,usedQuantity,producedQuantity,productUnit" />

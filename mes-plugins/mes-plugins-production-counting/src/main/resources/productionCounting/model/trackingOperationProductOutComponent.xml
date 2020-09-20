@@ -64,7 +64,7 @@
         <boolean name="enteredFromTerminal" persistent="false"/>
         <hasMany name="prodOutResourceAttrVals" joinField="trackingOperationProductOutComponent" model="prodOutResourceAttrVal" cascade="delete"/>
         <belongsTo name="storageLocation" model="storageLocation" plugin="materialFlowResources"/>
-
+        <dictionary name="causeOfWastes" dictionary="causesOfWastes"/>
     </fields>
 
     <hooks>

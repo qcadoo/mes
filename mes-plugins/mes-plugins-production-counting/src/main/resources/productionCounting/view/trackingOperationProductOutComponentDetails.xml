@@ -41,7 +41,7 @@
         <windowTab name="mainTab">
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="grid" reference="grid"
-                           columns="6" rows="9" hasBorders="false">
+                           columns="6" rows="10" hasBorders="false">
                     <layoutElement column="1" row="1" width="5">
                         <component type="input" name="number" reference="number"
                                    defaultEnabled="false">
@@ -129,11 +129,18 @@
                         <component type="input" name="wastesQuantityUNIT"
                                    reference="wastesQuantityUNIT" defaultEnabled="false" hasLabel="false"/>
                     </layoutElement>
+                    <layoutElement column="1" row="10" width="5">
+                        <component type="select" name="causeOfWastes" reference="causeOfWastes"
+                                   field="causeOfWastes">
+                        </component>
+                    </layoutElement>
                 </component>
+
                 <option type="header" value="true"/>
                 <option type="expression" value="#product['name']"/>
             </component>
         </windowTab>
+
         <windowTab name="resourceAttributes">
             <component type="grid" name="prodOutResourceAttrVals" reference="prodOutResourceAttrVals"
                        source="#{form}.prodOutResourceAttrVals">
@@ -168,10 +175,9 @@
                 <option type="fullscreen" value="true"/>
                 <option type="multiselect" value="true"/>
             </component>
-
         </windowTab>
-        <windowTab name="attributes">
 
+        <windowTab name="attributes">
             <component type="lookup" name="product" reference="product"
                        field="#{form}.product" defaultVisible="false">
                 <option type="column" name="name" fields="name" link="true"
@@ -214,8 +220,8 @@
                 <option type="fullscreen" value="true"/>
                 <option type="multiselect" value="true"/>
             </component>
-
         </windowTab>
+
         <windowTab name="storageLocationTab">
             <component type="gridLayout" name="storageLocationGridLayout" reference="storageLocationGridLayout"
                        columns="1" rows="2" hasBorders="false">
@@ -230,6 +236,7 @@
 
                         <option type="expression" value="#number"/>
                         <option type="fieldCode" value="number"/>
+
                         <criteriaModifier
                                 class="com.qcadoo.mes.productionCounting.criteriaModifiers.StorageLocationCriteriaModifierPC"
                                 method="filter"/>

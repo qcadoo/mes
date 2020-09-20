@@ -1,6 +1,10 @@
 package com.qcadoo.mes.orders.controllers.responses;
 
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.orders.controllers.dto.OperationalTaskHolder;
 import com.qcadoo.mes.orders.controllers.dto.OrderHolder;
+
+import java.util.List;
 
 public class OrderCreationResponse {
 
@@ -13,6 +17,8 @@ public class OrderCreationResponse {
     private String additionalInformation;
 
     private OrderHolder order;
+
+    private List<OperationalTaskHolder> operationalTasks = Lists.newArrayList();
 
     public enum StatusCode {
         OK, ERROR;
@@ -65,5 +71,13 @@ public class OrderCreationResponse {
 
     public void setAdditionalInformation(String additionalInformation) {
         this.additionalInformation = additionalInformation;
+    }
+
+    public List<OperationalTaskHolder> getOperationalTasks() {
+        return operationalTasks;
+    }
+
+    public void setOperationalTasks(List<OperationalTaskHolder> operationalTasks) {
+        this.operationalTasks = operationalTasks;
     }
 }

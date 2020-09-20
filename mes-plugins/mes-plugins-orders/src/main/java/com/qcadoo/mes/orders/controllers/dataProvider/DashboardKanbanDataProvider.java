@@ -22,6 +22,8 @@ public class DashboardKanbanDataProvider {
 
     private static final String L_STATES = "states";
 
+    public static final String L_ORDER_ID = "orderId";
+
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -82,6 +84,18 @@ public class DashboardKanbanDataProvider {
         query += "WHERE orderlistdto.id = :id ";
 
         return query;
+    }
+
+    public List<OperationalTaskHolder> getOperationalTasksPendingForOrder(Long orderId) {
+        String additionalRestrictions = "AND operationaltaskdto.orderid = :orderId AND coalesce(operationaltaskdto.usedquantity, 0) = 0 ";
+
+        Map<String, Object> params = Maps.newHashMap();
+
+        params.put(L_STATES,
+                Sets.newHashSet(OperationalTaskStateStringValues.FINISHED));
+        params.put(L_ORDER_ID, orderId);
+
+        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions, false), params, new BeanPropertyRowMapper(OperationalTaskHolder.class));
     }
 
     public List<OperationalTaskHolder> getOperationalTasksPending() {

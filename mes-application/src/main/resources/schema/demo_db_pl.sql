@@ -5550,7 +5550,8 @@ CREATE TABLE arch_productioncounting_trackingoperationproductoutcomponent (
     entityversion bigint DEFAULT 0,
     wastesquantity numeric(14,5),
     typeofmaterial character varying(255) DEFAULT '01component'::character varying,
-    archived boolean DEFAULT false
+    archived boolean DEFAULT false,
+    causeofwastes character varying(255)
 );
 
 
@@ -8975,7 +8976,9 @@ CREATE TABLE basic_parameter (
     dashboardoperation_id bigint,
     dashboardcomponentslocation_id bigint,
     dashboardproductsinputlocation_id bigint,
-    momentofvalidation character varying(255) DEFAULT '01orderAcceptance'::character varying
+    momentofvalidation character varying(255) DEFAULT '01orderAcceptance'::character varying,
+    moveproductstosubsequentoperations boolean DEFAULT false,
+    demandcausesofwastes boolean DEFAULT false
 );
 
 
@@ -9911,7 +9914,8 @@ CREATE TABLE productioncounting_productiontracking (
     workstation_id bigint,
     batch_id bigint,
     expirationdate date,
-    qualityrating character varying(255)
+    qualityrating character varying(255),
+    iscorrected boolean DEFAULT false
 );
 
 
@@ -9932,7 +9936,8 @@ CREATE TABLE productioncounting_trackingoperationproductoutcomponent (
     entityversion bigint DEFAULT 0,
     wastesquantity numeric(14,5),
     typeofmaterial character varying(255) DEFAULT '01component'::character varying,
-    storagelocation_id bigint
+    storagelocation_id bigint,
+    causeofwastes character varying(255)
 );
 
 
@@ -10179,7 +10184,7 @@ CREATE VIEW basicproductioncounting_productioncountingquantitylistdto AS
      LEFT JOIN technologies_operation op ON ((op.id = toc.operation_id)))
      LEFT JOIN orders_operationaltask ot ON (((ot.order_id = o.id) AND (ot.technologyoperationcomponent_id = toc.id))))
      LEFT JOIN basic_product replacementto ON ((replacementto.id = pcq.replacementto_id)))
-  WHERE (((o.typeofproductionrecording)::text = '02cumulated'::text) AND ((o.state)::text = ANY ((ARRAY['02accepted'::character varying, '03inProgress'::character varying, '06interrupted'::character varying])::text[])))
+  WHERE (((o.typeofproductionrecording)::text = '02cumulated'::text) AND ((o.state)::text = ANY (ARRAY[('02accepted'::character varying)::text, ('03inProgress'::character varying)::text, ('06interrupted'::character varying)::text])))
 UNION
  SELECT pcq.id,
     o.number AS ordernumber,
@@ -10208,7 +10213,7 @@ UNION
      LEFT JOIN basic_product replacementto ON ((replacementto.id = pcq.replacementto_id)))
      LEFT JOIN basicproductioncounting_usedquantity_helper uqh ON (((uqh.order_id = pcq.order_id) AND (uqh.product_id = pcq.product_id) AND (uqh.technologyoperationcomponent_id = pcq.technologyoperationcomponent_id))))
      LEFT JOIN basicproductioncounting_producedquantity_helper pqh ON (((pqh.order_id = pcq.order_id) AND (pqh.product_id = pcq.product_id) AND (pqh.technologyoperationcomponent_id = pcq.technologyoperationcomponent_id))))
-  WHERE (((o.typeofproductionrecording)::text = '03forEach'::text) AND ((o.state)::text = ANY ((ARRAY['02accepted'::character varying, '03inProgress'::character varying, '06interrupted'::character varying])::text[])));
+  WHERE (((o.typeofproductionrecording)::text = '03forEach'::text) AND ((o.state)::text = ANY (ARRAY[('02accepted'::character varying)::text, ('03inProgress'::character varying)::text, ('06interrupted'::character varying)::text])));
 
 
 --
@@ -16434,8 +16439,8 @@ CREATE VIEW materialflowresources_resourcedto AS
     resource.documentnumber,
     resource.qualityrating,
     resource.blockedforqualitycontrol,
-    supplier.number AS suppliernumber
-   FROM ((((((((materialflowresources_resource resource
+    COALESCE(supplier.number, doc_supplier.number) AS suppliernumber
+   FROM ((((((((((materialflowresources_resource resource
      JOIN materialflow_location location ON ((location.id = resource.location_id)))
      JOIN basic_product product ON ((product.id = resource.product_id)))
      LEFT JOIN basic_additionalcode additionalcode ON ((additionalcode.id = resource.additionalcode_id)))
@@ -16443,7 +16448,9 @@ CREATE VIEW materialflowresources_resourcedto AS
      LEFT JOIN materialflowresources_storagelocation storagelocation ON ((storagelocation.id = resource.storagelocation_id)))
      LEFT JOIN advancedgenealogy_batch batch ON ((batch.id = resource.batch_id)))
      LEFT JOIN deliveries_delivery delivery ON (((delivery.number)::text = (resource.deliverynumber)::text)))
-     LEFT JOIN basic_company supplier ON ((delivery.supplier_id = supplier.id)));
+     LEFT JOIN basic_company supplier ON ((delivery.supplier_id = supplier.id)))
+     LEFT JOIN materialflowresources_document doc ON (((doc.number)::text = (resource.documentnumber)::text)))
+     LEFT JOIN basic_company doc_supplier ON ((doc.company_id = doc_supplier.id)));
 
 
 --
@@ -20585,6 +20592,7 @@ CREATE TABLE productioncounting_productionanalysisdto (
     usedquantity numeric,
     wastesquantity numeric,
     donequantity numeric,
+    causeofwastes character varying(255),
     shift_id integer,
     shiftname character varying(1024),
     timerangefrom date,
@@ -30115,7 +30123,7 @@ SELECT pg_catalog.setval('arch_productioncounting_trackingoperationproductincomp
 -- Data for Name: arch_productioncounting_trackingoperationproductoutcomponent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY arch_productioncounting_trackingoperationproductoutcomponent (id, productiontracking_id, product_id, usedquantity, balance, batch_id, wastedquantity, givenunit, givenquantity, entityversion, wastesquantity, typeofmaterial, archived) FROM stdin;
+COPY arch_productioncounting_trackingoperationproductoutcomponent (id, productiontracking_id, product_id, usedquantity, balance, batch_id, wastedquantity, givenunit, givenquantity, entityversion, wastesquantity, typeofmaterial, archived, causeofwastes) FROM stdin;
 \.
 
 
@@ -31234,8 +31242,8 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, allowtechnologytreechangeinpendingorder, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, enableoperationgroupingworkplan, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation) FROM stdin;
-1	167	124	szt.	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	02fromOrdersMaterialCosts	\N	f	01globally	14	f	\N	f	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	f	\N	\N	\N	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	f	01accepted	01order	01allInputProducts	f	t	\N	\N	\N	f	f	f	\N	\N	\N	\N	\N	150	\N	\N	f	t	f	\N	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance
+COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, allowtechnologytreechangeinpendingorder, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, enableoperationgroupingworkplan, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation, moveproductstosubsequentoperations, demandcausesofwastes) FROM stdin;
+1	167	124	szt.	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	02fromOrdersMaterialCosts	\N	f	01globally	14	f	\N	f	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	f	\N	\N	\N	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	f	01accepted	01order	01allInputProducts	f	t	\N	\N	\N	f	f	f	\N	\N	\N	\N	\N	150	\N	\N	f	t	f	\N	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	f	f
 \.
 
 
@@ -35739,7 +35747,7 @@ SELECT pg_catalog.setval('productioncounting_productionbalance_id_seq', 1, false
 -- Data for Name: productioncounting_productiontracking; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY productioncounting_productiontracking (id, number, order_id, technologyinstanceoperationcomponent_id, shift_id, state, lasttracking, machinetime, labortime, executedoperationcycles, staff_id, workstationtype_id, division_id, active, createdate, updatedate, createuser, updateuser, laststatechangefails, laststatechangefailcause, isexternalsynchronized, timerangefrom, timerangeto, shiftstartday, changeovertime, subcontractor_id, technologyoperationcomponent_id, entityversion, repairorder_id, correction_id, iscorrection, planforordercompleted, workstation_id, batch_id, expirationdate, qualityrating) FROM stdin;
+COPY productioncounting_productiontracking (id, number, order_id, technologyinstanceoperationcomponent_id, shift_id, state, lasttracking, machinetime, labortime, executedoperationcycles, staff_id, workstationtype_id, division_id, active, createdate, updatedate, createuser, updateuser, laststatechangefails, laststatechangefailcause, isexternalsynchronized, timerangefrom, timerangeto, shiftstartday, changeovertime, subcontractor_id, technologyoperationcomponent_id, entityversion, repairorder_id, correction_id, iscorrection, planforordercompleted, workstation_id, batch_id, expirationdate, qualityrating, iscorrected) FROM stdin;
 \.
 
 
@@ -35870,7 +35878,7 @@ SELECT pg_catalog.setval('productioncounting_trackingoperationproductincomponent
 -- Data for Name: productioncounting_trackingoperationproductoutcomponent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY productioncounting_trackingoperationproductoutcomponent (id, productiontracking_id, product_id, usedquantity, balance, batch_id, wastedquantity, givenunit, givenquantity, entityversion, wastesquantity, typeofmaterial, storagelocation_id) FROM stdin;
+COPY productioncounting_trackingoperationproductoutcomponent (id, productiontracking_id, product_id, usedquantity, balance, batch_id, wastedquantity, givenunit, givenquantity, entityversion, wastesquantity, typeofmaterial, storagelocation_id, causeofwastes) FROM stdin;
 \.
 
 
@@ -36128,6 +36136,7 @@ COPY qcadoomodel_dictionary (id, name, pluginidentifier, active, entityversion) 
 17	occupationType	assignmentToShift	t	0
 18	productionLinePlacesForSCADA	productionLines	t	0
 20	qualityRating	qualityControl	t	0
+21	causesOfWastes	productionCounting	t	0
 \.
 
 
@@ -36135,7 +36144,7 @@ COPY qcadoomodel_dictionary (id, name, pluginidentifier, active, entityversion) 
 -- Name: qcadoomodel_dictionary_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoomodel_dictionary_id_seq', 20, true);
+SELECT pg_catalog.setval('qcadoomodel_dictionary_id_seq', 21, true);
 
 
 --
@@ -36529,6 +36538,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 120	ROLE_OEE	\N	0
 121	ROLE_STOPPAGES	\N	0
 122	ROLE_STOPPAGE_REASONS	\N	0
+123	ROLE_WMS	\N	0
 \.
 
 
@@ -36536,7 +36546,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 122, true);
+SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 123, true);
 
 
 --
@@ -44491,104 +44501,6 @@ CREATE RULE "_RETURN" AS
 --
 
 CREATE RULE "_RETURN" AS
-    ON SELECT TO productioncounting_productionanalysisdto DO INSTEAD  SELECT row_number() OVER () AS id,
-    bool_or(productiontracking.active) AS active,
-    (productionline.id)::integer AS productionline_id,
-    productionline.number AS productionlinenumber,
-    (basiccompany.id)::integer AS company_id,
-    basiccompany.number AS companynumber,
-    (staff.id)::integer AS staff_id,
-    (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
-    (assortment.id)::integer AS assortment_id,
-    assortment.name AS assortmentname,
-    (product.id)::integer AS product_id,
-    product.number AS productnumber,
-    product.name AS productname,
-    product.unit AS productunit,
-    product.size,
-    sum((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric))::numeric(14,5)) AS usedquantity,
-    sum((COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric))::numeric(14,5)) AS wastesquantity,
-    sum(((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric)))::numeric(14,5)) AS donequantity,
-    (shift.id)::integer AS shift_id,
-    shift.name AS shiftname,
-    (productiontracking.timerangefrom)::date AS timerangefrom,
-    (productiontracking.timerangeto)::date AS timerangeto,
-    (tcontext.id)::integer AS generator_id,
-    tcontext.number AS generatorname,
-    (ordersorder.id)::integer AS order_id,
-    ordersorder.number AS ordernumber,
-    COALESCE(masterorder.number, groupmasterorder.number) AS obtainedmasterordernumber,
-    tg.number AS technologygroupnumber
-   FROM ((((((((((((((productioncounting_productiontracking productiontracking
-     LEFT JOIN orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
-     LEFT JOIN basic_company basiccompany ON ((basiccompany.id = ordersorder.company_id)))
-     LEFT JOIN productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
-     LEFT JOIN basic_staff staff ON ((staff.id = productiontracking.staff_id)))
-     LEFT JOIN productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON ((trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id)))
-     LEFT JOIN basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
-     LEFT JOIN basic_assortment assortment ON ((assortment.id = product.assortment_id)))
-     LEFT JOIN basic_shift shift ON ((shift.id = productiontracking.shift_id)))
-     LEFT JOIN technologies_technology technologyprototype ON ((ordersorder.technologyprototype_id = technologyprototype.id)))
-     LEFT JOIN technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
-     LEFT JOIN masterorders_masterorder masterorder ON ((masterorder.id = ordersorder.masterorder_id)))
-     LEFT JOIN ordersgroups_ordersgroup ordersgroup ON ((ordersgroup.id = ordersorder.ordersgroup_id)))
-     LEFT JOIN masterorders_masterorder groupmasterorder ON ((groupmasterorder.id = ordersgroup.masterorder_id)))
-     LEFT JOIN technologies_technologygroup tg ON ((technologyprototype.technologygroup_id = tg.id)))
-  WHERE ((productiontracking.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02accepted'::character varying)::text]))
-  GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, product.id, shift.id, ((productiontracking.timerangefrom)::date), ((productiontracking.timerangeto)::date), ordersorder.id, tcontext.id, masterorder.id, groupmasterorder.id, tg.number
-UNION ALL
- SELECT row_number() OVER () AS id,
-    bool_or(productiontracking.active) AS active,
-    (productionline.id)::integer AS productionline_id,
-    productionline.number AS productionlinenumber,
-    (basiccompany.id)::integer AS company_id,
-    basiccompany.number AS companynumber,
-    (staff.id)::integer AS staff_id,
-    (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
-    (assortment.id)::integer AS assortment_id,
-    assortment.name AS assortmentname,
-    (product.id)::integer AS product_id,
-    product.number AS productnumber,
-    product.name AS productname,
-    product.unit AS productunit,
-    product.size,
-    sum((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric))::numeric(14,5)) AS usedquantity,
-    sum((COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric))::numeric(14,5)) AS wastesquantity,
-    sum(((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric)))::numeric(14,5)) AS donequantity,
-    (shift.id)::integer AS shift_id,
-    shift.name AS shiftname,
-    (productiontracking.timerangefrom)::date AS timerangefrom,
-    (productiontracking.timerangeto)::date AS timerangeto,
-    (tcontext.id)::integer AS generator_id,
-    tcontext.number AS generatorname,
-    (ordersorder.id)::integer AS order_id,
-    ordersorder.number AS ordernumber,
-    COALESCE(masterorder.number, groupmasterorder.number) AS obtainedmasterordernumber,
-    tg.number AS technologygroupnumber
-   FROM ((((((((((((((arch_productioncounting_productiontracking productiontracking
-     LEFT JOIN arch_orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
-     LEFT JOIN basic_company basiccompany ON ((basiccompany.id = ordersorder.company_id)))
-     LEFT JOIN productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
-     LEFT JOIN basic_staff staff ON ((staff.id = productiontracking.staff_id)))
-     LEFT JOIN arch_productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON ((trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id)))
-     LEFT JOIN basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
-     LEFT JOIN basic_assortment assortment ON ((assortment.id = product.assortment_id)))
-     LEFT JOIN basic_shift shift ON ((shift.id = productiontracking.shift_id)))
-     LEFT JOIN technologies_technology technologyprototype ON ((ordersorder.technologyprototype_id = technologyprototype.id)))
-     LEFT JOIN technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
-     LEFT JOIN arch_masterorders_masterorder masterorder ON ((masterorder.id = ordersorder.masterorder_id)))
-     LEFT JOIN arch_ordersgroups_ordersgroup ordersgroup ON ((ordersgroup.id = ordersorder.ordersgroup_id)))
-     LEFT JOIN arch_masterorders_masterorder groupmasterorder ON ((groupmasterorder.id = ordersgroup.masterorder_id)))
-     LEFT JOIN technologies_technologygroup tg ON ((technologyprototype.technologygroup_id = tg.id)))
-  WHERE ((productiontracking.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02accepted'::character varying)::text]))
-  GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, product.id, shift.id, ((productiontracking.timerangefrom)::date), ((productiontracking.timerangeto)::date), ordersorder.id, tcontext.id, masterorder.id, groupmasterorder.id, tg.number;
-
-
---
--- Name: _RETURN; Type: RULE; Schema: public; Owner: -
---
-
-CREATE RULE "_RETURN" AS
     ON SELECT TO productioncounting_trackingoperationproductincomponenthelper DO INSTEAD  SELECT trackingoperationproductincomponent.id,
     (productiontracking.id)::integer AS productiontracking_id,
     (product.id)::integer AS product_id,
@@ -44710,6 +44622,106 @@ CREATE RULE "_RETURN" AS
      LEFT JOIN technologies_technology at ON (((at.product_id = opic.product_id) AND (at.technologytype IS NULL) AND (at.active = true) AND ((at.state)::text = '02accepted'::text))))
      LEFT JOIN technologies_technology ct ON (((ct.product_id = opic.product_id) AND (ct.technologytype IS NULL) AND (ct.active = true) AND ((ct.state)::text = '05checked'::text))))
   GROUP BY opic.id, toc.id, product.id, product.number, product.name, product.unit, opic.quantity, opic.priority, opic.itemnumberintheexplodedview, tech.name, tech.number, tech.state, tech.master, op.name, tech.active, tech.technologytype, tech.id;
+
+
+--
+-- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE RULE "_RETURN" AS
+    ON SELECT TO productioncounting_productionanalysisdto DO INSTEAD  SELECT row_number() OVER () AS id,
+    bool_or(productiontracking.active) AS active,
+    (productionline.id)::integer AS productionline_id,
+    productionline.number AS productionlinenumber,
+    (basiccompany.id)::integer AS company_id,
+    basiccompany.number AS companynumber,
+    (staff.id)::integer AS staff_id,
+    (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
+    (assortment.id)::integer AS assortment_id,
+    assortment.name AS assortmentname,
+    (product.id)::integer AS product_id,
+    product.number AS productnumber,
+    product.name AS productname,
+    product.unit AS productunit,
+    product.size,
+    sum((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric))::numeric(14,5)) AS usedquantity,
+    sum((COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric))::numeric(14,5)) AS wastesquantity,
+    sum(((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric)))::numeric(14,5)) AS donequantity,
+    trackingoperationproductoutcomponent.causeofwastes,
+    (shift.id)::integer AS shift_id,
+    shift.name AS shiftname,
+    (productiontracking.timerangefrom)::date AS timerangefrom,
+    (productiontracking.timerangeto)::date AS timerangeto,
+    (tcontext.id)::integer AS generator_id,
+    tcontext.number AS generatorname,
+    (ordersorder.id)::integer AS order_id,
+    ordersorder.number AS ordernumber,
+    COALESCE(masterorder.number, groupmasterorder.number) AS obtainedmasterordernumber,
+    technologygroup.number AS technologygroupnumber
+   FROM ((((((((((((((productioncounting_productiontracking productiontracking
+     LEFT JOIN orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
+     LEFT JOIN basic_company basiccompany ON ((basiccompany.id = ordersorder.company_id)))
+     LEFT JOIN productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
+     LEFT JOIN basic_staff staff ON ((staff.id = productiontracking.staff_id)))
+     LEFT JOIN productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON ((trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id)))
+     LEFT JOIN basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
+     LEFT JOIN basic_assortment assortment ON ((assortment.id = product.assortment_id)))
+     LEFT JOIN basic_shift shift ON ((shift.id = productiontracking.shift_id)))
+     LEFT JOIN technologies_technology technologyprototype ON ((ordersorder.technologyprototype_id = technologyprototype.id)))
+     LEFT JOIN technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
+     LEFT JOIN masterorders_masterorder masterorder ON ((masterorder.id = ordersorder.masterorder_id)))
+     LEFT JOIN ordersgroups_ordersgroup ordersgroup ON ((ordersgroup.id = ordersorder.ordersgroup_id)))
+     LEFT JOIN masterorders_masterorder groupmasterorder ON ((groupmasterorder.id = ordersgroup.masterorder_id)))
+     LEFT JOIN technologies_technologygroup technologygroup ON ((technologyprototype.technologygroup_id = technologygroup.id)))
+  WHERE ((productiontracking.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02accepted'::character varying)::text]))
+  GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, product.id, shift.id, trackingoperationproductoutcomponent.causeofwastes, ((productiontracking.timerangefrom)::date), ((productiontracking.timerangeto)::date), ordersorder.id, tcontext.id, masterorder.id, groupmasterorder.id, technologygroup.number
+UNION ALL
+ SELECT row_number() OVER () AS id,
+    bool_or(productiontracking.active) AS active,
+    (productionline.id)::integer AS productionline_id,
+    productionline.number AS productionlinenumber,
+    (basiccompany.id)::integer AS company_id,
+    basiccompany.number AS companynumber,
+    (staff.id)::integer AS staff_id,
+    (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
+    (assortment.id)::integer AS assortment_id,
+    assortment.name AS assortmentname,
+    (product.id)::integer AS product_id,
+    product.number AS productnumber,
+    product.name AS productname,
+    product.unit AS productunit,
+    product.size,
+    sum((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric))::numeric(14,5)) AS usedquantity,
+    sum((COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric))::numeric(14,5)) AS wastesquantity,
+    sum(((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric)))::numeric(14,5)) AS donequantity,
+    trackingoperationproductoutcomponent.causeofwastes,
+    (shift.id)::integer AS shift_id,
+    shift.name AS shiftname,
+    (productiontracking.timerangefrom)::date AS timerangefrom,
+    (productiontracking.timerangeto)::date AS timerangeto,
+    (tcontext.id)::integer AS generator_id,
+    tcontext.number AS generatorname,
+    (ordersorder.id)::integer AS order_id,
+    ordersorder.number AS ordernumber,
+    COALESCE(masterorder.number, groupmasterorder.number) AS obtainedmasterordernumber,
+    technologygroup.number AS technologygroupnumber
+   FROM ((((((((((((((arch_productioncounting_productiontracking productiontracking
+     LEFT JOIN arch_orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
+     LEFT JOIN basic_company basiccompany ON ((basiccompany.id = ordersorder.company_id)))
+     LEFT JOIN productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
+     LEFT JOIN basic_staff staff ON ((staff.id = productiontracking.staff_id)))
+     LEFT JOIN arch_productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON ((trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id)))
+     LEFT JOIN basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
+     LEFT JOIN basic_assortment assortment ON ((assortment.id = product.assortment_id)))
+     LEFT JOIN basic_shift shift ON ((shift.id = productiontracking.shift_id)))
+     LEFT JOIN technologies_technology technologyprototype ON ((ordersorder.technologyprototype_id = technologyprototype.id)))
+     LEFT JOIN technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
+     LEFT JOIN arch_masterorders_masterorder masterorder ON ((masterorder.id = ordersorder.masterorder_id)))
+     LEFT JOIN arch_ordersgroups_ordersgroup ordersgroup ON ((ordersgroup.id = ordersorder.ordersgroup_id)))
+     LEFT JOIN arch_masterorders_masterorder groupmasterorder ON ((groupmasterorder.id = ordersgroup.masterorder_id)))
+     LEFT JOIN technologies_technologygroup technologygroup ON ((technologyprototype.technologygroup_id = technologygroup.id)))
+  WHERE ((productiontracking.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02accepted'::character varying)::text]))
+  GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, product.id, shift.id, trackingoperationproductoutcomponent.causeofwastes, ((productiontracking.timerangefrom)::date), ((productiontracking.timerangeto)::date), ordersorder.id, tcontext.id, masterorder.id, groupmasterorder.id, technologygroup.number;
 
 
 --

@@ -154,12 +154,7 @@ public class LogService {
         logEntity.setField(LogFields.LOG_LEVEL, builder.logLevel.getCode());
         logEntity.setField(LogFields.MESSAGE, builder.message);
         logEntity.setField(LogFields.LOG_TYPE, builder.type);
-        Long userId;
-        try {
-            userId = securityService.getCurrentUserId();
-        } catch (Exception ex) {
-            userId = findBotUser().getId();
-        }
+        Long userId = securityService.getCurrentUserOrQcadooBotId();
         logEntity.setField(LogFields.USER, userId);
         Entity saved = logDD.save(logEntity);
         if(!saved.isValid()) {

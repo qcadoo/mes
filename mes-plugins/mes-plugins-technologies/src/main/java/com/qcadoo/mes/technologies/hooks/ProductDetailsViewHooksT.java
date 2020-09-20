@@ -40,8 +40,6 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 @Service
 public class ProductDetailsViewHooksT {
 
-
-
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
