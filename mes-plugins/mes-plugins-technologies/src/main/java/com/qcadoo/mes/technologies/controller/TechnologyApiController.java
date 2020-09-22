@@ -17,6 +17,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.validators.ErrorMessage;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
@@ -92,6 +93,20 @@ public final class TechnologyApiController {
         operationEntity.setField(OperationFields.NAME, operation.getName());
         operationEntity.setField(OperationFields.QUANTITY_OF_WORKSTATIONS, 1);
         operationEntity.setField(OperationFields.ASSIGNED_TO_OPERATION, "01workstations");
+        operationEntity.setField(OperationFields.CREATE_OPERATION_OUTPUT, true);
+        operationEntity.setField("tpz", 0);
+        operationEntity.setField("tj", 0);
+        operationEntity.setField("timeNextOperation", 0);
+
+        operationEntity.setField("productionInOneCycle", BigDecimal.ONE);
+
+        operationEntity.setField("machineUtilization", BigDecimal.ONE);
+
+        operationEntity.setField("laborUtilization", BigDecimal.valueOf(1L));
+
+        operationEntity.setField("nextOperationAfterProducedType", "01all");
+
+        operationEntity.setField("nextOperationAfterProducedQuantity", BigDecimal.ZERO);
 
         operationEntity = operationEntity.getDataDefinition().save(operationEntity);
         if(operationEntity.isValid()) {
@@ -104,14 +119,14 @@ public final class TechnologyApiController {
             ErrorMessage numberError = operationEntity.getError(ProductionLineFields.NUMBER);
             if(Objects.nonNull(numberError) && numberError.getMessage().equals("qcadooView.validate.field.error.duplicated")) {
                 OperationResponse response = new OperationResponse(OperationResponse.StatusCode.ERROR);
-                response.setMessage(translationService.translate("basic.dashboard.orderDefinitionWizard.error.validationError.productionLineDuplicated",
+                response.setMessage(translationService.translate("basic.dashboard.orderDefinitionWizard.error.validationError.operationDuplicated",
                         LocaleContextHolder.getLocale()));
                 return response;
             }
 
         }
         OperationResponse response = new OperationResponse(OperationResponse.StatusCode.ERROR);
-        response.setMessage(translationService.translate("basic.dashboard.orderDefinitionWizard.error.validationError.productionLineErrors",
+        response.setMessage(translationService.translate("basic.dashboard.orderDefinitionWizard.error.validationError.operationErrors",
                 LocaleContextHolder.getLocale()));
         return response;
     }

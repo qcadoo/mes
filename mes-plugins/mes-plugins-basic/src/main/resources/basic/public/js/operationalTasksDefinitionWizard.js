@@ -99,16 +99,16 @@ QCD.operationalTasksDefinitionWizard = (function () {
 							QCD.translate("basic.dashboard.orderDefinitionWizard.error.validationError.emptyField"),
 							false);
 					}
-                    if (!invalid) {
-var data = QCD.operationalTasksDefinitionWizardContext.technologyOperations;
-					$.each(data, function (i, oper) {
-						$.each(oper.materials, function (i, material) {
-						var calculatedQuantity = material.quantityPerUnit * $('#otQuantity').val();
-                        material.quantity = parseFloat(calculatedQuantity.toFixed(5));
-                        $('#quantityProductIn-' + material.index).val(material.quantity);
+					if (!invalid) {
+						var data = QCD.operationalTasksDefinitionWizardContext.technologyOperations;
+						$.each(data, function (i, oper) {
+							$.each(oper.materials, function (i, material) {
+								var calculatedQuantity = material.quantityPerUnit * $('#otQuantity').val();
+								material.quantity = parseFloat(calculatedQuantity.toFixed(5));
+								$('#quantityProductIn-' + material.index).val(material.quantity);
+							});
 						});
-						});
-                    }
+					}
 					return !invalid;
 				} else if (currentIndex == 1) {
 					var invalid = false;
@@ -475,26 +475,27 @@ var data = QCD.operationalTasksDefinitionWizardContext.technologyOperations;
 				},
 				success: function (data) {
 					logoutIfSessionExpired(data);
-					if (QCD.operationalTasksDefinitionWizardContext.order.currentMaterialIndex) {
-						$.each(QCD.operationalTasksDefinitionWizardContext.technologyOperations, function (i, e) {
-							if (e.index == QCD.operationalTasksDefinitionWizardContext.order.currentTOCIndex) {
-								$.each(e.materials, function (i, e) {
-									if (e.index == QCD.operationalTasksDefinitionWizardContext.order.currentMaterialIndex) {
-										e.productId = data.id;;
-										e.productNumber = data.number;
-										e.product = data.number;
-										e.unit = data.unit;
-										$("#otProductDefinitionModal").modal('hide');
-										$('#inProduct-' + QCD.operationalTasksDefinitionWizardContext.order.currentMaterialIndex).val(data.number);
-										$('#inProduct-' + QCD.operationalTasksDefinitionWizardContext.order.currentMaterialIndex).removeClass('is-invalid');
-										$('#unit-' + QCD.operationalTasksDefinitionWizardContext.order.currentMaterialIndex).val(data.unit);
+					if (data.code === 'OK') {
+						if (QCD.operationalTasksDefinitionWizardContext.order.currentMaterialIndex) {
+							$.each(QCD.operationalTasksDefinitionWizardContext.technologyOperations, function (i, e) {
+								if (e.index == QCD.operationalTasksDefinitionWizardContext.order.currentTOCIndex) {
+									$.each(e.materials, function (i, e) {
+										if (e.index == QCD.operationalTasksDefinitionWizardContext.order.currentMaterialIndex) {
+											e.productId = data.id;;
+											e.productNumber = data.number;
+											e.product = data.number;
+											e.unit = data.unit;
+											$("#otProductDefinitionModal").modal('hide');
+											$('#inProduct-' + QCD.operationalTasksDefinitionWizardContext.order.currentMaterialIndex).val(data.number);
+											$('#inProduct-' + QCD.operationalTasksDefinitionWizardContext.order.currentMaterialIndex).removeClass('is-invalid');
+											$('#unit-' + QCD.operationalTasksDefinitionWizardContext.order.currentMaterialIndex).val(data.unit);
 
-									}
-								});
-							}
-						});
-					} else {
-						if (data.code === 'OK') {
+										}
+									});
+								}
+							});
+						} else {
+
 							QCD.operationalTasksDefinitionWizardContext.order.product = {};
 							QCD.operationalTasksDefinitionWizardContext.order.product.id = data.id;
 							QCD.operationalTasksDefinitionWizardContext.order.product.number = data.number;
@@ -505,14 +506,16 @@ var data = QCD.operationalTasksDefinitionWizardContext.technologyOperations;
 							$("#otUnit").val(QCD.operationalTasksDefinitionWizardContext.order.product.unit);
 							QCD.operationalTasksDefinitionWizardContext.order.technology = null;
 							$("#otTechnology").val("");
-						} else {
-							showMessage(
-								'failure',
-								QCD.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
-								data.message,
-								false);
+
 						}
+					} else {
+						showMessage(
+							'failure',
+							QCD.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
+							data.message,
+							false);
 					}
+
 					$("#loader").modal('hide');
 
 				},
@@ -576,7 +579,14 @@ var data = QCD.operationalTasksDefinitionWizardContext.technologyOperations;
 			if (e.keyCode != 13) {
 				$('#otTechnology').removeData("active");
 				QCD.operationalTasksDefinitionWizardContext.order.technology = null;
-
+				QCD.operationalTasksDefinitionWizardContext.technologyOperations = [];
+				$('#technologyOperations').bootstrapTable('load', QCD.operationalTasksDefinitionWizardContext.technologyOperations);
+				if (QCD.operationalTasksDefinitionWizardContext.order.technology) {
+					$("#removeTechnologyOperation").prop('disabled', true);
+					$("#newTechnologyOperation").prop('disabled', true);
+				} else {
+					$("#newTechnologyOperation").prop('disabled', false);
+				}
 			}
 		});
 
@@ -620,11 +630,16 @@ var data = QCD.operationalTasksDefinitionWizardContext.technologyOperations;
 		$("#removeTechnologyOperation").prop('disabled', true);
 
 		$('#technologyOperations').on('check.bs.table', function (row, $element) {
-			$("#removeTechnologyOperation").prop('disabled', false);
+			if (!QCD.operationalTasksDefinitionWizardContext.order.technology) {
+				$("#removeTechnologyOperation").prop('disabled', false);
+			}
 		});
 
 		$('#technologyOperations').on('uncheck.bs.table', function (row, $element) {
-			$("#removeTechnologyOperation").prop('disabled', true);
+			if (!QCD.operationalTasksDefinitionWizardContext.order.technology) {
+
+				$("#removeTechnologyOperation").prop('disabled', true);
+			}
 		});
 
 		var $technologyOperations = $("#technologyOperations")
@@ -666,16 +681,39 @@ var data = QCD.operationalTasksDefinitionWizardContext.technologyOperations;
 			})
 			$("#removeTechnologyOperation").prop('disabled', true);
 
-            var reIndex = 1;
-            $.each(QCD.operationalTasksDefinitionWizardContext.technologyOperations, function (i, toc) {
-                toc.node = reIndex + ".";
-                QCD.operationalTasksDefinitionWizardContext.node = reIndex;
-                reIndex = reIndex+1;
-            });
-            						$('#technologyOperations').bootstrapTable('load', QCD.operationalTasksDefinitionWizardContext.technologyOperations);
+			var reIndex = 1;
+			$.each(QCD.operationalTasksDefinitionWizardContext.technologyOperations, function (i, toc) {
+				toc.node = reIndex + ".";
+				QCD.operationalTasksDefinitionWizardContext.node = reIndex;
+				reIndex = reIndex + 1;
+			});
+			$('#technologyOperations').bootstrapTable('load', QCD.operationalTasksDefinitionWizardContext.technologyOperations);
 
 		});
 
+		$("#otStartDate").datetimepicker({
+			format: 'YYYY-MM-DD HH:mm:ss',
+			useStrict: true,
+			useCurrent: false,
+			locale: QCD.currentLang
+		});
+
+		$("#otFinishDate").datetimepicker({
+			format: 'YYYY-MM-DD HH:mm:ss',
+			useStrict: true,
+			useCurrent: false,
+			locale: QCD.currentLang
+		});
+
+		$("#otStartDatePicker").click(function () {
+			$("#otStartDate").data("DateTimePicker").toggle();
+
+
+		});
+
+		$("#otFinishDatePicker").click(function () {
+			$("#otFinishDate").data("DateTimePicker").toggle();
+		});
 
 
 		$('#operationDefinitionModal').on('hidden.bs.modal', function () {
@@ -1127,6 +1165,8 @@ var data = QCD.operationalTasksDefinitionWizardContext.technologyOperations;
 		QCD.operationalTasksDefinitionWizardContext.order.lastOperationIndex = null
 		QCD.operationalTasksDefinitionWizardContext.order.productEvents = [];
 		QCD.operationalTasksDefinitionWizardContext.order.workstationEvents = [];
+		QCD.operationalTasksDefinitionWizardContext.node = 0;
+
 	}
 
 	function openOperationDefinition(element) {
@@ -1223,7 +1263,7 @@ var data = QCD.operationalTasksDefinitionWizardContext.technologyOperations;
 		operElement = operElement + '<div class="input-group"><div class="input-group-prepend">';
 		operElement = operElement + '<label class="form-label required small-label">' + QCD.translate("basic.dashboard.operationalTasksDefinitionWizard.technologyOperations.node") + '</label>';
 		operElement = operElement + '</div>';
-		operElement = operElement + ' <input disabled type="text" class="form-control" tabindex="1" autocomplete="off" value="' + oper.node + '."></input> ';
+		operElement = operElement + ' <input disabled type="text" class="form-control" tabindex="1" autocomplete="off" value="' + oper.node + '"></input> ';
 		operElement = operElement + '</div>';
 		operElement = operElement + '</div>';
 		operElement = operElement + '<div class="col-sm-4">';
@@ -1852,36 +1892,36 @@ var data = QCD.operationalTasksDefinitionWizardContext.technologyOperations;
 		});
 	}
 
-    function createOperationalTasks() {
+	function createOperationalTasks() {
 		var order = {};
 		order.productId = QCD.operationalTasksDefinitionWizardContext.order.product.id;
 		order.quantity = $("#otQuantity").val();
 		order.description = $("#otDescription").val();
 		if (QCD.operationalTasksDefinitionWizardContext.order.technology) {
-            order.technologyId = QCD.operationalTasksDefinitionWizardContext.order.technology.id;
-        }
-        order.startDate = getDate("otStartDate");
-        order.typeOfProductionRecording = '03forEach';
-        order.finishDate = getDate("otFinishDate");
-        order.technologyOperations = [];
-        $.each(QCD.operationalTasksDefinitionWizardContext.technologyOperations, function (i, toc) {
-            var technologyOperation = {};
-            technologyOperation.id = toc.id;
+			order.technologyId = QCD.operationalTasksDefinitionWizardContext.order.technology.id;
+		}
+		order.startDate = getDate("otStartDate");
+		order.typeOfProductionRecording = '03forEach';
+		order.finishDate = getDate("otFinishDate");
+		order.technologyOperations = [];
+		$.each(QCD.operationalTasksDefinitionWizardContext.technologyOperations, function (i, toc) {
+			var technologyOperation = {};
+			technologyOperation.id = toc.id;
 			technologyOperation.operationId = toc.operationId;
 			technologyOperation.workstationId = toc.workstationId;
-            technologyOperation.node = toc.node;
-            technologyOperation.materials = [];
-            $.each(toc.materials, function (i, material) {
-			    var operationMaterial = {};
-                operationMaterial.productInId = material.productInId;
-                operationMaterial.productId = material.productId;
-                operationMaterial.quantity = material.quantity;
-                operationMaterial.quantityPerUnit = material.quantityPerUnit;
-                technologyOperation.materials.push(operationMaterial);
-            });
+			technologyOperation.node = toc.node;
+			technologyOperation.materials = [];
+			$.each(toc.materials, function (i, material) {
+				var operationMaterial = {};
+				operationMaterial.productInId = material.productInId;
+				operationMaterial.productId = material.productId;
+				operationMaterial.quantity = material.quantity;
+				operationMaterial.quantityPerUnit = material.quantityPerUnit;
+				technologyOperation.materials.push(operationMaterial);
+			});
 			order.technologyOperations.push(technologyOperation);
 
-        });
+		});
 		$.ajax({
 			url: "rest/operationalTasks",
 			type: "POST",
@@ -1895,10 +1935,10 @@ var data = QCD.operationalTasksDefinitionWizardContext.technologyOperations;
 				if (data.code === 'OK') {
 
 					$("#operationalTasksDefinitionWizard").modal('hide');
-					 $.each(data.operationalTasks, function (i, operationalTask) {
-					    QCD.dashboard.prependOperationalTask('operationalTasksPending', operationalTask);
+					$.each(data.operationalTasks, function (i, operationalTask) {
+						QCD.dashboard.prependOperationalTask('operationalTasksPending', operationalTask);
 
-					 });
+					});
 					showMessage('success',
 						QCD.translate("basic.dashboard.orderDefinitionWizard.success"),
 						data.message, false);
@@ -1933,7 +1973,7 @@ var data = QCD.operationalTasksDefinitionWizardContext.technologyOperations;
 				$("#loader").modal('hide');
 			}
 		});
-    }
+	}
 
 	return {
 		init: init,
