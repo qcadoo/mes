@@ -224,7 +224,7 @@
                            </div>
                         </div>
                      </div>
-                     <div class="form-group" style="width: 100%;">
+                     <div class="form-group"  id="workstations-group" style="width: 100%;">
                         <table id="workstations" data-search="false">
                            <thead>
                               <tr>

@@ -21,6 +21,85 @@ QCD.operationalTasksDefinitionWizard = (function () {
 
 
 	function init() {
+		(function ($) {
+			'use strict';
+
+			$.fn.bootstrapTable.locales['en-US'] = {
+				formatLoadingMessage: function () {
+					return 'Loading, please wait...';
+				},
+				formatRecordsPerPage: function (pageNumber) {
+					return pageNumber + ' rows per page';
+				},
+				formatShowingRows: function (pageFrom, pageTo, totalRows) {
+					return 'Showing ' + pageFrom + ' to ' + pageTo + ' of ' + totalRows + ' rows';
+				},
+				formatSearch: function () {
+					return 'Search';
+				},
+				formatNoMatches: function () {
+					return '';
+				},
+				formatPaginationSwitch: function () {
+					return 'Hide/Show pagination';
+				},
+				formatRefresh: function () {
+					return 'Refresh';
+				},
+				formatToggle: function () {
+					return 'Toggle';
+				},
+				formatColumns: function () {
+					return 'Columns';
+				},
+				formatAllRows: function () {
+					return 'All';
+				},
+				formatExport: function () {
+					return 'Export data';
+				},
+				formatClearFilters: function () {
+					return 'Clear filters';
+				}
+			};
+
+			$.extend($.fn.bootstrapTable.defaults, $.fn.bootstrapTable.locales['en-US']);
+
+		})(jQuery);
+
+		(function ($) {
+			'use strict';
+
+			$.fn.bootstrapTable.locales['pl-PL'] = {
+				formatLoadingMessage: function () {
+					return 'Ładowanie, proszę czekać...';
+				},
+				formatRecordsPerPage: function (pageNumber) {
+					return pageNumber + ' rekordów na stronę';
+				},
+				formatShowingRows: function (pageFrom, pageTo, totalRows) {
+					return 'Wyświetlanie rekordów od ' + pageFrom + ' do ' + pageTo + ' z ' + totalRows;
+				},
+				formatSearch: function () {
+					return 'Szukaj';
+				},
+				formatNoMatches: function () {
+					return '';
+				},
+				formatRefresh: function () {
+					return 'Odśwież';
+				},
+				formatToggle: function () {
+					return 'Przełącz';
+				},
+				formatColumns: function () {
+					return 'Kolumny';
+				}
+			};
+
+			$.extend($.fn.bootstrapTable.defaults, $.fn.bootstrapTable.locales['pl-PL']);
+
+		})(jQuery);
 		cleanContext();
 
 		$("#otSelectProduct").prop('disabled', true);
@@ -249,6 +328,7 @@ QCD.operationalTasksDefinitionWizard = (function () {
 					}
 					if (!invalid) {
 						$("#workstations").bootstrapTable('load', QCD.operationalTasksDefinitionWizardContext.technologyOperations);
+
 					}
 					return !invalid;
 				} else if (currentIndex == 4) {
@@ -822,6 +902,10 @@ QCD.operationalTasksDefinitionWizard = (function () {
 		});
 
 		var operationMaterialsObserver = new MutationObserver(function (mutations) {
+			$('[data-toggle="tooltip"]').tooltip({
+
+			});
+
 			mutations.forEach(function (mutation) {
 				$("input.decimal").unbind();
 				$('input.decimal').on('input', function () {
@@ -841,6 +925,47 @@ QCD.operationalTasksDefinitionWizard = (function () {
 			characterDataOldValue: false
 		});
 
+		var operationObserver = new MutationObserver(function (mutations) {
+			$('[data-toggle="tooltip"]').tooltip();
+
+
+		});
+		const operationGroupNode = document.getElementById('technologyOperations-group');
+
+		operationObserver.observe(operationGroupNode, {
+			attributes: true,
+			characterData: false,
+			childList: false,
+			subtree: true,
+			attributeOldValue: false,
+			characterDataOldValue: false
+		});
+
+		var workstationsObserver = new MutationObserver(function (mutations) {
+			$('[data-toggle="tooltip"]').tooltip();
+
+
+		});
+		const workstationsGroupNode = document.getElementById('workstations-group');
+
+		workstationsObserver.observe(workstationsGroupNode, {
+			attributes: true,
+			characterData: false,
+			childList: false,
+			subtree: true,
+			attributeOldValue: false,
+			characterDataOldValue: false
+		});
+
+
+
+
+								$('#workstationItems').on('check.bs.table', function (row, $element) {
+                        			$("#otSelectWorkstation").prop('disabled', false);
+                        		});
+                        		$('#workstationItems').on('uncheck.bs.table', function (row, $element) {
+                        			$("#otSelectWorkstation").prop('disabled', true);
+                        		});
 		//workstations
 		var $workstations = $("#workstations")
 			.bootstrapTable({
@@ -860,6 +985,9 @@ QCD.operationalTasksDefinitionWizard = (function () {
 					.toUpperCase())
 			});
 		$workstations.bootstrapTable('load', QCD.operationalTasksDefinitionWizardContext.technologyOperations);
+
+        $("#otSelectWorkstation").prop('disabled', true);
+
 
 		$('#otWorkstationsLookup').on('hidden.bs.modal', function () {
 			$("#operationalTasksDefinitionWizard").removeClass('disableModal');
@@ -1269,7 +1397,7 @@ QCD.operationalTasksDefinitionWizard = (function () {
 		operElement = operElement + '<div class="col-sm-4">';
 		operElement = operElement + '<div>';
 		operElement = operElement + '<button type="button" class="btn btn-outline-secondary bg-primary text-white" onclick="QCD.operationalTasksDefinitionWizard.addMaterialToOperation(' + new String(oper.index) + ')">';
-		operElement = operElement + '<span class="glyphicon glyphicon-plus"></span>';
+		operElement = operElement + QCD.translate("basic.dashboard.operationalTasksDefinitionWizard.technologyOperations.addMaterial");
 		operElement = operElement + '</button>';
 		operElement = operElement + '</div>';
 		operElement = operElement + '</div>';
@@ -2014,7 +2142,7 @@ function operationFormatter(value, row) {
 		select = select + '</select>';
 
 		select = select + '<div class="input-group-append">' +
-			'<button type="button" class="btn btn-outline-secondary bg-primary text-white" onclick="QCD.operationalTasksDefinitionWizard.openOperationDefinition(' + new String(row.index) + ')">' +
+			'<button type="button" data-toggle="tooltip" data-placement="top"  title="' + QCD.translate("basic.dashboard.operationalTasksDefinitionWizard.operations.operation.tip") + '" class="btn btn-outline-secondary bg-primary text-white" onclick="QCD.operationalTasksDefinitionWizard.openOperationDefinition(' + new String(row.index) + ')">' +
 			'<span class="glyphicon glyphicon-plus"></span>' +
 			'</button>' +
 			'</div></div>';
@@ -2024,12 +2152,7 @@ function operationFormatter(value, row) {
 
 function actionFormatter(value, row) {
 	return '<div class="input-group"><div class="input-group-append">' +
-		'<button type="button" class="btn btn-outline-secondary bg-primary text-white" onclick="QCD.operationalTasksDefinitionWizard.addMaterialToOperation(' + new String(row.operationIndex) + ')">' +
-		'<span class="glyphicon glyphicon-plus"></span>' +
-		'</button>' +
-		'</div>' +
-		'<div class="input-group-append">' +
-		'<button type="button" class="btn btn-outline-secondary bg-primary text-white" onclick="QCD.operationalTasksDefinitionWizard.removeMaterialFromOperation(' + new String(row.operationIndex) + ',' + new String(row.index) + ')">' +
+		'<button type="button" data-toggle="tooltip" data-placement="top"  title="' + QCD.translate("basic.dashboard.operationalTasksDefinitionWizard.materials.removeMaterial") + '" class="btn btn-outline-secondary bg-primary text-white" onclick="QCD.operationalTasksDefinitionWizard.removeMaterialFromOperation(' + new String(row.operationIndex) + ',' + new String(row.index) + ')">' +
 		'<span class="glyphicon glyphicon-minus"></span>' +
 		'</button>' +
 		'</div></div>';
@@ -2048,12 +2171,12 @@ function productInFormatter(value, row) {
 		'</div>' +
 		'<input type="text" class="form-control q-auto-complete" onkeypress="QCD.operationalTasksDefinitionWizard.addProductTypeahead(' + new String(row.operationIndex) + ',' + new String(row.index) + ')" id="inProduct-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
 		'<div class="input-group-append">' +
-		'<button type="button" class="btn btn-outline-secondary bg-primary text-white" onclick="QCD.operationalTasksDefinitionWizard.openOtMaterialsLookup(' + new String(row.operationIndex) + ',' + new String(row.index) + ')">' +
+		'<button type="button" data-toggle="tooltip" data-placement="top"  title="' + QCD.translate("basic.dashboard.operationalTasksDefinitionWizard.materials.selectProduct") + '"  class="btn btn-outline-secondary bg-primary text-white" onclick="QCD.operationalTasksDefinitionWizard.openOtMaterialsLookup(' + new String(row.operationIndex) + ',' + new String(row.index) + ')">' +
 		'<span class="glyphicon glyphicon-search"></span>' +
 		'</button>' +
 		'</div>' +
 		'<div class="input-group-append">' +
-		'<button type="button" class="btn btn-outline-secondary bg-primary text-white" onclick="QCD.operationalTasksDefinitionWizard.openMaterialDefinition(' + new String(row.operationIndex) + ',' + new String(row.index) + ')">' +
+		'<button type="button" data-toggle="tooltip" data-placement="top"  title="' + QCD.translate("basic.dashboard.operationalTasksDefinitionWizard.materials.addProduct") + '" class="btn btn-outline-secondary bg-primary text-white" onclick="QCD.operationalTasksDefinitionWizard.openMaterialDefinition(' + new String(row.operationIndex) + ',' + new String(row.index) + ')">' +
 		'<span class="glyphicon glyphicon-plus"></span>' +
 		'</button>' +
 		'</div>' +
@@ -2064,12 +2187,12 @@ function workstationFormatter(value, row) {
 	return '<div class="input-group">' +
 		'<input type="text" class="form-control q-auto-complete" onkeypress="QCD.operationalTasksDefinitionWizard.addWorkstationTypeahead(' + new String(row.index) + ')" id="workstation-' + row.index + '" value="' + nullToEmptyValue(value) + '"/>' +
 		'<div class="input-group-append">' +
-		'<button type="button" class="btn btn-outline-secondary bg-primary text-white" onclick="QCD.operationalTasksDefinitionWizard.openOtWorkstationsLookup(' + new String(row.index) + ')">' +
+		'<button type="button" data-toggle="tooltip" data-placement="top"  title="' + QCD.translate("basic.dashboard.operationalTasksDefinitionWizard.workstations.select.tip") + '"  class="btn btn-outline-secondary bg-primary text-white" onclick="QCD.operationalTasksDefinitionWizard.openOtWorkstationsLookup(' + new String(row.index) + ')">' +
 		'<span class="glyphicon glyphicon-search"></span>' +
 		'</button>' +
 		'</div>' +
 		'<div class="input-group-append">' +
-		'<button type="button" class="btn btn-outline-secondary bg-primary text-white" onclick="QCD.operationalTasksDefinitionWizard.openWorkstationDefinition(' + new String(row.index) + ')">' +
+		'<button type="button"  data-toggle="tooltip" data-placement="top"  title="' + QCD.translate("basic.dashboard.operationalTasksDefinitionWizard.workstations.new.tip") + '" class="btn btn-outline-secondary bg-primary text-white" onclick="QCD.operationalTasksDefinitionWizard.openWorkstationDefinition(' + new String(row.index) + ')">' +
 		'<span class="glyphicon glyphicon-plus"></span>' +
 		'</button>' +
 		'</div>' +
@@ -2079,14 +2202,14 @@ function workstationFormatter(value, row) {
 function quantityPerUnitProductInFormatter(value, row) {
 	if (QCD.operationalTasksDefinitionWizardContext.order.technology) {
 		return '<div class="input-group">' +
-			'<div class="input-group-prepend">' +
-			' <label class="form-label grid-label30" >' + QCD.translate("basic.dashboard.orderDefinitionWizard.materials.quantityPerUnit") + '</label>' +
+			'<div class="input-group-prepend" data-toggle="tooltip" data-placement="top"  title="' + QCD.translate("basic.dashboard.operationalTasksDefinitionWizard.materials.quantityPerUnit.tip") + '" >' +
+			' <label class="form-label grid-label30">' + QCD.translate("basic.dashboard.orderDefinitionWizard.materials.quantityPerUnit") + '</label>' +
 			'</div>' +
 			'<input type="text" class="form-control right decimal" disabled onblur="QCD.operationalTasksDefinitionWizard.quantityPerUnitOnBlur(' + new String(row.operationIndex) + ',' + new String(row.index) + ')" id="quantityPerUnitProductIn-' + row.index + '" value="' + nullToEmptyValue(value) + '"></input>' +
 			'</div>';
 	} else {
 		return '<div class="input-group">' +
-			'<div class="input-group-prepend">' +
+			'<div class="input-group-prepend" data-toggle="tooltip" data-placement="top"  title="' + QCD.translate("basic.dashboard.operationalTasksDefinitionWizard.materials.quantityPerUnit.tip") + '" >' +
 			' <label class="form-label grid-label30" >' + QCD.translate("basic.dashboard.orderDefinitionWizard.materials.quantityPerUnit") + '</label>' +
 			'</div>' +
 			'<input type="text" class="form-control right decimal"  onblur="QCD.operationalTasksDefinitionWizard.quantityPerUnitOnBlur(' + new String(row.operationIndex) + ',' + new String(row.index) + ')" id="quantityPerUnitProductIn-' + row.index + '" value="' + nullToEmptyValue(value) + '"></input>' +
@@ -2099,7 +2222,7 @@ function quantityProductInFormatter(value, row) {
 
 	return '<div class="input-group">' +
 		'<div class="input-group-prepend">' +
-		' <label class="form-label grid-label" >' + QCD.translate("basic.dashboard.orderDefinitionWizard.materials.quantity") + '</label>' +
+		' <label class="form-label grid-label30">' + QCD.translate("basic.dashboard.orderDefinitionWizard.materials.quantity") + '</label>' +
 		'</div>' +
 		'<input type="text" class="form-control right decimal" onblur="QCD.operationalTasksDefinitionWizard.quantityOnBlur(' + new String(row.operationIndex) + ',' + new String(row.index) + ')"  id="quantityProductIn-' + row.index + '" value="' + nullToEmptyValue(value) + '"></input>' +
 		'</div>';
