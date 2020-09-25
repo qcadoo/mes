@@ -140,6 +140,7 @@
                            rows="7">
                     <layoutElement column="1" row="1">
                         <component type="hidden" name="inBuffer" field="inBuffer" reference="inBuffer"/>
+                        <component type="hidden" name="wms" field="wms" reference="wms"/>
                         <component type="input" name="number" reference="number" field="number"/>
                     </layoutElement>
                     <layoutElement column="1" row="2">

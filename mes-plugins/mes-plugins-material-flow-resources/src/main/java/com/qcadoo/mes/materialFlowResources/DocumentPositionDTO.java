@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
 
-
 public class DocumentPositionDTO {
 
     private Long id;
@@ -51,6 +50,12 @@ public class DocumentPositionDTO {
     private String palletNumber;
 
     private String resourceNumber;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd", timezone = "CET")
+    @JsonDeserialize(using = DateDeserializer.class)
+    private Date pickingDate;
+
+    private String pickingWorker;
 
     @SearchAttribute(searchType = SearchAttribute.SEARCH_TYPE.EXACT_MATCH)
     private String typeOfPallet;
@@ -287,6 +292,8 @@ public class DocumentPositionDTO {
         hash = 67 * hash + Objects.hashCode(this.resource);
         hash = 67 * hash + Objects.hashCode(this.waste);
         hash = 67 * hash + Objects.hashCode(this.resourceNumber);
+        hash = 67 * hash + Objects.hashCode(this.pickingDate);
+        hash = 67 * hash + Objects.hashCode(this.pickingWorker);
         hash = 67 * hash + Objects.hashCode(this.sellingPrice);
         return hash;
     }
@@ -354,6 +361,12 @@ public class DocumentPositionDTO {
         if (!Objects.equals(this.resourceNumber, other.resourceNumber)) {
             return false;
         }
+        if (!Objects.equals(this.pickingDate, other.pickingDate)) {
+            return false;
+        }
+        if (!Objects.equals(this.pickingWorker, other.pickingWorker)) {
+            return false;
+        }
         if (!Objects.equals(this.sellingPrice, other.sellingPrice)) {
             return false;
         }
@@ -367,7 +380,8 @@ public class DocumentPositionDTO {
                 + ", givenunit=" + givenunit + ", conversion=" + conversion + ", expirationDate=" + expirationDate
                 + ", productionDate=" + productionDate + ", pallet=" + palletNumber + ", type_of_pallet=" + typeOfPallet
                 + ", storage_location=" + storageLocation + ", price=" + price + ", batch=" + batch + ", resource=" + resource
-                + ", resourceNumber=" + resourceNumber + '}';
+                + ", resourceNumber=" + resourceNumber + ", pickingDate=" + pickingDate + ", pickingWorker=" + pickingWorker
+                + '}';
     }
 
     public Boolean getLastResource() {
@@ -384,5 +398,21 @@ public class DocumentPositionDTO {
 
     public void setResourceNumber(String resourceNumber) {
         this.resourceNumber = resourceNumber;
+    }
+
+    public Date getPickingDate() {
+        return pickingDate;
+    }
+
+    public void setPickingDate(Date pickingDate) {
+        this.pickingDate = pickingDate;
+    }
+
+    public String getPickingWorker() {
+        return pickingWorker;
+    }
+
+    public void setPickingWorker(String pickingWorker) {
+        this.pickingWorker = pickingWorker;
     }
 }
