@@ -23,13 +23,33 @@
  */
 package com.qcadoo.mes.basic;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.constants.*;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.SubstituteComponentFields;
+import com.qcadoo.mes.basic.constants.SubstituteFields;
+import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.basic.util.UnitService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.*;
+import com.qcadoo.model.api.search.CustomRestriction;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriterion;
+import com.qcadoo.model.api.search.SearchOrder;
+import com.qcadoo.model.api.search.SearchProjection;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.view.api.ComponentState;
@@ -38,20 +58,9 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-
-import static com.qcadoo.mes.basic.constants.ProductFields.*;
 
 @Service
 public class ProductService {
-
-
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -72,40 +81,41 @@ public class ProductService {
 
     private SearchCriteriaBuilder prepareCriteriaBuilder(final SearchProjection projection, final SearchCriterion criteria,
             final SearchOrder order) {
-        SearchCriteriaBuilder scb = getProductDataDefinition().find();
-        if (projection != null) {
+        SearchCriteriaBuilder scb = getProductDD().find();
+
+        if (Objects.nonNull(projection)) {
             scb.setProjection(projection);
         }
-        if (criteria != null) {
+        if (Objects.nonNull(criteria)) {
             scb.add(criteria);
         }
-        if (order != null) {
+        if (Objects.nonNull(order)) {
             scb.addOrder(order);
         }
+
         return scb;
     }
 
-    private DataDefinition getProductDataDefinition() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
-    }
-
     public boolean checkIfProductEntityTypeIsCorrect(final Entity product, final ProductFamilyElementType entityType) {
-        return entityType.getStringValue().equals(product.getStringField(ENTITY_TYPE));
+        return entityType.getStringValue().equals(product.getStringField(ProductFields.ENTITY_TYPE));
     }
 
     public void conversionForProductUnit(final Entity product) {
-        final String productUnit = product.getStringField(ProductFields.UNIT);
-        if (StringUtils.isNotEmpty(productUnit)) {
-            final PossibleUnitConversions conversions = unitConversionService.getPossibleConversions(productUnit);
-            product.setField(CONVERSION_ITEMS, conversions.asEntities(UnitConversionItemFieldsB.PRODUCT, product));
+        String unit = product.getStringField(ProductFields.UNIT);
+        List<Entity> conversionItems = product.getHasManyField(ProductFields.CONVERSION_ITEMS);
+
+        if (StringUtils.isNotEmpty(unit) && conversionItems.isEmpty()) {
+            PossibleUnitConversions conversions = unitConversionService.getPossibleConversions(unit);
+
+            product.setField(ProductFields.CONVERSION_ITEMS, conversions.asEntities(UnitConversionItemFieldsB.PRODUCT, product));
         }
     }
 
     public BigDecimal convertQuantityFromProductUnit(final Entity product, final BigDecimal quantity, final String targetUnit) {
-        String productUnit = product.getStringField(ProductFields.UNIT);
+        String unit = product.getStringField(ProductFields.UNIT);
         PossibleUnitConversions possibleUnitConversions = findPossibleUnitConversions(targetUnit, product);
 
-        BigDecimal convertedQuantity = possibleUnitConversions.convertTo(quantity, productUnit);
+        BigDecimal convertedQuantity = possibleUnitConversions.convertTo(quantity, unit);
 
         return convertedQuantity;
     }
@@ -122,7 +132,7 @@ public class ProductService {
         PossibleUnitConversions possibleUnitConversions = unitConversionService.getPossibleConversions(unitName,
                 belongsToProductRestriction);
 
-        if (possibleUnitConversions == null) {
+        if (Objects.isNull(possibleUnitConversions)) {
             possibleUnitConversions = unitConversionService.getPossibleConversions(unitName);
         }
 
@@ -133,8 +143,9 @@ public class ProductService {
         final Entity existingProduct = product.getDataDefinition().get(product.getId());
         final String existingProductUnit = existingProduct.getStringField(ProductFields.UNIT);
         final String currentUnit = product.getStringField(ProductFields.UNIT);
-        if (existingProductUnit == null) {
-            return currentUnit != null;
+
+        if (Objects.isNull(existingProductUnit)) {
+            return Objects.nonNull(currentUnit);
         } else {
             return !existingProductUnit.equals(currentUnit);
         }
@@ -142,9 +153,10 @@ public class ProductService {
 
     public void openAdditionalDetails(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
         Entity product = productForm.getEntity();
 
-        if (product.getId() == null) {
+        if (Objects.isNull(product.getId())) {
             return;
         }
 
@@ -157,16 +169,20 @@ public class ProductService {
     }
 
     public void getDefaultConversions(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        final FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        if (productForm.getEntityId() == null) {
+        FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        if (Objects.isNull(productForm.getEntityId())) {
             return;
         }
 
         Entity product = productForm.getEntity();
         conversionForProductUnit(product);
+
         product = product.getDataDefinition().save(product);
-        if(product.isValid()) {
+
+        if (product.isValid()) {
             productForm.addMessage("basic.productDetails.message.getDefaultConversionsForProductSuccess", MessageType.SUCCESS);
+
             state.performEvent(view, "reset", new String[0]);
         } else {
             productForm.setEntity(product);
@@ -174,43 +190,48 @@ public class ProductService {
     }
 
     public void getDefaultConversionsForGrid(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        final GridComponent productsGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+        GridComponent productsGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+
         if (productsGrid.getSelectedEntities().isEmpty()) {
             return;
         }
 
         final List<Entity> products = productsGrid.getSelectedEntities();
+
         for (Entity product : products) {
             conversionForProductUnit(product);
+
             product.getDataDefinition().save(product);
         }
+
         productsGrid.addMessage("basic.productsList.message.getDefaultConversionsForProductsSuccess", MessageType.SUCCESS);
     }
 
     public boolean checkIfSubstituteIsNotRemoved(final DataDefinition substituteComponentDD, final Entity substituteComponent) {
         Entity substitute = substituteComponent.getBelongsToField(SubstituteComponentFields.SUBSTITUTE);
 
-        if (substitute == null || substitute.getId() == null) {
+        if (Objects.isNull(substitute) || Objects.isNull(substitute.getId())) {
             return true;
         }
 
-        Entity substituteEntity = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SUBSTITUTE)
-                .get(substitute.getId());
+        Entity substituteEntity = getSubstituteDD().get(substitute.getId());
 
-        if (substituteEntity == null) {
+        if (Objects.isNull(substituteEntity)) {
             substituteComponent.addGlobalError("qcadooView.message.belongsToNotFound");
             substituteComponent.setField(SubstituteComponentFields.SUBSTITUTE, null);
+
             return false;
         } else {
             return true;
         }
     }
 
-    public boolean checkSubstituteComponentUniqueness(final DataDefinition substituteComponentDD, final Entity substituteComponent) {
+    public boolean checkSubstituteComponentUniqueness(final DataDefinition substituteComponentDD,
+            final Entity substituteComponent) {
         Entity product = substituteComponent.getBelongsToField(SubstituteComponentFields.PRODUCT);
         Entity baseProduct = substituteComponent.getBelongsToField(SubstituteComponentFields.BASE_PRODUCT);
 
-        if (baseProduct == null || product == null) {
+        if (Objects.isNull(baseProduct) || Objects.isNull(product)) {
             return false;
         }
 
@@ -222,6 +243,7 @@ public class ProductService {
                 && !searchResult.getEntities().get(0).getId().equals(substituteComponent.getId())) {
             substituteComponent.addError(substituteComponentDD.getField(SubstituteComponentFields.PRODUCT),
                     "basic.validate.global.error.substituteComponentDuplicated");
+
             return false;
         } else {
             return true;
@@ -231,16 +253,17 @@ public class ProductService {
     public boolean checkIfProductIsNotRemoved(final DataDefinition substituteDD, final Entity substitute) {
         Entity product = substitute.getBelongsToField(SubstituteFields.PRODUCT);
 
-        if (product == null || product.getId() == null) {
+        if (Objects.isNull(product) || Objects.isNull(product.getId())) {
             return true;
         }
 
-        Entity productEntity = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
-                product.getId());
+        Entity productEntity = getProductDD().get(product.getId());
 
-        if (productEntity == null) {
+        if (Objects.isNull(productEntity)) {
             substitute.addGlobalError("qcadooView.message.belongsToNotFound");
+
             substitute.setField(SubstituteFields.PRODUCT, null);
+
             return false;
         }
 
@@ -248,9 +271,17 @@ public class ProductService {
     }
 
     public void fillUnit(final DataDefinition productDD, final Entity product) {
-        if (product.getField(UNIT) == null) {
-            product.setField(UNIT, unitService.getDefaultUnitFromSystemParameters());
+        if (Objects.isNull(product.getField(ProductFields.UNIT))) {
+            product.setField(ProductFields.UNIT, unitService.getDefaultUnitFromSystemParameters());
         }
+    }
+
+    private DataDefinition getProductDD() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
+    }
+
+    private DataDefinition getSubstituteDD() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SUBSTITUTE);
     }
 
 }
