@@ -56,4 +56,14 @@ public class ProductionCountingController {
                 locale);
     }
 
+    @RequestMapping(value = "productionAnalysisParameters", method = RequestMethod.GET)
+    public ModelAndView getProductionAnalysisParametersPageView(final Locale locale) {
+        JSONObject json = new JSONObject(ImmutableMap.of("form.id", parameterService.getParameterId().toString()));
+
+        Map<String, String> arguments = ImmutableMap.of("context", json.toString());
+
+        return crudService.prepareView(ProductionCountingConstants.PLUGIN_IDENTIFIER, "productionAnalysisParameters", arguments,
+                locale);
+    }
+
 }

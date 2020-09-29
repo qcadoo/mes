@@ -39,7 +39,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 
 @Service
-public class ParameterPBDetailsViewHooks {
+public class ProductionAnalysisParametersHooks {
 
     @Autowired
     private CurrencyService currencyService;
