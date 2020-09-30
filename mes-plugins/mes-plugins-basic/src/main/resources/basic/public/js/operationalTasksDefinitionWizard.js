@@ -285,6 +285,14 @@ QCD.operationalTasksDefinitionWizard = (function () {
 
 					var data = QCD.operationalTasksDefinitionWizardContext.technologyOperations;
 					$.each(data, function (i, oper) {
+						if (oper.node == 1 && oper.materials.length == 0) {
+							showMessage(
+								'failure',
+								QCD.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
+								QCD.translate("basic.dashboard.operationalTasksDefinitionWizard.error.materialCannotBeEmpty"),
+								false);
+							invalid = true;
+						}
 						$.each(oper.materials, function (i, material) {
 							if (material.product == null || material.product === '' || material.productId == null) {
 								$('#inProduct-' + material.index).addClass('is-invalid');
@@ -326,6 +334,7 @@ QCD.operationalTasksDefinitionWizard = (function () {
 							QCD.translate("basic.dashboard.orderDefinitionWizard.error.validationError.emptyField"),
 							false);
 					}
+
 					if (!invalid) {
 						$("#workstations").bootstrapTable('load', QCD.operationalTasksDefinitionWizardContext.technologyOperations);
 
@@ -354,7 +363,6 @@ QCD.operationalTasksDefinitionWizard = (function () {
 				$(document).find(".actions ul").prepend(saveBtn)
 
 				operations();
-				workstationTypes();
 			},
 		});
 		$(".otCancelBtn").click(function () {
@@ -401,6 +409,7 @@ QCD.operationalTasksDefinitionWizard = (function () {
 				function (data) {
 					$.each(data.technologies, function (i, tech) {
 						if (tech.master) {
+							QCD.operationalTasksDefinitionWizardContext.node = 0;
 							QCD.operationalTasksDefinitionWizardContext.order.technology = tech;
 							$("#otTechnology").val(QCD.operationalTasksDefinitionWizardContext.order.technology.number);
 							fillOperationMaterialsForTechnology();
@@ -649,6 +658,7 @@ QCD.operationalTasksDefinitionWizard = (function () {
 		$('#otTechnology').change(function () {
 			var current = $('#otTechnology').typeahead("getActive");
 			if (current) {
+				QCD.operationalTasksDefinitionWizardContext.node = 0;
 				QCD.operationalTasksDefinitionWizardContext.order.technology = current;
 				fillOperationMaterialsForTechnology();
 			}
@@ -686,6 +696,7 @@ QCD.operationalTasksDefinitionWizard = (function () {
 		});
 
 		$("#otSelectTechnology").click(function () {
+			QCD.operationalTasksDefinitionWizardContext.node = 0;
 			var selectedTechnology = $("#otTechnologies").bootstrapTable('getSelections');
 			QCD.operationalTasksDefinitionWizardContext.order.technology = selectedTechnology[0];
 			$("#otTechnologiesLookup").modal('hide');
@@ -895,7 +906,9 @@ QCD.operationalTasksDefinitionWizard = (function () {
 			$("#selectOtMaterial").prop('disabled', true);
 		});
 
-		$('[data-toggle="tooltip"]').tooltip();
+		$('[data-toggle="tooltip"]').tooltip({
+			trigger: 'hover'
+		})
 
 		$('input.decimal').on('input', function () {
 			this.value = this.value.replace(/[^0-9.,]/g, '').replace(/(\..*)\./g, '$1').replace(/(\,.*)\,/g, '$1');
@@ -903,8 +916,8 @@ QCD.operationalTasksDefinitionWizard = (function () {
 
 		var operationMaterialsObserver = new MutationObserver(function (mutations) {
 			$('[data-toggle="tooltip"]').tooltip({
-
-			});
+				trigger: 'hover'
+			})
 
 			mutations.forEach(function (mutation) {
 				$("input.decimal").unbind();
@@ -926,7 +939,9 @@ QCD.operationalTasksDefinitionWizard = (function () {
 		});
 
 		var operationObserver = new MutationObserver(function (mutations) {
-			$('[data-toggle="tooltip"]').tooltip();
+			$('[data-toggle="tooltip"]').tooltip({
+				trigger: 'hover'
+			})
 
 
 		});
@@ -942,7 +957,9 @@ QCD.operationalTasksDefinitionWizard = (function () {
 		});
 
 		var workstationsObserver = new MutationObserver(function (mutations) {
-			$('[data-toggle="tooltip"]').tooltip();
+			$('[data-toggle="tooltip"]').tooltip({
+				trigger: 'hover'
+			})
 
 
 		});
@@ -958,14 +975,12 @@ QCD.operationalTasksDefinitionWizard = (function () {
 		});
 
 
-
-
-								$('#workstationItems').on('check.bs.table', function (row, $element) {
-                        			$("#otSelectWorkstation").prop('disabled', false);
-                        		});
-                        		$('#workstationItems').on('uncheck.bs.table', function (row, $element) {
-                        			$("#otSelectWorkstation").prop('disabled', true);
-                        		});
+		$('#workstationItems').on('check.bs.table', function (row, $element) {
+			$("#otSelectWorkstation").prop('disabled', false);
+		});
+		$('#workstationItems').on('uncheck.bs.table', function (row, $element) {
+			$("#otSelectWorkstation").prop('disabled', true);
+		});
 		//workstations
 		var $workstations = $("#workstations")
 			.bootstrapTable({
@@ -986,7 +1001,7 @@ QCD.operationalTasksDefinitionWizard = (function () {
 			});
 		$workstations.bootstrapTable('load', QCD.operationalTasksDefinitionWizardContext.technologyOperations);
 
-        $("#otSelectWorkstation").prop('disabled', true);
+		$("#otSelectWorkstation").prop('disabled', true);
 
 
 		$('#otWorkstationsLookup').on('hidden.bs.modal', function () {
@@ -1444,7 +1459,7 @@ QCD.operationalTasksDefinitionWizard = (function () {
 	}
 
 	function removeMaterialFromOperation(tocIndex, materialIndex) {
-
+		$("div[role=tooltip]").remove();
 		$("#operation-materials-" + tocIndex).bootstrapTable('remove', {
 			field: 'index',
 			values: [materialIndex]
@@ -1727,7 +1742,8 @@ QCD.operationalTasksDefinitionWizard = (function () {
 	}
 
 	function openWorkstationDefinition(tocIndex) {
-		QCD.operationalTasksDefinitionWizardContext.order.currentTOCIndex = tocIndex;
+	    workstationTypes();
+ 		QCD.operationalTasksDefinitionWizardContext.order.currentTOCIndex = tocIndex;
 		units();
 		$("#otWorkstationNumber").removeClass('is-invalid');
 		$("#otWorkstationName").removeClass('is-invalid');
