@@ -204,6 +204,7 @@ QCD.orderDefinitionWizard = (function () {
 						}
 
 					});
+
 					if (materials.length < 1) {
 						showMessage(
 							'failure',
@@ -221,13 +222,14 @@ QCD.orderDefinitionWizard = (function () {
 								exist = true;
 
 							}
-							$.each(materials, function (i, reMaterial) {
-								if (material.index != reMaterial.index && material.productId == reMaterial.productId) {
-									$('#product-' + material.index).addClass('is-invalid');
-									exist = true;
-
-								}
-							});
+							if(!exist) {
+							    $.each(materials, function (i, reMaterial) {
+								    if (material.index != reMaterial.index && material.productId == reMaterial.productId) {
+									    $('#product-' + material.index).addClass('is-invalid');
+									    exist = true;
+								    }
+							    });
+							}
 						});
 
 					}

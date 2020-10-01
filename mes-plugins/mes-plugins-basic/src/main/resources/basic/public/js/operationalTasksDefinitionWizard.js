@@ -326,6 +326,24 @@ QCD.operationalTasksDefinitionWizard = (function () {
 								}
 							}
 						});
+						var exist = false;
+						if (!invalid) {
+							$.each(oper.materials, function (i, material) {
+
+								if (!exist) {
+									$.each(oper.materials, function (i, reMaterial) {
+										if ($('#inProduct-' + reMaterial.index).val() !== '' && (material.productId == reMaterial.productId
+										        || QCD.operationalTasksDefinitionWizardContext.order.product.id == reMaterial.productId)) {
+
+                                            if (!exist) {
+											    $('#inProduct-' + reMaterial.index).addClass('is-invalid');
+                                            }
+											exist = true;
+										}
+									});
+								}
+							});
+						}
 					});
 					if (invalid) {
 						showMessage(
@@ -333,6 +351,14 @@ QCD.operationalTasksDefinitionWizard = (function () {
 							QCD.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
 							QCD.translate("basic.dashboard.orderDefinitionWizard.error.validationError.emptyField"),
 							false);
+					}
+					if (exist) {
+						showMessage(
+							'failure',
+							QCD.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
+							QCD.translate("basic.dashboard.orderDefinitionWizard.error.productAlreadySelected"),
+							false);
+						invalid = true;
 					}
 
 					if (!invalid) {
@@ -1595,36 +1621,21 @@ QCD.operationalTasksDefinitionWizard = (function () {
 					$('#inProduct-' + element).removeClass('is-invalid');
 					$.each(QCD.operationalTasksDefinitionWizardContext.technologyOperations, function (i, e) {
 						if (e.index == tocIndex) {
-							var exist = false;
 
 							var data = e.materials;
-							$.each(data, function (i, e) {
-								if ($('#inProduct-' + element).val() !== '' && (e.productId == current.id || QCD.operationalTasksDefinitionWizardContext.order.product.id == current.id)) {
 
-									$('#inProduct-' + element).addClass('is-invalid');
-									$('#inProduct-' + element).val("");
-									showMessage(
-										'failure',
-										QCD.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
-										QCD.translate("basic.dashboard.orderDefinitionWizard.error.productAlreadySelected"),
-										false);
-									exist = true;
-									return false;
+
+							$.each(data, function (i, e) {
+								if (e.index == element) {
+									e.productId = current.id;
+									e.productNumber = current.number;
+									e.product = current.number;
+									e.unit = current.unit;
+									$('#unit-' + element).val(current.unit);
+
 								}
 							});
-							if (!exist) {
 
-								$.each(data, function (i, e) {
-									if (e.index == element) {
-										e.productId = current.id;
-										e.productNumber = current.number;
-										e.product = current.number;
-										e.unit = current.unit;
-										$('#unit-' + element).val(current.unit);
-
-									}
-								});
-							}
 						}
 					});
 				} else {
@@ -1742,8 +1753,8 @@ QCD.operationalTasksDefinitionWizard = (function () {
 	}
 
 	function openWorkstationDefinition(tocIndex) {
-	    workstationTypes();
- 		QCD.operationalTasksDefinitionWizardContext.order.currentTOCIndex = tocIndex;
+		workstationTypes();
+		QCD.operationalTasksDefinitionWizardContext.order.currentTOCIndex = tocIndex;
 		units();
 		$("#otWorkstationNumber").removeClass('is-invalid');
 		$("#otWorkstationName").removeClass('is-invalid');
