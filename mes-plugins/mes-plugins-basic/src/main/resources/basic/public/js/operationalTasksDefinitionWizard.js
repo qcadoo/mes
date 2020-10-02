@@ -282,6 +282,7 @@ QCD.operationalTasksDefinitionWizard = (function () {
 					return !invalid;
 				} else if (currentIndex == 3) {
 					var invalid = false;
+					var exist = false;
 
 					var data = QCD.operationalTasksDefinitionWizardContext.technologyOperations;
 					$.each(data, function (i, oper) {
@@ -326,13 +327,12 @@ QCD.operationalTasksDefinitionWizard = (function () {
 								}
 							}
 						});
-						var exist = false;
 						if (!invalid) {
 							$.each(oper.materials, function (i, material) {
 
 								if (!exist) {
 									$.each(oper.materials, function (i, reMaterial) {
-										if ($('#inProduct-' + reMaterial.index).val() !== '' && (material.productId == reMaterial.productId
+										if ($('#inProduct-' + reMaterial.index).val() !== '' && material.index != reMaterial.index && (material.productId == reMaterial.productId
 										        || QCD.operationalTasksDefinitionWizardContext.order.product.id == reMaterial.productId)) {
 
                                             if (!exist) {
@@ -430,6 +430,7 @@ QCD.operationalTasksDefinitionWizard = (function () {
 				'rest/technologies', {
 					query: "",
 					master: true,
+					forEach: true,
 					productId: QCD.operationalTasksDefinitionWizardContext.order.product.id
 				},
 				function (data) {
@@ -491,6 +492,7 @@ QCD.operationalTasksDefinitionWizard = (function () {
 					'rest/technologies', {
 						query: "",
 						master: true,
+					    forEach: true,
 						productId: QCD.operationalTasksDefinitionWizardContext.order.product.id
 					},
 					function (data) {
@@ -659,6 +661,7 @@ QCD.operationalTasksDefinitionWizard = (function () {
 				return $.getJSON(
 					'rest/technologies', {
 						query: $("#otTechnology").val(),
+					    forEach: true,
 						productId: QCD.operationalTasksDefinitionWizardContext.order.product.id
 					},
 					function (data) {
@@ -1124,7 +1127,8 @@ QCD.operationalTasksDefinitionWizard = (function () {
 						sort: p.sort,
 						order: p.order,
 						search: p.search,
-						productId: QCD.operationalTasksDefinitionWizardContext.order.product.id
+						productId: QCD.operationalTasksDefinitionWizardContext.order.product.id,
+						forEach: true
 
 					};
 				},
