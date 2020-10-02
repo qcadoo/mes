@@ -104,9 +104,9 @@ public class DashboardKanbanDataProvider {
         Map<String, Object> params = Maps.newHashMap();
 
         params.put(L_STATES,
-                Sets.newHashSet(OperationalTaskStateStringValues.FINISHED));
+                Sets.newHashSet(OperationalTaskStateStringValues.STARTED));
 
-        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions, false), params, new BeanPropertyRowMapper(OperationalTaskHolder.class));
+        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions, true), params, new BeanPropertyRowMapper(OperationalTaskHolder.class));
     }
 
     public List<OperationalTaskHolder> getOperationalTasksInProgress() {
@@ -115,9 +115,9 @@ public class DashboardKanbanDataProvider {
         Map<String, Object> params = Maps.newHashMap();
 
         params.put(L_STATES,
-                Sets.newHashSet(OperationalTaskStateStringValues.FINISHED));
+                Sets.newHashSet(OperationalTaskStateStringValues.STARTED));
 
-        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions, false), params, new BeanPropertyRowMapper(OperationalTaskHolder.class));
+        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions, true), params, new BeanPropertyRowMapper(OperationalTaskHolder.class));
     }
 
     public List<OperationalTaskHolder> getOperationalTasksCompleted() {
@@ -126,7 +126,7 @@ public class DashboardKanbanDataProvider {
         Map<String, Object> params = Maps.newHashMap();
 
         params.put(L_STATES,
-                Sets.newHashSet(OperationalTaskStateStringValues.FINISHED));
+                Sets.newHashSet(OperationalTaskStateStringValues.STARTED, OperationalTaskStateStringValues.FINISHED));
 
         return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions, true), params, new BeanPropertyRowMapper(OperationalTaskHolder.class));
     }

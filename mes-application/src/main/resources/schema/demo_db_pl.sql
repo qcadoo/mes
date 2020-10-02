@@ -12354,6 +12354,42 @@ ALTER SEQUENCE esilco_importpositionerror_id_seq OWNED BY esilco_importpositione
 
 
 --
+-- Name: esilco_outofstock; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE esilco_outofstock (
+    id bigint NOT NULL,
+    location_id bigint,
+    product_id bigint,
+    storagelocation_id bigint,
+    state character varying(255) DEFAULT '01new'::character varying,
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255)
+);
+
+
+--
+-- Name: esilco_outofstock_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE esilco_outofstock_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: esilco_outofstock_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE esilco_outofstock_id_seq OWNED BY esilco_outofstock.id;
+
+
+--
 -- Name: esilco_printdocuments; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -12384,6 +12420,78 @@ CREATE SEQUENCE esilco_printdocuments_id_seq
 --
 
 ALTER SEQUENCE esilco_printdocuments_id_seq OWNED BY esilco_printdocuments.id;
+
+
+--
+-- Name: esilco_wmsdocumentpart; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE esilco_wmsdocumentpart (
+    id bigint NOT NULL,
+    number character varying(255),
+    additionalinfo character varying(255),
+    part integer,
+    company character varying(255),
+    stateinwms character varying(255),
+    pickingworker character varying(255)
+);
+
+
+--
+-- Name: esilco_wmsdocumentpart_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE esilco_wmsdocumentpart_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: esilco_wmsdocumentpart_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE esilco_wmsdocumentpart_id_seq OWNED BY esilco_wmsdocumentpart.id;
+
+
+--
+-- Name: esilco_wmsposition; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE esilco_wmsposition (
+    id bigint NOT NULL,
+    productnumber character varying(255),
+    storagelocationnumber character varying(255),
+    batchnumber character varying(255),
+    cartons numeric(12,5),
+    rest numeric(12,5),
+    quantity numeric(12,5),
+    conversion numeric(12,5),
+    unit character varying(255),
+    pickingdate timestamp without time zone,
+    documentpart_id bigint NOT NULL
+);
+
+
+--
+-- Name: esilco_wmsposition_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE esilco_wmsposition_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: esilco_wmsposition_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE esilco_wmsposition_id_seq OWNED BY esilco_wmsposition.id;
 
 
 --
@@ -15416,7 +15524,14 @@ CREATE TABLE materialflowresources_document (
     filename character varying(255),
     acceptationinprogress boolean DEFAULT false,
     externalnumber character varying(255),
-    issend boolean DEFAULT false
+    issend boolean DEFAULT false,
+    wms boolean DEFAULT false,
+    datesendtowms timestamp without time zone,
+    dateshipmenttocustomer date,
+    additionalinfo character varying(255),
+    stateinwms character varying(255),
+    pickingworker character varying(255),
+    dateconfirmationofcompletion timestamp without time zone
 );
 
 
@@ -15536,7 +15651,10 @@ CREATE VIEW materialflowresources_documentdto AS
     (suborder.id)::integer AS suborder_id,
     suborder.number AS subordernumber,
     document.printed,
-    document.issend
+    document.issend,
+    document.wms,
+    document.stateinwms,
+    document.pickingworker
    FROM ((((((((((materialflowresources_document document
      LEFT JOIN materialflow_location locationfrom ON ((locationfrom.id = document.locationfrom_id)))
      LEFT JOIN materialflow_location locationto ON ((locationto.id = document.locationto_id)))
@@ -15877,7 +15995,9 @@ CREATE TABLE materialflowresources_position (
     orderid integer,
     sellingprice numeric(12,5) DEFAULT '0'::numeric,
     batch_id bigint,
-    qualityrating character varying(255)
+    qualityrating character varying(255),
+    pickingdate timestamp without time zone,
+    pickingworker_id bigint
 );
 
 
@@ -26872,7 +26992,28 @@ ALTER TABLE ONLY esilco_importpositionerror ALTER COLUMN id SET DEFAULT nextval(
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY esilco_outofstock ALTER COLUMN id SET DEFAULT nextval('esilco_outofstock_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY esilco_printdocuments ALTER COLUMN id SET DEFAULT nextval('esilco_printdocuments_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY esilco_wmsdocumentpart ALTER COLUMN id SET DEFAULT nextval('esilco_wmsdocumentpart_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY esilco_wmsposition ALTER COLUMN id SET DEFAULT nextval('esilco_wmsposition_id_seq'::regclass);
 
 
 --
@@ -30514,7 +30655,7 @@ COPY basic_address (id, company_id, addresstype, number, name, phone, email, web
 -- Name: basic_address_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('basic_address_id_seq', 1, true);
+SELECT pg_catalog.setval('basic_address_id_seq', 2, false);
 
 
 --
@@ -30597,7 +30738,7 @@ COPY basic_company (id, number, name, taxcountrycode_id, tax, street, house, fla
 -- Name: basic_company_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('basic_company_id_seq', 1, true);
+SELECT pg_catalog.setval('basic_company_id_seq', 2, false);
 
 
 --
@@ -30861,7 +31002,7 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 -- Name: basic_country_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('basic_country_id_seq', 249, true);
+SELECT pg_catalog.setval('basic_country_id_seq', 250, false);
 
 
 --
@@ -31073,7 +31214,7 @@ COPY basic_currency (id, currency, alphabeticcode, isocode, minorunit, exchanger
 -- Name: basic_currency_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('basic_currency_id_seq', 182, true);
+SELECT pg_catalog.setval('basic_currency_id_seq', 183, false);
 
 
 --
@@ -31099,7 +31240,7 @@ COPY basic_dashboardbutton (id, parameter_id, identifier, item_id, icon, success
 -- Name: basic_dashboardbutton_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('basic_dashboardbutton_id_seq', 11, true);
+SELECT pg_catalog.setval('basic_dashboardbutton_id_seq', 12, false);
 
 
 --
@@ -31145,7 +31286,7 @@ COPY basic_faulttype (id, name, appliesto, entityversion, isdefault) FROM stdin;
 -- Name: basic_faulttype_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('basic_faulttype_id_seq', 1, true);
+SELECT pg_catalog.setval('basic_faulttype_id_seq', 2, false);
 
 
 --
@@ -31251,7 +31392,7 @@ COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter,
 -- Name: basic_parameter_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('basic_parameter_id_seq', 1, true);
+SELECT pg_catalog.setval('basic_parameter_id_seq', 2, false);
 
 
 --
@@ -31326,7 +31467,7 @@ COPY basic_reportcolumnwidth (id, identifier, name, width, chartype, parameter_i
 -- Name: basic_reportcolumnwidth_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('basic_reportcolumnwidth_id_seq', 8, true);
+SELECT pg_catalog.setval('basic_reportcolumnwidth_id_seq', 9, false);
 
 
 --
@@ -31342,7 +31483,7 @@ COPY basic_shift (id, name, mondayworking, mondayhours, tuesdayworking, tuesdayh
 -- Name: basic_shift_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('basic_shift_id_seq', 1, true);
+SELECT pg_catalog.setval('basic_shift_id_seq', 2, false);
 
 
 --
@@ -31655,7 +31796,7 @@ COPY cmmsmachineparts_action (id, name, appliesto, entityversion, isdefault) FRO
 -- Name: cmmsmachineparts_action_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('cmmsmachineparts_action_id_seq', 1, true);
+SELECT pg_catalog.setval('cmmsmachineparts_action_id_seq', 2, false);
 
 
 --
@@ -32116,7 +32257,7 @@ COPY deliveries_columnfordeliveries (id, identifier, name, description, columnfi
 -- Name: deliveries_columnfordeliveries_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('deliveries_columnfordeliveries_id_seq', 13, true);
+SELECT pg_catalog.setval('deliveries_columnfordeliveries_id_seq', 14, false);
 
 
 --
@@ -32143,7 +32284,7 @@ COPY deliveries_columnfororders (id, identifier, name, description, columnfiller
 -- Name: deliveries_columnfororders_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('deliveries_columnfororders_id_seq', 12, true);
+SELECT pg_catalog.setval('deliveries_columnfororders_id_seq', 13, false);
 
 
 --
@@ -32386,7 +32527,7 @@ COPY deliveries_parameterdeliveryordercolumn (id, parameter_id, columnfororders_
 -- Name: deliveries_parameterdeliveryordercolumn_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('deliveries_parameterdeliveryordercolumn_id_seq', 12, true);
+SELECT pg_catalog.setval('deliveries_parameterdeliveryordercolumn_id_seq', 13, false);
 
 
 --
@@ -32420,6 +32561,21 @@ SELECT pg_catalog.setval('esilco_importpositionerror_id_seq', 1, false);
 
 
 --
+-- Data for Name: esilco_outofstock; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY esilco_outofstock (id, location_id, product_id, storagelocation_id, state, createdate, updatedate, createuser, updateuser) FROM stdin;
+\.
+
+
+--
+-- Name: esilco_outofstock_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('esilco_outofstock_id_seq', 1, false);
+
+
+--
 -- Data for Name: esilco_printdocuments; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -32432,6 +32588,36 @@ COPY esilco_printdocuments (id, active, createdate, updatedate, createuser, upda
 --
 
 SELECT pg_catalog.setval('esilco_printdocuments_id_seq', 1, false);
+
+
+--
+-- Data for Name: esilco_wmsdocumentpart; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY esilco_wmsdocumentpart (id, number, additionalinfo, part, company, stateinwms, pickingworker) FROM stdin;
+\.
+
+
+--
+-- Name: esilco_wmsdocumentpart_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('esilco_wmsdocumentpart_id_seq', 1, false);
+
+
+--
+-- Data for Name: esilco_wmsposition; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY esilco_wmsposition (id, productnumber, storagelocationnumber, batchnumber, cartons, rest, quantity, conversion, unit, pickingdate, documentpart_id) FROM stdin;
+\.
+
+
+--
+-- Name: esilco_wmsposition_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('esilco_wmsposition_id_seq', 1, false);
 
 
 --
@@ -34045,7 +34231,7 @@ SELECT pg_catalog.setval('materialflowresources_costnormslocation_id_seq', 1, fa
 -- Data for Name: materialflowresources_document; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, inbuffer, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress, externalnumber, issend) FROM stdin;
+COPY materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, inbuffer, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, dateshipmenttocustomer, additionalinfo, stateinwms, pickingworker, dateconfirmationofcompletion) FROM stdin;
 \.
 
 
@@ -34111,7 +34297,7 @@ COPY materialflowresources_documentpositionparameters (id, suggestresource, acce
 -- Name: materialflowresources_documentpositionparameters_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('materialflowresources_documentpositionparameters_id_seq', 1, true);
+SELECT pg_catalog.setval('materialflowresources_documentpositionparameters_id_seq', 2, false);
 
 
 --
@@ -34141,6 +34327,8 @@ COPY materialflowresources_documentpositionparametersitem (id, checked, editable
 5	f	t	1	additionalCode	5	f	\N
 19	f	t	1	waste	19	f	\N
 20	f	t	1	lastResource	22	\N	\N
+23	f	t	1	pickingDate	23	f	\N
+24	f	t	1	pickingWorker	24	f	\N
 \.
 
 
@@ -34148,7 +34336,7 @@ COPY materialflowresources_documentpositionparametersitem (id, checked, editable
 -- Name: materialflowresources_documentpositionparametersitem_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('materialflowresources_documentpositionparametersitem_id_seq', 20, true);
+SELECT pg_catalog.setval('materialflowresources_documentpositionparametersitem_id_seq', 24, true);
 
 
 --
@@ -34214,7 +34402,7 @@ SELECT pg_catalog.setval('materialflowresources_palletstoragestatedto_id_seq', 1
 -- Data for Name: materialflowresources_position; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY materialflowresources_position (id, document_id, product_id, quantity, price, productiondate, expirationdate, number, resource_id, givenunit, givenquantity, entityversion, storagelocation_id, additionalcode_id, conversion, palletnumber_id, typeofpallet, waste, resourcereceiptdocument, lastresource, resourcenumber, externaldocumentnumber, orderid, sellingprice, batch_id, qualityrating) FROM stdin;
+COPY materialflowresources_position (id, document_id, product_id, quantity, price, productiondate, expirationdate, number, resource_id, givenunit, givenquantity, entityversion, storagelocation_id, additionalcode_id, conversion, palletnumber_id, typeofpallet, waste, resourcereceiptdocument, lastresource, resourcenumber, externaldocumentnumber, orderid, sellingprice, batch_id, qualityrating, pickingdate, pickingworker_id) FROM stdin;
 \.
 
 
@@ -35121,7 +35309,7 @@ COPY ordersgantt_ordersganttparameters (id, datasource, manualwritingplan, calcu
 -- Name: ordersgantt_ordersganttparameters_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('ordersgantt_ordersganttparameters_id_seq', 1, true);
+SELECT pg_catalog.setval('ordersgantt_ordersganttparameters_id_seq', 2, false);
 
 
 --
@@ -35184,7 +35372,7 @@ COPY ordersupplies_columnforcoverages (id, identifier, name, description, column
 -- Name: ordersupplies_columnforcoverages_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('ordersupplies_columnforcoverages_id_seq', 12, true);
+SELECT pg_catalog.setval('ordersupplies_columnforcoverages_id_seq', 13, false);
 
 
 --
@@ -35946,7 +36134,7 @@ COPY productionlines_productionline (id, number, name, division_id, place, descr
 -- Name: productionlines_productionline_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('productionlines_productionline_id_seq', 1, true);
+SELECT pg_catalog.setval('productionlines_productionline_id_seq', 2, false);
 
 
 --
@@ -36144,7 +36332,7 @@ COPY qcadoomodel_dictionary (id, name, pluginidentifier, active, entityversion) 
 -- Name: qcadoomodel_dictionary_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoomodel_dictionary_id_seq', 21, true);
+SELECT pg_catalog.setval('qcadoomodel_dictionary_id_seq', 22, false);
 
 
 --
@@ -36200,7 +36388,7 @@ COPY qcadoomodel_dictionaryitem (id, name, externalnumber, description, technica
 -- Name: qcadoomodel_dictionaryitem_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoomodel_dictionaryitem_id_seq', 41, true);
+SELECT pg_catalog.setval('qcadoomodel_dictionaryitem_id_seq', 42, false);
 
 
 --
@@ -36216,7 +36404,7 @@ COPY qcadoomodel_globalunitconversionsaggregate (id, entityversion) FROM stdin;
 -- Name: qcadoomodel_globalunitconversionsaggregate_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoomodel_globalunitconversionsaggregate_id_seq', 1, true);
+SELECT pg_catalog.setval('qcadoomodel_globalunitconversionsaggregate_id_seq', 2, false);
 
 
 --
@@ -36240,7 +36428,7 @@ COPY qcadoomodel_unitconversionitem (id, quantityfrom, quantityto, unitfrom, uni
 -- Name: qcadoomodel_unitconversionitem_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoomodel_unitconversionitem_id_seq', 9, true);
+SELECT pg_catalog.setval('qcadoomodel_unitconversionitem_id_seq', 10, false);
 
 
 --
@@ -36373,7 +36561,7 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 -- Name: qcadooplugin_plugin_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooplugin_plugin_id_seq', 156, true);
+SELECT pg_catalog.setval('qcadooplugin_plugin_id_seq', 158, false);
 
 
 --
@@ -36394,7 +36582,7 @@ COPY qcadoosecurity_group (id, name, description, identifier, entityversion) FRO
 -- Name: qcadoosecurity_group_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoosecurity_group_id_seq', 6, true);
+SELECT pg_catalog.setval('qcadoosecurity_group_id_seq', 7, false);
 
 
 --
@@ -36417,7 +36605,6 @@ SELECT pg_catalog.setval('qcadoosecurity_persistenttoken_id_seq', 1, false);
 --
 
 COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin;
-1	ROLE_HOME_PROFIL	\N	0
 2	ROLE_API	\N	0
 3	ROLE_SUPERADMIN	\N	0
 4	ROLE_ADMIN	\N	0
@@ -36539,6 +36726,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 121	ROLE_STOPPAGES	\N	0
 122	ROLE_STOPPAGE_REASONS	\N	0
 123	ROLE_WMS	\N	0
+1	ROLE_HOME_PROFILE	\N	0
 \.
 
 
@@ -36546,7 +36734,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 123, true);
+SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 124, false);
 
 
 --
@@ -36563,7 +36751,7 @@ COPY qcadoosecurity_user (id, username, email, firstname, lastname, enabled, des
 -- Name: qcadoosecurity_user_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoosecurity_user_id_seq', 2, true);
+SELECT pg_catalog.setval('qcadoosecurity_user_id_seq', 3, false);
 
 
 --
@@ -36586,7 +36774,6 @@ SELECT pg_catalog.setval('qcadooview_alert_id_seq', 1, false);
 --
 
 COPY qcadooview_category (id, pluginidentifier, name, succession, authrole, entityversion) FROM stdin;
-1	qcadooView	administration	1	\N	0
 2	qcadooView	home	2	\N	0
 3	basic	companyStructure	3	ROLE_COMPANY_STRUCTURE	0
 17	basic	calendars	4	ROLE_SHIFTS	0
@@ -36606,6 +36793,7 @@ COPY qcadooview_category (id, pluginidentifier, name, succession, authrole, enti
 15	productionCounting	analysis	18	ROLE_ANALYSIS_VIEWER	0
 16	arch	archives	19	\N	0
 21	basic	parameters	20	\N	0
+1	qcadooView	administration	1	ROLE_HOME_PROFILE	0
 \.
 
 
@@ -36613,7 +36801,7 @@ COPY qcadooview_category (id, pluginidentifier, name, succession, authrole, enti
 -- Name: qcadooview_category_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_category_id_seq', 21, true);
+SELECT pg_catalog.setval('qcadooview_category_id_seq', 22, false);
 
 
 --
@@ -36628,7 +36816,6 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 5	qcadooUsers	groups	t	1	5	5	\N	0
 6	qcadooUsers	roles	t	1	6	6	\N	0
 7	qcadooUsers	users	t	1	7	7	\N	0
-8	qcadooUsers	profile	t	1	8	8	\N	0
 9	qcadooDictionaries	dictionaries	t	1	9	9	\N	0
 10	qcadooUnitConversions	unitConversions	t	1	10	10	ROLE_UNIT_CONVERSIONS	0
 11	basic	logsList	t	1	11	11	ROLE_LOGS	0
@@ -36778,6 +36965,9 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 63	stoppage	stoppages	t	8	63	1	ROLE_STOPPAGES	0
 157	stoppage	stoppageReasonsList	t	4	156	26	ROLE_STOPPAGE_REASONS	0
 171	basicProductionCounting	productionCountingQuantityList	t	9	170	13	ROLE_BASE_FUNCTIONALITY	0
+172	esilco	outOfStockList	t	9	171	14	ROLE_REQUIREMENTS	0
+8	qcadooUsers	profile	t	1	8	8	ROLE_HOME_PROFILE	0
+173	productionCounting	productionAnalysisParameters	t	21	172	\N	ROLE_PARAMETERS	0
 \.
 
 
@@ -36785,7 +36975,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 171, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 173, true);
 
 
 --
@@ -36950,6 +37140,8 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 168	materialFlowResources	materialFlowResourcesParameters	\N	/materialFlowResourcesParameters.html	0
 169	productionCounting	productionCountingParameters	\N	/productionCountingParameters.html	0
 170	basicProductionCounting	productionCountingQuantityList	productionCountingQuantityList	\N	0
+171	esilco	outOfStockList	outOfStockList	\N	0
+172	productionCounting	productionAnalysisParameters	\N	/productionAnalysisParameters.html	0
 \.
 
 
@@ -36957,7 +37149,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 170, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 172, true);
 
 
 --
@@ -37307,7 +37499,7 @@ COPY stoppage_stoppagereason (id, name, description) FROM stdin;
 -- Name: stoppage_stoppagereason_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('stoppage_stoppagereason_id_seq', 1, true);
+SELECT pg_catalog.setval('stoppage_stoppagereason_id_seq', 2, false);
 
 
 --
@@ -37496,7 +37688,7 @@ COPY supplynegotiations_columnforoffers (id, identifier, name, description, colu
 -- Name: supplynegotiations_columnforoffers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('supplynegotiations_columnforoffers_id_seq', 9, true);
+SELECT pg_catalog.setval('supplynegotiations_columnforoffers_id_seq', 10, false);
 
 
 --
@@ -37519,7 +37711,7 @@ COPY supplynegotiations_columnforrequests (id, identifier, name, description, co
 -- Name: supplynegotiations_columnforrequests_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('supplynegotiations_columnforrequests_id_seq', 8, true);
+SELECT pg_catalog.setval('supplynegotiations_columnforrequests_id_seq', 9, false);
 
 
 --
@@ -37633,7 +37825,7 @@ COPY supplynegotiations_parametercolumnforoffers (id, parameter_id, columnforoff
 -- Name: supplynegotiations_parametercolumnforoffers_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('supplynegotiations_parametercolumnforoffers_id_seq', 9, true);
+SELECT pg_catalog.setval('supplynegotiations_parametercolumnforoffers_id_seq', 10, false);
 
 
 --
@@ -37656,7 +37848,7 @@ COPY supplynegotiations_parametercolumnforrequests (id, parameter_id, columnforr
 -- Name: supplynegotiations_parametercolumnforrequests_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('supplynegotiations_parametercolumnforrequests_id_seq', 8, true);
+SELECT pg_catalog.setval('supplynegotiations_parametercolumnforrequests_id_seq', 9, false);
 
 
 --
@@ -38284,7 +38476,7 @@ COPY workplans_columnforinputproducts (id, identifier, name, description, column
 -- Name: workplans_columnforinputproducts_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('workplans_columnforinputproducts_id_seq', 8, true);
+SELECT pg_catalog.setval('workplans_columnforinputproducts_id_seq', 9, false);
 
 
 --
@@ -38305,7 +38497,7 @@ COPY workplans_columnfororders (id, identifier, name, description, columnfiller,
 -- Name: workplans_columnfororders_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('workplans_columnfororders_id_seq', 6, true);
+SELECT pg_catalog.setval('workplans_columnfororders_id_seq', 7, false);
 
 
 --
@@ -38326,7 +38518,7 @@ COPY workplans_columnforoutputproducts (id, identifier, name, description, colum
 -- Name: workplans_columnforoutputproducts_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('workplans_columnforoutputproducts_id_seq', 6, true);
+SELECT pg_catalog.setval('workplans_columnforoutputproducts_id_seq', 7, false);
 
 
 --
@@ -38347,7 +38539,7 @@ COPY workplans_parameterinputcolumn (id, parameter_id, columnforinputproducts_id
 -- Name: workplans_parameterinputcolumn_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('workplans_parameterinputcolumn_id_seq', 6, true);
+SELECT pg_catalog.setval('workplans_parameterinputcolumn_id_seq', 7, false);
 
 
 --
@@ -38367,7 +38559,7 @@ COPY workplans_parameterordercolumn (id, parameter_id, columnfororders_id, succe
 -- Name: workplans_parameterordercolumn_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('workplans_parameterordercolumn_id_seq', 5, true);
+SELECT pg_catalog.setval('workplans_parameterordercolumn_id_seq', 6, false);
 
 
 --
@@ -38388,7 +38580,7 @@ COPY workplans_parameteroutputcolumn (id, parameter_id, columnforoutputproducts_
 -- Name: workplans_parameteroutputcolumn_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('workplans_parameteroutputcolumn_id_seq', 6, true);
+SELECT pg_catalog.setval('workplans_parameteroutputcolumn_id_seq', 7, false);
 
 
 --
@@ -40174,11 +40366,35 @@ ALTER TABLE ONLY esilco_importpositionerror
 
 
 --
+-- Name: esilco_outofstock_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY esilco_outofstock
+    ADD CONSTRAINT esilco_outofstock_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: esilco_printdocuments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY esilco_printdocuments
     ADD CONSTRAINT esilco_printdocuments_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: esilco_wmsdocumentpart_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY esilco_wmsdocumentpart
+    ADD CONSTRAINT esilco_wmsdocumentpart_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: esilco_wmsposition_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY esilco_wmsposition
+    ADD CONSTRAINT esilco_wmsposition_pkey PRIMARY KEY (id);
 
 
 --
@@ -50222,6 +50438,30 @@ ALTER TABLE ONLY arch_productionscheduling_ordertimecalculation
 
 
 --
+-- Name: outofstock_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY esilco_outofstock
+    ADD CONSTRAINT outofstock_location_fkey FOREIGN KEY (location_id) REFERENCES materialflow_location(id) DEFERRABLE;
+
+
+--
+-- Name: outofstock_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY esilco_outofstock
+    ADD CONSTRAINT outofstock_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: outofstock_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY esilco_outofstock
+    ADD CONSTRAINT outofstock_storagelocation_fkey FOREIGN KEY (storagelocation_id) REFERENCES materialflowresources_storagelocation(id) DEFERRABLE;
+
+
+--
 -- Name: pallet_label_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -50851,6 +51091,14 @@ ALTER TABLE ONLY materialflowresources_position
 
 ALTER TABLE ONLY arch_materialflowresources_position
     ADD CONSTRAINT position_palletnumber_fkey FOREIGN KEY (palletnumber_id) REFERENCES basic_palletnumber(id) DEFERRABLE;
+
+
+--
+-- Name: position_pickingworker_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY materialflowresources_position
+    ADD CONSTRAINT position_pickingworker_fkey FOREIGN KEY (pickingworker_id) REFERENCES basic_staff(id) DEFERRABLE;
 
 
 --
@@ -54782,6 +55030,14 @@ ALTER TABLE ONLY materialflowresources_warehousestockreport
 
 
 --
+-- Name: wmsposition_documentpart_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY esilco_wmsposition
+    ADD CONSTRAINT wmsposition_documentpart_fkey FOREIGN KEY (documentpart_id) REFERENCES esilco_wmsdocumentpart(id) DEFERRABLE;
+
+
+--
 -- Name: worker_maintenanceevent_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -55019,3 +55275,4 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 --
 -- PostgreSQL database dump complete
 --
+

@@ -47,6 +47,7 @@
         <string name="userName"/>
         <string name="description"/>
         <boolean name="inBuffer" />
+        <boolean name="wms" />
     </fields>
 
     <masterModel plugin="materialFlowResources" model="document"/>

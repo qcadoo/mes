@@ -24,12 +24,9 @@
 package com.qcadoo.mes.basic.hooks;
 
 import static com.qcadoo.mes.basic.constants.ProductFamilyElementType.PARTICULAR_PRODUCT;
-import static com.qcadoo.mes.basic.constants.ProductFields.ADDITIONAL_UNIT;
-import static com.qcadoo.mes.basic.constants.ProductFields.EAN;
-import static com.qcadoo.mes.basic.constants.ProductFields.ENTITY_TYPE;
-import static com.qcadoo.mes.basic.constants.ProductFields.PARENT;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,33 +65,35 @@ public class ProductHooks {
     }
 
     public void clearFamilyFromProductWhenTypeIsChanged(final DataDefinition productDD, final Entity product) {
-        if (product.getId() == null) {
+        if (Objects.isNull(product.getId())) {
             return;
         }
-        String entityType = product.getStringField(ENTITY_TYPE);
+
+        String entityType = product.getStringField(ProductFields.ENTITY_TYPE);
         Entity productFromDB = product.getDataDefinition().get(product.getId());
+
         if (entityType.equals(PARTICULAR_PRODUCT.getStringValue())
-                && !entityType.equals(productFromDB.getStringField(ENTITY_TYPE))) {
-            deleteProductFamily(productFromDB);
+                && !entityType.equals(productFromDB.getStringField(ProductFields.ENTITY_TYPE))) {
+            deleteProductFamily(productDD, productFromDB);
         }
     }
 
-    private void deleteProductFamily(final Entity product) {
-        DataDefinition productDD = product.getDataDefinition();
-        List<Entity> productsWithFamily = productDD.find().add(SearchRestrictions.belongsTo(PARENT, product)).list()
+    private void deleteProductFamily(final DataDefinition productDD, final Entity product) {
+        List<Entity> productsWithFamily = productDD.find().add(SearchRestrictions.belongsTo(ProductFields.PARENT, product)).list()
                 .getEntities();
+
         for (Entity entity : productsWithFamily) {
-            entity.setField("parent", null);
+            entity.setField(ProductFields.PARENT, null);
             productDD.save(entity);
         }
     }
 
     public boolean checkIfNotBelongsToSameFamily(final DataDefinition productDD, final Entity product) {
-        if (product.getId() != null) {
-            Entity parent = product.getBelongsToField(PARENT);
+        if (Objects.nonNull(product.getId())) {
+            Entity parent = product.getBelongsToField(ProductFields.PARENT);
 
-            if ((parent != null) && product.getId().equals(parent.getId())) {
-                product.addError(productDD.getField(PARENT), "basic.product.parent.belongsToSameFamily");
+            if (Objects.nonNull(parent) && product.getId().equals(parent.getId())) {
+                product.addError(productDD.getField(ProductFields.PARENT), "basic.product.parent.belongsToSameFamily");
 
                 return false;
             }
@@ -105,32 +104,35 @@ public class ProductHooks {
 
     public boolean checkIfParentIsFamily(final DataDefinition productDD, final Entity product) {
         Entity parent = product.getBelongsToField(ProductFields.PARENT);
-        if (parent == null) {
+
+        if (Objects.isNull(parent)) {
             return true;
         }
+
         if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(parent.getStringField(ProductFields.ENTITY_TYPE))) {
             return true;
         } else {
-            product.addError(productDD.getField(PARENT), "basic.product.parent.parentIsNotFamily");
+            product.addError(productDD.getField(ProductFields.PARENT), "basic.product.parent.parentIsNotFamily");
 
             return false;
         }
     }
 
-    public void clearFieldsOnCopy(final DataDefinition dataDefinition, final Entity product) {
-        if (product == null) {
+    public void clearFieldsOnCopy(final DataDefinition productDD, final Entity product) {
+        if (Objects.isNull(product)) {
             return;
         }
-        product.setField(ADDITIONAL_UNIT, null);
 
-        product.setField(EAN, null);
+        product.setField(ProductFields.ADDITIONAL_UNIT, null);
+        product.setField(ProductFields.EAN, null);
     }
 
-    public void clearExternalIdOnCopy(final DataDefinition dataDefinition, final Entity entity) {
-        if (entity == null) {
+    public void clearExternalIdOnCopy(final DataDefinition productDD, final Entity product) {
+        if (Objects.isNull(product)) {
             return;
         }
-        entity.setField("externalNumber", null);
+
+        product.setField(ProductFields.EXTERNAL_NUMBER, null);
     }
 
     public void calculateConversionIfUnitChanged(final DataDefinition productDD, final Entity product) {
@@ -144,37 +146,47 @@ public class ProductHooks {
     }
 
     public boolean validateAdditionalUnit(final DataDefinition productDD, final Entity product) {
-
         String additionalUnit = product.getStringField(ProductFields.ADDITIONAL_UNIT);
         String defaultUnit = product.getStringField(ProductFields.UNIT);
+
         if (!StringUtils.isEmpty(additionalUnit)) {
             if (additionalUnit.equals(defaultUnit)) {
                 product.addError(productDD.getField(ProductFields.ADDITIONAL_UNIT),
                         "basic.product.additionalUnit.error.sameUnits");
+
                 return false;
             }
 
             List<Entity> conversions = product.getHasManyField(ProductFields.CONVERSION_ITEMS);
+
             if (!conversions.stream().anyMatch(
                     conversionItem -> conversionItem.getStringField(UnitConversionItemFields.UNIT_TO).equals(additionalUnit)
                             && conversionItem.getStringField(UnitConversionItemFields.UNIT_FROM).equals(defaultUnit))) {
                 product.addGlobalError("basic.product.additionalUnit.error.unitConversionMissing");
+
                 return false;
             }
         }
+
         return true;
     }
 
     public boolean validateCodeUniqueness(final DataDefinition productDD, final Entity product) {
-        Entity duplicateCode = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_ADDITIONAL_CODE)
-                .find().add(SearchRestrictions.eq(AdditionalCodeFields.CODE, product.getStringField(ProductFields.NUMBER)))
+        Entity duplicateCode = getAdditionalCodeDD().find()
+                .add(SearchRestrictions.eq(AdditionalCodeFields.CODE, product.getStringField(ProductFields.NUMBER)))
                 .setMaxResults(1).uniqueResult();
 
-        if (duplicateCode != null) {
+        if (Objects.nonNull(duplicateCode)) {
             product.addError(productDD.getField(ProductFields.NUMBER), "qcadooView.validate.field.error.duplicated");
+
             return false;
         }
+
         return true;
+    }
+
+    private DataDefinition getAdditionalCodeDD() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_ADDITIONAL_CODE);
     }
 
 }

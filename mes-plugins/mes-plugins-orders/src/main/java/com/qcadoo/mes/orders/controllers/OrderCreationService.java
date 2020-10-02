@@ -43,6 +43,7 @@ import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.GlobalMessage;
@@ -156,6 +157,9 @@ public class OrderCreationService {
     @Autowired
     private OrderDetailsListeners orderDetailsListeners;
 
+    @Autowired
+    private NumberService numberService;
+
     public OrderCreationResponse createOrder(OrderCreationRequest orderCreationRequest) {
 
         Entity parameter = parameterService.getParameter();
@@ -222,14 +226,12 @@ public class OrderCreationService {
                     "basic.dashboard.orderDefinitionWizard.createOrder.validationError", LocaleContextHolder.getLocale()));
         }
 
-
         if (createOperationalTasks) {
             createOperationalTasks(order, orderCreationRequest);
             modifyProductionCountingQuantityForEach(order, orderCreationRequest.getTechnologyOperations());
         } else {
             modifyProductionCountingQuantity(order, orderCreationRequest.getMaterials());
         }
-
 
         response.setMessage(translationService.translate("orders.orderCreationService.created", LocaleContextHolder.getLocale(),
                 order.getStringField(OrderFields.NUMBER)));
@@ -281,8 +283,7 @@ public class OrderCreationService {
             Entity dashboardComponentsLocation = parameter.getBelongsToField(L_DASHBOARD_COMPONENTS_LOCATION);
             Entity dashboardProductsInputLocation = parameter.getBelongsToField(L_DASHBOARD_PRODUCTS_INPUT_LOCATION);
             for (MaterialDto material : addedMaterials) {
-                createProductionCoutingQuantity(order, dashboardComponentsLocation, dashboardProductsInputLocation, material,
-                        toc);
+                createProductionCoutingQuantity(order, dashboardComponentsLocation, dashboardProductsInputLocation, material, toc);
             }
         }
 
@@ -316,12 +317,14 @@ public class OrderCreationService {
 
     private void createProductionCoutingQuantity(Entity order, Entity dashboardComponentsLocation,
             Entity dashboardProductsInputLocation, MaterialDto material, Entity toc) {
-        Entity productionCountingQuantity = dataDefinitionService.get(L_BASIC_PRODUCTION_COUNTING, L_PRODUCTION_COUNTING_QUANTITY)
-                .create();
+        Entity productionCountingQuantity = dataDefinitionService
+                .get(L_BASIC_PRODUCTION_COUNTING, L_PRODUCTION_COUNTING_QUANTITY).create();
         productionCountingQuantity.setField(L_ORDER, order.getId());
         productionCountingQuantity.setField(L_TECHNOLOGY_OPERATION_COMPONENT, toc.getId());
 
-        productionCountingQuantity.setField(L_PLANNED_QUANTITY, material.getQuantity());
+        BigDecimal q = order.getDecimalField(OrderFields.PLANNED_QUANTITY).multiply(material.getQuantityPerUnit(),
+                numberService.getMathContext());
+        productionCountingQuantity.setField(L_PLANNED_QUANTITY, q);
         productionCountingQuantity.setField(OrderCreationService.L_PRODUCT, material.getProductId());
         productionCountingQuantity.setField(L_ROLE, L_USED);
         productionCountingQuantity.setField(L_TYPE_OF_MATERIAL, L_COMPONENT);

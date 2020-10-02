@@ -49,6 +49,7 @@
         <belongsTo name="linkedDocumentLocation"
                    model="location" plugin="materialFlow"/>
         <boolean name="inBuffer" default="false"/>
+        <boolean name="wms" copyable="false" default="false"/>
         <datetime name="generationDate" copyable="false"/>
         <string name="fileName" copyable="false"/>
         <boolean name="acceptationInProgress" default="false"/>

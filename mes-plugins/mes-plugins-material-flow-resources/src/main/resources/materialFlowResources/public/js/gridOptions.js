@@ -1616,6 +1616,16 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     editable: false
                 },
                 {
+                    name: 'pickingDate',
+                    index: 'pickingDate',
+                    editable: false
+                },
+                {
+                    name: 'pickingWorker',
+                    index: 'pickingWorker',
+                    editable: false
+                },
+                {
                     name: 'batch',
                     index: 'batch',
                     editable: true,

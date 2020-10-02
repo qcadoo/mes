@@ -959,6 +959,7 @@ margin-top: 0px;
 
 .small-label {
     width: 80px;
+    margin-right: 15px;
 }
 
 hr {
@@ -971,9 +972,9 @@ hr {
 
 .grid-label {
     display: inline-block;
-    width: 100px;
+    width: 80px;
     text-align: left;
-    margin-right: 27px;
+    margin-right: 20px;
     display: inline-block;
     margin-bottom: .5rem;
     display: -ms-flexbox;
@@ -982,7 +983,7 @@ hr {
     align-items: center;
     padding: .375rem .75rem;
     margin-bottom: 0;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 400;
     line-height: 1.5;
     color: #495057;
@@ -993,18 +994,18 @@ hr {
 
 .grid-label30 {
     display: inline-block;
-    width: 130px;
+    width: 120px;
     text-align: left;
-    margin-right: 27px;
+    margin-right: 20px;
     display: inline-block;
     margin-bottom: .5rem;
     display: -ms-flexbox;
     display: flex;
     -ms-flex-align: center;
     align-items: center;
-    padding: .375rem .75rem;
+    padding: .375rem .0rem;
     margin-bottom: 0;
-    font-size: 1rem;
+    font-size: 0.9rem;
     font-weight: 400;
     line-height: 1.5;
     color: #495057;

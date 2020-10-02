@@ -14,16 +14,6 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.dto.ColumnProperties;
 import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
-
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -31,6 +21,10 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Repository
 public class DocumentPositionService {
@@ -81,7 +75,7 @@ public class DocumentPositionService {
         }
         String query = "SELECT %s FROM ( SELECT p.*, p.document_id AS document, product.number AS product, product.name AS productName, product.unit, additionalcode.code AS additionalcode, "
                 + "palletnumber.number AS palletnumber, location.number AS storagelocation, resource.number AS resource, batch.number as batch, batch.id as batchId, \n"
-                + "(coalesce(r1.resourcesCount,0) < 2 AND p.quantity >= coalesce(resource.quantity,0)) AS lastResource "
+                + "(coalesce(r1.resourcesCount,0) < 2 AND p.quantity >= coalesce(resource.quantity,0)) AS lastResource, p.pickingdate AS pickingDate, staff.name || ' ' || staff.surname AS pickingWorker "
                 + attrQueryPart.toString()
                 + "	FROM materialflowresources_position p\n"
                 + "	LEFT JOIN basic_product product ON (p.product_id = product.id)\n"
@@ -89,6 +83,7 @@ public class DocumentPositionService {
                 + "	LEFT JOIN basic_palletnumber palletnumber ON (p.palletnumber_id = palletnumber.id)\n"
                 + "	LEFT JOIN materialflowresources_resource resource ON (p.resource_id = resource.id)\n"
                 + "	LEFT JOIN advancedgenealogy_batch batch ON (p.batch_id = batch.id)\n"
+                + "	LEFT JOIN basic_staff staff ON (p.pickingworker_id = staff.id)\n"
                 + " LEFT JOIN (SELECT palletnumber_id, count(id) as resourcesCount FROM materialflowresources_resource GROUP BY palletnumber_id) r1 ON r1.palletnumber_id = resource.palletnumber_id \n"
                 + "	LEFT JOIN materialflowresources_storagelocation location ON (p.storagelocation_id = location.id) WHERE p.document_id = :documentId %s) q ";
 
@@ -139,6 +134,8 @@ public class DocumentPositionService {
             documentPositionDTO.setProductionDate(resultSet.getDate("productionDate"));
             documentPositionDTO.setPalletNumber(resultSet.getString("palletNumber"));
             documentPositionDTO.setResourceNumber(resultSet.getString("resourceNumber"));
+            documentPositionDTO.setPickingDate(resultSet.getDate("pickingDate"));
+            documentPositionDTO.setPickingWorker(resultSet.getString("pickingWorker"));
             documentPositionDTO.setTypeOfPallet(resultSet.getString("typeOfPallet"));
             documentPositionDTO.setStorageLocation(resultSet.getString("storageLocation"));
             documentPositionDTO.setPrice(resultSet.getBigDecimal("price"));
