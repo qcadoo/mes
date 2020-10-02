@@ -30,14 +30,21 @@ public class DataProviderForTechnology {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public TechnologiesResponse getTechnologies(String query, Long productId, Boolean master) {
+    public TechnologiesResponse getTechnologies(String query, Long productId, Boolean master, Boolean forEach) {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("Select id as id, number as number, master as master From technologies_technology WHERE ");
         if (master) {
             queryBuilder.append(" master = true AND ");
         }
+        if(forEach) {
+            queryBuilder
+                    .append(" typeOfProductionRecording = '03forEach' ");
+        } else {
+            queryBuilder
+                    .append(" typeOfProductionRecording = '02cumulated' ");
+        }
         queryBuilder
-                .append(" typeOfProductionRecording = '02cumulated' AND product_id = :productId AND state = '02accepted' AND number ilike :query ORDER BY number ASC LIMIT 10 ");
+                .append(" AND product_id = :productId AND state = '02accepted' AND number ilike :query ORDER BY number ASC LIMIT 10 ");
 
         Map<String, Object> parameters = Maps.newHashMap();
 
@@ -52,15 +59,31 @@ public class DataProviderForTechnology {
     }
 
     public TechnologiesGridResponse getTechnologiesResponse(int limit, int offset, String sort, String order, String search,
-            Long productId) {
+            Long productId, Boolean forEach) {
         StringBuilder query = new StringBuilder();
         query.append("SELECT tech.id, tech.number, tech.name ");
-        query.append("FROM technologies_technology tech WHERE tech.typeOfProductionRecording = '02cumulated' AND tech.active = true AND tech.product_id = :productID AND tech.state = '02accepted' ");
+        query.append("FROM technologies_technology tech WHERE ");
+        if(forEach) {
+            query
+                    .append(" tech.typeOfProductionRecording  = '03forEach' ");
+        } else {
+            query
+                    .append(" tech.typeOfProductionRecording  = '02cumulated' ");
+        }
+        query.append(" AND tech.active = true AND tech.product_id = :productID AND tech.state = '02accepted' ");
 
         StringBuilder queryCount = new StringBuilder();
         queryCount.append("SELECT COUNT(*) ");
+        queryCount.append("FROM technologies_technology tech WHERE ");
+        if(forEach) {
+            queryCount
+                    .append(" tech.typeOfProductionRecording  = '03forEach' ");
+        } else {
+            queryCount
+                    .append(" tech.typeOfProductionRecording  = '02cumulated' ");
+        }
         queryCount
-                .append("FROM technologies_technology tech WHERE tech.typeOfProductionRecording = '02cumulated' AND tech.active = true AND tech.product_id = :productID AND tech.state = '02accepted' ");
+                .append(" AND tech.active = true AND tech.product_id = :productID AND tech.state = '02accepted' ");
 
         appendTechnologyConditions(search, query);
         appendTechnologyConditions(search, queryCount);
