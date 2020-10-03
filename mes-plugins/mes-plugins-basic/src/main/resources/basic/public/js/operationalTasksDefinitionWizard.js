@@ -332,12 +332,12 @@ QCD.operationalTasksDefinitionWizard = (function () {
 
 								if (!exist) {
 									$.each(oper.materials, function (i, reMaterial) {
-										if ($('#inProduct-' + reMaterial.index).val() !== '' && material.index != reMaterial.index && (material.productId == reMaterial.productId
-										        || QCD.operationalTasksDefinitionWizardContext.order.product.id == reMaterial.productId)) {
+										if ($('#inProduct-' + reMaterial.index).val() !== '' && material.index != reMaterial.index && (material.productId == reMaterial.productId ||
+												QCD.operationalTasksDefinitionWizardContext.order.product.id == reMaterial.productId)) {
 
-                                            if (!exist) {
-											    $('#inProduct-' + reMaterial.index).addClass('is-invalid');
-                                            }
+											if (!exist) {
+												$('#inProduct-' + reMaterial.index).addClass('is-invalid');
+											}
 											exist = true;
 										}
 									});
@@ -492,7 +492,7 @@ QCD.operationalTasksDefinitionWizard = (function () {
 					'rest/technologies', {
 						query: "",
 						master: true,
-					    forEach: true,
+						forEach: true,
 						productId: QCD.operationalTasksDefinitionWizardContext.order.product.id
 					},
 					function (data) {
@@ -661,7 +661,7 @@ QCD.operationalTasksDefinitionWizard = (function () {
 				return $.getJSON(
 					'rest/technologies', {
 						query: $("#otTechnology").val(),
-					    forEach: true,
+						forEach: true,
 						productId: QCD.operationalTasksDefinitionWizardContext.order.product.id
 					},
 					function (data) {
@@ -706,6 +706,7 @@ QCD.operationalTasksDefinitionWizard = (function () {
 				} else {
 					$("#newTechnologyOperation").prop('disabled', false);
 				}
+				prepareOperationMaterials();
 			}
 		});
 
@@ -2032,7 +2033,14 @@ QCD.operationalTasksDefinitionWizard = (function () {
 						}
 					});
 				});
-
+				$('#technologyOperations').bootstrapTable('load', QCD.operationalTasksDefinitionWizardContext.technologyOperations);
+				if (QCD.operationalTasksDefinitionWizardContext.order.technology) {
+					$("#removeTechnologyOperation").prop('disabled', true);
+					$("#newTechnologyOperation").prop('disabled', true);
+				} else {
+					$("#newTechnologyOperation").prop('disabled', false);
+				}
+				prepareOperationMaterials();
 
 			},
 			error: function (data) {
