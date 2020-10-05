@@ -162,7 +162,7 @@ public class DataProviderForTechnology {
         StringBuilder query = new StringBuilder();
         query.append("SELECT id, number ");
         query.append("FROM technologies_operation ");
-        query.append("WHERE active = true ORDER BY number ASC");
+        query.append("WHERE active = true ORDER BY lower(number) ASC");
         return new OperationsResponse(jdbcTemplate.query(query.toString(), Maps.newHashMap(), new BeanPropertyRowMapper(OperationDto.class)));
     }
 }

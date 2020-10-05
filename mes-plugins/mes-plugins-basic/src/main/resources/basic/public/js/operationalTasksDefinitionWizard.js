@@ -285,15 +285,17 @@ QCD.operationalTasksDefinitionWizard = (function () {
 					var exist = false;
 
 					var data = QCD.operationalTasksDefinitionWizardContext.technologyOperations;
+					var last_element = data[data.length - 1];
+					if (last_element.materials.length == 0) {
+                        showMessage(
+                    		'failure',
+                    		QCD.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
+                    		QCD.translate("basic.dashboard.operationalTasksDefinitionWizard.error.materialCannotBeEmpty"),
+                    		false);
+                    	invalid = true;
+                    }
 					$.each(data, function (i, oper) {
-						if (oper.node == 1 && oper.materials.length == 0) {
-							showMessage(
-								'failure',
-								QCD.translate("basic.dashboard.orderDefinitionWizard.error.validationError"),
-								QCD.translate("basic.dashboard.operationalTasksDefinitionWizard.error.materialCannotBeEmpty"),
-								false);
-							invalid = true;
-						}
+
 						$.each(oper.materials, function (i, material) {
 							if (material.product == null || material.product === '' || material.productId == null) {
 								$('#inProduct-' + material.index).addClass('is-invalid');
