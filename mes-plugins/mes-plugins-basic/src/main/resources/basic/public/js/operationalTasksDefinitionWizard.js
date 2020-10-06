@@ -803,7 +803,7 @@ QCD.operationalTasksDefinitionWizard = (function () {
 				values: ids
 			})
 			$("#removeTechnologyOperation").prop('disabled', true);
-
+            QCD.operationalTasksDefinitionWizardContext.node = 0;
 			var reIndex = 1;
 			$.each(QCD.operationalTasksDefinitionWizardContext.technologyOperations, function (i, toc) {
 				toc.node = reIndex + ".";
