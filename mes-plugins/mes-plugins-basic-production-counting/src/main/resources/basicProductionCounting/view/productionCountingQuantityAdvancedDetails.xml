@@ -38,7 +38,7 @@
             <group name="actions">
                 <bigButton name="save" icon="saveIcon24.png" state="enabled"
                            action="#{form}.fireEvent(saveProductionCountingQuantity);"/>
-                <smallButton name="saveBack" icon="saveBackIcon16.png" state="enabled" action="#{form}.fireEvent(saveProductionCountingQuantity); #{window}.performBack;" />
+                <smallButton name="saveBack" icon="saveBackIcon16.png" state="enabled" action="#{form}.fireEvent(saveProductionCountingQuantity); #{window}.performBackWithoutConfirm;" />
             </group>
 
         </ribbon>
