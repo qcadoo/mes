@@ -22,10 +22,11 @@
 package com.qcadoo.mes.materialFlowResources.listeners;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.service.DocumentErrorsLogger;
+import com.qcadoo.mes.materialFlowResources.service.DocumentService;
 import com.qcadoo.mes.materialFlowResources.service.ReceiptDocumentForReleaseHelper;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
 import com.qcadoo.model.api.DataDefinition;
@@ -38,16 +39,11 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class DocumentsListListeners {
@@ -67,7 +63,7 @@ public class DocumentsListListeners {
     private DocumentErrorsLogger documentErrorsLogger;
 
     @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
+    private DocumentService documentService;
 
     public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
@@ -86,8 +82,7 @@ public class DocumentsListListeners {
                     continue;
                 }
 
-                if (getAcceptationInProgress(documentId)) {
-                    // if (documentFromDB.getBooleanField(DocumentFields.ACCEPTATION_IN_PROGRESS)) {
+                if (documentService.getAcceptationInProgress(documentId)) {
                     continue;
                 }
 
@@ -96,7 +91,7 @@ public class DocumentsListListeners {
         }
 
         if (!documentsFromDB.isEmpty()) {
-            setAcceptationInProgress(documentsFromDB, true);
+            documentService.setAcceptationInProgress(documentsFromDB, true);
             try {
                 createResourcesForDocuments(view, gridComponent, documentDD, documentsFromDB);
             } catch (Exception e) {
@@ -104,35 +99,9 @@ public class DocumentsListListeners {
                 LOG.error("Error in createResourcesForDocuments ", e);
                 throw new IllegalStateException(e.getMessage(), e);
             } finally {
-                setAcceptationInProgress(documentsFromDB, false);
+                documentService.setAcceptationInProgress(documentsFromDB, false);
             }
         }
-    }
-
-    private boolean getAcceptationInProgress(final Long documentId) {
-        String sql = "SELECT acceptationinprogress FROM materialflowresources_document WHERE id = :id;";
-        Map<String, Object> parameters = Maps.newHashMap();
-
-        parameters.put("id", documentId);
-        SqlParameterSource namedParameters = new MapSqlParameterSource(parameters);
-
-        return jdbcTemplate.queryForObject(sql, parameters, Boolean.class);
-    }
-
-    private void setAcceptationInProgress(final List<Entity> documents, final boolean acceptationInProgress) {
-        String sql = "UPDATE materialflowresources_document SET acceptationinprogress = :acceptationinprogress WHERE id IN (:ids);";
-
-        List<Long> ids = documents.stream().map(document -> document.getId()).collect(Collectors.toList());
-        Map<String, Object> parameters = Maps.newHashMap();
-
-        parameters.put("acceptationinprogress", acceptationInProgress);
-
-        parameters.put("ids", ids);
-
-        SqlParameterSource namedParameters = new MapSqlParameterSource(parameters);
-        LOG.info("DOCUMENT SET ACCEPTATION IN PROGRESS = " + acceptationInProgress + " ids ="
-                + ids.stream().map(Object::toString).collect(Collectors.joining(", ")));
-        jdbcTemplate.update(sql, namedParameters);
     }
 
     @Transactional
