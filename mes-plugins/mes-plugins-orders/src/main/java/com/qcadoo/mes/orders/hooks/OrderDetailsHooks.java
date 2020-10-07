@@ -46,7 +46,12 @@ import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.ExpressionService;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -55,15 +60,18 @@ import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -72,6 +80,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderDetailsHooks {
@@ -147,6 +158,10 @@ public class OrderDetailsHooks {
         disabledRibbonWhenOrderIsSynchronized(view);
         compareDeadlineAndEndDate(view);
         compareDeadlineAndStartDate(view);
+        if (!isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT))
+                || !isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANNED_QUANTITY))) {
+            return;
+        }
         orderProductQuantityHooks.changeFieldsEnabledForSpecificOrderState(view);
         orderProductQuantityHooks.fillProductUnit(view);
         changeFieldsEnabledForSpecificOrderState(view);
@@ -191,16 +206,15 @@ public class OrderDetailsHooks {
         }
     }
 
-    public void fillDivision(final LookupComponent divisionLookup, final Entity technology,
-            final Entity defaultProductionLine) {
+    public void fillDivision(final LookupComponent divisionLookup, final Entity technology, final Entity defaultProductionLine) {
         if (technology != null && PluginUtils.isEnabled(L_PRODUCT_FLOW_THRU_DIVISION)
                 && L_ONE_DIVISION.equals(technology.getField(L_RANGE))
                 && Objects.nonNull(technology.getBelongsToField(L_DIVISION))) {
             divisionLookup.setFieldValue(technology.getBelongsToField(L_DIVISION).getId());
             divisionLookup.requestComponentUpdateState();
-        } else if(Objects.nonNull(defaultProductionLine)) {
+        } else if (Objects.nonNull(defaultProductionLine)) {
             List<Entity> divisions = defaultProductionLine.getManyToManyField(ProductionLineFields.DIVISIONS);
-            if(divisions.size() == 1) {
+            if (divisions.size() == 1) {
                 divisionLookup.setFieldValue(divisions.get(0).getId());
                 divisionLookup.requestComponentUpdateState();
             }
@@ -557,8 +571,7 @@ public class OrderDetailsHooks {
         changeFieldsVisibility(view, selectForPatternTechnology);
     }
 
-    private void changeFieldsVisibility(final ViewDefinitionState view,
-                                        final boolean selectForPatternTechnology) {
+    private void changeFieldsVisibility(final ViewDefinitionState view, final boolean selectForPatternTechnology) {
         for (String reference : OrderDetailsHooks.L_PREDEFINED_TECHNOLOGY_FIELDS) {
             ComponentState componentState = view.getComponentByReference(reference);
 
@@ -592,6 +605,10 @@ public class OrderDetailsHooks {
 
         Entity product = order.getBelongsToField(BasicConstants.MODEL_PRODUCT);
 
+        if (!isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT))
+                || !isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANNED_QUANTITY))) {
+            return;
+        }
         if (product != null
                 && (order.getDecimalField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT) == null || !isValidQuantityForAdditionalUnit(
                         order, product))) {
@@ -600,7 +617,7 @@ public class OrderDetailsHooks {
     }
 
     private void setDoneQuantity(final ViewDefinitionState view) {
-        if (!isValidDecimalField(view, Lists.newArrayList(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED))) {
+        if (!isValidDecimalField(view, Lists.newArrayList(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED, OrderFields.PLANNED_QUANTITY))) {
             return;
         }
 
@@ -629,7 +646,8 @@ public class OrderDetailsHooks {
         if (BigDecimal.ZERO.compareTo(remainingAmountOfProductToProduce) == 1) {
             remainingAmountOfProductToProduce = BigDecimal.ZERO;
         }
-        remaingingAmoutOfProductToProduceField.setFieldValue(numberService.formatWithMinimumFractionDigits(remainingAmountOfProductToProduce, 0));
+        remaingingAmoutOfProductToProduceField.setFieldValue(numberService.formatWithMinimumFractionDigits(
+                remainingAmountOfProductToProduce, 0));
 
         remaingingAmoutOfProductToProduceField.requestComponentUpdateState();
 
