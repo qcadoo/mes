@@ -709,6 +709,7 @@ QCD.operationalTasksDefinitionWizard = (function () {
 					$("#newTechnologyOperation").prop('disabled', false);
 				}
 				prepareOperationMaterials();
+				disableStepsAfterClearTechnology();
 			}
 		});
 
@@ -2043,6 +2044,8 @@ QCD.operationalTasksDefinitionWizard = (function () {
 					$("#newTechnologyOperation").prop('disabled', false);
 				}
 				prepareOperationMaterials();
+				$("#workstations").bootstrapTable('load', QCD.operationalTasksDefinitionWizardContext.technologyOperations);
+				preparePreview();
 
 			},
 			error: function (data) {
@@ -2142,6 +2145,17 @@ QCD.operationalTasksDefinitionWizard = (function () {
 				$("#loader").modal('hide');
 			}
 		});
+	}
+
+    function disableStepsAfterClearTechnology() {
+        disableStep(3);
+        disableStep(4);
+        disableStep(5);
+    }
+
+	function disableStep(index) {
+	    $("#operationalTasksDefinitionForm-t-"+index).parent().addClass("disabled");
+	    $("#operationalTasksDefinitionForm-t-"+index).parent().removeClass("done")._enableAria(false);
 	}
 
 	return {

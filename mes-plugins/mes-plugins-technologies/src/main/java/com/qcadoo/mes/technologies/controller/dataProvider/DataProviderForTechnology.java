@@ -128,6 +128,7 @@ public class DataProviderForTechnology {
 
     public List<OperationMaterialDto> getTechnologyOperationMaterials(Long technologyId) {
         List<Long> ids = operationComponentDataProvider.getComponentsForTechnology(technologyId);
+        ids.addAll(operationComponentDataProvider.getIntermediateInProductsForTechnology(technologyId));
         StringBuilder query = new StringBuilder();
         query.append("SELECT opic.id as productInId, opic.id as index, p.id as productId, p.number as product, p.number as productNumber,  ");
         query.append("p.name as productName, p.unit as unit, opic.quantity as quantityPerUnit, ");
