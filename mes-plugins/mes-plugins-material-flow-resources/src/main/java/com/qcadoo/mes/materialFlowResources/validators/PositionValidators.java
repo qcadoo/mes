@@ -23,22 +23,31 @@
  */
 package com.qcadoo.mes.materialFlowResources.validators;
 
-import com.qcadoo.mes.materialFlowResources.constants.*;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
 import com.qcadoo.mes.materialFlowResources.service.ResourceStockService;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Date;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class PositionValidators {
 
     @Autowired
     private ReservationsService reservationsService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private ResourceStockService resourceStockService;
@@ -93,6 +102,7 @@ public class PositionValidators {
     }
 
     public boolean validateAvailableQuantity(final DataDefinition dataDefinition, final Entity position) {
+/*
         Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
 
         if (document != null && reservationsService.reservationsEnabledForDocumentPositions(document)) {
@@ -106,6 +116,7 @@ public class PositionValidators {
                 return false;
             }
         }
+*/
 
         return true;
     }
