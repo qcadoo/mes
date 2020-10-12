@@ -23,9 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
 import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
@@ -33,6 +30,9 @@ import com.qcadoo.mes.materialFlowResources.service.ResourceReservationsService;
 import com.qcadoo.mes.materialFlowResources.validators.PositionValidators;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class PositionModelHooks {
@@ -47,7 +47,7 @@ public class PositionModelHooks {
     private ResourceReservationsService resourceReservationsService;
 
     public void onSave(final DataDefinition positionDD, final Entity position) {
-        if (position.getId() != null && positionValidators.validateAvailableQuantity(positionDD, position)) {
+        if (position.getId() != null) {
             reservationsService.updateReservationFromDocumentPosition(position);
         }
     }
@@ -57,9 +57,7 @@ public class PositionModelHooks {
     }
 
     public void onCreate(final DataDefinition positionDD, final Entity position) {
-        if (positionValidators.validateAvailableQuantity(positionDD, position)) {
-            reservationsService.createReservationFromDocumentPosition(position);
-        }
+        reservationsService.createReservationFromDocumentPosition(position);
     }
 
     public boolean onDelete(final DataDefinition positionDD, final Entity position) {
