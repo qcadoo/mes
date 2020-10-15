@@ -36,28 +36,13 @@ import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
 import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessageCopyToEntityHelper;
 import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessageHolder;
 import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessageHolderFactory;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
-import com.qcadoo.model.api.search.SearchOrder;
-import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.search.*;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.exception.LockAcquisitionException;
 import org.slf4j.Logger;
@@ -66,6 +51,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class ResourceManagementServiceImpl implements ResourceManagementService {
@@ -483,11 +474,11 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         reservationsService.deleteReservationFromDocumentPosition(position);
 
         BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
+        BigDecimal conversion = BigDecimalUtils.convertNullToOne(position.getDecimalField(PositionFields.CONVERSION));
         String givenUnit = position.getStringField(PositionFields.GIVEN_UNIT);
 
         for (Entity resource : resources) {
             Entity newPosition = createNewPosition(position, product, resource);
-            BigDecimal conversion = BigDecimalUtils.convertNullToOne(newPosition.getDecimalField(PositionFields.CONVERSION));
 
             quantity = recalculateQuantity(quantity, conversion, givenUnit, resource.getDecimalField(ResourceFields.CONVERSION),
                     product.getStringField(ProductFields.UNIT));
@@ -543,7 +534,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 if (BigDecimal.ZERO.compareTo(quantity) == 0
                         || BigDecimal.ZERO.compareTo(calculationQuantityService.calculateAdditionalQuantity(quantity, conversion,
-                                givenUnit)) == 0) {
+                        givenUnit)) == 0) {
                     return Either.right(newPositions);
                 }
             } else {
@@ -645,11 +636,11 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         reservationsService.deleteReservationFromDocumentPosition(position);
 
         BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
+        BigDecimal conversion = BigDecimalUtils.convertNullToOne(position.getDecimalField(PositionFields.CONVERSION));
         String givenUnit = position.getStringField(PositionFields.GIVEN_UNIT);
 
         for (Entity resource : resources) {
             Entity newPosition = createNewPosition(position, product, resource);
-            BigDecimal conversion = BigDecimalUtils.convertNullToOne(newPosition.getDecimalField(PositionFields.CONVERSION));
 
             quantity = recalculateQuantity(quantity, conversion, givenUnit, resource.getDecimalField(ResourceFields.CONVERSION),
                     product.getStringField(ProductFields.UNIT));
@@ -705,7 +696,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 if (BigDecimal.ZERO.compareTo(quantity) == 0
                         || BigDecimal.ZERO.compareTo(calculationQuantityService.calculateAdditionalQuantity(quantity, conversion,
-                                givenUnit)) == 0) {
+                        givenUnit)) == 0) {
                     if (!newResource.isValid()) {
                         copyResourceErrorsToPosition(newPosition, newResource);
                     }
@@ -989,6 +980,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         List<Entity> resources = getResourcesForWarehouseProductAndAlgorithm(warehouse, product, position, warehouseAlgorithm);
 
         BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
+        BigDecimal conversion = BigDecimalUtils.convertNullToOne(position.getDecimalField(PositionFields.CONVERSION));
         String givenUnit = position.getStringField(PositionFields.GIVEN_UNIT);
 
         for (Entity resource : resources) {
@@ -1001,7 +993,6 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             LOGGER.info("RESOURCE USED: " + resource.toString());
 
             Entity newPosition = createNewPosition(position, product, resource);
-            BigDecimal conversion = BigDecimalUtils.convertNullToOne(newPosition.getDecimalField(PositionFields.CONVERSION));
 
             newPosition.setField(PositionFields.RESOURCE, resource);
 
