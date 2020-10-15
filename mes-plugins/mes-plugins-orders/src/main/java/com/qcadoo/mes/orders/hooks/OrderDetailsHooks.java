@@ -158,19 +158,18 @@ public class OrderDetailsHooks {
         disabledRibbonWhenOrderIsSynchronized(view);
         compareDeadlineAndEndDate(view);
         compareDeadlineAndStartDate(view);
-        if (!isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT))
-                || !isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANNED_QUANTITY))) {
-            return;
-        }
         orderProductQuantityHooks.changeFieldsEnabledForSpecificOrderState(view);
         orderProductQuantityHooks.fillProductUnit(view);
         changeFieldsEnabledForSpecificOrderState(view);
         setFieldsVisibility(view);
-        setQuantities(view);
         additionalUnitService.setAdditionalUnitField(view);
         unitService.fillProductForAdditionalUnitBeforeRender(view);
         fillOrderDescriptionIfTechnologyHasDescription(view);
         enableOrDisableGenerateOperationalTasksButton(view);
+        if (isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT))
+                && isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANNED_QUANTITY))) {
+            setQuantities(view);
+        }
 
     }
 
