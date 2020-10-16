@@ -1,5 +1,6 @@
 package com.qcadoo.mes.orders.util;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
@@ -9,14 +10,17 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class AdditionalUnitService {
@@ -48,6 +52,9 @@ public class AdditionalUnitService {
         FieldComponent quantityForAdditionalUnitField = (FieldComponent) view
                 .getComponentByReference(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT);
         Entity product = order.getBelongsToField(BasicConstants.MODEL_PRODUCT);
+        if (!isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANNED_QUANTITY))) {
+            return;
+        }
         BigDecimal quantityForAdditionalUnit = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
         if (product != null) {
             quantityForAdditionalUnit = getQuantityAfterConversion(order, getAdditionalUnit(product),
@@ -63,6 +70,9 @@ public class AdditionalUnitService {
     }
 
     public void setQuantityForUnit(final ViewDefinitionState view, final Entity order) {
+        if (!isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT))) {
+            return;
+        }
         FieldComponent quantityForUnitField = (FieldComponent) view.getComponentByReference(OrderFields.PLANNED_QUANTITY);
         Entity product = order.getBelongsToField(BasicConstants.MODEL_PRODUCT);
         BigDecimal unitQuantity = getQuantityAfterConversion(order, product.getStringField(ProductFields.UNIT),
@@ -89,6 +99,45 @@ public class AdditionalUnitService {
             }
         }
         return additionalUnit;
+    }
+
+    public boolean isValidDecimalField(final ViewDefinitionState view, final List<String> fileds) {
+        boolean isValid = true;
+
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Entity entity = orderForm.getEntity();
+
+        for (String field : fileds) {
+            try {
+                entity.getDecimalField(field);
+            } catch (IllegalArgumentException e) {
+                FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(field);
+                fieldComponent.addMessage("qcadooView.validate.field.error.invalidNumericFormat", ComponentState.MessageType.FAILURE);
+
+                isValid = false;
+            }
+        }
+
+        return isValid;
+    }
+
+    public boolean isValidDecimalFieldWithoutMsg(final ViewDefinitionState view, final List<String> fileds) {
+        boolean isValid = true;
+
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Entity entity = orderForm.getEntity();
+
+        for (String field : fileds) {
+            try {
+                entity.getDecimalField(field);
+            } catch (IllegalArgumentException e) {
+                isValid = false;
+            }
+        }
+
+        return isValid;
     }
 
 }

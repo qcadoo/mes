@@ -52,8 +52,10 @@ public final class TechnologyApiController {
 
     @ResponseBody
     @RequestMapping(value = "/technologies", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public TechnologiesResponse getTechnologies(@RequestParam("query") String query, @RequestParam("productId") Long productId, @RequestParam(value = "master", required = false, defaultValue = "false") Boolean master) {
-        return dataProvider.getTechnologies(query, productId, master);
+    public TechnologiesResponse getTechnologies(@RequestParam("query") String query, @RequestParam("productId") Long productId,
+        @RequestParam(value = "master", required = false, defaultValue = "false") Boolean master,
+        @RequestParam(value = "forEach", required = false, defaultValue = "false") Boolean forEach) {
+        return dataProvider.getTechnologies(query, productId, master, forEach);
     }
 
     @ResponseBody
@@ -80,8 +82,9 @@ public final class TechnologyApiController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "order", required = false) String order,
             @RequestParam(value = "search", required = false) String search,
-            @RequestParam(value = "productId") Long productId) {
-        return dataProvider.getTechnologiesResponse(limit, offset, sort, order, search, productId);
+            @RequestParam(value = "productId") Long productId,
+            @RequestParam(value = "forEach", required = false, defaultValue = "false") Boolean forEach) {
+        return dataProvider.getTechnologiesResponse(limit, offset, sort, order, search, productId, forEach);
     }
 
     @ResponseBody

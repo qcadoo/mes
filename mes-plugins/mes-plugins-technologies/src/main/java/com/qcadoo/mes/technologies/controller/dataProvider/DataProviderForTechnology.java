@@ -30,14 +30,21 @@ public class DataProviderForTechnology {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public TechnologiesResponse getTechnologies(String query, Long productId, Boolean master) {
+    public TechnologiesResponse getTechnologies(String query, Long productId, Boolean master, Boolean forEach) {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("Select id as id, number as number, master as master From technologies_technology WHERE ");
         if (master) {
             queryBuilder.append(" master = true AND ");
         }
+        if(forEach) {
+            queryBuilder
+                    .append(" typeOfProductionRecording = '03forEach' ");
+        } else {
+            queryBuilder
+                    .append(" typeOfProductionRecording = '02cumulated' ");
+        }
         queryBuilder
-                .append(" typeOfProductionRecording = '02cumulated' AND product_id = :productId AND state = '02accepted' AND number ilike :query ORDER BY number ASC LIMIT 10 ");
+                .append(" AND product_id = :productId AND state = '02accepted' AND number ilike :query ORDER BY number ASC LIMIT 10 ");
 
         Map<String, Object> parameters = Maps.newHashMap();
 
@@ -52,15 +59,31 @@ public class DataProviderForTechnology {
     }
 
     public TechnologiesGridResponse getTechnologiesResponse(int limit, int offset, String sort, String order, String search,
-            Long productId) {
+            Long productId, Boolean forEach) {
         StringBuilder query = new StringBuilder();
         query.append("SELECT tech.id, tech.number, tech.name ");
-        query.append("FROM technologies_technology tech WHERE tech.typeOfProductionRecording = '02cumulated' AND tech.active = true AND tech.product_id = :productID AND tech.state = '02accepted' ");
+        query.append("FROM technologies_technology tech WHERE ");
+        if(forEach) {
+            query
+                    .append(" tech.typeOfProductionRecording  = '03forEach' ");
+        } else {
+            query
+                    .append(" tech.typeOfProductionRecording  = '02cumulated' ");
+        }
+        query.append(" AND tech.active = true AND tech.product_id = :productID AND tech.state = '02accepted' ");
 
         StringBuilder queryCount = new StringBuilder();
         queryCount.append("SELECT COUNT(*) ");
+        queryCount.append("FROM technologies_technology tech WHERE ");
+        if(forEach) {
+            queryCount
+                    .append(" tech.typeOfProductionRecording  = '03forEach' ");
+        } else {
+            queryCount
+                    .append(" tech.typeOfProductionRecording  = '02cumulated' ");
+        }
         queryCount
-                .append("FROM technologies_technology tech WHERE tech.typeOfProductionRecording = '02cumulated' AND tech.active = true AND tech.product_id = :productID AND tech.state = '02accepted' ");
+                .append(" AND tech.active = true AND tech.product_id = :productID AND tech.state = '02accepted' ");
 
         appendTechnologyConditions(search, query);
         appendTechnologyConditions(search, queryCount);
@@ -105,6 +128,7 @@ public class DataProviderForTechnology {
 
     public List<OperationMaterialDto> getTechnologyOperationMaterials(Long technologyId) {
         List<Long> ids = operationComponentDataProvider.getComponentsForTechnology(technologyId);
+        ids.addAll(operationComponentDataProvider.getIntermediateInProductsForTechnology(technologyId));
         StringBuilder query = new StringBuilder();
         query.append("SELECT opic.id as productInId, opic.id as index, p.id as productId, p.number as product, p.number as productNumber,  ");
         query.append("p.name as productName, p.unit as unit, opic.quantity as quantityPerUnit, ");
@@ -139,7 +163,7 @@ public class DataProviderForTechnology {
         StringBuilder query = new StringBuilder();
         query.append("SELECT id, number ");
         query.append("FROM technologies_operation ");
-        query.append("WHERE active = true ORDER BY number ASC");
+        query.append("WHERE active = true ORDER BY lower(number) ASC");
         return new OperationsResponse(jdbcTemplate.query(query.toString(), Maps.newHashMap(), new BeanPropertyRowMapper(OperationDto.class)));
     }
 }

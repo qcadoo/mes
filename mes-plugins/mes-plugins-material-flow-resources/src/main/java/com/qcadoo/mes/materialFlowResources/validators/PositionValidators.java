@@ -23,22 +23,30 @@
  */
 package com.qcadoo.mes.materialFlowResources.validators;
 
-import com.qcadoo.mes.materialFlowResources.constants.*;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
 import com.qcadoo.mes.materialFlowResources.service.ResourceStockService;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+
+import java.util.Date;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.Date;
 
 @Service
 public class PositionValidators {
 
     @Autowired
     private ReservationsService reservationsService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private ResourceStockService resourceStockService;
@@ -90,39 +98,6 @@ public class PositionValidators {
         }
 
         return result;
-    }
-
-    public boolean validateAvailableQuantity(final DataDefinition dataDefinition, final Entity position) {
-        Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
-
-        if (document != null && reservationsService.reservationsEnabledForDocumentPositions(document)) {
-            BigDecimal availableQuantity = getAvailableQuantity(dataDefinition, position, document);
-            BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
-
-            if (quantity != null && quantity.compareTo(availableQuantity) > 0) {
-                position.addError(dataDefinition.getField(PositionFields.QUANTITY),
-                        "documentGrid.error.position.quantity.notEnoughResources");
-
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public BigDecimal getAvailableQuantity(final DataDefinition positionDD, final Entity position, final Entity document) {
-        BigDecimal oldQuantity = BigDecimal.ZERO;
-
-        if (position.getId() != null) {
-            Entity positionFromDB = positionDD.get(position.getId());
-
-            if (positionFromDB != null) {
-                oldQuantity = positionFromDB.getDecimalField(PositionFields.QUANTITY);
-            }
-        }
-
-        return resourceStockService.getResourceStockAvailableQuantity(position.getBelongsToField(PositionFields.PRODUCT),
-                document.getBelongsToField(DocumentFields.LOCATION_FROM)).add(oldQuantity);
     }
 
     public boolean validateDates(final DataDefinition dataDefinition, final Entity position) {

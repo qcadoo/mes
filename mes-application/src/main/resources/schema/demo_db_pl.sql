@@ -12433,7 +12433,9 @@ CREATE TABLE esilco_wmsdocumentpart (
     part integer,
     company character varying(255),
     stateinwms character varying(255),
-    pickingworker character varying(255)
+    pickingworker character varying(255),
+    document_id bigint,
+    parts integer
 );
 
 
@@ -12471,7 +12473,8 @@ CREATE TABLE esilco_wmsposition (
     conversion numeric(12,5),
     unit character varying(255),
     pickingdate timestamp without time zone,
-    documentpart_id bigint NOT NULL
+    documentpart_id bigint NOT NULL,
+    position_id bigint
 );
 
 
@@ -32594,7 +32597,7 @@ SELECT pg_catalog.setval('esilco_printdocuments_id_seq', 1, false);
 -- Data for Name: esilco_wmsdocumentpart; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY esilco_wmsdocumentpart (id, number, additionalinfo, part, company, stateinwms, pickingworker) FROM stdin;
+COPY esilco_wmsdocumentpart (id, number, additionalinfo, part, company, stateinwms, pickingworker, document_id, parts) FROM stdin;
 \.
 
 
@@ -32609,7 +32612,7 @@ SELECT pg_catalog.setval('esilco_wmsdocumentpart_id_seq', 1, false);
 -- Data for Name: esilco_wmsposition; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY esilco_wmsposition (id, productnumber, storagelocationnumber, batchnumber, cartons, rest, quantity, conversion, unit, pickingdate, documentpart_id) FROM stdin;
+COPY esilco_wmsposition (id, productnumber, storagelocationnumber, batchnumber, cartons, rest, quantity, conversion, unit, pickingdate, documentpart_id, position_id) FROM stdin;
 \.
 
 
@@ -55030,11 +55033,27 @@ ALTER TABLE ONLY materialflowresources_warehousestockreport
 
 
 --
+-- Name: wmsdocumentpart_document_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY esilco_wmsdocumentpart
+    ADD CONSTRAINT wmsdocumentpart_document_fkey FOREIGN KEY (document_id) REFERENCES materialflowresources_document(id) DEFERRABLE;
+
+
+--
 -- Name: wmsposition_documentpart_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY esilco_wmsposition
     ADD CONSTRAINT wmsposition_documentpart_fkey FOREIGN KEY (documentpart_id) REFERENCES esilco_wmsdocumentpart(id) DEFERRABLE;
+
+
+--
+-- Name: wmsposition_position_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY esilco_wmsposition
+    ADD CONSTRAINT wmsposition_position_fkey FOREIGN KEY (position_id) REFERENCES materialflowresources_position(id) DEFERRABLE;
 
 
 --

@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -369,10 +370,18 @@ public class OrderDetailsListeners {
 
     public void onQuantityForAdditionalUnitChange(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
+        if (!additionalUnitService.isValidDecimalFieldWithoutMsg(view, Lists.newArrayList(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT))
+                || !additionalUnitService.isValidDecimalFieldWithoutMsg(view, Lists.newArrayList(OrderFields.PLANNED_QUANTITY))) {
+            return;
+        }
         additionalUnitService.setQuantityForUnit(view, ((FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM)).getEntity());
     }
 
     public void onQuantityChange(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        if (!additionalUnitService.isValidDecimalFieldWithoutMsg(view, Lists.newArrayList(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT))
+                || !additionalUnitService.isValidDecimalFieldWithoutMsg(view, Lists.newArrayList(OrderFields.PLANNED_QUANTITY))) {
+            return;
+        }
         additionalUnitService.setQuantityFieldForAdditionalUnit(view,
                 ((FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM)).getEntity());
     }

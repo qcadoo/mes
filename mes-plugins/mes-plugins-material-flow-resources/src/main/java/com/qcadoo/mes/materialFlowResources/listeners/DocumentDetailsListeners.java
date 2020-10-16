@@ -29,9 +29,7 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
 import com.qcadoo.mes.materialFlowResources.print.DispositionOrderPdfService;
-import com.qcadoo.mes.materialFlowResources.service.ReceiptDocumentForReleaseHelper;
-import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
-import com.qcadoo.mes.materialFlowResources.service.ResourceStockService;
+import com.qcadoo.mes.materialFlowResources.service.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -52,9 +50,6 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -65,8 +60,6 @@ import java.util.*;
 public class DocumentDetailsListeners {
 
     private static final Logger LOG = LoggerFactory.getLogger(DocumentDetailsListeners.class);
-
-    
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -96,7 +89,7 @@ public class DocumentDetailsListeners {
     private DocumentErrorsLogger documentErrorsLogger;
 
     @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
+    private DocumentService documentService;
 
     public void showProductAttributes(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         List<String> ids = Arrays.asList(args[0].replace("[", "").replace("]", "").replaceAll("\"", "").split("\\s*,\\s*"));
@@ -218,13 +211,13 @@ public class DocumentDetailsListeners {
                 return;
             }
 
-            if (getAcceptationInProgress(documentId)) {
+            if (documentService.getAcceptationInProgress(documentId)) {
                 documentForm.addMessage("materialFlow.error.document.acceptationInProgress", MessageType.FAILURE);
 
                 return;
             }
 
-            setAcceptationInProgress(documentFromDB, true);
+            documentService.setAcceptationInProgress(documentFromDB, true);
 
             try {
                 createResourcesForDocuments(view, documentForm, documentDD, documentFromDB);
@@ -235,36 +228,9 @@ public class DocumentDetailsListeners {
 
                 throw new IllegalStateException(e.getMessage(), e);
             } finally {
-                setAcceptationInProgress(documentFromDB, false);
+                documentService.setAcceptationInProgress(documentFromDB, false);
             }
         }
-    }
-
-    private boolean getAcceptationInProgress(final Long documentId) {
-        String sql = "SELECT acceptationinprogress FROM materialflowresources_document WHERE id = :id;";
-        Map<String, Object> parameters = Maps.newHashMap();
-
-        parameters.put("id", documentId);
-
-        return jdbcTemplate.queryForObject(sql, parameters, Boolean.class);
-    }
-
-    private void setAcceptationInProgress(final Entity document, final boolean acceptationInProgress) {
-        String sql = "UPDATE materialflowresources_document SET acceptationinprogress = :acceptationinprogress WHERE id = :id;";
-
-        Map<String, Object> parameters = Maps.newHashMap();
-
-        parameters.put("acceptationinprogress", acceptationInProgress);
-
-        parameters.put("id", document.getId());
-
-        SqlParameterSource namedParameters = new MapSqlParameterSource(parameters);
-        String message = String.format("DOCUMENT SET ACCEPTATION IN PROGRESS = %b  id = %d number = %s", acceptationInProgress,
-                document.getId(), document.getStringField(DocumentFields.NUMBER));
-
-        LOG.info(message);
-
-        jdbcTemplate.update(sql, namedParameters);
     }
 
     @Transactional
@@ -293,7 +259,7 @@ public class DocumentDetailsListeners {
         }
 
         if (!document.getHasManyField(DocumentFields.POSITIONS).isEmpty()) {
-            String blockedResources = getBlockedResources(document);
+            String blockedResources = documentService.getBlockedResources(document);
             if (blockedResources == null) {
                 try {
                     resourceManagementService.createResources(document);
@@ -349,14 +315,6 @@ public class DocumentDetailsListeners {
         }
 
         documentForm.setEntity(document);
-    }
-
-    private String getBlockedResources(Entity document) {
-        String sql = "SELECT string_agg(p.number::text, ',' ORDER BY p.number) FROM materialflowresources_position p JOIN materialflowresources_resource r "
-                + "ON r.id = p.resource_id WHERE p.document_id = :id AND r.blockedforqualitycontrol";
-        Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("id", document.getId());
-        return jdbcTemplate.queryForObject(sql, parameters, String.class);
     }
 
     public void clearWarehouseFields(final ViewDefinitionState view, final ComponentState state, final String[] args) {

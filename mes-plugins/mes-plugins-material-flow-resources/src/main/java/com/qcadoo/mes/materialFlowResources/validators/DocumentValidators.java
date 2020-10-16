@@ -24,17 +24,23 @@
 package com.qcadoo.mes.materialFlowResources.validators;
 
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.materialFlowResources.constants.*;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class DocumentValidators {
@@ -153,34 +159,7 @@ public class DocumentValidators {
 
         return true;
     }
-
-    public boolean validateAvailableQuantities(final Entity document) {
-        String state = document.getStringField(DocumentFields.STATE);
-
-        if (DocumentState.ACCEPTED.getStringValue().equals(state)) {
-            return true;
-        }
-
-        DataDefinition positionDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_POSITION);
-
-        List<Entity> positions = document.getHasManyField(DocumentFields.POSITIONS);
-        Map<Long, Entity> groupedPositions = groupProductsInPositions(positions);
-
-        for (Entity position : positions) {
-            Entity product = position.getBelongsToField(PositionFields.PRODUCT);
-            BigDecimal availableQuantity = positionValidators.getAvailableQuantity(positionDD, position, document);
-
-            if (groupedPositions.get(product.getId()).getDecimalField(PositionFields.QUANTITY).compareTo(availableQuantity) > 0) {
-                document.addGlobalError("documentGrid.error.document.quantity.notEnoughResources", false);
-
-                return false;
-            }
-        }
-
-        return true;
-    }
-
+    
     private Map<Long, Entity> groupProductsInPositions(final List<Entity> positions) {
         Map<Long, Entity> groupedPositions = Maps.newHashMap();
 

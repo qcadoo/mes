@@ -1,4 +1,4 @@
-package com.qcadoo.mes.materialFlowResources.listeners;
+package com.qcadoo.mes.materialFlowResources.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -21,7 +21,7 @@ public class DocumentErrorsLogger {
     @Autowired
     private TranslationService translationService;
 
-    void saveResourceStockLackErrorsToSystemLogs(final Entity document) {
+    public void saveResourceStockLackErrorsToSystemLogs(final Entity document) {
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
 
             @Override

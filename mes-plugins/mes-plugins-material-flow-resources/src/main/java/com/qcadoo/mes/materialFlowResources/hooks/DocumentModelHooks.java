@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
@@ -38,6 +31,13 @@ import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
 import com.qcadoo.mes.materialFlowResources.validators.DocumentValidators;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class DocumentModelHooks {
@@ -57,10 +57,6 @@ public class DocumentModelHooks {
         setInitialDocumentNumber(document);
         setInitialDocumentInBuffer(document);
         setInitialDocumentAcceptationInProgress(document);
-
-        if (reservationsService.reservationsEnabledForDocumentPositions(document)) {
-            documentValidators.validateAvailableQuantities(document);
-        }
     }
 
     private void setInitialDocumentNumber(final Entity document) {
@@ -90,9 +86,6 @@ public class DocumentModelHooks {
     }
 
     public void onSave(final DataDefinition documentDD, final Entity document) {
-        if (reservationsService.reservationsEnabledForDocumentPositions(document)) {
-            documentValidators.validateAvailableQuantities(document);
-        }
         if (document.getBooleanField(DocumentFields.IN_BUFFER) && checkIfLocationsChange(document)) {
             cleanPositionsResource(document);
         }
