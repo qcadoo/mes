@@ -62,18 +62,25 @@
                     </script>
                 </smallButton>
             </group>
+
+            <group name="batches">
+                <bigButton name="deactivateBatches" icon="unactiveNotVisibleIcon.png"
+                           state="enabled" action="#{grid}.fireEvent(deactivateBatches);"
+                           message="advancedGenealogy.batchesList.window.ribbon.message.deactivateBatches">
+                </bigButton>
+            </group>
         </ribbon>
 
         <component type="grid" name="batchesListGrid" reference="grid">
             <script>
                 <![CDATA[
 					var buttonsStatus = ["status.blockBatch", "status.unblockBatch"];
-					
+
 					var deleteButton = #{window}.getRibbonItem("actions.delete");
 					
 					var blockBatchButton = #{window}.getRibbonItem("status.blockBatch");
 					var unblockBatchButton = #{window}.getRibbonItem("status.unblockBatch");
-					
+
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
 							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
@@ -181,6 +188,9 @@
             <listener event="changeBatchState"
                       class="com.qcadoo.mes.advancedGenealogy.states.client.BatchStateChangeViewClient"
                       method="changeState" />
+            <listener event="deactivateBatches"
+                      class="com.qcadoo.mes.advancedGenealogy.listeners.BatchesListListeners"
+                      method="deactivateBatches" />
         </component>
 
         <option type="fixedHeight" value="true" />
