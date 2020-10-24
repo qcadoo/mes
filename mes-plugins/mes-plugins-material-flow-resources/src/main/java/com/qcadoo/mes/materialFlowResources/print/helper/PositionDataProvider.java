@@ -253,4 +253,7 @@ public class PositionDataProvider {
         return convertNullToZero(position.getDecimalField(PositionFields.CONVERSION));
     }
 
+    public static String productNumber(Entity position) {
+        return position.getBelongsToField(PositionFields.PRODUCT).getStringField(ProductFields.NUMBER);
+    }
 }
