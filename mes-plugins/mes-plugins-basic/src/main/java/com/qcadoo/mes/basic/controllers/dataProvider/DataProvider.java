@@ -314,61 +314,6 @@ public class DataProvider {
         return ilikeQuery;
     }
 
-    public WorkstationsResponse getWorkstations(String query) {
-        StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append("Select id as id, number as number, name as name From basic_workstation WHERE ");
-        queryBuilder
-                .append(" active = true AND number ilike :query ORDER BY number ASC LIMIT 10 ");
-
-        Map<String, Object> parameters = Maps.newHashMap();
-
-        String ilikeQuery = "%" + query + "%";
-        parameters.put("query", ilikeQuery);
-        List<WorkstationDto> workstations = jdbcTemplate.query(queryBuilder.toString(), parameters, new BeanPropertyRowMapper(
-                WorkstationDto.class));
-        WorkstationsResponse workstationsResponse = new WorkstationsResponse();
-        workstationsResponse.setWorkstations(workstations);
-        return workstationsResponse;
-    }
-
-    public WorkstationsGridResponse getWorkstations(int limit, int offset, String sort, String order, String search) {
-        StringBuilder query = new StringBuilder();
-        query.append("Select w.id as id, w.number as number, w.name as name From basic_workstation w WHERE ");
-        query.append(" w.active = true ");
-
-        StringBuilder queryCount = new StringBuilder();
-        queryCount.append("SELECT COUNT(*) ");
-        queryCount
-                .append("From basic_workstation w WHERE w.active = true  ");
-
-        appendWorkstationConditions(search, query);
-        appendWorkstationConditions(search, queryCount);
-
-        if (StringUtils.isNotEmpty(sort)) {
-            query.append(" ORDER BY " + sort + " " + order);
-        }
-        query.append(String.format(" LIMIT %d OFFSET %d", limit, offset));
-
-        Map<String, Object> parameters = Maps.newHashMap();
-
-        Integer countRecords = jdbcTemplate.queryForObject(queryCount.toString(), parameters, Long.class).intValue();
-
-        List<WorkstationDto> workstations = jdbcTemplate.query(query.toString(), parameters, new BeanPropertyRowMapper(
-                WorkstationDto.class));
-
-        return new WorkstationsGridResponse(countRecords, workstations);
-    }
-
-
-    private void appendWorkstationConditions(String search, StringBuilder query) {
-        if (StringUtils.isNotEmpty(search)) {
-            query.append(" AND (");
-            query.append("UPPER(w.number) LIKE '%").append(search.toUpperCase()).append("%' OR ");
-            query.append("UPPER(w.name) LIKE '%").append(search.toUpperCase()).append("%' ");
-            query.append(") ");
-        }
-    }
-
     public WorkstationTypesResponse getWorkstationTypes() {
         StringBuilder query = new StringBuilder();
         query.append("Select w.id as id, w.number as number, w.name as name From basic_workstationtype w WHERE ");

@@ -30,6 +30,10 @@ public class OperationMaterialDto {
 
     private BigDecimal quantityPerUnit;
 
+    private Long workstationId;
+
+    private String workstationNumber;
+
     public Long getProductId() {
         return productId;
     }
@@ -132,5 +136,21 @@ public class OperationMaterialDto {
 
     public void setOperationId(Long operationId) {
         this.operationId = operationId;
+    }
+
+    public Long getWorkstationId() {
+        return workstationId;
+    }
+
+    public void setWorkstationId(Long workstationId) {
+        this.workstationId = workstationId;
+    }
+
+    public String getWorkstationNumber() {
+        return workstationNumber;
+    }
+
+    public void setWorkstationNumber(String workstationNumber) {
+        this.workstationNumber = workstationNumber;
     }
 }
