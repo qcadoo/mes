@@ -14,6 +14,7 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.dto.ColumnProperties;
 import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
+import com.qcadoo.plugin.api.PluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -49,6 +50,9 @@ public class DocumentPositionService {
 
     @Autowired
     private AttributePositionService attributePositionService;
+
+    @Autowired
+    private PluginManager pluginManager;
 
     public GridResponse<DocumentPositionDTO> findAll(final Long documentId, final String _sidx, final String _sord, int page,
             int perPage, final DocumentPositionDTO position, final Map<String, String> attributeFilters) {
@@ -160,29 +164,74 @@ public class DocumentPositionService {
                 records);
     }
 
-    public void delete(final Long id) {
+    private void delete(final Long id) {
         validator.validateBeforeDelete(id);
 
-        Map<String, Object> params = Maps.newHashMap();
-
-        params.put("id", id);
         String deleteQuery = "DELETE FROM materialflowresources_positionattributevalue WHERE position_id = :positionId";
         Map<String, Object> paramsDeleteAttribute = Maps.newHashMap();
         paramsDeleteAttribute.put("positionId", id);
         jdbcTemplate.update(deleteQuery, paramsDeleteAttribute);
 
-        StringBuilder queryBuilder = new StringBuilder();
-
-        queryBuilder.append("DELETE FROM materialflowresources_position WHERE id = :id ");
-
+        Map<String, Object> params = Maps.newHashMap();
+        params.put("id", id);
         String queryForDocumentId = "SELECT document_id, product_id, resource_id, quantity FROM materialflowresources_position WHERE id = :id";
-
         Map<String, Object> result = jdbcTemplate.queryForMap(queryForDocumentId, params);
 
         params.putAll(result);
 
+        createWMSDeletedPosition(id);
         reservationsService.deleteReservationFromDocumentPosition(params);
-        jdbcTemplate.update(queryBuilder.toString(), params);
+        jdbcTemplate.update("DELETE FROM materialflowresources_position WHERE id = :id ", params);
+    }
+
+    private void createWMSDeletedPosition(Long id) {
+        if (pluginManager.isPluginEnabled("esilco")) {
+            String queryForPosition = "SELECT document_id, product_id, storagelocation_id, quantity, additionalcode_id, "
+                    + "batch_id, wmsposition_id, givenquantity, conversion, givenunit, wmsadded FROM materialflowresources_position WHERE id = :id";
+            Map<String, Object> params = Maps.newHashMap();
+            params.put("id", id);
+            Map<String, Object> positionResult = jdbcTemplate.queryForMap(queryForPosition, params);
+            String queryForDocument = "SELECT wms, stateinwms FROM materialflowresources_document WHERE id = :document_id";
+            Map<String, Object> documentResult = jdbcTemplate.queryForMap(queryForDocument, positionResult);
+            if ((boolean) documentResult.get("wms") && !(boolean) positionResult.get("wmsadded")
+                    && !"05realized".equals(documentResult.get("stateinwms"))) {
+                String query = "INSERT INTO esilco_wmsdeletedposition (product_id, storagelocation_id, additionalcode_id, "
+                        + "batch_id, wmsposition_id, quantity, givenquantity, conversion, givenunit) VALUES "
+                        + "(:product_id, :storagelocation_id, :additionalcode_id, :batch_id, :wmsposition_id, :quantity, "
+                        + ":givenquantity, :conversion, :givenunit) RETURNING id";
+                jdbcTemplate.queryForObject(query, positionResult, Long.class);
+            }
+        }
+    }
+
+    private void markWMSAdded(Long documentId, Long positionId) {
+        if (pluginManager.isPluginEnabled("esilco")) {
+            String queryForDocument = "SELECT wms, stateinwms FROM materialflowresources_document WHERE id = :documentId";
+            Map<String, Object> params = Maps.newHashMap();
+            params.put("documentId", documentId);
+            params.put("positionId", positionId);
+            Map<String, Object> result = jdbcTemplate.queryForMap(queryForDocument, params);
+            if ((boolean) result.get("wms") && !"05realized".equals(result.get("stateinwms"))) {
+                jdbcTemplate.update("UPDATE materialflowresources_position SET wmsadded = true WHERE id = :positionId ", params);
+            }
+        }
+    }
+
+    private void markWMSModified(Long documentId, Long positionId) {
+        if (pluginManager.isPluginEnabled("esilco")) {
+            String queryForPosition = "SELECT wmsadded FROM materialflowresources_position WHERE id = :positionId";
+            Map<String, Object> params = Maps.newHashMap();
+            params.put("documentId", documentId);
+            params.put("positionId", positionId);
+            Map<String, Object> positionResult = jdbcTemplate.queryForMap(queryForPosition, params);
+            String queryForDocument = "SELECT wms, stateinwms FROM materialflowresources_document WHERE id = :documentId";
+            Map<String, Object> documentResult = jdbcTemplate.queryForMap(queryForDocument, params);
+            if ((boolean) documentResult.get("wms") && !(boolean) positionResult.get("wmsadded")
+                    && !"05realized".equals(documentResult.get("stateinwms"))) {
+                jdbcTemplate.update("UPDATE materialflowresources_position SET wmsmodified = true WHERE id = :positionId ",
+                        params);
+            }
+        }
     }
 
     public void create(final DocumentPositionDTO documentPositionVO) {
@@ -192,20 +241,16 @@ public class DocumentPositionService {
         }
         Map<String, Object> params = validator.validateAndTryMapBeforeCreate(documentPositionVO);
 
-        if (params.get("id") == null || Long.valueOf(params.get("id").toString()) == 0) {
+        if (params.get("id") == null || Long.parseLong(params.get("id").toString()) == 0) {
             params.remove("id");
         }
 
-        String keys = params.keySet().stream().collect(Collectors.joining(", "));
+        String keys = String.join(", ", params.keySet());
         keys += ", resourcenumber";
-        String values = params.keySet().stream().map(key -> {
-            return ":" + key;
-        }).collect(Collectors.joining(", "));
+        String values = params.keySet().stream().map(key -> ":" + key).collect(Collectors.joining(", "));
         values += ", '" + documentPositionVO.getResource() + "'";
 
-        String query = String.format("INSERT INTO materialflowresources_position (%s) "
-
-        + "VALUES (%s) RETURNING id", keys, values);
+        String query = String.format("INSERT INTO materialflowresources_position (%s) VALUES (%s) RETURNING id", keys, values);
 
         Long positionId = jdbcTemplate.queryForObject(query, params, Long.class);
 
@@ -213,29 +258,30 @@ public class DocumentPositionService {
             params.put("id", positionId);
 
             reservationsService.createReservationFromDocumentPosition(params);
+            markWMSAdded(documentPositionVO.getDocument(), positionId);
         }
         attributePositionService.createOrUpdateAttributePositionValues(true, positionId, documentPositionVO.getAttrs());
+        updateDocumentPositionsNumbers(documentPositionVO.getDocument());
     }
 
-    public void update(final Long id, final DocumentPositionDTO documentPositionVO) {
+    public void update(final DocumentPositionDTO documentPositionVO) {
         Long batchId = documentPositionVO.getBatchId();
         if(Objects.nonNull(batchId) && batchId == 0) {
             documentPositionVO.setBatchId(null);
         }
         Map<String, Object> params = validator.validateAndTryMapBeforeUpdate(documentPositionVO);
 
-        String set = params.keySet().stream().map(key -> {
-            return key + "=:" + key;
-        }).collect(Collectors.joining(", "));
+        String set = params.keySet().stream().map(key -> key + "=:" + key).collect(Collectors.joining(", "));
         set += ", resourcenumber = '" + documentPositionVO.getResource() + "'";
 
-        String query = String.format("UPDATE materialflowresources_position " + "SET %s " + "WHERE id = :id ", set);
+        String query = String.format("UPDATE materialflowresources_position SET %s WHERE id = :id ", set);
 
         reservationsService.updateReservationFromDocumentPosition(params);
         jdbcTemplate.update(query, params);
+        markWMSModified(documentPositionVO.getDocument(), documentPositionVO.getId());
         attributePositionService.createOrUpdateAttributePositionValues(false, documentPositionVO.getId(),
                 documentPositionVO.getAttrs());
-
+        updateDocumentPositionsNumbers(documentPositionVO.getDocument());
     }
 
     private List<StorageLocationDTO> getStorageLocations(String preparedQuery, String q, Map<String, Object> paramMap) {
@@ -347,7 +393,7 @@ public class DocumentPositionService {
         }
     }
 
-    public void updateDocumentPositionsNumbers(final Long documentId) {
+    private void updateDocumentPositionsNumbers(final Long documentId) {
         String query = "SELECT p.*, p.document_id AS document, product.number AS product, product.unit, additionalcode.code AS additionalcode, palletnumber.number AS palletnumber, "
                 + "location.number AS storagelocationnumber\n"
                 + "	FROM materialflowresources_position p\n"
