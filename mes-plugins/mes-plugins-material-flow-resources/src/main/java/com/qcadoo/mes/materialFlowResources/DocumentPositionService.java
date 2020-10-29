@@ -79,8 +79,8 @@ public class DocumentPositionService {
 
         Map<String, Object> config = getGridConfig(documentId);
         List<ColumnProperties> columns = (List<ColumnProperties>) config.get("columns");
-        List<String> attrCloumns = columns.stream().filter(c -> c.isChecked() && c.isForAttribute()).map(ColumnProperties::getName)
-                .collect(Collectors.toList());
+        List<String> attrCloumns = columns.stream().filter(c -> c.isChecked() && c.isForAttribute())
+                .map(ColumnProperties::getName).collect(Collectors.toList());
         StringBuilder attrQueryPart = new StringBuilder();
         if (!attrCloumns.isEmpty()) {
             attrCloumns.forEach(ac -> {
@@ -208,7 +208,7 @@ public class DocumentPositionService {
             Map<String, Object> positionResult = jdbcTemplate.queryForMap(queryForPosition, params);
             String queryForDocument = "SELECT wms, stateinwms FROM materialflowresources_document WHERE id = :document_id";
             Map<String, Object> documentResult = jdbcTemplate.queryForMap(queryForDocument, positionResult);
-            if ((boolean) documentResult.get(WMS) && !(boolean) positionResult.get(WMS_ADDED)
+            if (documentResult.get(WMS) != null && (boolean) documentResult.get(WMS) && !(boolean) positionResult.get(WMS_ADDED)
                     && !REALIZED.equals(documentResult.get(STATE_IN_WMS))) {
                 String query = "INSERT INTO esilco_wmsdeletedposition (product_id, storagelocation_id, additionalcode_id, "
                         + "batch_id, wmsposition_id, quantity, givenquantity, conversion, givenunit) VALUES "
@@ -226,7 +226,7 @@ public class DocumentPositionService {
             params.put(DOCUMENT_ID, documentId);
             params.put(POSITION_ID, positionId);
             Map<String, Object> result = jdbcTemplate.queryForMap(queryForDocument, params);
-            if ((boolean) result.get(WMS) && !REALIZED.equals(result.get(STATE_IN_WMS))) {
+            if (result.get(WMS) != null && (boolean) result.get(WMS) && !REALIZED.equals(result.get(STATE_IN_WMS))) {
                 jdbcTemplate.update("UPDATE materialflowresources_position SET wmsadded = true WHERE id = :positionId ", params);
             }
         }
@@ -241,7 +241,7 @@ public class DocumentPositionService {
             Map<String, Object> positionResult = jdbcTemplate.queryForMap(queryForPosition, params);
             String queryForDocument = "SELECT wms, stateinwms FROM materialflowresources_document WHERE id = :documentId";
             Map<String, Object> documentResult = jdbcTemplate.queryForMap(queryForDocument, params);
-            if ((boolean) documentResult.get(WMS) && !(boolean) positionResult.get(WMS_ADDED)
+            if (documentResult.get(WMS) != null && (boolean) documentResult.get(WMS) && !(boolean) positionResult.get(WMS_ADDED)
                     && !REALIZED.equals(documentResult.get(STATE_IN_WMS))) {
                 jdbcTemplate.update("UPDATE materialflowresources_position SET wmsmodified = true WHERE id = :positionId ",
                         params);
@@ -356,10 +356,10 @@ public class DocumentPositionService {
 
     public Map<String, Object> getGridConfig(final Long documentId) {
         try {
-            String query = "SELECT documentpositionparametersitem.*, attr.dataType as attributeDataType, attr.valueType as attributeValueType " +
-                    "FROM materialflowresources_documentpositionparametersitem documentpositionparametersitem " +
-                    "LEFT JOIN basic_attribute attr ON attr.id = documentpositionparametersitem.attribute_id  " +
-                    "WHERE attr IS NULL OR attr.active = TRUE  ORDER BY documentpositionparametersitem.ordering";
+            String query = "SELECT documentpositionparametersitem.*, attr.dataType as attributeDataType, attr.valueType as attributeValueType "
+                    + "FROM materialflowresources_documentpositionparametersitem documentpositionparametersitem "
+                    + "LEFT JOIN basic_attribute attr ON attr.id = documentpositionparametersitem.attribute_id  "
+                    + "WHERE attr IS NULL OR attr.active = TRUE  ORDER BY documentpositionparametersitem.ordering";
             List<ColumnProperties> columns = jdbcTemplate.query(query, Collections.EMPTY_MAP,
                     new BeanPropertyRowMapper(ColumnProperties.class));
 
@@ -482,7 +482,8 @@ public class DocumentPositionService {
 
         String additionalUnit = units.get("additionalunit").toString();
 
-        Optional<Map<String, Object>> maybeEntry = availableAdditionalUnits.stream().filter(entry -> entry.get("key").equals(additionalUnit)).findAny();
+        Optional<Map<String, Object>> maybeEntry = availableAdditionalUnits.stream()
+                .filter(entry -> entry.get("key").equals(additionalUnit)).findAny();
 
         if (maybeEntry.isPresent()) {
             units.put("quantityto", maybeEntry.get().get("quantityto"));
@@ -702,13 +703,11 @@ public class DocumentPositionService {
             ResourceDTO resourceDTO = batches.get(0);
             Map<String, Object> params = Maps.newHashMap();
             params.put("resourceId", resourceDTO.getId());
-            String attrBuilder = "SELECT " +
-                    "att.number, " +
-                    "resourceattributevalue.value " +
-                    "FROM materialflowresources_resourceattributevalue resourceattributevalue " +
-                    "LEFT JOIN materialflowresources_resource res ON res.id = resourceattributevalue.resource_id " +
-                    "LEFT JOIN basic_attribute att ON att.id = resourceattributevalue.attribute_id " +
-                    "WHERE res.id = :resourceId";
+            String attrBuilder = "SELECT " + "att.number, " + "resourceattributevalue.value "
+                    + "FROM materialflowresources_resourceattributevalue resourceattributevalue "
+                    + "LEFT JOIN materialflowresources_resource res ON res.id = resourceattributevalue.resource_id "
+                    + "LEFT JOIN basic_attribute att ON att.id = resourceattributevalue.attribute_id "
+                    + "WHERE res.id = :resourceId";
             List<AttributeDto> attributes = jdbcTemplate.query(attrBuilder, params,
                     new BeanPropertyRowMapper(AttributeDto.class));
             Map<String, Object> attributeMap = Maps.newHashMap();
