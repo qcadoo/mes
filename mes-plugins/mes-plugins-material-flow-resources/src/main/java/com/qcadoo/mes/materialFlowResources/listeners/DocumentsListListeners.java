@@ -32,6 +32,7 @@ import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.plugin.api.PluginManager;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
@@ -44,6 +45,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.List;
+
+import static com.qcadoo.mes.materialFlowResources.DocumentPositionService.*;
 
 @Service
 public class DocumentsListListeners {
@@ -65,6 +68,9 @@ public class DocumentsListListeners {
     @Autowired
     private DocumentService documentService;
 
+    @Autowired
+    private PluginManager pluginManager;
+
     public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
         DataDefinition documentDD = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
@@ -83,6 +89,12 @@ public class DocumentsListListeners {
                 }
 
                 if (documentService.getAcceptationInProgress(documentId)) {
+                    continue;
+                }
+
+                if (pluginManager.isPluginEnabled(ESILCO) && documentFromDB.getBooleanField(WMS)
+                        && !REALIZED.equals(documentFromDB.getStringField(STATE_IN_WMS))) {
+
                     continue;
                 }
 
