@@ -14,8 +14,6 @@ import com.qcadoo.mes.basic.controllers.dataProvider.responses.ProductResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.ProductsGridResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.WorkstationResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.WorkstationTypesResponse;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.WorkstationsGridResponse;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.WorkstationsResponse;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.validators.ErrorMessage;
@@ -56,12 +54,6 @@ public final class BasicApiController {
     private TranslationService translationService;
 
     @ResponseBody
-    @RequestMapping(value = "/workstations", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public WorkstationsResponse getWorkstations(@RequestParam("query") String query) {
-        return dataProvider.getWorkstations(query);
-    }
-
-    @ResponseBody
     @RequestMapping(value = "/workstationTypes", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public WorkstationTypesResponse getWorkstationTypes() {
         return dataProvider.getWorkstationTypes();
@@ -100,15 +92,6 @@ public final class BasicApiController {
         return response;
     }
 
-
-    @ResponseBody
-    @RequestMapping(value = "/workstationsByPage", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public WorkstationsGridResponse getWorkstations(@RequestParam(value = "limit") int limit, @RequestParam(value = "offset") int offset,
-            @RequestParam(value = "sort", required = false) String sort,
-            @RequestParam(value = "order", required = false) String order,
-            @RequestParam(value = "search", required = false) String search) {
-        return dataProvider.getWorkstations(limit, offset, sort, order, search);
-    }
 
     @ResponseBody
     @RequestMapping(value = "/products", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

@@ -9,30 +9,18 @@ import com.qcadoo.mes.materialFlowResources.DocumentPositionDTO;
 import com.qcadoo.mes.materialFlowResources.DocumentPositionService;
 import com.qcadoo.mes.materialFlowResources.ResourceDTO;
 import com.qcadoo.mes.materialFlowResources.StorageLocationDTO;
-
-import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TimeZone;
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Controller
 @RequestMapping("/rest/documentPositions")
@@ -74,7 +62,6 @@ public class DocumentPositionsController {
     @RequestMapping(method = RequestMethod.PUT)
     public void create(@RequestBody DocumentPositionDTO documentPositionVO) {
         documentPositionService.create(documentPositionVO);
-        documentPositionService.updateDocumentPositionsNumbers(documentPositionVO.getDocument());
     }
 
     @ResponseBody
@@ -85,9 +72,8 @@ public class DocumentPositionsController {
 
     @ResponseBody
     @RequestMapping(value = "{id}", method = RequestMethod.PUT)
-    public void update(@PathVariable Long id, @RequestBody DocumentPositionDTO documentPositionVO) {
-        documentPositionService.update(id, documentPositionVO);
-        documentPositionService.updateDocumentPositionsNumbers(documentPositionVO.getDocument());
+    public void update(@RequestBody DocumentPositionDTO documentPositionVO) {
+        documentPositionService.update(documentPositionVO);
     }
 
     @ResponseBody

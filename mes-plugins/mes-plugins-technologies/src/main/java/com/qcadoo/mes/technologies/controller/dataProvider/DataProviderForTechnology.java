@@ -1,16 +1,21 @@
 package com.qcadoo.mes.technologies.controller.dataProvider;
 
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.WorkstationDto;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.WorkstationsGridResponse;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.WorkstationsResponse;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
 import com.qcadoo.mes.productionLines.controller.dataProvider.ProductionLineDto;
 import com.qcadoo.mes.technologies.OperationComponentDataProvider;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,12 +41,10 @@ public class DataProviderForTechnology {
         if (master) {
             queryBuilder.append(" master = true AND ");
         }
-        if(forEach) {
-            queryBuilder
-                    .append(" typeOfProductionRecording = '03forEach' ");
+        if (forEach) {
+            queryBuilder.append(" typeOfProductionRecording = '03forEach' ");
         } else {
-            queryBuilder
-                    .append(" typeOfProductionRecording = '02cumulated' ");
+            queryBuilder.append(" typeOfProductionRecording = '02cumulated' ");
         }
         queryBuilder
                 .append(" AND product_id = :productId AND state = '02accepted' AND number ilike :query ORDER BY number ASC LIMIT 10 ");
@@ -63,27 +66,22 @@ public class DataProviderForTechnology {
         StringBuilder query = new StringBuilder();
         query.append("SELECT tech.id, tech.number, tech.name ");
         query.append("FROM technologies_technology tech WHERE ");
-        if(forEach) {
-            query
-                    .append(" tech.typeOfProductionRecording  = '03forEach' ");
+        if (forEach) {
+            query.append(" tech.typeOfProductionRecording  = '03forEach' ");
         } else {
-            query
-                    .append(" tech.typeOfProductionRecording  = '02cumulated' ");
+            query.append(" tech.typeOfProductionRecording  = '02cumulated' ");
         }
         query.append(" AND tech.active = true AND tech.product_id = :productID AND tech.state = '02accepted' ");
 
         StringBuilder queryCount = new StringBuilder();
         queryCount.append("SELECT COUNT(*) ");
         queryCount.append("FROM technologies_technology tech WHERE ");
-        if(forEach) {
-            queryCount
-                    .append(" tech.typeOfProductionRecording  = '03forEach' ");
+        if (forEach) {
+            queryCount.append(" tech.typeOfProductionRecording  = '03forEach' ");
         } else {
-            queryCount
-                    .append(" tech.typeOfProductionRecording  = '02cumulated' ");
+            queryCount.append(" tech.typeOfProductionRecording  = '02cumulated' ");
         }
-        queryCount
-                .append(" AND tech.active = true AND tech.product_id = :productID AND tech.state = '02accepted' ");
+        queryCount.append(" AND tech.active = true AND tech.product_id = :productID AND tech.state = '02accepted' ");
 
         appendTechnologyConditions(search, query);
         appendTechnologyConditions(search, queryCount);
@@ -140,7 +138,24 @@ public class DataProviderForTechnology {
         query.append("WHERE opic.id IN (:ids) ");
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("ids", ids);
-        return jdbcTemplate.query(query.toString(), parameters, new BeanPropertyRowMapper(OperationMaterialDto.class));
+        List<OperationMaterialDto> operationMaterials = jdbcTemplate.query(query.toString(), parameters,
+                new BeanPropertyRowMapper(OperationMaterialDto.class));
+
+        Map<Long, List<WorkstionTechnologyOperationComponentDto>> workstationByTechnologyOperationComponents = getWorkstionsByTechnologyOperationComponents(operationMaterials
+                .stream().map(om -> om.getTocId()).collect(Collectors.toList()));
+        for (OperationMaterialDto operationMaterial : operationMaterials) {
+
+            if (workstationByTechnologyOperationComponents.containsKey(operationMaterial.getTocId())) {
+                List<WorkstionTechnologyOperationComponentDto> workstations = workstationByTechnologyOperationComponents
+                        .get(operationMaterial.getTocId());
+                if(workstations.size() == 1) {
+                    WorkstionTechnologyOperationComponentDto workstationTechnologyOperationComponent = workstations.get(0);
+                    operationMaterial.setWorkstationId(workstationTechnologyOperationComponent.getWorkstationId());
+                    operationMaterial.setWorkstationNumber(workstationTechnologyOperationComponent.getWorkstationNumber());
+                }
+            }
+        }
+        return operationMaterials;
     }
 
     public ProductionLineDto getTechnologyProductionLine(Long technologyId) {
@@ -164,6 +179,100 @@ public class DataProviderForTechnology {
         query.append("SELECT id, number ");
         query.append("FROM technologies_operation ");
         query.append("WHERE active = true ORDER BY lower(number) ASC");
-        return new OperationsResponse(jdbcTemplate.query(query.toString(), Maps.newHashMap(), new BeanPropertyRowMapper(OperationDto.class)));
+        return new OperationsResponse(jdbcTemplate.query(query.toString(), Maps.newHashMap(), new BeanPropertyRowMapper(
+                OperationDto.class)));
     }
+
+    public List<Long> getWorkstationsIds(Long technologyOperationId) {
+        Entity technologyOperation = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(technologyOperationId);
+        List<Entity> workstationEntities = technologyOperation.getHasManyField(TechnologyOperationComponentFields.WORKSTATIONS);
+        return workstationEntities.stream().map(w -> w.getId()).collect(Collectors.toList());
+    }
+
+    public WorkstationsResponse getWorkstations(String query, Long tocId) {
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("Select id as id, number as number, name as name From basic_workstation WHERE ");
+        queryBuilder.append(" active = true ");
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        if (Objects.nonNull(tocId)) {
+            List<Long> ids = getWorkstationsIds(tocId);
+            if (ids.isEmpty()) {
+                queryBuilder.append(" AND id = -1 ");
+            } else {
+                queryBuilder.append(" AND id in (:ids) ");
+                parameters.put("ids", ids);
+            }
+        }
+        queryBuilder.append(" AND number ilike :query ORDER BY number ASC LIMIT 10 ");
+
+        String ilikeQuery = "%" + query + "%";
+        parameters.put("query", ilikeQuery);
+        List<WorkstationDto> workstations = jdbcTemplate.query(queryBuilder.toString(), parameters, new BeanPropertyRowMapper(
+                WorkstationDto.class));
+        WorkstationsResponse workstationsResponse = new WorkstationsResponse();
+        workstationsResponse.setWorkstations(workstations);
+        return workstationsResponse;
+    }
+
+    public WorkstationsGridResponse getWorkstations(int limit, int offset, String sort, String order, String search, Long tocId) {
+        StringBuilder query = new StringBuilder();
+        query.append("Select w.id as id, w.number as number, w.name as name From basic_workstation w WHERE ");
+        query.append(" w.active = true ");
+
+        StringBuilder queryCount = new StringBuilder();
+        queryCount.append("SELECT COUNT(*) ");
+        queryCount.append("From basic_workstation w WHERE w.active = true  ");
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        appendWorkstationConditions(tocId, search, query, parameters);
+        appendWorkstationConditions(tocId, search, queryCount, parameters);
+
+        if (StringUtils.isNotEmpty(sort)) {
+            query.append(" ORDER BY " + sort + " " + order);
+        }
+        query.append(String.format(" LIMIT %d OFFSET %d", limit, offset));
+
+        Integer countRecords = jdbcTemplate.queryForObject(queryCount.toString(), parameters, Long.class).intValue();
+
+        List<WorkstationDto> workstations = jdbcTemplate.query(query.toString(), parameters, new BeanPropertyRowMapper(
+                WorkstationDto.class));
+
+        return new WorkstationsGridResponse(countRecords, workstations);
+    }
+
+    private void appendWorkstationConditions(Long tocId, String search, StringBuilder query, Map<String, Object> parameters) {
+        if (StringUtils.isNotEmpty(search)) {
+            query.append(" AND (");
+            query.append("UPPER(w.number) LIKE '%").append(search.toUpperCase()).append("%' OR ");
+            query.append("UPPER(w.name) LIKE '%").append(search.toUpperCase()).append("%' ");
+            query.append(") ");
+        }
+        if (Objects.nonNull(tocId)) {
+            List<Long> ids = getWorkstationsIds(tocId);
+            if (ids.isEmpty()) {
+                query.append(" AND w.id = -1 ");
+            } else {
+                query.append(" AND w.id in (:ids) ");
+                parameters.put("ids", ids);
+            }
+        }
+    }
+
+    private Map<Long, List<WorkstionTechnologyOperationComponentDto>> getWorkstionsByTechnologyOperationComponents(List<Long> ids) {
+        StringBuilder query = new StringBuilder();
+        query.append("select toc.id AS technologyOperationComponentId, w.name as workstationName, w.number as workstationNumber, ");
+        query.append("w.id AS workstationId from jointable_technologyoperationcomponent_workstation jtw ");
+        query.append("left join technologies_technologyoperationcomponent toc ON toc.id = jtw.technologyoperationcomponent_id ");
+        query.append("left join basic_workstation w ON w.id = jtw.workstation_id ");
+        query.append("where toc.id in (:ids)");
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("ids", ids);
+        List<WorkstionTechnologyOperationComponentDto> workstionsTechnologyOperationComponents = jdbcTemplate.query(
+                query.toString(), parameters, new BeanPropertyRowMapper(WorkstionTechnologyOperationComponentDto.class));
+        return workstionsTechnologyOperationComponents.stream().collect(
+                Collectors.groupingBy(WorkstionTechnologyOperationComponentDto::getTechnologyOperationComponentId));
+    }
+
 }

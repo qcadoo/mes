@@ -468,6 +468,14 @@ public class OrderCreationService {
             }
             toc.setField(TechnologyOperationComponentFields.TECHNOLOGY, technology.getId());
             toc = toc.getDataDefinition().save(toc);
+            if(Objects.nonNull(technologyOperation.getWorkstationId())) {
+                List<Entity> workstations = Lists.newArrayList(toc.getHasManyField(TechnologyOperationComponentFields.WORKSTATIONS));
+
+                Entity workstation = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION).get(technologyOperation.getWorkstationId());
+                workstations.add(workstation);
+                toc.setField(TechnologyOperationComponentFields.WORKSTATIONS, workstations);
+            }
+            toc = toc.getDataDefinition().save(toc);
             technologyOperation.setId(toc.getId());
             if (toc.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS).isEmpty()) {
                 Entity topoc = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
