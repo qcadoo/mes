@@ -67,4 +67,8 @@ public final class DocumentFields {
 
     public static final String ACCEPTATION_IN_PROGRESS = "acceptationInProgress";
 
+    public static final String WMS = "wms";
+
+    public static final String STATE_IN_WMS = "stateInWMS";
+
 }

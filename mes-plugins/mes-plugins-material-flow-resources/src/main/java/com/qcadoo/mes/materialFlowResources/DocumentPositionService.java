@@ -10,6 +10,7 @@ import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.dto.ColumnProperties;
@@ -36,13 +37,9 @@ public class DocumentPositionService {
 
     public static final String REALIZED = "05realized";
 
-    public static final String STATE_IN_WMS = "stateinwms";
-
     public static final String ESILCO = "esilco";
 
     public static final String ID = "id";
-
-    public static final String WMS = "wms";
 
     public static final String WMS_ADDED = "wmsadded";
 
@@ -206,10 +203,10 @@ public class DocumentPositionService {
             Map<String, Object> params = Maps.newHashMap();
             params.put(ID, id);
             Map<String, Object> positionResult = jdbcTemplate.queryForMap(queryForPosition, params);
-            String queryForDocument = "SELECT wms, stateinwms FROM materialflowresources_document WHERE id = :document_id";
+            String queryForDocument = "SELECT wms, stateinwms AS stateInWMS FROM materialflowresources_document WHERE id = :document_id";
             Map<String, Object> documentResult = jdbcTemplate.queryForMap(queryForDocument, positionResult);
-            if (documentResult.get(WMS) != null && (boolean) documentResult.get(WMS) && !(boolean) positionResult.get(WMS_ADDED)
-                    && !REALIZED.equals(documentResult.get(STATE_IN_WMS))) {
+            if (documentResult.get(DocumentFields.WMS) != null && (boolean) documentResult.get(DocumentFields.WMS) && !(boolean) positionResult.get(WMS_ADDED)
+                    && !REALIZED.equals(documentResult.get(DocumentFields.STATE_IN_WMS))) {
                 String query = "INSERT INTO esilco_wmsdeletedposition (product_id, storagelocation_id, additionalcode_id, "
                         + "batch_id, wmsposition_id, quantity, givenquantity, conversion, givenunit) VALUES "
                         + "(:product_id, :storagelocation_id, :additionalcode_id, :batch_id, :wmsposition_id, :quantity, "
@@ -221,12 +218,12 @@ public class DocumentPositionService {
 
     private void markWMSAdded(Long documentId, Long positionId) {
         if (pluginManager.isPluginEnabled(ESILCO)) {
-            String queryForDocument = "SELECT wms, stateinwms FROM materialflowresources_document WHERE id = :documentId";
+            String queryForDocument = "SELECT wms, stateinwms AS stateInWMS FROM materialflowresources_document WHERE id = :documentId";
             Map<String, Object> params = Maps.newHashMap();
             params.put(DOCUMENT_ID, documentId);
             params.put(POSITION_ID, positionId);
             Map<String, Object> result = jdbcTemplate.queryForMap(queryForDocument, params);
-            if (result.get(WMS) != null && (boolean) result.get(WMS) && !REALIZED.equals(result.get(STATE_IN_WMS))) {
+            if (result.get(DocumentFields.WMS) != null && (boolean) result.get(DocumentFields.WMS) && !REALIZED.equals(result.get(DocumentFields.STATE_IN_WMS))) {
                 jdbcTemplate.update("UPDATE materialflowresources_position SET wmsadded = true WHERE id = :positionId ", params);
             }
         }
@@ -239,10 +236,10 @@ public class DocumentPositionService {
             params.put(DOCUMENT_ID, documentId);
             params.put(POSITION_ID, positionId);
             Map<String, Object> positionResult = jdbcTemplate.queryForMap(queryForPosition, params);
-            String queryForDocument = "SELECT wms, stateinwms FROM materialflowresources_document WHERE id = :documentId";
+            String queryForDocument = "SELECT wms, stateinwms AS stateInWMS FROM materialflowresources_document WHERE id = :documentId";
             Map<String, Object> documentResult = jdbcTemplate.queryForMap(queryForDocument, params);
-            if (documentResult.get(WMS) != null && (boolean) documentResult.get(WMS) && !(boolean) positionResult.get(WMS_ADDED)
-                    && !REALIZED.equals(documentResult.get(STATE_IN_WMS))) {
+            if (documentResult.get(DocumentFields.WMS) != null && (boolean) documentResult.get(DocumentFields.WMS) && !(boolean) positionResult.get(WMS_ADDED)
+                    && !REALIZED.equals(documentResult.get(DocumentFields.STATE_IN_WMS))) {
                 jdbcTemplate.update("UPDATE materialflowresources_position SET wmsmodified = true WHERE id = :positionId ",
                         params);
             }
@@ -360,7 +357,7 @@ public class DocumentPositionService {
                     + "FROM materialflowresources_documentpositionparametersitem documentpositionparametersitem "
                     + "LEFT JOIN basic_attribute attr ON attr.id = documentpositionparametersitem.attribute_id  "
                     + "WHERE attr IS NULL OR attr.active = TRUE  ORDER BY documentpositionparametersitem.ordering";
-            List<ColumnProperties> columns = jdbcTemplate.query(query, Collections.EMPTY_MAP,
+            List<ColumnProperties> columns = jdbcTemplate.query(query, Collections.emptyMap(),
                     new BeanPropertyRowMapper(ColumnProperties.class));
 
             Map<String, Object> config = Maps.newHashMap();
@@ -373,7 +370,7 @@ public class DocumentPositionService {
 
             return config;
         } catch (EmptyResultDataAccessException e) {
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
     }
 
@@ -387,7 +384,7 @@ public class DocumentPositionService {
 
             return units;
         } catch (EmptyResultDataAccessException e) {
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
     }
 
@@ -516,7 +513,7 @@ public class DocumentPositionService {
     private boolean shouldSuggestResource() {
         String query = "SELECT suggestResource FROM materialflowresources_documentpositionparameters LIMIT 1";
 
-        return jdbcTemplate.queryForObject(query, Collections.EMPTY_MAP, Boolean.class);
+        return jdbcTemplate.queryForObject(query, Collections.emptyMap(), Boolean.class);
     }
 
     private Object isOutDocument(final Long documentId) {
