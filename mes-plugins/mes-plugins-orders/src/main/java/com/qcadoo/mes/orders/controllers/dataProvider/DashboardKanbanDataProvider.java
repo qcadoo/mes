@@ -104,7 +104,7 @@ public class DashboardKanbanDataProvider {
         Map<String, Object> params = Maps.newHashMap();
 
         params.put(L_STATES,
-                Sets.newHashSet(OperationalTaskStateStringValues.STARTED));
+                Sets.newHashSet(OperationalTaskStateStringValues.PENDING, OperationalTaskStateStringValues.STARTED));
 
         return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions, true), params, new BeanPropertyRowMapper(OperationalTaskHolder.class));
     }
