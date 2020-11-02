@@ -215,7 +215,7 @@
                 <component type="gridLayout" name="gridsLayout" columns="3" rows="8" hasBorders="false">
                     <layoutElement column="1" row="1">
                         <component type="input" name="number" field="number"
-                                   reference="number">
+                                   reference="number" defaultEnabled="never">
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
