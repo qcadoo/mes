@@ -13,6 +13,7 @@ import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.dto.ColumnProperties;
 import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
 import com.qcadoo.plugin.api.PluginManager;
@@ -40,8 +41,6 @@ public class DocumentPositionService {
     public static final String ESILCO = "esilco";
 
     public static final String ID = "id";
-
-    public static final String WMS_ADDED = "wmsadded";
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -205,7 +204,7 @@ public class DocumentPositionService {
             Map<String, Object> positionResult = jdbcTemplate.queryForMap(queryForPosition, params);
             String queryForDocument = "SELECT wms, stateinwms AS stateInWMS FROM materialflowresources_document WHERE id = :document_id";
             Map<String, Object> documentResult = jdbcTemplate.queryForMap(queryForDocument, positionResult);
-            if (documentResult.get(DocumentFields.WMS) != null && (boolean) documentResult.get(DocumentFields.WMS) && !(boolean) positionResult.get(WMS_ADDED)
+            if (documentResult.get(DocumentFields.WMS) != null && (boolean) documentResult.get(DocumentFields.WMS) && !(boolean) positionResult.get(PositionFields.WMS_ADDED)
                     && !REALIZED.equals(documentResult.get(DocumentFields.STATE_IN_WMS))) {
                 String query = "INSERT INTO esilco_wmsdeletedposition (product_id, storagelocation_id, additionalcode_id, "
                         + "batch_id, wmsposition_id, quantity, givenquantity, conversion, givenunit) VALUES "
@@ -238,7 +237,7 @@ public class DocumentPositionService {
             Map<String, Object> positionResult = jdbcTemplate.queryForMap(queryForPosition, params);
             String queryForDocument = "SELECT wms, stateinwms AS stateInWMS FROM materialflowresources_document WHERE id = :documentId";
             Map<String, Object> documentResult = jdbcTemplate.queryForMap(queryForDocument, params);
-            if (documentResult.get(DocumentFields.WMS) != null && (boolean) documentResult.get(DocumentFields.WMS) && !(boolean) positionResult.get(WMS_ADDED)
+            if (documentResult.get(DocumentFields.WMS) != null && (boolean) documentResult.get(DocumentFields.WMS) && !(boolean) positionResult.get(PositionFields.WMS_ADDED)
                     && !REALIZED.equals(documentResult.get(DocumentFields.STATE_IN_WMS))) {
                 jdbcTemplate.update("UPDATE materialflowresources_position SET wmsmodified = true WHERE id = :positionId ",
                         params);

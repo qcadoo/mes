@@ -27,10 +27,8 @@ import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
 import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
 import com.qcadoo.mes.materialFlowResources.service.ResourceReservationsService;
-import com.qcadoo.mes.materialFlowResources.validators.PositionValidators;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,9 +37,6 @@ public class PositionModelHooks {
 
     @Autowired
     private ReservationsService reservationsService;
-
-    @Autowired
-    private PositionValidators positionValidators;
 
     @Autowired
     private ResourceReservationsService resourceReservationsService;
