@@ -27,13 +27,12 @@ import java.util.Date;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Maps;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
+import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.WarehouseIssueGenerator;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.WarehouseIssueParameterService;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.WarehouseIssueFields;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.states.constants.WarehouseIssueState;
@@ -51,9 +50,6 @@ public class WarehouseIssueHooks {
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
-
-    @Autowired
     private StateChangeEntityBuilder stateChangeEntityBuilder;
 
     @Autowired
@@ -61,6 +57,9 @@ public class WarehouseIssueHooks {
 
     @Autowired
     private WarehouseIssueParameterService warehouseIssueParameterService;
+
+    @Autowired
+    private WarehouseIssueGenerator warehouseIssueGenerator;
 
     public void onCreate(final DataDefinition warehouseIssueDD, final Entity warehouseIssue) {
         setInitialState(warehouseIssue);
@@ -75,15 +74,11 @@ public class WarehouseIssueHooks {
             warehouseIssue.setField(WarehouseIssueFields.DATE_OF_CREATION, new Date());
         }
         if (Objects.isNull(warehouseIssue.getField(WarehouseIssueFields.NUMBER))) {
-            warehouseIssue.setField(WarehouseIssueFields.NUMBER, setNumberFromSequence());
+            warehouseIssue.setField(WarehouseIssueFields.NUMBER, warehouseIssueGenerator.setNumberFromSequence());
         }
         if (warehouseIssueParameterService.issueForOrder()) {
             fillOrderFields(warehouseIssue);
         }
-    }
-
-    private String setNumberFromSequence() {
-        return jdbcTemplate.queryForObject("SELECT generate_warehouseissue_number()", Maps.newHashMap(), String.class);
     }
 
     private void fillOrderFields(Entity warehouseIssue) {
