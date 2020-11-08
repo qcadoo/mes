@@ -106,7 +106,7 @@
             <option type="column" name="additionalCodes" fields="additionalCodes"/>
             <option type="column" name="unit" fields="unit"/>
             <option type="column" name="additionalUnit" fields="additionalUnit"/>
-            <option type="column" name="size" fields="size"/>
+            <option type="column" name="size" fields="sizeNumber"/>
 
             <option type="order" column="name" direction="asc"/>
 

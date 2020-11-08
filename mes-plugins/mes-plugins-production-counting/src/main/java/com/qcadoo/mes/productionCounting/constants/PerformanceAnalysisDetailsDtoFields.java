@@ -49,7 +49,7 @@ public final class PerformanceAnalysisDetailsDtoFields {
 
     public static final String PRODUCT_UNIT = "productUnit";
 
-    public static final String SIZE = "size";
+    public static final String SIZE_NUMBER = "sizeNumber";
 
     public static final String PERFORMANCE_NORM = "performanceNorm";
 

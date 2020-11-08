@@ -43,7 +43,7 @@
         <string name="productNumber"/>
         <string name="productName"/>
         <string name="productUnit"/>
-        <string name="size"/>
+        <string name="sizeNumber"/>
 
         <decimal name="performanceNorm">
             <validatesRange from="0" exclusively="false"/>

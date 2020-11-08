@@ -23,6 +23,16 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
+import static com.qcadoo.mes.basic.constants.ProductFields.CONVERSION_ITEMS;
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.util.UnitService;
@@ -38,24 +48,15 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import static com.qcadoo.mes.basic.constants.ProductFields.CONVERSION_ITEMS;
-import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
 @Service
 public class ProductDetailsHooks {
 
-
-
     private static final String UNIT_FROM = "unitFrom";
 
-    String[] innerComponents = { ProductFields.SIZE, "expiryDateValidity", "productForm",
-            "showInProductData" };
+    private static final String[] innerComponents = { ProductFields.SIZE, ProductFields.EXPIRY_DATE_VALIDITY,
+            ProductFields.PRODUCT_FORM, ProductFields.SHOW_IN_PRODUCT_DATA };
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -76,7 +77,7 @@ public class ProductDetailsHooks {
 
         FieldComponent unitField = (FieldComponent) view.getComponentByReference(UNIT);
 
-        if ((productForm.getEntityId() == null) && (unitField.getFieldValue() == null)) {
+        if (Objects.isNull(productForm.getEntityId()) && Objects.isNull(unitField.getFieldValue())) {
             unitField.setFieldValue(unitService.getDefaultUnitFromSystemParameters());
             unitField.requestComponentUpdateState();
         }
@@ -87,12 +88,12 @@ public class ProductDetailsHooks {
         final AwesomeDynamicListComponent conversionItemsAdl = (AwesomeDynamicListComponent) view
                 .getComponentByReference(CONVERSION_ITEMS);
 
-        conversionItemsAdl.setEnabled(productForm.getEntityId() != null);
+        conversionItemsAdl.setEnabled(Objects.nonNull(productForm.getEntityId()));
         for (FormComponent formComponent : conversionItemsAdl.getFormComponents()) {
-            formComponent.findFieldComponentByName(UNIT_FROM).setEnabled(formComponent.getEntityId() == null);
+            formComponent.findFieldComponentByName(UNIT_FROM).setEnabled(Objects.isNull(formComponent.getEntityId()));
         }
         FieldComponent additionalUnit = (FieldComponent) view.getComponentByReference(ProductFields.ADDITIONAL_UNIT);
-        additionalUnit.setEnabled(productForm.getEntityId() != null);
+        additionalUnit.setEnabled(Objects.nonNull(productForm.getEntityId()));
     }
 
     public void disableProductFormForExternalItems(final ViewDefinitionState state) {
@@ -103,7 +104,7 @@ public class ProductDetailsHooks {
         LookupComponent assortmentLookup = (LookupComponent) state.getComponentByReference(ProductFields.ASSORTMENT);
         Long productId = productForm.getEntityId();
 
-        if (productId == null) {
+        if (Objects.isNull(productId)) {
             productForm.setFormEnabled(true);
 
             return;
@@ -111,7 +112,7 @@ public class ProductDetailsHooks {
 
         Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
 
-        if (product == null) {
+        if (Objects.isNull(product)) {
             return;
         }
 
@@ -131,7 +132,7 @@ public class ProductDetailsHooks {
         FormComponent productForm = (FormComponent) state.getComponentByReference(QcadooViewConstants.L_FORM);
         Long productId = productForm.getEntityId();
 
-        if (productId == null) {
+        if (Objects.isNull(productId)) {
             productForm.setFormEnabled(true);
 
             return;
@@ -139,7 +140,7 @@ public class ProductDetailsHooks {
 
         Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
 
-        if (product == null) {
+        if (Objects.isNull(product)) {
             return;
         }
 
@@ -163,8 +164,7 @@ public class ProductDetailsHooks {
 
         RibbonActionItem getDefaultConversions = (RibbonActionItem) operationGroups.getItemByName("getDefaultConversions");
 
-        updateButtonState(getDefaultConversions, operationGroup.getId() != null);
-
+        updateButtonState(getDefaultConversions, Objects.nonNull(operationGroup.getId()));
     }
 
     private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {
@@ -176,13 +176,13 @@ public class ProductDetailsHooks {
         FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long productId = productForm.getEntityId();
 
-        if (productId == null) {
+        if (Objects.isNull(productId)) {
             return;
         }
 
         Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
 
-        if (product == null) {
+        if (Objects.isNull(product)) {
             return;
         }
 
@@ -201,13 +201,15 @@ public class ProductDetailsHooks {
         FieldComponent productIdForMultiUpload = (FieldComponent) view.getComponentByReference("productIdForMultiUpload");
         FieldComponent productMultiUploadLocale = (FieldComponent) view.getComponentByReference("productMultiUploadLocale");
 
-        if (product.getEntityId() != null) {
+        if (Objects.nonNull(product.getEntityId())) {
             productIdForMultiUpload.setFieldValue(product.getEntityId());
         } else {
             productIdForMultiUpload.setFieldValue("");
         }
+
         productIdForMultiUpload.requestComponentUpdateState();
         productMultiUploadLocale.setFieldValue(LocaleContextHolder.getLocale());
         productMultiUploadLocale.requestComponentUpdateState();
     }
+
 }

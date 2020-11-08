@@ -23,17 +23,18 @@
  */
 package com.qcadoo.mes.basic.imports.product;
 
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.imports.dtos.CellBinderRegistry;
-import com.qcadoo.mes.basic.imports.helpers.CellParser;
-import com.qcadoo.mes.basic.imports.parsers.DictionaryCellParsers;
+import static com.qcadoo.mes.basic.imports.dtos.CellBinder.optional;
+import static com.qcadoo.mes.basic.imports.dtos.CellBinder.required;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import static com.qcadoo.mes.basic.imports.dtos.CellBinder.optional;
-import static com.qcadoo.mes.basic.imports.dtos.CellBinder.required;
+
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.imports.dtos.CellBinderRegistry;
+import com.qcadoo.mes.basic.imports.helpers.CellParser;
+import com.qcadoo.mes.basic.imports.parsers.DictionaryCellParsers;
 
 @Component
 public class ProductCellBinderRegistry {
@@ -65,6 +66,9 @@ public class ProductCellBinderRegistry {
     private CellParser bigDecimalCellParser;
 
     @Autowired
+    private CellParser sizeCellParser;
+
+    @Autowired
     private CellParser integerCellParser;
 
     @Autowired
@@ -87,7 +91,7 @@ public class ProductCellBinderRegistry {
         cellBinderRegistry.setCellBinder(optional(L_NOMINAL_COST, bigDecimalCellParser));
         cellBinderRegistry.setCellBinder(optional(L_LAST_PURCHASE_COST, bigDecimalCellParser));
         cellBinderRegistry.setCellBinder(optional(L_AVERAGE_COST, bigDecimalCellParser));
-        cellBinderRegistry.setCellBinder(optional(ProductFields.SIZE));
+        cellBinderRegistry.setCellBinder(optional(ProductFields.SIZE, sizeCellParser));
         cellBinderRegistry.setCellBinder(optional(ProductFields.EXPIRY_DATE_VALIDITY, integerCellParser));
         cellBinderRegistry.setCellBinder(optional(ProductFields.BATCH_EVIDENCE, booleanCellParser));
     }

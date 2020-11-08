@@ -300,6 +300,9 @@
 
         <model:model model="dashboardButton" resource="model/dashboardButton.xml"/>
 
+        <model:model model="size" resource="model/size.xml"/>
+        <model:model model="sizeGroup" resource="model/sizeGroup.xml"/>
+
         <model:dictionary name="categories"/>
         <model:dictionary name="reasonTypeOfChangingOrderState"/>
 
@@ -390,6 +393,10 @@
         <menu:menu-item name="numberPatternsList" category="administration"
                         view="numberPatternsList" defaultAuthorizationRole="ROLE_NUMBER_PATTERN"/>
 
+        <menu:menu-item name="sizesList" category="basic" view="sizesList" defaultAuthorizationRole="ROLE_PRODUCTS"/>
+
+        <menu:menu-item name="sizeGroupsList" category="basic" view="sizeGroupsList" defaultAuthorizationRole="ROLE_PRODUCTS"/>
+
         <view:view resource="view/reportColumnWidthDetails.xml"/>
         <view:view resource="view/companiesList.xml"/>
         <view:view resource="view/companyDetails.xml"/>
@@ -474,6 +481,11 @@
         <view:view resource="view/numberPatternElementDetails.xml"/>
         <view:view resource="view/formsList.xml"/>
         <view:view resource="view/formDetails.xml"/>
+
+        <view:view resource="view/sizesList.xml"/>
+        <view:view resource="view/sizeDetails.xml"/>
+        <view:view resource="view/sizeGroupsList.xml"/>
+        <view:view resource="view/sizeGroupDetails.xml"/>
 
         <view:view-hook plugin="qcadooUsers" view="userDetails" type="beforeRender"
                         class="com.qcadoo.mes.basic.hooks.UserDetailsHooksB"
