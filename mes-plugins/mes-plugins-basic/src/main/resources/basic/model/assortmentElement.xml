@@ -27,12 +27,12 @@
 <model name="assortmentElement" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
         <dictionary name="descriptionType" dictionary="descriptionTypes" required="true"/>
         <string name="description">
             <validatesLength max="255"/>
         </string>
-
         <boolean name="main" default="false"/>
         <belongsTo name="assortment" model="assortment" required="true"/>
     </fields>
