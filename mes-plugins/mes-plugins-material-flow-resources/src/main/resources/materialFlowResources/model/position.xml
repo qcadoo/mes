@@ -71,8 +71,6 @@
 
         <boolean name="waste" default="false"/>
         <dictionary name="qualityRating" dictionary="qualityRating"/>
-        <boolean name="wmsadded" copyable="false" default="false"/>
-        <boolean name="wmsmodified" copyable="false" default="false"/>
     </fields>
     <hooks>
         <onCreate class="com.qcadoo.mes.materialFlowResources.hooks.PositionModelHooks" method="onCreate"/>

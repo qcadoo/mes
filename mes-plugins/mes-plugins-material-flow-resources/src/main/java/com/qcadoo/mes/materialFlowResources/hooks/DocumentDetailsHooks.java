@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.utils.DateUtils;
@@ -41,6 +35,7 @@ import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.plugin.api.PluginManager;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -51,15 +46,18 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.ESILCO;
 
 @Service
 public class DocumentDetailsHooks {
 
     public static final String L_PRINT_DISPOSITION_ORDER_PDF = "printDispositionOrderPdf";
-
-
-
-
 
     private static final String L_ACTIONS = "actions";
 
@@ -89,6 +87,9 @@ public class DocumentDetailsHooks {
 
     @Autowired
     private ReservationsService reservationsService;
+
+    @Autowired
+    private PluginManager pluginManager;
 
     public void onBeforeRender(final ViewDefinitionState view) {
         initializeDocument(view);
@@ -160,7 +161,7 @@ public class DocumentDetailsHooks {
             changeFillResourceButtonState(window, false);
             changeCheckResourcesStockButtonState(window, false);
 
-            changeaAdMultipleResourcesButtonState(window, false);
+            changeAddMultipleResourcesButtonState(window, false);
 
             FieldComponent dateField = (FieldComponent) view.getComponentByReference(DocumentFields.TIME);
             FieldComponent userField = (FieldComponent) view.getComponentByReference(DocumentFields.USER);
@@ -176,24 +177,33 @@ public class DocumentDetailsHooks {
             changeFillResourceButtonState(window, reservationsService.reservationsEnabledForDocumentPositions(document));
             changeCheckResourcesStockButtonState(window, DocumentType.isOutbound(document.getStringField(DocumentFields.TYPE))
                     && !reservationsService.reservationsEnabledForDocumentPositions(document));
-            changeaAdMultipleResourcesButtonState(window, DocumentType.isOutbound(document.getStringField(DocumentFields.TYPE)));
+            changeAddMultipleResourcesButtonState(window, DocumentType.isOutbound(document.getStringField(DocumentFields.TYPE)));
+            if (pluginManager.isPluginEnabled(ESILCO)) {
+                if (document.getBooleanField(DocumentFields.WMS) && !document.getBooleanField(DocumentFields.EDIT_IN_WMS)) {
+                    toggleRibbon(window, false);
+                    changeFillResourceButtonState(window, false);
+                    changeAddMultipleResourcesButtonState(window, false);
+                } else {
+                    toggleRibbon(window, true);
+                }
+            }
         } else if (DocumentState.ACCEPTED.equals(state)) {
             documentForm.setFormEnabled(false);
-            disableRibbon(window);
+            toggleRibbon(window, false);
             changePrintButtonState(window, true);
             changeFillResourceButtonState(window, false);
             changeCheckResourcesStockButtonState(window, false);
-            changeaAdMultipleResourcesButtonState(window, false);
+            changeAddMultipleResourcesButtonState(window, false);
         }
     }
 
-    private void disableRibbon(final WindowComponent window) {
+    private void toggleRibbon(final WindowComponent window, final boolean enable) {
         for (String actionItem : L_ACTIONS_ITEMS) {
-            window.getRibbon().getGroupByName(L_ACTIONS).getItemByName(actionItem).setEnabled(false);
+            window.getRibbon().getGroupByName(L_ACTIONS).getItemByName(actionItem).setEnabled(enable);
             window.getRibbon().getGroupByName(L_ACTIONS).getItemByName(actionItem).requestUpdate(true);
         }
 
-        changeAcceptButtonState(window, false);
+        changeAcceptButtonState(window, enable);
     }
 
     private void changeAcceptButtonState(final WindowComponent window, final boolean enable) {
@@ -218,7 +228,7 @@ public class DocumentDetailsHooks {
         fillResourcesItem.requestUpdate(true);
     }
 
-    private void changeaAdMultipleResourcesButtonState(final WindowComponent window, final boolean enable) {
+    private void changeAddMultipleResourcesButtonState(final WindowComponent window, final boolean enable) {
         RibbonActionItem addMultipleResources = window.getRibbon().getGroupByName("resources")
                 .getItemByName("addMultipleResources");
 

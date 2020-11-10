@@ -57,8 +57,8 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.*;
 
-import static com.qcadoo.mes.materialFlowResources.DocumentPositionService.ESILCO;
-import static com.qcadoo.mes.materialFlowResources.DocumentPositionService.REALIZED;
+import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.ESILCO;
+import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.REALIZED;
 
 @Service
 public class DocumentDetailsListeners {
@@ -410,8 +410,7 @@ public class DocumentDetailsListeners {
 
         JSONObject context = new JSONObject(parameters);
 
-        String url = "../page/materialFlowResources/positionAddMulti.html?context=" +
-                context.toString();
+        String url = "../page/materialFlowResources/positionAddMulti.html?context=" + context.toString();
         view.openModal(url);
     }
 
@@ -428,8 +427,7 @@ public class DocumentDetailsListeners {
 
             JSONObject context = new JSONObject(parameters);
 
-            String url = "../page/materialFlowResources/positionsImport.html?context=" +
-                    context.toString();
+            String url = "../page/materialFlowResources/positionsImport.html?context=" + context.toString();
             view.openModal(url);
         }
     }

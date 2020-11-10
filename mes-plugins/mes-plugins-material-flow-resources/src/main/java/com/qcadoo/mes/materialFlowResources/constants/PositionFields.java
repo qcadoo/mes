@@ -78,8 +78,4 @@ public final class PositionFields {
     public static final String POSITION_ATTRIBUTE_VALUES = "positionAttributeValues";
 
     public static final String QUALITY_RATING = "qualityRating";
-
-    public static final String WMS_ADDED = "wmsadded";
-
-    public static final String WMS_MODIFIED = "wmsmodified";
 }

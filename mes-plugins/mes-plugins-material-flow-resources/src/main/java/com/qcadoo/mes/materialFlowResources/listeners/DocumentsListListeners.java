@@ -46,13 +46,14 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.List;
 
-import static com.qcadoo.mes.materialFlowResources.DocumentPositionService.ESILCO;
-import static com.qcadoo.mes.materialFlowResources.DocumentPositionService.REALIZED;
-
 @Service
 public class DocumentsListListeners {
 
     private static final Logger LOG = LoggerFactory.getLogger(DocumentsListListeners.class);
+
+    public static final String REALIZED = "05realized";
+
+    public static final String ESILCO = "esilco";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;

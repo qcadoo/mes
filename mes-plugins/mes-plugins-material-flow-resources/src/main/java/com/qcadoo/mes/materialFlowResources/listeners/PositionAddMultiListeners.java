@@ -1,7 +1,6 @@
 package com.qcadoo.mes.materialFlowResources.listeners;
 
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
@@ -9,7 +8,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.plugin.api.PluginManager;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
@@ -23,9 +21,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import static com.qcadoo.mes.materialFlowResources.DocumentPositionService.ESILCO;
-import static com.qcadoo.mes.materialFlowResources.DocumentPositionService.REALIZED;
 
 @Service
 public class PositionAddMultiListeners {
@@ -41,9 +36,6 @@ public class PositionAddMultiListeners {
 
     @Autowired
     private NumberService numberService;
-
-    @Autowired
-    private PluginManager pluginManager;
 
     public void addPositions(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent resourceGrid = (GridComponent) view.getComponentByReference(L_RESOURCE_GRID);
@@ -73,8 +65,6 @@ public class PositionAddMultiListeners {
 
             if (!newPosition.isValid()) {
                 errorNumbers.add(resource.getStringField(ResourceFields.NUMBER));
-            } else {
-                markWMSAdded(newPosition);
             }
         }
 
@@ -84,16 +74,6 @@ public class PositionAddMultiListeners {
         }
 
         generated.setChecked(true);
-    }
-
-    private void markWMSAdded(Entity position) {
-        if (pluginManager.isPluginEnabled(ESILCO)) {
-            Entity document = position.getBelongsToField(PositionFields.DOCUMENT);
-            if (document.getBooleanField(DocumentFields.WMS) && !REALIZED.equals(document.getStringField(DocumentFields.STATE_IN_WMS))) {
-                position.setField(PositionFields.WMS_ADDED, true);
-                getPositionDD().save(position);
-            }
-        }
     }
 
     private Entity createPosition(final Entity document, final Entity resource) {
