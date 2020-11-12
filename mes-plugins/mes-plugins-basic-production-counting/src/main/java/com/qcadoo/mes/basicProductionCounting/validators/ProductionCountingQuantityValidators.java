@@ -34,14 +34,13 @@ import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class ProductionCountingQuantityValidators {
@@ -56,8 +55,7 @@ public class ProductionCountingQuantityValidators {
     private ProductionProgressModifyLockHelper progressModifyLockHelper;
 
     public boolean validatesWith(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
-        boolean isValid = true;
-        isValid = isValid && checkTypeOfProductionRecording(productionCountingQuantityDD, productionCountingQuantity);
+        boolean isValid = checkTypeOfProductionRecording(productionCountingQuantityDD, productionCountingQuantity);
         isValid = isValid && checkRoleAndTypeOfMaterial(productionCountingQuantityDD, productionCountingQuantity);
         isValid = isValid && checkIfMaterialExists(productionCountingQuantityDD, productionCountingQuantity);
         return isValid;
@@ -65,21 +63,17 @@ public class ProductionCountingQuantityValidators {
 
     private boolean checkIfMaterialExists(final DataDefinition productionCountingQuantityDD,
             final Entity productionCountingQuantity) {
-        String typeOfProductionRecording = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER)
-                .getStringField(L_TYPE_OF_PRODUCTION_RECORDING);
-        if (L_FOR_EACH.equals(typeOfProductionRecording)
-                && Objects.nonNull(productionCountingQuantity
-                        .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT))) {
-            List<Entity> productionCountingQuantities = productionCountingQuantityDD
-                    .find()
+        if (Objects.nonNull(
+                productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT))) {
+            List<Entity> productionCountingQuantities = productionCountingQuantityDD.find()
                     .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER,
                             productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER)))
                     .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT,
                             productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT)))
                     .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT,
                             productionCountingQuantity
-                                    .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT))).list()
-                    .getEntities();
+                                    .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT)))
+                    .list().getEntities();
 
             if (productionCountingQuantities.isEmpty()) {
                 return true;
@@ -94,7 +88,7 @@ public class ProductionCountingQuantityValidators {
             List<Entity> filteredProductionCountingQuantities = productionCountingQuantities.stream()
                     .filter(pq -> !pq.getId().equals(productionCountingQuantity.getId())).collect(Collectors.toList());
 
-            if(!filteredProductionCountingQuantities.isEmpty()) {
+            if (!filteredProductionCountingQuantities.isEmpty()) {
                 productionCountingQuantity
                         .addGlobalError("basicProductionCounting.productionCountingQuantity.error.materialForOperationExists");
                 return false;
@@ -103,12 +97,12 @@ public class ProductionCountingQuantityValidators {
         return true;
     }
 
-    private boolean checkTypeOfProductionRecording(DataDefinition productionCountingQuantityDD, Entity productionCountingQuantity) {
+    private boolean checkTypeOfProductionRecording(DataDefinition productionCountingQuantityDD,
+            Entity productionCountingQuantity) {
         String typeOfProductionRecording = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER)
                 .getStringField(L_TYPE_OF_PRODUCTION_RECORDING);
-        if (L_FOR_EACH.equals(typeOfProductionRecording)
-                && Objects.isNull(productionCountingQuantity
-                        .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT))) {
+        if (L_FOR_EACH.equals(typeOfProductionRecording) && Objects.isNull(
+                productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT))) {
             productionCountingQuantity.addError(
                     productionCountingQuantityDD.getField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
                     TECHNOLOGY_OPERATION_COMPONENT_REQUIRED);
@@ -126,11 +120,10 @@ public class ProductionCountingQuantityValidators {
         if (BigDecimalUtils.valueEquals((BigDecimal) oldValue, (BigDecimal) newValue)) {
             return true;
         }
-        if (progressModifyLockHelper.isLocked(productionCountingQuantity
-                .getBelongsToField(ProductionCountingQuantityFields.ORDER))) {
-            productionCountingQuantity
-                    .addError(plannedQuantityFieldDefinition,
-                            "basicProductionCounting.productionCountingQuantity.plannedQuantity.error.valueChangeIsNotAllowedForAcceptetOrder");
+        if (progressModifyLockHelper
+                .isLocked(productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER))) {
+            productionCountingQuantity.addError(plannedQuantityFieldDefinition,
+                    "basicProductionCounting.productionCountingQuantity.plannedQuantity.error.valueChangeIsNotAllowedForAcceptetOrder");
             return false;
         }
         return true;
@@ -152,8 +145,9 @@ public class ProductionCountingQuantityValidators {
                         .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
 
                 if (technologyOperationComponent == null) {
-                    productionCountingQuantity.addError(productionCountingQuantityDD
-                            .getField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
+                    productionCountingQuantity.addError(
+                            productionCountingQuantityDD
+                                    .getField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
                             TECHNOLOGY_OPERATION_COMPONENT_REQUIRED);
 
                     return false;
@@ -170,8 +164,9 @@ public class ProductionCountingQuantityValidators {
                         .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT);
 
                 if (technologyOperationComponent == null) {
-                    productionCountingQuantity.addError(productionCountingQuantityDD
-                            .getField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
+                    productionCountingQuantity.addError(
+                            productionCountingQuantityDD
+                                    .getField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT),
                             TECHNOLOGY_OPERATION_COMPONENT_REQUIRED);
 
                     return false;
@@ -194,8 +189,7 @@ public class ProductionCountingQuantityValidators {
             final Entity productionCountingQuantity) {
         Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
 
-        SearchCriteriaBuilder searchCriteriaBuilder = productionCountingQuantityDD
-                .find()
+        SearchCriteriaBuilder searchCriteriaBuilder = productionCountingQuantityDD.find()
                 .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))
                 .add(SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL,
                         ProductionCountingQuantityTypeOfMaterial.FINAL_PRODUCT.getStringValue()));
