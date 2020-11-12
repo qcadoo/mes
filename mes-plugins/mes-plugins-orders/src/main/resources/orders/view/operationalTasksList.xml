@@ -42,7 +42,7 @@
             <option type="column" name="startDate" fields="startDate" width="100"/>
             <option type="column" name="finishDate" fields="finishDate" width="100"/>
             <option type="column" name="staffName" fields="staffName" width="125"/>
-            <option type="column" name="productionLineName" fields="productionLineName" width="100"/>
+            <option type="column" name="productionLineNumber" fields="productionLineNumber" width="100"/>
             <option type="column" name="workstationNumber" fields="workstationNumber" width="100"/>
             <option type="column" name="orderNumber" fields="orderNumber" link="true"
                     correspondingView="orders/orderDetails" correspondingField="orderId"
@@ -67,9 +67,9 @@
 
             <option type="order" column="startDate" direction="desc"/>
 
-            <option type="searchable" value="name,number,startDate,finishDate,staffName,productionLineName,workstationNumber,orderNumber,state,type,
+            <option type="searchable" value="name,number,startDate,finishDate,staffName,productionLineNumber,workstationNumber,orderNumber,state,type,
 							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,usedQuantity,remainingQuantity,doneInPercentage,productUnit"/>
-            <option type="orderable" value="name,number,startDate,finishDate,staffName,productionLineName,workstationNumber,orderNumber,state,type,
+            <option type="orderable" value="name,number,startDate,finishDate,staffName,productionLineNumber,workstationNumber,orderNumber,state,type,
 							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,usedQuantity,remainingQuantity,doneInPercentage,productUnit"/>
 
             <option type="correspondingView" value="orders/operationalTaskDetails"/>

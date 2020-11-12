@@ -45,8 +45,6 @@ public final class OperationalTaskWithColorDtoFields {
 
     public static final String STAFF_NAME = "staffName";
 
-    public static final String PRODUCTION_LINE_NAME = "productionLineName";
-
     public static final String WORKSTATION_NUMBER = "workstationNumber";
 
     public static final String WORKSTATION_ID = "workstationId";
