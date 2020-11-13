@@ -23,6 +23,11 @@
  */
 package com.qcadoo.mes.technologiesGenerator.customization.product;
 
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologiesGenerator.GeneratorSettings;
@@ -33,44 +38,49 @@ import com.qcadoo.mes.technologiesGenerator.customization.product.domain.Product
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 @Service
 public class ProductCustomizer {
 
     @Autowired
     private CustomizedProductDataProvider customizedProductDataProvider;
 
-    public Entity findOrCreate(final Entity product, final Entity mainProduct, final ProductSuffixes suffixes, final GeneratorSettings settings) {
+    public Entity findOrCreate(final Entity product, final Entity mainProduct, final ProductSuffixes suffixes,
+            final GeneratorSettings settings) {
         String generatedNumber = generateNumber(product, suffixes.getNumberSuffix());
-        return customizedProductDataProvider.tryFind(product, generatedNumber).orElseGet(
-                () -> customize(product, mainProduct, generatedNumber, generateName(product, suffixes.getNameSuffix()), settings));
+
+        return customizedProductDataProvider.tryFind(product, generatedNumber).orElseGet(() -> customize(product, mainProduct,
+                generatedNumber, generateName(product, suffixes.getNameSuffix()), settings));
     }
 
     private String generateNumber(final Entity product, final ProductNumberSuffix numberSuffix) {
         String originalNumber = product.getStringField(ProductFields.NUMBER);
+
         return String.format("%s - %s", originalNumber, numberSuffix.get());
     }
 
     private String generateName(final Entity product, final ProductNameSuffix nameSuffix) {
         String originalName = product.getStringField(ProductFields.NAME);
+
         return String.format("%s - %s", originalName, nameSuffix.get());
     }
 
-    private Entity customize(final Entity product, final Entity mainProduct, final String newNumber, final String newName, final GeneratorSettings settings) {
+    private Entity customize(final Entity product, final Entity mainProduct, final String newNumber, final String newName,
+            final GeneratorSettings settings) {
         DataDefinition productDD = product.getDataDefinition();
+
         Entity newProduct = productDD.copy(product.getId()).get(0);
+
         newProduct.setField(ProductFields.PARENT, product);
         newProduct.setField(ProductFields.NAME, newName);
         newProduct.setField(ProductFields.NUMBER, newNumber);
         newProduct.setField(ProductFields.ENTITY_TYPE, ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue());
         newProduct.setField(ProductFieldsTG.FROM_GENERATOR, true);
-        
-        if(settings.shouldCopyProductSize() && mainProduct!=null){
-            newProduct.setField(ProductFields.SIZE, mainProduct.getField(ProductFields.SIZE));
+
+        if (settings.shouldCopyProductSize() && Objects.nonNull(mainProduct)) {
+            newProduct.setField(ProductFields.SIZE, mainProduct.getBelongsToField(ProductFields.SIZE));
         }
 
         return productDD.save(newProduct);
     }
+
 }

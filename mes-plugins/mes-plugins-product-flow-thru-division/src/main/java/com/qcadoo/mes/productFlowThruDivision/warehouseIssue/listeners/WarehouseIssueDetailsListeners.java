@@ -164,7 +164,7 @@ public class WarehouseIssueDetailsListeners {
             return;
         }
 
-        Entity warehouseIssue = warehouseIssueHooks.getwarehouseIssueDD().get(warehouseIssueId);
+        Entity warehouseIssue = warehouseIssueHooks.getWarehouseIssueDD().get(warehouseIssueId);
 
         warehouseIssue.getDataDefinition().save(warehouseIssue);
         GridComponent grid = (GridComponent) view.getComponentByReference(WarehouseIssueFields.PRODUCTS_TO_ISSUES);

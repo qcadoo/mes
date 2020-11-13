@@ -1314,6 +1314,40 @@ $$;
 
 
 --
+-- Name: generate_warehouseissue_number(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION generate_warehouseissue_number() RETURNS text
+    LANGUAGE plpgsql
+    AS $$
+    DECLARE
+        _pattern text;
+        _sequence_name text;
+        _sequence_value numeric;
+        _tmp text;
+        _seq text;
+        _number text;
+
+    BEGIN
+        _pattern := '#seq';
+
+        SELECT nextval('productflowthrudivision_warehouseissue_number_seq') INTO _sequence_value;
+
+        _seq := to_char(_sequence_value, 'fm000000');
+
+        IF _seq LIKE '%#%' THEN
+            _seq := _sequence_value;
+        END IF;
+
+        _number := _pattern;
+        _number := replace(_number, '#seq', _seq);
+
+        RETURN _number;
+    END;
+$$;
+
+
+--
 -- Name: genkey(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -4798,7 +4832,6 @@ CREATE TABLE basic_product (
     quantityfornutritionsunit character varying(255),
     showinproductdata boolean DEFAULT false,
     doublequantityfordoublepallet boolean,
-    size character varying(255),
     usedquantitycontrol boolean DEFAULT false,
     automaticusedquantity boolean DEFAULT false,
     nominalweight numeric(12,5),
@@ -4832,7 +4865,8 @@ CREATE TABLE basic_product (
     isactivecartonlabelquantity boolean,
     batchevidence boolean DEFAULT false,
     expirydatevalidity integer,
-    productform_id bigint
+    productform_id bigint,
+    size_id bigint
 );
 
 
@@ -9088,7 +9122,7 @@ CREATE TABLE basic_productdto (
     externalnumber character varying(255),
     assortmentname character varying(255),
     norm character varying(255),
-    size character varying(255),
+    sizenumber character varying(255),
     hasattachments boolean,
     additionalcodes text,
     active boolean,
@@ -9196,6 +9230,75 @@ CREATE SEQUENCE basic_shifttimetableexception_id_seq
 --
 
 ALTER SEQUENCE basic_shifttimetableexception_id_seq OWNED BY basic_shifttimetableexception.id;
+
+
+--
+-- Name: basic_size; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_size (
+    id bigint NOT NULL,
+    number character varying(255),
+    succession integer,
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255),
+    active boolean DEFAULT true
+);
+
+
+--
+-- Name: basic_size_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE basic_size_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_size_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE basic_size_id_seq OWNED BY basic_size.id;
+
+
+--
+-- Name: basic_sizegroup; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_sizegroup (
+    id bigint NOT NULL,
+    number character varying(255),
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255),
+    active boolean DEFAULT true
+);
+
+
+--
+-- Name: basic_sizegroup_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE basic_sizegroup_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_sizegroup_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE basic_sizegroup_id_seq OWNED BY basic_sizegroup.id;
 
 
 --
@@ -12462,43 +12565,6 @@ ALTER SEQUENCE esilco_printdocuments_id_seq OWNED BY esilco_printdocuments.id;
 
 
 --
--- Name: esilco_wmsdeletedposition; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE esilco_wmsdeletedposition (
-    id bigint NOT NULL,
-    product_id bigint,
-    storagelocation_id bigint,
-    additionalcode_id bigint,
-    batch_id bigint,
-    wmsposition_id bigint,
-    quantity numeric(14,5),
-    givenquantity numeric(14,5),
-    conversion numeric(12,5),
-    givenunit character varying(255)
-);
-
-
---
--- Name: esilco_wmsdeletedposition_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE esilco_wmsdeletedposition_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: esilco_wmsdeletedposition_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE esilco_wmsdeletedposition_id_seq OWNED BY esilco_wmsdeletedposition.id;
-
-
---
 -- Name: esilco_wmsdocumentpart; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -12532,6 +12598,66 @@ CREATE SEQUENCE esilco_wmsdocumentpart_id_seq
 --
 
 ALTER SEQUENCE esilco_wmsdocumentpart_id_seq OWNED BY esilco_wmsdocumentpart.id;
+
+
+--
+-- Name: esilco_wmsdocumenttype; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE esilco_wmsdocumenttype (
+    id bigint NOT NULL,
+    type character varying(255),
+    parameter_id bigint
+);
+
+
+--
+-- Name: esilco_wmsdocumenttype_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE esilco_wmsdocumenttype_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: esilco_wmsdocumenttype_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE esilco_wmsdocumenttype_id_seq OWNED BY esilco_wmsdocumenttype.id;
+
+
+--
+-- Name: esilco_wmslocation; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE esilco_wmslocation (
+    id bigint NOT NULL,
+    location_id bigint,
+    parameter_id bigint
+);
+
+
+--
+-- Name: esilco_wmslocation_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE esilco_wmslocation_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: esilco_wmslocation_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE esilco_wmslocation_id_seq OWNED BY esilco_wmslocation.id;
 
 
 --
@@ -15054,6 +15180,16 @@ CREATE TABLE jointable_productionline_technologygroup (
 
 
 --
+-- Name: jointable_size_sizegroup; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE jointable_size_sizegroup (
+    size_id bigint NOT NULL,
+    sizegroup_id bigint NOT NULL
+);
+
+
+--
 -- Name: jointable_staff_timeusagereportfilter; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -15660,7 +15796,8 @@ CREATE TABLE materialflowresources_document (
     stateinwms character varying(255),
     pickingworker character varying(255),
     dateconfirmationofcompletion timestamp without time zone,
-    locationchanged boolean DEFAULT false
+    locationchanged boolean DEFAULT false,
+    editinwms boolean DEFAULT true
 );
 
 
@@ -16127,9 +16264,7 @@ CREATE TABLE materialflowresources_position (
     qualityrating character varying(255),
     pickingdate timestamp without time zone,
     pickingworker_id bigint,
-    wmsposition_id bigint,
-    wmsadded boolean DEFAULT false,
-    wmsmodified boolean DEFAULT false
+    wmsposition_id bigint
 );
 
 
@@ -17857,7 +17992,7 @@ CREATE VIEW orders_operationaltaskwithcolordto AS
     operationaltask.startdate,
     operationaltask.finishdate,
     (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
-    productionline.name AS productionlinename,
+    productionline.number AS productionlinenumber,
     workstation.number AS workstationnumber,
     (workstation.id)::integer AS workstationid,
     (ordersorder.id)::integer AS orderid,
@@ -17892,7 +18027,7 @@ UNION ALL
     operationaltask.startdate,
     operationaltask.finishdate,
     (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
-    productionline.name AS productionlinename,
+    productionline.number AS productionlinenumber,
     workstation.number AS workstationnumber,
     (workstation.id)::integer AS workstationid,
     (ordersorder.id)::integer AS orderid,
@@ -17933,7 +18068,7 @@ UNION ALL
     operationaltask.startdate,
     operationaltask.finishdate,
     (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
-    productionline.name AS productionlinename,
+    productionline.number AS productionlinenumber,
     workstation.number AS workstationnumber,
     (workstation.id)::integer AS workstationid,
     (ordersorder.id)::integer AS orderid,
@@ -17974,7 +18109,7 @@ UNION ALL
     operationaltask.startdate,
     operationaltask.finishdate,
     (((staff.surname)::text || ' '::text) || (staff.name)::text) AS staffname,
-    productionline.name AS productionlinename,
+    productionline.number AS productionlinenumber,
     workstation.number AS workstationnumber,
     (workstation.id)::integer AS workstationid,
     (ordersorder.id)::integer AS orderid,
@@ -20125,6 +20260,18 @@ ALTER SEQUENCE productflowthrudivision_warehouseissue_id_seq OWNED BY productflo
 
 
 --
+-- Name: productflowthrudivision_warehouseissue_number_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE productflowthrudivision_warehouseissue_number_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
 -- Name: productflowthrudivision_warehouseissuestatechange; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -20459,7 +20606,7 @@ CREATE VIEW productioncounting_beforeadditionalactionsanalysisentry AS
     product.number AS productnumber,
     product.name AS productname,
     product.unit AS productunit,
-    product.size,
+    size.number AS sizenumber,
     sum(COALESCE(topoc.usedquantity, (0)::numeric)) AS quantity,
     sum(COALESCE(topoc.wastesquantity, (0)::numeric)) AS wastes,
     (sum(COALESCE(topoc.usedquantity, (0)::numeric)) + sum(COALESCE(topoc.wastesquantity, (0)::numeric))) AS donequantity,
@@ -20467,7 +20614,7 @@ CREATE VIEW productioncounting_beforeadditionalactionsanalysisentry AS
     date(date_trunc('day'::text, pt.timerangeto)) AS timerangeto,
     shift.name AS shiftname,
     tcontext.number AS technologygeneratornumber
-   FROM ((((((((((((productioncounting_productiontracking pt
+   FROM (((((((((((((productioncounting_productiontracking pt
      JOIN orders_order ord ON ((ord.id = pt.order_id)))
      JOIN technologies_technology technologyprototype ON ((technologyprototype.id = ord.technologyprototype_id)))
      JOIN technologies_technology technology ON ((technology.id = ord.technology_id)))
@@ -20480,8 +20627,9 @@ CREATE VIEW productioncounting_beforeadditionalactionsanalysisentry AS
      JOIN productioncounting_trackingoperationproductoutcomponent topoc ON ((pt.id = topoc.productiontracking_id)))
      JOIN basic_product product ON ((topoc.product_id = product.id)))
      LEFT JOIN basic_assortment assortment ON ((product.assortment_id = assortment.id)))
+     LEFT JOIN basic_size size ON ((size.id = product.size_id)))
   WHERE ((technology.additionalactions = false) AND ((parenttechnology.additionalactions = true) OR (ord.parent_id IS NULL)) AND ((product.id = ord.product_id) OR ((pt.technologyoperationcomponent_id IS NOT NULL) AND ((topoc.typeofmaterial)::text = '02intermediate'::text))))
-  GROUP BY ord.number, shift.name, (date_trunc('day'::text, pt.timerangefrom)), (date_trunc('day'::text, pt.timerangeto)), pl.number, c.number, assortment.name, product.number, product.name, product.unit, product.size, tcontext.number
+  GROUP BY ord.number, shift.name, (date_trunc('day'::text, pt.timerangefrom)), (date_trunc('day'::text, pt.timerangeto)), pl.number, c.number, assortment.name, product.number, product.name, product.unit, size.number, tcontext.number
 UNION ALL
  SELECT row_number() OVER () AS id,
     pl.number AS productionlinenumber,
@@ -20491,7 +20639,7 @@ UNION ALL
     product.number AS productnumber,
     product.name AS productname,
     product.unit AS productunit,
-    product.size,
+    size.number AS sizenumber,
     sum(COALESCE(topoc.usedquantity, (0)::numeric)) AS quantity,
     sum(COALESCE(topoc.wastesquantity, (0)::numeric)) AS wastes,
     (sum(COALESCE(topoc.usedquantity, (0)::numeric)) + sum(COALESCE(topoc.wastesquantity, (0)::numeric))) AS donequantity,
@@ -20499,7 +20647,7 @@ UNION ALL
     date(date_trunc('day'::text, pt.timerangeto)) AS timerangeto,
     shift.name AS shiftname,
     tcontext.number AS technologygeneratornumber
-   FROM ((((((((((((arch_productioncounting_productiontracking pt
+   FROM (((((((((((((arch_productioncounting_productiontracking pt
      JOIN arch_orders_order ord ON ((ord.id = pt.order_id)))
      JOIN technologies_technology technologyprototype ON ((technologyprototype.id = ord.technologyprototype_id)))
      JOIN technologies_technology technology ON ((technology.id = ord.technology_id)))
@@ -20512,8 +20660,9 @@ UNION ALL
      JOIN arch_productioncounting_trackingoperationproductoutcomponent topoc ON ((pt.id = topoc.productiontracking_id)))
      JOIN basic_product product ON ((topoc.product_id = product.id)))
      LEFT JOIN basic_assortment assortment ON ((product.assortment_id = assortment.id)))
+     LEFT JOIN basic_size size ON ((size.id = product.size_id)))
   WHERE ((technology.additionalactions = false) AND ((parenttechnology.additionalactions = true) OR (ord.parent_id IS NULL)) AND ((product.id = ord.product_id) OR ((pt.technologyoperationcomponent_id IS NOT NULL) AND ((topoc.typeofmaterial)::text = '02intermediate'::text))))
-  GROUP BY ord.number, shift.name, (date_trunc('day'::text, pt.timerangefrom)), (date_trunc('day'::text, pt.timerangeto)), pl.number, c.number, assortment.name, product.number, product.name, product.unit, product.size, tcontext.number;
+  GROUP BY ord.number, shift.name, (date_trunc('day'::text, pt.timerangefrom)), (date_trunc('day'::text, pt.timerangeto)), pl.number, c.number, assortment.name, product.number, product.name, product.unit, size.number, tcontext.number;
 
 
 --
@@ -20541,7 +20690,7 @@ CREATE VIEW productioncounting_finalproductanalysisentry AS
     product.number AS productnumber,
     product.name AS productname,
     product.unit AS productunit,
-    product.size,
+    size.number AS sizenumber,
     sum(COALESCE(topoc.usedquantity, (0)::numeric)) AS quantity,
     sum(COALESCE(topoc.wastesquantity, (0)::numeric)) AS wastes,
     (sum(COALESCE(topoc.usedquantity, (0)::numeric)) + sum(COALESCE(topoc.wastesquantity, (0)::numeric))) AS donequantity,
@@ -20549,18 +20698,19 @@ CREATE VIEW productioncounting_finalproductanalysisentry AS
     date(date_trunc('day'::text, pt.timerangeto)) AS timerangeto,
     shift.name AS shiftname,
     tcontext.number AS technologygeneratornumber
-   FROM (((((((((productioncounting_trackingoperationproductoutcomponent topoc
+   FROM ((((((((((productioncounting_trackingoperationproductoutcomponent topoc
      JOIN productioncounting_productiontracking pt ON ((pt.id = topoc.productiontracking_id)))
      JOIN orders_order ord ON ((ord.id = pt.order_id)))
      JOIN basic_product product ON ((topoc.product_id = product.id)))
      JOIN technologies_technology technology ON ((technology.id = ord.technologyprototype_id)))
      LEFT JOIN basic_shift shift ON ((pt.shift_id = shift.id)))
      LEFT JOIN basic_assortment assortment ON ((product.assortment_id = assortment.id)))
+     LEFT JOIN basic_size size ON ((size.id = product.size_id)))
      LEFT JOIN productionlines_productionline pl ON ((ord.productionline_id = pl.id)))
      LEFT JOIN basic_company c ON ((c.id = ord.company_id)))
      LEFT JOIN technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technology.generatorcontext_id)))
   WHERE ((ord.parent_id IS NULL) AND ((product.id = ord.product_id) OR ((pt.technologyoperationcomponent_id IS NOT NULL) AND ((topoc.typeofmaterial)::text = '02intermediate'::text))))
-  GROUP BY ord.number, shift.name, (date_trunc('day'::text, pt.timerangefrom)), (date_trunc('day'::text, pt.timerangeto)), pl.number, c.number, assortment.name, product.number, product.name, product.unit, product.size, tcontext.number
+  GROUP BY ord.number, shift.name, (date_trunc('day'::text, pt.timerangefrom)), (date_trunc('day'::text, pt.timerangeto)), pl.number, c.number, assortment.name, product.number, product.name, product.unit, size.number, tcontext.number
 UNION ALL
  SELECT row_number() OVER () AS id,
     pl.number AS productionlinenumber,
@@ -20570,7 +20720,7 @@ UNION ALL
     product.number AS productnumber,
     product.name AS productname,
     product.unit AS productunit,
-    product.size,
+    size.number AS sizenumber,
     sum(COALESCE(topoc.usedquantity, (0)::numeric)) AS quantity,
     sum(COALESCE(topoc.wastesquantity, (0)::numeric)) AS wastes,
     (sum(COALESCE(topoc.usedquantity, (0)::numeric)) + sum(COALESCE(topoc.wastesquantity, (0)::numeric))) AS donequantity,
@@ -20578,18 +20728,19 @@ UNION ALL
     date(date_trunc('day'::text, pt.timerangeto)) AS timerangeto,
     shift.name AS shiftname,
     tcontext.number AS technologygeneratornumber
-   FROM (((((((((arch_productioncounting_trackingoperationproductoutcomponent topoc
+   FROM ((((((((((arch_productioncounting_trackingoperationproductoutcomponent topoc
      JOIN arch_productioncounting_productiontracking pt ON ((pt.id = topoc.productiontracking_id)))
      JOIN arch_orders_order ord ON ((ord.id = pt.order_id)))
      JOIN basic_product product ON ((topoc.product_id = product.id)))
      JOIN technologies_technology technology ON ((technology.id = ord.technologyprototype_id)))
      LEFT JOIN basic_shift shift ON ((pt.shift_id = shift.id)))
      LEFT JOIN basic_assortment assortment ON ((product.assortment_id = assortment.id)))
+     LEFT JOIN basic_size size ON ((size.id = product.size_id)))
      LEFT JOIN productionlines_productionline pl ON ((ord.productionline_id = pl.id)))
      LEFT JOIN basic_company c ON ((c.id = ord.company_id)))
      LEFT JOIN technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technology.generatorcontext_id)))
   WHERE ((ord.parent_id IS NULL) AND ((product.id = ord.product_id) OR ((pt.technologyoperationcomponent_id IS NOT NULL) AND ((topoc.typeofmaterial)::text = '02intermediate'::text))))
-  GROUP BY ord.number, shift.name, (date_trunc('day'::text, pt.timerangefrom)), (date_trunc('day'::text, pt.timerangeto)), pl.number, c.number, assortment.name, product.number, product.name, product.unit, product.size, tcontext.number;
+  GROUP BY ord.number, shift.name, (date_trunc('day'::text, pt.timerangefrom)), (date_trunc('day'::text, pt.timerangeto)), pl.number, c.number, assortment.name, product.number, product.name, product.unit, size.number, tcontext.number;
 
 
 --
@@ -20621,7 +20772,7 @@ CREATE VIEW productioncounting_performanceanalysisdetaildto AS
     product.number AS productnumber,
     product.name AS productname,
     product.unit AS productunit,
-    product.size,
+    size.number AS sizenumber,
     technology.standardperformancetechnology AS performancenorm,
     ((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric)))::numeric(14,5) AS donequantity,
     ((((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric)) * (60)::numeric) / technology.standardperformancetechnology))::integer AS timebasedonnorms,
@@ -20636,13 +20787,14 @@ CREATE VIEW productioncounting_performanceanalysisdetaildto AS
     COALESCE(productiontracking.shiftstartday, (productiontracking.timerangefrom)::date) AS timerangefromwithouttime,
     (productiontracking.timerangeto)::date AS timerangetowithouttime,
     date_part('epoch'::text, (productiontracking.timerangeto - productiontracking.timerangefrom)) AS labortimesum
-   FROM ((((((((((productioncounting_productiontracking productiontracking
+   FROM (((((((((((productioncounting_productiontracking productiontracking
      LEFT JOIN orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
      LEFT JOIN productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
      LEFT JOIN basic_staff staff ON ((staff.id = productiontracking.staff_id)))
      LEFT JOIN productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON ((trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id)))
      LEFT JOIN basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
      LEFT JOIN basic_assortment assortment ON ((assortment.id = product.assortment_id)))
+     LEFT JOIN basic_size size ON ((size.id = product.size_id)))
      LEFT JOIN technologies_technology technology ON ((technology.id = ordersorder.technology_id)))
      LEFT JOIN basic_shift shift ON ((shift.id = productiontracking.shift_id)))
      LEFT JOIN technologies_technology technologyprototype ON ((ordersorder.technologyprototype_id = technologyprototype.id)))
@@ -20661,7 +20813,7 @@ UNION ALL
     product.number AS productnumber,
     product.name AS productname,
     product.unit AS productunit,
-    product.size,
+    size.number AS sizenumber,
     technology.standardperformancetechnology AS performancenorm,
     ((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric)))::numeric(14,5) AS donequantity,
     ((((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric)) * (60)::numeric) / technology.standardperformancetechnology))::integer AS timebasedonnorms,
@@ -20676,13 +20828,14 @@ UNION ALL
     COALESCE(productiontracking.shiftstartday, (productiontracking.timerangefrom)::date) AS timerangefromwithouttime,
     (productiontracking.timerangeto)::date AS timerangetowithouttime,
     date_part('epoch'::text, (productiontracking.timerangeto - productiontracking.timerangefrom)) AS labortimesum
-   FROM ((((((((((arch_productioncounting_productiontracking productiontracking
+   FROM (((((((((((arch_productioncounting_productiontracking productiontracking
      LEFT JOIN arch_orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
      LEFT JOIN productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
      LEFT JOIN basic_staff staff ON ((staff.id = productiontracking.staff_id)))
      LEFT JOIN arch_productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON ((trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id)))
      LEFT JOIN basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
      LEFT JOIN basic_assortment assortment ON ((assortment.id = product.assortment_id)))
+     LEFT JOIN basic_size size ON ((size.id = product.size_id)))
      LEFT JOIN technologies_technology technology ON ((technology.id = ordersorder.technology_id)))
      LEFT JOIN basic_shift shift ON ((shift.id = productiontracking.shift_id)))
      LEFT JOIN technologies_technology technologyprototype ON ((ordersorder.technologyprototype_id = technologyprototype.id)))
@@ -20840,7 +20993,7 @@ CREATE TABLE productioncounting_productionanalysisdto (
     productnumber character varying(255),
     productname character varying(1024),
     productunit character varying(255),
-    size character varying(255),
+    sizenumber character varying(255),
     usedquantity numeric,
     wastesquantity numeric,
     donequantity numeric,
@@ -26711,6 +26864,20 @@ ALTER TABLE ONLY basic_shifttimetableexception ALTER COLUMN id SET DEFAULT nextv
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY basic_size ALTER COLUMN id SET DEFAULT nextval('basic_size_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_sizegroup ALTER COLUMN id SET DEFAULT nextval('basic_sizegroup_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY basic_staff ALTER COLUMN id SET DEFAULT nextval('basic_staff_id_seq'::regclass);
 
 
@@ -27145,14 +27312,21 @@ ALTER TABLE ONLY esilco_printdocuments ALTER COLUMN id SET DEFAULT nextval('esil
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY esilco_wmsdeletedposition ALTER COLUMN id SET DEFAULT nextval('esilco_wmsdeletedposition_id_seq'::regclass);
+ALTER TABLE ONLY esilco_wmsdocumentpart ALTER COLUMN id SET DEFAULT nextval('esilco_wmsdocumentpart_id_seq'::regclass);
 
 
 --
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY esilco_wmsdocumentpart ALTER COLUMN id SET DEFAULT nextval('esilco_wmsdocumentpart_id_seq'::regclass);
+ALTER TABLE ONLY esilco_wmsdocumenttype ALTER COLUMN id SET DEFAULT nextval('esilco_wmsdocumenttype_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY esilco_wmslocation ALTER COLUMN id SET DEFAULT nextval('esilco_wmslocation_id_seq'::regclass);
 
 
 --
@@ -31552,7 +31726,7 @@ SELECT pg_catalog.setval('basic_parameter_id_seq', 2, false);
 -- Data for Name: basic_product; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_product (id, number, name, globaltypeofmaterial, ean, category, unit, externalnumber, description, parent_id, nodenumber, entitytype, durabilityinmonths, averageoffercost, costfornumber, lastpurchasecost, lastoffercost, isglutenproduct, symbol, averagecost, goodsgroup, nominalcost, bio, isdoublepallet, technologygroup_id, active, createdate, updatedate, createuser, updateuser, quantityofextrusioningredient, norm, actualversion, hasnutritionelements, quantityfornutritions, quantityfornutritionsunit, showinproductdata, doublequantityfordoublepallet, size, usedquantitycontrol, automaticusedquantity, nominalweight, countusedquantityforfullpallets, quantityinpackage, synchronize, capacitynormfortwodimensionalmachines, downform_id, upform_id, downshelve_id, upshelve_id, costnormsgenerator_id, producer_id, machinepart, drawingnumber, catalognumber, isproductiondate, entityversion, ispallet, additionalunit, fromgenerator, generatorcontext_id, dateformatinqcp5code, assortment_id, isoil, isaroma, capacitynormforthreedimensionalmachines, recommendednumofheadsfortwodimensionalmachines, recommendednumofheadsforthreedimensionalmachines, iscartonlabel, isactivecartonlabelquantity, batchevidence, expirydatevalidity, productform_id) FROM stdin;
+COPY basic_product (id, number, name, globaltypeofmaterial, ean, category, unit, externalnumber, description, parent_id, nodenumber, entitytype, durabilityinmonths, averageoffercost, costfornumber, lastpurchasecost, lastoffercost, isglutenproduct, symbol, averagecost, goodsgroup, nominalcost, bio, isdoublepallet, technologygroup_id, active, createdate, updatedate, createuser, updateuser, quantityofextrusioningredient, norm, actualversion, hasnutritionelements, quantityfornutritions, quantityfornutritionsunit, showinproductdata, doublequantityfordoublepallet, usedquantitycontrol, automaticusedquantity, nominalweight, countusedquantityforfullpallets, quantityinpackage, synchronize, capacitynormfortwodimensionalmachines, downform_id, upform_id, downshelve_id, upshelve_id, costnormsgenerator_id, producer_id, machinepart, drawingnumber, catalognumber, isproductiondate, entityversion, ispallet, additionalunit, fromgenerator, generatorcontext_id, dateformatinqcp5code, assortment_id, isoil, isaroma, capacitynormforthreedimensionalmachines, recommendednumofheadsfortwodimensionalmachines, recommendednumofheadsforthreedimensionalmachines, iscartonlabel, isactivecartonlabelquantity, batchevidence, expirydatevalidity, productform_id, size_id) FROM stdin;
 \.
 
 
@@ -31652,6 +31826,36 @@ COPY basic_shifttimetableexception (id, name, fromdate, todate, type, relatestop
 --
 
 SELECT pg_catalog.setval('basic_shifttimetableexception_id_seq', 1, false);
+
+
+--
+-- Data for Name: basic_size; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY basic_size (id, number, succession, createdate, updatedate, createuser, updateuser, active) FROM stdin;
+\.
+
+
+--
+-- Name: basic_size_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('basic_size_id_seq', 1, false);
+
+
+--
+-- Data for Name: basic_sizegroup; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY basic_sizegroup (id, number, createdate, updatedate, createuser, updateuser, active) FROM stdin;
+\.
+
+
+--
+-- Name: basic_sizegroup_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('basic_sizegroup_id_seq', 1, false);
 
 
 --
@@ -32759,21 +32963,6 @@ SELECT pg_catalog.setval('esilco_printdocuments_id_seq', 1, false);
 
 
 --
--- Data for Name: esilco_wmsdeletedposition; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY esilco_wmsdeletedposition (id, product_id, storagelocation_id, additionalcode_id, batch_id, wmsposition_id, quantity, givenquantity, conversion, givenunit) FROM stdin;
-\.
-
-
---
--- Name: esilco_wmsdeletedposition_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('esilco_wmsdeletedposition_id_seq', 1, false);
-
-
---
 -- Data for Name: esilco_wmsdocumentpart; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -32786,6 +32975,36 @@ COPY esilco_wmsdocumentpart (id, number, additionalinfo, part, company, stateinw
 --
 
 SELECT pg_catalog.setval('esilco_wmsdocumentpart_id_seq', 1, false);
+
+
+--
+-- Data for Name: esilco_wmsdocumenttype; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY esilco_wmsdocumenttype (id, type, parameter_id) FROM stdin;
+\.
+
+
+--
+-- Name: esilco_wmsdocumenttype_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('esilco_wmsdocumenttype_id_seq', 1, false);
+
+
+--
+-- Data for Name: esilco_wmslocation; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY esilco_wmslocation (id, location_id, parameter_id) FROM stdin;
+\.
+
+
+--
+-- Name: esilco_wmslocation_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('esilco_wmslocation_id_seq', 1, false);
 
 
 --
@@ -34210,6 +34429,14 @@ COPY jointable_shift_shifttimetableexception (shift_id, shifttimetableexception_
 
 
 --
+-- Data for Name: jointable_size_sizegroup; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY jointable_size_sizegroup (size_id, sizegroup_id) FROM stdin;
+\.
+
+
+--
 -- Data for Name: jointable_staff_timeusagereportfilter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -34437,7 +34664,7 @@ SELECT pg_catalog.setval('materialflowresources_costnormslocation_id_seq', 1, fa
 -- Data for Name: materialflowresources_document; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, inbuffer, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, dateshipmenttocustomer, additionalinfo, stateinwms, pickingworker, dateconfirmationofcompletion, locationchanged) FROM stdin;
+COPY materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, inbuffer, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, dateshipmenttocustomer, additionalinfo, stateinwms, pickingworker, dateconfirmationofcompletion, locationchanged, editinwms) FROM stdin;
 \.
 
 
@@ -34532,9 +34759,9 @@ COPY materialflowresources_documentpositionparametersitem (id, checked, editable
 22	f	t	1	sellingPrice	22	f	\N
 5	f	t	1	additionalCode	5	f	\N
 19	f	t	1	waste	19	f	\N
-20	f	t	1	lastResource	22	\N	\N
 23	f	t	1	pickingDate	23	f	\N
 24	f	t	1	pickingWorker	24	f	\N
+20	f	t	1	lastResource	22	f	\N
 \.
 
 
@@ -34608,7 +34835,7 @@ SELECT pg_catalog.setval('materialflowresources_palletstoragestatedto_id_seq', 1
 -- Data for Name: materialflowresources_position; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY materialflowresources_position (id, document_id, product_id, quantity, price, productiondate, expirationdate, number, resource_id, givenunit, givenquantity, entityversion, storagelocation_id, additionalcode_id, conversion, palletnumber_id, typeofpallet, waste, resourcereceiptdocument, lastresource, resourcenumber, externaldocumentnumber, orderid, sellingprice, batch_id, qualityrating, pickingdate, pickingworker_id, wmsposition_id, wmsadded, wmsmodified) FROM stdin;
+COPY materialflowresources_position (id, document_id, product_id, quantity, price, productiondate, expirationdate, number, resource_id, givenunit, givenquantity, entityversion, storagelocation_id, additionalcode_id, conversion, palletnumber_id, typeofpallet, waste, resourcereceiptdocument, lastresource, resourcenumber, externaldocumentnumber, orderid, sellingprice, batch_id, qualityrating, pickingdate, pickingworker_id, wmsposition_id) FROM stdin;
 \.
 
 
@@ -35954,6 +36181,13 @@ SELECT pg_catalog.setval('productflowthrudivision_warehouseissue_id_seq', 1, fal
 
 
 --
+-- Name: productflowthrudivision_warehouseissue_number_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('productflowthrudivision_warehouseissue_number_seq', 1, false);
+
+
+--
 -- Data for Name: productflowthrudivision_warehouseissuestatechange; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -37177,6 +37411,8 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 173	productionCounting	productionAnalysisParameters	t	21	172	\N	ROLE_PARAMETERS	0
 174	esilco	picksReportsList	t	22	173	\N	ROLE_REQUIREMENTS	0
 175	esilco	workerStatsReportsList	t	22	174	\N	ROLE_REQUIREMENTS	0
+176	basic	sizesList	t	19	175	26	ROLE_PRODUCTS	0
+177	basic	sizeGroupsList	t	19	176	27	ROLE_PRODUCTS	0
 \.
 
 
@@ -37184,7 +37420,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 175, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 177, true);
 
 
 --
@@ -37353,6 +37589,8 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 172	productionCounting	productionAnalysisParameters	\N	/productionAnalysisParameters.html	0
 173	esilco	picksReportsList	picksReportsList	\N	0
 174	esilco	workerStatsReportsList	workerStatsReportsList	\N	0
+175	basic	sizesList	sizesList	\N	0
+176	basic	sizeGroupsList	sizeGroupsList	\N	0
 \.
 
 
@@ -37360,7 +37598,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 174, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 176, true);
 
 
 --
@@ -40049,6 +40287,22 @@ ALTER TABLE ONLY basic_shifttimetableexception
 
 
 --
+-- Name: basic_size_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_size
+    ADD CONSTRAINT basic_size_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: basic_sizegroup_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_sizegroup
+    ADD CONSTRAINT basic_sizegroup_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: basic_skill_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -40601,19 +40855,27 @@ ALTER TABLE ONLY esilco_printdocuments
 
 
 --
--- Name: esilco_wmsdeletedposition_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY esilco_wmsdeletedposition
-    ADD CONSTRAINT esilco_wmsdeletedposition_pkey PRIMARY KEY (id);
-
-
---
 -- Name: esilco_wmsdocumentpart_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY esilco_wmsdocumentpart
     ADD CONSTRAINT esilco_wmsdocumentpart_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: esilco_wmsdocumenttype_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY esilco_wmsdocumenttype
+    ADD CONSTRAINT esilco_wmsdocumenttype_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: esilco_wmslocation_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY esilco_wmslocation
+    ADD CONSTRAINT esilco_wmslocation_pkey PRIMARY KEY (id);
 
 
 --
@@ -41286,6 +41548,14 @@ ALTER TABLE ONLY jointable_productionline_technologygroup
 
 ALTER TABLE ONLY jointable_shift_shifttimetableexception
     ADD CONSTRAINT jointable_shift_shifttimetableexception_pkey PRIMARY KEY (shifttimetableexception_id, shift_id);
+
+
+--
+-- Name: jointable_size_sizegroup_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_size_sizegroup
+    ADD CONSTRAINT jointable_size_sizegroup_pkey PRIMARY KEY (size_id, sizegroup_id);
 
 
 --
@@ -44810,35 +45080,6 @@ CREATE RULE "_RETURN" AS
 --
 
 CREATE RULE "_RETURN" AS
-    ON SELECT TO basic_productdto DO INSTEAD  SELECT product.id,
-    product.number,
-    product.name,
-    product.globaltypeofmaterial,
-    product.category,
-    parent.name AS parentname,
-    product.ean,
-    product.externalnumber,
-    assortment.name AS assortmentname,
-    product.norm,
-    product.size,
-    (count(attachment.id) <> 0) AS hasattachments,
-    string_agg((code.code)::text, ', '::text) AS additionalcodes,
-    product.active,
-    product.unit,
-    product.additionalunit
-   FROM ((((basic_product product
-     LEFT JOIN basic_product parent ON ((product.parent_id = parent.id)))
-     LEFT JOIN basic_assortment assortment ON ((product.assortment_id = assortment.id)))
-     LEFT JOIN basic_productattachment attachment ON ((attachment.product_id = product.id)))
-     LEFT JOIN basic_additionalcode code ON ((code.product_id = product.id)))
-  GROUP BY product.id, parent.name, assortment.name;
-
-
---
--- Name: _RETURN; Type: RULE; Schema: public; Owner: -
---
-
-CREATE RULE "_RETURN" AS
     ON SELECT TO goodfood_extrusionbatchingredientdto DO INSTEAD  WITH ingredients AS (
          SELECT e.extrusionprotocol_id,
             i_1.product_id,
@@ -45088,6 +45329,36 @@ CREATE RULE "_RETURN" AS
 --
 
 CREATE RULE "_RETURN" AS
+    ON SELECT TO basic_productdto DO INSTEAD  SELECT product.id,
+    product.number,
+    product.name,
+    product.globaltypeofmaterial,
+    product.category,
+    parent.name AS parentname,
+    product.ean,
+    product.externalnumber,
+    assortment.name AS assortmentname,
+    product.norm,
+    size.number AS sizenumber,
+    (count(attachment.id) <> 0) AS hasattachments,
+    string_agg((code.code)::text, ', '::text) AS additionalcodes,
+    product.active,
+    product.unit,
+    product.additionalunit
+   FROM (((((basic_product product
+     LEFT JOIN basic_product parent ON ((product.parent_id = parent.id)))
+     LEFT JOIN basic_assortment assortment ON ((product.assortment_id = assortment.id)))
+     LEFT JOIN basic_productattachment attachment ON ((attachment.product_id = product.id)))
+     LEFT JOIN basic_additionalcode code ON ((code.product_id = product.id)))
+     LEFT JOIN basic_size size ON ((size.id = product.size_id)))
+  GROUP BY product.id, parent.name, assortment.name, size.number;
+
+
+--
+-- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE RULE "_RETURN" AS
     ON SELECT TO productioncounting_productionanalysisdto DO INSTEAD  SELECT row_number() OVER () AS id,
     bool_or(productiontracking.active) AS active,
     (productionline.id)::integer AS productionline_id,
@@ -45102,7 +45373,7 @@ CREATE RULE "_RETURN" AS
     product.number AS productnumber,
     product.name AS productname,
     product.unit AS productunit,
-    product.size,
+    size.number AS sizenumber,
     sum((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric))::numeric(14,5)) AS usedquantity,
     sum((COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric))::numeric(14,5)) AS wastesquantity,
     sum(((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric)))::numeric(14,5)) AS donequantity,
@@ -45117,7 +45388,7 @@ CREATE RULE "_RETURN" AS
     ordersorder.number AS ordernumber,
     COALESCE(masterorder.number, groupmasterorder.number) AS obtainedmasterordernumber,
     technologygroup.number AS technologygroupnumber
-   FROM ((((((((((((((productioncounting_productiontracking productiontracking
+   FROM (((((((((((((((productioncounting_productiontracking productiontracking
      LEFT JOIN orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
      LEFT JOIN basic_company basiccompany ON ((basiccompany.id = ordersorder.company_id)))
      LEFT JOIN productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
@@ -45125,6 +45396,7 @@ CREATE RULE "_RETURN" AS
      LEFT JOIN productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON ((trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id)))
      LEFT JOIN basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
      LEFT JOIN basic_assortment assortment ON ((assortment.id = product.assortment_id)))
+     LEFT JOIN basic_size size ON ((size.id = product.size_id)))
      LEFT JOIN basic_shift shift ON ((shift.id = productiontracking.shift_id)))
      LEFT JOIN technologies_technology technologyprototype ON ((ordersorder.technologyprototype_id = technologyprototype.id)))
      LEFT JOIN technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
@@ -45133,7 +45405,7 @@ CREATE RULE "_RETURN" AS
      LEFT JOIN masterorders_masterorder groupmasterorder ON ((groupmasterorder.id = ordersgroup.masterorder_id)))
      LEFT JOIN technologies_technologygroup technologygroup ON ((technologyprototype.technologygroup_id = technologygroup.id)))
   WHERE ((productiontracking.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02accepted'::character varying)::text]))
-  GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, product.id, shift.id, trackingoperationproductoutcomponent.causeofwastes, ((productiontracking.timerangefrom)::date), ((productiontracking.timerangeto)::date), ordersorder.id, tcontext.id, masterorder.id, groupmasterorder.id, technologygroup.number
+  GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, size.number, product.id, shift.id, trackingoperationproductoutcomponent.causeofwastes, ((productiontracking.timerangefrom)::date), ((productiontracking.timerangeto)::date), ordersorder.id, tcontext.id, masterorder.id, groupmasterorder.id, technologygroup.number
 UNION ALL
  SELECT row_number() OVER () AS id,
     bool_or(productiontracking.active) AS active,
@@ -45149,7 +45421,7 @@ UNION ALL
     product.number AS productnumber,
     product.name AS productname,
     product.unit AS productunit,
-    product.size,
+    size.number AS sizenumber,
     sum((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric))::numeric(14,5)) AS usedquantity,
     sum((COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric))::numeric(14,5)) AS wastesquantity,
     sum(((COALESCE(trackingoperationproductoutcomponent.usedquantity, (0)::numeric) + COALESCE(trackingoperationproductoutcomponent.wastesquantity, (0)::numeric)))::numeric(14,5)) AS donequantity,
@@ -45164,7 +45436,7 @@ UNION ALL
     ordersorder.number AS ordernumber,
     COALESCE(masterorder.number, groupmasterorder.number) AS obtainedmasterordernumber,
     technologygroup.number AS technologygroupnumber
-   FROM ((((((((((((((arch_productioncounting_productiontracking productiontracking
+   FROM (((((((((((((((arch_productioncounting_productiontracking productiontracking
      LEFT JOIN arch_orders_order ordersorder ON ((ordersorder.id = productiontracking.order_id)))
      LEFT JOIN basic_company basiccompany ON ((basiccompany.id = ordersorder.company_id)))
      LEFT JOIN productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
@@ -45172,6 +45444,7 @@ UNION ALL
      LEFT JOIN arch_productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent ON ((trackingoperationproductoutcomponent.productiontracking_id = productiontracking.id)))
      LEFT JOIN basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
      LEFT JOIN basic_assortment assortment ON ((assortment.id = product.assortment_id)))
+     LEFT JOIN basic_size size ON ((size.id = product.size_id)))
      LEFT JOIN basic_shift shift ON ((shift.id = productiontracking.shift_id)))
      LEFT JOIN technologies_technology technologyprototype ON ((ordersorder.technologyprototype_id = technologyprototype.id)))
      LEFT JOIN technologiesgenerator_generatorcontext tcontext ON ((tcontext.id = technologyprototype.generatorcontext_id)))
@@ -45180,7 +45453,7 @@ UNION ALL
      LEFT JOIN arch_masterorders_masterorder groupmasterorder ON ((groupmasterorder.id = ordersgroup.masterorder_id)))
      LEFT JOIN technologies_technologygroup technologygroup ON ((technologyprototype.technologygroup_id = technologygroup.id)))
   WHERE ((productiontracking.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02accepted'::character varying)::text]))
-  GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, product.id, shift.id, trackingoperationproductoutcomponent.causeofwastes, ((productiontracking.timerangefrom)::date), ((productiontracking.timerangeto)::date), ordersorder.id, tcontext.id, masterorder.id, groupmasterorder.id, technologygroup.number;
+  GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, size.number, product.id, shift.id, trackingoperationproductoutcomponent.causeofwastes, ((productiontracking.timerangefrom)::date), ((productiontracking.timerangeto)::date), ordersorder.id, tcontext.id, masterorder.id, groupmasterorder.id, technologygroup.number;
 
 
 --
@@ -51665,6 +51938,14 @@ ALTER TABLE ONLY jointable_product_scale
 
 
 --
+-- Name: product_size_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_product
+    ADD CONSTRAINT product_size_fkey FOREIGN KEY (size_id) REFERENCES basic_size(id) DEFERRABLE;
+
+
+--
 -- Name: productandquantityhelper_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -54025,6 +54306,22 @@ ALTER TABLE ONLY arch_productflowthrudivision_warehouseissuestatechange
 
 
 --
+-- Name: size_sizegroup_size_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_size_sizegroup
+    ADD CONSTRAINT size_sizegroup_size_fkey FOREIGN KEY (size_id) REFERENCES basic_size(id) DEFERRABLE;
+
+
+--
+-- Name: size_sizegroup_sizegroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_size_sizegroup
+    ADD CONSTRAINT size_sizegroup_sizegroup_fkey FOREIGN KEY (sizegroup_id) REFERENCES basic_sizegroup(id) DEFERRABLE;
+
+
+--
 -- Name: sourcecost_factory_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -55297,51 +55594,35 @@ ALTER TABLE ONLY materialflowresources_warehousestockreport
 
 
 --
--- Name: wmsdeletedposition_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY esilco_wmsdeletedposition
-    ADD CONSTRAINT wmsdeletedposition_additionalcode_fkey FOREIGN KEY (additionalcode_id) REFERENCES basic_additionalcode(id) DEFERRABLE;
-
-
---
--- Name: wmsdeletedposition_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY esilco_wmsdeletedposition
-    ADD CONSTRAINT wmsdeletedposition_batch_fkey FOREIGN KEY (batch_id) REFERENCES advancedgenealogy_batch(id) DEFERRABLE;
-
-
---
--- Name: wmsdeletedposition_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY esilco_wmsdeletedposition
-    ADD CONSTRAINT wmsdeletedposition_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
--- Name: wmsdeletedposition_storagelocation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY esilco_wmsdeletedposition
-    ADD CONSTRAINT wmsdeletedposition_storagelocation_fkey FOREIGN KEY (storagelocation_id) REFERENCES materialflowresources_storagelocation(id) DEFERRABLE;
-
-
---
--- Name: wmsdeletedposition_wmsposition_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY esilco_wmsdeletedposition
-    ADD CONSTRAINT wmsdeletedposition_wmsposition_fkey FOREIGN KEY (wmsposition_id) REFERENCES esilco_wmsposition(id) DEFERRABLE;
-
-
---
 -- Name: wmsdocumentpart_document_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY esilco_wmsdocumentpart
     ADD CONSTRAINT wmsdocumentpart_document_fkey FOREIGN KEY (document_id) REFERENCES materialflowresources_document(id) DEFERRABLE;
+
+
+--
+-- Name: wmsdocumenttype_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY esilco_wmsdocumenttype
+    ADD CONSTRAINT wmsdocumenttype_parameter_fkey FOREIGN KEY (parameter_id) REFERENCES basic_parameter(id) DEFERRABLE;
+
+
+--
+-- Name: wmslocation_location_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY esilco_wmslocation
+    ADD CONSTRAINT wmslocation_location_fkey FOREIGN KEY (location_id) REFERENCES materialflow_location(id) DEFERRABLE;
+
+
+--
+-- Name: wmslocation_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY esilco_wmslocation
+    ADD CONSTRAINT wmslocation_parameter_fkey FOREIGN KEY (parameter_id) REFERENCES basic_parameter(id) DEFERRABLE;
 
 
 --

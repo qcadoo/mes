@@ -100,6 +100,10 @@ public final class BasicConstants {
 
     public static final String MODEL_DASHBOARD_BUTTON = "dashboardButton";
 
+    public static final String MODEL_SIZE = "size";
+
+    public static final String MODEL_SIZE_GROUP = "sizeGroup";
+
     // VIEW
 
     public static final String VIEW_GENERAL_PARAMETERS = "generalParameters";

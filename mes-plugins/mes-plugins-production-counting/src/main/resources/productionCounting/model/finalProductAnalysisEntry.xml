@@ -39,7 +39,7 @@
         <string name="productNumber"/>
         <string name="productName"/>
         <string name="productUnit"/>
-        <string name="size"/>
+        <string name="sizeNumber"/>
 
         <decimal name="quantity">
             <validatesUnscaledValue max="9"/>

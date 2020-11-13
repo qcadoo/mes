@@ -71,7 +71,6 @@
 
         <boolean name="waste" default="false"/>
         <dictionary name="qualityRating" dictionary="qualityRating"/>
-
     </fields>
     <hooks>
         <onCreate class="com.qcadoo.mes.materialFlowResources.hooks.PositionModelHooks" method="onCreate"/>

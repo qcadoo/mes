@@ -27,9 +27,9 @@
 <model name="warehouseIssue" auditable="true"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-    <fields>
 
-        <string name="number" required="true" unique="true">
+    <fields>
+        <string name="number" unique="true">
             <validatesLength max="255"/>
         </string>
 
@@ -76,6 +76,7 @@
 
         <hasMany name="corrections" model="productToIssueCorrection" joinField="warehouseIssue" cascade="delete"/>
     </fields>
+
     <hooks>
         <validatesWith class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.validators.WarehouseIssueValidators"
                        method="checkRequiredFields"/>
@@ -84,10 +85,8 @@
                 method="onCreate"/>
         <onSave class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks.WarehouseIssueHooks"
                 method="onSave"/>
-
         <onCopy class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks.WarehouseIssueHooks"
                 method="onCopy"/>
-
     </hooks>
 
 </model>

@@ -1,5 +1,19 @@
 package com.qcadoo.mes.materialFlowResources;
 
+import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.ESILCO;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
+
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -10,22 +24,12 @@ import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.dto.ColumnProperties;
 import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
 import com.qcadoo.plugin.api.PluginManager;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
-
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Repository
 public class DocumentPositionService {
@@ -34,17 +38,7 @@ public class DocumentPositionService {
 
     public static final String DOCUMENT_ID = "documentId";
 
-    public static final String REALIZED = "05realized";
-
-    public static final String STATE_IN_WMS = "stateinwms";
-
-    public static final String ESILCO = "esilco";
-
     public static final String ID = "id";
-
-    public static final String WMS = "wms";
-
-    public static final String WMS_ADDED = "wmsadded";
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -194,59 +188,8 @@ public class DocumentPositionService {
 
         params.putAll(result);
 
-        createWMSDeletedPosition(id);
         reservationsService.deleteReservationFromDocumentPosition(params);
         jdbcTemplate.update("DELETE FROM materialflowresources_position WHERE id = :id ", params);
-    }
-
-    private void createWMSDeletedPosition(Long id) {
-        if (pluginManager.isPluginEnabled(ESILCO)) {
-            String queryForPosition = "SELECT document_id, product_id, storagelocation_id, quantity, additionalcode_id, "
-                    + "batch_id, wmsposition_id, givenquantity, conversion, givenunit, wmsadded FROM materialflowresources_position WHERE id = :id";
-            Map<String, Object> params = Maps.newHashMap();
-            params.put(ID, id);
-            Map<String, Object> positionResult = jdbcTemplate.queryForMap(queryForPosition, params);
-            String queryForDocument = "SELECT wms, stateinwms FROM materialflowresources_document WHERE id = :document_id";
-            Map<String, Object> documentResult = jdbcTemplate.queryForMap(queryForDocument, positionResult);
-            if (documentResult.get(WMS) != null && (boolean) documentResult.get(WMS) && !(boolean) positionResult.get(WMS_ADDED)
-                    && !REALIZED.equals(documentResult.get(STATE_IN_WMS))) {
-                String query = "INSERT INTO esilco_wmsdeletedposition (product_id, storagelocation_id, additionalcode_id, "
-                        + "batch_id, wmsposition_id, quantity, givenquantity, conversion, givenunit) VALUES "
-                        + "(:product_id, :storagelocation_id, :additionalcode_id, :batch_id, :wmsposition_id, :quantity, "
-                        + ":givenquantity, :conversion, :givenunit) RETURNING id";
-                jdbcTemplate.queryForObject(query, positionResult, Long.class);
-            }
-        }
-    }
-
-    private void markWMSAdded(Long documentId, Long positionId) {
-        if (pluginManager.isPluginEnabled(ESILCO)) {
-            String queryForDocument = "SELECT wms, stateinwms FROM materialflowresources_document WHERE id = :documentId";
-            Map<String, Object> params = Maps.newHashMap();
-            params.put(DOCUMENT_ID, documentId);
-            params.put(POSITION_ID, positionId);
-            Map<String, Object> result = jdbcTemplate.queryForMap(queryForDocument, params);
-            if (result.get(WMS) != null && (boolean) result.get(WMS) && !REALIZED.equals(result.get(STATE_IN_WMS))) {
-                jdbcTemplate.update("UPDATE materialflowresources_position SET wmsadded = true WHERE id = :positionId ", params);
-            }
-        }
-    }
-
-    private void markWMSModified(Long documentId, Long positionId) {
-        if (pluginManager.isPluginEnabled(ESILCO)) {
-            String queryForPosition = "SELECT wmsadded FROM materialflowresources_position WHERE id = :positionId";
-            Map<String, Object> params = Maps.newHashMap();
-            params.put(DOCUMENT_ID, documentId);
-            params.put(POSITION_ID, positionId);
-            Map<String, Object> positionResult = jdbcTemplate.queryForMap(queryForPosition, params);
-            String queryForDocument = "SELECT wms, stateinwms FROM materialflowresources_document WHERE id = :documentId";
-            Map<String, Object> documentResult = jdbcTemplate.queryForMap(queryForDocument, params);
-            if (documentResult.get(WMS) != null && (boolean) documentResult.get(WMS) && !(boolean) positionResult.get(WMS_ADDED)
-                    && !REALIZED.equals(documentResult.get(STATE_IN_WMS))) {
-                jdbcTemplate.update("UPDATE materialflowresources_position SET wmsmodified = true WHERE id = :positionId ",
-                        params);
-            }
-        }
     }
 
     public void create(final DocumentPositionDTO documentPositionVO) {
@@ -273,7 +216,6 @@ public class DocumentPositionService {
             params.put(ID, positionId);
 
             reservationsService.createReservationFromDocumentPosition(params);
-            markWMSAdded(documentPositionVO.getDocument(), positionId);
         }
         attributePositionService.createOrUpdateAttributePositionValues(true, positionId, documentPositionVO.getAttrs());
         updateDocumentPositionsNumbers(documentPositionVO.getDocument());
@@ -293,7 +235,6 @@ public class DocumentPositionService {
 
         reservationsService.updateReservationFromDocumentPosition(params);
         jdbcTemplate.update(query, params);
-        markWMSModified(documentPositionVO.getDocument(), documentPositionVO.getId());
         attributePositionService.createOrUpdateAttributePositionValues(false, documentPositionVO.getId(),
                 documentPositionVO.getAttrs());
         updateDocumentPositionsNumbers(documentPositionVO.getDocument());
@@ -360,7 +301,7 @@ public class DocumentPositionService {
                     + "FROM materialflowresources_documentpositionparametersitem documentpositionparametersitem "
                     + "LEFT JOIN basic_attribute attr ON attr.id = documentpositionparametersitem.attribute_id  "
                     + "WHERE attr IS NULL OR attr.active = TRUE  ORDER BY documentpositionparametersitem.ordering";
-            List<ColumnProperties> columns = jdbcTemplate.query(query, Collections.EMPTY_MAP,
+            List<ColumnProperties> columns = jdbcTemplate.query(query, Collections.emptyMap(),
                     new BeanPropertyRowMapper(ColumnProperties.class));
 
             Map<String, Object> config = Maps.newHashMap();
@@ -373,7 +314,7 @@ public class DocumentPositionService {
 
             return config;
         } catch (EmptyResultDataAccessException e) {
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
     }
 
@@ -387,7 +328,7 @@ public class DocumentPositionService {
 
             return units;
         } catch (EmptyResultDataAccessException e) {
-            return Collections.EMPTY_MAP;
+            return Collections.emptyMap();
         }
     }
 
@@ -509,14 +450,21 @@ public class DocumentPositionService {
     private boolean isGridReadOnly(final Long documentId) {
         String query = "SELECT state FROM materialflowresources_document WHERE id = :id";
         String stateString = jdbcTemplate.queryForObject(query, Collections.singletonMap(ID, documentId), String.class);
-
-        return DocumentState.parseString(stateString) == DocumentState.ACCEPTED;
+        boolean readOnly = DocumentState.parseString(stateString) == DocumentState.ACCEPTED;
+        if (pluginManager.isPluginEnabled(ESILCO)) {
+            query = "SELECT wms, editinwms FROM materialflowresources_document WHERE id = :id";
+            Map<String, Object> documentResult = jdbcTemplate.queryForMap(query, Collections.singletonMap(ID, documentId));
+            readOnly = readOnly || documentResult.get(DocumentFields.WMS) != null
+                    && (boolean) documentResult.get(DocumentFields.WMS) && documentResult.get(DocumentFields.EDIT_IN_WMS) != null
+                    && !(boolean) documentResult.get(DocumentFields.EDIT_IN_WMS);
+        }
+        return readOnly;
     }
 
     private boolean shouldSuggestResource() {
         String query = "SELECT suggestResource FROM materialflowresources_documentpositionparameters LIMIT 1";
 
-        return jdbcTemplate.queryForObject(query, Collections.EMPTY_MAP, Boolean.class);
+        return jdbcTemplate.queryForObject(query, Collections.emptyMap(), Boolean.class);
     }
 
     private Object isOutDocument(final Long documentId) {

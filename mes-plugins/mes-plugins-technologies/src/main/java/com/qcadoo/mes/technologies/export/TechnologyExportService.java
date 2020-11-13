@@ -147,9 +147,7 @@ public class TechnologyExportService {
         LOG.info("Start export file: " + file.getName());
         BufferedWriter bufferedWriter = null;
 
-        try {
-            FileOutputStream fileOutputStream = new FileOutputStream(file);
-
+        try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
             fileOutputStream.write(239);
             fileOutputStream.write(187);
             fileOutputStream.write(191);

@@ -98,7 +98,7 @@
                                 width="70"/>
                         <option type="column" name="productName" fields="productName"
                                 width="80"/>
-                        <option type="column" name="size" fields="size"
+                        <option type="column" name="sizeNumber" fields="sizeNumber"
                                 width="40"/>
                         <option type="column" name="quantity" fields="quantity"
                                 width="40"/>
@@ -122,11 +122,11 @@
                         <option type="order" column="productionLineNumber" direction="asc"/>
 
                         <option type="searchable"
-                                value="productionLineNumber,companyNumber,assortmentName,productNumber,productName,size,quantity,wastes,doneQuantity,productUnit,,shiftName,timeRangeFrom,timeRangeTo,technologyGeneratorNumber,orderNumber"/>
+                                value="productionLineNumber,companyNumber,assortmentName,productNumber,productName,sizeNumber,quantity,wastes,doneQuantity,productUnit,,shiftName,timeRangeFrom,timeRangeTo,technologyGeneratorNumber,orderNumber"/>
                         <option type="multiSearch"
-                                value="productionLineNumber,companyNumber,assortmentName,productNumber,productName,size,quantity,wastes,doneQuantity,productUnit,,shiftName,timeRangeFrom,timeRangeTo,technologyGeneratorNumber,orderNumber"/>
+                                value="productionLineNumber,companyNumber,assortmentName,productNumber,productName,sizeNumber,quantity,wastes,doneQuantity,productUnit,,shiftName,timeRangeFrom,timeRangeTo,technologyGeneratorNumber,orderNumber"/>
                         <option type="orderable"
-                                value="productionLineNumber,companyNumber,assortmentName,productNumber,productName,size,quantity,wastes,doneQuantity,productUnit,,shiftName,timeRangeFrom,timeRangeTo,technologyGeneratorNumber,orderNumber"/>
+                                value="productionLineNumber,companyNumber,assortmentName,productNumber,productName,sizeNumber,quantity,wastes,doneQuantity,productUnit,,shiftName,timeRangeFrom,timeRangeTo,technologyGeneratorNumber,orderNumber"/>
 
                         <option type="footerRow" value="true"/>
                         <option type="columnsToSummary" value="quantity,wastes,doneQuantity"/>

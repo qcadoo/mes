@@ -57,8 +57,8 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.*;
 
-import static com.qcadoo.mes.materialFlowResources.DocumentPositionService.*;
-import static com.qcadoo.mes.materialFlowResources.DocumentPositionService.STATE_IN_WMS;
+import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.ESILCO;
+import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.REALIZED;
 
 @Service
 public class DocumentDetailsListeners {
@@ -228,8 +228,8 @@ public class DocumentDetailsListeners {
                 return;
             }
 
-            if (pluginManager.isPluginEnabled(ESILCO) && documentFromDB.getBooleanField(WMS)
-                    && !REALIZED.equals(documentFromDB.getStringField(STATE_IN_WMS))) {
+            if (pluginManager.isPluginEnabled(ESILCO) && documentFromDB.getBooleanField(DocumentFields.WMS)
+                    && !REALIZED.equals(documentFromDB.getStringField(DocumentFields.STATE_IN_WMS))) {
                 documentForm.addMessage("materialFlow.error.document.notRealizedInWMS", MessageType.FAILURE);
 
                 return;
@@ -410,8 +410,7 @@ public class DocumentDetailsListeners {
 
         JSONObject context = new JSONObject(parameters);
 
-        String url = "../page/materialFlowResources/positionAddMulti.html?context=" +
-                context.toString();
+        String url = "../page/materialFlowResources/positionAddMulti.html?context=" + context.toString();
         view.openModal(url);
     }
 
@@ -428,8 +427,7 @@ public class DocumentDetailsListeners {
 
             JSONObject context = new JSONObject(parameters);
 
-            String url = "../page/materialFlowResources/positionsImport.html?context=" +
-                    context.toString();
+            String url = "../page/materialFlowResources/positionsImport.html?context=" + context.toString();
             view.openModal(url);
         }
     }

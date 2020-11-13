@@ -23,9 +23,16 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks;
 
+import java.util.Date;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
+import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.WarehouseIssueGenerator;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.WarehouseIssueParameterService;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.constans.WarehouseIssueFields;
 import com.qcadoo.mes.productFlowThruDivision.warehouseIssue.states.constants.WarehouseIssueState;
@@ -35,10 +42,6 @@ import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Date;
 
 @Service
 public class WarehouseIssueHooks {
@@ -55,11 +58,10 @@ public class WarehouseIssueHooks {
     @Autowired
     private WarehouseIssueParameterService warehouseIssueParameterService;
 
-    public void onCreate(final DataDefinition warehouseIssueDD, final Entity warehouseIssue) {
-        setInitialState(warehouseIssue);
-    }
+    @Autowired
+    private WarehouseIssueGenerator warehouseIssueGenerator;
 
-    public void onCopy(final DataDefinition warehouseIssueDD, final Entity warehouseIssue) {
+    public void onCreate(final DataDefinition warehouseIssueDD, final Entity warehouseIssue) {
         setInitialState(warehouseIssue);
     }
 
@@ -68,8 +70,11 @@ public class WarehouseIssueHooks {
     }
 
     public void onSave(final DataDefinition warehouseIssueDD, final Entity warehouseIssue) {
-        if (warehouseIssue.getId() == null) {
+        if (Objects.isNull(warehouseIssue.getId())) {
             warehouseIssue.setField(WarehouseIssueFields.DATE_OF_CREATION, new Date());
+        }
+        if (Objects.isNull(warehouseIssue.getField(WarehouseIssueFields.NUMBER))) {
+            warehouseIssue.setField(WarehouseIssueFields.NUMBER, warehouseIssueGenerator.setNumberFromSequence());
         }
         if (warehouseIssueParameterService.issueForOrder()) {
             fillOrderFields(warehouseIssue);
@@ -77,20 +82,30 @@ public class WarehouseIssueHooks {
     }
 
     private void fillOrderFields(Entity warehouseIssue) {
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                warehouseIssue.getBelongsToField(WarehouseIssueFields.ORDER).getId());
-        if (warehouseIssue.getDateField(WarehouseIssueFields.ORDER_START_DATE) == null) {
+        Entity order = getOrderDD().get(warehouseIssue.getBelongsToField(WarehouseIssueFields.ORDER).getId());
+
+        if (Objects.isNull(warehouseIssue.getDateField(WarehouseIssueFields.ORDER_START_DATE))) {
             warehouseIssue.setField(WarehouseIssueFields.ORDER_START_DATE, order.getDateField(OrderFields.START_DATE));
         }
-        if (warehouseIssue.getStringField(WarehouseIssueFields.ORDER_PRODUCTION_LINE_NUMBER) == null) {
+        if (Objects.isNull(warehouseIssue.getStringField(WarehouseIssueFields.ORDER_PRODUCTION_LINE_NUMBER))) {
             Entity orderProductionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
+
             warehouseIssue.setField(WarehouseIssueFields.ORDER_PRODUCTION_LINE_NUMBER,
                     orderProductionLine.getStringField(ProductionLineFields.NUMBER));
         }
     }
 
-    public DataDefinition getwarehouseIssueDD() {
+    public void onCopy(final DataDefinition warehouseIssueDD, final Entity warehouseIssue) {
+        setInitialState(warehouseIssue);
+    }
+
+    private DataDefinition getOrderDD() {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
+    }
+
+    public DataDefinition getWarehouseIssueDD() {
         return dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
                 ProductFlowThruDivisionConstants.MODEL_WAREHOUSE_ISSUE);
     }
+
 }

@@ -25,8 +25,6 @@ import java.util.stream.Collectors;
 @Service
 public class PositionAddMultiListeners {
 
-    
-
     private static final String L_RESOURCE_GRID = "resourceGrid";
 
     private static final String L_GENERATED = "generated";

@@ -46,12 +46,14 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.List;
 
-import static com.qcadoo.mes.materialFlowResources.DocumentPositionService.*;
-
 @Service
 public class DocumentsListListeners {
 
     private static final Logger LOG = LoggerFactory.getLogger(DocumentsListListeners.class);
+
+    public static final String REALIZED = "05realized";
+
+    public static final String ESILCO = "esilco";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -80,26 +82,10 @@ public class DocumentsListListeners {
 
         List<Entity> documentsFromDB = Lists.newArrayList();
 
-        for (Long documentId : gridComponent.getSelectedEntitiesIds()) {
-            Entity documentFromDB = documentDD.get(documentId);
+        boolean allAccepted = getDocumentsToAccept(documentDD, gridComponent, documentsFromDB);
 
-            if (documentFromDB != null) {
-                if (DocumentState.ACCEPTED.getStringValue().equals(documentFromDB.getStringField(DocumentFields.STATE))) {
-                    continue;
-                }
-
-                if (documentService.getAcceptationInProgress(documentId)) {
-                    continue;
-                }
-
-                if (pluginManager.isPluginEnabled(ESILCO) && documentFromDB.getBooleanField(WMS)
-                        && !REALIZED.equals(documentFromDB.getStringField(STATE_IN_WMS))) {
-
-                    continue;
-                }
-
-                documentsFromDB.add(documentFromDB);
-            }
+        if (!allAccepted) {
+            gridComponent.addMessage("materialFlow.info.document.acceptInfo", ComponentState.MessageType.INFO);
         }
 
         if (!documentsFromDB.isEmpty()) {
@@ -114,6 +100,34 @@ public class DocumentsListListeners {
                 documentService.setAcceptationInProgress(documentsFromDB, false);
             }
         }
+    }
+
+    private boolean getDocumentsToAccept(DataDefinition documentDD, GridComponent gridComponent, List<Entity> documentsFromDB) {
+        boolean allAccepted = true;
+        for (Long documentId : gridComponent.getSelectedEntitiesIds()) {
+            Entity documentFromDB = documentDD.get(documentId);
+
+            if (documentFromDB != null) {
+                if (DocumentState.ACCEPTED.getStringValue().equals(documentFromDB.getStringField(DocumentFields.STATE))) {
+                    allAccepted = false;
+                    continue;
+                }
+
+                if (documentService.getAcceptationInProgress(documentId)) {
+                    allAccepted = false;
+                    continue;
+                }
+
+                if (pluginManager.isPluginEnabled(ESILCO) && documentFromDB.getBooleanField(DocumentFields.WMS)
+                        && !REALIZED.equals(documentFromDB.getStringField(DocumentFields.STATE_IN_WMS))) {
+                    allAccepted = false;
+                    continue;
+                }
+
+                documentsFromDB.add(documentFromDB);
+            }
+        }
+        return allAccepted;
     }
 
     @Transactional

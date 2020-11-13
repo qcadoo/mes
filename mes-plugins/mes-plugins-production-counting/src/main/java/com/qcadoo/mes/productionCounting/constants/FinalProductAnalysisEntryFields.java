@@ -3,6 +3,7 @@ package com.qcadoo.mes.productionCounting.constants;
 public final class FinalProductAnalysisEntryFields {
 
     private FinalProductAnalysisEntryFields() {
+
     }
 
     public static final String FINAL_PRODUCT_ANALYSIS_GENERATOR = "finalProductAnalysisGenerator";
@@ -15,7 +16,7 @@ public final class FinalProductAnalysisEntryFields {
 
     public static final String PRODUCT_UNIT = "productUnit";
 
-    public static final String SIZE = "size";
+    public static final String SIZE_NUMBER = "sizeNumber";
 
     public static final String QUANTITY = "quantity";
 
