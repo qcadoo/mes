@@ -53,6 +53,8 @@
 			persistent="false" />
 		<string name="externalNumber" unique="true"/>
 		<string name="genealogyTreeNodeLabel" persistent="false"/>
+		<hasMany name="batchAttachments" joinField="batch" model="batchAttachment" cascade="delete"/>
+
 	</fields>
 	<hooks>
 		<onCreate class="com.qcadoo.mes.advancedGenealogy.hooks.BatchModelHooks"

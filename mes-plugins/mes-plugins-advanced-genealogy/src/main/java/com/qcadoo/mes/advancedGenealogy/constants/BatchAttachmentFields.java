@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo Framework
+ * Project: Qcadoo MES
  * Version: 1.4
  *
  * This file is part of Qcadoo.
@@ -23,28 +23,20 @@
  */
 package com.qcadoo.mes.advancedGenealogy.constants;
 
-public interface AdvancedGenealogyConstants {
+public final class BatchAttachmentFields {
 
-    String PLUGIN_IDENTIFIER = "advancedGenealogy";
+    private BatchAttachmentFields() {
 
-    // MODEL
-    String MODEL_BATCH = "batch";
+    }
 
-    String MODEL_BATCH_STATE_CHANGE = "batchStateChange";
+    public static final String NAME = "name";
 
-    String MODEL_GENEALOGY_REPORT = "genealogyReport";
+    public static final String BATCH = "batch";
 
-    String MODEL_TRACKING_RECORD = "trackingRecord";
+    public static final String ATTACHMENT = "attachment";
 
-    String MODEL_TRACKING_RECORD_STATE_CHANGE = "trackingRecordStateChange";
+    public static final String SIZE = "size";
 
-    String MODEL_USED_BATCH_SIMPLE = "usedBatchSimple";
+    public static final String EXT = "ext";
 
-    String L_PRODUCED_FROM = "02producedFrom";
-
-    String L_USED_TO_PRODUCE = "01usedToProduce";
-
-    String L_SPACER = ": ";
-
-    String MODEL_BATCH_ATTACHMENT = "batchAttachment";
 }
