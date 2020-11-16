@@ -59,8 +59,6 @@ import java.util.*;
 @Component
 public class DeliveredProductAddMultiListeners {
 
-
-
     private static final String L_OFFER = "offer";
 
     private static final String L_GENERATED = "generated";
@@ -291,8 +289,9 @@ public class DeliveredProductAddMultiListeners {
 
         deliveredProduct.setField(DeliveredProductFields.PRODUCT,
                 position.getBelongsToField(DeliveredProductMultiPositionFields.PRODUCT));
+        BigDecimal quantity = position.getDecimalField(DeliveredProductMultiPositionFields.QUANTITY);
         deliveredProduct.setField(DeliveredProductFields.DELIVERED_QUANTITY,
-                position.getDecimalField(DeliveredProductMultiPositionFields.QUANTITY));
+                quantity);
         deliveredProduct.setField(DeliveredProductFields.ADDITIONAL_QUANTITY,
                 position.getDecimalField(DeliveredProductMultiPositionFields.ADDITIONAL_QUANTITY));
         deliveredProduct.setField(DeliveredProductFields.CONVERSION,
@@ -305,6 +304,14 @@ public class DeliveredProductAddMultiListeners {
                 position.getStringField(DeliveredProductMultiPositionFields.ADDITIONAL_UNIT));
         deliveredProduct.setField(DeliveredProductFields.ADDITIONAL_CODE,
                 position.getBelongsToField(DeliveredProductMultiPositionFields.ADDITIONAL_CODE));
+        BigDecimal pricePerUnit = position.getDecimalField(DeliveredProductMultiPositionFields.PRICE_PER_UNIT);
+        deliveredProduct.setField(DeliveredProductFields.PRICE_PER_UNIT, pricePerUnit);
+        if (pricePerUnit != null) {
+            BigDecimal totalPrice = numberService
+                    .setScaleWithDefaultMathContext(pricePerUnit.multiply(quantity, numberService.getMathContext()));
+
+            deliveredProduct.setField(DeliveredProductFields.TOTAL_PRICE, totalPrice);
+        }
 
         if (PluginUtils.isEnabled("supplyNegotiations")) {
             if (Objects.nonNull(position.getId())) {

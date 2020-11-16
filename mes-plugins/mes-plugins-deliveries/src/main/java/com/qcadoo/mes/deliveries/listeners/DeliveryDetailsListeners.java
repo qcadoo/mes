@@ -73,8 +73,6 @@ public class DeliveryDetailsListeners {
 
     private static final Logger LOG = LoggerFactory.getLogger(DeliveryDetailsListeners.class);
 
-    
-
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
     private static final String L_PRODUCT = "product";
@@ -344,6 +342,8 @@ public class DeliveryDetailsListeners {
         deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.BATCH,
                 orderedProduct.getBelongsToField(OrderedProductFields.BATCH));
         deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.CONVERSION, conversion);
+        deliveredProductMultiPosition.setField(DeliveredProductMultiPositionFields.PRICE_PER_UNIT,
+                orderedProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT));
 
         if (PluginUtils.isEnabled("supplyNegotiations")) {
             deliveredProductMultiPosition.setField(L_OFFER, orderedProduct.getBelongsToField(L_OFFER));
