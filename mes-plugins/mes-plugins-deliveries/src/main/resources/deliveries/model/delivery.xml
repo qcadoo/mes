@@ -44,7 +44,7 @@
         </string>
 		
         <integer name="deliveryDateBuffer" persistent="false" />
-        <dictionary name="paymentForm" dictionary="paymentForm" persistent="false" />
+        <dictionary name="paymentForm" dictionary="paymentForm"/>
 
         <belongsTo name="location" model="location"
                    plugin="materialFlow" />

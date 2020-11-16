@@ -49,8 +49,10 @@ import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.apache.commons.lang3.StringUtils;
@@ -128,7 +130,23 @@ public class DeliveryDetailsListeners {
     private CalculationQuantityService calculationQuantityService;
 
     public void fillCompanyFieldsForSupplier(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        deliveryDetailsHooks.fillCompanyFieldsForSupplier(view);
+        LookupComponent supplierLookup = (LookupComponent) view.getComponentByReference(DeliveryFields.SUPPLIER);
+        FieldComponent deliveryDateBufferField = (FieldComponent) view
+                .getComponentByReference(DeliveryFields.DELIVERY_DATE_BUFFER);
+        FieldComponent paymentFormField = (FieldComponent) view.getComponentByReference(DeliveryFields.PAYMENT_FORM);
+
+        Entity supplier = supplierLookup.getEntity();
+
+        if (Objects.isNull(supplier)) {
+            deliveryDateBufferField.setFieldValue(null);
+            paymentFormField.setFieldValue(null);
+        } else {
+            deliveryDateBufferField.setFieldValue(supplier.getIntegerField(CompanyFieldsD.BUFFER));
+            paymentFormField.setFieldValue(supplier.getStringField(CompanyFieldsD.PAYMENT_FORM));
+        }
+
+        deliveryDateBufferField.requestComponentUpdateState();
+        paymentFormField.requestComponentUpdateState();
     }
 
     public final void printDeliveryReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {

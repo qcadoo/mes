@@ -368,10 +368,6 @@
 
 	</component>
 
-	<hooks>
-<!--		<beforeRender
-			class="com.qcadoo.mes.orderSupplies.hooks.DeliveryDetailsViewHooks"
-			method="beforeRender" />-->
-	</hooks>
+	<hooks/>
 
 </view>

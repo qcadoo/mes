@@ -43,11 +43,7 @@ import static org.mockito.Mockito.when;
 
 public class DeliveryDetailsHooksTest {
 
-
-
     private static final String L_DELIVERY_DATE_BUFFER = "deliveryDateBuffer";
-
-    private static final String L_PAYMENT_FORM = "paymentForm";
 
     private DeliveryDetailsHooks deliveryDetailsHooks;
 
@@ -73,9 +69,6 @@ public class DeliveryDetailsHooksTest {
     private FieldComponent deliveryDateBufferField;
 
     @Mock
-    private FieldComponent paymentFormField;
-
-    @Mock
     private Entity supplier;
 
     @Before
@@ -95,22 +88,18 @@ public class DeliveryDetailsHooksTest {
     public void shouldFillCompanyFields() throws Exception {
         // given
         Integer buffer = Integer.valueOf(10);
-        String paymentForm = "cash";
 
         when(view.getComponentByReference(SUPPLIER)).thenReturn(supplierLookup);
         when(view.getComponentByReference(L_DELIVERY_DATE_BUFFER)).thenReturn(deliveryDateBufferField);
-        when(view.getComponentByReference(L_PAYMENT_FORM)).thenReturn(paymentFormField);
 
         when(supplierLookup.getEntity()).thenReturn(supplier);
         when(supplier.getIntegerField(CompanyFieldsD.BUFFER)).thenReturn(buffer);
-        when(supplier.getStringField(CompanyFieldsD.PAYMENT_FORM)).thenReturn(paymentForm);
 
         // when
         deliveryDetailsHooks.fillCompanyFieldsForSupplier(view);
 
         // then
         verify(deliveryDateBufferField).setFieldValue(buffer);
-        verify(paymentFormField).setFieldValue(paymentForm);
     }
 
     @Test
@@ -118,7 +107,6 @@ public class DeliveryDetailsHooksTest {
         // given
         when(view.getComponentByReference(SUPPLIER)).thenReturn(supplierLookup);
         when(view.getComponentByReference(L_DELIVERY_DATE_BUFFER)).thenReturn(deliveryDateBufferField);
-        when(view.getComponentByReference(L_PAYMENT_FORM)).thenReturn(paymentFormField);
 
         when(supplierLookup.getEntity()).thenReturn(null);
 
@@ -127,7 +115,6 @@ public class DeliveryDetailsHooksTest {
 
         // then
         verify(deliveryDateBufferField).setFieldValue(null);
-        verify(paymentFormField).setFieldValue(null);
     }
 
     @Test

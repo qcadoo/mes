@@ -23,30 +23,9 @@
  */
 package com.qcadoo.mes.deliveries.print;
 
-import static com.google.common.base.Preconditions.checkState;
-
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Component;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.lowagie.text.Chunk;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.Rectangle;
+import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
@@ -56,11 +35,7 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.deliveries.DeliveriesService;
-import com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields;
-import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
+import com.qcadoo.mes.deliveries.constants.*;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateChangeFields;
 import com.qcadoo.mes.deliveries.util.DeliveryPricesAndQuantities;
 import com.qcadoo.model.api.Entity;
@@ -71,6 +46,17 @@ import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.*;
+
+import static com.google.common.base.Preconditions.checkState;
 
 @Component(value = "deliveryReportPdf")
 public class DeliveryReportPdf extends ReportPdfView {
@@ -211,7 +197,6 @@ public class DeliveryReportPdf extends ReportPdfView {
         Date createDate = delivery.getDateField("createDate");
         Entity prepareOrderDate = getPrepareOrderDate(delivery);
         Entity receivedOrderDate = getReceivedOrderDate(delivery);
-        Entity supplier = delivery.getBelongsToField(DeliveryFields.SUPPLIER);
 
         if (StringUtils.isNotEmpty(state)) {
             column.put("deliveries.delivery.report.columnHeader.state",
@@ -228,12 +213,10 @@ public class DeliveryReportPdf extends ReportPdfView {
             column.put("deliveries.delivery.report.columnHeader.receivedOrderDate",
                     getStringFromDate(receivedOrderDate.getDateField(DeliveryStateChangeFields.DATE_AND_TIME)));
         }
-        if (supplier != null) {
-            String paymentForm = supplier.getStringField(CompanyFieldsD.PAYMENT_FORM);
+        String paymentForm = delivery.getStringField(DeliveryFields.PAYMENT_FORM);
 
-            if (StringUtils.isNotEmpty(paymentForm)) {
-                column.put("deliveries.delivery.report.columnHeader.paymentForm", paymentForm);
-            }
+        if (StringUtils.isNotEmpty(paymentForm)) {
+            column.put("deliveries.delivery.report.columnHeader.paymentForm", paymentForm);
         }
 
         return column;

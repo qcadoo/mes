@@ -60,11 +60,7 @@ import java.util.Optional;
 @Service
 public class DeliveryDetailsHooks {
 
-
-
     private static final String L_LOGGINGS_GRID = "loggingsGrid";
-
-
 
     private static final String L_RELATED_DELIVERY = "relatedDelivery";
 
@@ -112,20 +108,16 @@ public class DeliveryDetailsHooks {
         LookupComponent supplierLookup = (LookupComponent) view.getComponentByReference(DeliveryFields.SUPPLIER);
         FieldComponent deliveryDateBufferField = (FieldComponent) view
                 .getComponentByReference(DeliveryFields.DELIVERY_DATE_BUFFER);
-        FieldComponent paymentFormField = (FieldComponent) view.getComponentByReference(DeliveryFields.PAYMENT_FORM);
 
         Entity supplier = supplierLookup.getEntity();
 
         if (Objects.isNull(supplier)) {
             deliveryDateBufferField.setFieldValue(null);
-            paymentFormField.setFieldValue(null);
         } else {
             deliveryDateBufferField.setFieldValue(supplier.getIntegerField(CompanyFieldsD.BUFFER));
-            paymentFormField.setFieldValue(supplier.getStringField(CompanyFieldsD.PAYMENT_FORM));
         }
 
         deliveryDateBufferField.requestComponentUpdateState();
-        paymentFormField.requestComponentUpdateState();
     }
 
     public void changeFieldsEnabledDependOnState(final ViewDefinitionState view) {
