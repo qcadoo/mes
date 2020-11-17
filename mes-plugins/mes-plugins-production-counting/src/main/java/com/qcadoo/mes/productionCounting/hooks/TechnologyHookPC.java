@@ -24,6 +24,7 @@
 package com.qcadoo.mes.productionCounting.hooks;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,32 +38,34 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class TechnologyHookPC {
 
-    private static final List<String> L_ORDER_FIELD_NAMES = Lists.newArrayList(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING,
-            TechnologyFieldsPC.REGISTER_PIECEWORK, TechnologyFieldsPC.REGISTER_QUANTITY_IN_PRODUCT,
-            TechnologyFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT, TechnologyFieldsPC.JUST_ONE, TechnologyFieldsPC.ALLOW_TO_CLOSE,
-            TechnologyFieldsPC.AUTO_CLOSE_ORDER, TechnologyFieldsPC.REGISTER_PRODUCTION_TIME);
+    private static final List<String> L_TECHNOLOGY_FIELD_NAMES = Lists.newArrayList(
+            TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING, TechnologyFieldsPC.REGISTER_PIECEWORK,
+            TechnologyFieldsPC.REGISTER_QUANTITY_IN_PRODUCT, TechnologyFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT,
+            TechnologyFieldsPC.REGISTER_PRODUCTION_TIME);
 
     @Autowired
     private ParameterService parameterService;
 
     public void onCreate(final DataDefinition technologyDD, final Entity technology) {
-        setOrderWithDefaultProductionCountingValues(technologyDD, technology);
+        setTechnologyWithDefaultProductionCountingValues(technologyDD, technology);
     }
 
-    public void setOrderWithDefaultProductionCountingValues(final DataDefinition technologyDD, final Entity technology) {
-        for (String fieldName : L_ORDER_FIELD_NAMES) {
-            if (technology.getField(fieldName) == null) {
+    public void setTechnologyWithDefaultProductionCountingValues(final DataDefinition technologyDD, final Entity technology) {
+        for (String fieldName : L_TECHNOLOGY_FIELD_NAMES) {
+            if (Objects.isNull(technology.getField(fieldName))) {
                 technology.setField(fieldName, parameterService.getParameter().getField(fieldName));
             }
         }
     }
 
     public boolean validatesWith(final DataDefinition parameterDD, final Entity technology) {
-        if (technology.getStringField(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING) == null) {
+        if (Objects.isNull(technology.getStringField(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
             technology.addError(parameterDD.getField(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING),
                     "qcadooView.validate.field.error.missing");
+
             return false;
         }
+
         return true;
     }
 

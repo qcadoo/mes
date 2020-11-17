@@ -23,6 +23,13 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
+import java.util.List;
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
@@ -31,21 +38,13 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class TechnologyDetailsHooksPC {
 
-
-
-    private static final List<String> L_TECHNOLOGY_FIELD_NAMES = Lists.newArrayList(TechnologyFieldsPC.REGISTER_QUANTITY_IN_PRODUCT,
-            TechnologyFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT, TechnologyFieldsPC.REGISTER_PRODUCTION_TIME,
-            TechnologyFieldsPC.REGISTER_PIECEWORK, TechnologyFieldsPC.JUST_ONE, TechnologyFieldsPC.ALLOW_TO_CLOSE,
-            TechnologyFieldsPC.AUTO_CLOSE_ORDER);
+    private static final List<String> L_TECHNOLOGY_FIELD_NAMES = Lists.newArrayList(
+            TechnologyFieldsPC.REGISTER_QUANTITY_IN_PRODUCT, TechnologyFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT,
+            TechnologyFieldsPC.REGISTER_PRODUCTION_TIME, TechnologyFieldsPC.REGISTER_PIECEWORK);
 
     @Autowired
     private ProductionCountingService productionCountingService;
@@ -53,19 +52,19 @@ public class TechnologyDetailsHooksPC {
     @Autowired
     private ParameterService parameterService;
 
-    public void setOrderDefaultValues(final ViewDefinitionState view) {
+    public void setTechnologyDefaultValues(final ViewDefinitionState view) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent typeOfProductionRecordingField = (FieldComponent) view
                 .getComponentByReference(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 
-        if (orderForm.getEntityId() != null) {
+        if (Objects.nonNull(orderForm.getEntityId())) {
             return;
         }
 
         for (String fieldComponentName : L_TECHNOLOGY_FIELD_NAMES) {
             FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(fieldComponentName);
 
-            if (fieldComponent.getFieldValue() == null) {
+            if (Objects.isNull(fieldComponent.getFieldValue())) {
                 fieldComponent.setFieldValue(getDefaultValueForProductionCountingFromParameter(fieldComponentName));
                 fieldComponent.requestComponentUpdateState();
             }
@@ -73,9 +72,9 @@ public class TechnologyDetailsHooksPC {
             fieldComponent.setEnabled(false);
         }
 
-        if (typeOfProductionRecordingField.getFieldValue() == null) {
-            typeOfProductionRecordingField
-                    .setFieldValue(getDefaultValueForTypeOfProductionRecordingParameter(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING));
+        if (Objects.isNull(typeOfProductionRecordingField.getFieldValue())) {
+            typeOfProductionRecordingField.setFieldValue(
+                    getDefaultValueForTypeOfProductionRecordingParameter(TechnologyFieldsPC.TYPE_OF_PRODUCTION_RECORDING));
         }
     }
 
@@ -100,7 +99,8 @@ public class TechnologyDetailsHooksPC {
         }
     }
 
-    private void setRegisterPieceworkEnabledAndValue(final ViewDefinitionState view, final boolean isEnabled, final boolean value) {
+    private void setRegisterPieceworkEnabledAndValue(final ViewDefinitionState view, final boolean isEnabled,
+            final boolean value) {
         FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(TechnologyFieldsPC.REGISTER_PIECEWORK);
         fieldComponent.setEnabled(isEnabled);
         fieldComponent.setFieldValue(value);

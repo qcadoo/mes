@@ -73,15 +73,8 @@ public class OrderXlsxImportService extends XlsxImportService {
 
     private static final String L_REGISTER_PIECEWORK = "registerPiecework";
 
-    private static final String L_JUST_ONE = "justOne";
-
-    private static final String L_ALLOW_TO_CLOSE = "allowToClose";
-
-    private static final String L_AUTO_CLOSE_ORDER = "autoCloseOrder";
-
     private static final Set<String> L_PRODUCTION_TRACKING_FIELDS = Sets.newHashSet(L_TYPE_OF_PRODUCTION_RECORDING,
-            L_REGISTER_QUANTITY_IN_PRODUCT, L_REGISTER_QUANTITY_OUT_PRODUCT, L_REGISTER_PRODUCTION_TIME, L_REGISTER_PIECEWORK,
-            L_JUST_ONE, L_ALLOW_TO_CLOSE, L_AUTO_CLOSE_ORDER);
+            L_REGISTER_QUANTITY_IN_PRODUCT, L_REGISTER_QUANTITY_OUT_PRODUCT, L_REGISTER_PRODUCTION_TIME, L_REGISTER_PIECEWORK);
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;

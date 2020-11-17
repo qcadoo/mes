@@ -1,5 +1,24 @@
 package com.qcadoo.mes.masterOrders;
 
+import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
+
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
@@ -39,50 +58,29 @@ import com.qcadoo.model.constants.DictionaryItemFields;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
-
 @Service
 public class OrdersFromMOProductsGenerationService {
 
-    private static final String IS_SUBCONTRACTED = "isSubcontracted";
+    private static final String L_IS_SUBCONTRACTED = "isSubcontracted";
 
-    private static final String CREATE_COLLECTIVE_ORDERS = "createCollectiveOrders";
+    private static final String L_CREATE_COLLECTIVE_ORDERS = "createCollectiveOrders";
 
     private static final String L_MASTER_ORDER_POSITION_STATUS = "masterOrderPositionStatus";
 
     private static final List<String> L_TECHNOLOGY_FIELD_NAMES = Lists.newArrayList("registerQuantityInProduct",
-            "registerQuantityOutProduct", "registerProductionTime", "registerPiecework", "justOne", "allowToClose",
-            "autoCloseOrder", "typeOfProductionRecording");
+            "registerQuantityOutProduct", "registerProductionTime", "registerPiecework", "typeOfProductionRecording");
 
-    private static final String ORDERS_GENERATION_NOT_COMPLETE_DATES = "ordersGenerationNotCompleteDates";
+    private static final String L_ORDERS_GENERATION_NOT_COMPLETE_DATES = "ordersGenerationNotCompleteDates";
 
-    private static final String CUMULATED_MASTER_ORDER_QUANTITY = "cumulatedMasterOrderQuantity";
+    private static final String L_COPY_NOTES_FROM_MASTER_ORDER_POSITION = "copyNotesFromMasterOrderPosition";
 
-    private static final String COPY_NOTES_FROM_MASTER_ORDER_POSITION = "copyNotesFromMasterOrderPosition";
+    private static final String L_PPS_IS_AUTOMATIC = "ppsIsAutomatic";
 
-    private static final String PPS_IS_AUTOMATIC = "ppsIsAutomatic";
+    private static final String L_IGNORE_MISSING_COMPONENTS = "ignoreMissingComponents";
 
-    private static final String IGNORE_MISSING_COMPONENTS = "ignoreMissingComponents";
+    private static final String L_AUTOMATICALLY_GENERATE_ORDERS_FOR_COMPONENTS = "automaticallyGenerateOrdersForComponents";
 
-    private static final String PARAMETER_AUTOMATICALLY_GENERATE_ORDERS_FOR_COMPONENTS = "automaticallyGenerateOrdersForComponents";
-
-    private static final String PARAMETER_ORDERS_GENERATED_BY_COVERAGE = "ordersGeneratedByCoverage";
+    private static final String L_ORDERS_GENERATED_BY_COVERAGE = "ordersGeneratedByCoverage";
 
     @Autowired
     private TechnologyServiceO technologyServiceO;
@@ -120,15 +118,18 @@ public class OrdersFromMOProductsGenerationService {
     @Autowired
     private DictionaryService dictionaryService;
 
-    public GenerationOrderResult generateOrders(List<Entity> masterOrderProducts, Date start, Date finish, boolean generatePPS) {
+    public GenerationOrderResult generateOrders(final List<Entity> masterOrderProducts, final Date start, final Date finish,
+            final boolean generatePPS) {
         GenerationOrderResult result = new GenerationOrderResult(translationService, parameterService);
-        boolean automaticPps = parameterService.getParameter().getBooleanField(PPS_IS_AUTOMATIC);
+
+        boolean automaticPps = parameterService.getParameter().getBooleanField(L_PPS_IS_AUTOMATIC);
 
         List<Entity> masterOrderProductsEntities = Lists.newArrayList();
 
         masterOrderProducts.forEach(masterOrderProduct -> {
-            Optional<Entity> dtoEntity = Optional.ofNullable(masterOrderProduct.getDataDefinition().getMasterModelEntity(
-                    masterOrderProduct.getId()));
+            Optional<Entity> dtoEntity = Optional
+                    .ofNullable(masterOrderProduct.getDataDefinition().getMasterModelEntity(masterOrderProduct.getId()));
+
             if (dtoEntity.isPresent()) {
                 masterOrderProductsEntities.add(dtoEntity.get());
             } else {
@@ -136,7 +137,7 @@ public class OrdersFromMOProductsGenerationService {
             }
         });
 
-        boolean createCollectiveOrders = parameterService.getParameter().getBooleanField(CREATE_COLLECTIVE_ORDERS);
+        boolean createCollectiveOrders = parameterService.getParameter().getBooleanField(L_CREATE_COLLECTIVE_ORDERS);
         if (createCollectiveOrders) {
             Map<ProductTechnologyKey, List<Entity>> groupedMap = groupPositions(masterOrderProductsEntities);
 
@@ -144,8 +145,9 @@ public class OrdersFromMOProductsGenerationService {
                 String hql = "SELECT SUM(mop.quantityRemainingToOrderWithoutStock) AS quantityRemainingToOrder FROM #masterOrders_masterOrderPositionDto mop "
                         + " WHERE mop.id IN (:ids)";
 
-                SearchQueryBuilder scb = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
-                        MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO).find(hql);
+                SearchQueryBuilder scb = dataDefinitionService
+                        .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO)
+                        .find(hql);
 
                 scb.setParameterList("ids", entry.getValue().stream().map(e -> e.getId()).collect(Collectors.toList()));
 
@@ -156,39 +158,41 @@ public class OrdersFromMOProductsGenerationService {
                         .technology(entry.getKey().getTechnology()).groupedMasterOrderProduct(entry.getValue())
                         .quantityRemainingToOrder(quantityRemainingToOrderResult.getDecimalField("quantityRemainingToOrder"))
                         .build();
+
                 generateOrder(generatePPS, automaticPps, result, masterOrderProduct, start, finish);
-
             }
-
         } else {
-            masterOrderProductsEntities
-                    .forEach(mop -> {
-                        BigDecimal quantityRemainingToOrder = dataDefinitionService
-                                .get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
-                                        MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO).get(mop.getId())
-                                .getDecimalField(MasterOrderPositionDtoFields.QUANTITY_REMAINING_TO_ORDER_WITHOUT_STOCK);
-                        MasterOrderProduct masterOrderProduct = MasterOrderProduct.newMasterOrderProduct()
-                                .createCollectiveOrders(createCollectiveOrders)
-                                .product(mop.getBelongsToField(MasterOrderProductFields.PRODUCT))
-                                .technology(mop.getBelongsToField(MasterOrderProductFields.TECHNOLOGY))
-                                .masterOrder(mop.getBelongsToField(MasterOrderProductFields.MASTER_ORDER))
-                                .comments(mop.getStringField(MasterOrderProductFields.COMMENTS))
-                                .quantityRemainingToOrder(quantityRemainingToOrder).masterOrderProduct(mop).build();
-                        generateOrder(generatePPS, automaticPps, result, masterOrderProduct, start, finish);
+            masterOrderProductsEntities.forEach(mop -> {
+                BigDecimal quantityRemainingToOrder = dataDefinitionService
+                        .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO)
+                        .get(mop.getId()).getDecimalField(MasterOrderPositionDtoFields.QUANTITY_REMAINING_TO_ORDER_WITHOUT_STOCK);
 
-                    });
+                MasterOrderProduct masterOrderProduct = MasterOrderProduct.newMasterOrderProduct()
+                        .createCollectiveOrders(createCollectiveOrders)
+                        .product(mop.getBelongsToField(MasterOrderProductFields.PRODUCT))
+                        .technology(mop.getBelongsToField(MasterOrderProductFields.TECHNOLOGY))
+                        .masterOrder(mop.getBelongsToField(MasterOrderProductFields.MASTER_ORDER))
+                        .comments(mop.getStringField(MasterOrderProductFields.COMMENTS))
+                        .quantityRemainingToOrder(quantityRemainingToOrder).masterOrderProduct(mop).build();
+
+                generateOrder(generatePPS, automaticPps, result, masterOrderProduct, start, finish);
+            });
         }
+
         MasterOrderProduct.newMasterOrderProduct().createCollectiveOrders(createCollectiveOrders);
+
         return result;
     }
 
-    private Map<ProductTechnologyKey, List<Entity>> groupPositions(List<Entity> masterOrderProductsEntities) {
+    private Map<ProductTechnologyKey, List<Entity>> groupPositions(final List<Entity> masterOrderProductsEntities) {
         Map<ProductTechnologyKey, List<Entity>> groupedMap = Maps.newHashMap();
 
         masterOrderProductsEntities.forEach(mop -> {
             ProductTechnologyKey key = new ProductTechnologyKey(mop);
+
             if (Objects.isNull(key.getTechnology())) {
                 Entity technology = technologyServiceO.getDefaultTechnology(key.getProduct());
+
                 if (Objects.nonNull(technology)) {
                     key.setTechnology(technology);
                     key.setTechnologyId(technology.getId());
@@ -203,12 +207,12 @@ public class OrdersFromMOProductsGenerationService {
                 groupedMap.put(key, values);
             }
         });
+
         return groupedMap;
     }
 
-    private void generateOrder(boolean generatePPS, boolean automaticPps, GenerationOrderResult result,
-            MasterOrderProduct masterOrderProduct, Date start, Date finish) {
-
+    private void generateOrder(final boolean generatePPS, final boolean automaticPps, final GenerationOrderResult result,
+            final MasterOrderProduct masterOrderProduct, final Date start, final Date finish) {
         if (PluginUtils.isEnabled("integrationBaseLinker")) {
             createDocuments();
         }
@@ -225,17 +229,19 @@ public class OrdersFromMOProductsGenerationService {
 
         BigDecimal stockQuantity = BigDecimal.ZERO;
         BigDecimal quantityRemainingToOrder = masterOrderProduct.getQuantityRemainingToOrder();
+
         if (realizationFromStock) {
             List<Entity> locations = parameter.getHasManyField(ParameterFieldsO.REALIZATION_LOCATIONS);
             Entity product = masterOrderProduct.getProduct();
+
             for (Entity location : locations) {
-                Map<Long, BigDecimal> productQuantity = materialFlowResourcesService.getQuantitiesForProductsAndLocation(
-                        Lists.newArrayList(product), location);
+                Map<Long, BigDecimal> productQuantity = materialFlowResourcesService
+                        .getQuantitiesForProductsAndLocation(Lists.newArrayList(product), location);
+
                 if (productQuantity.containsKey(product.getId())) {
                     stockQuantity = stockQuantity.add(productQuantity.get(product.getId()), numberService.getMathContext());
                 }
             }
-
         }
 
         if (realizationFromStock && stockQuantity.compareTo(quantityRemainingToOrder) >= 0
@@ -248,22 +254,29 @@ public class OrdersFromMOProductsGenerationService {
                 setMasterOrderPositionStatus(masterOrderProductEntity, MasterOrderPositionStatus.ORDERED);
                 masterOrderProductEntity.getDataDefinition().save(masterOrderProductEntity);
             }
+
             result.addRealizationFromStock(masterOrderProduct.getProduct().getStringField(ProductFields.NUMBER));
         } else {
             Entity order = createOrder(masterOrderProduct, realizationFromStock, quantityRemainingToOrder, stockQuantity, start,
                     finish);
+
             order = getOrderDD().save(order);
+
             if (!order.isValid()) {
                 MasterOrderProductErrorContainer productErrorContainer = new MasterOrderProductErrorContainer();
+
                 productErrorContainer.setProduct(masterOrderProduct.getProduct().getStringField(ProductFields.NUMBER));
+
                 if (Objects.nonNull(masterOrderProduct.getMasterOrder())) {
-                    productErrorContainer.setMasterOrder(masterOrderProduct.getMasterOrder().getStringField(
-                            MasterOrderFields.NUMBER));
+                    productErrorContainer
+                            .setMasterOrder(masterOrderProduct.getMasterOrder().getStringField(MasterOrderFields.NUMBER));
                 } else {
                     productErrorContainer.setMasterOrder(extractMasterOrdersNumbers(masterOrderProduct));
                 }
+
                 productErrorContainer.setQuantity(order.getDecimalField(OrderFields.PLANNED_QUANTITY));
                 productErrorContainer.setErrorMessages(order.getGlobalErrors());
+
                 result.addNotGeneratedProductError(productErrorContainer);
             } else {
                 result.addGeneratedOrderNumber(order.getStringField(OrderFields.NUMBER));
@@ -273,8 +286,8 @@ public class OrdersFromMOProductsGenerationService {
                 if (Objects.isNull(order.getBelongsToField(OrderFields.TECHNOLOGY))) {
                     result.addOrderWithoutGeneratedSubOrders(new SubOrderErrorHolder(order.getStringField(OrderFields.NUMBER),
                             "masterOrders.masterOrder.generationOrder.ordersWithoutGeneratedSubOrders.technologyNotSet"));
-                } else if (parameter.getBooleanField(PARAMETER_AUTOMATICALLY_GENERATE_ORDERS_FOR_COMPONENTS)
-                        && parameter.getBooleanField(PARAMETER_ORDERS_GENERATED_BY_COVERAGE)
+                } else if (parameter.getBooleanField(L_AUTOMATICALLY_GENERATE_ORDERS_FOR_COMPONENTS)
+                        && parameter.getBooleanField(L_ORDERS_GENERATED_BY_COVERAGE)
                         && Objects.nonNull(order.getDateField(OrderFields.DATE_FROM))
                         && order.getDateField(OrderFields.DATE_FROM).before(new Date())) {
                     result.addOrderWithoutGeneratedSubOrders(new SubOrderErrorHolder(order.getStringField(OrderFields.NUMBER),
@@ -285,20 +298,21 @@ public class OrdersFromMOProductsGenerationService {
             }
 
             if (order.isValid() && generatePPS && automaticPps
-                    && !parameter.getBooleanField(ORDERS_GENERATION_NOT_COMPLETE_DATES)) {
+                    && !parameter.getBooleanField(L_ORDERS_GENERATION_NOT_COMPLETE_DATES)) {
                 List<Entity> orders = getOrderAndSubOrders(order.getId());
                 Collections.reverse(orders);
                 Integer lastLevel = null;
                 Date lastDate = null;
-                for (Entity ord : orders) {
 
+                for (Entity ord : orders) {
                     Date calculatedOrderStartDate = null;
 
-                    if(parameterService.getParameter().getBooleanField(ParameterFieldsO.ADVISE_START_DATE_OF_THE_ORDER)) {
+                    if (parameterService.getParameter().getBooleanField(ParameterFieldsO.ADVISE_START_DATE_OF_THE_ORDER)) {
                         calculatedOrderStartDate = order.getDateField(OrderFields.START_DATE);
                     } else {
                         if (Objects.isNull(ord.getDateField(OrderFields.DATE_FROM))) {
                             Optional<Entity> maybeOrder = orderService.findLastOrder(ord);
+
                             if (maybeOrder.isPresent()) {
                                 calculatedOrderStartDate = ord.getDateField(OrderFields.FINISH_DATE);
                             } else {
@@ -306,6 +320,7 @@ public class OrdersFromMOProductsGenerationService {
                             }
                         } else {
                             Optional<Entity> maybeOrder = findPreviousOrder(ord);
+
                             if (maybeOrder.isPresent()) {
                                 calculatedOrderStartDate = maybeOrder.get().getDateField(OrderFields.FINISH_DATE);
 
@@ -327,6 +342,7 @@ public class OrdersFromMOProductsGenerationService {
 
                     try {
                         Date finishDate = tryGeneratePPS(ord, calculatedOrderStartDate);
+
                         if (Objects.nonNull(lastDate) && finishDate.after(lastDate)) {
                             lastDate = finishDate;
                         } else if (Objects.isNull(lastDate)) {
@@ -334,29 +350,27 @@ public class OrdersFromMOProductsGenerationService {
                         }
                     } catch (Exception ex) {
                         result.addOrderWithoutPps(ord.getStringField(OrderFields.NUMBER));
+
                         break;
                     }
+
                     lastLevel = ord.getIntegerField("level");
-
                 }
-
             }
-
         }
-
     }
 
     public Optional<Entity> findNextOrder(final Entity order) {
         Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
-        Entity nextOrder = dataDefinitionService
-                .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
-                .find()
+
+        Entity nextOrder = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find()
                 .add(SearchRestrictions.belongsTo(OrderFields.PRODUCTION_LINE, productionLine))
                 .add(SearchRestrictions.or(SearchRestrictions.eq(OrderFields.STATE, OrderState.PENDING.getStringValue()),
                         SearchRestrictions.eq(OrderFields.STATE, OrderState.IN_PROGRESS.getStringValue()),
                         SearchRestrictions.eq(OrderFields.STATE, OrderState.ACCEPTED.getStringValue())))
                 .add(SearchRestrictions.gt(OrderFields.START_DATE, order.getDateField(OrderFields.START_DATE)))
                 .addOrder(SearchOrders.asc(OrderFields.START_DATE)).setMaxResults(1).uniqueResult();
+
         return Optional.ofNullable(nextOrder);
     }
 
@@ -377,44 +391,58 @@ public class OrdersFromMOProductsGenerationService {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     private void tryGeneratePPS(final Entity order) {
         Date startDate = findStartDate(order);
+
         generateEmptyPpsForOrder(order);
+
         order.setField("generatePPS", true);
         order.setField(OrderFields.START_DATE, startDate);
         order.setField(OrderFields.FINISH_DATE, new DateTime(order.getDateField(OrderFields.START_DATE)).plusDays(1).toDate());
+
         Entity storedOrder = order.getDataDefinition().save(order);
+
         if (!storedOrder.isValid()) {
             throw new EntityRuntimeException(storedOrder);
         }
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    private Date tryGeneratePPS(final Entity order, Date date) {
+    private Date tryGeneratePPS(final Entity order, final Date date) {
         Date startDate = findStartDate(order, date);
+
         generateEmptyPpsForOrder(order);
+
         order.setField("generatePPS", true);
         order.setField(OrderFields.START_DATE, startDate);
         order.setField(OrderFields.FINISH_DATE, new DateTime(order.getDateField(OrderFields.START_DATE)).plusDays(1).toDate());
+
         Entity storedOrder = order.getDataDefinition().save(order);
+
         if (!storedOrder.isValid()) {
             throw new EntityRuntimeException(storedOrder);
         }
+
         return order.getDateField(OrderFields.FINISH_DATE);
     }
 
-    private void generateEmptyPpsForOrder(Entity order) {
+    private void generateEmptyPpsForOrder(final Entity order) {
         Entity productionPerShift = dataDefinitionService.get("productionPerShift", "productionPerShift").find()
                 .add(SearchRestrictions.belongsTo("order", order)).setMaxResults(1).uniqueResult();
-        if (productionPerShift != null) {
+
+        if (Objects.nonNull(productionPerShift)) {
             return;
         }
+
         boolean shouldBeCorrected = OrderState.of(order).compareTo(OrderState.PENDING) != 0;
+
         productionPerShift = dataDefinitionService.get("productionPerShift", "productionPerShift").create();
         productionPerShift.setField("order", order);
+
         if (shouldBeCorrected) {
             productionPerShift.setField("plannedProgressType", "02corrected");
         } else {
             productionPerShift.setField("plannedProgressType", "01planned");
         }
+
         productionPerShift.getDataDefinition().save(productionPerShift);
     }
 
@@ -424,11 +452,14 @@ public class OrdersFromMOProductsGenerationService {
         }
 
         Optional<Entity> previousOrder = findPreviousOrder(order);
+
         if (previousOrder.isPresent()) {
             Integer changeoverDurationInMillis = getChangeoverDurationInMillis(previousOrder.get(), order);
+
             Optional<DateTime> maybeDate = shiftsService.getNearestWorkingDate(
                     new DateTime(previousOrder.get().getDateField(OrderFields.FINISH_DATE)),
                     order.getBelongsToField(OrderFields.PRODUCTION_LINE));
+
             if (maybeDate.isPresent()) {
                 return calculateOrderStartDate(maybeDate.get().toDate(), changeoverDurationInMillis);
             }
@@ -437,13 +468,15 @@ public class OrdersFromMOProductsGenerationService {
         return DateTime.now().toDate();
     }
 
-    private Date findStartDate(final Entity order, Date startDate) {
-
+    private Date findStartDate(final Entity order, final Date startDate) {
         Optional<Entity> previousOrder = findPreviousOrder(order);
+
         if (previousOrder.isPresent()) {
             Integer changeoverDurationInMillis = getChangeoverDurationInMillis(previousOrder.get(), order);
+
             Optional<DateTime> maybeDate = shiftsService.getNearestWorkingDate(new DateTime(startDate),
                     order.getBelongsToField(OrderFields.PRODUCTION_LINE));
+
             if (maybeDate.isPresent()) {
                 return calculateOrderStartDate(maybeDate.get().toDate(), changeoverDurationInMillis);
             }
@@ -452,39 +485,46 @@ public class OrdersFromMOProductsGenerationService {
         return startDate;
     }
 
-    private Date calculateOrderStartDate(Date finishDate, Integer changeoverDurationInMillis) {
+    private Date calculateOrderStartDate(final Date finishDate, final Integer changeoverDurationInMillis) {
         DateTime finishDateTime = new DateTime(finishDate);
+
         finishDateTime = finishDateTime.plusMillis(changeoverDurationInMillis);
+
         return finishDateTime.toDate();
     }
 
     public Optional<Entity> findPreviousOrder(final Entity order) {
         Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
+
         Entity nextOrder = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find()
                 .add(SearchRestrictions.belongsTo(OrderFields.PRODUCTION_LINE, productionLine))
-                .add(SearchRestrictions.isNotNull(OrderFields.START_DATE))
-                .addOrder(SearchOrders.desc(OrderFields.START_DATE))
+                .add(SearchRestrictions.isNotNull(OrderFields.START_DATE)).addOrder(SearchOrders.desc(OrderFields.START_DATE))
                 .setMaxResults(1).uniqueResult();
+
         return Optional.ofNullable(nextOrder);
     }
 
-    public Integer getChangeoverDurationInMillis(Entity previousOrder, final Entity nextOrder) {
+    public Integer getChangeoverDurationInMillis(final Entity previousOrder, final Entity nextOrder) {
         Entity fromTechnology = previousOrder.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
         Entity toTechnology = nextOrder.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
         Entity productionLine = nextOrder.getBelongsToField(PRODUCTION_LINE);
         Entity changeover = changeoverNormsService.getMatchingChangeoverNorms(fromTechnology, toTechnology, productionLine);
-        if (changeover != null) {
+
+        if (Objects.nonNull(changeover)) {
             Integer duration = changeover.getIntegerField(LineChangeoverNormsFields.DURATION);
-            if (duration == null) {
+
+            if (Objects.isNull(duration)) {
                 return 0;
             }
+
             return duration * 1000;
         }
+
         return 0;
     }
 
     private Entity createOrder(final MasterOrderProduct masterOrderProduct, final boolean realizationFromStock,
-            BigDecimal quantityRemainingToOrder, final BigDecimal stockQuantity, Date start, Date finish) {
+            final BigDecimal quantityRemainingToOrder, final BigDecimal stockQuantity, final Date start, final Date finish) {
         Entity parameter = parameterService.getParameter();
 
         Entity product = masterOrderProduct.getProduct();
@@ -496,12 +536,15 @@ public class OrdersFromMOProductsGenerationService {
             fillDates(parameter, order, null, start, finish);
         } else {
             Entity masterOrder = masterOrderProduct.getMasterOrder();
+
             Date masterOrderDeadline = masterOrder.getDateField(MasterOrderFields.DEADLINE);
             Date masterOrderStartDate = masterOrder.getDateField(MasterOrderFields.START_DATE);
             Date masterOrderFinishDate = masterOrder.getDateField(MasterOrderFields.FINISH_DATE);
+
             order.setField(OrderFields.COMPANY, masterOrder.getBelongsToField(MasterOrderFields.COMPANY));
             order.setField(OrderFields.ADDRESS, masterOrder.getBelongsToField(MasterOrderFields.ADDRESS));
             order.setField(OrderFieldsMO.MASTER_ORDER, masterOrder);
+
             fillDates(parameter, order, masterOrderDeadline, masterOrderStartDate, masterOrderFinishDate);
         }
 
@@ -514,72 +557,80 @@ public class OrdersFromMOProductsGenerationService {
         order.setField(OrderFields.DIVISION, orderService.getDivision(technology));
 
         order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
-        order.setField(IS_SUBCONTRACTED, false);
+        order.setField(L_IS_SUBCONTRACTED, false);
         order.setField(OrderFields.STATE, OrderStateStringValues.PENDING);
         order.setField(OrderFields.ORDER_TYPE, OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue());
+
         if (realizationFromStock) {
             if (stockQuantity.compareTo(BigDecimal.ZERO) > 0 && stockQuantity.compareTo(quantityRemainingToOrder) < 0) {
                 if (!masterOrderProduct.isCreateCollectiveOrders()) {
                     Entity masterOrderProductEntity = masterOrderProduct.getMasterOrderProduct();
+
                     masterOrderProductEntity.setField(MasterOrderProductFields.QUANTITY_TAKEN_FROM_WAREHOUSE, stockQuantity);
                     masterOrderProductEntity.getDataDefinition().save(masterOrderProductEntity);
                 }
+
                 order.setField(OrderFields.PLANNED_QUANTITY,
                         quantityRemainingToOrder.subtract(stockQuantity, numberService.getMathContext()));
             } else {
                 if (!masterOrderProduct.isCreateCollectiveOrders()) {
                     Entity masterOrderProductEntity = masterOrderProduct.getMasterOrderProduct();
+
                     masterOrderProductEntity.setField(MasterOrderProductFields.QUANTITY_TAKEN_FROM_WAREHOUSE, BigDecimal.ZERO);
                     masterOrderProductEntity.getDataDefinition().save(masterOrderProductEntity);
                 }
-                order.setField(OrderFields.PLANNED_QUANTITY, quantityRemainingToOrder);
 
+                order.setField(OrderFields.PLANNED_QUANTITY, quantityRemainingToOrder);
             }
         } else {
             order.setField(OrderFields.PLANNED_QUANTITY, quantityRemainingToOrder);
-
         }
         if (!masterOrderProduct.isCreateCollectiveOrders()) {
             Entity masterOrderProductEntity = masterOrderProduct.getMasterOrderProduct();
+
             setMasterOrderPositionStatus(masterOrderProductEntity, MasterOrderPositionStatus.ORDERED);
+
             masterOrderProductEntity.getDataDefinition().save(masterOrderProductEntity);
         } else {
             for (Entity mop : masterOrderProduct.getGroupedMasterOrderProduct()) {
                 setMasterOrderPositionStatus(mop, MasterOrderPositionStatus.ORDERED);
+
                 mop = mop.getDataDefinition().save(mop);
                 mop.isValid();
             }
         }
 
-        order.setField(IGNORE_MISSING_COMPONENTS, parameter.getBooleanField(IGNORE_MISSING_COMPONENTS));
+        order.setField(L_IGNORE_MISSING_COMPONENTS, parameter.getBooleanField(L_IGNORE_MISSING_COMPONENTS));
 
         String orderDescription = buildDescription(parameter, masterOrderProduct, technology);
+
         order.setField(OrderFields.DESCRIPTION, orderDescription);
+
         fillPCParametersForOrder(order, technology);
+
         return order;
     }
 
-    private void fillDates(Entity parameter, Entity order, Date masterOrderDeadline, Date masterOrderStartDate,
-            Date masterOrderFinishDate) {
-        if (!parameter.getBooleanField(ORDERS_GENERATION_NOT_COMPLETE_DATES)) {
+    private void fillDates(final Entity parameter, final Entity order, final Date masterOrderDeadline,
+            final Date masterOrderStartDate, final Date masterOrderFinishDate) {
+        if (!parameter.getBooleanField(L_ORDERS_GENERATION_NOT_COMPLETE_DATES)) {
             order.setField(OrderFields.DATE_FROM, masterOrderStartDate);
             order.setField(OrderFields.DATE_TO, masterOrderFinishDate);
             order.setField(OrderFields.DEADLINE, masterOrderDeadline);
         }
     }
 
-    public String buildDescription(Entity parameter, MasterOrderProduct masterOrderProduct, Entity technology) {
+    public String buildDescription(final Entity parameter, final MasterOrderProduct masterOrderProduct, final Entity technology) {
         boolean copyDescription = parameter.getBooleanField(ParameterFieldsMO.COPY_DESCRIPTION);
-        boolean copyNotesFromMasterOrderPosition = parameter.getBooleanField(COPY_NOTES_FROM_MASTER_ORDER_POSITION);
+        boolean copyNotesFromMasterOrderPosition = parameter.getBooleanField(L_COPY_NOTES_FROM_MASTER_ORDER_POSITION);
         boolean fillOrderDescriptionBasedOnTechnology = parameter
                 .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);
 
         StringBuilder descriptionBuilder = new StringBuilder();
 
         if (!masterOrderProduct.isCreateCollectiveOrders()) {
-
-            if (copyDescription
-                    && StringUtils.isNoneBlank(masterOrderProduct.getMasterOrder().getStringField(MasterOrderFields.DESCRIPTION))) {
+            if (copyDescription && StringUtils
+                    .isNoneBlank(masterOrderProduct.getMasterOrder().getStringField(MasterOrderFields.DESCRIPTION))) {
                 descriptionBuilder.append(masterOrderProduct.getMasterOrder().getStringField(MasterOrderFields.DESCRIPTION));
             }
 
@@ -587,6 +638,7 @@ public class OrdersFromMOProductsGenerationService {
                 if (StringUtils.isNoneBlank(descriptionBuilder.toString())) {
                     descriptionBuilder.append("\n");
                 }
+
                 descriptionBuilder.append(masterOrderProduct.getComments());
             }
         } else {
@@ -599,26 +651,23 @@ public class OrdersFromMOProductsGenerationService {
             if (StringUtils.isNoneBlank(descriptionBuilder.toString())) {
                 descriptionBuilder.append("\n");
             }
-            descriptionBuilder.append(technology.getStringField(TechnologyFields.DESCRIPTION));
 
+            descriptionBuilder.append(technology.getStringField(TechnologyFields.DESCRIPTION));
         }
 
         return descriptionBuilder.toString();
     }
 
-    private String extractMasterOrdersNumbers(MasterOrderProduct masterOrderProduct) {
-        return String.join(
-                ", ",
-                masterOrderProduct
-                        .getGroupedMasterOrderProduct()
-                        .stream()
-                        .map(mop -> mop.getBelongsToField(MasterOrderProductFields.MASTER_ORDER).getStringField(
-                                MasterOrderFields.NUMBER)).collect(Collectors.toSet()));
+    private String extractMasterOrdersNumbers(final MasterOrderProduct masterOrderProduct) {
+        return String.join(", ", masterOrderProduct.getGroupedMasterOrderProduct().stream()
+                .map(mop -> mop.getBelongsToField(MasterOrderProductFields.MASTER_ORDER).getStringField(MasterOrderFields.NUMBER))
+                .collect(Collectors.toSet()));
     }
 
-    public String buildDescription(Entity parameter, Entity masterOrder, Entity masterOrderProduct, Entity technology) {
+    public String buildDescription(final Entity parameter, final Entity masterOrder, final Entity masterOrderProduct,
+            final Entity technology) {
         boolean copyDescription = parameter.getBooleanField(ParameterFieldsMO.COPY_DESCRIPTION);
-        boolean copyNotesFromMasterOrderPosition = parameter.getBooleanField(COPY_NOTES_FROM_MASTER_ORDER_POSITION);
+        boolean copyNotesFromMasterOrderPosition = parameter.getBooleanField(L_COPY_NOTES_FROM_MASTER_ORDER_POSITION);
         boolean fillOrderDescriptionBasedOnTechnology = parameter
                 .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);
 
@@ -633,6 +682,7 @@ public class OrdersFromMOProductsGenerationService {
             if (StringUtils.isNoneBlank(descriptionBuilder.toString())) {
                 descriptionBuilder.append("\n");
             }
+
             descriptionBuilder.append(masterOrderProduct.getStringField(MasterOrderProductFields.COMMENTS));
         }
 
@@ -641,8 +691,8 @@ public class OrdersFromMOProductsGenerationService {
             if (StringUtils.isNoneBlank(descriptionBuilder.toString())) {
                 descriptionBuilder.append("\n");
             }
-            descriptionBuilder.append(technology.getStringField(TechnologyFields.DESCRIPTION));
 
+            descriptionBuilder.append(technology.getStringField(TechnologyFields.DESCRIPTION));
         }
 
         return descriptionBuilder.toString();
@@ -656,15 +706,14 @@ public class OrdersFromMOProductsGenerationService {
         if (masterOrderProduct.isCreateCollectiveOrders()) {
             return numberGeneratorService.generateNumber(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER, 6);
         } else {
-            return numberGeneratorService.generateNumberWithPrefix(OrdersConstants.PLUGIN_IDENTIFIER,
-                    OrdersConstants.MODEL_ORDER, 3, masterOrderProduct.getMasterOrder().getStringField(MasterOrderFields.NUMBER)
-                            + "-");
+            return numberGeneratorService.generateNumberWithPrefix(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER,
+                    3, masterOrderProduct.getMasterOrder().getStringField(MasterOrderFields.NUMBER) + "-");
         }
-
     }
 
-    private void setMasterOrderPositionStatus(final Entity masterOrderProduct, MasterOrderPositionStatus status) {
+    private void setMasterOrderPositionStatus(final Entity masterOrderProduct, final MasterOrderPositionStatus status) {
         Entity item = dictionaryService.getItemEntityByTechnicalCode(L_MASTER_ORDER_POSITION_STATUS, status.getStringValue());
+
         if (Objects.nonNull(item)) {
             masterOrderProduct.setField(MasterOrderProductFields.MASTER_ORDER_POSITION_STATUS,
                     item.getStringField(DictionaryItemFields.NAME));
@@ -673,10 +722,11 @@ public class OrdersFromMOProductsGenerationService {
     }
 
     private Entity getTechnology(final MasterOrderProduct masterOrderProduct) {
-        Entity technology;
-        technology = masterOrderProduct.getTechnology();
+        Entity technology = masterOrderProduct.getTechnology();
+
         if (Objects.isNull(technology)) {
             Entity product = masterOrderProduct.getProduct();
+
             technology = technologyServiceO.getDefaultTechnology(product);
         }
 
@@ -693,6 +743,7 @@ public class OrdersFromMOProductsGenerationService {
 
     private List<Entity> getOrderAndSubOrders(final Long orderID) {
         String sql = "SELECT o FROM #orders_order AS o WHERE o.root = :orderID OR o.id = :orderID";
+
         return getOrderDD().find(sql).setLong("orderID", orderID).list().getEntities();
     }
 
@@ -708,4 +759,5 @@ public class OrdersFromMOProductsGenerationService {
         return dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
                 MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO);
     }
+
 }
