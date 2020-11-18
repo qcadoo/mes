@@ -23,20 +23,6 @@
  */
 package com.qcadoo.mes.masterOrders.validators;
 
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.id;
-import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
-import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
-import static com.qcadoo.model.api.search.SearchRestrictions.isNull;
-import static com.qcadoo.model.api.search.SearchRestrictions.or;
-
-import java.util.Date;
-import java.util.Locale;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
@@ -44,12 +30,21 @@ import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.constants.OrderFieldsMO;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.Locale;
+import java.util.Objects;
+
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.id;
+import static com.qcadoo.model.api.search.SearchRestrictions.*;
 
 @Service
 public class OrderValidatorsMO {
@@ -137,17 +132,6 @@ public class OrderValidatorsMO {
         }
 
         return checkIfOrderMatchesAnyOfMasterOrderProductsWithTechnology(order, masterOrder);
-    }
-
-    /* Precondition - order is not null */
-    private boolean orderHasPatternTechnology(final DataDefinition orderDD, final Entity order) {
-        if (OrderType.of(order) != OrderType.WITH_PATTERN_TECHNOLOGY) {
-            order.addError(orderDD.getField(OrderFields.ORDER_TYPE), "masterOrders.order.masterOrder.wrongOrderType");
-
-            return false;
-        }
-
-        return true;
     }
 
     private boolean checkIfOrderMatchesAnyOfMasterOrderProductsWithTechnology(final Entity order, final Entity masterOrder) {

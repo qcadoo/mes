@@ -25,7 +25,6 @@ package com.qcadoo.mes.lineChangeoverNormsForOrders.hooks;
 
 import com.google.common.base.Predicate;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.util.OrderDetailsRibbonHelper;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.testing.model.EntityTestUtils;
@@ -72,10 +71,6 @@ public class OrderDetailsHookLCNFOTest {
         ReflectionTestUtils.setField(orderDetailsHooksLCNFO, "orderDetailsRibbonHelper", orderDetailsRibbonHelper);
     }
 
-    private void stubOrderType(final OrderType type) {
-        EntityTestUtils.stubStringField(order, OrderFields.ORDER_TYPE, type.getStringValue());
-    }
-
     private void stubTechnologyPrototype(final Entity technology, final Entity productionLine) {
         EntityTestUtils.stubBelongsToField(order, OrderFields.TECHNOLOGY_PROTOTYPE, technology);
         EntityTestUtils.stubBelongsToField(order, OrderFields.PRODUCTION_LINE, productionLine);
@@ -95,19 +90,9 @@ public class OrderDetailsHookLCNFOTest {
 
         assertFalse(predicate.apply(null));
 
-        stubOrderType(OrderType.WITH_OWN_TECHNOLOGY);
         stubTechnologyPrototype(null, null);
         assertFalse(predicate.apply(order));
 
-        stubOrderType(OrderType.WITH_OWN_TECHNOLOGY);
-        stubTechnologyPrototype(technologyPrototype, productionLine);
-        assertFalse(predicate.apply(order));
-
-        stubOrderType(OrderType.WITH_PATTERN_TECHNOLOGY);
-        stubTechnologyPrototype(null, null);
-        assertFalse(predicate.apply(order));
-
-        stubOrderType(OrderType.WITH_PATTERN_TECHNOLOGY);
         stubTechnologyPrototype(technologyPrototype, productionLine);
         assertTrue(predicate.apply(order));
     }

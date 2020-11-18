@@ -27,12 +27,10 @@ import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.CopyOfTechnologyStateChangeVC;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyType;
 import com.qcadoo.model.api.*;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -135,47 +133,11 @@ public class CopyOfTechnologyDetailsListeners {
     public void performBack(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Map<String, Object> parameters = Maps.newHashMap();
 
-        Long technologyId = (Long) state.getFieldValue();
-        Entity technology = technologyServiceO.getTechnologyDD().get(technologyId);
         Entity order = getOrderWithTechnology(view);
         parameters.put("form.id", order.getId());
 
         String url = "../page/orders/orderDetails.html";
         view.redirectTo(url, false, false, parameters);
-    }
-
-    @Transactional
-    public void clearTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        final FormComponent technologyForm = (FormComponent) state;
-
-        Long technologyId = (Long) state.getFieldValue();
-
-        if (technologyId != null) {
-            Entity technology = technologyServiceO.getTechnologyDD().get(technologyId);
-            Entity order = getOrderWithTechnology(view);
-
-            Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-
-            if (technologyPrototype != null && technologyId.equals(technologyPrototype.getId())) {
-                Entity newTechnology = createTechnology(order);
-
-                if (newTechnology.isValid()) {
-                    order.setField(OrderFields.TECHNOLOGY, null);
-                    order.setField(OrderFields.TECHNOLOGY_PROTOTYPE, null);
-
-                    order = order.getDataDefinition().save(order);
-
-                    deleteTechnology(technology);
-
-                    order.setField(OrderFields.TECHNOLOGY, newTechnology);
-
-                    order.getDataDefinition().save(order);
-
-                    state.setFieldValue(newTechnology.getId());
-                    technologyForm.setEntity(newTechnology);
-                }
-            }
-        }
     }
 
     @Transactional
@@ -231,23 +193,6 @@ public class CopyOfTechnologyDetailsListeners {
         return orderDD.get(Long.valueOf(orderId));
     }
 
-    private Entity createTechnology(final Entity order) {
-        Entity newTechnology = technologyServiceO.getTechnologyDD().create();
-
-        String number = technologyServiceO.generateNumberForTechnologyInOrder(order, null);
-
-        Entity product = order.getBelongsToField(TechnologyFields.PRODUCT);
-
-        newTechnology.setField(TechnologyFields.NUMBER, number);
-        newTechnology.setField(TechnologyFields.NAME, technologyServiceO.makeTechnologyName(number, product));
-        newTechnology.setField(TechnologyFields.PRODUCT, product);
-        newTechnology.setField(TechnologyFields.TECHNOLOGY_TYPE, getTechnologyType(order));
-
-        newTechnology = newTechnology.getDataDefinition().save(newTechnology);
-
-        return newTechnology;
-    }
-
     private Entity copyTechnology(final Entity technologyPrototype, final Entity order) {
         String number = technologyServiceO.generateNumberForTechnologyInOrder(order, technologyPrototype);
 
@@ -255,7 +200,7 @@ public class CopyOfTechnologyDetailsListeners {
 
         copyOfTechnology.setField(TechnologyFields.NUMBER, number);
         copyOfTechnology.setField(TechnologyFields.TECHNOLOGY_PROTOTYPE, technologyPrototype);
-        copyOfTechnology.setField(TechnologyFields.TECHNOLOGY_TYPE, getTechnologyType(order));
+        copyOfTechnology.setField(TechnologyFields.TECHNOLOGY_TYPE, TechnologyServiceO.WITH_PATTERN_TECHNOLOGY);
         copyOfTechnology = copyOfTechnology.getDataDefinition().save(copyOfTechnology);
 
         return copyOfTechnology;
@@ -264,13 +209,4 @@ public class CopyOfTechnologyDetailsListeners {
     private EntityOpResult deleteTechnology(final Entity technology) {
         return technology.getDataDefinition().delete(technology.getId());
     }
-
-    private String getTechnologyType(final Entity order) {
-        if (OrderType.of(order) == OrderType.WITH_OWN_TECHNOLOGY) {
-            return TechnologyType.WITH_OWN_TECHNOLOGY.getStringValue();
-        } else {
-            return TechnologyType.WITH_PATTERN_TECHNOLOGY.getStringValue();
-        }
-    }
-
 }

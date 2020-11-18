@@ -24,7 +24,6 @@
 package com.qcadoo.mes.lineChangeoverNormsForOrders.hooks;
 
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.util.OrderDetailsRibbonHelper;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -41,8 +40,7 @@ public class OrderDetailsHooksLCNFO {
         if (order == null) {
             return false;
         }
-        OrderType orderType = OrderType.of(order);
-        if (orderType != OrderType.WITH_PATTERN_TECHNOLOGY || order.getBelongsToField(OrderFields.PRODUCTION_LINE) == null) {
+        if (order.getBelongsToField(OrderFields.PRODUCTION_LINE) == null) {
             return false;
         }
         Entity patternTechnology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);

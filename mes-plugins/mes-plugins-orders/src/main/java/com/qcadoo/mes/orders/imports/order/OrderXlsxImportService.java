@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.orders.imports.order;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -39,7 +30,6 @@ import com.qcadoo.mes.basic.imports.services.XlsxImportService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.util.AdditionalUnitService;
@@ -49,6 +39,14 @@ import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Objects;
+import java.util.Set;
 
 @Service
 public class OrderXlsxImportService extends XlsxImportService {
@@ -101,7 +99,6 @@ public class OrderXlsxImportService extends XlsxImportService {
     }
 
     private void setRequiredFields(final Entity order) {
-        order.setField(OrderFields.ORDER_TYPE, OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue());
         order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
     }
 

@@ -1,17 +1,5 @@
 package com.qcadoo.mes.orders.listeners;
 
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
@@ -19,7 +7,6 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
@@ -33,11 +20,20 @@ import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class OrdersGenerationFromProductsListeners {
-
-
 
     private static final String DATE_FROM = "dateFrom";
 
@@ -134,7 +130,6 @@ public class OrdersGenerationFromProductsListeners {
         order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
         order.setField(IS_SUBCONTRACTED, false);
         order.setField(OrderFields.STATE, OrderStateStringValues.PENDING);
-        order.setField(OrderFields.ORDER_TYPE, OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue());
         order.setField(OrderFields.PLANNED_QUANTITY, plannedQuantity);
 
         order.setField(IGNORE_MISSING_COMPONENTS, parameters.getBooleanField(IGNORE_MISSING_COMPONENTS));

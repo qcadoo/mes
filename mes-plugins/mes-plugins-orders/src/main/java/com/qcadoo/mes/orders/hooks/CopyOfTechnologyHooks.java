@@ -26,7 +26,6 @@ package com.qcadoo.mes.orders.hooks;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.criteriaModifiers.TechnologyCriteriaModifiersO;
@@ -48,27 +47,20 @@ import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
-
-import java.util.List;
-
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class CopyOfTechnologyHooks {
-
-
-
-    
 
     private static final String L_CLEAR_AND_LOAD_PATTERN_TECHNOLOGY = "clearAndLoadPatternTechnology";
 
     private static final String L_TECHNOLOGY = "technology";
 
     private static final String L_STATUS = "status";
-
-    private static final String L_CLEAR_TECHNOLOGY = "clearTechnology";
 
     private static final String L_CHECK_TECHNOLOGY = "checkTechnology";
 
@@ -99,11 +91,7 @@ public class CopyOfTechnologyHooks {
         Entity technology = technologyForm.getEntity().getDataDefinition().get(technologyId);
         Entity order = getOrderForTechnology(view);
 
-        String orderType = order.getStringField(OrderFields.ORDER_TYPE);
-
-        enableFileds(view, orderType);
-        disableRibbonItem(view, orderType, order);
-        setVisibleFileds(view, orderType);
+        disableRibbonItem(view, order);
         setCriteriaModifierParameters(view, order);
         technologyDetailsHooks.filterStateChangeHistory(view);
         technologyDetailsHooks.setTreeTabEditable(view);
@@ -118,7 +106,6 @@ public class CopyOfTechnologyHooks {
        try {
            orderId = state.getJsonContext().getString("window.mainTab.technology.orderId");
         } catch (JSONException ex) {
-           // throw new RuntimeException(ex);
            EntityList entities = ((FormComponent) state.getComponentByReference(QcadooViewConstants.L_FORM)).getPersistedEntityWithIncludedFormValues().getHasManyField("orders");
            if(!entities.isEmpty()){
                orderId = String.valueOf(entities.get(0).getId());
@@ -167,7 +154,7 @@ public class CopyOfTechnologyHooks {
         patternTechnologyLookup.setFilterValue(holder);
     }
 
-    private void disableRibbonItem(final ViewDefinitionState view, final String orderType, final Entity order) {
+    private void disableRibbonItem(final ViewDefinitionState view, final Entity order) {
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         Ribbon ribbon = window.getRibbon();
 
@@ -175,17 +162,7 @@ public class CopyOfTechnologyHooks {
         RibbonGroup status = ribbon.getGroupByName(L_STATUS);
 
         RibbonActionItem clearAndLoadPatternTechnology = technology.getItemByName(L_CLEAR_AND_LOAD_PATTERN_TECHNOLOGY);
-        RibbonActionItem clearTechnology = technology.getItemByName(L_CLEAR_TECHNOLOGY);
         RibbonActionItem checkTechnology = status.getItemByName(L_CHECK_TECHNOLOGY);
-
-        if (OrderType.WITH_OWN_TECHNOLOGY.getStringValue().equals(orderType)) {
-            clearAndLoadPatternTechnology.setEnabled(false);
-            clearAndLoadPatternTechnology.requestUpdate(true);
-        }
-        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType)) {
-            clearTechnology.setEnabled(false);
-            clearTechnology.requestUpdate(true);
-        }
 
         String state = order.getStringField(OrderFields.STATE);
 
@@ -193,29 +170,8 @@ public class CopyOfTechnologyHooks {
             clearAndLoadPatternTechnology.setEnabled(false);
             clearAndLoadPatternTechnology.requestUpdate(true);
 
-            clearTechnology.setEnabled(false);
-            clearTechnology.requestUpdate(true);
-
             checkTechnology.setEnabled(false);
             checkTechnology.requestUpdate(true);
-        }
-    }
-
-    private void enableFileds(final ViewDefinitionState view, final String orderType) {
-        LookupComponent technologyPrototypeLookup = (LookupComponent) view
-                .getComponentByReference(TechnologyFields.TECHNOLOGY_PROTOTYPE);
-
-        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType)) {
-            technologyPrototypeLookup.setEnabled(true);
-        }
-    }
-
-    private void setVisibleFileds(final ViewDefinitionState view, final String orderType) {
-        LookupComponent patternTechnologyLookup = (LookupComponent) view
-                .getComponentByReference(TechnologyFields.TECHNOLOGY_PROTOTYPE);
-
-        if (OrderType.WITH_OWN_TECHNOLOGY.getStringValue().equals(orderType)) {
-            patternTechnologyLookup.setVisible(false);
         }
     }
 
