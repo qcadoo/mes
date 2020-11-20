@@ -272,6 +272,11 @@
                            plugin="materialFlowResources" joinField="newBatch" cascade="nullify"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="staff">
+            <model:hasMany name="documentPositions" model="position" joinField="pickingWorker"
+                           plugin="materialFlowResources"/>
+        </model:model-field>
+
         <model:model-hook plugin="materialFlow" model="location">
             <model:validatesWith class="com.qcadoo.mes.materialFlowResources.validators.LocationValidators"
                            method="validatesWith"/>
