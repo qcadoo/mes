@@ -9,6 +9,8 @@ import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
 import com.qcadoo.mes.basic.controllers.dataProvider.requests.ProductRequest;
 import com.qcadoo.mes.basic.controllers.dataProvider.requests.WorkstationRequest;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.CountriesGridResponse;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.CountriesResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.ProductResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.ProductsGridResponse;
@@ -112,6 +114,22 @@ public final class BasicApiController {
             @RequestParam(value = "order", required = false) String order,
             @RequestParam(value = "search", required = false) String search) {
         return dataProvider.getProductsResponse(limit, offset, sort, order, search);
+    }
+
+
+    @ResponseBody
+    @RequestMapping(value = "/countriesByPage", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public CountriesGridResponse getCountriesByPage(@RequestParam(value = "limit") int limit, @RequestParam(value = "offset") int offset,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "order", required = false) String order,
+            @RequestParam(value = "search", required = false) String search) {
+        return dataProvider.getCountriesByPage(limit, offset, sort, order, search);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/countries", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public CountriesResponse getCountries(@RequestParam("query") String query) {
+        return dataProvider.getCountries(query);
     }
 
     @ResponseBody

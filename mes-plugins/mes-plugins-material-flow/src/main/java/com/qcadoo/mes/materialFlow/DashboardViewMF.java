@@ -33,6 +33,7 @@ import com.qcadoo.mes.materialFlow.constants.ParameterFieldsMF;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.constants.MenuItemFields;
@@ -72,7 +73,14 @@ public class DashboardViewMF implements DashboardView {
 
         Entity parameter = parameterService.getParameter();
         Entity currentUser = userService.getCurrentUserEntity();
-
+        if (PluginUtils.isEnabled("configurator")
+                && (securityService.hasCurrentUserRole("ROLE_ADMIN") || securityService.hasCurrentUserRole("ROLE_SUPERADMIN"))
+                && !parameter.getBooleanField("applicationConfigured")) {
+            mav.setViewName("configurator/configurator");
+            mav.addObject("translationsMap", translationService.getMessagesGroup("configurator", locale));
+            mav.addObject("locale", locale.getLanguage());
+            return mav;
+        }
         mav.setViewName("basic/dashboard");
         mav.addObject("locale", locale.getLanguage());
 
@@ -103,17 +111,16 @@ public class DashboardViewMF implements DashboardView {
         LinkedList<Entity> filteredDashboardButtons = Lists.newLinkedList();
 
         dashboardButtons.forEach(dashboardButton -> {
-                    Entity item = dashboardButton.getBelongsToField(DashboardButtonFields.ITEM);
+            Entity item = dashboardButton.getBelongsToField(DashboardButtonFields.ITEM);
 
-                    if (Objects.nonNull(item)) {
-                        String authRole = item.getStringField(MenuItemFields.AUTH_ROLE);
+            if (Objects.nonNull(item)) {
+                String authRole = item.getStringField(MenuItemFields.AUTH_ROLE);
 
-                        if (securityService.hasRole(currentUser, authRole)) {
-                            filteredDashboardButtons.add(dashboardButton);
-                        }
-                    }
+                if (securityService.hasRole(currentUser, authRole)) {
+                    filteredDashboardButtons.add(dashboardButton);
                 }
-        );
+            }
+        });
 
         return filteredDashboardButtons;
     }
