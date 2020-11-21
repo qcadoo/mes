@@ -33,7 +33,6 @@ import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
@@ -114,15 +113,7 @@ public class CostCalculationDetailsHooks {
         if (order == null) {
             filterValueHolder.remove(CostCalculationFields.TECHNOLOGY);
         } else {
-            String orderType = order.getStringField(OrderFields.ORDER_TYPE);
-
-            Entity technology = null;
-
-            if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType)) {
-                technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-            } else {
-                technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-            }
+            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
 
             if (technology == null) {
                 filterValueHolder.remove(CostCalculationFields.TECHNOLOGY);
@@ -153,7 +144,7 @@ public class CostCalculationDetailsHooks {
                 Long orderId = json.getLong("window.mainTab.orderId");
                 order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
 
-                technology = getTechnologyFromOrder(order);
+                technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
             }
             if(Objects.nonNull(order) || Objects.nonNull(technology)) {
                 applyValuesToFields(view, technology, order);
@@ -336,20 +327,6 @@ public class CostCalculationDetailsHooks {
             saveNominalCosts.setEnabled(true);
             saveNominalCosts.requestUpdate(true);
         }
-    }
-
-    private Entity getTechnologyFromOrder(final Entity order) {
-        Entity technology = null;
-
-        String orderType = order.getStringField(OrderFields.ORDER_TYPE);
-
-        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType)) {
-            technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-        } else {
-            technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        }
-
-        return technology;
     }
 
     public void applyValuesToFields(final ViewDefinitionState view, final Entity technology, final Entity order) {

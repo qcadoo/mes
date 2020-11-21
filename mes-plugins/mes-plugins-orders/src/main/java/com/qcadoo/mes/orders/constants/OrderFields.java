@@ -69,8 +69,6 @@ public final class OrderFields {
 
     public static final String STATE = "state";
 
-    public static final String ORDER_TYPE = "orderType";
-
     public static final String COMPANY = "company";
 
     public static final String PRODUCT = "product";

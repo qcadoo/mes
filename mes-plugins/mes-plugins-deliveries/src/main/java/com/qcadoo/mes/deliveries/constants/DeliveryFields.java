@@ -77,5 +77,4 @@ public final class DeliveryFields {
 
     public static final String ATTACHMENTS = "attachments";
 
-
 }

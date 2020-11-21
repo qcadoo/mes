@@ -58,11 +58,10 @@
 
         <!-- PRODUCTS FAMILY TREE -->
         <belongsTo name="parent" model="product"/>
-        <belongsTo name="child" model="product" persistent="false"/>
         <hasMany name="productFamilyChildrens" joinField="parent"
                  model="product"/>
         <tree name="productFamilyChildrenTree" joinField="parent" model="product"
-              cascade="nullify" persistent="false"/>
+              persistent="false"/>
         <integer name="priority" persistent="false"/>
         <string name="nodeNumber"/>
         <enum name="entityType" values="01particularProduct,02productsFamily"

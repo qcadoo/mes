@@ -78,4 +78,8 @@ public final class PositionFields {
     public static final String POSITION_ATTRIBUTE_VALUES = "positionAttributeValues";
 
     public static final String QUALITY_RATING = "qualityRating";
+
+    public static final String PICKING_DATE = "pickingDate";
+
+    public static final String PICKING_WORKER = "pickingWorker";
 }

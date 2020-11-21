@@ -36,32 +36,6 @@
           
             
             <group name="technology">
-                <bigButton name="clearTechnology" icon="closeIcon24.png"
-                           state="disabled">
-                    <script>
-                        <![CDATA[
-							this.addOnChangeListener({
-								onClick: function() {
-									if(window.canClose()) {
-										#{form}.performEvent('clearTechnology', []);
-									}
-								}
-							});		
-							#{form}.addOnChangeListener({
-								onSetValue: function(value) {
-									if (! value || ! value.content) {
-										return;
-									}
-									if (! value.content.entityId) {
-										this.disable();
-									} else {
-										this.enable();
-									}
-								}
-							});					
-						]]>
-                    </script>
-                </bigButton>
                 <bigButton name="clearAndLoadPatternTechnology" icon="updateIcon24.png"
                            state="disabled">
                     <script>
@@ -161,8 +135,7 @@
                     </layoutElement>
                     <layoutElement column="1" row="5">
                         <component type="lookup" name="technologyPrototype"
-                                   reference="technologyPrototype" field="technologyPrototype"
-                                   defaultEnabled="false">
+                                   reference="technologyPrototype" field="technologyPrototype">
                             <option type="column" name="name" fields="name" link="true"
                                     width="300"/>
                             <option type="column" name="state" fields="state"/>
@@ -230,8 +203,6 @@
                 <option type="header" value="true"/>
                 <option type="expression" value="#product['number'] + ' ' + #product['name']"/>
 
-                <listener event="clearTechnology" method="clearTechnology"
-                          class="com.qcadoo.mes.orders.listeners.CopyOfTechnologyDetailsListeners"/>
                 <listener event="clearAndLoadPatternTechnology" method="clearAndLoadPatternTechnology"
                           class="com.qcadoo.mes.orders.listeners.CopyOfTechnologyDetailsListeners"/>
                 <listener event="save" method="changePatternTechnology"

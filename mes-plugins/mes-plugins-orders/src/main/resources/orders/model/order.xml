@@ -68,10 +68,6 @@
               values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"
               required="true"/>
 
-        <enum name="orderType"
-              values="01withPatternTechnology,02withOwnTechnology"
-              default="01withPatternTechnology" required="true"/>
-
         <belongsTo name="company" plugin="basic" model="company"/>
         <belongsTo name="product" plugin="basic" model="product"
                    required="true"/>

@@ -29,11 +29,7 @@ import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
-import com.qcadoo.mes.orders.constants.OperationalTaskFields;
-import com.qcadoo.mes.orders.constants.OperationalTaskType;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderType;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.constants.*;
 import com.qcadoo.mes.orders.criteriaModifiers.TechnologyCriteriaModifiersO;
 import com.qcadoo.mes.orders.hooks.OrderDetailsHooks;
 import com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient;
@@ -59,19 +55,16 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 @Service
 public class OrderDetailsListeners {
-
-
 
     private static final String L_PLANNED_DATE_FROM = "plannedDateFrom";
 
@@ -179,19 +172,17 @@ public class OrderDetailsListeners {
         if (orderId != null) {
             Entity order = orderService.getOrder(orderId);
 
-            if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(order.getStringField(OrderFields.ORDER_TYPE))) {
-                LookupComponent patternTechnologyLookup = (LookupComponent) view
-                        .getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
+            LookupComponent patternTechnologyLookup = (LookupComponent) view
+                    .getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
 
-                if (patternTechnologyLookup.getEntity() == null) {
-                    state.addMessage("order.technology.patternTechnology.not.set", MessageType.INFO);
-                    return;
-                }
-                if (!patternTechnologyLookup.getEntity().getBelongsToField(TechnologyFields.PRODUCT)
-                        .equals(order.getBelongsToField(OrderFields.PRODUCT))) {
-                    state.addMessage("order.technology.patternTechnology.productGroupTechnology.set", MessageType.INFO);
-                    return;
-                }
+            if (patternTechnologyLookup.getEntity() == null) {
+                state.addMessage("order.technology.patternTechnology.not.set", MessageType.INFO);
+                return;
+            }
+            if (!patternTechnologyLookup.getEntity().getBelongsToField(TechnologyFields.PRODUCT)
+                    .equals(order.getBelongsToField(OrderFields.PRODUCT))) {
+                state.addMessage("order.technology.patternTechnology.productGroupTechnology.set", MessageType.INFO);
+                return;
             }
 
             Long technologyId = order.getBelongsToField(OrderFields.TECHNOLOGY).getId();
@@ -310,37 +301,32 @@ public class OrderDetailsListeners {
     }
 
     public void changeOrderProduct(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FieldComponent orderTypeField = (FieldComponent) view.getComponentByReference(OrderFields.ORDER_TYPE);
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCT);
+        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
+        FieldComponent defaultTechnologyField = (FieldComponent) view.getComponentByReference(OrderFields.DEFAULT_TECHNOLOGY);
 
-        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderTypeField.getFieldValue())) {
-            LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCT);
-            LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
-            FieldComponent defaultTechnologyField = (FieldComponent) view.getComponentByReference(OrderFields.DEFAULT_TECHNOLOGY);
+        Entity product = productLookup.getEntity();
 
-            Entity product = productLookup.getEntity();
+        defaultTechnologyField.setFieldValue(null);
+        technologyLookup.setFieldValue(null);
 
-            defaultTechnologyField.setFieldValue(null);
-            technologyLookup.setFieldValue(null);
+        if (product != null) {
+            FilterValueHolder holder = technologyLookup.getFilterValue();
 
-            if (product != null) {
-                FilterValueHolder holder = technologyLookup.getFilterValue();
+            holder.put(TechnologyCriteriaModifiersO.PRODUCT_PARAMETER, product.getId());
 
-                holder.put(TechnologyCriteriaModifiersO.PRODUCT_PARAMETER, product.getId());
+            technologyLookup.setFilterValue(holder);
 
-                technologyLookup.setFilterValue(holder);
-                
-                Entity defaultTechnologyEntity = technologyServiceO.getDefaultTechnology(product);
+            Entity defaultTechnologyEntity = technologyServiceO.getDefaultTechnology(product);
 
-                if (defaultTechnologyEntity != null) {
-                    String defaultTechnologyValue = expressionService.getValue(defaultTechnologyEntity,
-                            "#number + ' - ' + #name", view.getLocale());
+            if (defaultTechnologyEntity != null) {
+                String defaultTechnologyValue = expressionService.getValue(defaultTechnologyEntity,
+                        "#number + ' - ' + #name", view.getLocale());
 
-                    defaultTechnologyField.setFieldValue(defaultTechnologyValue);
-                    technologyLookup.setFieldValue(defaultTechnologyEntity.getId());
-                }
+                defaultTechnologyField.setFieldValue(defaultTechnologyValue);
+                technologyLookup.setFieldValue(defaultTechnologyEntity.getId());
             }
         }
-
     }
 
     public void printOrderReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {

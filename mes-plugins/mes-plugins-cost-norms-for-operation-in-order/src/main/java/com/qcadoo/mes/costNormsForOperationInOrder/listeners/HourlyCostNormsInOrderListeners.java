@@ -25,7 +25,6 @@ package com.qcadoo.mes.costNormsForOperationInOrder.listeners;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.orders.hooks.CopyOfTechnologyHooks;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -36,9 +35,6 @@ import java.util.Map;
 
 @Service
 public class HourlyCostNormsInOrderListeners {
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private CopyOfTechnologyHooks copyOfTechnologyHooks;

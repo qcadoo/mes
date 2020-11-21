@@ -34,7 +34,6 @@
 			orders.effectiveDateTo AS orders_order_effectivedateto,
 			orders.startDate AS orders_order_startdate,
 			orders.finishDate AS orders_order_finishdate,
-			orders.orderType AS orders_order_ordertype,
 			technology.name AS technologies_technology_name,
 			technology.number AS technologies_technology_number,
 			technologyPrototype.name AS technologies_technology_prototype_name,
@@ -103,7 +102,6 @@
 	<field name="orders_order_effectivedateto" class="java.util.Date"/>
 	<field name="orders_order_startworker" class="java.lang.String"/>
 	<field name="orders_order_endworker" class="java.lang.String"/>
-	<field name="orders_order_ordertype" class="java.lang.String"/>
 	<field name="orders_order_startdate" class="java.util.Date"/>
 	<field name="orders_order_finishdate" class="java.util.Date"/>
 	<field name="technologies_technology_name" class="java.lang.String"/>
@@ -404,7 +402,7 @@
 			<textField>
 				<reportElement style="qcadooParagraph" x="10" y="330" width="250" height="15"/>
 				<textElement/>
-				<textFieldExpression class="java.lang.String"><![CDATA[$F{orders_order_ordertype}.equals("01withPatternTechnology") ?$R{orders.order.report.technology.pattern} : $R{orders.order.report.technology.own}]]></textFieldExpression>
+				<textFieldExpression class="java.lang.String"><![CDATA[$R{orders.order.report.technology.pattern}]]></textFieldExpression>
 			</textField>
 			<frame>
 				<reportElement stretchType="RelativeToTallestObject" x="0" y="345" width="555" height="55">

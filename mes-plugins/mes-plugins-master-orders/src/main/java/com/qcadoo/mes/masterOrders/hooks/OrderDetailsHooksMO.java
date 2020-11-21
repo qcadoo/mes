@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
-import java.math.BigDecimal;
-import java.util.Date;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Strings;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
@@ -49,6 +42,12 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Date;
 
 @Service
 public class OrderDetailsHooksMO {
@@ -96,16 +95,6 @@ public class OrderDetailsHooksMO {
                 fillMasterOrderFields(view, masterOrder, masterOrderProduct, masterOrderProductComponent);
             }
         }
-        if (masterOrder != null) {
-            disableOrderType(view);
-        }
-    }
-
-    private void disableOrderType(final ViewDefinitionState view) {
-        FieldComponent orderTypeField = (FieldComponent) view.getComponentByReference(OrderFields.ORDER_TYPE);
-
-        orderTypeField.setEnabled(false);
-        orderTypeField.requestComponentUpdateState();
     }
 
     private void fillMasterOrderFields(final ViewDefinitionState view, final Entity masterOrder, final Entity product,

@@ -23,22 +23,13 @@
  */
 package com.qcadoo.mes.orders;
 
-import java.util.Date;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.technologies.BarcodeOperationComponentService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyType;
 import com.qcadoo.mes.technologies.states.aop.TechnologyStateChangeAspect;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
@@ -49,6 +40,12 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Date;
+import java.util.Objects;
 
 @Service
 public class TechnologyServiceO {
@@ -71,34 +68,25 @@ public class TechnologyServiceO {
     @Autowired
     private BarcodeOperationComponentService barcodeOperationComponentService;
 
+    public static final String WITH_PATTERN_TECHNOLOGY = "01patternTechnology";
+
     @Transactional
     public void createOrUpdateTechnology(final DataDefinition orderDD, final Entity order) {
-        OrderType orderType = OrderType.of(order);
         Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
 
-        if (orderType == OrderType.WITH_PATTERN_TECHNOLOGY) {
-            if (technologyPrototype == null) {
-                removeTechnologyFromOrder(order);
-            } else {
-                createOrUpdateTechnologyForWithPatternTechnology(order, technologyPrototype);
-            }
+        if (technologyPrototype == null) {
+            removeTechnologyFromOrder(order);
         } else {
-            throw new IllegalStateException("Without pkt orderType must be set to WITH_PATTERN_TECHNOLOGY");
+            createOrUpdateTechnologyForWithPatternTechnology(order, technologyPrototype);
         }
     }
 
     @Transactional
     public Entity createTechnologyIfPktDisabled(final DataDefinition orderDD, Entity order) {
-        OrderType orderType = OrderType.of(order);
-        Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-
         if (!isTechnologyCopied(order)) {
-            if (orderType == OrderType.WITH_PATTERN_TECHNOLOGY) {
-                order.setField(OrderFields.TECHNOLOGY, copyTechnology(order, technologyPrototype));
-                order = order.getDataDefinition().save(order);
-            } else {
-                throw new IllegalStateException("Without pkt orderType must be set to WITH_PATTERN_TECHNOLOGY");
-            }
+            Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+            order.setField(OrderFields.TECHNOLOGY, copyTechnology(order, technologyPrototype));
+            order = order.getDataDefinition().save(order);
         }
         barcodeOperationComponentService.removeBarcode(order);
         return order;
@@ -110,12 +98,7 @@ public class TechnologyServiceO {
 
     private void createOrUpdateTechnologyForWithPatternTechnology(final Entity order, final Entity technologyPrototype) {
         if (isTechnologyCopied(order)) {
-            if (isOrderTypeChangedToWithPatternTechnology(order)) {
-                order.setField(OrderFields.TECHNOLOGY,
-                        copyTechnology(order, technologyPrototype));
-                barcodeOperationComponentService.removeBarcode(order);
-
-            } else if (technologyWasChanged(order)) {
+            if (technologyWasChanged(order)) {
                 order.setField(OrderFields.TECHNOLOGY, technologyPrototype);
                 barcodeOperationComponentService.removeBarcode(order);
             }
@@ -141,18 +124,6 @@ public class TechnologyServiceO {
         }
 
         return !Objects.equals(technology.getId(), technologyPrototype.getId());
-    }
-
-    private boolean isOrderTypeChangedToWithPatternTechnology(final Entity order) {
-        Entity existingOrder = getExistingOrder(order);
-
-        if (existingOrder == null) {
-            return false;
-        }
-
-        String orderType = existingOrder.getStringField(OrderFields.ORDER_TYPE);
-
-        return !OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType);
     }
 
     private boolean technologyWasChanged(final Entity order) {
@@ -186,7 +157,7 @@ public class TechnologyServiceO {
 
         copyOfTechnology.setField(TechnologyFields.NUMBER, number);
         copyOfTechnology.setField(TechnologyFields.TECHNOLOGY_PROTOTYPE, technologyPrototype);
-        copyOfTechnology.setField(TechnologyFields.TECHNOLOGY_TYPE, TechnologyType.WITH_PATTERN_TECHNOLOGY.getStringValue());
+        copyOfTechnology.setField(TechnologyFields.TECHNOLOGY_TYPE, WITH_PATTERN_TECHNOLOGY);
 
         copyOfTechnology = copyOfTechnology.getDataDefinition().save(copyOfTechnology);
 
@@ -195,10 +166,6 @@ public class TechnologyServiceO {
 
     public DataDefinition getTechnologyDD() {
         return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY);
-    }
-
-    public String makeTechnologyName(final String technologyNumber, final Entity product) {
-        return technologyNumber + " - " + product.getStringField(ProductFields.NUMBER);
     }
 
     public Entity getDefaultTechnology(final Entity product) {

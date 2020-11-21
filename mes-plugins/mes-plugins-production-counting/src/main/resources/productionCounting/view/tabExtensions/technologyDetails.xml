@@ -66,25 +66,6 @@
                     <option type="labelWidth" value="60" />
                 </component>
 			</layoutElement>
-			<layoutElement column="2" row="1">
-				<component type="checkbox" name="justOne" reference="justOne"
-					field="#{form}.justOne" >
-                    <option type="labelWidth" value="80" />
-                </component>
-			</layoutElement>
-			<layoutElement column="2" row="2">
-				<component type="checkbox" name="allowToClose" reference="allowToClose"
-					field="#{form}.allowToClose" hasDescription="true" >
-                    <option type="labelWidth" value="80" />
-                </component>
-			</layoutElement>
-			<layoutElement column="2" row="3">
-				<component type="checkbox" name="autoCloseOrder"
-					reference="autoCloseOrder" field="#{form}.autoCloseOrder"
-					hasDescription="true" >
-                    <option type="labelWidth" value="80" />
-                </component>
-			</layoutElement>
 		</component>
 	</windowTab>
 	

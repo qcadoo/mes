@@ -23,24 +23,25 @@
  */
 package com.qcadoo.mes.productionCounting.listeners;
 
-import com.google.common.collect.Lists;
-import com.qcadoo.mes.productionCounting.ProductionCountingService;
-import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.productionCounting.ProductionCountingService;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.TechnologyFieldsPC;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 
 @Service
 public class TechnologyDetailsListenersPC {
 
-    private static final List<String> L_ORDER_FIELD_NAMES = Lists.newArrayList(OrderFieldsPC.REGISTER_QUANTITY_IN_PRODUCT,
-            OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT, OrderFieldsPC.REGISTER_PRODUCTION_TIME,
-            OrderFieldsPC.REGISTER_PIECEWORK, OrderFieldsPC.JUST_ONE, OrderFieldsPC.ALLOW_TO_CLOSE,
-            OrderFieldsPC.AUTO_CLOSE_ORDER);
+    private static final List<String> L_TECHNOLOGY_FIELD_NAMES = Lists.newArrayList(
+            TechnologyFieldsPC.REGISTER_QUANTITY_IN_PRODUCT, TechnologyFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT,
+            TechnologyFieldsPC.REGISTER_PRODUCTION_TIME, TechnologyFieldsPC.REGISTER_PIECEWORK);
 
     @Autowired
     private ProductionCountingService productionCountingService;
@@ -53,7 +54,7 @@ public class TechnologyDetailsListenersPC {
 
         if (productionCountingService.isTypeOfProductionRecordingCumulated(typeOfProductionRecording)
                 || productionCountingService.isTypeOfProductionRecordingForEach(typeOfProductionRecording)) {
-            productionCountingService.setComponentsState(view, L_ORDER_FIELD_NAMES, true, true);
+            productionCountingService.setComponentsState(view, L_TECHNOLOGY_FIELD_NAMES, true, true);
         }
     }
 

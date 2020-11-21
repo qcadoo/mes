@@ -333,15 +333,6 @@
             <model:boolean name="registerQuantityOutProduct"/>
         </model:model-field>
         <model:model-field model="order" plugin="orders">
-            <model:boolean name="justOne"/>
-        </model:model-field>
-        <model:model-field model="order" plugin="orders">
-            <model:boolean name="allowToClose"/>
-        </model:model-field>
-        <model:model-field model="order" plugin="orders">
-            <model:boolean name="autoCloseOrder"/>
-        </model:model-field>
-        <model:model-field model="order" plugin="orders">
             <model:hasMany name="productionTrackings" model="productionTracking"
                            joinField="order" plugin="productionCounting" cascade="delete"/>
         </model:model-field>
@@ -366,15 +357,6 @@
         </model:model-field>
         <model:model-field model="technology" plugin="technologies">
             <model:boolean name="registerQuantityOutProduct"/>
-        </model:model-field>
-        <model:model-field model="technology" plugin="technologies">
-            <model:boolean name="justOne"/>
-        </model:model-field>
-        <model:model-field model="technology" plugin="technologies">
-            <model:boolean name="allowToClose"/>
-        </model:model-field>
-        <model:model-field model="technology" plugin="technologies">
-            <model:boolean name="autoCloseOrder"/>
         </model:model-field>
 
         <model:model-field plugin="productionCounting" model="anomalyReason">
@@ -538,7 +520,7 @@
 
         <view:view-hook plugin="technologies" view="technologyDetails"
                         type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.TechnologyDetailsHooksPC"
-                        method="setOrderDefaultValues"/>
+                        method="setTechnologyDefaultValues"/>
         <view:view-hook plugin="technologies" view="technologyDetails"
                         type="beforeRender" class="com.qcadoo.mes.productionCounting.hooks.TechnologyDetailsHooksPC"
                         method="checkTypeOfProductionRecording"/>

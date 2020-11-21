@@ -39,12 +39,6 @@ public final class OrderFieldsPC {
 
     public static final String REGISTER_QUANTITY_IN_PRODUCT = "registerQuantityInProduct";
 
-    public static final String JUST_ONE = "justOne";
-
-    public static final String ALLOW_TO_CLOSE = "allowToClose";
-
-    public static final String AUTO_CLOSE_ORDER = "autoCloseOrder";
-
     public static final String PRODUCTION_TRACKINGS = "productionTrackings";
 
 }

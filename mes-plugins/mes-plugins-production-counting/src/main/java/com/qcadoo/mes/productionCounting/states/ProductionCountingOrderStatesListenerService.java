@@ -24,14 +24,17 @@
 package com.qcadoo.mes.productionCounting.states;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.states.StateChangeContext;
@@ -45,6 +48,9 @@ import com.qcadoo.model.api.search.SearchResult;
 public class ProductionCountingOrderStatesListenerService {
 
     @Autowired
+    private ParameterService parameterService;
+
+    @Autowired
     private BasicProductionCountingService basicProductionCountingService;
 
     @Autowired
@@ -52,6 +58,7 @@ public class ProductionCountingOrderStatesListenerService {
 
     public void validationOnComplete(final StateChangeContext stateChangeContext) {
         final Entity order = stateChangeContext.getOwner();
+
         String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
 
         if (checkIfOrderHasProductionTrackings(order)) {
@@ -77,7 +84,9 @@ public class ProductionCountingOrderStatesListenerService {
     private void checkFinalProductionCountingForOrderCumulated(final StateChangeContext stateChangeContext) {
         final Entity order = stateChangeContext.getOwner();
 
-        if (order.getBooleanField(OrderFieldsPC.ALLOW_TO_CLOSE) && !checkIfOrderHasFinalProductionTrackings(order)) {
+        Entity parameter = parameterService.getParameter();
+
+        if (parameter.getBooleanField(ParameterFieldsPC.ALLOW_TO_CLOSE) && !checkIfOrderHasFinalProductionTrackings(order)) {
             stateChangeContext.addValidationError("orders.order.state.allowToClose.failureCumulated");
         }
     }
@@ -95,7 +104,9 @@ public class ProductionCountingOrderStatesListenerService {
             }
         }
 
-        if (order.getBooleanField(OrderFieldsPC.ALLOW_TO_CLOSE)
+        Entity parameter = parameterService.getParameter();
+
+        if (parameter.getBooleanField(ParameterFieldsPC.ALLOW_TO_CLOSE)
                 && (technologyOperationComponents.size() != productionTrackingsNumber)) {
             stateChangeContext.addValidationError("orders.order.state.allowToClose.failureForEach");
         }
@@ -110,7 +121,7 @@ public class ProductionCountingOrderStatesListenerService {
                 .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
                 .add(SearchRestrictions.eq(ProductionTrackingFields.LAST_TRACKING, true));
 
-        if (technologyOperationComponent != null) {
+        if (Objects.nonNull(technologyOperationComponent)) {
             searchCriteriaBuilder.add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT,
                     technologyOperationComponent));
         }

@@ -55,8 +55,6 @@ public final class ProductFields {
 
     public static final String PARENT = "parent";
 
-    public static final String CHILD = "child";
-    
     public static final String PRODUCT_FAMILY_CHILDRENS = "productFamilyChildrens";
 
     public static final String PRODUCT_FAMILY_CHILDREN_TREE = "productFamilyChildrenTree";
