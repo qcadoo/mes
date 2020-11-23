@@ -44,14 +44,14 @@ public class SizeGroupCriteriaModifiers {
     private DataDefinitionService dataDefinitionService;
 
     public void filterSizes(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
-        Long groupId = filterValue.getLong("sizeGroupId");
+        Long sizeGroupId = filterValue.getLong("sizeGroupId");
 
-        Entity group = getSizeGroupDD().find().add(SearchRestrictions.idEq(groupId)).setMaxResults(1).uniqueResult();
+        Entity sizeGroup = getSizeGroupDD().find().add(SearchRestrictions.idEq(sizeGroupId)).setMaxResults(1).uniqueResult();
 
-        List<Entity> roles = group.getManyToManyField(SizeGroupFields.SIZES);
+        List<Entity> sizes = sizeGroup.getManyToManyField(SizeGroupFields.SIZES);
 
-        for (Entity role : roles) {
-            scb.add(SearchRestrictions.idNe(role.getId()));
+        for (Entity size : sizes) {
+            scb.add(SearchRestrictions.idNe(size.getId()));
         }
     }
 
