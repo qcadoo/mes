@@ -89,4 +89,6 @@ public final class ProductFields {
 
     public static final String BATCH_EVIDENCE = "batchEvidence";
 
+    public static final String MODELS = "models";
+
 }

@@ -23,22 +23,22 @@
  */
 package com.qcadoo.mes.basic.constants;
 
-public final class FormsFields {
+public final class ModelFields {
 
-    private FormsFields() {
+    private ModelFields() {
 
     }
 
-    public static final String NUMBER = "number";
-
     public static final String NAME = "name";
 
-    public static final String COMPANY = "company";
+    public static final String ASSORTMENT = "assortment";
 
-    public static final String SIZE = "size";
+    public static final String FORMS = "forms";
 
-    public static final String UNIT = "unit";
+    public static final String TYPE_OF_PRODUCT = "typeOfProduct";
 
-    public static final String MODELS = "model";
+    public static final String LABEL = "label";
+
+    public static final String PRODUCTS = "products";
 
 }

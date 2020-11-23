@@ -35,4 +35,6 @@ public final class AssortmentFields {
 
     public static final String PRODUCTS = "products";
 
+    public static final String MODELS = "models";
+
 }

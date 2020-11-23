@@ -87,6 +87,7 @@
             <validatesRange from="0" exclusively="true" />
         </integer>
 
+        <belongsTo name="model" model="model"/>
     </fields>
 
     <hooks>

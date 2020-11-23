@@ -74,6 +74,46 @@
             </component>
         </windowTab>
 
+        <windowTab name="modelsTab">
+            <component type="gridLayout" name="modelsGridLayout" columns="1"
+                       rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="lookup" name="modelsLookup" reference="modelsLookup"
+                               field="#{form}.models" defaultVisible="false" persistent="false"
+                               hasLabel="false">
+
+                        <option type="searchable" value="name"/>
+                        <option type="orderable" value="name"/>
+
+                        <option type="expression" value="#name"/>
+                        <option type="fieldCode" value="name"/>
+
+                        <option type="multiselect" value="true"/>
+
+                        <criteriaModifier class="com.qcadoo.mes.basic.criteriaModifiers.ModelCriteriaModifiers"
+                                          method="showModelsWithoutAssortment"/>
+                    </component>
+                    <component type="grid" name="models" reference="models"
+                               source="#{form}.models">
+                        <option type="column" name="name" fields="name"/>
+
+                        <option type="order" column="name" direction="asc"/>
+
+                        <option type="searchable" value="name"/>
+                        <option type="orderable" value="name"/>
+
+                        <option type="weakRelation" value="true"/>
+                        <option type="correspondingLookup" value="modelsLookup"/>
+
+                        <option type="creatable" value="true"/>
+                        <option type="deletable" value="true"/>
+                        <option type="multiselect" value="true"/>
+                        <option type="fixedHeight" value="true"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
         <windowTab name="productsTab">
             <component type="gridLayout" name="productsGridLayout" columns="1"
                        rows="1">
@@ -93,6 +133,7 @@
                         <option type="fieldCode" value="number"/>
 
                         <option type="multiselect" value="true"/>
+
                         <criteriaModifier class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
                                           method="showProductsWithoutAssortment"/>
                     </component>
@@ -102,7 +143,13 @@
                         <option type="column" name="name" fields="name"/>
                         <option type="column" name="category" fields="category"/>
                         <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial"/>
+
                         <option type="order" column="number" direction="asc"/>
+
+                        <option type="searchable"
+                                value="number,name,globalTypeOfMaterial,category"/>
+                        <option type="orderable"
+                                value="number,name,globalTypeOfMaterial,category"/>
 
                         <option type="weakRelation" value="true"/>
                         <option type="correspondingLookup" value="productsLookup"/>
@@ -111,10 +158,6 @@
                         <option type="deletable" value="true"/>
                         <option type="multiselect" value="true"/>
                         <option type="fixedHeight" value="true"/>
-                        <option type="searchable"
-                                value="number,name,globalTypeOfMaterial,category"/>
-                        <option type="orderable"
-                                value="number,name,globalTypeOfMaterial,category"/>
                     </component>
                 </layoutElement>
             </component>
@@ -122,6 +165,4 @@
 
     </component>
 
-    <hooks>
-    </hooks>
 </view>

@@ -104,6 +104,8 @@ public final class BasicConstants {
 
     public static final String MODEL_SIZE_GROUP = "sizeGroup";
 
+    public static final String MODEL_MODEL = "model";
+
     // VIEW
 
     public static final String VIEW_GENERAL_PARAMETERS = "generalParameters";
