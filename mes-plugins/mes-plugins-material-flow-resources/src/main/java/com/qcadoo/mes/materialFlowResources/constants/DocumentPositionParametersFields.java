@@ -39,4 +39,6 @@ public final class DocumentPositionParametersFields {
 
     public static final String SUGGEST_RESOURCE = "suggestResource";
 
+    public static final String SHORT_EXPIRY_DATE = "shortExpiryDate";
+
 }

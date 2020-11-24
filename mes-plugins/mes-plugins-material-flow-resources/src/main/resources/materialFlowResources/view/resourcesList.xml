@@ -34,6 +34,47 @@
     <component type="window" name="window">
         <ribbon>
             <template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete"/>
+            <group name="filters">
+                <bigButton name="showResourcesWithShortExpiryDate" icon="generateIcon24.png" message="materialFlowResources.resourcesList.window.ribbon.filters.showResourcesWithShortExpiryDate.description">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('showResourcesWithShortExpiryDate', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+                <bigButton name="showResourcesAfterDeadline" icon="generateIcon24.png" message="materialFlowResources.resourcesList.window.ribbon.filters.showResourcesAfterDeadline.description">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('showResourcesAfterDeadline', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+                <bigButton name="showAllResources" icon="generateIcon24.png">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('showAllResources', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <component type="grid" name="resourceGrid" reference="grid">
@@ -84,11 +125,29 @@
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
 
+            <listener event="showAllResources"
+                      class="com.qcadoo.mes.materialFlowResources.listeners.ResourcesListListeners"
+                      method="showAllResources"/>
+            <listener event="showResourcesAfterDeadline"
+                      class="com.qcadoo.mes.materialFlowResources.listeners.ResourcesListListeners"
+                      method="showResourcesAfterDeadline"/>
+            <listener event="showResourcesWithShortExpiryDate"
+                      class="com.qcadoo.mes.materialFlowResources.listeners.ResourcesListListeners"
+                      method="showResourcesWithShortExpiryDate"/>
+
             <criteriaModifier class="com.qcadoo.mes.materialFlowResources.criteriaModifiers.ResourcesCriteriaModifier"
                               method="restrictToUserLocations"/>
         </component>
+        <component type="checkbox" name="isShortFilter" reference="isShortFilter" defaultVisible="false" defaultEnabled="false"/>
+        <component type="checkbox" name="isDeadlineFilter" reference="isDeadlineFilter" defaultVisible="false" defaultEnabled="false"/>
 
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
     </component>
+
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.materialFlowResources.hooks.ResourcesListHooks"
+                method="applyFilters"/>
+    </hooks>
 </view>

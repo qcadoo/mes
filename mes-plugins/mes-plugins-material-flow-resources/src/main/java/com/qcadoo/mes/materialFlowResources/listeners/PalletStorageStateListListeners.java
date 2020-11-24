@@ -3,7 +3,6 @@ package com.qcadoo.mes.materialFlowResources.listeners;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.materialFlowResources.constants.PalletStorageStateDtoFields;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
@@ -12,7 +11,6 @@ import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -32,9 +30,6 @@ public class PalletStorageStateListListeners {
     private static final String L_GRID_OPTIONS = "grid.options";
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     public void showDetails(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent palletStorageStateGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
