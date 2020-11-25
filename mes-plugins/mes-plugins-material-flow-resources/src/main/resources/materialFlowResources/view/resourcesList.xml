@@ -93,7 +93,12 @@
             <option type="column" name="value" fields="value" width="60" authorizationRole="ROLE_RESOURCE_PRICE" />
             <option type="column" name="time" fields="time"/>
             <option type="column" name="productionDate" fields="productionDate"/>
-            <option type="column" name="expirationDate" fields="expirationDate"/>
+            <option type="column" name="expirationDate" fields="expirationDate"
+                    classesCondition="rowObject['colorResourcesAfterDeadline']>0"
+                    classesNames="rowObject['expirationDateCellColor']"/>
+            <option type="column" name="expirationDateCellColor" fields="expirationDateCellColor" hidden="true"/>
+            <option type="column" name="colorResourcesAfterDeadline" fields="colorResourcesAfterDeadline"
+                    hidden="true"/>
             <option type="column" name="batch" fields="batchNumber"/>
             <option type="column" name="storageLocation" fields="storageLocationNumber"/>
 

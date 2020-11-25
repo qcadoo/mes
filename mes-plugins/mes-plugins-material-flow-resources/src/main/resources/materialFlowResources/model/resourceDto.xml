@@ -62,6 +62,8 @@
         <string name="mergedProductNumberAndAdditionalCode"/>
         <belongsTo name="positionAddMultiHelper" model="positionAddMultiHelper"/>
         <boolean name="blockedForQualityControl"/>
+        <decimal name="colorResourcesAfterDeadline"/>
+        <string name="expirationDateCellColor"/>
     </fields>
 
     <masterModel plugin="materialFlowResources" model="resource"/>
