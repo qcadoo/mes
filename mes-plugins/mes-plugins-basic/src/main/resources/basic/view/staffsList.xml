@@ -36,47 +36,69 @@
 				<bigButton name="openStaffsImportPage" state="enabled" icon="xlsIcon24.png"
 						   action="#{window}.fireEvent(openStaffsImportPage);"/>
 			</group>
+			<group name="labels">
+				<bigButton name="printStaffLabels" icon="pdfIcon24.png"
+						   state="disabled" message="basic.staffsList.window.ribbon.labels.printStaffLabels.description">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{grid}.performEvent('printStaffLabels', []);
+								}
+							});
+						]]>
+					</script>
+				</bigButton>
+			</group>
 		</ribbon>
 		
 		<component type="grid" name="staffs" reference="grid">
 			<option type="column" name="number" fields="number" link="true"
-				width="50" />
+					width="50" />
 			<option type="column" name="name" fields="name" link="true" />
 			<option type="column" name="surname" fields="surname" link="true" />
 			<option type="column" name="post" fields="post" link="true" />
 			<option type="column" name="shift" fields="shift" expression="#shift['name']"
-				link="true" />
+					link="true" />
 			<option type="column" name="division_number" fields="division"
-				expression="#division['number']" link="true" width="120" />
+					expression="#division['number']" link="true" width="120" />
 			<option type="column" name="division_name" fields="division"
-				expression="#division['name']" link="true" width="120" />
+					expression="#division['name']" link="true" width="120" />
 			<option type="column" name="workstation_number" fields="workstation"
 					expression="#workstation['number']" link="true" width="120" />
 			<option type="column" name="workstation_name" fields="workstation"
 					expression="#workstation['name']" link="true" width="120" />
 			<option type="column" name="workFor" fields="workFor"
-				expression="#workFor['name']" width="250"/>
+					expression="#workFor['name']" width="250"/>
 				
 			<option type="order" column="number" direction="desc" />
 			
 			<option type="searchable"
-				value="name,number,surname,post,shift,division_name,division_number.workstation_name,workstation_name,workstation_number" />
+					value="name,number,surname,post,shift,division_name,division_number.workstation_name,workstation_name,workstation_number" />
 			<option type="orderable"
-				value="name,number,surname,post,shift,division_name,division_number,workstation_name,workstation_number" />
+					value="name,number,surname,post,shift,division_name,division_number,workstation_name,workstation_number" />
 				
 			<option type="correspondingView" value="basic/staffDetails" />
 			<option type="correspondingComponent" value="form" />
 			
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
+
+			<listener event="printStaffLabels"
+					  class="com.qcadoo.mes.basic.listeners.StaffsListListeners"
+					  method="printStaffLabels"/>
 		</component>
 
 		<listener event="openStaffsImportPage"
 				  class="com.qcadoo.mes.basic.listeners.StaffsListListeners"
 				  method="openStaffsImportPage"/>
-		
+
 		<option type="fixedHeight" value="true" />
 		<option type="header" value="false" />
 	</component>
-	
+
+	<hooks>
+		<beforeRender class="com.qcadoo.mes.basic.hooks.StaffsListHooks"
+					  method="updateRibbonState"/>
+	</hooks>
 </view>
