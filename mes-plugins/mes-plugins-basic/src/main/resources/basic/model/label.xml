@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<model name="model" activable="true" auditable="true"
+<model name="label" activable="true" auditable="true"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
@@ -32,13 +32,12 @@
         <string name="name" required="true" unique="true">
             <validatesLength max="1024"/>
         </string>
-        <belongsTo name="assortment" plugin="basic" model="assortment"/>
-        <belongsTo name="forms" plugin="basic" model="forms"/>
-        <dictionary name="typeOfProduct" dictionary="typeOfProducts"/>
-        <belongsTo name="label" plugin="basic" model="label"/>
+        <string name="description">
+            <validatesLength max="2048"/>
+        </string>
 
-        <hasMany name="products" model="product" plugin="basic"
-                    joinField="model" copyable="false" cascade="nullify"/>
+        <hasMany name="models" model="model" plugin="basic"
+                    joinField="label" copyable="false" cascade="nullify"/>
     </fields>
 
     <hooks>

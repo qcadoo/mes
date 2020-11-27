@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view name="modelsList" modelName="model" menuAccessible="true"
+<view name="labelDetails" modelName="label"
       defaultAuthorizationRole="ROLE_PRODUCTS"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
@@ -33,32 +33,27 @@
     <component type="window" name="window" reference="window">
 
         <ribbon>
-            <template name="standardGridTemplate"/>
+            <template name="standardFormTemplate"/>
         </ribbon>
 
-        <component type="grid" name="models" reference="grid">
-            <option type="column" name="name" fields="name" link="true"/>
-            <option type="column" name="assortmentName" fields="assortment" expression="#assortment['name']" link="true"/>
-            <option type="column" name="formsName" fields="forms" expression="#forms['name']" link="true"/>
-            <option type="column" name="typeOfProduct" fields="typeOfProduct" link="true"/>
-            <option type="column" name="label" fields="label" expression="#label['name']" link="true"/>
+        <component type="form" name="label" reference="form">
+            <component type="gridLayout" name="gridLayout" columns="2"
+                       rows="3">
+                <layoutElement column="1" row="1">
+                    <component type="input" name="name" field="name"
+                               reference="name">
+                        <option type="alignment" value="right"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2" height="2">
+                    <component type="textarea" name="description" field="description"/>
+                </layoutElement>
+            </component>
 
-            <option type="order" column="name" direction="asc"/>
-
-            <option type="searchable" value="name,assortmentName,formsName,typeOfProduct,label"/>
-            <option type="orderable" value="name,assortmentName,formsName,typeOfProduct,label"/>
-
-            <option type="correspondingView" value="basic/modelDetails"/>
-            <option type="correspondingComponent" value="form"/>
-            <option type="correspondingViewInModal" value="true" />
-
-            <option type="fullscreen" value="true"/>
-            <option type="multiselect" value="true"/>
-
+            <option type="header" value="true"/>
+            <option type="expression" value="#name"/>
         </component>
-
-        <option type="fixedHeight" value="true"/>
-        <option type="header" value="false"/>
     </component>
 
+    <hooks />
 </view>

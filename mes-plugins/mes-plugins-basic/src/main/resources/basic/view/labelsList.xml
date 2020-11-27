@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view name="modelsList" modelName="model" menuAccessible="true"
+<view name="labelsList" modelName="label" menuAccessible="true"
       defaultAuthorizationRole="ROLE_PRODUCTS"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
@@ -36,19 +36,18 @@
             <template name="standardGridTemplate"/>
         </ribbon>
 
-        <component type="grid" name="models" reference="grid">
-            <option type="column" name="name" fields="name" link="true"/>
-            <option type="column" name="assortmentName" fields="assortment" expression="#assortment['name']" link="true"/>
-            <option type="column" name="formsName" fields="forms" expression="#forms['name']" link="true"/>
-            <option type="column" name="typeOfProduct" fields="typeOfProduct" link="true"/>
-            <option type="column" name="label" fields="label" expression="#label['name']" link="true"/>
+        <component type="grid" name="labels" reference="grid">
+            <option type="column" name="name" fields="name" link="true"
+                    width="40"/>
+            <option type="column" name="description" fields="description" link="true"
+                    width="60"/>
 
             <option type="order" column="name" direction="asc"/>
 
-            <option type="searchable" value="name,assortmentName,formsName,typeOfProduct,label"/>
-            <option type="orderable" value="name,assortmentName,formsName,typeOfProduct,label"/>
+            <option type="searchable" value="name,description"/>
+            <option type="orderable" value="name,description"/>
 
-            <option type="correspondingView" value="basic/modelDetails"/>
+            <option type="correspondingView" value="basic/labelDetails"/>
             <option type="correspondingComponent" value="form"/>
             <option type="correspondingViewInModal" value="true" />
 

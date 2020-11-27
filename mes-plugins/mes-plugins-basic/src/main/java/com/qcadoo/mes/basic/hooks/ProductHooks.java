@@ -35,6 +35,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.basic.ProductService;
 import com.qcadoo.mes.basic.constants.AdditionalCodeFields;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ModelFields;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.tree.ProductNumberingService;
@@ -55,6 +56,51 @@ public class ProductHooks {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    public void onSave(final DataDefinition productDD, final Entity product) {
+        updateModel(productDD, product);
+        updateNodeNumber(productDD, product);
+        clearFamilyFromProductWhenTypeIsChanged(productDD, product);
+    }
+
+    private void updateModel(final DataDefinition productDD, final Entity product) {
+        Long productId = product.getId();
+        Entity model = product.getBelongsToField(ProductFields.MODEL);
+
+        if (Objects.nonNull(productId)) {
+            Entity productFromDB = productDD.get(productId);
+
+            Entity assortment = product.getBelongsToField(ProductFields.ASSORTMENT);
+            Entity assortmentFromDB = productFromDB.getBelongsToField(ProductFields.ASSORTMENT);
+
+            boolean areSame = (Objects.isNull(assortment) ? Objects.isNull(assortmentFromDB)
+                    : assortment.equals(assortmentFromDB));
+
+            if (!areSame) {
+                if (Objects.nonNull(model) && Objects.nonNull(assortment)) {
+                    Entity modelAssortment = product.getBelongsToField(ProductFields.MODEL_ASSORTMENT);
+
+                    if (Objects.isNull(modelAssortment)) {
+                        modelAssortment = model.getBelongsToField(ModelFields.ASSORTMENT);
+                    }
+
+                    if (Objects.nonNull(modelAssortment) && !modelAssortment.getId().equals(assortment.getId())) {
+                        product.setField(ProductFields.MODEL, null);
+                    }
+                }
+            }
+        } else {
+            Entity assortment = product.getBelongsToField(ProductFields.ASSORTMENT);
+
+            if (Objects.nonNull(model) && Objects.nonNull(assortment)) {
+                Entity modelAssortment = model.getBelongsToField(ModelFields.ASSORTMENT);
+
+                if (Objects.nonNull(modelAssortment) && !modelAssortment.getId().equals(assortment.getId())) {
+                    product.setField(ProductFields.MODEL, null);
+                }
+            }
+        }
+    }
 
     public void generateNodeNumber(final DataDefinition productDD, final Entity product) {
         productNumberingService.generateNodeNumber(product);

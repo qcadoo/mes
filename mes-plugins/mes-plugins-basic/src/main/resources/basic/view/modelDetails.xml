@@ -73,8 +73,16 @@
                                    reference="typeOfProduct"/>
                     </layoutElement>
                     <layoutElement column="1" row="5">
-                        <component type="select" name="label" field="label"
-                                   reference="label"/>
+                        <component type="lookup" name="label" field="#{form}.label"
+                                   reference="label">
+                            <option type="column" name="description" fields="description"/>
+
+                            <option type="searchable" value="name,description"/>
+                            <option type="orderable" value="name,description"/>
+
+                            <option type="expression" value="#name"/>
+                            <option type="fieldCode" value="name"/>
+                        </component>
                     </layoutElement>
                 </component>
 
