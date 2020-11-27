@@ -1,6 +1,8 @@
 package com.qcadoo.mes.technologies.controller;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.WorkstationTypesGridResponse;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.WorkstationTypesResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.WorkstationsGridResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.WorkstationsResponse;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
@@ -82,6 +84,24 @@ public final class TechnologyApiController {
             @RequestParam(value = "tocId", required = false) Long tocId) {
         return dataProvider.getWorkstations(limit, offset, sort, order, search, tocId);
     }
+
+
+
+    @ResponseBody
+    @RequestMapping(value = "/workstationTypesByQuery", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public WorkstationTypesResponse getWorkstations(@RequestParam("query") String query) {
+        return dataProvider.getWorkstationTypes(query);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/workstationTypesByPage", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public WorkstationTypesGridResponse getWorkstations(@RequestParam(value = "limit") int limit, @RequestParam(value = "offset") int offset,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "order", required = false) String order,
+            @RequestParam(value = "search", required = false) String search) {
+        return dataProvider.getWorkstationTypes(limit, offset, sort, order, search);
+    }
+
 
     @ResponseBody
     @RequestMapping(value = "/technology/{technologyId}/operationMaterials", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

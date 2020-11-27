@@ -6,6 +6,7 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
+import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
 import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
 import com.qcadoo.mes.basic.controllers.dataProvider.requests.ProductRequest;
 import com.qcadoo.mes.basic.controllers.dataProvider.requests.WorkstationRequest;
@@ -69,6 +70,38 @@ public final class BasicApiController {
         workstationEntity.setField(WorkstationFields.NUMBER, workstation.getNumber());
         workstationEntity.setField(WorkstationFields.NAME, workstation.getName());
         workstationEntity.setField(WorkstationFields.WORKSTATION_TYPE, workstation.getType());
+
+        workstationEntity = workstationEntity.getDataDefinition().save(workstationEntity);
+        if(workstationEntity.isValid()) {
+            WorkstationResponse workstationResponse = new WorkstationResponse(WorkstationResponse.StatusCode.OK);
+            workstationResponse.setId(workstationEntity.getId());
+            workstationResponse.setNumber(workstation.getNumber());
+            workstationResponse.setName(workstation.getName());
+            return workstationResponse;
+        } else {
+            //
+            ErrorMessage numberError = workstationEntity.getError(WorkstationFields.NUMBER);
+            if(Objects.nonNull(numberError) && numberError.getMessage().equals("qcadooView.validate.field.error.duplicated")) {
+                WorkstationResponse response = new WorkstationResponse(WorkstationResponse.StatusCode.ERROR);
+                response.setMessage(translationService.translate("basic.dashboard.operationalTasksDefinitionWizard.error.validationError.workstationDuplicated",
+                        LocaleContextHolder.getLocale()));
+                return response;
+            }
+
+        }
+        WorkstationResponse response = new WorkstationResponse(WorkstationResponse.StatusCode.ERROR);
+        response.setMessage(translationService.translate("basic.dashboard.operationalTasksDefinitionWizard.error.validationError.workstationErrors",
+                LocaleContextHolder.getLocale()));
+        return response;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/workstationType", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public WorkstationResponse saveWorkstationType(@RequestBody WorkstationRequest workstation) {
+
+        Entity workstationEntity = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION_TYPE).create();
+        workstationEntity.setField(WorkstationTypeFields.NUMBER, workstation.getNumber());
+        workstationEntity.setField(WorkstationTypeFields.NAME, workstation.getName());
 
         workstationEntity = workstationEntity.getDataDefinition().save(workstationEntity);
         if(workstationEntity.isValid()) {

@@ -2,6 +2,9 @@ package com.qcadoo.mes.technologies.controller.dataProvider;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.WorkstationDto;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.WorkstationTypeDto;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.WorkstationTypesGridResponse;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.WorkstationTypesResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.WorkstationsGridResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.WorkstationsResponse;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
@@ -273,6 +276,57 @@ public class DataProviderForTechnology {
                 query.toString(), parameters, new BeanPropertyRowMapper(WorkstionTechnologyOperationComponentDto.class));
         return workstionsTechnologyOperationComponents.stream().collect(
                 Collectors.groupingBy(WorkstionTechnologyOperationComponentDto::getTechnologyOperationComponentId));
+    }
+
+    public WorkstationTypesResponse getWorkstationTypes(String query) {
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("Select id as id, number as number, name as name From basic_workstationtype WHERE ");
+        queryBuilder.append(" active = true ");
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        queryBuilder.append(" AND number ilike :query ORDER BY number ASC LIMIT 10 ");
+
+        String ilikeQuery = "%" + query + "%";
+        parameters.put("query", ilikeQuery);
+
+        List<WorkstationTypeDto> workstationTypes = jdbcTemplate.query(queryBuilder.toString(), parameters, new BeanPropertyRowMapper(
+                WorkstationTypeDto.class));
+        return new WorkstationTypesResponse(workstationTypes);
+    }
+
+    public WorkstationTypesGridResponse getWorkstationTypes(int limit, int offset, String sort, String order, String search) {
+        StringBuilder query = new StringBuilder();
+        query.append("Select w.id as id, w.number as number, w.name as name From basic_workstationtype w WHERE ");
+        query.append(" w.active = true ");
+
+        StringBuilder queryCount = new StringBuilder();
+        queryCount.append("SELECT COUNT(*) ");
+        queryCount.append("From basic_workstationtype w WHERE w.active = true  ");
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        appendWorkstationTypesConditions(search, query, parameters);
+        appendWorkstationTypesConditions(search, queryCount, parameters);
+
+        if (StringUtils.isNotEmpty(sort)) {
+            query.append(" ORDER BY " + sort + " " + order);
+        }
+        query.append(String.format(" LIMIT %d OFFSET %d", limit, offset));
+
+        Integer countRecords = jdbcTemplate.queryForObject(queryCount.toString(), parameters, Long.class).intValue();
+
+        List<WorkstationTypeDto> workstations = jdbcTemplate.query(query.toString(), parameters, new BeanPropertyRowMapper(
+                WorkstationTypeDto.class));
+
+        return new WorkstationTypesGridResponse(countRecords, workstations);
+    }
+
+    private void appendWorkstationTypesConditions(String search, StringBuilder query, Map<String, Object> parameters) {
+        if (StringUtils.isNotEmpty(search)) {
+            query.append(" AND (");
+            query.append("UPPER(w.number) LIKE '%").append(search.toUpperCase()).append("%' OR ");
+            query.append("UPPER(w.name) LIKE '%").append(search.toUpperCase()).append("%' ");
+            query.append(") ");
+        }
     }
 
 }

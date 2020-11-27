@@ -89,7 +89,11 @@ public class DashboardViewMF implements DashboardView {
         mav.addObject("showChartOnDashboard", getShowChartOnDashboard(parameter));
         mav.addObject("whatToShowOnDashboard", getWhatToShowOnDashboard(parameter));
         mav.addObject("dashboardButtons", filterDashboardButtons(getDashboardButtons(parameter), currentUser));
-
+        if(arguments.containsKey("wizardToOpen")) {
+            mav.addObject("wizardToOpen", arguments.get("wizardToOpen"));
+        } else {
+            mav.addObject("wizardToOpen", null);
+        }
         return mav;
     }
 

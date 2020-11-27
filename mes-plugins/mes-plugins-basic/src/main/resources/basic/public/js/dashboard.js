@@ -378,6 +378,14 @@ QCD.dashboard = (function () {
 
 $(document).ready(function() {
     QCD.dashboard.init();
+    console.log(QCD.wizardToOpen);
+    if(QCD.wizardToOpen) {
+        if(QCD.wizardToOpen == 'orders') {
+            addOrder();
+        } else {
+            addOperationalTask();
+        }
+    }
 });
 
 const drag = (event) => {
