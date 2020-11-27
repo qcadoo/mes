@@ -70,6 +70,20 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="productFamily">
+                <bigButton name="productFamilySizes" icon="genealogyIcon24.png" message="basic.productDetails.window.ribbon.productFamily.productFamilySizes.description"
+                           state="enabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('productFamilySizes', []);
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -193,6 +207,8 @@
                           method="getDefaultConversions"/>
                 <listener event="openAdditionalDetails" class="com.qcadoo.mes.basic.ProductService"
                           method="openAdditionalDetails"/>
+                <listener event="productFamilySizes" class="com.qcadoo.mes.basic.ProductService"
+                          method="productFamilySizes"/>
                 <listener event="downloadAttachment" method="downloadAttachment"
                           class="com.qcadoo.mes.basic.listeners.AttachmentsListeners"/>
 
@@ -474,6 +490,10 @@
                       method="disableUnitFromWhenFormIsSaved"/>
         <beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
                       method="updateRibbonState"/>
+        <beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
+                      method="updateProductFamilySizesRibbonState"/>
+        <beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
+                      method="disableEntityTypeWhenProductFamilyHasChildren"/>
         <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.ProductHooksCMP"
                       method="setCriteriaModifierParameters"/>
         <beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"

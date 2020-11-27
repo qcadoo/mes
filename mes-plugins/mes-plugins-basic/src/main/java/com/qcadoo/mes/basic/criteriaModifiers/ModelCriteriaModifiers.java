@@ -23,20 +23,18 @@
  */
 package com.qcadoo.mes.basic.criteriaModifiers;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ModelFields;
-import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ModelCriteriaModifiers {
@@ -51,7 +49,7 @@ public class ModelCriteriaModifiers {
     public void filterProducts(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
         Long modelId = filterValue.getLong("modelId");
 
-        Entity model = getModelDD().find().add(SearchRestrictions.idEq(modelId)).setMaxResults(1).uniqueResult();
+        Entity model = getModelDD().get(modelId);
 
         List<Entity> products = model.getHasManyField(ModelFields.PRODUCTS);
 

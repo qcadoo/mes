@@ -33,8 +33,8 @@
 
         <hasMany name="assortmentElements" joinField="assortment" model="assortmentElement" cascade="delete"
                  copyable="true"/>
-        <hasMany name="products" joinField="assortment" model="product" cascade="nullify"/>
-        <hasMany name="models" joinField="assortment" model="model" cascade="nullify"/>
+        <hasMany name="products" joinField="assortment" model="product"/>
+        <hasMany name="models" joinField="assortment" model="model"/>
     </fields>
 
     <hooks/>

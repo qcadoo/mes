@@ -36,7 +36,9 @@
 		<priority name="succession" required="true"/>
 
 		<manyToMany name="sizeGroups" model="sizeGroup" plugin="basic"
-					joinField="sizes" cascade="nullify"/>
+					joinField="sizes"/>
+
+		<hasMany name="products" model="product" joinField="size"/>
 	</fields>
 
 	<hooks/>
