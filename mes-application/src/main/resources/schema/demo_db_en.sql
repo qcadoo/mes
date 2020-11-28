@@ -1894,6 +1894,72 @@ ALTER SEQUENCE advancedgenealogy_batch_id_seq OWNED BY advancedgenealogy_batch.i
 
 
 --
+-- Name: advancedgenealogy_batchattachment; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE advancedgenealogy_batchattachment (
+    id bigint NOT NULL,
+    batch_id bigint,
+    attachment character varying(255),
+    name character varying(255),
+    size numeric(12,5),
+    ext character varying(255)
+);
+
+
+--
+-- Name: advancedgenealogy_batchattachment_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE advancedgenealogy_batchattachment_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: advancedgenealogy_batchattachment_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE advancedgenealogy_batchattachment_id_seq OWNED BY advancedgenealogy_batchattachment.id;
+
+
+--
+-- Name: advancedgenealogy_batchdto; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE advancedgenealogy_batchdto (
+    id bigint,
+    batchnumber character varying(255),
+    state character varying(255),
+    createuser character varying(255),
+    createdate timestamp without time zone,
+    externalnumber character varying(255),
+    active boolean,
+    productnumber character varying(255),
+    productname character varying(1024),
+    suppliername character varying(255),
+    hasattachments boolean
+);
+
+ALTER TABLE ONLY advancedgenealogy_batchdto REPLICA IDENTITY NOTHING;
+
+
+--
+-- Name: advancedgenealogy_batchdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE advancedgenealogy_batchdto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
 -- Name: advancedgenealogy_batchstatechange; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -4538,7 +4604,8 @@ CREATE TABLE deliveries_delivery (
     updateuser character varying(255),
     synchronizationstatus character varying(255),
     entityversion bigint DEFAULT 0,
-    positionsfile character varying(255)
+    positionsfile character varying(255),
+    paymentform character varying(255)
 );
 
 
@@ -4866,7 +4933,8 @@ CREATE TABLE basic_product (
     batchevidence boolean DEFAULT false,
     expirydatevalidity integer,
     productform_id bigint,
-    size_id bigint
+    size_id bigint,
+    model_id bigint
 );
 
 
@@ -5348,8 +5416,6 @@ CREATE TABLE technologies_technology (
     productionflow character varying(255) DEFAULT '02withinTheProcess'::character varying,
     productsflowlocation_id bigint,
     typeofproductionrecording character varying(255),
-    justone boolean,
-    allowtoclose boolean,
     registerquantityoutproduct boolean,
     autocloseorder boolean,
     registerpiecework boolean,
@@ -8215,6 +8281,46 @@ CREATE TABLE basic_subassemblyattachment (
 
 
 --
+-- Name: basic_workstation; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_workstation (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(1024),
+    description character varying(2048),
+    workstationtype_id bigint,
+    operation_id bigint,
+    active boolean DEFAULT true,
+    productionline_id bigint,
+    division_id bigint,
+    serialnumber character varying(255),
+    udtnumber character varying(255),
+    series character varying(255),
+    producer character varying(255),
+    productiondate date,
+    wnknumber character varying(255),
+    entityversion bigint DEFAULT 0,
+    staff_id bigint
+);
+
+
+--
+-- Name: basic_workstationattachment; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_workstationattachment (
+    id bigint NOT NULL,
+    workstation_id bigint,
+    attachment character varying(255),
+    name character varying(255),
+    size numeric(12,5),
+    ext character varying(255),
+    entityversion bigint DEFAULT 0
+);
+
+
+--
 -- Name: cmmsmachineparts_machinepartattachment; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -8226,6 +8332,82 @@ CREATE TABLE cmmsmachineparts_machinepartattachment (
     size numeric(12,5),
     ext character varying(255),
     entityversion bigint DEFAULT 0
+);
+
+
+--
+-- Name: deliveries_deliveryattachment; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE deliveries_deliveryattachment (
+    id bigint NOT NULL,
+    delivery_id bigint,
+    attachment character varying(255),
+    name character varying(255),
+    size numeric(12,5),
+    ext character varying(255)
+);
+
+
+--
+-- Name: qualitycontrol_qualitycardattachment; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE qualitycontrol_qualitycardattachment (
+    id bigint NOT NULL,
+    qualitycard_id bigint,
+    attachment character varying(255),
+    name character varying(255),
+    size numeric(12,5),
+    ext character varying(255)
+);
+
+
+--
+-- Name: qualitycontrol_qualitycontrol; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE qualitycontrol_qualitycontrol (
+    id bigint NOT NULL,
+    number character varying(255),
+    product_id bigint,
+    qualitycard_id bigint,
+    controltype character varying(255) DEFAULT '01final'::character varying,
+    batch_id bigint,
+    date date,
+    staff_id bigint,
+    order_id bigint,
+    qualityrating character varying(255),
+    state character varying(255) DEFAULT '01new'::character varying,
+    delivery_id bigint,
+    description character varying(2048)
+);
+
+
+--
+-- Name: qualitycontrol_qualitycontrolattachment; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE qualitycontrol_qualitycontrolattachment (
+    id bigint NOT NULL,
+    qualitycontrol_id bigint,
+    attachment character varying(255),
+    name character varying(255),
+    size numeric(12,5),
+    ext character varying(255)
+);
+
+
+--
+-- Name: technologies_qualitycard; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE technologies_qualitycard (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(2048),
+    description character varying(2048),
+    state character varying(255) DEFAULT '01new'::character varying
 );
 
 
@@ -8303,7 +8485,77 @@ UNION ALL
     (3000000 + row_number() OVER ()) AS id,
     'basic/subassemblyDetails'::text AS pinnedtocorrespondingview
    FROM (basic_subassemblyattachment subassemblyattachment
-     LEFT JOIN basic_subassembly subassembly ON ((subassemblyattachment.subassembly_id = subassembly.id)));
+     LEFT JOIN basic_subassembly subassembly ON ((subassemblyattachment.subassembly_id = subassembly.id)))
+UNION ALL
+ SELECT '05batches'::text AS pinnedto,
+    batch.number AS pinnedtoobjectidentifier,
+    ''::text AS pinnedtoobjectidentifiername,
+    (batch.id)::integer AS pinnedtoobjectid,
+    'advancedgenealogy_batch'::text AS pinnedtomodelname,
+    batchattachment.attachment,
+    batchattachment.name,
+    batchattachment.size,
+    upper((batchattachment.ext)::text) AS ext,
+    (4000000 + row_number() OVER ()) AS id,
+    'advancedGenealogy/batchDetails'::text AS pinnedtocorrespondingview
+   FROM (advancedgenealogy_batchattachment batchattachment
+     LEFT JOIN advancedgenealogy_batch batch ON ((batchattachment.batch_id = batch.id)))
+UNION ALL
+ SELECT '06deliveries'::text AS pinnedto,
+    delivery.number AS pinnedtoobjectidentifier,
+    delivery.name AS pinnedtoobjectidentifiername,
+    (delivery.id)::integer AS pinnedtoobjectid,
+    'deliveries_delivery'::text AS pinnedtomodelname,
+    deliveryattachment.attachment,
+    deliveryattachment.name,
+    deliveryattachment.size,
+    upper((deliveryattachment.ext)::text) AS ext,
+    (5000000 + row_number() OVER ()) AS id,
+    'deliveries/deliveryDetails'::text AS pinnedtocorrespondingview
+   FROM (deliveries_deliveryattachment deliveryattachment
+     LEFT JOIN deliveries_delivery delivery ON ((deliveryattachment.delivery_id = delivery.id)))
+UNION ALL
+ SELECT '07qualityControls'::text AS pinnedto,
+    qualitycontrol.number AS pinnedtoobjectidentifier,
+    ''::text AS pinnedtoobjectidentifiername,
+    (qualitycontrol.id)::integer AS pinnedtoobjectid,
+    'qualitycontrol_qualitycontrol'::text AS pinnedtomodelname,
+    qualitycontrolattachment.attachment,
+    qualitycontrolattachment.name,
+    qualitycontrolattachment.size,
+    upper((qualitycontrolattachment.ext)::text) AS ext,
+    (6000000 + row_number() OVER ()) AS id,
+    'qualityControl/qualityControlDetails'::text AS pinnedtocorrespondingview
+   FROM (qualitycontrol_qualitycontrolattachment qualitycontrolattachment
+     LEFT JOIN qualitycontrol_qualitycontrol qualitycontrol ON ((qualitycontrolattachment.qualitycontrol_id = qualitycontrol.id)))
+UNION ALL
+ SELECT '08qualityCards'::text AS pinnedto,
+    qualitycard.number AS pinnedtoobjectidentifier,
+    qualitycard.name AS pinnedtoobjectidentifiername,
+    (qualitycard.id)::integer AS pinnedtoobjectid,
+    'technologies_qualitycard'::text AS pinnedtomodelname,
+    qualitycardattachment.attachment,
+    qualitycardattachment.name,
+    qualitycardattachment.size,
+    upper((qualitycardattachment.ext)::text) AS ext,
+    (7000000 + row_number() OVER ()) AS id,
+    'qualityControl/qualityCardDetails'::text AS pinnedtocorrespondingview
+   FROM (qualitycontrol_qualitycardattachment qualitycardattachment
+     LEFT JOIN technologies_qualitycard qualitycard ON ((qualitycardattachment.qualitycard_id = qualitycard.id)))
+UNION ALL
+ SELECT '09workstations'::text AS pinnedto,
+    workstation.number AS pinnedtoobjectidentifier,
+    workstation.name AS pinnedtoobjectidentifiername,
+    (workstation.id)::integer AS pinnedtoobjectid,
+    'basic_workstation'::text AS pinnedtomodelname,
+    workstationattachment.attachment,
+    workstationattachment.name,
+    workstationattachment.size,
+    upper((workstationattachment.ext)::text) AS ext,
+    (8000000 + row_number() OVER ()) AS id,
+    'basic/workstationDetails'::text AS pinnedtocorrespondingview
+   FROM (basic_workstationattachment workstationattachment
+     LEFT JOIN basic_workstation workstation ON ((workstationattachment.workstation_id = workstation.id)));
 
 
 --
@@ -8657,6 +8909,41 @@ ALTER SEQUENCE basic_forms_id_seq OWNED BY basic_forms.id;
 
 
 --
+-- Name: basic_label; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_label (
+    id bigint NOT NULL,
+    name character varying(1024),
+    description character varying(2048),
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255),
+    active boolean DEFAULT true
+);
+
+
+--
+-- Name: basic_label_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE basic_label_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_label_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE basic_label_id_seq OWNED BY basic_label.id;
+
+
+--
 -- Name: basic_log; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -8692,6 +8979,44 @@ CREATE SEQUENCE basic_log_id_seq
 --
 
 ALTER SEQUENCE basic_log_id_seq OWNED BY basic_log.id;
+
+
+--
+-- Name: basic_model; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_model (
+    id bigint NOT NULL,
+    name character varying(1024),
+    assortment_id bigint,
+    forms_id bigint,
+    typeofproduct character varying(255),
+    label_id bigint,
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255),
+    active boolean DEFAULT true
+);
+
+
+--
+-- Name: basic_model_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE basic_model_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_model_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE basic_model_id_seq OWNED BY basic_model.id;
 
 
 --
@@ -9014,7 +9339,8 @@ CREATE TABLE basic_parameter (
     moveproductstosubsequentoperations boolean DEFAULT false,
     demandcausesofwastes boolean DEFAULT false,
     wmsapk character varying(255),
-    wmsversion character varying(255)
+    wmsversion character varying(255),
+    applicationconfigured boolean DEFAULT false
 );
 
 
@@ -9121,6 +9447,7 @@ CREATE TABLE basic_productdto (
     ean character varying(255),
     externalnumber character varying(255),
     assortmentname character varying(255),
+    modelname character varying(1024),
     norm character varying(255),
     sizenumber character varying(255),
     hasattachments boolean,
@@ -9406,31 +9733,6 @@ CREATE SEQUENCE basic_subassemblyattachment_id_seq
 --
 
 ALTER SEQUENCE basic_subassemblyattachment_id_seq OWNED BY basic_subassemblyattachment.id;
-
-
---
--- Name: basic_workstation; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE basic_workstation (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(1024),
-    description character varying(2048),
-    workstationtype_id bigint,
-    operation_id bigint,
-    active boolean DEFAULT true,
-    productionline_id bigint,
-    division_id bigint,
-    serialnumber character varying(255),
-    udtnumber character varying(255),
-    series character varying(255),
-    producer character varying(255),
-    productiondate date,
-    wnknumber character varying(255),
-    entityversion bigint DEFAULT 0,
-    staff_id bigint
-);
 
 
 --
@@ -9722,21 +10024,6 @@ ALTER SEQUENCE basic_workstation_id_seq OWNED BY basic_workstation.id;
 
 
 --
--- Name: basic_workstationattachment; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE basic_workstationattachment (
-    id bigint NOT NULL,
-    workstation_id bigint,
-    attachment character varying(255),
-    name character varying(255),
-    size numeric(12,5),
-    ext character varying(255),
-    entityversion bigint DEFAULT 0
-);
-
-
---
 -- Name: basic_workstationattachment_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -9869,7 +10156,6 @@ CREATE TABLE orders_order (
     remainingamountofproducttoproduce numeric(12,5),
     ownlinechangeoverduration integer,
     registerproductiontime boolean,
-    justone boolean,
     registerquantityinproduct boolean,
     laborworktime integer,
     includetpz boolean,
@@ -9884,7 +10170,6 @@ CREATE TABLE orders_order (
     realizationtime integer,
     calculate boolean,
     includeadditionaltime boolean,
-    allowtoclose boolean,
     typeofproductionrecording character varying(255) DEFAULT '02cumulated'::character varying,
     masterorder_id bigint,
     active boolean DEFAULT true,
@@ -9894,7 +10179,6 @@ CREATE TABLE orders_order (
     ignorerequiredcomponents boolean,
     automaticallymoveoverusage boolean DEFAULT false,
     updatecomponentsavailability boolean,
-    ordertype character varying(255) DEFAULT '01withPatternTechnology'::character varying,
     technologyprototype_id bigint,
     level integer,
     parent_id bigint,
@@ -11942,7 +12226,8 @@ CREATE TABLE deliveries_deliveredproductmultiposition (
     additionalunit character varying(255),
     additionalcode_id bigint,
     offer_id bigint,
-    batch_id bigint
+    batch_id bigint,
+    priceperunit numeric(12,5)
 );
 
 
@@ -12001,20 +12286,6 @@ CREATE SEQUENCE deliveries_delivery_id_seq
 --
 
 ALTER SEQUENCE deliveries_delivery_id_seq OWNED BY deliveries_delivery.id;
-
-
---
--- Name: deliveries_deliveryattachment; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE deliveries_deliveryattachment (
-    id bigint NOT NULL,
-    delivery_id bigint,
-    attachment character varying(255),
-    name character varying(255),
-    size numeric(12,5),
-    ext character varying(255)
-);
 
 
 --
@@ -12166,19 +12437,6 @@ CREATE TABLE supplynegotiations_negotiation (
     createuser character varying(255),
     updateuser character varying(255),
     entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: technologies_qualitycard; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE technologies_qualitycard (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(2048),
-    description character varying(2048),
-    state character varying(255) DEFAULT '01new'::character varying
 );
 
 
@@ -12577,7 +12835,9 @@ CREATE TABLE esilco_wmsdocumentpart (
     stateinwms character varying(255),
     pickingworker character varying(255),
     document_id bigint,
-    parts integer
+    parts integer,
+    additionaldescription character varying(2048),
+    differences boolean DEFAULT false
 );
 
 
@@ -15797,7 +16057,8 @@ CREATE TABLE materialflowresources_document (
     pickingworker character varying(255),
     dateconfirmationofcompletion timestamp without time zone,
     locationchanged boolean DEFAULT false,
-    editinwms boolean DEFAULT true
+    editinwms boolean DEFAULT true,
+    additionaldescription character varying(2048)
 );
 
 
@@ -15959,7 +16220,9 @@ CREATE TABLE materialflowresources_documentpositionparameters (
     pallettoshift integer,
     palletwithfreeplace integer,
     fillresourceirrespectiveofconversion boolean DEFAULT false,
-    numberofmonthsforpositionsdata integer DEFAULT 1
+    numberofmonthsforpositionsdata integer DEFAULT 1,
+    colorresourcesafterdeadline boolean DEFAULT false,
+    shortexpirydate integer DEFAULT 14
 );
 
 
@@ -16826,7 +17089,22 @@ CREATE VIEW materialflowresources_resourcedto AS
     resource.documentnumber,
     resource.qualityrating,
     resource.blockedforqualitycontrol,
-    COALESCE(supplier.number, doc_supplier.number) AS suppliernumber
+    COALESCE(supplier.number, doc_supplier.number) AS suppliernumber,
+        CASE
+            WHEN ( SELECT materialflowresources_documentpositionparameters.colorresourcesafterdeadline
+               FROM materialflowresources_documentpositionparameters
+             LIMIT 1) THEN (1)::numeric
+            ELSE (0)::numeric
+        END AS colorresourcesafterdeadline,
+        CASE
+            WHEN (resource.expirationdate < ('now'::text)::date) THEN 'red-cell'::character varying(255)
+            WHEN (( SELECT (materialflowresources_documentpositionparameters.shortexpirydate IS NOT NULL)
+               FROM materialflowresources_documentpositionparameters
+             LIMIT 1) AND (resource.expirationdate > ('now'::text)::date) AND (resource.expirationdate <= (('now'::text)::date + ((( SELECT materialflowresources_documentpositionparameters.shortexpirydate
+               FROM materialflowresources_documentpositionparameters
+             LIMIT 1))::double precision * '1 day'::interval)))) THEN 'orange-cell'::character varying(255)
+            ELSE NULL::character varying
+        END AS expirationdatecellcolor
    FROM ((((((((((materialflowresources_resource resource
      JOIN materialflow_location location ON ((location.id = resource.location_id)))
      JOIN basic_product product ON ((product.id = resource.product_id)))
@@ -18370,7 +18648,9 @@ CREATE VIEW orders_orderplanninglistdto AS
             WHEN (((COALESCE(ordersorder.donequantity, (0)::numeric) * (100)::numeric) / NULLIF(ordersorder.plannedquantity, (0)::numeric)) >= (100)::numeric) THEN 'green-cell'::character varying(255)
             WHEN (((COALESCE(ordersorder.donequantity, (0)::numeric) * (100)::numeric) / NULLIF(ordersorder.plannedquantity, (0)::numeric)) = (0)::numeric) THEN 'red-cell'::character varying(255)
             ELSE 'yellow-cell'::character varying(255)
-        END AS percentageofexecutioncellcolor
+        END AS percentageofexecutioncellcolor,
+    ordersorder.deadline,
+    (date_part('day'::text, (date_trunc('day'::text, ordersorder.deadline) - (('now'::text)::date)::timestamp without time zone)))::integer AS daystodeadline
    FROM ((((((orders_order ordersorder
      JOIN basic_product product ON ((product.id = ordersorder.product_id)))
      LEFT JOIN technologies_technology technology ON ((technology.id = ordersorder.technology_id)))
@@ -22665,20 +22945,6 @@ ALTER SEQUENCE qualitycontrol_deliveryqualitycontrol_id_seq OWNED BY qualitycont
 
 
 --
--- Name: qualitycontrol_qualitycardattachment; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE qualitycontrol_qualitycardattachment (
-    id bigint NOT NULL,
-    qualitycard_id bigint,
-    attachment character varying(255),
-    name character varying(255),
-    size numeric(12,5),
-    ext character varying(255)
-);
-
-
---
 -- Name: qualitycontrol_qualitycardattachment_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -22726,27 +22992,6 @@ CREATE SEQUENCE qualitycontrol_qualitycarddto_id_seq
 
 
 --
--- Name: qualitycontrol_qualitycontrol; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE qualitycontrol_qualitycontrol (
-    id bigint NOT NULL,
-    number character varying(255),
-    product_id bigint,
-    qualitycard_id bigint,
-    controltype character varying(255) DEFAULT '01final'::character varying,
-    batch_id bigint,
-    date date,
-    staff_id bigint,
-    order_id bigint,
-    qualityrating character varying(255),
-    state character varying(255) DEFAULT '01new'::character varying,
-    delivery_id bigint,
-    description character varying(2048)
-);
-
-
---
 -- Name: qualitycontrol_qualitycontrol_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -22775,20 +23020,6 @@ CREATE SEQUENCE qualitycontrol_qualitycontrol_number_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
---
--- Name: qualitycontrol_qualitycontrolattachment; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE qualitycontrol_qualitycontrolattachment (
-    id bigint NOT NULL,
-    qualitycontrol_id bigint,
-    attachment character varying(255),
-    name character varying(255),
-    size numeric(12,5),
-    ext character varying(255)
-);
 
 
 --
@@ -25863,6 +26094,13 @@ ALTER TABLE ONLY advancedgenealogy_batch ALTER COLUMN id SET DEFAULT nextval('ad
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY advancedgenealogy_batchattachment ALTER COLUMN id SET DEFAULT nextval('advancedgenealogy_batchattachment_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY advancedgenealogy_batchstatechange ALTER COLUMN id SET DEFAULT nextval('advancedgenealogy_batchstatechange_id_seq'::regclass);
 
 
@@ -26780,7 +27018,21 @@ ALTER TABLE ONLY basic_forms ALTER COLUMN id SET DEFAULT nextval('basic_forms_id
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY basic_label ALTER COLUMN id SET DEFAULT nextval('basic_label_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY basic_log ALTER COLUMN id SET DEFAULT nextval('basic_log_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_model ALTER COLUMN id SET DEFAULT nextval('basic_model_id_seq'::regclass);
 
 
 --
@@ -29134,6 +29386,28 @@ COPY advancedgenealogy_batch (id, number, product_id, supplier_id, state, extern
 --
 
 SELECT pg_catalog.setval('advancedgenealogy_batch_id_seq', 1, false);
+
+
+--
+-- Data for Name: advancedgenealogy_batchattachment; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY advancedgenealogy_batchattachment (id, batch_id, attachment, name, size, ext) FROM stdin;
+\.
+
+
+--
+-- Name: advancedgenealogy_batchattachment_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('advancedgenealogy_batchattachment_id_seq', 1, false);
+
+
+--
+-- Name: advancedgenealogy_batchdto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('advancedgenealogy_batchdto_id_seq', 1, false);
 
 
 --
@@ -31632,6 +31906,21 @@ SELECT pg_catalog.setval('basic_forms_id_seq', 1, false);
 
 
 --
+-- Data for Name: basic_label; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY basic_label (id, name, description, createdate, updatedate, createuser, updateuser, active) FROM stdin;
+\.
+
+
+--
+-- Name: basic_label_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('basic_label_id_seq', 1, false);
+
+
+--
 -- Data for Name: basic_log; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -31644,6 +31933,21 @@ COPY basic_log (id, createtime, user_id, message, item1, item2, item3, details, 
 --
 
 SELECT pg_catalog.setval('basic_log_id_seq', 1, false);
+
+
+--
+-- Data for Name: basic_model; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY basic_model (id, name, assortment_id, forms_id, typeofproduct, label_id, createdate, updatedate, createuser, updateuser, active) FROM stdin;
+\.
+
+
+--
+-- Name: basic_model_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('basic_model_id_seq', 1, false);
 
 
 --
@@ -31710,8 +32014,8 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, allowtechnologytreechangeinpendingorder, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, enableoperationgroupingworkplan, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation, moveproductstosubsequentoperations, demandcausesofwastes, wmsapk, wmsversion) FROM stdin;
-1	\N	5	pc	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	02fromOrdersMaterialCosts	\N	f	01globally	14	f	\N	f	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	f	\N	\N	\N	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	f	01accepted	01order	01allInputProducts	f	t	\N	\N	\N	f	f	f	\N	\N	\N	\N	\N	150	\N	\N	f	t	f	\N	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	f	f	\N	\N
+COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, allowtechnologytreechangeinpendingorder, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, enableoperationgroupingworkplan, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation, moveproductstosubsequentoperations, demandcausesofwastes, wmsapk, wmsversion, applicationconfigured) FROM stdin;
+1	\N	5	pc	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	02fromOrdersMaterialCosts	\N	f	01globally	14	f	\N	f	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	f	\N	\N	\N	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	f	01accepted	01order	01allInputProducts	f	t	\N	\N	\N	f	f	f	\N	\N	\N	\N	\N	150	\N	\N	f	t	f	\N	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	f	f	\N	\N	t
 \.
 
 
@@ -31726,7 +32030,7 @@ SELECT pg_catalog.setval('basic_parameter_id_seq', 2, false);
 -- Data for Name: basic_product; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_product (id, number, name, globaltypeofmaterial, ean, category, unit, externalnumber, description, parent_id, nodenumber, entitytype, durabilityinmonths, averageoffercost, costfornumber, lastpurchasecost, lastoffercost, isglutenproduct, symbol, averagecost, goodsgroup, nominalcost, bio, isdoublepallet, technologygroup_id, active, createdate, updatedate, createuser, updateuser, quantityofextrusioningredient, norm, actualversion, hasnutritionelements, quantityfornutritions, quantityfornutritionsunit, showinproductdata, doublequantityfordoublepallet, usedquantitycontrol, automaticusedquantity, nominalweight, countusedquantityforfullpallets, quantityinpackage, synchronize, capacitynormfortwodimensionalmachines, downform_id, upform_id, downshelve_id, upshelve_id, costnormsgenerator_id, producer_id, machinepart, drawingnumber, catalognumber, isproductiondate, entityversion, ispallet, additionalunit, fromgenerator, generatorcontext_id, dateformatinqcp5code, assortment_id, isoil, isaroma, capacitynormforthreedimensionalmachines, recommendednumofheadsfortwodimensionalmachines, recommendednumofheadsforthreedimensionalmachines, iscartonlabel, isactivecartonlabelquantity, batchevidence, expirydatevalidity, productform_id, size_id) FROM stdin;
+COPY basic_product (id, number, name, globaltypeofmaterial, ean, category, unit, externalnumber, description, parent_id, nodenumber, entitytype, durabilityinmonths, averageoffercost, costfornumber, lastpurchasecost, lastoffercost, isglutenproduct, symbol, averagecost, goodsgroup, nominalcost, bio, isdoublepallet, technologygroup_id, active, createdate, updatedate, createuser, updateuser, quantityofextrusioningredient, norm, actualversion, hasnutritionelements, quantityfornutritions, quantityfornutritionsunit, showinproductdata, doublequantityfordoublepallet, usedquantitycontrol, automaticusedquantity, nominalweight, countusedquantityforfullpallets, quantityinpackage, synchronize, capacitynormfortwodimensionalmachines, downform_id, upform_id, downshelve_id, upshelve_id, costnormsgenerator_id, producer_id, machinepart, drawingnumber, catalognumber, isproductiondate, entityversion, ispallet, additionalunit, fromgenerator, generatorcontext_id, dateformatinqcp5code, assortment_id, isoil, isaroma, capacitynormforthreedimensionalmachines, recommendednumofheadsfortwodimensionalmachines, recommendednumofheadsforthreedimensionalmachines, iscartonlabel, isactivecartonlabelquantity, batchevidence, expirydatevalidity, productform_id, size_id, model_id) FROM stdin;
 \.
 
 
@@ -32730,7 +33034,7 @@ SELECT pg_catalog.setval('deliveries_deliveredproductmulti_id_seq', 1, false);
 -- Data for Name: deliveries_deliveredproductmultiposition; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY deliveries_deliveredproductmultiposition (id, deliveredproductmulti_id, product_id, quantity, additionalquantity, conversion, iswaste, expirationdate, unit, additionalunit, additionalcode_id, offer_id, batch_id) FROM stdin;
+COPY deliveries_deliveredproductmultiposition (id, deliveredproductmulti_id, product_id, quantity, additionalquantity, conversion, iswaste, expirationdate, unit, additionalunit, additionalcode_id, offer_id, batch_id, priceperunit) FROM stdin;
 \.
 
 
@@ -32760,7 +33064,7 @@ SELECT pg_catalog.setval('deliveries_deliveredproductreservation_id_seq', 1, fal
 -- Data for Name: deliveries_delivery; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY deliveries_delivery (id, number, name, description, supplier_id, deliverydate, deliveryaddress, relateddelivery_id, currency_id, externalnumber, externalsynchronized, state, location_id, active, createdate, updatedate, createuser, updateuser, synchronizationstatus, entityversion, positionsfile) FROM stdin;
+COPY deliveries_delivery (id, number, name, description, supplier_id, deliverydate, deliveryaddress, relateddelivery_id, currency_id, externalnumber, externalsynchronized, state, location_id, active, createdate, updatedate, createuser, updateuser, synchronizationstatus, entityversion, positionsfile, paymentform) FROM stdin;
 \.
 
 
@@ -32966,7 +33270,7 @@ SELECT pg_catalog.setval('esilco_printdocuments_id_seq', 1, false);
 -- Data for Name: esilco_wmsdocumentpart; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY esilco_wmsdocumentpart (id, number, additionalinfo, part, company, stateinwms, pickingworker, document_id, parts) FROM stdin;
+COPY esilco_wmsdocumentpart (id, number, additionalinfo, part, company, stateinwms, pickingworker, document_id, parts, additionaldescription, differences) FROM stdin;
 \.
 
 
@@ -34664,7 +34968,7 @@ SELECT pg_catalog.setval('materialflowresources_costnormslocation_id_seq', 1, fa
 -- Data for Name: materialflowresources_document; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, inbuffer, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, dateshipmenttocustomer, additionalinfo, stateinwms, pickingworker, dateconfirmationofcompletion, locationchanged, editinwms) FROM stdin;
+COPY materialflowresources_document (id, number, type, "time", state, locationfrom_id, locationto_id, user_id, delivery_id, active, createdate, updatedate, createuser, updateuser, order_id, description, suborder_id, company_id, maintenanceevent_id, entityversion, plannedevent_id, name, createlinkeddocument, linkeddocumentlocation_id, address_id, inbuffer, dispositionshift_id, positionsfile, printed, generationdate, filename, acceptationinprogress, externalnumber, issend, wms, datesendtowms, dateshipmenttocustomer, additionalinfo, stateinwms, pickingworker, dateconfirmationofcompletion, locationchanged, editinwms, additionaldescription) FROM stdin;
 \.
 
 
@@ -34721,8 +35025,8 @@ SELECT pg_catalog.setval('materialflowresources_documentdto_id_seq', 1, false);
 -- Data for Name: materialflowresources_documentpositionparameters; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY materialflowresources_documentpositionparameters (id, suggestresource, acceptanceofdocumentbeforeprinting, notshowprices, presenttotalamountandrest, pallettoshift, palletwithfreeplace, fillresourceirrespectiveofconversion, numberofmonthsforpositionsdata) FROM stdin;
-1	f	t	f	f	\N	\N	f	1
+COPY materialflowresources_documentpositionparameters (id, suggestresource, acceptanceofdocumentbeforeprinting, notshowprices, presenttotalamountandrest, pallettoshift, palletwithfreeplace, fillresourceirrespectiveofconversion, numberofmonthsforpositionsdata, colorresourcesafterdeadline, shortexpirydate) FROM stdin;
+1	f	t	f	f	\N	\N	f	1	f	14
 \.
 
 
@@ -35466,7 +35770,7 @@ SELECT pg_catalog.setval('orders_operationaltaskwithcolordto_id_seq', 1, false);
 -- Data for Name: orders_order; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, justone, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, registerpiecework, generatedenddate, machineworktime, ownlinechangeover, autocloseorder, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, allowtoclose, typeofproductionrecording, masterorder_id, active, productpriceperunit, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, ordertype, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, issubcontracted, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, directadditionalcost, directadditionalcostdescription, division_id) FROM stdin;
+COPY orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, registerpiecework, generatedenddate, machineworktime, ownlinechangeover, autocloseorder, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, typeofproductionrecording, masterorder_id, active, productpriceperunit, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, issubcontracted, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, directadditionalcost, directadditionalcostdescription, division_id) FROM stdin;
 \.
 
 
@@ -36765,6 +37069,7 @@ COPY qcadoomodel_dictionary (id, name, pluginidentifier, active, entityversion) 
 18	productionLinePlacesForSCADA	productionLines	t	0
 20	qualityRating	qualityControl	t	0
 21	causesOfWastes	productionCounting	t	0
+22	typeOfProducts	basic	t	0
 \.
 
 
@@ -36772,7 +37077,7 @@ COPY qcadoomodel_dictionary (id, name, pluginidentifier, active, entityversion) 
 -- Name: qcadoomodel_dictionary_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoomodel_dictionary_id_seq', 22, false);
+SELECT pg_catalog.setval('qcadoomodel_dictionary_id_seq', 22, true);
 
 
 --
@@ -36994,6 +37299,7 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 155	qualityControl	1.5.0	DISABLED	f	0	\N	\N
 156	oee	1.5.0	DISABLED	f	0	\N	\N
 157	luxon	1.5.0	DISABLED	f	0	\N	\N
+158	configurator	1.5.0	DISABLED	f	0	\N	\N
 \.
 
 
@@ -37001,7 +37307,7 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 -- Name: qcadooplugin_plugin_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooplugin_plugin_id_seq', 158, false);
+SELECT pg_catalog.setval('qcadooplugin_plugin_id_seq', 158, true);
 
 
 --
@@ -37397,22 +37703,25 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 95	productionCounting	productionBalance	t	15	95	5	ROLE_PRODUCTION_COUNTING	0
 107	productionPerShift	balancePerShift	t	15	106	8	\N	0
 164	productionCounting	employeeWorkingTimeSettlement	t	15	163	9	ROLE_ANALYSIS_VIEWER	0
-165	basic	generalParameters	t	21	164	\N	ROLE_PARAMETERS	0
-166	orders	planningParameters	t	21	165	\N	ROLE_PARAMETERS	0
-167	technologies	technologiesParameters	t	21	166	\N	ROLE_PARAMETERS	0
-168	deliveries	supplyParameters	t	21	167	\N	ROLE_PARAMETERS	0
-169	materialFlowResources	materialFlowResourcesParameters	t	21	168	\N	ROLE_PARAMETERS	0
-170	productionCounting	productionCountingParameters	t	21	169	\N	ROLE_PARAMETERS	0
 63	stoppage	stoppages	t	8	63	1	ROLE_STOPPAGES	0
 157	stoppage	stoppageReasonsList	t	4	156	26	ROLE_STOPPAGE_REASONS	0
 171	basicProductionCounting	productionCountingQuantityList	t	9	170	13	ROLE_BASE_FUNCTIONALITY	0
 172	esilco	outOfStockList	t	9	171	14	ROLE_REQUIREMENTS	0
 8	qcadooUsers	profile	t	1	8	8	ROLE_HOME_PROFILE	0
-173	productionCounting	productionAnalysisParameters	t	21	172	\N	ROLE_PARAMETERS	0
-174	esilco	picksReportsList	t	22	173	\N	ROLE_REQUIREMENTS	0
-175	esilco	workerStatsReportsList	t	22	174	\N	ROLE_REQUIREMENTS	0
 176	basic	sizesList	t	19	175	26	ROLE_PRODUCTS	0
 177	basic	sizeGroupsList	t	19	176	27	ROLE_PRODUCTS	0
+178	configurator	configurator	t	1	177	17	ROLE_ADMIN	0
+179	basic	labelsList	t	4	178	28	ROLE_PRODUCTS	0
+180	basic	modelsList	t	19	179	28	ROLE_PRODUCTS	0
+165	basic	generalParameters	t	21	164	1	ROLE_PARAMETERS	0
+166	orders	planningParameters	t	21	165	2	ROLE_PARAMETERS	0
+167	technologies	technologiesParameters	t	21	166	3	ROLE_PARAMETERS	0
+168	deliveries	supplyParameters	t	21	167	4	ROLE_PARAMETERS	0
+169	materialFlowResources	materialFlowResourcesParameters	t	21	168	5	ROLE_PARAMETERS	0
+170	productionCounting	productionCountingParameters	t	21	169	6	ROLE_PARAMETERS	0
+173	productionCounting	productionAnalysisParameters	t	21	172	7	ROLE_PARAMETERS	0
+174	esilco	picksReportsList	t	22	173	1	ROLE_REQUIREMENTS	0
+175	esilco	workerStatsReportsList	t	22	174	2	ROLE_REQUIREMENTS	0
 \.
 
 
@@ -37420,7 +37729,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 177, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 180, true);
 
 
 --
@@ -37591,6 +37900,9 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 174	esilco	workerStatsReportsList	workerStatsReportsList	\N	0
 175	basic	sizesList	sizesList	\N	0
 176	basic	sizeGroupsList	sizeGroupsList	\N	0
+177	configurator	configurator	\N	/configurator.html	0
+178	basic	labelsList	labelsList	\N	0
+179	basic	modelsList	modelsList	\N	0
 \.
 
 
@@ -37598,7 +37910,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 176, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 179, true);
 
 
 --
@@ -38573,7 +38885,7 @@ SELECT pg_catalog.setval('technologies_qualitycardstatechange_id_seq', 1, false)
 -- Data for Name: technologies_technology; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY technologies_technology (id, number, name, product_id, technologygroup_id, externalsynchronized, master, description, state, recipeimportstatus, recipeimportmsg, formula, minimalquantity, active, isstandardgoodfoodtechnology, range, division_id, componentslocation_id, componentsoutputlocation_id, productsinputlocation_id, technologytype, technologyprototype_id, productionline_id, productionflow, productsflowlocation_id, typeofproductionrecording, justone, allowtoclose, registerquantityoutproduct, autocloseorder, registerpiecework, registerquantityinproduct, registerproductiontime, entityversion, standardperformancetechnology, template, additionalactions, generatorcontext_id, qualitycard_id) FROM stdin;
+COPY technologies_technology (id, number, name, product_id, technologygroup_id, externalsynchronized, master, description, state, recipeimportstatus, recipeimportmsg, formula, minimalquantity, active, isstandardgoodfoodtechnology, range, division_id, componentslocation_id, componentsoutputlocation_id, productsinputlocation_id, technologytype, technologyprototype_id, productionline_id, productionflow, productsflowlocation_id, typeofproductionrecording, registerquantityoutproduct, autocloseorder, registerpiecework, registerquantityinproduct, registerproductiontime, entityversion, standardperformancetechnology, template, additionalactions, generatorcontext_id, qualitycard_id) FROM stdin;
 \.
 
 
@@ -39068,6 +39380,14 @@ SELECT pg_catalog.setval('workplans_workplanordercolumn_id_seq', 1, false);
 
 ALTER TABLE ONLY advancedgenealogy_batch
     ADD CONSTRAINT advancedgenealogy_batch_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: advancedgenealogy_batchattachment_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY advancedgenealogy_batchattachment
+    ADD CONSTRAINT advancedgenealogy_batchattachment_pkey PRIMARY KEY (id);
 
 
 --
@@ -40191,11 +40511,27 @@ ALTER TABLE ONLY basic_forms
 
 
 --
+-- Name: basic_label_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_label
+    ADD CONSTRAINT basic_label_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: basic_log_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY basic_log
     ADD CONSTRAINT basic_log_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: basic_model_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_model
+    ADD CONSTRAINT basic_model_pkey PRIMARY KEY (id);
 
 
 --
@@ -45329,36 +45665,6 @@ CREATE RULE "_RETURN" AS
 --
 
 CREATE RULE "_RETURN" AS
-    ON SELECT TO basic_productdto DO INSTEAD  SELECT product.id,
-    product.number,
-    product.name,
-    product.globaltypeofmaterial,
-    product.category,
-    parent.name AS parentname,
-    product.ean,
-    product.externalnumber,
-    assortment.name AS assortmentname,
-    product.norm,
-    size.number AS sizenumber,
-    (count(attachment.id) <> 0) AS hasattachments,
-    string_agg((code.code)::text, ', '::text) AS additionalcodes,
-    product.active,
-    product.unit,
-    product.additionalunit
-   FROM (((((basic_product product
-     LEFT JOIN basic_product parent ON ((product.parent_id = parent.id)))
-     LEFT JOIN basic_assortment assortment ON ((product.assortment_id = assortment.id)))
-     LEFT JOIN basic_productattachment attachment ON ((attachment.product_id = product.id)))
-     LEFT JOIN basic_additionalcode code ON ((code.product_id = product.id)))
-     LEFT JOIN basic_size size ON ((size.id = product.size_id)))
-  GROUP BY product.id, parent.name, assortment.name, size.number;
-
-
---
--- Name: _RETURN; Type: RULE; Schema: public; Owner: -
---
-
-CREATE RULE "_RETURN" AS
     ON SELECT TO productioncounting_productionanalysisdto DO INSTEAD  SELECT row_number() OVER () AS id,
     bool_or(productiontracking.active) AS active,
     (productionline.id)::integer AS productionline_id,
@@ -45454,6 +45760,61 @@ UNION ALL
      LEFT JOIN technologies_technologygroup technologygroup ON ((technologyprototype.technologygroup_id = technologygroup.id)))
   WHERE ((productiontracking.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02accepted'::character varying)::text]))
   GROUP BY productionline.id, basiccompany.id, staff.id, assortment.id, size.number, product.id, shift.id, trackingoperationproductoutcomponent.causeofwastes, ((productiontracking.timerangefrom)::date), ((productiontracking.timerangeto)::date), ordersorder.id, tcontext.id, masterorder.id, groupmasterorder.id, technologygroup.number;
+
+
+--
+-- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE RULE "_RETURN" AS
+    ON SELECT TO advancedgenealogy_batchdto DO INSTEAD  SELECT batch.id,
+    batch.number AS batchnumber,
+    batch.state,
+    batch.createuser,
+    batch.createdate,
+    batch.externalnumber,
+    batch.active,
+    product.number AS productnumber,
+    product.name AS productname,
+    company.name AS suppliername,
+    (count(attachment.id) <> 0) AS hasattachments
+   FROM (((advancedgenealogy_batch batch
+     LEFT JOIN advancedgenealogy_batchattachment attachment ON ((batch.id = attachment.batch_id)))
+     LEFT JOIN basic_product product ON ((batch.product_id = product.id)))
+     LEFT JOIN basic_company company ON ((batch.supplier_id = company.id)))
+  GROUP BY batch.id, product.number, product.name, company.name;
+
+
+--
+-- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE RULE "_RETURN" AS
+    ON SELECT TO basic_productdto DO INSTEAD  SELECT product.id,
+    product.number,
+    product.name,
+    product.globaltypeofmaterial,
+    product.category,
+    parent.name AS parentname,
+    product.ean,
+    product.externalnumber,
+    assortment.name AS assortmentname,
+    model.name AS modelname,
+    product.norm,
+    size.number AS sizenumber,
+    (count(attachment.id) <> 0) AS hasattachments,
+    string_agg((code.code)::text, ', '::text) AS additionalcodes,
+    product.active,
+    product.unit,
+    product.additionalunit
+   FROM ((((((basic_product product
+     LEFT JOIN basic_product parent ON ((product.parent_id = parent.id)))
+     LEFT JOIN basic_assortment assortment ON ((product.assortment_id = assortment.id)))
+     LEFT JOIN basic_model model ON ((product.model_id = model.id)))
+     LEFT JOIN basic_productattachment attachment ON ((attachment.product_id = product.id)))
+     LEFT JOIN basic_additionalcode code ON ((code.product_id = product.id)))
+     LEFT JOIN basic_size size ON ((size.id = product.size_id)))
+  GROUP BY product.id, parent.name, assortment.name, model.name, size.number;
 
 
 --
@@ -46351,6 +46712,14 @@ ALTER TABLE ONLY advancedgenealogy_batch
 
 ALTER TABLE ONLY advancedgenealogy_batch
     ADD CONSTRAINT batch_supplier_fkey FOREIGN KEY (supplier_id) REFERENCES basic_company(id) DEFERRABLE;
+
+
+--
+-- Name: batchattachment_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY advancedgenealogy_batchattachment
+    ADD CONSTRAINT batchattachment_batch_fkey FOREIGN KEY (batch_id) REFERENCES advancedgenealogy_batch(id) DEFERRABLE;
 
 
 --
@@ -49922,6 +50291,30 @@ ALTER TABLE ONLY arch_states_message
 
 
 --
+-- Name: model_assortment_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_model
+    ADD CONSTRAINT model_assortment_fkey FOREIGN KEY (assortment_id) REFERENCES basic_assortment(id) DEFERRABLE;
+
+
+--
+-- Name: model_forms_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_model
+    ADD CONSTRAINT model_forms_fkey FOREIGN KEY (forms_id) REFERENCES basic_forms(id) DEFERRABLE;
+
+
+--
+-- Name: model_label_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_model
+    ADD CONSTRAINT model_label_fkey FOREIGN KEY (label_id) REFERENCES basic_label(id) DEFERRABLE;
+
+
+--
 -- Name: modifytechnologyaddproducthelper_modifytechnologyhelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -51879,6 +52272,14 @@ ALTER TABLE ONLY productflowthrudivision_issue
 
 ALTER TABLE ONLY arch_productflowthrudivision_issue
     ADD CONSTRAINT product_issue_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: product_model_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_product
+    ADD CONSTRAINT product_model_fkey FOREIGN KEY (model_id) REFERENCES basic_model(id) DEFERRABLE;
 
 
 --
