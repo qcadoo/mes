@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.advancedGenealogy.hooks;
 
-import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.advancedGenealogy.states.constants.BatchStateChangeFields;
@@ -42,6 +36,14 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import static com.qcadoo.mes.states.constants.StateChangeStatus.SUCCESSFUL;
 
 @Service
 public final class BatchViewHooks {
@@ -59,6 +61,7 @@ public final class BatchViewHooks {
     public void onBeforeRender(final ViewDefinitionState view) {
         disableFormWhenExternalSynchronized(view);
         filterStateChangeHistory(view);
+        setIdForMultiUploadField(view);
     }
 
     private void disableFormWhenExternalSynchronized(final ViewDefinitionState view) {
@@ -102,6 +105,25 @@ public final class BatchViewHooks {
                 supplierField.requestComponentUpdateState();
             }
         }
+    }
+
+    public void setIdForMultiUploadField(final ViewDefinitionState view) {
+        FormComponent batchForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        FieldComponent batchIdForMultiUpload = (FieldComponent) view.getComponentByReference("batchIdForMultiUpload");
+        FieldComponent locale = (FieldComponent) view.getComponentByReference("locale");
+
+        Long id = batchForm.getEntityId();
+
+        if (Objects.nonNull(id)) {
+            batchIdForMultiUpload.setFieldValue(id);
+            batchIdForMultiUpload.requestComponentUpdateState();
+        } else {
+            batchIdForMultiUpload.setFieldValue("");
+            batchIdForMultiUpload.requestComponentUpdateState();
+        }
+
+        locale.setFieldValue(LocaleContextHolder.getLocale());
+        locale.requestComponentUpdateState();
     }
 
 }

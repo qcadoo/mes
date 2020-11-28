@@ -55,8 +55,6 @@ public final class ProductFields {
 
     public static final String PARENT = "parent";
 
-    public static final String CHILD = "child";
-    
     public static final String PRODUCT_FAMILY_CHILDRENS = "productFamilyChildrens";
 
     public static final String PRODUCT_FAMILY_CHILDREN_TREE = "productFamilyChildrenTree";
@@ -90,5 +88,9 @@ public final class ProductFields {
     public static final String EXPIRY_DATE_VALIDITY = "expiryDateValidity";
 
     public static final String BATCH_EVIDENCE = "batchEvidence";
+
+    public static final String MODEL = "model";
+
+    public static final String MODEL_ASSORTMENT = "modelAssortment";
 
 }

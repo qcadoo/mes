@@ -46,4 +46,5 @@ public interface AdvancedGenealogyConstants {
 
     String L_SPACER = ": ";
 
+    String MODEL_BATCH_ATTACHMENT = "batchAttachment";
 }

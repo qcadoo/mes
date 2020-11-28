@@ -89,4 +89,8 @@ public final class ResourceDtoFields {
 
     public static final String BLOCKED_FOR_QUALITY_CONTROL = "blockedForQualityControl";
 
+    public static final String IS_SHORT_FILTER = "isShortFilter";
+
+    public static final String IS_DEADLINE_FILTER = "isDeadlineFilter";
+
 }

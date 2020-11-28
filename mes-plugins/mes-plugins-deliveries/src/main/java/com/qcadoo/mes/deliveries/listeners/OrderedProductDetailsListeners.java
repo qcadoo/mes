@@ -57,8 +57,6 @@ import java.util.Optional;
 @Service
 public class OrderedProductDetailsListeners {
 
-    
-
     @Autowired
     private NumberService numberService;
 

@@ -6,15 +6,15 @@ import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.AdditionalCodeDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.AttribiuteValueDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.CountryDto;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.PalletNumberDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.WorkstationDto;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.WorkstationTypeDto;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.CountriesGridResponse;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.CountriesResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.ProductsGridResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.WorkstationTypesResponse;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.WorkstationsGridResponse;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.WorkstationsResponse;
 import com.qcadoo.model.api.DictionaryService;
 
 import java.util.Collections;
@@ -321,5 +321,58 @@ public class DataProvider {
         List<WorkstationTypeDto> workstationTypes = jdbcTemplate.query(query.toString(), Maps.newHashMap(), new BeanPropertyRowMapper(
                 WorkstationTypeDto.class));
         return new WorkstationTypesResponse(workstationTypes);
+    }
+
+    public CountriesResponse getCountries(String query) {
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("Select c.id as id, c.code as code, c.country as country From basic_country c WHERE ");
+        queryBuilder.append(" 1=1 ");
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        queryBuilder.append(" AND c.country ilike :query ORDER BY country ASC LIMIT 10 ");
+
+        String ilikeQuery = "%" + query + "%";
+        parameters.put("query", ilikeQuery);
+        List<CountryDto> countries = jdbcTemplate.query(queryBuilder.toString(), parameters, new BeanPropertyRowMapper(
+                CountryDto.class));
+        CountriesResponse response = new CountriesResponse();
+        response.setCountries(countries);
+        return response;
+    }
+
+    public CountriesGridResponse getCountriesByPage(int limit, int offset, String sort, String order, String search) {
+        StringBuilder query = new StringBuilder();
+        query.append("Select c.id as id, c.code as code, c.country as country From basic_country c WHERE ");
+        query.append(" 1 = 1 ");
+
+        StringBuilder queryCount = new StringBuilder();
+        queryCount.append("SELECT COUNT(*) ");
+        queryCount.append("From basic_country c WHERE 1 = 1 ");
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        appendCountriesConditions(search, query, parameters);
+        appendCountriesConditions(search, queryCount, parameters);
+
+        if (StringUtils.isNotEmpty(sort)) {
+            query.append(" ORDER BY " + sort + " " + order);
+        }
+        query.append(String.format(" LIMIT %d OFFSET %d", limit, offset));
+
+        Integer countRecords = jdbcTemplate.queryForObject(queryCount.toString(), parameters, Long.class).intValue();
+
+        List<CountryDto> countries = jdbcTemplate.query(query.toString(), parameters, new BeanPropertyRowMapper(
+                CountryDto.class));
+
+        return new CountriesGridResponse(countRecords, countries);
+    }
+
+
+    private void appendCountriesConditions(String search, StringBuilder query, Map<String, Object> parameters) {
+        if (StringUtils.isNotEmpty(search)) {
+            query.append(" AND (");
+            query.append("UPPER(c.code) LIKE '%").append(search.toUpperCase()).append("%' OR ");
+            query.append("UPPER(c.country) LIKE '%").append(search.toUpperCase()).append("%' ");
+            query.append(") ");
+        }
     }
 }

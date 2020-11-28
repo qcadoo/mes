@@ -27,6 +27,7 @@
 <model name="log" activable="false" deletable="false" updatable="false" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
         <datetime name="createTime" required="true"/>
         <belongsTo name="user" model="user" plugin="qcadooSecurity" required="true"/>

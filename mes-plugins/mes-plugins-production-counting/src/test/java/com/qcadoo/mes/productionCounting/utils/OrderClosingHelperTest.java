@@ -35,10 +35,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
@@ -59,16 +62,23 @@ public class OrderClosingHelperTest {
     private OrderClosingHelper orderClosingHelper;
 
     @Mock
+    private ParameterService parameterService;
+
+    @Mock
     private DataDefinition productionTrackingDD;
 
     @Mock
-    private Entity productionTracking, order, technology;
+    private Entity productionTracking, order, technology, parameter;
 
     @Before
     public final void init() {
+        orderClosingHelper = new OrderClosingHelper();
+
         MockitoAnnotations.initMocks(this);
 
-        orderClosingHelper = new OrderClosingHelper();
+        ReflectionTestUtils.setField(orderClosingHelper, "parameterService", parameterService);
+
+        given(parameterService.getParameter()).willReturn(parameter);
 
         given(productionTracking.getId()).willReturn(PRODUCTION_RECORD_ID);
         given(productionTracking.getDataDefinition()).willReturn(productionTrackingDD);
@@ -252,8 +262,7 @@ public class OrderClosingHelperTest {
     }
 
     private void orderHasEnabledAutoClose() {
-        given(order.getBooleanField(OrderFieldsPC.AUTO_CLOSE_ORDER)).willReturn(true);
-        given(order.getField(OrderFieldsPC.AUTO_CLOSE_ORDER)).willReturn(true);
+        given(parameter.getBooleanField(ParameterFieldsPC.AUTO_CLOSE_ORDER)).willReturn(true);
     }
 
     private void productionTrackingIsLast() {

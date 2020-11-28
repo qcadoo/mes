@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.costCalculation.listeners;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
-import java.math.BigDecimal;
-import java.util.Map;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
@@ -42,7 +33,6 @@ import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
 import com.qcadoo.mes.costCalculation.hooks.CostCalculationDetailsHooks;
 import com.qcadoo.mes.costCalculation.print.CostCalculationReportService;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
@@ -57,6 +47,14 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Map;
+import java.util.Set;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 @Service
 public class CostCalculationDetailsListeners {
@@ -189,7 +187,7 @@ public class CostCalculationDetailsListeners {
             return;
         }
 
-        Entity technology = getTechnologyFromOrder(order);
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
 
         if (technology == null) {
             return;
@@ -252,20 +250,6 @@ public class CostCalculationDetailsListeners {
         orderLookup.requestComponentUpdateState();
         defaultTechnologyLookup.requestComponentUpdateState();
         technologyLookup.requestComponentUpdateState();
-    }
-
-    private Entity getTechnologyFromOrder(final Entity order) {
-        Entity technology = null;
-
-        String orderType = order.getStringField(OrderFields.ORDER_TYPE);
-
-        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderType)) {
-            technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-        } else {
-            technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        }
-
-        return technology;
     }
 
     private Entity getDefaultTechnology(final Entity product) {

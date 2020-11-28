@@ -111,7 +111,7 @@
 					]]>
                 </script>
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="6">
+                           rows="7">
                     <layoutElement column="1" row="1">
                         <component type="input" name="number" field="number"
                                    reference="number">
@@ -171,6 +171,17 @@
                                     value="#name"/>
                             <option type="fieldCode" value="name"/>
 
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="7">
+                        <component type="lookup" name="model" field="#{form}.model"
+                                   reference="model" hasDescription="true">
+
+                            <option type="searchable" value="name"/>
+                            <option type="orderable" value="name"/>
+
+                            <option type="expression" value="#name"/>
+                            <option type="fieldCode" value="name"/>
                         </component>
                     </layoutElement>
                 </component>

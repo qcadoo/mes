@@ -58,11 +58,10 @@
 
         <!-- PRODUCTS FAMILY TREE -->
         <belongsTo name="parent" model="product"/>
-        <belongsTo name="child" model="product" persistent="false"/>
         <hasMany name="productFamilyChildrens" joinField="parent"
                  model="product"/>
         <tree name="productFamilyChildrenTree" joinField="parent" model="product"
-              cascade="nullify" persistent="false"/>
+              persistent="false"/>
         <integer name="priority" persistent="false"/>
         <string name="nodeNumber"/>
         <enum name="entityType" values="01particularProduct,02productsFamily"
@@ -88,6 +87,8 @@
             <validatesRange from="0" exclusively="true" />
         </integer>
 
+        <belongsTo name="model" model="model"/>
+        <belongsTo name="modelAssortment" model="assortment" persistent="false"/>
     </fields>
 
     <hooks>
@@ -108,7 +109,7 @@
         <onCreate class="com.qcadoo.mes.basic.hooks.ProductHooks"
                   method="calculateConversionOnCreate"/>
 
-        <onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="updateNodeNumber"/>
+        <onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="onSave"/>
         <onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearFamilyFromProductWhenTypeIsChanged"/>
 
         <onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="generateNodeNumber"/>

@@ -23,10 +23,15 @@
  */
 package com.qcadoo.mes.basic.listeners;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class StaffsListListeners {
@@ -35,6 +40,22 @@ public class StaffsListListeners {
         StringBuilder url = new StringBuilder("../page/basic/staffsImport.html");
 
         view.openModal(url.toString());
+    }
+
+    public void printStaffLabels(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent staffsGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+
+        Set<Long> staffIds = staffsGrid.getSelectedEntitiesIds();
+
+        if (staffIds.isEmpty()) {
+            view.addMessage("basic.staffsList.error.notSelected", ComponentState.MessageType.INFO);
+        } else {
+            String redirectUrl = new StringBuilder("/basic/staffLabelsReport.pdf?")
+                    .append(staffIds.stream().map(staffId -> "ids=" + staffId.toString()).collect(Collectors.joining("&")))
+                    .toString();
+
+            view.redirectTo(redirectUrl, true, false);
+        }
     }
 
 }

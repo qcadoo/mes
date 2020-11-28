@@ -6,9 +6,12 @@ import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
+import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
 import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
 import com.qcadoo.mes.basic.controllers.dataProvider.requests.ProductRequest;
 import com.qcadoo.mes.basic.controllers.dataProvider.requests.WorkstationRequest;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.CountriesGridResponse;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.CountriesResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.ProductResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.ProductsGridResponse;
@@ -92,6 +95,38 @@ public final class BasicApiController {
         return response;
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/workstationType", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public WorkstationResponse saveWorkstationType(@RequestBody WorkstationRequest workstation) {
+
+        Entity workstationEntity = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION_TYPE).create();
+        workstationEntity.setField(WorkstationTypeFields.NUMBER, workstation.getNumber());
+        workstationEntity.setField(WorkstationTypeFields.NAME, workstation.getName());
+
+        workstationEntity = workstationEntity.getDataDefinition().save(workstationEntity);
+        if(workstationEntity.isValid()) {
+            WorkstationResponse workstationResponse = new WorkstationResponse(WorkstationResponse.StatusCode.OK);
+            workstationResponse.setId(workstationEntity.getId());
+            workstationResponse.setNumber(workstation.getNumber());
+            workstationResponse.setName(workstation.getName());
+            return workstationResponse;
+        } else {
+            //
+            ErrorMessage numberError = workstationEntity.getError(WorkstationFields.NUMBER);
+            if(Objects.nonNull(numberError) && numberError.getMessage().equals("qcadooView.validate.field.error.duplicated")) {
+                WorkstationResponse response = new WorkstationResponse(WorkstationResponse.StatusCode.ERROR);
+                response.setMessage(translationService.translate("basic.dashboard.operationalTasksDefinitionWizard.error.validationError.workstationDuplicated",
+                        LocaleContextHolder.getLocale()));
+                return response;
+            }
+
+        }
+        WorkstationResponse response = new WorkstationResponse(WorkstationResponse.StatusCode.ERROR);
+        response.setMessage(translationService.translate("basic.dashboard.operationalTasksDefinitionWizard.error.validationError.workstationErrors",
+                LocaleContextHolder.getLocale()));
+        return response;
+    }
+
 
     @ResponseBody
     @RequestMapping(value = "/products", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -112,6 +147,22 @@ public final class BasicApiController {
             @RequestParam(value = "order", required = false) String order,
             @RequestParam(value = "search", required = false) String search) {
         return dataProvider.getProductsResponse(limit, offset, sort, order, search);
+    }
+
+
+    @ResponseBody
+    @RequestMapping(value = "/countriesByPage", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public CountriesGridResponse getCountriesByPage(@RequestParam(value = "limit") int limit, @RequestParam(value = "offset") int offset,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "order", required = false) String order,
+            @RequestParam(value = "search", required = false) String search) {
+        return dataProvider.getCountriesByPage(limit, offset, sort, order, search);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/countries", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public CountriesResponse getCountries(@RequestParam("query") String query) {
+        return dataProvider.getCountries(query);
     }
 
     @ResponseBody

@@ -402,28 +402,22 @@
 					]]>
                 </script>
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="11">
+                           rows="10">
                     <layoutElement column="1" row="1">
-                        <component type="select" name="orderType" field="orderType"
-                                   reference="orderType" hasDescription="true"
-                                   defaultEnabled="never">
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="1" row="2">
                         <component type="input" name="number" reference="number"
                                    field="number">
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="3" height="2">
+                    <layoutElement column="1" row="2" height="2">
                         <component type="textarea" name="name" field="name"
                                    reference="name" hasDescription="true"/>
                     </layoutElement>
-                    <layoutElement column="1" row="5" height="2">
+                    <layoutElement column="1" row="4" height="2">
                         <component type="textarea" name="description" field="description"
                                    reference="description"/>
                     </layoutElement>
-                    <layoutElement column="1" row="7">
+                    <layoutElement column="1" row="6">
                         <component type="lookup" name="company" reference="company"
                                    field="company">
                             <option type="column" name="name" fields="name" link="true"/>
@@ -440,7 +434,7 @@
                                       method="clearAddress"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="8">
+                    <layoutElement column="1" row="7">
                         <component type="lookup" name="address" reference="address"
                                    field="address" source="#{company}.addresses">
                             <option type="column" fields="name" name="name" link="true"/>
@@ -453,7 +447,7 @@
                             <option type="fieldCode" value="number"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="9">
+                    <layoutElement column="1" row="8">
                         <component type="calendar" name="dateFrom" field="startDate"
                                    reference="dateFrom" hasDescription="true">
                             <option type="labelWidth" value="50"/>
@@ -464,7 +458,7 @@
                                       method="copyStartDateToDetails"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="10">
+                    <layoutElement column="1" row="9">
                         <component type="calendar" name="dateTo" field="finishDate"
                                    reference="dateTo" hasDescription="true">
                             <option type="labelWidth" value="50"/>
@@ -475,7 +469,7 @@
                                       method="copyFinishDateToDetails"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="11">
+                    <layoutElement column="1" row="10">
                         <component type="calendar" name="deadline" field="deadline"
                                    reference="deadline">
                             <option type="labelWidth" value="50"/>

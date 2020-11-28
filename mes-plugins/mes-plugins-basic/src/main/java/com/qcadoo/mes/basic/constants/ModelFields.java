@@ -21,30 +21,24 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.technologies.constants;
+package com.qcadoo.mes.basic.constants;
 
-public enum TechnologyType {
+public final class ModelFields {
 
-    WITH_PATTERN_TECHNOLOGY("01patternTechnology"), WITH_OWN_TECHNOLOGY("02ownTechnology");
+    private ModelFields() {
 
-    private final String technologyType;
-
-    private TechnologyType(final String technologyType) {
-        this.technologyType = technologyType;
     }
 
-    public String getStringValue() {
-        return technologyType;
-    }
+    public static final String NAME = "name";
 
-    public static TechnologyType parseString(final String string) {
-        if ("01patternTechnology".equals(string)) {
-            return WITH_PATTERN_TECHNOLOGY;
-        } else if ("02ownTechnology".equals(string)) {
-            return WITH_OWN_TECHNOLOGY;
-        }
+    public static final String ASSORTMENT = "assortment";
 
-        throw new IllegalStateException("Unsupported TechnologyType: " + string);
-    }
+    public static final String FORMS = "forms";
+
+    public static final String TYPE_OF_PRODUCT = "typeOfProduct";
+
+    public static final String LABEL = "label";
+
+    public static final String PRODUCTS = "products";
 
 }

@@ -1,10 +1,5 @@
 package com.qcadoo.mes.materialFlowResources.hooks;
 
-import java.math.BigDecimal;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.materialFlowResources.constants.DocumentPositionParametersItemValues;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PalletStorageStateDtoFields;
@@ -15,11 +10,13 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @Service
 public class PalletStorageStateListHooks {
-
-
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -43,7 +40,5 @@ public class PalletStorageStateListHooks {
                 palletGrid.setCustomRestriction(searchBuilder -> searchBuilder.add(SearchRestrictions.lt(PalletStorageStateDtoFields.TOTAL_QUANTITY,  BigDecimal.valueOf(palletWithFreePlace))));
             }
         }
-
     }
-
 }

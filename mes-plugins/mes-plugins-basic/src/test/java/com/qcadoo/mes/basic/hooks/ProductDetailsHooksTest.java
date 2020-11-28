@@ -23,6 +23,21 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.test.util.ReflectionTestUtils;
+
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.util.UnitService;
@@ -35,26 +50,10 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.test.util.ReflectionTestUtils;
-
-import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(SearchRestrictions.class)
 public class ProductDetailsHooksTest {
-
-
 
     private static final String L_SZT = "szt";
 
@@ -80,7 +79,7 @@ public class ProductDetailsHooksTest {
     private FieldComponent parentField, entityTypeField, unitField;
 
     @Mock
-    private LookupComponent assortmentLookup;
+    private LookupComponent assortmentLookup, modelLookup;
 
     @Mock
     private DataDefinition productDD;
@@ -107,6 +106,7 @@ public class ProductDetailsHooksTest {
         given(view.getComponentByReference(ProductFields.PARENT)).willReturn(parentField);
         given(view.getComponentByReference(ProductFields.ENTITY_TYPE)).willReturn(entityTypeField);
         given(view.getComponentByReference(ProductFields.ASSORTMENT)).willReturn(assortmentLookup);
+        given(view.getComponentByReference(ProductFields.MODEL)).willReturn(modelLookup);
 
         given(productForm.getEntityId()).willReturn(L_ID);
 
@@ -122,6 +122,8 @@ public class ProductDetailsHooksTest {
         verify(productForm).setFormEnabled(false);
         verify(entityTypeField).setEnabled(true);
         verify(parentField).setEnabled(true);
+        verify(assortmentLookup).setEnabled(true);
+        verify(modelLookup).setEnabled(true);
     }
 
     @Test

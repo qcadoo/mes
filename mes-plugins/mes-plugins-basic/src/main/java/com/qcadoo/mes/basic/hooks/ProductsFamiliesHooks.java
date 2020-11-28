@@ -32,7 +32,6 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.search.CustomRestriction;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.view.api.ComponentState.MessageType;
@@ -57,19 +56,20 @@ public class ProductsFamiliesHooks {
     @Autowired
     private ProductsFamiliesTreeService productsFamiliesTreeService;
 
-    private static CustomRestriction customRestriction = new CustomRestriction() {
+    private static CustomRestriction productFamiliesRestriction = searchBuilder -> searchBuilder.add(SearchRestrictions.isNull(PARENT)).add(
+            SearchRestrictions.eq(ProductFields.ENTITY_TYPE, ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue()));
 
-        @Override
-        public void addRestriction(final SearchCriteriaBuilder searchBuilder) {
-            searchBuilder.add(SearchRestrictions.isNull(PARENT)).add(
-                    SearchRestrictions.eq(ProductFields.ENTITY_TYPE, ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue()));
-        }
-
-    };
+    private static CustomRestriction productWithoutFamiliesRestriction = searchBuilder -> searchBuilder.add(SearchRestrictions.isNull(PARENT)).add(
+            SearchRestrictions.eq(ProductFields.ENTITY_TYPE, ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()));
 
     public final void addDiscriminatorRestrictionToProductsFamilies(final ViewDefinitionState view) {
         GridComponent grid = (GridComponent) view.getComponentByReference("parents");
-        grid.setCustomRestriction(customRestriction);
+        grid.setCustomRestriction(productFamiliesRestriction);
+    }
+
+    public final void addDiscriminatorRestrictionToProducts(final ViewDefinitionState view) {
+        GridComponent grid = (GridComponent) view.getComponentByReference("children");
+        grid.setCustomRestriction(productWithoutFamiliesRestriction);
     }
 
     public void generateTreeWhenIdIsSet(final ViewDefinitionState view) {

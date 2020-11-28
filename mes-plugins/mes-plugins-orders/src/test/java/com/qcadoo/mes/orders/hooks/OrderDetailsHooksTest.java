@@ -66,8 +66,6 @@ import static org.springframework.test.util.ReflectionTestUtils.setField;
 @PrepareForTest(SearchRestrictions.class)
 public class OrderDetailsHooksTest {
 
-
-
     private static final Long L_ID = 1L;
 
     private OrderDetailsHooks orderDetailsHooks;

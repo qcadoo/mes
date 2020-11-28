@@ -110,7 +110,7 @@
         <windowTab name="warehouseState">
             <component type="form" name="inputDataForWarehouse" reference="inputDataForWarehouse">
                 <component type="gridLayout" name="inputDataForWarehouseGridLayout" reference="inputDataForWarehouseGridLayout"
-                           columns="3" rows="1">
+                           columns="3" rows="3">
                     <layoutElement column="1" row="1">
                         <component type="borderLayout" name="workPlansBasicBorderLayout"
                                    reference="workPlansBasicBorderLayout">
@@ -130,6 +130,19 @@
                                     </component>
                                 </layoutElement>
                             </component>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="checkbox" name="colorResourcesAfterDeadline"
+                                   field="#{form}.colorResourcesAfterDeadline" reference="colorResourcesAfterDeadline"
+                                   hasDescription="true">
+                            <option type="labelWidth" value="60" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
+                        <component type="input" name="shortExpiryDate" reference="shortExpiryDate" field="#{form}.shortExpiryDate"
+                                   hasDescription="true">
+                            <option type="labelWidth" value="60" />
                         </component>
                     </layoutElement>
                 </component>

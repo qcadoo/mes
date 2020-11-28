@@ -33,47 +33,60 @@
 		<ribbon>
 			<template name="standardFormTemplate" includeItems="navigation.back" />
 			<group name="add">
-				<bigButton name="addProduct" icon="newIcon24.png" state="enabled"
-					action="#{form}.fireEvent(addSelectedProductToFamily); #{window}.performBack">
+				<bigButton name="addProducts" icon="newIcon24.png" state="enabled"
+					action="#{form}.fireEvent(addSelectedProductsToFamily); #{window}.performBack">
 				</bigButton>
 			</group>
 		</ribbon>
 
 		<component type="form" name="form" reference="form">
-			<component type="gridLayout" name="gridLayout" columns="1"
+			<component type="flowGridLayout" name="gridLayout" columns="1"
 				rows="5">
-				<layoutElement column="1" row="1">
-					<component type="lookup" name="child" field="child"
-						reference="child">
-						<option type="column" name="name" fields="name" link="true"
-							width="200" />
-						<option type="column" name="parent" fields="parent"
-							expression="#parent['number'] + ' - ' + #parent['name']" />
+				<layoutElement column="1" row="1" minHeight="5">
+					<component type="grid" name="children" reference="children">
+						<script>
+							<![CDATA[
+								var addProductsButton = #{window}.getRibbonItem("add.addProducts");
 
-						<option type="searchable" value="name" />
-						<option type="orderable" value="name" />
+								var listener = {
+									onChange: function(selectedEntitiesArray) {
+										if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
+											addProductsButton.disable();
+										} else {
+											addProductsButton.enable();
+										}
+									}
+								}
 
-						<option type="expression"
-							value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-						<option type="fieldCode" value="number" />
+								this.addOnChangeListener(listener);
+							]]>
+						</script>
+						<option type="column" name="number" fields="number" />
+						<option type="column" name="name" fields="name" />
 
-						<listener event="onSelectedEntityChange"
-							class="com.qcadoo.mes.basic.listeners.ProductFamiliesAddProductListeners"
-							method="changeProductInLookup" />
+						<option type="order" column="name" direction="asc" />
+
+						<option type="searchable" value="number,name" />
+						<option type="orderable" value="number,name" />
+
+						<option type="correspondingView" value="basic/productDetails" />
+						<option type="correspondingComponent" value="form" />
+
+						<option type="fullscreen" value="true" />
+						<option type="multiselect" value="true" />
 					</component>
 				</layoutElement>
 			</component>
 
-			<listener event="addSelectedProductToFamily"
+			<listener event="addSelectedProductsToFamily"
 				class="com.qcadoo.mes.basic.listeners.ProductFamiliesAddProductListeners"
-				method="addSelectedProductToFamily" />
+				method="addSelectedProductsToFamily" />
 		</component>
 
 	</component>
 
 	<hooks>
-		<beforeRender
-			class="com.qcadoo.mes.basic.hooks.ProductFamiliesAddProductHooks"
-			method="updateRibbonState" />
+		<beforeInitialize class="com.qcadoo.mes.basic.hooks.ProductsFamiliesHooks"
+						  method="addDiscriminatorRestrictionToProducts" />
 	</hooks>
 </view>

@@ -53,4 +53,5 @@ public final class DeliveredProductMultiPositionFields {
 
     public static final String ADDITIONAL_CODE = "additionalCode";
 
+    public static final String PRICE_PER_UNIT = "pricePerUnit";
 }

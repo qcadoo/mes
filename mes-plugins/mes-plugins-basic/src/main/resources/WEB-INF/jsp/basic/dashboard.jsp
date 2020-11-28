@@ -32,6 +32,7 @@
     var QCD = QCD || {};
 
     QCD.currentLang = '<c:out value="${locale}" />';
+    QCD.wizardToOpen = '<c:out value="${wizardToOpen}" />';
 
     QCD.translate = function (key) {
         return QCD.translations[key] || '[' + key + ']';

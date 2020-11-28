@@ -38,6 +38,7 @@
         <string name="ean"/>
         <string name="externalNumber"/>
         <string name="assortmentName"/>
+        <string name="modelName"/>
         <string name="norm"/>
         <string name="sizeNumber"/>
         <string name="additionalCodes"/>

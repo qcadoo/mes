@@ -23,26 +23,9 @@
  */
 package com.qcadoo.mes.orders.print;
 
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
+import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
@@ -50,7 +33,6 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderType;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -60,6 +42,14 @@ import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.util.List;
+import java.util.*;
 
 @Component(value = "ordersOrderReportPdf")
 public class OrderReportPdf extends ReportPdfView {
@@ -185,28 +175,20 @@ public class OrderReportPdf extends ReportPdfView {
 			values.put("technologyNumber", technology.getStringField(TechnologyFields.NUMBER));
 			values.put("technologyName", technology.getStringField(TechnologyFields.NAME));
 
-			String tableLabelKey = "orders.order.report.technology.own";
-
-			if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(orderEntity.getStringField(OrderFields.ORDER_TYPE))) {
-				tableLabelKey = "orders.order.report.technology.label";
-			}
-
-			addTableToDocument(document, locale, tableLabelKey, values);
+			addTableToDocument(document, locale, "orders.order.report.technology.label", values);
 		}
     }
 
     private void addTechnologyTable(final Document document, final Entity order, final Locale locale) throws DocumentException {
-        if (OrderType.WITH_PATTERN_TECHNOLOGY.getStringValue().equals(order.getStringField(OrderFields.ORDER_TYPE))) {
-            Map<String, String> values = Maps.newLinkedHashMap();
+        Map<String, String> values = Maps.newLinkedHashMap();
 
-            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
 
-            if (!Objects.isNull(technology)) {
-				values.put("technologyNumber", technology.getStringField(TechnologyFields.NUMBER));
-				values.put("technologyName", technology.getStringField(TechnologyFields.NAME));
+        if (!Objects.isNull(technology)) {
+            values.put("technologyNumber", technology.getStringField(TechnologyFields.NUMBER));
+            values.put("technologyName", technology.getStringField(TechnologyFields.NAME));
 
-				addTableToDocument(document, locale, "orders.order.report.technologyPrototype.label", values);
-			}
+            addTableToDocument(document, locale, "orders.order.report.technologyPrototype.label", values);
         }
     }
 

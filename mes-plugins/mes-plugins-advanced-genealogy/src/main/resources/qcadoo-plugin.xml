@@ -66,11 +66,13 @@
         <localization:translation path="locales"/>
 
         <model:model model="batch" resource="model/batch.xml"/>
+        <model:model model="batchDto" resource="model/batchDto.xml"/>
         <model:model model="batchStateChange" resource="model/batchStateChange.xml"/>
         <model:model model="trackingRecord" resource="model/trackingRecord.xml"/>
         <model:model model="trackingRecordStateChange" resource="model/trackingRecordStateChange.xml"/>
         <model:model model="usedBatchSimple" resource="model/usedBatchSimple.xml"/>
         <model:model model="genealogyReport" resource="model/genealogyReport.xml"/>
+        <model:model model="batchAttachment" resource="model/batchAttachment.xml"/>
 
         <model:model-field plugin="states" model="message">
             <model:belongsTo name="batchStateChange" plugin="advancedGenealogy"

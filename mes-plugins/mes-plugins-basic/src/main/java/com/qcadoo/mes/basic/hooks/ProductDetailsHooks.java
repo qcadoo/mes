@@ -102,6 +102,8 @@ public class ProductDetailsHooks {
         FieldComponent parentField = (FieldComponent) state.getComponentByReference(ProductFields.PARENT);
 
         LookupComponent assortmentLookup = (LookupComponent) state.getComponentByReference(ProductFields.ASSORTMENT);
+        LookupComponent modelLookup = (LookupComponent) state.getComponentByReference(ProductFields.MODEL);
+
         Long productId = productForm.getEntityId();
 
         if (Objects.isNull(productId)) {
@@ -125,6 +127,7 @@ public class ProductDetailsHooks {
             entityTypeField.setEnabled(true);
             parentField.setEnabled(true);
             assortmentLookup.setEnabled(true);
+            modelLookup.setEnabled(true);
         }
     }
 
