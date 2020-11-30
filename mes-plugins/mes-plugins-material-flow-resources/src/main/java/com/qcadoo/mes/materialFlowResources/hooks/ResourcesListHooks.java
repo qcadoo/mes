@@ -36,7 +36,7 @@ public class ResourcesListHooks {
                         ComponentState.MessageType.FAILURE);
             } else {
                 resourcesGrid.setCustomRestriction(searchBuilder -> searchBuilder.add(SearchRestrictions.and(
-                        SearchRestrictions.gt(ResourceDtoFields.EXPIRATION_DATE, DateTime.now().withTimeAtStartOfDay().toDate()),
+                        SearchRestrictions.ge(ResourceDtoFields.EXPIRATION_DATE, DateTime.now().withTimeAtStartOfDay().toDate()),
                         SearchRestrictions.le(ResourceDtoFields.EXPIRATION_DATE,
                                 DateTime.now().withTimeAtStartOfDay().plusDays(shortExpiryDate).toDate()))));
             }
