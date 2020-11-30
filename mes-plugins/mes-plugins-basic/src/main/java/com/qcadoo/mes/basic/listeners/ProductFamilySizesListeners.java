@@ -54,6 +54,8 @@ public class ProductFamilySizesListeners {
                 product.setField(ProductFields.MODEL, productFamily.getBelongsToField(ProductFields.MODEL));
                 product.setField(ProductFields.CATEGORY, productFamily.getStringField(ProductFields.CATEGORY));
                 product.setField(ProductFields.ENTITY_TYPE, ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue());
+                product.setField(ProductFields.GLOBAL_TYPE_OF_MATERIAL,
+                        productFamily.getStringField(ProductFields.GLOBAL_TYPE_OF_MATERIAL));
                 product.setField(ProductFields.NAME, productFamily.getStringField(ProductFields.NAME));
                 product.setField(ProductFields.NUMBER,
                         productFamily.getStringField(ProductFields.NUMBER) + "-" + size.getStringField(SizeFields.NUMBER));
