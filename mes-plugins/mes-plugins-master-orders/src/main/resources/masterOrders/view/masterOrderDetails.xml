@@ -248,6 +248,20 @@
                         <component type="textarea" name="description" field="description"
                                    reference="description"/>
                     </layoutElement>
+                    <layoutElement column="1" row="7">
+                        <component type="lookup" name="salesPlan" reference="salesPlan"
+                                   field="#{form}.salesPlan">
+                            <option type="column" name="name" fields="name" link="true"
+                                    width="100"/>
+
+                            <option type="searchable" value="name"/>
+                            <option type="orderable" value="name"/>
+
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                    </layoutElement>
                     <layoutElement column="2" row="1">
                         <component type="checkbox" name="addMasterPrefixToNumber"
                                    field="addMasterPrefixToNumber" reference="addMasterPrefixToNumber">

@@ -134,6 +134,11 @@
                            cascade="nullify"/>
         </model:model-field>
 
+        <model:model-field plugin="orders" model="salesPlan">
+            <model:hasMany name="masterOrders" model="masterOrder" plugin="masterOrders" joinField="salesPlan"
+                           cascade="nullify"/>
+        </model:model-field>
+
         <model:model-hook model="order" plugin="orders">
             <model:validatesWith class="com.qcadoo.mes.masterOrders.validators.OrderValidatorsMO"
                                  method="checkProductAndTechnology"/>
