@@ -159,9 +159,9 @@ public class ProductDetailsHooks {
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
 
-        RibbonGroup operationGroups = (RibbonGroup) window.getRibbon().getGroupByName("conversions");
+        RibbonGroup operationGroups = window.getRibbon().getGroupByName("conversions");
 
-        RibbonActionItem getDefaultConversions = (RibbonActionItem) operationGroups.getItemByName("getDefaultConversions");
+        RibbonActionItem getDefaultConversions = operationGroups.getItemByName("getDefaultConversions");
 
         updateButtonState(getDefaultConversions, Objects.nonNull(operationGroup.getId()));
     }
@@ -173,9 +173,9 @@ public class ProductDetailsHooks {
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
 
-        RibbonGroup productFamily = (RibbonGroup) window.getRibbon().getGroupByName("productFamily");
+        RibbonGroup productFamily = window.getRibbon().getGroupByName("productFamily");
 
-        RibbonActionItem productFamilySizes = (RibbonActionItem) productFamily.getItemByName("productFamilySizes");
+        RibbonActionItem productFamilySizes = productFamily.getItemByName("productFamilySizes");
 
         updateButtonState(productFamilySizes,
                 ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(product.getField(ProductFields.ENTITY_TYPE)));
@@ -186,11 +186,7 @@ public class ProductDetailsHooks {
 
         Entity product = productForm.getPersistedEntityWithIncludedFormValues();
         FieldComponent entityTypeField = (FieldComponent) view.getComponentByReference(ProductFields.ENTITY_TYPE);
-        if (product.getHasManyField(ProductFields.PRODUCT_FAMILY_CHILDRENS).isEmpty()) {
-            entityTypeField.setEnabled(true);
-        } else {
-            entityTypeField.setEnabled(false);
-        }
+        entityTypeField.setEnabled(product.getHasManyField(ProductFields.PRODUCT_FAMILY_CHILDRENS).isEmpty());
     }
 
     private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {

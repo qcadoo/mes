@@ -45,9 +45,6 @@
 
         <component type="form" name="productionCountingQuantityDetails"
                    reference="form">
-
-
-
             <component type="gridLayout" name="gridLayout" columns="1"
                        rows="5" hasBorders="false">
                 <layoutElement column="1" row="1">

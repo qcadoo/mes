@@ -92,9 +92,16 @@
         <model:model model="operationalTaskWithColorDto" resource="model/operationalTaskWithColorDto.xml"/>
         <model:model model="operationalTaskStateChange" resource="model/operationalTaskStateChange.xml"/>
         <model:model model="setCategory" resource="model/setCategory.xml"/>
+        <model:model model="salesPlan" resource="model/salesPlan.xml"/>
+        <model:model model="salesPlanProduct" resource="model/salesPlanProduct.xml"/>
+        <model:model model="salesPlanStateChange" resource="model/salesPlanStateChange.xml"/>
 
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="positions" model="schedulePosition" plugin="orders" joinField="product"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="salesPlanProducts" model="salesPlanProduct" plugin="orders" joinField="product"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="workstation">
@@ -341,6 +348,9 @@
         <menu:menu-item name="operationalTasks" category="orders"
                         view="operationalTasksList" defaultAuthorizationRole="ROLE_PLANNING"/>
 
+        <menu:menu-item name="salesPlansList" category="orders"
+                        view="salesPlansList" defaultAuthorizationRole="ROLE_PLANNING"/>
+
         <menu:menu-item-url name="planningParameters" category="parameters" url="/planningParameters.html"
                             defaultAuthorizationRole="ROLE_PARAMETERS"/>
 
@@ -368,6 +378,9 @@
         <view:view resource="view/operationalTaskDetails.xml"/>
         <view:view resource="view/planningParameters.xml"/>
         <view:view resource="view/setCategory.xml"/>
+        <view:view resource="view/salesPlansList.xml"/>
+        <view:view resource="view/salesPlanDetails.xml"/>
+        <view:view resource="view/salesPlanProductDetails.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/productsList.xml"/>

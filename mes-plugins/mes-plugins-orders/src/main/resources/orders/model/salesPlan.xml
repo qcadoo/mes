@@ -24,31 +24,31 @@
     ***************************************************************************
 
 -->
-<model name="productDto" activable="true" auditable="false" deletable="false" insertable="false"
-       updatable="false"
+<model name="salesPlan"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <string name="number"/>
-        <string name="name"/>
-        <enum name="globalTypeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"/>
-        <dictionary name="category" dictionary="categories"/>
-        <string name="parentName"/>
-        <string name="ean"/>
-        <string name="externalNumber"/>
-        <string name="assortmentName"/>
-        <string name="modelName"/>
-        <string name="norm"/>
-        <string name="sizeNumber"/>
-        <string name="additionalCodes"/>
-        <boolean name="hasAttachments"/>
-        <string name="unit"/>
-        <string name="additionalUnit"/>
-        <enum name="entityType" values="01particularProduct,02productsFamily"/>
+        <string name="number" unique="true"/>
+        <string name="name" required="true">
+            <validatesLength max="255"/>
+        </string>
+        <string name="description">
+            <validatesLength max="2048"/>
+        </string>
+        <date name="dateFrom"/>
+        <date name="dateTo"/>
+        <enum name="state" values="01draft" default="01draft" required="true"/>
+        <hasMany name="products" joinField="salesPlan" model="salesPlanProduct"
+                 cascade="delete" copyable="true"/>
     </fields>
 
-    <identifier expression="#number + ' - ' + #name"/>
+    <hooks>
+        <onCreate class="com.qcadoo.mes.orders.hooks.SalesPlanHooks" method="onCreate"/>
+        <onCopy class="com.qcadoo.mes.orders.hooks.SalesPlanHooks" method="onCopy"/>
+        <onSave class="com.qcadoo.mes.orders.hooks.SalesPlanHooks"
+                method="onSave"/>
+    </hooks>
 
-    <masterModel plugin="basic" model="product"/>
+    <identifier expression="#number + ' - ' + #name"/>
 </model>
