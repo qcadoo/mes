@@ -82,4 +82,6 @@ public final class PositionFields {
     public static final String PICKING_DATE = "pickingDate";
 
     public static final String PICKING_WORKER = "pickingWorker";
+
+    public static final String REST_AFTER_SHIFT_DISPOSITION = "restAfterShiftDisposition";
 }
