@@ -15,12 +15,11 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class AdditionalUnitService {
@@ -122,14 +121,14 @@ public class AdditionalUnitService {
         return isValid;
     }
 
-    public boolean isValidDecimalFieldWithoutMsg(final ViewDefinitionState view, final List<String> fileds) {
+    public boolean isValidDecimalFieldWithoutMsg(final ViewDefinitionState view, final List<String> fields) {
         boolean isValid = true;
 
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        Entity entity = orderForm.getEntity();
+        Entity entity = form.getEntity();
 
-        for (String field : fileds) {
+        for (String field : fields) {
             try {
                 entity.getDecimalField(field);
             } catch (IllegalArgumentException e) {

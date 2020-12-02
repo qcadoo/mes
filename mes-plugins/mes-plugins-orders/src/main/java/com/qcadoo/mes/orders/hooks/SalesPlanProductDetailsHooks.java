@@ -2,13 +2,15 @@ package com.qcadoo.mes.orders.hooks;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.SalesPlanProductFields;
+import com.qcadoo.mes.orders.criteriaModifiers.ProductCriteriaModifiersO;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,9 +24,6 @@ public class SalesPlanProductDetailsHooks {
 
     private static final String L_SURPLUS_FROM_PLAN_UNIT = "surplusFromPlanUnit";
 
-    @Autowired
-    private TechnologyServiceO technologyServiceO;
-
     public void onBeforeRender(final ViewDefinitionState view) {
         List<String> referenceNames = Lists.newArrayList(L_PLANNED_QUANTITY_UNIT, L_ORDERED_QUANTITY_UNIT,
                 L_SURPLUS_FROM_PLAN_UNIT);
@@ -36,25 +35,6 @@ public class SalesPlanProductDetailsHooks {
 
         if (product != null) {
             unit = product.getStringField(ProductFields.UNIT);
-
-            LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(SalesPlanProductFields.TECHNOLOGY);
-            if (technologyLookup.getEntity() == null) {
-                Entity defaultTechnology = technologyServiceO.getDefaultTechnology(product);
-
-                if (defaultTechnology != null) {
-                    technologyLookup.setFieldValue(defaultTechnology);
-                    technologyLookup.requestComponentUpdateState();
-                } else {
-                    Entity productFamily = product.getBelongsToField(ProductFields.PARENT);
-                    if (productFamily != null) {
-                        defaultTechnology = technologyServiceO.getDefaultTechnology(productFamily);
-                        if (defaultTechnology != null) {
-                            technologyLookup.setFieldValue(defaultTechnology);
-                            technologyLookup.requestComponentUpdateState();
-                        }
-                    }
-                }
-            }
         }
 
         for (String referenceName : referenceNames) {
@@ -62,6 +42,23 @@ public class SalesPlanProductDetailsHooks {
             field.setFieldValue(unit);
             field.requestComponentUpdateState();
         }
+        setCriteriaModifierParameters(productLookup,
+                ((FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM)).getEntity());
+    }
 
+    private void setCriteriaModifierParameters(LookupComponent productLookup, Entity salesPlanProduct) {
+        FilterValueHolder filterValueHolder = productLookup.getFilterValue();
+
+        Long salesPlanId = salesPlanProduct.getBelongsToField(SalesPlanProductFields.SALES_PLAN).getId();
+        Entity product = salesPlanProduct.getBelongsToField(SalesPlanProductFields.PRODUCT);
+
+        if (product != null) {
+            filterValueHolder.put(ProductCriteriaModifiersO.L_PRODUCT_ID, product.getId());
+        }
+
+        filterValueHolder.put(ProductCriteriaModifiersO.L_SALES_PLAN_ID, salesPlanId);
+
+        productLookup.setFilterValue(filterValueHolder);
+        productLookup.requestComponentUpdateState();
     }
 }

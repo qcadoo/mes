@@ -71,28 +71,18 @@
         </windowTab>
 
         <windowTab name="productsTab">
-            <component type="grid" name="products" source="#{form}.products"
-                       reference="products">
-                <option type="column" name="productNumber" fields="product" expression="#product['number']"
-                        link="true" width="100"/>
-                <option type="column" name="productName" fields="product" expression="#product['name']"
-                        link="true" width="100"/>
-                <option type="column" name="productEntityType" fields="product"
-                        expression="'@basic.product.entityType.value.' + #product['entityType']" width="50"/>
-                <option type="column" name="productModel" fields="product"
-                        expression="#product['model']?.get('name')" width="60"/>
-                <option type="column" name="productAssortment" fields="product"
-                        expression="#product['assortment']?.get('name')" width="60"/>
-                <option type="column" name="technologyNumber" fields="technology" expression="#technology['number']"
-                        width="60"/>
-                <option type="column" name="plannedQuantity" fields="plannedQuantity"
-                        width="40"/>
-                <option type="column" name="orderedQuantity" fields="orderedQuantity"
-                        width="40"/>
-                <option type="column" name="surplusFromPlan" fields="surplusFromPlan"
-                        width="40"/>
-                <option type="column" name="productUnit" fields="product"
-                        expression="#product['unit']" width="30"/>
+            <component type="grid" name="products" useDto="true" source="#{form}.productsDto"
+                       reference="products" model="salesPlanProductDto">
+                <option type="column" name="productNumber" fields="productNumber" link="true" width="100"/>
+                <option type="column" name="productName" fields="productName" link="true" width="100"/>
+                <option type="column" name="productEntityType" fields="productEntityType" width="50"/>
+                <option type="column" name="productModel" fields="productModel" width="60"/>
+                <option type="column" name="productAssortment" fields="productAssortment" width="60"/>
+                <option type="column" name="technologyNumber" fields="technologyNumber" width="60"/>
+                <option type="column" name="plannedQuantity" fields="plannedQuantity" width="40"/>
+                <option type="column" name="orderedQuantity" fields="orderedQuantity" width="40"/>
+                <option type="column" name="surplusFromPlan" fields="surplusFromPlan" width="40"/>
+                <option type="column" name="productUnit" fields="productUnit" width="30"/>
 
                 <option type="order" column="productNumber" direction="asc"/>
 
@@ -104,6 +94,9 @@
                 <option type="correspondingView" value="orders/salesPlanProductDetails"/>
                 <option type="correspondingComponent" value="form"/>
                 <option type="correspondingViewInModal" value="true"/>
+
+                <option type="footerRow" value="true"/>
+                <option type="columnsToSummary" value="plannedQuantity,orderedQuantity,surplusFromPlan"/>
 
                 <option type="fixedHeight" value="true"/>
                 <option type="multiselect" value="true"/>

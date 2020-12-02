@@ -94,14 +94,25 @@
         <model:model model="setCategory" resource="model/setCategory.xml"/>
         <model:model model="salesPlan" resource="model/salesPlan.xml"/>
         <model:model model="salesPlanProduct" resource="model/salesPlanProduct.xml"/>
+        <model:model model="salesPlanProductDto" resource="model/salesPlanProductDto.xml"/>
         <model:model model="salesPlanStateChange" resource="model/salesPlanStateChange.xml"/>
 
         <model:model-field plugin="basic" model="product">
-            <model:hasMany name="positions" model="schedulePosition" plugin="orders" joinField="product"/>
+            <model:hasMany name="salesPlanProducts" model="salesPlanProduct" plugin="orders" joinField="product"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies" model="technology">
+            <model:hasMany name="salesPlanProducts" model="salesPlanProduct" plugin="orders" joinField="technology"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="shift">
+            <model:hasMany name="salesPlanStateChanges"
+                           plugin="orders" model="salesPlanStateChange"
+                           joinField="shift"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">
-            <model:hasMany name="salesPlanProducts" model="salesPlanProduct" plugin="orders" joinField="product"/>
+            <model:hasMany name="positions" model="schedulePosition" plugin="orders" joinField="product"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="workstation">

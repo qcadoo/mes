@@ -57,6 +57,8 @@ public final class OrdersConstants {
 
     public static final String MODEL_SALES_PLAN = "salesPlan";
 
+    public static final String MODEL_SALES_PLAN_PRODUCT = "salesPlanProduct";
+
     public static final String MODEL_SCHEDULE_POSITION = "schedulePosition";
 
     public static final String MODEL_OPERATIONAL_TASK = "operationalTask";

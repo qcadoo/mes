@@ -50,12 +50,12 @@
                         <option type="expression"
                                 value="#number + ' - ' + #name"/>
                         <option type="fieldCode" value="number"/>
-<!--                        <criteriaModifier-->
-<!--                                class="com.qcadoo.mes.orders.criteriaModifier.ProductCriteriaModifiersO"-->
-<!--                                method="show"/>-->
+                        <criteriaModifier
+                                class="com.qcadoo.mes.orders.criteriaModifiers.ProductCriteriaModifiersO"
+                                method="showNotAssignedProducts"/>
                         <listener event="onSelectedEntityChange"
-                                  class="com.qcadoo.view.api.listeners.RerenderListener"
-                                  method="onChangeRerender"/>
+                                  class="com.qcadoo.mes.orders.listeners.SalesPlanProductDetailsListeners"
+                                  method="fillDefaultTechnology"/>
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="2" width="4">
@@ -78,6 +78,8 @@
                     <component type="input" name="plannedQuantity" field="plannedQuantity"
                                reference="plannedQuantity">
                         <option type="alignment" value="right"/>
+                        <listener event="onInputChange" method="onPlannedQuantityChange"
+                                  class="com.qcadoo.mes.orders.listeners.SalesPlanProductDetailsListeners"/>
                     </component>
                 </layoutElement>
                 <layoutElement column="5" row="3">
