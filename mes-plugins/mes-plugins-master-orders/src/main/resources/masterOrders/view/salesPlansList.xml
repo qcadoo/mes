@@ -16,7 +16,7 @@
             <option type="column" name="dateTo" fields="dateTo" width="50"/>
             <option type="column" name="state" fields="state" width="40"/>
 
-            <option type="correspondingView" value="orders/salesPlanDetails"/>
+            <option type="correspondingView" value="masterOrders/salesPlanDetails"/>
             <option type="correspondingComponent" value="form"/>
 
             <option type="order" column="number" direction="desc"/>

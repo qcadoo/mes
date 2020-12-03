@@ -24,34 +24,29 @@
     ***************************************************************************
 
 -->
-<model name="salesPlan"
+<model name="salesPlanProduct"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <string name="number" unique="true"/>
-        <string name="name" required="true">
-            <validatesLength max="255"/>
-        </string>
-        <string name="description">
-            <validatesLength max="2048"/>
-        </string>
-        <date name="dateFrom"/>
-        <date name="dateTo"/>
-        <enum name="state" values="01draft" default="01draft" required="true"/>
-        <hasMany name="products" joinField="salesPlan" model="salesPlanProduct"
-                 cascade="delete" copyable="true"/>
-        <hasMany name="productsDto" joinField="salesPlan" model="salesPlanProductDto"
-                 persistent="false"/>
-        <hasMany name="stateChanges" model="salesPlanStateChange" joinField="salesPlan" cascade="delete"/>
+        <decimal name="plannedQuantity" required="true">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="orderedQuantity" default="0">
+            <validatesRange from="0"/>
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="surplusFromPlan">
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <belongsTo name="salesPlan" model="salesPlan"/>
+        <belongsTo name="product" plugin="basic" model="product" required="true"/>
+        <belongsTo name="technology" plugin="technologies" model="technology"/>
     </fields>
 
-    <hooks>
-        <onCreate class="com.qcadoo.mes.orders.hooks.SalesPlanHooks" method="onCreate"/>
-        <onCopy class="com.qcadoo.mes.orders.hooks.SalesPlanHooks" method="onCopy"/>
-        <onSave class="com.qcadoo.mes.orders.hooks.SalesPlanHooks"
-                method="onSave"/>
-    </hooks>
-
-    <identifier expression="#number + ' - ' + #name"/>
+    <hooks/>
 </model>

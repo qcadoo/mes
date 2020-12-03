@@ -33,6 +33,17 @@
 
         <ribbon>
             <template name="standardFormTemplate"/>
+            <group name="products">
+                <bigButton name="addProductsBySize" icon="newIcon24.png"
+                             state="enabled" action="#{form}.fireEvent(addProductsBySize);">
+                </bigButton>
+                <bigButton name="getOrderedQuantities" icon="generateIcon24.png"
+                           state="enabled" action="#{form}.fireEvent(getOrderedQuantities);">
+                </bigButton>
+                <bigButton name="showOrderedProductsForFamily" icon="genealogyIcon24.png"
+                           state="disabled" action="#{form}.fireEvent(showOrderedProductsForFamily);">
+                </bigButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -65,8 +76,14 @@
                     </layoutElement>
                 </component>
                 <option type="header" value="true"/>
-                <option type="expression"
-                        value="#number"/>
+                <option type="expression" value="#number"/>
+
+                <listener event="addProductsBySize" method="addProductsBySize"
+                          class="com.qcadoo.mes.masterOrders.listeners.SalesPlanDetailsListeners"/>
+                <listener event="getOrderedQuantities" method="getOrderedQuantities"
+                          class="com.qcadoo.mes.masterOrders.listeners.SalesPlanDetailsListeners"/>
+                <listener event="showOrderedProductsForFamily" method="showOrderedProductsForFamily"
+                          class="com.qcadoo.mes.masterOrders.listeners.SalesPlanDetailsListeners"/>
             </component>
         </windowTab>
 
@@ -91,7 +108,7 @@
                 <option type="orderable"
                         value="productNumber,productName,productEntityType,productModel,productAssortment,technologyNumber,plannedQuantity,productUnit,orderedQuantity,surplusFromPlan"/>
 
-                <option type="correspondingView" value="orders/salesPlanProductDetails"/>
+                <option type="correspondingView" value="masterOrders/salesPlanProductDetails"/>
                 <option type="correspondingComponent" value="form"/>
                 <option type="correspondingViewInModal" value="true"/>
 

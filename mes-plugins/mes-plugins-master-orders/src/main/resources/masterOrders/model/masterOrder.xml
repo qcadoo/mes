@@ -97,7 +97,7 @@
         <text name="comments" persistent="false"/>
         <dictionary name="masterOrderPositionStatus" dictionary="masterOrderPositionStatus" persistent="false"/>
 
-        <belongsTo name="salesPlan" plugin="orders" model="salesPlan"/>
+        <belongsTo name="salesPlan" model="salesPlan"/>
     </fields>
 
     <hooks>

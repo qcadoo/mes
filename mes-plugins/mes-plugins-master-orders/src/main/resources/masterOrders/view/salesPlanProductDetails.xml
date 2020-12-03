@@ -51,10 +51,10 @@
                                 value="#number + ' - ' + #name"/>
                         <option type="fieldCode" value="number"/>
                         <criteriaModifier
-                                class="com.qcadoo.mes.orders.criteriaModifiers.ProductCriteriaModifiersO"
+                                class="com.qcadoo.mes.masterOrders.criteriaModifier.ProductCriteriaModifiersO"
                                 method="showNotAssignedProducts"/>
                         <listener event="onSelectedEntityChange"
-                                  class="com.qcadoo.mes.orders.listeners.SalesPlanProductDetailsListeners"
+                                  class="com.qcadoo.mes.masterOrders.listeners.SalesPlanProductDetailsListeners"
                                   method="fillDefaultTechnology"/>
                     </component>
                 </layoutElement>
@@ -79,7 +79,7 @@
                                reference="plannedQuantity">
                         <option type="alignment" value="right"/>
                         <listener event="onInputChange" method="onPlannedQuantityChange"
-                                  class="com.qcadoo.mes.orders.listeners.SalesPlanProductDetailsListeners"/>
+                                  class="com.qcadoo.mes.masterOrders.listeners.SalesPlanProductDetailsListeners"/>
                     </component>
                 </layoutElement>
                 <layoutElement column="5" row="3">
@@ -121,7 +121,7 @@
 
     <hooks>
         <beforeRender
-                class="com.qcadoo.mes.orders.hooks.SalesPlanProductDetailsHooks"
+                class="com.qcadoo.mes.masterOrders.hooks.SalesPlanProductDetailsHooks"
                 method="onBeforeRender"/>
     </hooks>
 

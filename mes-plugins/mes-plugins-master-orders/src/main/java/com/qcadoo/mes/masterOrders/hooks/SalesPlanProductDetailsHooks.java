@@ -1,9 +1,9 @@
-package com.qcadoo.mes.orders.hooks;
+package com.qcadoo.mes.masterOrders.hooks;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.orders.constants.SalesPlanProductFields;
-import com.qcadoo.mes.orders.criteriaModifiers.ProductCriteriaModifiersO;
+import com.qcadoo.mes.masterOrders.constants.SalesPlanProductFields;
+import com.qcadoo.mes.masterOrders.criteriaModifier.ProductCriteriaModifiersO;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;

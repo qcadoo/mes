@@ -1,4 +1,4 @@
-package com.qcadoo.mes.orders.listeners;
+package com.qcadoo.mes.masterOrders.listeners;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.TechnologyServiceO;
-import com.qcadoo.mes.orders.constants.SalesPlanProductFields;
+import com.qcadoo.mes.masterOrders.constants.SalesPlanProductFields;
 import com.qcadoo.mes.orders.util.AdditionalUnitService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;

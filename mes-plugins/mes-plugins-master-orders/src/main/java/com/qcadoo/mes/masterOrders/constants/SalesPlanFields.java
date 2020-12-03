@@ -1,4 +1,4 @@
-package com.qcadoo.mes.orders.constants;
+package com.qcadoo.mes.masterOrders.constants;
 
 public final class SalesPlanFields {
 
@@ -10,4 +10,8 @@ public final class SalesPlanFields {
     public static final String NAME = "name";
 
     public static final String STATE = "state";
+
+    public static final String PRODUCTS = "products";
+
+    public static final String MASTER_ORDERS = "masterOrders";
 }

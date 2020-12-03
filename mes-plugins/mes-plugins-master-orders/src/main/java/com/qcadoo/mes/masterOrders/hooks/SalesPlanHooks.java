@@ -1,9 +1,9 @@
-package com.qcadoo.mes.orders.hooks;
+package com.qcadoo.mes.masterOrders.hooks;
 
+import com.qcadoo.mes.masterOrders.constants.SalesPlanFields;
+import com.qcadoo.mes.masterOrders.states.SalesPlanServiceMarker;
+import com.qcadoo.mes.masterOrders.states.constants.SalesPlanStateStringValues;
 import com.qcadoo.mes.newstates.StateExecutorService;
-import com.qcadoo.mes.orders.constants.SalesPlanFields;
-import com.qcadoo.mes.orders.states.SalesPlanServiceMarker;
-import com.qcadoo.mes.orders.states.constants.SalesPlanStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import org.apache.commons.lang3.StringUtils;

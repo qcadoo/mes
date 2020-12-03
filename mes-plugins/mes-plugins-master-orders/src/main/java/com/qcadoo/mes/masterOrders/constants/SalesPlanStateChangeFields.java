@@ -1,4 +1,4 @@
-package com.qcadoo.mes.orders.constants;
+package com.qcadoo.mes.masterOrders.constants;
 
 public final class SalesPlanStateChangeFields {
 
