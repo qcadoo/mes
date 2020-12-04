@@ -90,6 +90,20 @@
         <windowTab name="productsTab">
             <component type="grid" name="products" useDto="true" source="#{form}.productsDto"
                        reference="products" model="salesPlanProductDto">
+                <script>
+                    <![CDATA[
+                    this.addOnChangeListener({
+						onChange: function(selectedEntitiesArray) {
+							if (selectedEntitiesArray && selectedEntitiesArray.length == 1
+							    && selectedEntitiesArray[0].fields.productEntityType == "02productsFamily") {
+								#{window}.getRibbonItem("products.showOrderedProductsForFamily").enable();
+							} else {
+								#{window}.getRibbonItem("products.showOrderedProductsForFamily").disable();
+							}
+						}
+					});
+				]]>
+                </script>
                 <option type="column" name="productNumber" fields="productNumber" link="true" width="100"/>
                 <option type="column" name="productName" fields="productName" link="true" width="100"/>
                 <option type="column" name="productEntityType" fields="productEntityType" width="50"/>

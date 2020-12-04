@@ -193,6 +193,7 @@
         <view:view resource="view/salesPlansList.xml"/>
         <view:view resource="view/salesPlanDetails.xml"/>
         <view:view resource="view/salesPlanProductDetails.xml"/>
+        <view:view resource="view/orderedProductsForFamily.xml"/>
 
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/masterOrderDefinitionsParameters.xml"/>

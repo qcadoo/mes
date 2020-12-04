@@ -26,14 +26,11 @@ package com.qcadoo.mes.masterOrders.hooks;
 import com.google.common.base.Preconditions;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
-import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
-import com.qcadoo.mes.masterOrders.util.MasterOrderProductsDataService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -44,12 +41,6 @@ import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.DEADLINE;
 
 @Service
 public class MasterOrderHooks {
-
-    @Autowired
-    private MasterOrderOrdersDataProvider masterOrderOrdersDataProvider;
-
-    @Autowired
-    private MasterOrderProductsDataService masterOrderProductsDataService;
 
     public void onCreate(final DataDefinition dataDefinition, final Entity masterOrder) {
         setExternalSynchronizedField(masterOrder);
