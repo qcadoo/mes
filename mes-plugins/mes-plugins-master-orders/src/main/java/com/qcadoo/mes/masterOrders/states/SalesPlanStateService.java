@@ -1,4 +1,4 @@
-package com.qcadoo.mes.orders.states;
+package com.qcadoo.mes.masterOrders.states;
 
 import com.qcadoo.mes.newstates.BasicStateService;
 import org.springframework.beans.factory.annotation.Autowired;

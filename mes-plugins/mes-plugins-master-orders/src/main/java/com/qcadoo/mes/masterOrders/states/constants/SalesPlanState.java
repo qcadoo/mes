@@ -1,4 +1,4 @@
-package com.qcadoo.mes.orders.states.constants;
+package com.qcadoo.mes.masterOrders.states.constants;
 
 import com.google.common.base.Preconditions;
 import com.qcadoo.mes.states.StateEnum;

@@ -77,8 +77,27 @@
         <model:model model="masterOrderPositionDto" resource="model/masterOrderPositionDto.xml"/>
         <model:model model="masterOrderDto" resource="model/masterOrderDto.xml"/>
         <model:model model="generatingOrdersHelper" resource="model/generatingOrdersHelper.xml"/>
+
         <model:model model="productsBySizeHelper" resource="model/productsBySizeHelper.xml"/>
         <model:model model="productsBySizeEntryHelper" resource="model/productsBySizeEntryHelper.xml"/>
+        <model:model model="salesPlan" resource="model/salesPlan.xml"/>
+        <model:model model="salesPlanProduct" resource="model/salesPlanProduct.xml"/>
+        <model:model model="salesPlanStateChange" resource="model/salesPlanStateChange.xml"/>
+        <model:model model="salesPlanProductDto" resource="model/salesPlanProductDto.xml"/>
+
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="salesPlanProducts" model="salesPlanProduct" plugin="masterOrders" joinField="product"/>
+        </model:model-field>
+
+        <model:model-field plugin="technologies" model="technology">
+            <model:hasMany name="salesPlanProducts" model="salesPlanProduct" plugin="masterOrders" joinField="technology"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="shift">
+            <model:hasMany name="salesPlanStateChanges"
+                           plugin="masterOrders" model="salesPlanStateChange"
+                           joinField="shift"/>
+        </model:model-field>
 
         <model:dictionary name="masterOrderState"/>
         <model:dictionary name="masterOrderPositionStatus"/>
@@ -132,13 +151,7 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="address">
-            <model:hasMany name="masterOrders" model="masterOrder" plugin="masterOrders" joinField="address"
-                           cascade="nullify"/>
-        </model:model-field>
-
-        <model:model-field plugin="orders" model="salesPlan">
-            <model:hasMany name="masterOrders" model="masterOrder" plugin="masterOrders" joinField="salesPlan"
-                           cascade="nullify"/>
+            <model:hasMany name="masterOrders" model="masterOrder" plugin="masterOrders" joinField="address"/>
         </model:model-field>
 
         <model:model-hook model="order" plugin="orders">
@@ -167,6 +180,9 @@
         <menu:menu-item name="masterOrderPositions" category="orders" view="masterOrderPositionsList"
                         defaultAuthorizationRole="ROLE_PLANNING"/>
 
+        <menu:menu-item name="salesPlansList" category="orders"
+                        view="salesPlansList" defaultAuthorizationRole="ROLE_PLANNING"/>
+
         <view:view resource="view/masterOrdersList.xml"/>
         <view:view resource="view/masterOrderDetails.xml"/>
 
@@ -177,8 +193,13 @@
 
         <view:view resource="view/masterOrderPositionsList.xml"/>
         <view:view resource="view/generatingOrders.xml"/>
-        
+
         <view:view resource="view/productsBySize.xml"/>
+
+        <view:view resource="view/salesPlansList.xml"/>
+        <view:view resource="view/salesPlanDetails.xml"/>
+        <view:view resource="view/salesPlanProductDetails.xml"/>
+        <view:view resource="view/orderedProductsForFamily.xml"/>
 
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/masterOrderDefinitionsParameters.xml"/>

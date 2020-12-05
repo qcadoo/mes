@@ -31,8 +31,8 @@ import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
 import com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.model.api.DataDefinitionService;
+
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -55,15 +55,6 @@ import org.springframework.stereotype.Service;
 public class MasterOrderDetailsListeners {
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
-
-    @Autowired
-    private ExpressionService expressionService;
-
-    @Autowired
-    private TechnologyServiceO technologyServiceO;
-
-    @Autowired
-    private MasterOrderDetailsHooks masterOrderDetailsHooks;
 
     @Autowired
     private OrdersFromMOProductsGenerationService ordersGenerationService;

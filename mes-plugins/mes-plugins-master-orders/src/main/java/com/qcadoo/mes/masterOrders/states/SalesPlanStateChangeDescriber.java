@@ -1,8 +1,8 @@
-package com.qcadoo.mes.orders.states;
+package com.qcadoo.mes.masterOrders.states;
 
-import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.orders.constants.SalesPlanStateChangeFields;
-import com.qcadoo.mes.orders.states.constants.SalesPlanState;
+import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
+import com.qcadoo.mes.masterOrders.constants.SalesPlanStateChangeFields;
+import com.qcadoo.mes.masterOrders.states.constants.SalesPlanState;
 import com.qcadoo.mes.states.AbstractStateChangeDescriber;
 import com.qcadoo.mes.states.StateEnum;
 import com.qcadoo.model.api.DataDefinition;
@@ -18,7 +18,7 @@ public class SalesPlanStateChangeDescriber extends AbstractStateChangeDescriber 
 
     @Override
     public DataDefinition getDataDefinition() {
-        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SALES_PLAN_STATE_CHANGE);
+        return dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_SALES_PLAN_STATE_CHANGE);
     }
 
     @Override
@@ -33,6 +33,6 @@ public class SalesPlanStateChangeDescriber extends AbstractStateChangeDescriber 
 
     @Override
     public DataDefinition getOwnerDataDefinition() {
-        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SALES_PLAN);
+        return dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_SALES_PLAN);
     }
 }

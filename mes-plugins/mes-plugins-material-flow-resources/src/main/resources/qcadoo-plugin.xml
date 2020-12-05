@@ -117,6 +117,7 @@
         <model:model model="resourceAttributeValueBeforeCorrection" resource="model/resourceAttributeValueBeforeCorrection.xml"/>
 
         <model:model model="positionAttributeValue" resource="model/positionAttributeValue.xml"/>
+        <model:model model="documentStateChange" resource="model/documentStateChange.xml"/>
 
         <model:model-field plugin="basic" model="parameter">
             <model:belongsTo name="documentPositionParameters" model="documentPositionParameters"
