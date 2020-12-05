@@ -144,6 +144,21 @@
                     </script>
                 </smallButton>
             </group>
+            <group name="actions">
+                <bigButton name="addProductsBySize" icon="generateIcon24.png">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{form}.performEvent('addProductsBySize', []);
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
             <group name="orders" defaultAuthorizationRole="ROLE_PLANNING_ORDERS">
                 <bigButton name="createOrder" icon="generateIcon24.png">
                     <script>
@@ -369,6 +384,10 @@
 
                 <option type="header" value="true"/>
                 <option type="expression" value="#number + ' - ' + '@masterOrders.masterOrderDto.state.value.' + #state"/>
+
+                <listener event="addProductsBySize"
+                          class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"
+                          method="addProductsBySize"/>
 
                 <listener event="createOrder"
                           class="com.qcadoo.mes.masterOrders.listeners.MasterOrderDetailsListeners"

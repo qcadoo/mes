@@ -30,6 +30,7 @@ import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
 import com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks;
 import com.qcadoo.mes.orders.TechnologyServiceO;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.plugin.api.PluginUtils;
@@ -42,19 +43,16 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 @Service
 public class MasterOrderDetailsListeners {
-
-    
-
-
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
@@ -69,6 +67,9 @@ public class MasterOrderDetailsListeners {
 
     @Autowired
     private OrdersFromMOProductsGenerationService ordersGenerationService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public void onAddExistingEntity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
@@ -125,6 +126,19 @@ public class MasterOrderDetailsListeners {
     public void refreshView(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent masterOrderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         masterOrderForm.performEvent(view, "refresh");
+    }
+
+    public void addProductsBySize(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        Entity helper = dataDefinitionService.get("masterOrders", "productsBySizeHelper").create();
+        helper.setField("masterOrder", form.getEntityId());
+        helper = helper.getDataDefinition().save(helper);
+
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("form.id", helper.getId());
+
+        String url = "../page/masterOrders/productsBySize.html";
+        view.openModal(url, parameters);
     }
 
     public void generateOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {

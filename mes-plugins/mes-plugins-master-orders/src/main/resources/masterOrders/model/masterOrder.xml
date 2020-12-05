@@ -98,6 +98,10 @@
         <dictionary name="masterOrderPositionStatus" dictionary="masterOrderPositionStatus" persistent="false"/>
 
         <belongsTo name="salesPlan" plugin="orders" model="salesPlan"/>
+
+        <hasMany name="productsBySizeHelpers" joinField="masterOrder" model="productsBySizeHelper"
+                 plugin="masterOrders" cascade="nullify"/>
+
     </fields>
 
     <hooks>

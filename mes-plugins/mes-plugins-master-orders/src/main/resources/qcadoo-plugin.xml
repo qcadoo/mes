@@ -77,6 +77,8 @@
         <model:model model="masterOrderPositionDto" resource="model/masterOrderPositionDto.xml"/>
         <model:model model="masterOrderDto" resource="model/masterOrderDto.xml"/>
         <model:model model="generatingOrdersHelper" resource="model/generatingOrdersHelper.xml"/>
+        <model:model model="productsBySizeHelper" resource="model/productsBySizeHelper.xml"/>
+        <model:model model="productsBySizeEntryHelper" resource="model/productsBySizeEntryHelper.xml"/>
 
         <model:dictionary name="masterOrderState"/>
         <model:dictionary name="masterOrderPositionStatus"/>
@@ -175,6 +177,8 @@
 
         <view:view resource="view/masterOrderPositionsList.xml"/>
         <view:view resource="view/generatingOrders.xml"/>
+        
+        <view:view resource="view/productsBySize.xml"/>
 
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/masterOrderDefinitionsParameters.xml"/>
