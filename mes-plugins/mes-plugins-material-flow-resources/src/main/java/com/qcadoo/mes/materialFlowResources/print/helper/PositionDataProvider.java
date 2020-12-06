@@ -236,19 +236,19 @@ public class PositionDataProvider {
     }
 
     public static BigDecimal restNonZeroDecimalValDifference(Entity position) {
-        BigDecimal givenQuantity = BigDecimal.ZERO;
+        BigDecimal gq = BigDecimal.ZERO;
         if (Objects.nonNull(position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION))) {
-            givenQuantity = position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION).stripTrailingZeros();
+            gq = position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION).stripTrailingZeros();
         } else {
-            givenQuantity = position.getDecimalField(PositionFields.GIVEN_QUANTITY);
+            gq = position.getDecimalField(PositionFields.GIVEN_QUANTITY);
         }
 
         BigDecimal conversion = position.getDecimalField(PositionFields.CONVERSION);
-        BigDecimal amount = givenQuantity.divide(conversion, MathContext.DECIMAL64).setScale(5, RoundingMode.HALF_UP);
+        BigDecimal amount = gq.divide(conversion, MathContext.DECIMAL64).setScale(5, RoundingMode.HALF_UP);
         amount = amount.setScale(0, RoundingMode.DOWN);
 
         BigDecimal wholeAmount = amount.multiply(convertNullToZero(position.getDecimalField(PositionFields.CONVERSION)));
-        BigDecimal rest = convertNullToZero(position.getDecimalField(PositionFields.GIVEN_QUANTITY)).subtract(wholeAmount);
+        BigDecimal rest = convertNullToZero(gq).subtract(wholeAmount, MathContext.DECIMAL64);
         rest = rest.setScale(5, RoundingMode.HALF_UP);
 
         return rest != null ? rest.stripTrailingZeros() : BigDecimal.ZERO;
