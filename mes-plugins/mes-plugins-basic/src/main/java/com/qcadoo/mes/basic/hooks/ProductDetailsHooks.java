@@ -23,28 +23,35 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.util.UnitService;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
-import com.qcadoo.view.api.ribbon.RibbonActionItem;
-import com.qcadoo.view.api.ribbon.RibbonGroup;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
-import com.qcadoo.view.constants.QcadooViewConstants;
+import static com.qcadoo.mes.basic.constants.ProductFields.CONVERSION_ITEMS;
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+
+import java.util.Objects;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-
-import static com.qcadoo.mes.basic.constants.ProductFields.CONVERSION_ITEMS;
-import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.criteriaModifiers.ModelCriteriaModifiers;
+import com.qcadoo.mes.basic.util.UnitService;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ProductDetailsHooks {
@@ -62,6 +69,19 @@ public class ProductDetailsHooks {
 
     @Autowired
     private UnitService unitService;
+
+    public void onBeforeRender(final ViewDefinitionState view) {
+        generateProductNumber(view);
+        fillUnit(view);
+        disableProductFormForExternalItems(view);
+        disableUnitFromWhenFormIsSaved(view);
+        updateRibbonState(view);
+        updateProductFamilySizesRibbonState(view);
+        disableEntityTypeWhenProductFamilyHasChildren(view);
+        setProductIdForMultiUploadField(view);
+        enableCharacteristicsTabForExternalItems(view);
+        setCriteriaModifierParameters(view);
+    }
 
     public void generateProductNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT,
@@ -232,6 +252,25 @@ public class ProductDetailsHooks {
         productIdForMultiUpload.requestComponentUpdateState();
         productMultiUploadLocale.setFieldValue(LocaleContextHolder.getLocale());
         productMultiUploadLocale.requestComponentUpdateState();
+    }
+
+    private void setCriteriaModifierParameters(final ViewDefinitionState view) {
+        LookupComponent assortmentLookup = (LookupComponent) view.getComponentByReference(ProductFields.ASSORTMENT);
+        LookupComponent modelLookup = (LookupComponent) view.getComponentByReference(ProductFields.MODEL);
+
+        Entity assortment = assortmentLookup.getEntity();
+
+        FilterValueHolder filterValueHolder = modelLookup.getFilterValue();
+
+        if (Objects.isNull(assortment)) {
+            if (filterValueHolder.has(ModelCriteriaModifiers.L_ASSORTMENT_ID)) {
+                filterValueHolder.remove(ModelCriteriaModifiers.L_ASSORTMENT_ID);
+            }
+        } else {
+            filterValueHolder.put(ModelCriteriaModifiers.L_ASSORTMENT_ID, assortment.getId());
+        }
+
+        modelLookup.setFilterValue(filterValueHolder);
     }
 
 }

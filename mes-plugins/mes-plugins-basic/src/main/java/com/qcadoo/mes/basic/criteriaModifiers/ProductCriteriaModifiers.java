@@ -25,17 +25,33 @@ package com.qcadoo.mes.basic.criteriaModifiers;
 
 import static com.qcadoo.mes.basic.constants.ProductFields.ENTITY_TYPE;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ModelFields;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.SubstituteFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Service
 public class ProductCriteriaModifiers {
+
+    public static final String L_ASSORTMENT_ID = "assortmentId";
+
+    public static final String L_MODEL_ID = "modelId";
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public void showProductFamilyOnly(final SearchCriteriaBuilder scb) {
         scb.add(SearchRestrictions.eq(ENTITY_TYPE, ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue()));
@@ -45,15 +61,43 @@ public class ProductCriteriaModifiers {
         scb.add(SearchRestrictions.eq(ENTITY_TYPE, ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()));
     }
 
-    public void showProductsWithoutGivenProduct(final SearchCriteriaBuilder scb, final FilterValueHolder filter) {
-        if (filter.has(SubstituteFields.PRODUCT)) {
-            Long productId = filter.getLong(SubstituteFields.PRODUCT);
+    public void showProductsWithoutGivenProduct(final SearchCriteriaBuilder scb, final FilterValueHolder filterValueHolder) {
+        if (filterValueHolder.has(SubstituteFields.PRODUCT)) {
+            Long productId = filterValueHolder.getLong(SubstituteFields.PRODUCT);
             scb.add(SearchRestrictions.idNe(productId));
         }
     }
 
     public void showProductsWithoutAssortment(final SearchCriteriaBuilder scb) {
         scb.add(SearchRestrictions.isNull(ProductFields.ASSORTMENT));
+    }
+
+    public void showProductsWithModelAndAssortment(final SearchCriteriaBuilder scb, final FilterValueHolder filterValueHolder) {
+        Long modelId = filterValueHolder.getLong(L_MODEL_ID);
+
+        Entity model = getModelDD().get(modelId);
+
+        List<Entity> products = model.getHasManyField(ModelFields.PRODUCTS);
+
+        for (Entity product : products) {
+            scb.add(SearchRestrictions.idNe(product.getId()));
+        }
+
+        if (filterValueHolder.has(L_ASSORTMENT_ID)) {
+            Long assortmentId = filterValueHolder.getLong(L_ASSORTMENT_ID);
+
+            scb.createAlias(ModelFields.ASSORTMENT, ModelFields.ASSORTMENT, JoinType.LEFT);
+            scb.add(SearchRestrictions.or(
+                    SearchRestrictions.isNull(ProductFields.ASSORTMENT),
+                    SearchRestrictions.eq(ModelFields.ASSORTMENT + ".id", assortmentId)
+            ));
+        } else {
+            scb.add(SearchRestrictions.isNull(ProductFields.ASSORTMENT));
+        }
+    }
+
+    private DataDefinition getModelDD() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_MODEL);
     }
 
 }
