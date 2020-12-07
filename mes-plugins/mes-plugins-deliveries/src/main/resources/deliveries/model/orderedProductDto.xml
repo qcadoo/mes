@@ -64,6 +64,9 @@
         <boolean name="hasAttachments"/>
         <string name="batchNumber"/>
         <string name="qualityCardNumber"/>
+        <decimal name="minOrderQuantity"/>
+        <boolean name="belowMinOrderQuantity"/>
+
     </fields>
 
     <masterModel plugin="deliveries" model="orderedProduct"/>
