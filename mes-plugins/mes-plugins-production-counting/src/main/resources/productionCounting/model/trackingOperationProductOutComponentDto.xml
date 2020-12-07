@@ -31,24 +31,15 @@
 
     <fields>
         <belongsTo name="productionTracking" model="productionTracking" persistent="false"/>
-
         <integer name="productionTrackingId"/>
-
         <string name="productNumber"/>
-
         <string name="productName"/>
-
         <string name="productUnit"/>
-
         <decimal name="plannedQuantity"/>
         <decimal name="producedSum"/>
-
         <decimal name="wastesSum"/>
-
         <decimal name="remainingQuantity"/>
-
         <decimal name="usedQuantity"/>
-
         <decimal name="wastesQuantity"/>
     </fields>
 
