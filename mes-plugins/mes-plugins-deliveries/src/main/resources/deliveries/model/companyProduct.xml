@@ -36,7 +36,7 @@
         <boolean name="isDefault" default="false"/>
 
         <decimal name="minimumOrderQuantity">
-            <validatesRange from="0" exclusively="false"/>
+            <validatesRange from="0" exclusively="true"/>
         </decimal>
     </fields>
     <hooks>
