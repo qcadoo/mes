@@ -45,6 +45,7 @@
                  persistent="false"/>
         <hasMany name="stateChanges" model="salesPlanStateChange" joinField="salesPlan" cascade="delete"/>
         <hasMany name="masterOrders" model="masterOrder" joinField="salesPlan"/>
+        <hasMany name="productsBySizeHelpers" joinField="salesPlan" model="productsBySizeHelper"/>
     </fields>
 
     <hooks>

@@ -23,17 +23,6 @@
  */
 package com.qcadoo.mes.masterOrders.validators;
 
-import static com.qcadoo.model.api.search.SearchRestrictions.and;
-import static com.qcadoo.model.api.search.SearchRestrictions.belongsTo;
-import static com.qcadoo.model.api.search.SearchRestrictions.not;
-
-import java.util.Collection;
-
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -43,6 +32,14 @@ import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Collection;
+
+import static com.qcadoo.model.api.search.SearchRestrictions.*;
 
 @Service
 public class MasterOrderProductValidators {
@@ -51,9 +48,7 @@ public class MasterOrderProductValidators {
     private MasterOrderOrdersDataProvider masterOrderOrdersDataProvider;
 
     public boolean onValidate(final DataDefinition masterOrderProductDD, final Entity masterOrderProduct) {
-        boolean isValid = true;
-
-        isValid = checkIfEntityAlreadyExistsForProductAndMasterOrder(masterOrderProductDD, masterOrderProduct) && isValid;
+        boolean isValid = checkIfEntityAlreadyExistsForProductAndMasterOrder(masterOrderProductDD, masterOrderProduct);
         isValid = checkIfOrdersAssignedToMasterOrder(masterOrderProduct) && isValid;
 
         return isValid;
@@ -89,16 +84,12 @@ public class MasterOrderProductValidators {
     private boolean checkIfOrdersAssignedToMasterOrder(final Entity masterOrderProduct) {
         Entity masterOrder = masterOrderProduct.getBelongsToField(MasterOrderProductFields.MASTER_ORDER);
 
-        StringBuilder query = new StringBuilder();
-
-        query.append("SELECT masterOrder.id AS masterOrderId, masterOrder.number AS masterOrderNumber, ");
-        query.append(
-                "(SELECT count(mproduct) FROM #masterOrders_masterOrderProduct mproduct WHERE mproduct.masterOrder.id = masterOrder.id) AS positions, ");
-        query.append("(SELECT count(morder) FROM #orders_order morder WHERE morder.masterOrder.id = masterOrder.id) AS orders  ");
-        query.append("FROM #masterOrders_masterOrder masterOrder ");
-        query.append("WHERE masterOrder.id = :oid");
-
-        Entity masterOrderFromDB = masterOrder.getDataDefinition().find(query.toString()).setLong("oid", masterOrder.getId())
+        String query = "SELECT masterOrder.id AS masterOrderId, masterOrder.number AS masterOrderNumber, " +
+                "(SELECT count(mproduct) FROM #masterOrders_masterOrderProduct mproduct WHERE mproduct.masterOrder.id = masterOrder.id) AS positions, " +
+                "(SELECT count(morder) FROM #orders_order morder WHERE morder.masterOrder.id = masterOrder.id) AS orders  " +
+                "FROM #masterOrders_masterOrder masterOrder " +
+                "WHERE masterOrder.id = :oid";
+        Entity masterOrderFromDB = masterOrder.getDataDefinition().find(query).setLong("oid", masterOrder.getId())
                 .setMaxResults(1).uniqueResult();
 
         if (masterOrderFromDB.getLongField("orders") != 0l && masterOrderFromDB.getLongField("positions") == 0l) {

@@ -30,6 +30,7 @@
 
     <fields>
         <belongsTo name="masterOrder" plugin="masterOrders" model="masterOrder"/>
+        <belongsTo name="salesPlan" model="salesPlan"/>
         <belongsTo name="product" plugin="basic" model="product"/>
         <decimal name="totalQuantity"/>
         <hasMany name="productsBySizeEntryHelpers" joinField="productsBySizeHelper" model="productsBySizeEntryHelper"/>

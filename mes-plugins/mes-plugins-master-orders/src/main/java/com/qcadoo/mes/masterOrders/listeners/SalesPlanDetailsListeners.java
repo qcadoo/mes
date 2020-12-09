@@ -26,6 +26,17 @@ public class SalesPlanDetailsListeners {
     private DataDefinitionService dataDefinitionService;
 
     public void addProductsBySize(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        Entity helper = dataDefinitionService
+                .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_PRODUCTS_BY_SIZE_HELPER).create();
+        helper.setField(ProductsBySizeHelperFields.SALES_PLAN, form.getEntityId());
+        helper = helper.getDataDefinition().save(helper);
+
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("form.id", helper.getId());
+
+        String url = "../page/masterOrders/productsBySize.html";
+        view.openModal(url, parameters);
     }
 
     public void getOrderedQuantities(final ViewDefinitionState view, final ComponentState state, final String[] args) {
