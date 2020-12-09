@@ -30,6 +30,7 @@ import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
 import com.qcadoo.mes.materialFlowResources.print.DispositionOrderPdfService;
 import com.qcadoo.mes.materialFlowResources.service.*;
+import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -97,6 +98,9 @@ public class DocumentDetailsListeners {
 
     @Autowired
     private PluginManager pluginManager;
+
+    @Autowired
+    private DocumentStateChangeService documentStateChangeService;
 
     public void showProductAttributes(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         List<String> ids = Arrays.asList(args[0].replace("[", "").replace("]", "").replaceAll("\"", "").split("\\s*,\\s*"));
@@ -267,6 +271,8 @@ public class DocumentDetailsListeners {
         String failedMessage = String.format("DOCUMENT ACCEPT FAILED: id = %d number = %s", document.getId(),
                 document.getStringField(DocumentFields.NUMBER));
         if (!document.isValid()) {
+            documentStateChangeService.buildStateChange(document, StateChangeStatus.FAILURE);
+
             document.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
 
             documentForm.setEntity(document);
@@ -315,6 +321,8 @@ public class DocumentDetailsListeners {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
             documentErrorsLogger.saveResourceStockLackErrorsToSystemLogs(document);
+
+            documentStateChangeService.buildStateChange(document.getId());
 
             document.setField(DocumentFields.STATE, DocumentState.DRAFT.getStringValue());
 

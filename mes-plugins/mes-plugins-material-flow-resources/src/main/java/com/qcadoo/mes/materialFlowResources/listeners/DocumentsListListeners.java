@@ -25,10 +25,8 @@ import com.google.common.collect.Lists;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.service.DocumentErrorsLogger;
-import com.qcadoo.mes.materialFlowResources.service.DocumentService;
-import com.qcadoo.mes.materialFlowResources.service.ReceiptDocumentForReleaseHelper;
-import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
+import com.qcadoo.mes.materialFlowResources.service.*;
+import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -72,6 +70,9 @@ public class DocumentsListListeners {
 
     @Autowired
     private PluginManager pluginManager;
+
+    @Autowired
+    private DocumentStateChangeService documentStateChangeService;
 
     public void createResourcesForDocuments(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
@@ -140,6 +141,7 @@ public class DocumentsListListeners {
             document = documentDD.save(document);
 
             if (!document.isValid()) {
+                documentStateChangeService.buildStateChange(document, StateChangeStatus.FAILURE);
                 continue;
             }
 
@@ -156,6 +158,8 @@ public class DocumentsListListeners {
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
                 documentErrorsLogger.saveResourceStockLackErrorsToSystemLogs(document);
+
+                documentStateChangeService.buildStateChange(document.getId());
 
                 document.getGlobalErrors().forEach(gridComponent::addMessage);
                 document.getErrors().values().forEach(gridComponent::addMessage);

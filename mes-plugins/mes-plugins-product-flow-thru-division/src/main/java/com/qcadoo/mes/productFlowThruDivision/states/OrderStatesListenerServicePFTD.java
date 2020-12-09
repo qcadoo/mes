@@ -39,6 +39,7 @@ import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.OrderMaterials
 import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.service.DocumentBuilder;
 import com.qcadoo.mes.materialFlowResources.service.DocumentManagementService;
+import com.qcadoo.mes.materialFlowResources.service.DocumentStateChangeService;
 import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
@@ -50,6 +51,7 @@ import com.qcadoo.mes.productionCounting.constants.PriceBasedOn;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.StateEnum;
+import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -109,6 +111,9 @@ public class OrderStatesListenerServicePFTD {
     @Autowired
     private OrderMaterialAvailability orderMaterialAvailability;
 
+    @Autowired
+    private DocumentStateChangeService documentStateChangeService;
+
     public void acceptInboundDocumentsForOrder(final StateChangeContext stateChangeContext) {
         Entity order = stateChangeContext.getOwner();
         String priceBasedOn = parameterService.getParameter().getStringField(ParameterFieldsPC.PRICE_BASED_ON);
@@ -127,7 +132,6 @@ public class OrderStatesListenerServicePFTD {
     }
 
     public Entity updateCostsInOrder(Entity order) {
-
         List<Entity> orderMaterialsCosts = orderMaterialsCostDataGenerator.generateUpdatedMaterialsListFor(order);
         order.setField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS, orderMaterialsCosts);
         return order.getDataDefinition().save(order);
@@ -164,6 +168,7 @@ public class OrderStatesListenerServicePFTD {
 
             Entity acceptedDocument = acceptInboundDocument(document);
             if (!acceptedDocument.isValid()) {
+                documentStateChangeService.buildStateChange(acceptedDocument, StateChangeStatus.FAILURE);
                 for (ErrorMessage error : acceptedDocument.getGlobalErrors()) {
                     order.addGlobalError(error.getMessage(), error.getVars());
                 }
@@ -315,7 +320,6 @@ public class OrderStatesListenerServicePFTD {
     }
 
     private BigDecimal getProductQuantityUsedInOrder(final Long productId, final Long orderId) {
-
         DataDefinition trackingOpicDD = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
                 ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_IN_COMPONENT);
         String hql = "SELECT opic.usedQuantity AS quantity "

@@ -45,14 +45,18 @@ public class DocumentManagementServiceImpl implements DocumentManagementService 
     @Autowired
     private ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper;
 
+    @Autowired
+    private DocumentStateChangeService documentStateChangeService;
+
     @Override
     public DocumentBuilder getDocumentBuilder() {
         return new DocumentBuilder(dataDefinitionService, resourceManagementService, receiptDocumentForReleaseHelper,
-                userService.getCurrentUserEntity());
+                documentStateChangeService, userService.getCurrentUserEntity());
     }
 
     @Override
     public DocumentBuilder getDocumentBuilder(Entity user) {
-        return new DocumentBuilder(dataDefinitionService, resourceManagementService, receiptDocumentForReleaseHelper, user);
+        return new DocumentBuilder(dataDefinitionService, resourceManagementService, receiptDocumentForReleaseHelper,
+                documentStateChangeService, user);
     }
 }

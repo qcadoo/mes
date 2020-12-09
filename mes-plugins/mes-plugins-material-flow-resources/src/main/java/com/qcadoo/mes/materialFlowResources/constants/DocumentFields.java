@@ -73,4 +73,6 @@ public final class DocumentFields {
 
     public static final String EDIT_IN_WMS = "editInWMS";
 
+    public static final String STATE_CHANGES = "stateChanges";
+
 }

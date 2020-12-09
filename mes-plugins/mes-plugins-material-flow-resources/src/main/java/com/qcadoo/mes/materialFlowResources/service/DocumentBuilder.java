@@ -48,15 +48,19 @@ public class DocumentBuilder {
 
     private final ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper;
 
+    private final DocumentStateChangeService documentStateChangeService;
+
     private final Entity document;
 
     private final List<Entity> positions = Lists.newArrayList();
 
     DocumentBuilder(final DataDefinitionService dataDefinitionService, final ResourceManagementService resourceManagementService,
-            final ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper, final Entity user) {
+            final ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper,
+            final DocumentStateChangeService documentStateChangeService, final Entity user) {
         this.dataDefinitionService = dataDefinitionService;
         this.resourceManagementService = resourceManagementService;
         this.receiptDocumentForReleaseHelper = receiptDocumentForReleaseHelper;
+        this.documentStateChangeService = documentStateChangeService;
         this.document = createDocument(user);
     }
 
@@ -339,8 +343,8 @@ public class DocumentBuilder {
                     if (!p.isValid()) {
                         invalidPositions.add(p);
                         savedDocument.setNotValid();
-                        p.getGlobalErrors().forEach(
-                                e -> savedDocument.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
+                        p.getGlobalErrors()
+                                .forEach(e -> savedDocument.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
                         p.getErrors().values()
                                 .forEach(e -> savedDocument.addGlobalError(e.getMessage(), e.getAutoClose(), e.getVars()));
                     }
@@ -349,6 +353,9 @@ public class DocumentBuilder {
         }
 
         if (!savedDocument.isValid()) {
+            if (DocumentState.ACCEPTED.getStringValue().equals(savedDocument.getStringField(DocumentFields.STATE))) {
+                documentStateChangeService.buildStateChange(savedDocument.getId());
+            }
             strategy.accept(new BuildContext(savedDocument, invalidPositions));
         }
 
