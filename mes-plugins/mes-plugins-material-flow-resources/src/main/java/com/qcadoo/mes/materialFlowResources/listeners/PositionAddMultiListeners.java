@@ -30,7 +30,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PositionAddMultiListeners {
@@ -61,18 +60,11 @@ public class PositionAddMultiListeners {
             return;
         }
 
-        try {
-            tryCreatePositions(view, selectedEntities);
-        } catch (EntityRuntimeException ere) {
-            Entity pos = ere.getEntity();
-            view.addMessage("documentPositions.error.position.quantity.notEnoughResources", ComponentState.MessageType.FAILURE,
-                    pos.getBelongsToField(PositionFields.PRODUCT).getStringField(ProductFields.NUMBER),
-                    pos.getBelongsToField(PositionFields.RESOURCE).getStringField(ResourceFields.NUMBER));
-        }
+        tryCreatePositions(view, selectedEntities);
+
         generated.setChecked(true);
     }
 
-    @Transactional
     public void tryCreatePositions(ViewDefinitionState view, Set<Long> selectedEntities) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
@@ -84,11 +76,19 @@ public class PositionAddMultiListeners {
         for (Long resourceId : selectedEntities) {
             Entity resource = getResourceDD().get(resourceId);
 
-            Entity newPosition = createPosition(document, resource);
-
-            if (!newPosition.isValid()) {
-                errorNumbers.add(resource.getStringField(ResourceFields.NUMBER));
+            try {
+                Entity newPosition = createPosition(document, resource);
+                if (!newPosition.isValid()) {
+                    errorNumbers.add(resource.getStringField(ResourceFields.NUMBER));
+                }
+            }  catch (EntityRuntimeException ere) {
+                Entity pos = ere.getEntity();
+                view.addMessage("documentPositions.error.position.quantity.notEnoughResources", ComponentState.MessageType.FAILURE,
+                        pos.getBelongsToField(PositionFields.PRODUCT).getStringField(ProductFields.NUMBER),
+                        pos.getBelongsToField(PositionFields.RESOURCE).getStringField(ResourceFields.NUMBER));
             }
+
+
         }
 
         if (!errorNumbers.isEmpty()) {
