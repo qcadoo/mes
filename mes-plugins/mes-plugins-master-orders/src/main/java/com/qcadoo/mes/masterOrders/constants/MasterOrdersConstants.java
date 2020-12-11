@@ -49,6 +49,10 @@ public final class MasterOrdersConstants {
 
     public static final String MODEL_SALES_PLAN_STATE_CHANGE = "salesPlanStateChange";
 
+    public static final String MODEL_PRODUCTS_BY_SIZE_HELPER = "productsBySizeHelper";
+
+    public static final String MODEL_PRODUCTS_BY_SIZE_ENTRY_HELPER = "productsBySizeEntryHelper";
+
     public static final String MODEL_SALES_PLAN = "salesPlan";
 
     public static String masterOrderDetailsUrl(Long id) {

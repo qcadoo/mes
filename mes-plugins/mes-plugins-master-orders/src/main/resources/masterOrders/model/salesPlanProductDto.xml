@@ -47,5 +47,5 @@
 
     </fields>
 
-    <masterModel plugin="orders" model="salesPlanProduct"/>
+    <masterModel plugin="masterOrders" model="salesPlanProduct"/>
 </model>

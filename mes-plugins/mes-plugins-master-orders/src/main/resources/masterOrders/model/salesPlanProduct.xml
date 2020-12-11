@@ -48,5 +48,9 @@
         <belongsTo name="technology" plugin="technologies" model="technology"/>
     </fields>
 
-    <hooks/>
+    <hooks>
+        <validatesWith
+                class="com.qcadoo.mes.masterOrders.validators.SalesPlanProductValidators"
+                method="onValidate"/>
+    </hooks>
 </model>

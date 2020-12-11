@@ -25,13 +25,8 @@ package com.qcadoo.mes.masterOrders.listeners;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.masterOrders.OrdersFromMOProductsGenerationService;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
-import com.qcadoo.mes.masterOrders.hooks.MasterOrderDetailsHooks;
-import com.qcadoo.mes.orders.TechnologyServiceO;
+import com.qcadoo.mes.masterOrders.constants.*;
 import com.qcadoo.model.api.DataDefinitionService;
-
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState;
@@ -43,13 +38,12 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class MasterOrderDetailsListeners {
@@ -121,8 +115,8 @@ public class MasterOrderDetailsListeners {
 
     public void addProductsBySize(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Entity helper = dataDefinitionService.get("masterOrders", "productsBySizeHelper").create();
-        helper.setField("masterOrder", form.getEntityId());
+        Entity helper = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_PRODUCTS_BY_SIZE_HELPER).create();
+        helper.setField(ProductsBySizeHelperFields.MASTER_ORDER, form.getEntityId());
         helper = helper.getDataDefinition().save(helper);
 
         Map<String, Object> parameters = Maps.newHashMap();

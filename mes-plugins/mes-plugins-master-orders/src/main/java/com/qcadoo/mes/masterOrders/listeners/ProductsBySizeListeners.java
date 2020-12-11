@@ -1,7 +1,8 @@
 package com.qcadoo.mes.masterOrders.listeners;
 
-import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
+import com.qcadoo.mes.masterOrders.constants.ProductsBySizeHelperFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -9,12 +10,11 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class ProductsBySizeListeners {
@@ -37,10 +37,11 @@ public class ProductsBySizeListeners {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         List<Entity> childs = product.getHasManyField(ProductFields.PRODUCT_FAMILY_CHILDRENS);
-        List<Entity> productsBySize = Lists.newArrayList();
         for (Entity child : childs) {
             if (Objects.nonNull(child.getBelongsToField(ProductFields.SIZE))) {
-                Entity entry = dataDefinitionService.get("masterOrders", "productsBySizeEntryHelper").create();
+                Entity entry = dataDefinitionService
+                        .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_PRODUCTS_BY_SIZE_ENTRY_HELPER)
+                        .create();
                 entry.setField("product", child.getId());
                 entry.setField("productsBySizeHelper", form.getEntityId());
                 entry.getDataDefinition().save(entry);
@@ -51,8 +52,10 @@ public class ProductsBySizeListeners {
     private void clearProductsList(ViewDefinitionState view, Entity product) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        Entity helper = dataDefinitionService.get("masterOrders","productsBySizeHelper").get(form.getEntityId());
-        for (Entity entity : helper.getHasManyField("productsBySizeEntryHelpers")) {
+        Entity helper = dataDefinitionService
+                .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_PRODUCTS_BY_SIZE_HELPER)
+                .get(form.getEntityId());
+        for (Entity entity : helper.getHasManyField(ProductsBySizeHelperFields.PRODUCTS_BY_SIZE_ENTRY_HELPERS)) {
             entity.getDataDefinition().delete(entity.getId());
         }
     }
