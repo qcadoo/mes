@@ -61,6 +61,8 @@ public class ProductFamilySizesListeners {
                         productFamily.getStringField(ProductFields.NUMBER) + "-" + size.getStringField(SizeFields.NUMBER));
                 product.getDataDefinition().save(product);
             }
+            view.addMessage("basic.addProductFamilySizes.generateProducts.success", ComponentState.MessageType.SUCCESS,
+                    grid.getSelectedEntitiesIds().size() + "");
         }
     }
 }
