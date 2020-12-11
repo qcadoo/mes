@@ -1251,6 +1251,37 @@ $$;
 
 
 --
+-- Name: generate_sales_plan_number(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION generate_sales_plan_number() RETURNS text
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    _pattern text;
+    _sequence_value numeric;
+    _seq text;
+    _number text;
+BEGIN
+    _pattern := '#seq';
+
+    select nextval('masterorders_sales_plan_number_seq') into _sequence_value;
+
+    _seq := to_char(_sequence_value, 'fm000000');
+
+    if _seq like '%#%' then
+        _seq := _sequence_value;
+    end if;
+
+    _number := _pattern;
+    _number := replace(_number, '#seq', _seq);
+
+    RETURN _number;
+END;
+$$;
+
+
+--
 -- Name: generate_schedule_number(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -1266,6 +1297,37 @@ BEGIN
     _pattern := '#seq';
 
     select nextval('orders_schedule_number_seq') into _sequence_value;
+
+    _seq := to_char(_sequence_value, 'fm000000');
+
+    if _seq like '%#%' then
+        _seq := _sequence_value;
+    end if;
+
+    _number := _pattern;
+    _number := replace(_number, '#seq', _seq);
+
+    RETURN _number;
+END;
+$$;
+
+
+--
+-- Name: generate_technological_process_rate_number(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION generate_technological_process_rate_number() RETURNS text
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    _pattern text;
+    _sequence_value numeric;
+    _seq text;
+    _number text;
+BEGIN
+    _pattern := '#seq';
+
+    select nextval('basic_technological_process_rate_number_seq') into _sequence_value;
 
     _seq := to_char(_sequence_value, 'fm000000');
 
@@ -5417,7 +5479,6 @@ CREATE TABLE technologies_technology (
     productsflowlocation_id bigint,
     typeofproductionrecording character varying(255),
     registerquantityoutproduct boolean,
-    autocloseorder boolean,
     registerpiecework boolean,
     registerquantityinproduct boolean,
     registerproductiontime boolean,
@@ -9454,7 +9515,8 @@ CREATE TABLE basic_productdto (
     additionalcodes text,
     active boolean,
     unit character varying(255),
-    additionalunit character varying(255)
+    additionalunit character varying(255),
+    entitytype character varying(255)
 );
 
 ALTER TABLE ONLY basic_productdto REPLICA IDENTITY NOTHING;
@@ -9885,6 +9947,80 @@ ALTER SEQUENCE basic_substitutecomponent_id_seq OWNED BY basic_substitutecompone
 
 
 --
+-- Name: basic_technological_process_rate_number_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE basic_technological_process_rate_number_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_technologicalprocessrate; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_technologicalprocessrate (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(1024)
+);
+
+
+--
+-- Name: basic_technologicalprocessrate_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE basic_technologicalprocessrate_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_technologicalprocessrate_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE basic_technologicalprocessrate_id_seq OWNED BY basic_technologicalprocessrate.id;
+
+
+--
+-- Name: basic_technologicalprocessrateitem; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE basic_technologicalprocessrateitem (
+    id bigint NOT NULL,
+    technologicalprocessrate_id bigint,
+    actualrate numeric(14,5),
+    datefrom date,
+    dateto date
+);
+
+
+--
+-- Name: basic_technologicalprocessrateitem_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE basic_technologicalprocessrateitem_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: basic_technologicalprocessrateitem_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE basic_technologicalprocessrateitem_id_seq OWNED BY basic_technologicalprocessrateitem.id;
+
+
+--
 -- Name: jointable_productionline_shifttimetableexception; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -10164,7 +10300,6 @@ CREATE TABLE orders_order (
     generatedenddate timestamp without time zone,
     machineworktime integer,
     ownlinechangeover boolean DEFAULT false,
-    autocloseorder boolean,
     registerquantityoutproduct boolean,
     operationdurationquantityunit character varying(255),
     realizationtime integer,
@@ -10421,7 +10556,6 @@ CREATE TABLE productioncounting_trackingoperationproductincomponent (
     product_id bigint,
     usedquantity numeric(14,5),
     balance numeric(14,5),
-    batch_id bigint,
     obtainedquantity numeric(14,5),
     remainedquantity numeric(14,5),
     effectiveusedquantity numeric(15,5),
@@ -11917,7 +12051,8 @@ CREATE TABLE deliveries_companyproduct (
     company_id bigint,
     product_id bigint,
     isdefault boolean DEFAULT false,
-    entityversion bigint DEFAULT 0
+    entityversion bigint DEFAULT 0,
+    minimumorderquantity numeric(12,5)
 );
 
 
@@ -11949,7 +12084,8 @@ CREATE TABLE deliveries_companyproductsfamily (
     company_id bigint,
     product_id bigint,
     isdefault boolean DEFAULT false,
-    entityversion bigint DEFAULT 0
+    entityversion bigint DEFAULT 0,
+    minimumorderquantity numeric(12,5)
 );
 
 
@@ -12499,12 +12635,28 @@ CREATE VIEW deliveries_orderedproductdto AS
         END AS additionallefttoreceivequantity,
     attachments.hasattachments,
     batch.number AS batchnumber,
-    qualitycard.number AS qualitycardnumber
-   FROM (((((((((((deliveries_orderedproduct orderedproduct
+    qualitycard.number AS qualitycardnumber,
+    parentproduct.number AS parentproductnumber,
+    companyproduct.minimumorderquantity,
+    companyproductsfamily.minimumorderquantity AS minimumfamilyorderquantity,
+        CASE
+            WHEN (companyproduct.minimumorderquantity IS NOT NULL) THEN companyproduct.minimumorderquantity
+            ELSE companyproductsfamily.minimumorderquantity
+        END AS minorderquantity,
+        CASE
+            WHEN ((companyproduct.minimumorderquantity IS NULL) AND (companyproductsfamily.minimumorderquantity IS NULL)) THEN false
+            WHEN ((companyproduct.minimumorderquantity IS NOT NULL) AND (companyproduct.minimumorderquantity <= orderedproduct.orderedquantity)) THEN false
+            WHEN ((companyproductsfamily.minimumorderquantity IS NOT NULL) AND (companyproductsfamily.minimumorderquantity <= orderedproduct.orderedquantity)) THEN false
+            ELSE true
+        END AS belowminorderquantity
+   FROM ((((((((((((((deliveries_orderedproduct orderedproduct
      LEFT JOIN deliveries_delivery delivery ON ((delivery.id = orderedproduct.delivery_id)))
      LEFT JOIN basic_currency currency ON ((currency.id = delivery.currency_id)))
      LEFT JOIN basic_company supplier ON ((supplier.id = delivery.supplier_id)))
      LEFT JOIN basic_product product ON ((product.id = orderedproduct.product_id)))
+     LEFT JOIN basic_product parentproduct ON ((product.parent_id = parentproduct.id)))
+     LEFT JOIN deliveries_companyproduct companyproduct ON (((product.id = companyproduct.product_id) AND (supplier.id = companyproduct.company_id))))
+     LEFT JOIN deliveries_companyproductsfamily companyproductsfamily ON (((parentproduct.id = companyproductsfamily.product_id) AND (supplier.id = companyproductsfamily.company_id))))
      LEFT JOIN supplynegotiations_offer offer ON ((offer.id = orderedproduct.offer_id)))
      LEFT JOIN supplynegotiations_negotiation negotiation ON ((negotiation.id = offer.negotiation_id)))
      LEFT JOIN technologies_operation operation ON ((operation.id = orderedproduct.operation_id)))
@@ -14116,210 +14268,6 @@ ALTER SEQUENCE goodfood_goodfoodreport_id_seq OWNED BY goodfood_goodfoodreport.i
 
 
 --
--- Name: goodfood_label; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE goodfood_label (
-    id bigint NOT NULL,
-    palletcontext_id bigint,
-    printedcount integer,
-    firstssccnumber character varying(20),
-    firstpalletnumber character varying(6),
-    lastssccnumber character varying(20),
-    lastpalletnumber character varying(6),
-    masterorder_id bigint,
-    productionline_id bigint,
-    batchnumber character varying(255),
-    bestbefore character varying(255),
-    registrationdate date,
-    active boolean DEFAULT true,
-    batch_id bigint,
-    state character varying(255) DEFAULT '01draft'::character varying,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: goodfood_label_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE goodfood_label_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: goodfood_label_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE goodfood_label_id_seq OWNED BY goodfood_label.id;
-
-
---
--- Name: goodfood_palletcontext; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE goodfood_palletcontext (
-    id bigint NOT NULL,
-    confirmed boolean DEFAULT false,
-    day date,
-    shift_id bigint,
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255),
-    operator_id bigint,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: masterorders_masterorder; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE masterorders_masterorder (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(1024),
-    description character varying(2048),
-    externalnumber character varying(255),
-    deadline timestamp without time zone,
-    addmasterprefixtonumber boolean,
-    masterorderstate character varying(255),
-    company_id bigint,
-    externalsynchronized boolean DEFAULT true,
-    generationdateoneec date,
-    cancelsynchronizationreason character varying(255),
-    active boolean DEFAULT true,
-    pw2prod boolean DEFAULT false,
-    batch_id bigint,
-    masterorderdefinition_id bigint,
-    startdate timestamp without time zone,
-    finishdate timestamp without time zone,
-    entityversion bigint DEFAULT 0,
-    sendagaintoblackbox boolean DEFAULT false,
-    dateofreceipt timestamp without time zone,
-    address_id bigint,
-    externalproductionorderid character varying(255),
-    ponumber character varying(255),
-    direction character varying(255),
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying,
-    updateuser character varying,
-    deliverynotenumber character varying,
-    cancelsynchronizationtype character varying,
-    companypayer_id bigint,
-    productioncode character varying,
-    commissionnumber character varying,
-    machinetype character varying,
-    pipedriveupdate timestamp without time zone,
-    state character varying(255) DEFAULT '01new'::character varying,
-    asanataskid character varying,
-    asanatasknameupdated boolean DEFAULT false,
-    asanataskcommentadded boolean DEFAULT false,
-    sendagaintoasana boolean DEFAULT false,
-    sendagaintoasanatries integer DEFAULT 0,
-    asanastatecompleteddate timestamp without time zone,
-    colourral character varying(255)
-);
-
-
---
--- Name: masterorders_masterorderproduct; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE masterorders_masterorderproduct (
-    id bigint NOT NULL,
-    product_id bigint,
-    technology_id bigint,
-    masterorder_id bigint,
-    masterorderquantity numeric(14,5),
-    cumulatedorderquantity numeric(14,5),
-    producedorderquantity numeric(14,5),
-    entityversion bigint DEFAULT 0,
-    lefttorelease numeric(14,5),
-    comments text,
-    masterorderpositionstatus character varying(255),
-    quantitytakenfromwarehouse numeric(14,5),
-    quantityremainingtoorder numeric(14,5)
-);
-
-
---
--- Name: goodfood_labelactivedto; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW goodfood_labelactivedto AS
- SELECT label.id,
-    label.registrationdate,
-    palletcontext.day AS palletcontextday,
-    shift.name AS palletcontextshiftname,
-    staff.name AS palletcontextoperatorname,
-    staff.surname AS palletcontextoperatorsurname,
-    productionline.number AS productionlinenumber,
-    masterorder.number AS masterordernumber,
-    product.number AS productnumber,
-    label.printedcount,
-    label.firstssccnumber,
-    label.lastssccnumber,
-    label.state
-   FROM (((((((goodfood_label label
-     LEFT JOIN goodfood_palletcontext palletcontext ON ((palletcontext.id = label.palletcontext_id)))
-     LEFT JOIN basic_shift shift ON ((shift.id = palletcontext.shift_id)))
-     LEFT JOIN basic_staff staff ON ((staff.id = palletcontext.operator_id)))
-     LEFT JOIN productionlines_productionline productionline ON ((productionline.id = label.productionline_id)))
-     LEFT JOIN masterorders_masterorder masterorder ON ((masterorder.id = label.masterorder_id)))
-     LEFT JOIN masterorders_masterorderproduct masterorderproduct ON ((masterorderproduct.masterorder_id = masterorder.id)))
-     LEFT JOIN basic_product product ON ((product.id = masterorderproduct.product_id)))
-  WHERE (label.active = true);
-
-
---
--- Name: goodfood_labelactivedto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE goodfood_labelactivedto_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: goodfood_labeldto; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW goodfood_labeldto AS
- SELECT label.id,
-    label.registrationdate,
-    palletcontext.day AS palletcontextday,
-    shift.name AS palletcontextshiftname,
-    staff.name AS palletcontextoperatorname,
-    staff.surname AS palletcontextoperatorsurname,
-    productionline.number AS productionlinenumber,
-    masterorder.number AS masterordernumber,
-    product.number AS productnumber,
-    label.printedcount,
-    label.firstssccnumber,
-    label.lastssccnumber,
-    label.state,
-    label.active
-   FROM (((((((goodfood_label label
-     LEFT JOIN goodfood_palletcontext palletcontext ON ((palletcontext.id = label.palletcontext_id)))
-     LEFT JOIN basic_shift shift ON ((shift.id = palletcontext.shift_id)))
-     LEFT JOIN basic_staff staff ON ((staff.id = palletcontext.operator_id)))
-     LEFT JOIN productionlines_productionline productionline ON ((productionline.id = label.productionline_id)))
-     LEFT JOIN masterorders_masterorder masterorder ON ((masterorder.id = label.masterorder_id)))
-     LEFT JOIN masterorders_masterorderproduct masterorderproduct ON ((masterorderproduct.masterorder_id = masterorder.id)))
-     LEFT JOIN basic_product product ON ((product.id = masterorderproduct.product_id)));
-
-
---
 -- Name: goodfood_labeldto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -14332,50 +14280,13 @@ CREATE SEQUENCE goodfood_labeldto_id_seq
 
 
 --
--- Name: goodfood_labelstatechange; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE goodfood_labelstatechange (
-    id bigint NOT NULL,
-    dateandtime timestamp without time zone,
-    sourcestate character varying(255),
-    targetstate character varying(255),
-    status character varying(255),
-    phase integer,
-    shift_id bigint,
-    worker character varying(255),
-    label_id bigint,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: goodfood_labelstatechange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE goodfood_labelstatechange_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: goodfood_labelstatechange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE goodfood_labelstatechange_id_seq OWNED BY goodfood_labelstatechange.id;
-
-
---
 -- Name: goodfood_pallet; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE goodfood_pallet (
     id bigint NOT NULL,
     palletcontext_id bigint,
-    label_id bigint,
+    palletlabel_id bigint,
     typeoflogistics character varying(255) DEFAULT '01fullPallet'::character varying,
     printedcount integer,
     ssccnumber character varying(20),
@@ -14431,6 +14342,122 @@ ALTER SEQUENCE goodfood_pallet_id_seq OWNED BY goodfood_pallet.id;
 
 
 --
+-- Name: goodfood_palletcontext; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE goodfood_palletcontext (
+    id bigint NOT NULL,
+    confirmed boolean DEFAULT false,
+    day date,
+    shift_id bigint,
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255),
+    operator_id bigint,
+    entityversion bigint DEFAULT 0
+);
+
+
+--
+-- Name: goodfood_palletlabel; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE goodfood_palletlabel (
+    id bigint NOT NULL,
+    palletcontext_id bigint,
+    printedcount integer,
+    firstssccnumber character varying(20),
+    firstpalletnumber character varying(6),
+    lastssccnumber character varying(20),
+    lastpalletnumber character varying(6),
+    masterorder_id bigint,
+    productionline_id bigint,
+    batchnumber character varying(255),
+    bestbefore character varying(255),
+    registrationdate date,
+    active boolean DEFAULT true,
+    batch_id bigint,
+    state character varying(255) DEFAULT '01draft'::character varying,
+    entityversion bigint DEFAULT 0
+);
+
+
+--
+-- Name: masterorders_masterorder; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE masterorders_masterorder (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(1024),
+    description character varying(2048),
+    externalnumber character varying(255),
+    deadline timestamp without time zone,
+    addmasterprefixtonumber boolean,
+    masterorderstate character varying(255),
+    company_id bigint,
+    externalsynchronized boolean DEFAULT true,
+    generationdateoneec date,
+    cancelsynchronizationreason character varying(255),
+    active boolean DEFAULT true,
+    pw2prod boolean DEFAULT false,
+    batch_id bigint,
+    masterorderdefinition_id bigint,
+    startdate timestamp without time zone,
+    finishdate timestamp without time zone,
+    entityversion bigint DEFAULT 0,
+    sendagaintoblackbox boolean DEFAULT false,
+    dateofreceipt timestamp without time zone,
+    address_id bigint,
+    externalproductionorderid character varying(255),
+    ponumber character varying(255),
+    direction character varying(255),
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying,
+    updateuser character varying,
+    deliverynotenumber character varying,
+    cancelsynchronizationtype character varying,
+    companypayer_id bigint,
+    productioncode character varying,
+    commissionnumber character varying,
+    machinetype character varying,
+    pipedriveupdate timestamp without time zone,
+    state character varying(255) DEFAULT '01new'::character varying,
+    asanataskid character varying,
+    asanatasknameupdated boolean DEFAULT false,
+    asanataskcommentadded boolean DEFAULT false,
+    sendagaintoasana boolean DEFAULT false,
+    sendagaintoasanatries integer DEFAULT 0,
+    asanastatecompleteddate timestamp without time zone,
+    colourral character varying(255),
+    salesplan_id bigint
+);
+
+
+--
+-- Name: masterorders_masterorderproduct; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE masterorders_masterorderproduct (
+    id bigint NOT NULL,
+    product_id bigint,
+    technology_id bigint,
+    masterorder_id bigint,
+    masterorderquantity numeric(14,5),
+    cumulatedorderquantity numeric(14,5),
+    producedorderquantity numeric(14,5),
+    entityversion bigint DEFAULT 0,
+    lefttorelease numeric(14,5),
+    comments text,
+    masterorderpositionstatus character varying(255),
+    quantitytakenfromwarehouse numeric(14,5),
+    quantityremainingtoorder numeric(14,5)
+);
+
+
+--
 -- Name: qcadoomodel_unitconversionitem; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -14480,11 +14507,11 @@ CREATE VIEW goodfood_palletactivedto AS
    FROM (((((((((((goodfood_pallet pallet
      LEFT JOIN goodfood_pallet secondpallet ON ((secondpallet.id = pallet.secondpallet_id)))
      LEFT JOIN goodfood_palletcontext palletcontext ON ((palletcontext.id = pallet.palletcontext_id)))
-     LEFT JOIN goodfood_label label ON ((label.id = pallet.label_id)))
+     LEFT JOIN goodfood_palletlabel palletlabel ON ((palletlabel.id = pallet.palletlabel_id)))
      LEFT JOIN basic_shift shift ON ((shift.id = palletcontext.shift_id)))
      LEFT JOIN basic_staff staff ON ((staff.id = palletcontext.operator_id)))
-     LEFT JOIN productionlines_productionline productionline ON ((productionline.id = label.productionline_id)))
-     LEFT JOIN masterorders_masterorder masterorder ON ((masterorder.id = label.masterorder_id)))
+     LEFT JOIN productionlines_productionline productionline ON ((productionline.id = palletlabel.productionline_id)))
+     LEFT JOIN masterorders_masterorder masterorder ON ((masterorder.id = palletlabel.masterorder_id)))
      LEFT JOIN masterorders_masterorderproduct masterorderproduct ON ((masterorderproduct.masterorder_id = masterorder.id)))
      LEFT JOIN orders_orderproduct orderproduct ON ((orderproduct.masterorder_id = masterorder.id)))
      LEFT JOIN basic_product product ON ((product.id = masterorderproduct.product_id)))
@@ -14558,11 +14585,11 @@ CREATE VIEW goodfood_palletdto AS
    FROM (((((((((((goodfood_pallet pallet
      LEFT JOIN goodfood_pallet secondpallet ON ((secondpallet.id = pallet.secondpallet_id)))
      LEFT JOIN goodfood_palletcontext palletcontext ON ((palletcontext.id = pallet.palletcontext_id)))
-     LEFT JOIN goodfood_label label ON ((label.id = pallet.label_id)))
+     LEFT JOIN goodfood_palletlabel palletlabel ON ((palletlabel.id = pallet.palletlabel_id)))
      LEFT JOIN basic_shift shift ON ((shift.id = palletcontext.shift_id)))
      LEFT JOIN basic_staff staff ON ((staff.id = palletcontext.operator_id)))
-     LEFT JOIN productionlines_productionline productionline ON ((productionline.id = label.productionline_id)))
-     LEFT JOIN masterorders_masterorder masterorder ON ((masterorder.id = label.masterorder_id)))
+     LEFT JOIN productionlines_productionline productionline ON ((productionline.id = palletlabel.productionline_id)))
+     LEFT JOIN masterorders_masterorder masterorder ON ((masterorder.id = palletlabel.masterorder_id)))
      LEFT JOIN masterorders_masterorderproduct masterorderproduct ON ((masterorderproduct.masterorder_id = masterorder.id)))
      LEFT JOIN orders_orderproduct orderproduct ON ((orderproduct.masterorder_id = masterorder.id)))
      LEFT JOIN basic_product product ON ((product.id = masterorderproduct.product_id)))
@@ -14579,6 +14606,144 @@ CREATE SEQUENCE goodfood_palletdto_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+--
+-- Name: goodfood_palletlabel_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE goodfood_palletlabel_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: goodfood_palletlabel_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE goodfood_palletlabel_id_seq OWNED BY goodfood_palletlabel.id;
+
+
+--
+-- Name: goodfood_palletlabelactivedto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW goodfood_palletlabelactivedto AS
+ SELECT label.id,
+    label.registrationdate,
+    palletcontext.day AS palletcontextday,
+    shift.name AS palletcontextshiftname,
+    staff.name AS palletcontextoperatorname,
+    staff.surname AS palletcontextoperatorsurname,
+    productionline.number AS productionlinenumber,
+    masterorder.number AS masterordernumber,
+    product.number AS productnumber,
+    label.printedcount,
+    label.firstssccnumber,
+    label.lastssccnumber,
+    label.state
+   FROM (((((((goodfood_palletlabel label
+     LEFT JOIN goodfood_palletcontext palletcontext ON ((palletcontext.id = label.palletcontext_id)))
+     LEFT JOIN basic_shift shift ON ((shift.id = palletcontext.shift_id)))
+     LEFT JOIN basic_staff staff ON ((staff.id = palletcontext.operator_id)))
+     LEFT JOIN productionlines_productionline productionline ON ((productionline.id = label.productionline_id)))
+     LEFT JOIN masterorders_masterorder masterorder ON ((masterorder.id = label.masterorder_id)))
+     LEFT JOIN masterorders_masterorderproduct masterorderproduct ON ((masterorderproduct.masterorder_id = masterorder.id)))
+     LEFT JOIN basic_product product ON ((product.id = masterorderproduct.product_id)))
+  WHERE (label.active = true);
+
+
+--
+-- Name: goodfood_palletlabelactivedto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE goodfood_palletlabelactivedto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: goodfood_palletlabeldto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW goodfood_palletlabeldto AS
+ SELECT label.id,
+    label.registrationdate,
+    palletcontext.day AS palletcontextday,
+    shift.name AS palletcontextshiftname,
+    staff.name AS palletcontextoperatorname,
+    staff.surname AS palletcontextoperatorsurname,
+    productionline.number AS productionlinenumber,
+    masterorder.number AS masterordernumber,
+    product.number AS productnumber,
+    label.printedcount,
+    label.firstssccnumber,
+    label.lastssccnumber,
+    label.state,
+    label.active
+   FROM (((((((goodfood_palletlabel label
+     LEFT JOIN goodfood_palletcontext palletcontext ON ((palletcontext.id = label.palletcontext_id)))
+     LEFT JOIN basic_shift shift ON ((shift.id = palletcontext.shift_id)))
+     LEFT JOIN basic_staff staff ON ((staff.id = palletcontext.operator_id)))
+     LEFT JOIN productionlines_productionline productionline ON ((productionline.id = label.productionline_id)))
+     LEFT JOIN masterorders_masterorder masterorder ON ((masterorder.id = label.masterorder_id)))
+     LEFT JOIN masterorders_masterorderproduct masterorderproduct ON ((masterorderproduct.masterorder_id = masterorder.id)))
+     LEFT JOIN basic_product product ON ((product.id = masterorderproduct.product_id)));
+
+
+--
+-- Name: goodfood_palletlabeldto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE goodfood_palletlabeldto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: goodfood_palletlabelstatechange; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE goodfood_palletlabelstatechange (
+    id bigint NOT NULL,
+    dateandtime timestamp without time zone,
+    sourcestate character varying(255),
+    targetstate character varying(255),
+    status character varying(255),
+    phase integer,
+    shift_id bigint,
+    worker character varying(255),
+    palletlabel_id bigint,
+    entityversion bigint DEFAULT 0
+);
+
+
+--
+-- Name: goodfood_palletlabelstatechange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE goodfood_palletlabelstatechange_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: goodfood_palletlabelstatechange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE goodfood_palletlabelstatechange_id_seq OWNED BY goodfood_palletlabelstatechange.id;
 
 
 --
@@ -14796,22 +14961,22 @@ CREATE TABLE integrationbartender_sendtoprint (
 
 
 --
--- Name: jointable_label_printlabelshelper; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE jointable_label_printlabelshelper (
-    printlabelshelper_id bigint NOT NULL,
-    label_id bigint NOT NULL
-);
-
-
---
 -- Name: jointable_order_printlabelshelper; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE jointable_order_printlabelshelper (
     printlabelshelper_id bigint NOT NULL,
     order_id bigint NOT NULL
+);
+
+
+--
+-- Name: jointable_palletlabel_printlabelshelper; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE jointable_palletlabel_printlabelshelper (
+    printlabelshelper_id bigint NOT NULL,
+    palletlabel_id bigint NOT NULL
 );
 
 
@@ -14842,8 +15007,8 @@ CREATE VIEW integrationbartender_printedcartonlabeldto AS
      JOIN integrationbartender_printlabelshelper printlabelshelper ON ((printlabelshelper.id = sendtoprint.printlabelshelper_id)))
      JOIN masterorders_masterorder masterorder ON ((masterorder.id = printlabelshelper.masterorder_id)))
      JOIN integrationbartender_printer printer ON ((printer.id = printlabelshelper.printer_id)))
-  WHERE (NOT (printlabelshelper.id IN ( SELECT jointable_label_printlabelshelper.printlabelshelper_id
-           FROM jointable_label_printlabelshelper
+  WHERE (NOT (printlabelshelper.id IN ( SELECT jointable_palletlabel_printlabelshelper.printlabelshelper_id
+           FROM jointable_palletlabel_printlabelshelper
         UNION
          SELECT jointable_printlabelshelper_printedlabel.printlabelshelper_id
            FROM jointable_printlabelshelper_printedlabel
@@ -15900,6 +16065,223 @@ ALTER SEQUENCE masterorders_masterorderproduct_id_seq OWNED BY masterorders_mast
 
 
 --
+-- Name: masterorders_productsbysizeentryhelper; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE masterorders_productsbysizeentryhelper (
+    id bigint NOT NULL,
+    size_id bigint,
+    productsbysizehelper_id bigint,
+    quantity numeric(12,5),
+    product_id bigint
+);
+
+
+--
+-- Name: masterorders_productsbysizeentryhelper_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE masterorders_productsbysizeentryhelper_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: masterorders_productsbysizeentryhelper_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE masterorders_productsbysizeentryhelper_id_seq OWNED BY masterorders_productsbysizeentryhelper.id;
+
+
+--
+-- Name: masterorders_productsbysizehelper; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE masterorders_productsbysizehelper (
+    id bigint NOT NULL,
+    product_id bigint,
+    totalquantity numeric(12,5),
+    masterorder_id bigint,
+    salesplan_id bigint
+);
+
+
+--
+-- Name: masterorders_productsbysizehelper_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE masterorders_productsbysizehelper_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: masterorders_productsbysizehelper_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE masterorders_productsbysizehelper_id_seq OWNED BY masterorders_productsbysizehelper.id;
+
+
+--
+-- Name: masterorders_sales_plan_number_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE masterorders_sales_plan_number_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: masterorders_salesplan; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE masterorders_salesplan (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(255),
+    description character varying(2048),
+    state character varying(255),
+    datefrom date,
+    dateto date
+);
+
+
+--
+-- Name: masterorders_salesplan_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE masterorders_salesplan_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: masterorders_salesplan_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE masterorders_salesplan_id_seq OWNED BY masterorders_salesplan.id;
+
+
+--
+-- Name: masterorders_salesplanproduct; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE masterorders_salesplanproduct (
+    id bigint NOT NULL,
+    salesplan_id bigint NOT NULL,
+    product_id bigint NOT NULL,
+    technology_id bigint,
+    plannedquantity numeric(12,5),
+    orderedquantity numeric(12,5) DEFAULT 0,
+    surplusfromplan numeric(12,5)
+);
+
+
+--
+-- Name: masterorders_salesplanproduct_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE masterorders_salesplanproduct_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: masterorders_salesplanproduct_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE masterorders_salesplanproduct_id_seq OWNED BY masterorders_salesplanproduct.id;
+
+
+--
+-- Name: masterorders_salesplanproductdto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW masterorders_salesplanproductdto AS
+ SELECT spp.id,
+    (spp.salesplan_id)::integer AS salesplanid,
+    spp.salesplan_id,
+    p.number AS productnumber,
+    p.name AS productname,
+    p.entitytype AS productentitytype,
+    assortment.name AS productassortment,
+    model.name AS productmodel,
+    p.unit AS productunit,
+    t.number AS technologynumber,
+    spp.plannedquantity,
+    spp.orderedquantity,
+    spp.surplusfromplan
+   FROM ((((masterorders_salesplanproduct spp
+     JOIN basic_product p ON ((spp.product_id = p.id)))
+     LEFT JOIN basic_assortment assortment ON ((p.assortment_id = assortment.id)))
+     LEFT JOIN basic_model model ON ((p.model_id = model.id)))
+     LEFT JOIN technologies_technology t ON ((t.id = spp.technology_id)));
+
+
+--
+-- Name: masterorders_salesplanproductdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE masterorders_salesplanproductdto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: masterorders_salesplanstatechange; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE masterorders_salesplanstatechange (
+    id bigint NOT NULL,
+    dateandtime timestamp without time zone,
+    salesplan_id bigint,
+    shift_id bigint,
+    sourcestate character varying(255),
+    targetstate character varying(255),
+    status character varying(255),
+    phase integer,
+    worker character varying(255)
+);
+
+
+--
+-- Name: masterorders_salesplanstatechange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE masterorders_salesplanstatechange_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: masterorders_salesplanstatechange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE masterorders_salesplanstatechange_id_seq OWNED BY masterorders_salesplanstatechange.id;
+
+
+--
 -- Name: materialflow_location_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -16281,6 +16663,40 @@ ALTER SEQUENCE materialflowresources_documentpositionparametersitem_id_seq OWNED
 
 
 --
+-- Name: materialflowresources_documentstatechange; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE materialflowresources_documentstatechange (
+    id bigint NOT NULL,
+    dateandtime timestamp without time zone,
+    document_id bigint,
+    sourcestate character varying(255),
+    targetstate character varying(255),
+    status character varying(255),
+    worker character varying(255)
+);
+
+
+--
+-- Name: materialflowresources_documentstatechange_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE materialflowresources_documentstatechange_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: materialflowresources_documentstatechange_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE materialflowresources_documentstatechange_id_seq OWNED BY materialflowresources_documentstatechange.id;
+
+
+--
 -- Name: materialflowresources_importstoragelocation; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -16527,7 +16943,8 @@ CREATE TABLE materialflowresources_position (
     qualityrating character varying(255),
     pickingdate timestamp without time zone,
     pickingworker_id bigint,
-    wmsposition_id bigint
+    wmsposition_id bigint,
+    restaftershiftdisposition numeric(14,5)
 );
 
 
@@ -17100,7 +17517,7 @@ CREATE VIEW materialflowresources_resourcedto AS
             WHEN (resource.expirationdate < ('now'::text)::date) THEN 'red-cell'::character varying(255)
             WHEN (( SELECT (materialflowresources_documentpositionparameters.shortexpirydate IS NOT NULL)
                FROM materialflowresources_documentpositionparameters
-             LIMIT 1) AND (resource.expirationdate > ('now'::text)::date) AND (resource.expirationdate <= (('now'::text)::date + ((( SELECT materialflowresources_documentpositionparameters.shortexpirydate
+             LIMIT 1) AND (resource.expirationdate >= ('now'::text)::date) AND (resource.expirationdate <= (('now'::text)::date + ((( SELECT materialflowresources_documentpositionparameters.shortexpirydate
                FROM materialflowresources_documentpositionparameters
              LIMIT 1))::double precision * '1 day'::interval)))) THEN 'orange-cell'::character varying(255)
             ELSE NULL::character varying
@@ -21834,6 +22251,18 @@ ALTER SEQUENCE productioncounting_trackingoperationproductincomponent_id_seq OWN
 
 
 --
+-- Name: productioncounting_usedbatch; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE productioncounting_usedbatch (
+    id bigint NOT NULL,
+    trackingoperationproductincomponent_id bigint,
+    batch_id bigint,
+    quantity numeric(14,5)
+);
+
+
+--
 -- Name: productioncounting_trackingoperationproductincomponentdto; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -21849,7 +22278,7 @@ CREATE VIEW productioncounting_trackingoperationproductincomponentdto AS
     trackingoperationproductincomponent.obtainedquantity,
     trackingoperationproductincomponent.remainedquantity,
     trackingoperationproductincomponent.effectiveusedquantity,
-    b.number AS batchnumber,
+    (string_agg((batch.number)::text, ', '::text))::character varying(255) AS batchnumber,
         CASE
             WHEN (( SELECT count(*) AS count
                FROM basic_substitutecomponent
@@ -21858,14 +22287,15 @@ CREATE VIEW productioncounting_trackingoperationproductincomponentdto AS
         END AS replacement,
     productreplacement.number AS productreplacementnumber,
     (productreplacement.id)::integer AS productreplacementid
-   FROM (((((productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent
+   FROM ((((((productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent
      LEFT JOIN productioncounting_productiontracking productiontracking ON ((productiontracking.id = trackingoperationproductincomponent.productiontracking_id)))
      LEFT JOIN basic_product product ON ((product.id = trackingoperationproductincomponent.product_id)))
      LEFT JOIN basic_product productreplacement ON ((productreplacement.id = trackingoperationproductincomponent.replacementto_id)))
-     LEFT JOIN advancedgenealogy_batch b ON ((b.id = trackingoperationproductincomponent.batch_id)))
+     LEFT JOIN productioncounting_usedbatch usedbatch ON ((usedbatch.trackingoperationproductincomponent_id = trackingoperationproductincomponent.id)))
+     LEFT JOIN advancedgenealogy_batch batch ON ((batch.id = usedbatch.batch_id)))
      LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity ON (((productioncountingquantity.order_id = productiontracking.order_id) AND (productioncountingquantity.product_id = trackingoperationproductincomponent.product_id) AND ((productioncountingquantity.role)::text = '01used'::text))))
   WHERE (productiontracking.technologyoperationcomponent_id IS NULL)
-  GROUP BY trackingoperationproductincomponent.id, productiontracking.id, product.number, product.name, product.unit, product.id, trackingoperationproductincomponent.usedquantity, trackingoperationproductincomponent.obtainedquantity, trackingoperationproductincomponent.remainedquantity, trackingoperationproductincomponent.effectiveusedquantity, b.number, productreplacement.number, productreplacement.id
+  GROUP BY trackingoperationproductincomponent.id, productiontracking.id, product.number, product.name, product.unit, product.id, trackingoperationproductincomponent.usedquantity, trackingoperationproductincomponent.obtainedquantity, trackingoperationproductincomponent.remainedquantity, trackingoperationproductincomponent.effectiveusedquantity, productreplacement.number, productreplacement.id
 UNION
  SELECT trackingoperationproductincomponent.id,
     (productiontracking.id)::integer AS productiontrackingid,
@@ -21878,7 +22308,7 @@ UNION
     trackingoperationproductincomponent.obtainedquantity,
     trackingoperationproductincomponent.remainedquantity,
     trackingoperationproductincomponent.effectiveusedquantity,
-    b.number AS batchnumber,
+    (string_agg((batch.number)::text, ', '::text))::character varying(255) AS batchnumber,
         CASE
             WHEN (( SELECT count(*) AS count
                FROM basic_substitutecomponent
@@ -21887,14 +22317,15 @@ UNION
         END AS replacement,
     productreplacement.number AS productreplacementnumber,
     (productreplacement.id)::integer AS productreplacementid
-   FROM (((((productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent
+   FROM ((((((productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent
      LEFT JOIN productioncounting_productiontracking productiontracking ON ((productiontracking.id = trackingoperationproductincomponent.productiontracking_id)))
      LEFT JOIN basic_product product ON ((product.id = trackingoperationproductincomponent.product_id)))
      LEFT JOIN basic_product productreplacement ON ((productreplacement.id = trackingoperationproductincomponent.replacementto_id)))
-     LEFT JOIN advancedgenealogy_batch b ON ((b.id = trackingoperationproductincomponent.batch_id)))
+     LEFT JOIN productioncounting_usedbatch usedbatch ON ((usedbatch.trackingoperationproductincomponent_id = trackingoperationproductincomponent.id)))
+     LEFT JOIN advancedgenealogy_batch batch ON ((batch.id = usedbatch.batch_id)))
      LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity ON (((productioncountingquantity.order_id = productiontracking.order_id) AND (productioncountingquantity.technologyoperationcomponent_id = productiontracking.technologyoperationcomponent_id) AND (productioncountingquantity.product_id = trackingoperationproductincomponent.product_id) AND ((productioncountingquantity.role)::text = '01used'::text))))
   WHERE (productiontracking.technologyoperationcomponent_id IS NOT NULL)
-  GROUP BY trackingoperationproductincomponent.id, productiontracking.id, product.number, product.name, product.unit, product.id, trackingoperationproductincomponent.usedquantity, trackingoperationproductincomponent.obtainedquantity, trackingoperationproductincomponent.remainedquantity, trackingoperationproductincomponent.effectiveusedquantity, b.number, productiontracking.technologyoperationcomponent_id, productreplacement.number, productreplacement.id;
+  GROUP BY trackingoperationproductincomponent.id, productiontracking.id, product.number, product.name, product.unit, product.id, trackingoperationproductincomponent.usedquantity, trackingoperationproductincomponent.obtainedquantity, trackingoperationproductincomponent.remainedquantity, trackingoperationproductincomponent.effectiveusedquantity, productiontracking.technologyoperationcomponent_id, productreplacement.number, productreplacement.id;
 
 
 --
@@ -22023,18 +22454,6 @@ CREATE SEQUENCE productioncounting_trackingoperationproductoutcomponenthelper_i
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
---
--- Name: productioncounting_usedbatch; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE productioncounting_usedbatch (
-    id bigint NOT NULL,
-    trackingoperationproductincomponent_id bigint,
-    batch_id bigint,
-    quantity numeric(14,5)
-);
 
 
 --
@@ -23593,7 +24012,7 @@ CREATE TABLE states_message (
     offerstatechange_id bigint,
     negotiationstatechange_id bigint,
     warehouseissuestatechange_id bigint,
-    labelstatechange_id bigint,
+    palletlabelstatechange_id bigint,
     maintenanceeventstatechange_id bigint,
     entityversion bigint DEFAULT 0,
     plannedeventstatechange_id bigint,
@@ -27172,6 +27591,20 @@ ALTER TABLE ONLY basic_substitutecomponent ALTER COLUMN id SET DEFAULT nextval('
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY basic_technologicalprocessrate ALTER COLUMN id SET DEFAULT nextval('basic_technologicalprocessrate_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_technologicalprocessrateitem ALTER COLUMN id SET DEFAULT nextval('basic_technologicalprocessrateitem_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY basic_viewedactivity ALTER COLUMN id SET DEFAULT nextval('basic_viewedactivity_id_seq'::regclass);
 
 
@@ -27781,20 +28214,6 @@ ALTER TABLE ONLY goodfood_goodfoodreport ALTER COLUMN id SET DEFAULT nextval('go
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY goodfood_label ALTER COLUMN id SET DEFAULT nextval('goodfood_label_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY goodfood_labelstatechange ALTER COLUMN id SET DEFAULT nextval('goodfood_labelstatechange_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY goodfood_pallet ALTER COLUMN id SET DEFAULT nextval('goodfood_pallet_id_seq'::regclass);
 
 
@@ -27803,6 +28222,20 @@ ALTER TABLE ONLY goodfood_pallet ALTER COLUMN id SET DEFAULT nextval('goodfood_p
 --
 
 ALTER TABLE ONLY goodfood_palletcontext ALTER COLUMN id SET DEFAULT nextval('goodfood_palletcontext_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_palletlabel ALTER COLUMN id SET DEFAULT nextval('goodfood_palletlabel_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_palletlabelstatechange ALTER COLUMN id SET DEFAULT nextval('goodfood_palletlabelstatechange_id_seq'::regclass);
 
 
 --
@@ -27914,6 +28347,41 @@ ALTER TABLE ONLY masterorders_masterorderproduct ALTER COLUMN id SET DEFAULT nex
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY masterorders_productsbysizeentryhelper ALTER COLUMN id SET DEFAULT nextval('masterorders_productsbysizeentryhelper_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_productsbysizehelper ALTER COLUMN id SET DEFAULT nextval('masterorders_productsbysizehelper_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplan ALTER COLUMN id SET DEFAULT nextval('masterorders_salesplan_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplanproduct ALTER COLUMN id SET DEFAULT nextval('masterorders_salesplanproduct_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplanstatechange ALTER COLUMN id SET DEFAULT nextval('masterorders_salesplanstatechange_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY materialflow_location ALTER COLUMN id SET DEFAULT nextval('materialflow_location_id_seq'::regclass);
 
 
@@ -27957,6 +28425,13 @@ ALTER TABLE ONLY materialflowresources_documentpositionparameters ALTER COLUMN i
 --
 
 ALTER TABLE ONLY materialflowresources_documentpositionparametersitem ALTER COLUMN id SET DEFAULT nextval('materialflowresources_documentpositionparametersitem_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY materialflowresources_documentstatechange ALTER COLUMN id SET DEFAULT nextval('materialflowresources_documentstatechange_id_seq'::regclass);
 
 
 --
@@ -32290,6 +32765,43 @@ SELECT pg_catalog.setval('basic_substitutecomponent_id_seq', 1, false);
 
 
 --
+-- Name: basic_technological_process_rate_number_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('basic_technological_process_rate_number_seq', 1, false);
+
+
+--
+-- Data for Name: basic_technologicalprocessrate; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY basic_technologicalprocessrate (id, number, name) FROM stdin;
+\.
+
+
+--
+-- Name: basic_technologicalprocessrate_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('basic_technologicalprocessrate_id_seq', 1, false);
+
+
+--
+-- Data for Name: basic_technologicalprocessrateitem; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY basic_technologicalprocessrateitem (id, technologicalprocessrate_id, actualrate, datefrom, dateto) FROM stdin;
+\.
+
+
+--
+-- Name: basic_technologicalprocessrateitem_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('basic_technologicalprocessrateitem_id_seq', 1, false);
+
+
+--
 -- Name: basic_timetableexceptiondto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -32952,7 +33464,7 @@ SELECT pg_catalog.setval('deliveries_columnfororders_id_seq', 13, false);
 -- Data for Name: deliveries_companyproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY deliveries_companyproduct (id, company_id, product_id, isdefault, entityversion) FROM stdin;
+COPY deliveries_companyproduct (id, company_id, product_id, isdefault, entityversion, minimumorderquantity) FROM stdin;
 \.
 
 
@@ -32967,7 +33479,7 @@ SELECT pg_catalog.setval('deliveries_companyproduct_id_seq', 1, false);
 -- Data for Name: deliveries_companyproductsfamily; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY deliveries_companyproductsfamily (id, company_id, product_id, isdefault, entityversion) FROM stdin;
+COPY deliveries_companyproductsfamily (id, company_id, product_id, isdefault, entityversion, minimumorderquantity) FROM stdin;
 \.
 
 
@@ -33767,28 +34279,6 @@ SELECT pg_catalog.setval('goodfood_goodfoodreport_id_seq', 1, false);
 
 
 --
--- Data for Name: goodfood_label; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY goodfood_label (id, palletcontext_id, printedcount, firstssccnumber, firstpalletnumber, lastssccnumber, lastpalletnumber, masterorder_id, productionline_id, batchnumber, bestbefore, registrationdate, active, batch_id, state, entityversion) FROM stdin;
-\.
-
-
---
--- Name: goodfood_label_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('goodfood_label_id_seq', 1, false);
-
-
---
--- Name: goodfood_labelactivedto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('goodfood_labelactivedto_id_seq', 1, false);
-
-
---
 -- Name: goodfood_labeldto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
@@ -33796,25 +34286,10 @@ SELECT pg_catalog.setval('goodfood_labeldto_id_seq', 1, false);
 
 
 --
--- Data for Name: goodfood_labelstatechange; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY goodfood_labelstatechange (id, dateandtime, sourcestate, targetstate, status, phase, shift_id, worker, label_id, entityversion) FROM stdin;
-\.
-
-
---
--- Name: goodfood_labelstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('goodfood_labelstatechange_id_seq', 1, false);
-
-
---
 -- Data for Name: goodfood_pallet; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY goodfood_pallet (id, palletcontext_id, label_id, typeoflogistics, printedcount, ssccnumber, palletnumber, secondpallet_id, state, isstateerror, stateerror, registrationdate, senddate, active, packagescount, laststatechangefails, laststatechangefailcause, externalnumber, externalsynchronized, eurocod, entityversion, sendagaintoblackbox, product_id) FROM stdin;
+COPY goodfood_pallet (id, palletcontext_id, palletlabel_id, typeoflogistics, printedcount, ssccnumber, palletnumber, secondpallet_id, state, isstateerror, stateerror, registrationdate, senddate, active, packagescount, laststatechangefails, laststatechangefailcause, externalnumber, externalsynchronized, eurocod, entityversion, sendagaintoblackbox, product_id) FROM stdin;
 \.
 
 
@@ -33859,6 +34334,50 @@ SELECT pg_catalog.setval('goodfood_palletcontext_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('goodfood_palletdto_id_seq', 1, false);
+
+
+--
+-- Data for Name: goodfood_palletlabel; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY goodfood_palletlabel (id, palletcontext_id, printedcount, firstssccnumber, firstpalletnumber, lastssccnumber, lastpalletnumber, masterorder_id, productionline_id, batchnumber, bestbefore, registrationdate, active, batch_id, state, entityversion) FROM stdin;
+\.
+
+
+--
+-- Name: goodfood_palletlabel_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('goodfood_palletlabel_id_seq', 1, false);
+
+
+--
+-- Name: goodfood_palletlabelactivedto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('goodfood_palletlabelactivedto_id_seq', 1, false);
+
+
+--
+-- Name: goodfood_palletlabeldto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('goodfood_palletlabeldto_id_seq', 1, false);
+
+
+--
+-- Data for Name: goodfood_palletlabelstatechange; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY goodfood_palletlabelstatechange (id, dateandtime, sourcestate, targetstate, status, phase, shift_id, worker, palletlabel_id, entityversion) FROM stdin;
+\.
+
+
+--
+-- Name: goodfood_palletlabelstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('goodfood_palletlabelstatechange_id_seq', 1, false);
 
 
 --
@@ -34533,14 +35052,6 @@ COPY jointable_issue_productstoissuehelper (productstoissuehelper_id, issue_id) 
 
 
 --
--- Data for Name: jointable_label_printlabelshelper; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY jointable_label_printlabelshelper (printlabelshelper_id, label_id) FROM stdin;
-\.
-
-
---
 -- Data for Name: jointable_materialrequirement_order; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -34617,6 +35128,14 @@ COPY jointable_order_schedule (order_id, schedule_id) FROM stdin;
 --
 
 COPY jointable_order_workplan (workplan_id, order_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: jointable_palletlabel_printlabelshelper; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY jointable_palletlabel_printlabelshelper (printlabelshelper_id, palletlabel_id) FROM stdin;
 \.
 
 
@@ -34835,7 +35354,7 @@ SELECT pg_catalog.setval('masterorders_generatingordershelper_id_seq', 1, false)
 -- Data for Name: masterorders_masterorder; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY masterorders_masterorder (id, number, name, description, externalnumber, deadline, addmasterprefixtonumber, masterorderstate, company_id, externalsynchronized, generationdateoneec, cancelsynchronizationreason, active, pw2prod, batch_id, masterorderdefinition_id, startdate, finishdate, entityversion, sendagaintoblackbox, dateofreceipt, address_id, externalproductionorderid, ponumber, direction, createdate, updatedate, createuser, updateuser, deliverynotenumber, cancelsynchronizationtype, companypayer_id, productioncode, commissionnumber, machinetype, pipedriveupdate, state, asanataskid, asanatasknameupdated, asanataskcommentadded, sendagaintoasana, sendagaintoasanatries, asanastatecompleteddate, colourral) FROM stdin;
+COPY masterorders_masterorder (id, number, name, description, externalnumber, deadline, addmasterprefixtonumber, masterorderstate, company_id, externalsynchronized, generationdateoneec, cancelsynchronizationreason, active, pw2prod, batch_id, masterorderdefinition_id, startdate, finishdate, entityversion, sendagaintoblackbox, dateofreceipt, address_id, externalproductionorderid, ponumber, direction, createdate, updatedate, createuser, updateuser, deliverynotenumber, cancelsynchronizationtype, companypayer_id, productioncode, commissionnumber, machinetype, pipedriveupdate, state, asanataskid, asanatasknameupdated, asanataskcommentadded, sendagaintoasana, sendagaintoasanatries, asanastatecompleteddate, colourral, salesplan_id) FROM stdin;
 \.
 
 
@@ -34902,6 +35421,95 @@ COPY masterorders_masterorderproduct (id, product_id, technology_id, masterorder
 --
 
 SELECT pg_catalog.setval('masterorders_masterorderproduct_id_seq', 1, false);
+
+
+--
+-- Data for Name: masterorders_productsbysizeentryhelper; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY masterorders_productsbysizeentryhelper (id, size_id, productsbysizehelper_id, quantity, product_id) FROM stdin;
+\.
+
+
+--
+-- Name: masterorders_productsbysizeentryhelper_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('masterorders_productsbysizeentryhelper_id_seq', 1, false);
+
+
+--
+-- Data for Name: masterorders_productsbysizehelper; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY masterorders_productsbysizehelper (id, product_id, totalquantity, masterorder_id, salesplan_id) FROM stdin;
+\.
+
+
+--
+-- Name: masterorders_productsbysizehelper_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('masterorders_productsbysizehelper_id_seq', 1, false);
+
+
+--
+-- Name: masterorders_sales_plan_number_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('masterorders_sales_plan_number_seq', 1, false);
+
+
+--
+-- Data for Name: masterorders_salesplan; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY masterorders_salesplan (id, number, name, description, state, datefrom, dateto) FROM stdin;
+\.
+
+
+--
+-- Name: masterorders_salesplan_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('masterorders_salesplan_id_seq', 1, false);
+
+
+--
+-- Data for Name: masterorders_salesplanproduct; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY masterorders_salesplanproduct (id, salesplan_id, product_id, technology_id, plannedquantity, orderedquantity, surplusfromplan) FROM stdin;
+\.
+
+
+--
+-- Name: masterorders_salesplanproduct_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('masterorders_salesplanproduct_id_seq', 1, false);
+
+
+--
+-- Name: masterorders_salesplanproductdto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('masterorders_salesplanproductdto_id_seq', 1, false);
+
+
+--
+-- Data for Name: masterorders_salesplanstatechange; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY masterorders_salesplanstatechange (id, dateandtime, salesplan_id, shift_id, sourcestate, targetstate, status, phase, worker) FROM stdin;
+\.
+
+
+--
+-- Name: masterorders_salesplanstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('masterorders_salesplanstatechange_id_seq', 1, false);
 
 
 --
@@ -35066,6 +35674,7 @@ COPY materialflowresources_documentpositionparametersitem (id, checked, editable
 23	f	t	1	pickingDate	23	f	\N
 24	f	t	1	pickingWorker	24	f	\N
 20	f	t	1	lastResource	22	f	\N
+25	f	t	1	restAfterShiftDisposition	25	f	\N
 \.
 
 
@@ -35073,7 +35682,22 @@ COPY materialflowresources_documentpositionparametersitem (id, checked, editable
 -- Name: materialflowresources_documentpositionparametersitem_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('materialflowresources_documentpositionparametersitem_id_seq', 24, true);
+SELECT pg_catalog.setval('materialflowresources_documentpositionparametersitem_id_seq', 25, true);
+
+
+--
+-- Data for Name: materialflowresources_documentstatechange; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY materialflowresources_documentstatechange (id, dateandtime, document_id, sourcestate, targetstate, status, worker) FROM stdin;
+\.
+
+
+--
+-- Name: materialflowresources_documentstatechange_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('materialflowresources_documentstatechange_id_seq', 1, false);
 
 
 --
@@ -35139,7 +35763,7 @@ SELECT pg_catalog.setval('materialflowresources_palletstoragestatedto_id_seq', 1
 -- Data for Name: materialflowresources_position; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY materialflowresources_position (id, document_id, product_id, quantity, price, productiondate, expirationdate, number, resource_id, givenunit, givenquantity, entityversion, storagelocation_id, additionalcode_id, conversion, palletnumber_id, typeofpallet, waste, resourcereceiptdocument, lastresource, resourcenumber, externaldocumentnumber, orderid, sellingprice, batch_id, qualityrating, pickingdate, pickingworker_id, wmsposition_id) FROM stdin;
+COPY materialflowresources_position (id, document_id, product_id, quantity, price, productiondate, expirationdate, number, resource_id, givenunit, givenquantity, entityversion, storagelocation_id, additionalcode_id, conversion, palletnumber_id, typeofpallet, waste, resourcereceiptdocument, lastresource, resourcenumber, externaldocumentnumber, orderid, sellingprice, batch_id, qualityrating, pickingdate, pickingworker_id, wmsposition_id, restaftershiftdisposition) FROM stdin;
 \.
 
 
@@ -35770,7 +36394,7 @@ SELECT pg_catalog.setval('orders_operationaltaskwithcolordto_id_seq', 1, false);
 -- Data for Name: orders_order; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, registerpiecework, generatedenddate, machineworktime, ownlinechangeover, autocloseorder, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, typeofproductionrecording, masterorder_id, active, productpriceperunit, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, issubcontracted, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, directadditionalcost, directadditionalcostdescription, division_id) FROM stdin;
+COPY orders_order (id, number, name, description, commentreasontypecorrectiondatefrom, commentreasontypecorrectiondateto, commentreasondeviationeffectivestart, commentreasondeviationeffectiveend, externalnumber, commentreasontypedeviationsquantity, datefrom, dateto, effectivedatefrom, effectivedateto, deadline, correcteddatefrom, correcteddateto, startdate, finishdate, state, company_id, product_id, technology_id, productionline_id, plannedquantity, donequantity, externalsynchronized, commissionedplannedquantity, commissionedcorrectedquantity, amountofproductproduced, remainingamountofproducttoproduce, ownlinechangeoverduration, registerproductiontime, registerquantityinproduct, laborworktime, includetpz, inputproductsrequiredfortype, registerpiecework, generatedenddate, machineworktime, ownlinechangeover, registerquantityoutproduct, operationdurationquantityunit, realizationtime, calculate, includeadditionaltime, typeofproductionrecording, masterorder_id, active, productpriceperunit, failuresyncmessage, targetstate, ignorerequiredcomponents, automaticallymoveoverusage, updatecomponentsavailability, technologyprototype_id, level, parent_id, ignoremissingcomponents, masterorderproduct_id, dateschanged, sourcecorrecteddatefrom, sourcecorrecteddateto, sourcestartdate, sourcefinishdate, batchnumber, root_id, includeordersforcomponent, plannedfinishallorders, plannedstartallorders, calculatedfinishallorders, issubcontracted, registerfilled, workplandelivered, calculatedstartallorders, scadacreatedorupdatestate, entityversion, workertochange, masterorderproductcomponent_id, wastesquantity, existsrepairorders, ordercategory, address_id, finalproductiontracking, updatefinishdate, ordersgroup_id, plannedquantityforadditionalunit, directadditionalcost, directadditionalcostdescription, division_id) FROM stdin;
 \.
 
 
@@ -36781,7 +37405,7 @@ SELECT pg_catalog.setval('productioncounting_trackingoperationproductcomponentdt
 -- Data for Name: productioncounting_trackingoperationproductincomponent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY productioncounting_trackingoperationproductincomponent (id, productiontracking_id, product_id, usedquantity, balance, batch_id, obtainedquantity, remainedquantity, effectiveusedquantity, givenunit, givenquantity, entityversion, typeofmaterial, wasteused, wasteusedonly, wasteusedquantity, wasteunit, additionalinformation, replacementto_id) FROM stdin;
+COPY productioncounting_trackingoperationproductincomponent (id, productiontracking_id, product_id, usedquantity, balance, obtainedquantity, remainedquantity, effectiveusedquantity, givenunit, givenquantity, entityversion, typeofmaterial, wasteused, wasteusedonly, wasteusedquantity, wasteunit, additionalinformation, replacementto_id) FROM stdin;
 \.
 
 
@@ -37473,6 +38097,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 122	ROLE_STOPPAGE_REASONS	\N	0
 123	ROLE_WMS	\N	0
 1	ROLE_HOME_PROFILE	\N	0
+124	ROLE_TECHNOLOGICAL_PROCESSES	\N	0
 \.
 
 
@@ -37480,7 +38105,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 124, false);
+SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 124, true);
 
 
 --
@@ -37722,6 +38347,8 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 173	productionCounting	productionAnalysisParameters	t	21	172	7	ROLE_PARAMETERS	0
 174	esilco	picksReportsList	t	22	173	1	ROLE_REQUIREMENTS	0
 175	esilco	workerStatsReportsList	t	22	174	2	ROLE_REQUIREMENTS	0
+181	masterOrders	salesPlansList	t	7	180	20	ROLE_PLANNING	0
+182	basic	technologicalProcessRateList	t	18	181	24	ROLE_TECHNOLOGICAL_PROCESSES	0
 \.
 
 
@@ -37729,7 +38356,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 180, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 182, true);
 
 
 --
@@ -37903,6 +38530,8 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 177	configurator	configurator	\N	/configurator.html	0
 178	basic	labelsList	labelsList	\N	0
 179	basic	modelsList	modelsList	\N	0
+180	masterOrders	salesPlansList	salesPlansList	\N	0
+181	basic	technologicalProcessRateList	technologicalProcessRateList	\N	0
 \.
 
 
@@ -37910,7 +38539,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 179, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 181, true);
 
 
 --
@@ -38214,7 +38843,7 @@ SELECT pg_catalog.setval('repairs_repairorderworktime_id_seq', 1, false);
 -- Data for Name: states_message; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY states_message (id, type, translationkey, translationargs, correspondfieldname, autoclose, productiontrackingstatechange_id, deliverystatechange_id, assignmenttoshiftstatechange_id, technologystatechange_id, orderstatechange_id, extrusionprotocolstatechange_id, confectionprotocolstatechange_id, palletstatechange_id, batchstatechange_id, trackingrecordstatechange_id, requestforquotationstatechange_id, offerstatechange_id, negotiationstatechange_id, warehouseissuestatechange_id, labelstatechange_id, maintenanceeventstatechange_id, entityversion, plannedeventstatechange_id, recurringeventstatechange_id) FROM stdin;
+COPY states_message (id, type, translationkey, translationargs, correspondfieldname, autoclose, productiontrackingstatechange_id, deliverystatechange_id, assignmenttoshiftstatechange_id, technologystatechange_id, orderstatechange_id, extrusionprotocolstatechange_id, confectionprotocolstatechange_id, palletstatechange_id, batchstatechange_id, trackingrecordstatechange_id, requestforquotationstatechange_id, offerstatechange_id, negotiationstatechange_id, warehouseissuestatechange_id, palletlabelstatechange_id, maintenanceeventstatechange_id, entityversion, plannedeventstatechange_id, recurringeventstatechange_id) FROM stdin;
 \.
 
 
@@ -38885,7 +39514,7 @@ SELECT pg_catalog.setval('technologies_qualitycardstatechange_id_seq', 1, false)
 -- Data for Name: technologies_technology; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY technologies_technology (id, number, name, product_id, technologygroup_id, externalsynchronized, master, description, state, recipeimportstatus, recipeimportmsg, formula, minimalquantity, active, isstandardgoodfoodtechnology, range, division_id, componentslocation_id, componentsoutputlocation_id, productsinputlocation_id, technologytype, technologyprototype_id, productionline_id, productionflow, productsflowlocation_id, typeofproductionrecording, registerquantityoutproduct, autocloseorder, registerpiecework, registerquantityinproduct, registerproductiontime, entityversion, standardperformancetechnology, template, additionalactions, generatorcontext_id, qualitycard_id) FROM stdin;
+COPY technologies_technology (id, number, name, product_id, technologygroup_id, externalsynchronized, master, description, state, recipeimportstatus, recipeimportmsg, formula, minimalquantity, active, isstandardgoodfoodtechnology, range, division_id, componentslocation_id, componentsoutputlocation_id, productsinputlocation_id, technologytype, technologyprototype_id, productionline_id, productionflow, productsflowlocation_id, typeofproductionrecording, registerquantityoutproduct, registerpiecework, registerquantityinproduct, registerproductiontime, entityversion, standardperformancetechnology, template, additionalactions, generatorcontext_id, qualitycard_id) FROM stdin;
 \.
 
 
@@ -40703,6 +41332,22 @@ ALTER TABLE ONLY basic_substitutecomponent
 
 
 --
+-- Name: basic_technologicalprocessrate_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_technologicalprocessrate
+    ADD CONSTRAINT basic_technologicalprocessrate_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: basic_technologicalprocessrateitem_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_technologicalprocessrateitem
+    ADD CONSTRAINT basic_technologicalprocessrateitem_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: basic_viewedactivity_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -41447,22 +42092,6 @@ ALTER TABLE ONLY goodfood_goodfoodreport
 
 
 --
--- Name: goodfood_label_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY goodfood_label
-    ADD CONSTRAINT goodfood_label_pkey PRIMARY KEY (id);
-
-
---
--- Name: goodfood_labelstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY goodfood_labelstatechange
-    ADD CONSTRAINT goodfood_labelstatechange_pkey PRIMARY KEY (id);
-
-
---
 -- Name: goodfood_pallet_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -41476,6 +42105,22 @@ ALTER TABLE ONLY goodfood_pallet
 
 ALTER TABLE ONLY goodfood_palletcontext
     ADD CONSTRAINT goodfood_palletcontext_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: goodfood_palletlabel_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_palletlabel
+    ADD CONSTRAINT goodfood_palletlabel_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: goodfood_palletlabelstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_palletlabelstatechange
+    ADD CONSTRAINT goodfood_palletlabelstatechange_pkey PRIMARY KEY (id);
 
 
 --
@@ -41687,14 +42332,6 @@ ALTER TABLE ONLY jointable_issue_productstoissuehelper
 
 
 --
--- Name: jointable_label_printlabelshelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY jointable_label_printlabelshelper
-    ADD CONSTRAINT jointable_label_printlabelshelper_pkey PRIMARY KEY (label_id, printlabelshelper_id);
-
-
---
 -- Name: jointable_materialrequirement_order_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -41772,6 +42409,14 @@ ALTER TABLE ONLY jointable_order_schedule
 
 ALTER TABLE ONLY jointable_order_workplan
     ADD CONSTRAINT jointable_order_workplan_pkey PRIMARY KEY (workplan_id, order_id);
+
+
+--
+-- Name: jointable_palletlabel_printlabelshelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_palletlabel_printlabelshelper
+    ADD CONSTRAINT jointable_palletlabel_printlabelshelper_pkey PRIMARY KEY (palletlabel_id, printlabelshelper_id);
 
 
 --
@@ -41991,6 +42636,46 @@ ALTER TABLE ONLY masterorders_masterorderproduct
 
 
 --
+-- Name: masterorders_productsbysizeentryhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_productsbysizeentryhelper
+    ADD CONSTRAINT masterorders_productsbysizeentryhelper_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: masterorders_productsbysizehelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_productsbysizehelper
+    ADD CONSTRAINT masterorders_productsbysizehelper_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: masterorders_salesplan_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplan
+    ADD CONSTRAINT masterorders_salesplan_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: masterorders_salesplanproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplanproduct
+    ADD CONSTRAINT masterorders_salesplanproduct_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: masterorders_salesplanstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplanstatechange
+    ADD CONSTRAINT masterorders_salesplanstatechange_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: materialflow_location_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -42036,6 +42721,14 @@ ALTER TABLE ONLY materialflowresources_documentpositionparameters
 
 ALTER TABLE ONLY materialflowresources_documentpositionparametersitem
     ADD CONSTRAINT materialflowresources_documentpositionparametersitem_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: materialflowresources_documentstatechange_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY materialflowresources_documentstatechange
+    ADD CONSTRAINT materialflowresources_documentstatechange_pkey PRIMARY KEY (id);
 
 
 --
@@ -44520,7 +45213,7 @@ CREATE INDEX idx_del_verystatechange_delivery_id ON deliveries_deliverystatechan
 -- Name: idx_goo_abelstatechange_label_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_goo_abelstatechange_label_id ON goodfood_labelstatechange USING btree (label_id);
+CREATE INDEX idx_goo_abelstatechange_label_id ON goodfood_palletlabelstatechange USING btree (palletlabel_id);
 
 
 --
@@ -44569,21 +45262,21 @@ CREATE INDEX idx_goo_ioninputproduct_confectionprotocol_id ON goodfood_confectio
 -- Name: idx_goo_label_batch_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_goo_label_batch_id ON goodfood_label USING btree (batch_id);
+CREATE INDEX idx_goo_label_batch_id ON goodfood_palletlabel USING btree (batch_id);
 
 
 --
 -- Name: idx_goo_label_masterorder_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_goo_label_masterorder_id ON goodfood_label USING btree (masterorder_id);
+CREATE INDEX idx_goo_label_masterorder_id ON goodfood_palletlabel USING btree (masterorder_id);
 
 
 --
 -- Name: idx_goo_label_palletcontext_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_goo_label_palletcontext_id ON goodfood_label USING btree (palletcontext_id);
+CREATE INDEX idx_goo_label_palletcontext_id ON goodfood_palletlabel USING btree (palletcontext_id);
 
 
 --
@@ -44611,7 +45304,7 @@ CREATE INDEX idx_goo_ocolstatechange_extrusionprotocol_id ON goodfood_extrusionp
 -- Name: idx_goo_pallet_label_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX idx_goo_pallet_label_id ON goodfood_pallet USING btree (label_id);
+CREATE INDEX idx_goo_pallet_label_id ON goodfood_pallet USING btree (palletlabel_id);
 
 
 --
@@ -45018,13 +45711,6 @@ CREATE INDEX idx_ord_suborders_ordersgroup_id ON ordersforsubproductsgeneration_
 --
 
 CREATE INDEX idx_pro_dailyprogress_progressforday_id ON productionpershift_dailyprogress USING btree (progressforday_id);
-
-
---
--- Name: idx_pro_ductincomponent_batch_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX idx_pro_ductincomponent_batch_id ON productioncounting_trackingoperationproductincomponent USING btree (batch_id);
 
 
 --
@@ -45549,10 +46235,11 @@ CREATE RULE "_RETURN" AS
         END AS plannedquantity,
     trackingoperationproductincomponent.usedquantity,
     batch.number AS batchnumber
-   FROM (((((productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent
+   FROM ((((((productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent
      LEFT JOIN productioncounting_productiontracking productiontracking ON ((productiontracking.id = trackingoperationproductincomponent.productiontracking_id)))
      LEFT JOIN basic_product product ON ((product.id = trackingoperationproductincomponent.product_id)))
-     LEFT JOIN advancedgenealogy_batch batch ON ((batch.id = trackingoperationproductincomponent.batch_id)))
+     LEFT JOIN productioncounting_usedbatch usedbatch ON ((usedbatch.trackingoperationproductincomponent_id = trackingoperationproductincomponent.id)))
+     LEFT JOIN advancedgenealogy_batch batch ON ((batch.id = usedbatch.batch_id)))
      LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_1 ON (((productioncountingquantity_1.order_id = productiontracking.order_id) AND (productioncountingquantity_1.product_id = trackingoperationproductincomponent.product_id) AND ((productioncountingquantity_1.role)::text = '01used'::text))))
      LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_2 ON (((productioncountingquantity_2.order_id = productiontracking.order_id) AND (productioncountingquantity_2.technologyoperationcomponent_id = productiontracking.technologyoperationcomponent_id) AND (productioncountingquantity_2.product_id = trackingoperationproductincomponent.product_id) AND ((productioncountingquantity_2.role)::text = '01used'::text))))
   WHERE ((productiontracking.state)::text <> ALL (ARRAY[(('03declined'::text)::character varying)::text, (('04corrected'::text)::character varying)::text]))
@@ -45806,7 +46493,8 @@ CREATE RULE "_RETURN" AS
     string_agg((code.code)::text, ', '::text) AS additionalcodes,
     product.active,
     product.unit,
-    product.additionalunit
+    product.additionalunit,
+    product.entitytype
    FROM ((((((basic_product product
      LEFT JOIN basic_product parent ON ((product.parent_id = parent.id)))
      LEFT JOIN basic_assortment assortment ON ((product.assortment_id = assortment.id)))
@@ -48355,6 +49043,14 @@ ALTER TABLE ONLY materialflowresources_documentpositionparametersitem
 
 
 --
+-- Name: documentstatechange_document_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY materialflowresources_documentstatechange
+    ADD CONSTRAINT documentstatechange_document_fkey FOREIGN KEY (document_id) REFERENCES materialflowresources_document(id) DEFERRABLE;
+
+
+--
 -- Name: event_staff_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -49406,24 +50102,8 @@ ALTER TABLE ONLY jointable_productionline_technologygroup
 -- Name: label_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY goodfood_label
-    ADD CONSTRAINT label_batch_fkey FOREIGN KEY (batch_id) REFERENCES advancedgenealogy_batch(id) DEFERRABLE;
-
-
---
--- Name: label_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY arch_goodfood_label
     ADD CONSTRAINT label_batch_fkey FOREIGN KEY (batch_id) REFERENCES advancedgenealogy_batch(id) DEFERRABLE;
-
-
---
--- Name: label_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY goodfood_label
-    ADD CONSTRAINT label_masterorder_fkey FOREIGN KEY (masterorder_id) REFERENCES masterorders_masterorder(id) DEFERRABLE;
 
 
 --
@@ -49438,40 +50118,8 @@ ALTER TABLE ONLY arch_goodfood_label
 -- Name: label_palletcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY goodfood_label
-    ADD CONSTRAINT label_palletcontext_fkey FOREIGN KEY (palletcontext_id) REFERENCES goodfood_palletcontext(id) DEFERRABLE;
-
-
---
--- Name: label_palletcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY arch_goodfood_label
     ADD CONSTRAINT label_palletcontext_fkey FOREIGN KEY (palletcontext_id) REFERENCES goodfood_palletcontext(id) DEFERRABLE;
-
-
---
--- Name: label_printlabelshelper_label_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY jointable_label_printlabelshelper
-    ADD CONSTRAINT label_printlabelshelper_label_fkey FOREIGN KEY (label_id) REFERENCES goodfood_label(id) DEFERRABLE;
-
-
---
--- Name: label_printlabelshelper_printlabelshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY jointable_label_printlabelshelper
-    ADD CONSTRAINT label_printlabelshelper_printlabelshelper_fkey FOREIGN KEY (printlabelshelper_id) REFERENCES integrationbartender_printlabelshelper(id) DEFERRABLE;
-
-
---
--- Name: label_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY goodfood_label
-    ADD CONSTRAINT label_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES productionlines_productionline(id) DEFERRABLE;
 
 
 --
@@ -49480,14 +50128,6 @@ ALTER TABLE ONLY goodfood_label
 
 ALTER TABLE ONLY arch_goodfood_label
     ADD CONSTRAINT label_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES productionlines_productionline(id) DEFERRABLE;
-
-
---
--- Name: labelstatechange_label_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY goodfood_labelstatechange
-    ADD CONSTRAINT labelstatechange_label_fkey FOREIGN KEY (label_id) REFERENCES goodfood_label(id) DEFERRABLE;
 
 
 --
@@ -49496,14 +50136,6 @@ ALTER TABLE ONLY goodfood_labelstatechange
 
 ALTER TABLE ONLY arch_goodfood_labelstatechange
     ADD CONSTRAINT labelstatechange_label_fkey FOREIGN KEY (label_id) REFERENCES arch_goodfood_label(id) DEFERRABLE;
-
-
---
--- Name: labelstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY goodfood_labelstatechange
-    ADD CONSTRAINT labelstatechange_shift_fkey FOREIGN KEY (shift_id) REFERENCES basic_shift(id) DEFERRABLE;
 
 
 --
@@ -49803,6 +50435,14 @@ ALTER TABLE ONLY arch_masterorders_masterorder
 
 
 --
+-- Name: masterorder_salesplan_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_masterorder
+    ADD CONSTRAINT masterorder_salesplan_fkey FOREIGN KEY (salesplan_id) REFERENCES masterorders_salesplan(id) DEFERRABLE;
+
+
+--
 -- Name: masterorderdefinition_parameter_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -50070,14 +50710,6 @@ ALTER TABLE ONLY arch_states_message
 -- Name: message_labelstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY states_message
-    ADD CONSTRAINT message_labelstatechange_fkey FOREIGN KEY (labelstatechange_id) REFERENCES goodfood_labelstatechange(id) DEFERRABLE;
-
-
---
--- Name: message_labelstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY arch_states_message
     ADD CONSTRAINT message_labelstatechange_fkey FOREIGN KEY (labelstatechange_id) REFERENCES arch_goodfood_labelstatechange(id) DEFERRABLE;
 
@@ -50144,6 +50776,14 @@ ALTER TABLE ONLY states_message
 
 ALTER TABLE ONLY arch_states_message
     ADD CONSTRAINT message_orderstatechange_fkey FOREIGN KEY (orderstatechange_id) REFERENCES arch_orders_orderstatechange(id) DEFERRABLE;
+
+
+--
+-- Name: message_palletlabelstatechange_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY states_message
+    ADD CONSTRAINT message_palletlabelstatechange_fkey FOREIGN KEY (palletlabelstatechange_id) REFERENCES goodfood_palletlabelstatechange(id) DEFERRABLE;
 
 
 --
@@ -51382,14 +52022,6 @@ ALTER TABLE ONLY esilco_outofstock
 -- Name: pallet_label_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY goodfood_pallet
-    ADD CONSTRAINT pallet_label_fkey FOREIGN KEY (label_id) REFERENCES goodfood_label(id) DEFERRABLE;
-
-
---
--- Name: pallet_label_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY arch_goodfood_pallet
     ADD CONSTRAINT pallet_label_fkey FOREIGN KEY (label_id) REFERENCES arch_goodfood_label(id) DEFERRABLE;
 
@@ -51427,6 +52059,14 @@ ALTER TABLE ONLY arch_goodfood_pallet
 
 
 --
+-- Name: pallet_palletlabel_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_pallet
+    ADD CONSTRAINT pallet_palletlabel_fkey FOREIGN KEY (palletlabel_id) REFERENCES goodfood_palletlabel(id) DEFERRABLE;
+
+
+--
 -- Name: pallet_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -51456,6 +52096,70 @@ ALTER TABLE ONLY goodfood_palletcontext
 
 ALTER TABLE ONLY goodfood_palletcontext
     ADD CONSTRAINT palletcontext_shift_fkey FOREIGN KEY (shift_id) REFERENCES basic_shift(id) DEFERRABLE;
+
+
+--
+-- Name: palletlabel_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_palletlabel
+    ADD CONSTRAINT palletlabel_batch_fkey FOREIGN KEY (batch_id) REFERENCES advancedgenealogy_batch(id) DEFERRABLE;
+
+
+--
+-- Name: palletlabel_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_palletlabel
+    ADD CONSTRAINT palletlabel_masterorder_fkey FOREIGN KEY (masterorder_id) REFERENCES masterorders_masterorder(id) DEFERRABLE;
+
+
+--
+-- Name: palletlabel_palletcontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_palletlabel
+    ADD CONSTRAINT palletlabel_palletcontext_fkey FOREIGN KEY (palletcontext_id) REFERENCES goodfood_palletcontext(id) DEFERRABLE;
+
+
+--
+-- Name: palletlabel_printlabelshelper_label_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_palletlabel_printlabelshelper
+    ADD CONSTRAINT palletlabel_printlabelshelper_label_fkey FOREIGN KEY (palletlabel_id) REFERENCES goodfood_palletlabel(id) DEFERRABLE;
+
+
+--
+-- Name: palletlabel_printlabelshelper_printlabelshelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_palletlabel_printlabelshelper
+    ADD CONSTRAINT palletlabel_printlabelshelper_printlabelshelper_fkey FOREIGN KEY (printlabelshelper_id) REFERENCES integrationbartender_printlabelshelper(id) DEFERRABLE;
+
+
+--
+-- Name: palletlabel_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_palletlabel
+    ADD CONSTRAINT palletlabel_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES productionlines_productionline(id) DEFERRABLE;
+
+
+--
+-- Name: palletlabelstatechange_palletlabel_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_palletlabelstatechange
+    ADD CONSTRAINT palletlabelstatechange_palletlabel_fkey FOREIGN KEY (palletlabel_id) REFERENCES goodfood_palletlabel(id) DEFERRABLE;
+
+
+--
+-- Name: palletlabelstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY goodfood_palletlabelstatechange
+    ADD CONSTRAINT palletlabelstatechange_shift_fkey FOREIGN KEY (shift_id) REFERENCES basic_shift(id) DEFERRABLE;
 
 
 --
@@ -53091,6 +53795,54 @@ ALTER TABLE ONLY arch_productioncounting_productiontracking
 
 
 --
+-- Name: productsbysizeentryhelper_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_productsbysizeentryhelper
+    ADD CONSTRAINT productsbysizeentryhelper_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: productsbysizeentryhelper_productsbysizehelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_productsbysizeentryhelper
+    ADD CONSTRAINT productsbysizeentryhelper_productsbysizehelper_fkey FOREIGN KEY (productsbysizehelper_id) REFERENCES masterorders_productsbysizehelper(id) DEFERRABLE;
+
+
+--
+-- Name: productsbysizeentryhelper_size_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_productsbysizeentryhelper
+    ADD CONSTRAINT productsbysizeentryhelper_size_fkey FOREIGN KEY (size_id) REFERENCES basic_size(id) DEFERRABLE;
+
+
+--
+-- Name: productsbysizehelper_masterorder_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_productsbysizehelper
+    ADD CONSTRAINT productsbysizehelper_masterorder_fkey FOREIGN KEY (masterorder_id) REFERENCES masterorders_masterorder(id) DEFERRABLE;
+
+
+--
+-- Name: productsbysizehelper_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_productsbysizehelper
+    ADD CONSTRAINT productsbysizehelper_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: productsbysizehelper_salesplan_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_productsbysizehelper
+    ADD CONSTRAINT productsbysizehelper_salesplan_fkey FOREIGN KEY (salesplan_id) REFERENCES masterorders_salesplan(id) DEFERRABLE;
+
+
+--
 -- Name: productstoissue_additionalcode_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -54579,6 +55331,46 @@ ALTER TABLE ONLY materialflowresources_resourcestock
 
 
 --
+-- Name: salesplanproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplanproduct
+    ADD CONSTRAINT salesplanproduct_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: salesplanproduct_salesplan_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplanproduct
+    ADD CONSTRAINT salesplanproduct_salesplan_fkey FOREIGN KEY (salesplan_id) REFERENCES masterorders_salesplan(id) DEFERRABLE;
+
+
+--
+-- Name: salesplanproduct_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplanproduct
+    ADD CONSTRAINT salesplanproduct_technology_fkey FOREIGN KEY (technology_id) REFERENCES technologies_technology(id) DEFERRABLE;
+
+
+--
+-- Name: salesplanstatechange_salesplan_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplanstatechange
+    ADD CONSTRAINT salesplanstatechange_salesplan_fkey FOREIGN KEY (salesplan_id) REFERENCES masterorders_salesplan(id) DEFERRABLE;
+
+
+--
+-- Name: salesplanstatechange_shift_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplanstatechange
+    ADD CONSTRAINT salesplanstatechange_shift_fkey FOREIGN KEY (shift_id) REFERENCES basic_shift(id) DEFERRABLE;
+
+
+--
 -- Name: scheduleposition_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -55187,6 +55979,14 @@ ALTER TABLE ONLY basic_substitutecomponent
 
 
 --
+-- Name: technologicalprocessrateitem_technologicalprocessrate_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_technologicalprocessrateitem
+    ADD CONSTRAINT technologicalprocessrateitem_technologicalprocessrate_fkey FOREIGN KEY (technologicalprocessrate_id) REFERENCES basic_technologicalprocessrate(id) DEFERRABLE;
+
+
+--
 -- Name: technologies_technology_technologygroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -55608,14 +56408,6 @@ ALTER TABLE ONLY productioncounting_trackinginproductreplacementhelper
 
 ALTER TABLE ONLY productioncounting_trackinginproductreplacementhelper
     ADD CONSTRAINT trackinginproductreplacementhelper_productiontracking_fkey FOREIGN KEY (productiontracking_id) REFERENCES productioncounting_productiontracking(id) DEFERRABLE;
-
-
---
--- Name: trackingoperationproductincomponent_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY productioncounting_trackingoperationproductincomponent
-    ADD CONSTRAINT trackingoperationproductincomponent_batch_fkey FOREIGN KEY (batch_id) REFERENCES advancedgenealogy_batch(id) DEFERRABLE;
 
 
 --
