@@ -29,7 +29,7 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
 		<enum name="entityType" values="01simple,02forOrder" required="true" />
-		<enum name="state" values="01draft,02accepted,03declined"
+		<enum name="state" values="01draft,02accepted,03declined,04corrected"
 			default="01draft" required="true" />
 		<decimal name="quantity">
 			<validatesRange from="0" exclusively="true" />

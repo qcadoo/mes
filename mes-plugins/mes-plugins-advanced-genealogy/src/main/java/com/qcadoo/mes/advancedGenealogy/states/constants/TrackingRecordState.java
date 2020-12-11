@@ -41,7 +41,7 @@ public enum TrackingRecordState implements StateEnum {
 
         @Override
         public boolean canChangeTo(final StateEnum targetState) {
-            return DECLINED.equals(targetState);
+            return DECLINED.equals(targetState) || CORRECTED.equals(targetState);
         }
 
     },
@@ -51,6 +51,15 @@ public enum TrackingRecordState implements StateEnum {
         @Override
         public boolean canChangeTo(final StateEnum targetState) {
             return false;
+        }
+
+    },
+
+    CORRECTED(TrackingRecordStateStringValues.CORRECTED) {
+
+        @Override
+        public boolean canChangeTo(final StateEnum targetState) {
+            return ACCEPTED.equals(targetState) || DECLINED.equals(targetState);
         }
 
     };

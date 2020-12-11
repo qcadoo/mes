@@ -12,8 +12,6 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 @Service
 public class ScheduleDetailsHooks {
 
-
-
     private static final String L_ORDERS_LOOKUP = "ordersLookup";
 
     public void onBeforeRender(final ViewDefinitionState view) {

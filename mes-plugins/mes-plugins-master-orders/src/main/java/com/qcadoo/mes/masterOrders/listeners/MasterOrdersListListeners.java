@@ -23,15 +23,9 @@
  */
 package com.qcadoo.mes.masterOrders.listeners;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
-import com.qcadoo.mes.orders.TechnologyServiceO;
-import com.qcadoo.mes.orders.states.client.OrderStateChangeViewClient;
-import com.qcadoo.mes.technologies.states.TechnologyStateChangeViewClient;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -39,21 +33,14 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class MasterOrdersListListeners {
 
     @Autowired
-    private OrderStateChangeViewClient orderStateChangeViewClient;
-
-    @Autowired
-    private TechnologyStateChangeViewClient technologyStateChangeViewClient;
-
-    @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private TechnologyServiceO technologyServiceO;
 
     public void changeState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent gridComponent = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);

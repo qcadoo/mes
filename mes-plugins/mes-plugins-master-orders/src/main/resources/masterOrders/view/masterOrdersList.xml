@@ -101,7 +101,18 @@
 
         <component type="grid" name="masterOrdersList" reference="grid">
             <script>
+                function testf(cellvalue, options, rowObject)
+                {
+                console.log("ddd");
+                return cellvalue + "lol";
+                }
                 <![CDATA[
+                                function testf(cellvalue, options, rowObject)
+                {
+                console.log("ddd");
+                return cellvalue + "lol";
+                }
+
 					var completeMasterOrder = #{window}.getRibbonItemOrNull("status.completeMasterOrder");
     				var declineMasterOrder = #{window}.getRibbonItemOrNull("status.declineMasterOrder");
 

@@ -47,8 +47,6 @@ public class ProductionCountingQuantityAdvancedDetailsListeners {
 
     private static final String L_SAVE = "save";
 
-    
-
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
 

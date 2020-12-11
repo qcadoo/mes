@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PLANNING" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="salesPlanProductDetails" modelName="salesPlanProduct">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <template name="standardFormTemplate"
+                      excludeItems="actions.copy,actions.delete"/>
+        </ribbon>
+
+        <component type="form" name="salesPlanProduct" reference="form">
+            <component type="gridLayout" name="gridLayout" columns="5"
+                       rows="5" hasBorders="false">
+                <layoutElement column="1" row="1" width="4">
+                    <component type="lookup" name="product" reference="product"
+                               field="product">
+                        <option type="column" name="name" fields="name"/>
+
+                        <option type="searchable" value="name,number"/>
+                        <option type="orderable" value="name,number"/>
+
+                        <option type="expression"
+                                value="#number + ' - ' + #name"/>
+                        <option type="fieldCode" value="number"/>
+                        <criteriaModifier
+                                class="com.qcadoo.mes.masterOrders.criteriaModifier.ProductCriteriaModifiersO"
+                                method="showNotAssignedProducts"/>
+                        <listener event="onSelectedEntityChange"
+                                  class="com.qcadoo.mes.masterOrders.listeners.SalesPlanProductDetailsListeners"
+                                  method="fillDefaultTechnology"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2" width="4">
+                    <component type="lookup" name="technology" reference="technology"
+                               field="technology">
+                        <option type="column" name="name" fields="name" width="300"/>
+
+                        <option type="searchable" value="name,number"/>
+                        <option type="orderable" value="name,number"/>
+
+                        <option type="expression"
+                                value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                        <option type="fieldCode" value="number"/>
+                        <criteriaModifier
+                                class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
+                                method="showAcceptedPatternTechnology"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="3" width="4">
+                    <component type="input" name="plannedQuantity" field="plannedQuantity"
+                               reference="plannedQuantity">
+                        <option type="alignment" value="right"/>
+                        <listener event="onInputChange" method="onPlannedQuantityChange"
+                                  class="com.qcadoo.mes.masterOrders.listeners.SalesPlanProductDetailsListeners"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="5" row="3">
+                    <component type="input" name="plannedQuantityUnit"
+                               reference="plannedQuantityUnit" defaultEnabled="false" hasLabel="false">
+                        <option type="textRepresentationOnDisabled" value="true"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="4" width="4">
+                    <component type="input" name="orderedQuantity" field="orderedQuantity"
+                               reference="orderedQuantity" defaultEnabled="false">
+                        <option type="alignment" value="right"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="5" row="4">
+                    <component type="input" name="orderedQuantityUnit"
+                               reference="orderedQuantityUnit" defaultEnabled="false" hasLabel="false">
+                        <option type="textRepresentationOnDisabled" value="true"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="5" width="4">
+                    <component type="input" name="surplusFromPlan" field="surplusFromPlan"
+                               reference="surplusFromPlan" defaultEnabled="false">
+                        <option type="alignment" value="right"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="5" row="5">
+                    <component type="input" name="surplusFromPlanUnit"
+                               reference="surplusFromPlanUnit" defaultEnabled="false" hasLabel="false">
+                        <option type="textRepresentationOnDisabled" value="true"/>
+                    </component>
+                </layoutElement>
+            </component>
+            <option type="header" value="true"/>
+            <option type="expression" value="#product.get('number')"/>
+        </component>
+
+    </component>
+
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.masterOrders.hooks.SalesPlanProductDetailsHooks"
+                method="onBeforeRender"/>
+    </hooks>
+
+</view>

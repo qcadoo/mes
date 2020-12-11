@@ -48,8 +48,6 @@ import java.util.Objects;
 @Service
 public class MasterOrderProductDetailsHooks {
 
-    
-
     @Autowired
     private MasterOrderDetailsHooks masterOrderDetailsHooks;
 

@@ -96,6 +96,12 @@
         <belongsTo name="technology" plugin="technologies" model="technology" persistent="false"/>
         <text name="comments" persistent="false"/>
         <dictionary name="masterOrderPositionStatus" dictionary="masterOrderPositionStatus" persistent="false"/>
+
+        <hasMany name="productsBySizeHelpers" joinField="masterOrder" model="productsBySizeHelper"
+                 plugin="masterOrders" cascade="nullify"/>
+
+        <belongsTo name="salesPlan" model="salesPlan"/>
+
     </fields>
 
     <hooks>

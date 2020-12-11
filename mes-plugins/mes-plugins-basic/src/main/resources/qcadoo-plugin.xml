@@ -239,6 +239,8 @@
 
         <security:role identifier="ROLE_WMS"/>
 
+        <security:role identifier="ROLE_TECHNOLOGICAL_PROCESSES"/>
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="crew" resource="model/crew.xml"/>
@@ -306,6 +308,9 @@
         <model:model model="label" resource="model/label.xml"/>
 
         <model:model model="model" resource="model/model.xml"/>
+
+        <model:model model="technologicalProcessRate" resource="model/technologicalProcessRate.xml"/>
+        <model:model model="technologicalProcessRateItem" resource="model/technologicalProcessRateItem.xml"/>
 
         <model:dictionary name="categories"/>
         <model:dictionary name="reasonTypeOfChangingOrderState"/>
@@ -431,6 +436,8 @@
         <view:view resource="view/productFamiliesAddProduct.xml"/>
         <view:view resource="view/productsAttributes.xml"/>
 
+        <view:view resource="view/eansImport.xml"/>
+
         <view:view resource="view/workstationTypesList.xml"/>
         <view:view resource="view/workstationTypeDetails.xml"/>
 
@@ -502,6 +509,14 @@
 
         <view:view resource="view/modelsList.xml"/>
         <view:view resource="view/modelDetails.xml"/>
+        <view:view resource="view/productFamilySizes.xml"/>
+        <view:view resource="view/addProductFamilySizes.xml"/>
+        <view:view resource="view/technologicalProcessRateList.xml"/>
+        <view:view resource="view/technologicalProcessRateDetails.xml"/>
+        <view:view resource="view/technologicalProcessRateItemDetails.xml"/>
+
+        <menu:menu-item name="technologicalProcessRateList" category="staff"
+                        view="technologicalProcessRateList" defaultAuthorizationRole="ROLE_TECHNOLOGICAL_PROCESSES"/>
 
         <view:view-hook plugin="qcadooUsers" view="userDetails" type="beforeRender"
                         class="com.qcadoo.mes.basic.hooks.UserDetailsHooksB"

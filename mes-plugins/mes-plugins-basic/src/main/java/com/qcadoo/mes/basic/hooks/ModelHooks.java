@@ -42,18 +42,19 @@ public class ModelHooks {
 
     private void updateProductAssortments(final DataDefinition modelDD, final Entity model) {
         Long modelId = model.getId();
+        Entity assortment = model.getBelongsToField(ModelFields.ASSORTMENT);
 
         if (Objects.nonNull(modelId)) {
             Entity modelFromDB = modelDD.get(modelId);
-            List<Entity> products = model.getHasManyField(ModelFields.PRODUCTS);
 
-            Entity assortment = model.getBelongsToField(ModelFields.ASSORTMENT);
             Entity assortmentFromDB = modelFromDB.getBelongsToField(ModelFields.ASSORTMENT);
 
             boolean areSame = (Objects.isNull(assortment) ? Objects.isNull(assortmentFromDB)
                     : assortment.equals(assortmentFromDB));
 
             if (!areSame) {
+                List<Entity> products = model.getHasManyField(ModelFields.PRODUCTS);
+
                 products.forEach(product -> {
                     product.setField(ProductFields.MODEL_ASSORTMENT, assortment);
                     product.setField(ProductFields.ASSORTMENT, assortment);

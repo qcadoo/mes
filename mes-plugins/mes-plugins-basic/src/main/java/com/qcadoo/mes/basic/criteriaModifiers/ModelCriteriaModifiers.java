@@ -23,17 +23,10 @@
  */
 package com.qcadoo.mes.basic.criteriaModifiers;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ModelFields;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
@@ -41,27 +34,19 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 @Service
 public class ModelCriteriaModifiers {
 
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
+    public static final String L_ASSORTMENT_ID = "assortmentId";
 
     public void showModelsWithoutAssortment(final SearchCriteriaBuilder scb) {
         scb.add(SearchRestrictions.isNull(ModelFields.ASSORTMENT));
     }
 
-    public void filterProducts(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
-        Long modelId = filterValue.getLong("modelId");
+    public void showModelWithAssortment(final SearchCriteriaBuilder scb, final FilterValueHolder filterValueHolder) {
+        if (filterValueHolder.has(L_ASSORTMENT_ID)) {
+            Long assortmentId = filterValueHolder.getLong(L_ASSORTMENT_ID);
 
-        Entity model = getModelDD().find().add(SearchRestrictions.idEq(modelId)).setMaxResults(1).uniqueResult();
-
-        List<Entity> products = model.getHasManyField(ModelFields.PRODUCTS);
-
-        for (Entity product : products) {
-            scb.add(SearchRestrictions.idNe(product.getId()));
+            scb.createAlias(ModelFields.ASSORTMENT, ModelFields.ASSORTMENT, JoinType.LEFT);
+            scb.add(SearchRestrictions.eq(ModelFields.ASSORTMENT + ".id", assortmentId));
         }
-    }
-
-    private DataDefinition getModelDD() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_MODEL);
     }
 
 }

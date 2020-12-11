@@ -70,6 +70,20 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="productFamily">
+                <bigButton name="productFamilySizes" icon="genealogyIcon24.png" message="basic.productDetails.window.ribbon.productFamily.productFamilySizes.description"
+                           state="enabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('productFamilySizes', []);
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -171,6 +185,9 @@
                                     value="#name"/>
                             <option type="fieldCode" value="name"/>
 
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.view.api.listeners.RerenderListener"
+                                      method="onChangeRerender"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="7">
@@ -182,6 +199,10 @@
 
                             <option type="expression" value="#name"/>
                             <option type="fieldCode" value="name"/>
+
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.basic.criteriaModifiers.ModelCriteriaModifiers"
+                                    method="showModelWithAssortment"/>
                         </component>
                     </layoutElement>
                 </component>
@@ -193,6 +214,8 @@
                           method="getDefaultConversions"/>
                 <listener event="openAdditionalDetails" class="com.qcadoo.mes.basic.ProductService"
                           method="openAdditionalDetails"/>
+                <listener event="productFamilySizes" class="com.qcadoo.mes.basic.ProductService"
+                          method="productFamilySizes"/>
                 <listener event="downloadAttachment" method="downloadAttachment"
                           class="com.qcadoo.mes.basic.listeners.AttachmentsListeners"/>
 
@@ -465,20 +488,8 @@
 
     <hooks>
         <beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
-                      method="generateProductNumber"/>
-        <beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
-                      method="fillUnit"/>
-        <beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
-                      method="disableProductFormForExternalItems"/>
-        <beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
-                      method="disableUnitFromWhenFormIsSaved"/>
-        <beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
-                      method="updateRibbonState"/>
+                      method="onBeforeRender"/>
         <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.ProductHooksCMP"
                       method="setCriteriaModifierParameters"/>
-        <beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
-                      method="setProductIdForMultiUploadField"/>
-        <beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
-                      method="enableCharacteristicsTabForExternalItems"/>
     </hooks>
 </view>

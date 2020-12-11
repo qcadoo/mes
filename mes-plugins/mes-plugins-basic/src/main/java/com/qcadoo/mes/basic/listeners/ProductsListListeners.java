@@ -37,4 +37,10 @@ public class ProductsListListeners {
         view.openModal(url.toString());
     }
 
+    public void openEansImportPage(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        StringBuilder url = new StringBuilder("../page/basic/eansImport.html");
+
+        view.openModal(url.toString());
+    }
+
 }

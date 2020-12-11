@@ -38,7 +38,7 @@
 
         <windowTab name="mainTab">
             <component type="form" name="model" reference="form">
-                <component type="gridLayout" name="gridLayout" columns="2"
+                <component type="gridLayout" name="gridLayout" columns="3"
                            rows="5">
                     <layoutElement column="1" row="1">
                         <component type="input" name="name" field="name"
@@ -55,6 +55,10 @@
 
                             <option type="expression" value="#name"/>
                             <option type="fieldCode" value="name"/>
+
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.view.api.listeners.RerenderListener"
+                                      method="onChangeRerender"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="3">
@@ -111,8 +115,8 @@
                         <option type="multiselect" value="true"/>
 
                         <criteriaModifier
-                                class="com.qcadoo.mes.basic.criteriaModifiers.ModelCriteriaModifiers"
-                                method="filterProducts"/>
+                                class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
+                                method="showProductsWithModelAndAssortment"/>
                     </component>
                     <component type="grid" name="products" reference="products"
                                source="#{form}.products">
@@ -143,6 +147,6 @@
     <hooks>
         <beforeRender
             class="com.qcadoo.mes.basic.hooks.ModelDetailsHooks"
-            method="fillCriteriaModifiers"/>
+            method="onBeforeRender"/>
     </hooks>
 </view>

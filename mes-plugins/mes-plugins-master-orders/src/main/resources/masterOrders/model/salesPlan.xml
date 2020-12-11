@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<model name="salesPlan"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
+    <fields>
+        <string name="number" unique="true"/>
+        <string name="name" required="true">
+            <validatesLength max="255"/>
+        </string>
+        <string name="description">
+            <validatesLength max="2048"/>
+        </string>
+        <date name="dateFrom"/>
+        <date name="dateTo"/>
+        <enum name="state" values="01draft" default="01draft" required="true"/>
+        <hasMany name="products" joinField="salesPlan" model="salesPlanProduct"
+                 cascade="delete" copyable="true"/>
+        <hasMany name="productsDto" joinField="salesPlan" model="salesPlanProductDto"
+                 persistent="false"/>
+        <hasMany name="stateChanges" model="salesPlanStateChange" joinField="salesPlan" cascade="delete"/>
+        <hasMany name="masterOrders" model="masterOrder" joinField="salesPlan"/>
+        <hasMany name="productsBySizeHelpers" joinField="salesPlan" model="productsBySizeHelper"/>
+    </fields>
+
+    <hooks>
+        <onCreate class="com.qcadoo.mes.masterOrders.hooks.SalesPlanHooks" method="onCreate"/>
+        <onCopy class="com.qcadoo.mes.masterOrders.hooks.SalesPlanHooks" method="onCopy"/>
+        <onSave class="com.qcadoo.mes.masterOrders.hooks.SalesPlanHooks"
+                method="onSave"/>
+    </hooks>
+
+    <identifier expression="#number + ' - ' + #name"/>
+</model>

@@ -34,7 +34,9 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.criteriaModifiers.ModelCriteriaModifiers;
 import com.qcadoo.mes.basic.util.UnitService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -45,6 +47,7 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
@@ -66,6 +69,19 @@ public class ProductDetailsHooks {
 
     @Autowired
     private UnitService unitService;
+
+    public void onBeforeRender(final ViewDefinitionState view) {
+        generateProductNumber(view);
+        fillUnit(view);
+        disableProductFormForExternalItems(view);
+        disableUnitFromWhenFormIsSaved(view);
+        updateRibbonState(view);
+        updateProductFamilySizesRibbonState(view);
+        disableEntityTypeWhenProductFamilyHasChildren(view);
+        setProductIdForMultiUploadField(view);
+        enableCharacteristicsTabForExternalItems(view);
+        setCriteriaModifierParameters(view);
+    }
 
     public void generateProductNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT,
@@ -163,11 +179,34 @@ public class ProductDetailsHooks {
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
 
-        RibbonGroup operationGroups = (RibbonGroup) window.getRibbon().getGroupByName("conversions");
+        RibbonGroup operationGroups = window.getRibbon().getGroupByName("conversions");
 
-        RibbonActionItem getDefaultConversions = (RibbonActionItem) operationGroups.getItemByName("getDefaultConversions");
+        RibbonActionItem getDefaultConversions = operationGroups.getItemByName("getDefaultConversions");
 
         updateButtonState(getDefaultConversions, Objects.nonNull(operationGroup.getId()));
+    }
+
+    public void updateProductFamilySizesRibbonState(final ViewDefinitionState view) {
+        FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Entity product = productForm.getEntity();
+
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
+
+        RibbonGroup productFamily = window.getRibbon().getGroupByName("productFamily");
+
+        RibbonActionItem productFamilySizes = productFamily.getItemByName("productFamilySizes");
+
+        updateButtonState(productFamilySizes,
+                ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(product.getField(ProductFields.ENTITY_TYPE)));
+    }
+
+    public void disableEntityTypeWhenProductFamilyHasChildren(final ViewDefinitionState view) {
+        FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Entity product = productForm.getPersistedEntityWithIncludedFormValues();
+        FieldComponent entityTypeField = (FieldComponent) view.getComponentByReference(ProductFields.ENTITY_TYPE);
+        entityTypeField.setEnabled(product.getHasManyField(ProductFields.PRODUCT_FAMILY_CHILDRENS).isEmpty());
     }
 
     private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {
@@ -213,6 +252,25 @@ public class ProductDetailsHooks {
         productIdForMultiUpload.requestComponentUpdateState();
         productMultiUploadLocale.setFieldValue(LocaleContextHolder.getLocale());
         productMultiUploadLocale.requestComponentUpdateState();
+    }
+
+    private void setCriteriaModifierParameters(final ViewDefinitionState view) {
+        LookupComponent assortmentLookup = (LookupComponent) view.getComponentByReference(ProductFields.ASSORTMENT);
+        LookupComponent modelLookup = (LookupComponent) view.getComponentByReference(ProductFields.MODEL);
+
+        Entity assortment = assortmentLookup.getEntity();
+
+        FilterValueHolder filterValueHolder = modelLookup.getFilterValue();
+
+        if (Objects.isNull(assortment)) {
+            if (filterValueHolder.has(ModelCriteriaModifiers.L_ASSORTMENT_ID)) {
+                filterValueHolder.remove(ModelCriteriaModifiers.L_ASSORTMENT_ID);
+            }
+        } else {
+            filterValueHolder.put(ModelCriteriaModifiers.L_ASSORTMENT_ID, assortment.getId());
+        }
+
+        modelLookup.setFilterValue(filterValueHolder);
     }
 
 }

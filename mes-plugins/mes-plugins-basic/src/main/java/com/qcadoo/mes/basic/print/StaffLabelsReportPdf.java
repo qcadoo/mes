@@ -16,7 +16,6 @@ import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
 import com.lowagie.text.Image;
-import com.lowagie.text.PageSize;
 import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.Barcode128;
@@ -83,7 +82,7 @@ public class StaffLabelsReportPdf extends ReportPdfView {
             if (index % 8 == 0) {
                 document.add(table);
 
-                if (index < staffs.size() - 1) {
+                if (index < staffs.size()) {
                     document.add(Chunk.NEXTPAGE);
 
                     table = pdfHelper.createPanelTable(2);
@@ -91,7 +90,7 @@ public class StaffLabelsReportPdf extends ReportPdfView {
                     table.setTableEvent(null);
                 }
             } else {
-                if (index == staffs.size() - 1) {
+                if (index == staffs.size()) {
                     table.completeRow();
 
                     document.add(table);
@@ -99,7 +98,7 @@ public class StaffLabelsReportPdf extends ReportPdfView {
             }
         }
 
-        return translationService.translate("basic.productLabel.report.fileName", locale, DateUtils.toDateTimeString(new Date()));
+        return translationService.translate("basic.staffLabelsReport.report.fileName", locale, DateUtils.toDateTimeString(new Date()));
     }
 
     private PdfPTable createBarcodeTable(final PdfWriter writer, final Entity staff) {
@@ -109,16 +108,17 @@ public class StaffLabelsReportPdf extends ReportPdfView {
         barcodeTable.getDefaultCell().setVerticalAlignment(Element.ALIGN_MIDDLE);
         barcodeTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
 
-        barcodeTable.getDefaultCell().setPaddingTop(15F);
+        barcodeTable.getDefaultCell().setPaddingTop(10F);
+        barcodeTable.getDefaultCell().setPaddingBottom(10F);
 
         createNameAndSurname(writer, barcodeTable, staff);
 
+        barcodeTable.getDefaultCell().setPaddingTop(0F);
         barcodeTable.getDefaultCell().setPaddingLeft(30F);
         barcodeTable.getDefaultCell().setPaddingRight(30F);
+        barcodeTable.getDefaultCell().setPaddingBottom(0F);
 
         createBarcode(writer, barcodeTable, staff);
-        
-        barcodeTable.getDefaultCell().setPaddingBottom(15F);
 
         return barcodeTable;
     }

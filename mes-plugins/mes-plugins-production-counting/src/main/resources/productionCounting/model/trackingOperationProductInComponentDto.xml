@@ -31,27 +31,16 @@
 
     <fields>
         <belongsTo name="productionTracking" model="productionTracking" persistent="false"/>
-
         <integer name="productionTrackingId"/>
-
         <integer name="productId"/>
-
         <string name="productNumber"/>
-
         <string name="productName"/>
-
         <string name="productUnit"/>
-
         <decimal name="plannedQuantity"/>
-
         <decimal name="usedQuantity"/>
-
         <boolean name="replacement"/>
-
         <integer name="productReplacementId"/>
-
         <string name="productReplacementNumber"/>
-
     </fields>
 
     <masterModel plugin="productionCounting" model="trackingOperationProductInComponent"/>

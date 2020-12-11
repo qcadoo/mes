@@ -37,8 +37,7 @@
         <dictionary name="typeOfProduct" dictionary="typeOfProducts"/>
         <belongsTo name="label" plugin="basic" model="label"/>
 
-        <hasMany name="products" model="product" plugin="basic"
-                    joinField="model" copyable="false" cascade="nullify"/>
+        <hasMany name="products" model="product" joinField="model"/>
     </fields>
 
     <hooks>

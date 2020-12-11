@@ -40,11 +40,12 @@
 					<option type="column" name="name" fields="product"
 						expression="#product['name']" width="100" link="true"/>
 					<option type="column" name="isDefault" fields="isDefault" width="30"/>
+					<option type="column" name="minimumOrderQuantity" fields="minimumOrderQuantity"/>
 
 					<option type="order" column="number" direction="desc" />
 
-					<option type="searchable" value="number,name,isDefault" />
-					<option type="orderable" value="number,name,isDefault" />
+					<option type="searchable" value="number,name,isDefault,minimumOrderQuantity" />
+					<option type="orderable" value="number,name,isDefault,minimumOrderQuantity" />
 
 					<option type="correspondingView" value="deliveries/companyProductsFamilyDetails" />
 					<option type="correspondingComponent" value="form" />
@@ -64,11 +65,12 @@
 					<option type="column" name="name" fields="product"
 						expression="#product['name']" width="100" link="true"/>
 					<option type="column" name="isDefault" fields="isDefault" width="30"/>
+					<option type="column" name="minimumOrderQuantity" fields="minimumOrderQuantity"/>
 
 					<option type="order" column="number" direction="desc" />
 
-					<option type="searchable" value="number,name,isDefault" />
-					<option type="orderable" value="number,name,isDefault" />
+					<option type="searchable" value="number,name,isDefault,minimumOrderQuantity" />
+					<option type="orderable" value="number,name,isDefault,minimumOrderQuantity" />
 
 					<option type="correspondingView" value="deliveries/companyProductDetails" />
 					<option type="correspondingComponent" value="form" />

@@ -29,12 +29,26 @@ public final class TrackingOperationProductOutComponentDtoFields {
 
     }
 
-    public static final String PLANNED_QUANTITY = "plannedQuantity";
+    public static final String PRODUCTION_TRACKING = "productionTracking";
 
-    public static final String REMAINING_QUANTITY = "remainingQuantity";
+    public static final String PRODUCTION_TRACKING_ID = "productionTrackingId";
+
+    public static final String PRODUCT_NUMBER = "productNumber";
+
+    public static final String PRODUCT_NAME = "productName";
+
+    public static final String PRODUCT_UNIT = "productUnit";
+
+    public static final String PLANNED_QUANTITY = "plannedQuantity";
 
     public static final String PRODUCED_SUM = "producedSum";
 
     public static final String WASTES_SUM = "wastesSum";
+
+    public static final String REMAINING_QUANTITY = "remainingQuantity";
+
+    public static final String USED_QUANTITY = "usedQuantity";
+
+    public static final String WASTES_QUANTITY = "wastesQuantity";
 
 }

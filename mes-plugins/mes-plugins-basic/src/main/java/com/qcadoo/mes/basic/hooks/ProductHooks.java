@@ -58,26 +58,38 @@ public class ProductHooks {
     private DataDefinitionService dataDefinitionService;
 
     public void onSave(final DataDefinition productDD, final Entity product) {
-        updateModel(productDD, product);
+        updateModelAndAssortment(productDD, product);
         updateNodeNumber(productDD, product);
         clearFamilyFromProductWhenTypeIsChanged(productDD, product);
     }
 
-    private void updateModel(final DataDefinition productDD, final Entity product) {
+    private void updateModelAndAssortment(final DataDefinition productDD, final Entity product) {
         Long productId = product.getId();
+        Entity assortment = product.getBelongsToField(ProductFields.ASSORTMENT);
         Entity model = product.getBelongsToField(ProductFields.MODEL);
+
+        boolean isAssortmentAndModelNonNull = Objects.nonNull(assortment) && Objects.nonNull(model);
 
         if (Objects.nonNull(productId)) {
             Entity productFromDB = productDD.get(productId);
 
-            Entity assortment = product.getBelongsToField(ProductFields.ASSORTMENT);
             Entity assortmentFromDB = productFromDB.getBelongsToField(ProductFields.ASSORTMENT);
 
             boolean areSame = (Objects.isNull(assortment) ? Objects.isNull(assortmentFromDB)
-                    : assortment.equals(assortmentFromDB));
+                    : assortment.getId().equals(assortmentFromDB.getId()));
 
-            if (!areSame) {
-                if (Objects.nonNull(model) && Objects.nonNull(assortment)) {
+            if (areSame) {
+                if (Objects.nonNull(model) && Objects.isNull(assortment)) {
+                    Entity modelAssortment = product.getBelongsToField(ProductFields.MODEL_ASSORTMENT);
+
+                    if (Objects.isNull(modelAssortment)) {
+                        modelAssortment = model.getBelongsToField(ModelFields.ASSORTMENT);
+                    }
+
+                    product.setField(ProductFields.ASSORTMENT, modelAssortment);
+                }
+            } else {
+                if (isAssortmentAndModelNonNull) {
                     Entity modelAssortment = product.getBelongsToField(ProductFields.MODEL_ASSORTMENT);
 
                     if (Objects.isNull(modelAssortment)) {
@@ -90,9 +102,7 @@ public class ProductHooks {
                 }
             }
         } else {
-            Entity assortment = product.getBelongsToField(ProductFields.ASSORTMENT);
-
-            if (Objects.nonNull(model) && Objects.nonNull(assortment)) {
+            if (isAssortmentAndModelNonNull) {
                 Entity modelAssortment = model.getBelongsToField(ModelFields.ASSORTMENT);
 
                 if (Objects.nonNull(modelAssortment) && !modelAssortment.getId().equals(assortment.getId())) {

@@ -1,19 +1,5 @@
 package com.qcadoo.mes.materialFlowResources;
 
-import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.ESILCO;
-
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
-
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
@@ -30,6 +16,24 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.dto.ColumnProperties;
 import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
 import com.qcadoo.plugin.api.PluginManager;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
+import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.ESILCO;
 
 @Repository
 public class DocumentPositionService {
@@ -139,6 +143,7 @@ public class DocumentPositionService {
             documentPositionDTO.setProductName(resultSet.getString("productName"));
             documentPositionDTO.setAdditionalCode(resultSet.getString("additionalCode"));
             documentPositionDTO.setQuantity(resultSet.getBigDecimal("quantity"));
+            documentPositionDTO.setRestAfterShiftDisposition(resultSet.getBigDecimal("restAfterShiftDisposition"));
             documentPositionDTO.setUnit(resultSet.getString("unit"));
             documentPositionDTO.setGivenquantity(resultSet.getBigDecimal("givenquantity"));
             documentPositionDTO.setGivenunit(resultSet.getString("givenunit"));

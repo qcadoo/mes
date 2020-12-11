@@ -1,0 +1,85 @@
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PLANNING" name="orderedProductsForFamily" modelName="salesPlanProduct"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <group name="navigation">
+                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBackWithoutConfirm" />
+            </group>
+        </ribbon>
+
+        <windowTab name="mainTab">
+            <component type="form" name="salesPlanProduct" reference="form">
+                <component type="gridLayout" name="gridLayout" columns="2"
+                           rows="5" hasBorders="false">
+                    <layoutElement column="1" row="1">
+                        <component type="input" name="product"
+                                   reference="product" defaultEnabled="false">
+                            <option type="textRepresentationOnDisabled" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="input" name="plannedQuantity"
+                                   reference="plannedQuantity" defaultEnabled="false">
+                            <option type="textRepresentationOnDisabled" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="3" width="2" height="3">
+                        <component type="grid" name="products" reference="products" model="salesPlanProduct">
+                            <option type="column" name="productNumber" fields="product" expression="#product['number']" width="100"/>
+                            <option type="column" name="productName" fields="product" expression="#product['name']" width="100"/>
+                            <option type="column" name="productSize" fields="product" expression="#product['size']?.get('number')" width="50"/>
+                            <option type="column" name="orderedQuantity" fields="orderedQuantity" width="40"/>
+                            <option type="column" name="productUnit" fields="product" expression="#product['unit']" width="30"/>
+
+                            <option type="order" column="productNumber" direction="asc"/>
+
+                            <option type="footerRow" value="true"/>
+                            <option type="columnsToSummary" value="orderedQuantity"/>
+
+                            <option type="fixedHeight" value="true"/>
+                            <option type="paginable" value="false"/>
+                        </component>
+                    </layoutElement>
+                </component>
+
+            </component>
+        </windowTab>
+
+        <option type="header" value="false"/>
+    </component>
+
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.masterOrders.hooks.OrderedProductsForFamilyHooks"
+                method="onBeforeRender"/>
+    </hooks>
+
+</view>

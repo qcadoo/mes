@@ -33,6 +33,7 @@
 
         <ribbon>
             <group template="navigation"/>
+
             <group name="actions">
                 <bigButton name="save" icon="saveIcon24.png" action="#{form}.performSave;"/>
                 <bigButton name="saveBack" icon="saveBackIcon24.png" action="#{form}.performSave; #{window}.performBack;"/>
@@ -76,10 +77,10 @@
                         <component type="input" name="usedQuantityUNIT"
                                    reference="usedQuantityUNIT" defaultEnabled="false" hasLabel="false"/>
                     </layoutElement>
-
                     <layoutElement column="1" row="5" width="5">
                         <component type="input" name="givenQuantity" field="givenQuantity" reference="givenQuantity">
                             <option type="alignment" value="right"/>
+
                             <listener event="onInputChange" method="givenQuantityChangedIn"
                                       class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductComponentDetailsListeners"/>
                         </component>
@@ -111,6 +112,7 @@
                         <component type="input" name="wasteUsedQuantity" field="wasteUsedQuantity"
                                    reference="wasteUsedQuantity" hasDescription="true">
                             <option type="alignment" value="right"/>
+
                             <listener event="onInputChange" method="recalculateUsedQuantity"
                                       class="com.qcadoo.mes.productionCounting.listeners.TrackingOperationProductInComponentDetailsListeners"/>
                         </component>
@@ -132,15 +134,14 @@
                 <option type="expression" value="#product['name']"/>
             </component>
         </windowTab>
-        <windowTab name="attributes">
 
+        <windowTab name="attributes">
             <component type="lookup" name="product" reference="product"
                        field="#{form}.product" defaultVisible="false">
                 <option type="column" name="name" fields="name" link="true"
                         width="200"/>
                 <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial"
                         link="true"/>
-
 
                 <option type="searchable" value="name,globalTypeOfMaterial"/>
                 <option type="orderable" value="name,globalTypeOfMaterial"/>
@@ -176,8 +177,8 @@
                 <option type="fullscreen" value="true"/>
                 <option type="multiselect" value="true"/>
             </component>
-
         </windowTab>
+
         <windowTab name="batches">
             <component type="grid" name="usedBatches" reference="usedBatches"
                        source="#{form}.usedBatches">
@@ -190,8 +191,8 @@
                         expression="#batch['product']?.get('unit')"/>
                 <option type="order" column="number" direction="desc"/>
 
-                <option type="orderable" value="number,quantity"/>
-                <option type="searchable" value="number,quantity"/>
+                <option type="orderable" value="number,quantity,unit"/>
+                <option type="searchable" value="number,quantity,unit"/>
 
                 <option type="correspondingView" value="productionCounting/usedBatchDetails"/>
                 <option type="correspondingComponent" value="form"/>

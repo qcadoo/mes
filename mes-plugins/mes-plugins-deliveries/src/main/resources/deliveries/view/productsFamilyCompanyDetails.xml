@@ -36,7 +36,7 @@
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="companyProductsFamilyGridLayout"
-                           columns="4" rows="2" hasBorders="false">
+                           columns="4" rows="3" hasBorders="false">
                     <layoutElement column="1" row="1" width="3">
                         <component type="lookup" name="company" field="company"
                                    reference="company">
@@ -55,6 +55,18 @@
                     <layoutElement column="1" row="2">
                         <component type="checkbox" name="isDefault" field="isDefault" reference="isDefault"/>
                     </layoutElement>
+                    <layoutElement column="1" row="3"  width="3">
+                        <component type="input" name="minimumOrderQuantity"
+                                   reference="minimumOrderQuantity" field="minimumOrderQuantity" hasDescription="true">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="4" row="3">
+                        <component type="input" name="unit"
+                                   defaultEnabled="never" hasLabel="false" reference="unit">
+                            <option type="textRepresentationOnDisabled" value="true"/>
+                        </component>
+                    </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>
@@ -64,4 +76,9 @@
          
     </component>
 
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.deliveries.hooks.CompanyProductsDetailsHooks"
+                method="onBeforeRenderForProduct"/>
+    </hooks>
 </view>

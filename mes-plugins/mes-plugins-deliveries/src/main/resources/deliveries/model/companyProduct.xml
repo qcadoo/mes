@@ -34,6 +34,10 @@
         <belongsTo name="product" plugin="basic" model="product"
                    required="true"/>
         <boolean name="isDefault" default="false"/>
+
+        <decimal name="minimumOrderQuantity">
+            <validatesRange from="0" exclusively="true"/>
+        </decimal>
     </fields>
     <hooks>
         <validatesWith

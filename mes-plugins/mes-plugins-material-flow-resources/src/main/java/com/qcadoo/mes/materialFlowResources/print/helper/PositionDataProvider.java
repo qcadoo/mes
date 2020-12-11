@@ -34,6 +34,7 @@ import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
 import com.qcadoo.model.api.Entity;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -71,8 +72,8 @@ public class PositionDataProvider {
 
     public static String batch(final Entity position) {
         String batch = null;
-        if(Objects.nonNull(position.getBelongsToField(PositionFields.BATCH))) {
-           batch = position.getBelongsToField(PositionFields.BATCH).getStringField(BatchFields.NUMBER);
+        if (Objects.nonNull(position.getBelongsToField(PositionFields.BATCH))) {
+            batch = position.getBelongsToField(PositionFields.BATCH).getStringField(BatchFields.NUMBER);
         }
 
         Entity storageLocation = position.getBelongsToField(PositionFields.STORAGE_LOCATION);
@@ -82,7 +83,7 @@ public class PositionDataProvider {
     }
 
     public static String onlyBatch(final Entity position) {
-        if(Objects.nonNull(position.getBelongsToField(PositionFields.BATCH))) {
+        if (Objects.nonNull(position.getBelongsToField(PositionFields.BATCH))) {
             return position.getBelongsToField(PositionFields.BATCH).getStringField(BatchFields.NUMBER);
         }
         return StringUtils.EMPTY;
@@ -163,6 +164,14 @@ public class PositionDataProvider {
         return quantity != null ? quantity.stripTrailingZeros().toPlainString() : BigDecimal.ZERO.toPlainString();
     }
 
+    public static BigDecimal quantityAddDecimalValDifferencePrint(Entity position) {
+        if (Objects.nonNull(position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION))) {
+            return position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION).stripTrailingZeros();
+        }
+        BigDecimal quantity = position.getDecimalField(PositionFields.GIVEN_QUANTITY);
+        return quantity != null ? quantity.stripTrailingZeros() : BigDecimal.ZERO;
+    }
+
     public static BigDecimal quantityAddDecimalVal(Entity position) {
         BigDecimal quantity = position.getDecimalField(PositionFields.GIVEN_QUANTITY);
         return quantity != null ? quantity.stripTrailingZeros() : BigDecimal.ZERO;
@@ -210,6 +219,39 @@ public class PositionDataProvider {
             return StringUtils.EMPTY;
         }
         return rest.stripTrailingZeros().toPlainString();
+    }
+
+    public static BigDecimal amountNonZeroDecimalValDifference(Entity position) {
+        BigDecimal givenQuantity = BigDecimal.ZERO;
+        if (Objects.nonNull(position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION))) {
+            givenQuantity = position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION).stripTrailingZeros();
+        } else {
+            givenQuantity = position.getDecimalField(PositionFields.GIVEN_QUANTITY);
+        }
+
+        BigDecimal conversion = position.getDecimalField(PositionFields.CONVERSION);
+        BigDecimal amount = givenQuantity.divide(conversion, MathContext.DECIMAL64).setScale(5, RoundingMode.HALF_UP);
+        amount = amount.setScale(0, RoundingMode.DOWN);
+        return amount != null ? amount.stripTrailingZeros() : BigDecimal.ZERO;
+    }
+
+    public static BigDecimal restNonZeroDecimalValDifference(Entity position) {
+        BigDecimal gq = BigDecimal.ZERO;
+        if (Objects.nonNull(position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION))) {
+            gq = position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION).stripTrailingZeros();
+        } else {
+            gq = position.getDecimalField(PositionFields.GIVEN_QUANTITY);
+        }
+
+        BigDecimal conversion = position.getDecimalField(PositionFields.CONVERSION);
+        BigDecimal amount = gq.divide(conversion, MathContext.DECIMAL64).setScale(5, RoundingMode.HALF_UP);
+        amount = amount.setScale(0, RoundingMode.DOWN);
+
+        BigDecimal wholeAmount = amount.multiply(convertNullToZero(position.getDecimalField(PositionFields.CONVERSION)));
+        BigDecimal rest = convertNullToZero(gq).subtract(wholeAmount, MathContext.DECIMAL64);
+        rest = rest.setScale(5, RoundingMode.HALF_UP);
+
+        return rest != null ? rest.stripTrailingZeros() : BigDecimal.ZERO;
     }
 
     public static BigDecimal restNonZeroDecimalVal(Entity position) {

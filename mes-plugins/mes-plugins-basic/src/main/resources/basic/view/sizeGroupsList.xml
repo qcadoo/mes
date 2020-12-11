@@ -46,7 +46,7 @@
 
             <option type="correspondingView" value="basic/sizeGroupDetails"/>
             <option type="correspondingComponent" value="form"/>
-            <option type="correspondingViewInModal" value="true" />
+            <option type="correspondingViewInModal" value="false" />
 
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>

@@ -29,16 +29,26 @@ public final class TrackingOperationProductInComponentDtoFields {
 
     }
 
-    public static final String PRODUCT_NAME = "productName";
+    public static final String PRODUCTION_TRACKING = "productionTracking";
+
+    public static final String PRODUCTION_TRACKING_ID = "productionTrackingId";
+
+    public static final String PRODUCT_ID = "productId";
 
     public static final String PRODUCT_NUMBER = "productNumber";
 
-    public static final String PRODUCT_UNIT = "productUnit";
+    public static final String PRODUCT_NAME = "productName";
 
-    public static final String PRODUCT_ID = "productId";
+    public static final String PRODUCT_UNIT = "productUnit";
 
     public static final String PLANNED_QUANTITY = "plannedQuantity";
 
     public static final String USED_QUANTITY = "usedQuantity";
+
+    public static final String REPLACEMENT = "replacement";
+
+    public static final String PRODUCT_REPLACEMENT_ID = "productReplacementId";
+
+    public static final String PRODUCT_REPLACEMENT_NUMBER = "productReplacementNumber";
 
 }
