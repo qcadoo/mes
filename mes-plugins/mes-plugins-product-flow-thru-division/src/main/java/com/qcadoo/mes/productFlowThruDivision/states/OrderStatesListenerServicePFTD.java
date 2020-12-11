@@ -270,11 +270,7 @@ public class OrderStatesListenerServicePFTD {
         document.setAccepted();
         document.setField(DocumentFields.TIME, new Date());
         document.setField(DocumentFieldsPFTD.ORDER, order);
-        Entity savedDocument = document.build();
-        if (!savedDocument.isValid()) {
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-        }
-        return savedDocument;
+        return document.build();
     }
 
     private MultiMap groupProductionCountingQuantitiesByField(final List<Entity> productionCountingQuantities,

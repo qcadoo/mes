@@ -107,6 +107,28 @@
         <model:model model="qualityCard" resource="model/qualityCard.xml"/>
         <model:model model="qualityCardStateChange" resource="model/qualityCardStateChange.xml"/>
         <model:model model="technologyOperationComponentDto" resource="model/technologyOperationComponentDto.xml"/>
+        <model:model model="technologicalProcess" resource="model/technologicalProcess.xml"/>
+        <model:model model="technologicalProcessList" resource="model/technologicalProcessList.xml"/>
+
+        <model:model-field plugin="basic" model="workstationType">
+            <model:hasMany name="technologicalProcesses" plugin="technologies"
+                           model="technologicalProcess" joinField="workstationType"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="workstation">
+            <model:hasMany name="technologicalProcesses" plugin="technologies"
+                           model="technologicalProcess" joinField="workstation"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="sizeGroup">
+            <model:hasMany name="technologicalProcesses" plugin="technologies"
+                           model="technologicalProcess" joinField="sizeGroup"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="technologicalProcessRate">
+            <model:hasMany name="technologicalProcesses" plugin="technologies"
+                           model="technologicalProcess" joinField="technologicalProcessRate"/>
+        </model:model-field>
 
         <model:model-field plugin="states" model="message">
             <model:belongsTo name="technologyStateChange" plugin="technologies" model="technologyStateChange"/>
@@ -114,28 +136,26 @@
 
         <model:model-field plugin="basic" model="shift">
             <model:hasMany name="technologyStateChanges" plugin="technologies"
-                           model="technologyStateChange" joinField="shift" cascade="nullify"/>
+                           model="technologyStateChange" joinField="shift"/>
         </model:model-field>
 
         <model:model model="technologyAttachment" resource="model/technologyAttachment.xml"/>
 
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="operationProductInComponents"
-                           plugin="technologies" model="operationProductInComponent" joinField="product"
-                           cascade="nullify"/>
+                           plugin="technologies" model="operationProductInComponent" joinField="product"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="operationProductInComponentsDto"
-                           plugin="technologies" model="operationProductInComponentDto" joinField="product"
-                           cascade="nullify"/>
+                           plugin="technologies" model="operationProductInComponentDto" joinField="product"/>
         </model:model-field>
 
 
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="operationProductOutComponents"
                            plugin="technologies" model="operationProductOutComponent"
-                           joinField="product" cascade="nullify"/>
+                           joinField="product"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">
@@ -173,32 +193,32 @@
 
         <model:model-field plugin="basic" model="workstationType">
             <model:hasMany name="operations" plugin="technologies"
-                           model="operation" joinField="workstationType" cascade="nullify"/>
+                           model="operation" joinField="workstationType"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="division">
             <model:hasMany name="operations" plugin="technologies"
-                           model="operation" joinField="division" cascade="nullify"/>
+                           model="operation" joinField="division"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="division">
             <model:hasMany name="technologyOperationComponents" plugin="technologies"
-                           model="technologyOperationComponent" joinField="division" cascade="nullify"/>
+                           model="technologyOperationComponent" joinField="division"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="skill">
             <model:hasMany name="operationSkills" plugin="technologies"
-                           model="operationSkill" joinField="skill" cascade="delete" copyable="false"/>
+                           model="operationSkill" joinField="skill" cascade="delete"/>
         </model:model-field>
 
         <model:model-field plugin="productionLines" model="productionLine">
             <model:hasMany name="operations" plugin="technologies"
-                           model="operation" joinField="productionLine" cascade="nullify"/>
+                           model="operation" joinField="productionLine"/>
         </model:model-field>
 
         <model:model-field plugin="productionLines" model="productionLine">
             <model:hasMany name="technologyOperationComponents" plugin="technologies"
-                           model="technologyOperationComponent" joinField="productionLine" cascade="nullify"/>
+                           model="technologyOperationComponent" joinField="productionLine"/>
         </model:model-field>
 
         <model:model-field model="parameter" plugin="basic">
@@ -238,6 +258,10 @@
                         view="technologyGroupsList" defaultAuthorizationRole="ROLE_TECHNOLOGIES"/>
         <menu:menu-item name="productsToProductGroupTechnology" category="technology"
                         view="productsToProductGroupTechnologyList" defaultAuthorizationRole="ROLE_TECHNOLOGIES"/>
+        <menu:menu-item name="technologicalProcessesList" category="technology"
+                        view="technologicalProcessesList" defaultAuthorizationRole="ROLE_TECHNOLOGICAL_PROCESSES"/>
+        <menu:menu-item name="technologicalProcessListsList" category="technology"
+                        view="technologicalProcessListsList" defaultAuthorizationRole="ROLE_TECHNOLOGICAL_PROCESSES"/>
 
         <menu:menu-item-url name="technologiesParameters" category="parameters" url="/technologiesParameters.html"
                             defaultAuthorizationRole="ROLE_PARAMETERS"/>
@@ -272,6 +296,10 @@
         <view:view resource="view/productToProductGroupTechnologyDetails.xml"/>
 
         <view:view resource="view/technologiesParameters.xml"/>
+        <view:view resource="view/technologicalProcessesList.xml"/>
+        <view:view resource="view/technologicalProcessDetails.xml"/>
+        <view:view resource="view/technologicalProcessListsList.xml"/>
+        <view:view resource="view/technologicalProcessListDetails.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
 

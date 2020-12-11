@@ -46,7 +46,7 @@
         <belongsTo name="operationGroup" model="operationGroup"/>
 
         <hasMany name="operationComponents" model="technologyOperationComponent"
-                 joinField="operation" cascade="nullify"/>
+                 joinField="operation"/>
 
         <hasMany name="productInComponents" model="productComponent"
                  joinField="operationIn" cascade="delete" copyable="true"/>
@@ -55,10 +55,7 @@
 
         <belongsTo name="workstation" plugin="basic" model="workstation" persistent="false"/>
         <manyToMany name="workstations" plugin="basic" model="workstation"
-                    joinField="operations" cascade="nullify" copyable="true"/>
-
-        <!--  <manyToMany name="workstationTypes" plugin="basic" model="workstationType"
-            joinField="operations" />-->
+                    joinField="operations" copyable="true"/>
 
         <enum name="assignedToOperation" values="01workstations,02workstationTypes"
               default="01workstations" required="true"/>
@@ -70,10 +67,12 @@
         <belongsTo name="productionLine" model="productionLine" plugin="productionLines"/>
 
         <integer name="quantityOfWorkstations" default="1" required="true">
-            <validatesRange from="1" exclusively="false"/>
+            <validatesRange from="1"/>
         </integer>
 
-        <hasMany name="operationSkills" plugin="technologies" model="operationSkill" joinField="operation" cascade="delete" copyable="false"/>
+        <hasMany name="operationSkills" model="operationSkill" joinField="operation" cascade="delete" copyable="false"/>
+        <hasMany name="technologicalProcessLists"
+                       model="technologicalProcessList" joinField="operation"/>
     </fields>
 
     <hooks>
