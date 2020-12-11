@@ -23,6 +23,23 @@
  */
 package com.qcadoo.mes.basic.imports.services;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.util.UriComponentsBuilder;
+
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 import com.google.common.io.Files;
@@ -45,29 +62,11 @@ import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.Comparator;
-import java.util.Map;
-import java.util.Objects;
-import java.util.function.Function;
 
 @Service
 public abstract class ImportService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ImportService.class);
-
-
 
     private static final String L_REDIRECT_TO_LOGS = "redirectToLogs";
 
@@ -77,7 +76,7 @@ public abstract class ImportService {
 
     private static final String L_WINDOW_SHOW_BACK = "window.showBack";
 
-    private static final String L_IMPORT = "import";
+    public static final String L_IMPORT = "import";
 
     private static final String L_IMPORT_FILE = "importFile";
 
@@ -101,7 +100,7 @@ public abstract class ImportService {
 
     private static final String L_BASIC_IMPORT_ERROR_LINE_NUMBER = "basic.import.error.line.number";
 
-    private static final String L_DOT = ".";
+    public static final String L_DOT = ".";
 
     private static final String L_DASH = "_";
 
@@ -109,7 +108,7 @@ public abstract class ImportService {
 
     private static final String L_IMPORT_SCHEMA = "ImportSchema";
 
-    private static final String L_LABEL = "label";
+    public static final String L_LABEL = "label";
 
     public static final String L_CSV = "csv";
 
@@ -164,11 +163,7 @@ public abstract class ImportService {
             final Boolean rollbackOnError, final String pluginIdentifier, final String modelName, final Entity belongsTo,
             final String belongsToName, final Function<Entity, SearchCriterion> criteriaSupplier,
             final Function<Entity, Boolean> checkOnUpdate) throws IOException {
-        boolean shouldUpdate = false;
-        CheckBoxComponent shouldUpdateCheckBox = (CheckBoxComponent) view.getComponentByReference(L_SHOULD_UPDATE);
-        if (shouldUpdateCheckBox != null) {
-            shouldUpdate = shouldUpdateCheckBox.isChecked();
-        }
+        boolean shouldUpdate = shouldUpdate(view);
 
         FieldComponent importFileField = (FieldComponent) view.getComponentByReference(L_IMPORT_FILE);
         String filePath = (String) importFileField.getFieldValue();
@@ -251,6 +246,18 @@ public abstract class ImportService {
             final String belongsToName, final Boolean shouldUpdate, final Function<Entity, SearchCriterion> criteriaSupplier,
             final Function<Entity, Boolean> checkOnUpdate) throws IOException;
 
+    public boolean shouldUpdate(final ViewDefinitionState view) {
+        boolean shouldUpdate = false;
+
+        CheckBoxComponent shouldUpdateCheckBox = (CheckBoxComponent) view.getComponentByReference(L_SHOULD_UPDATE);
+
+        if (Objects.nonNull(shouldUpdateCheckBox)) {
+            shouldUpdate = shouldUpdateCheckBox.isChecked();
+        }
+
+        return shouldUpdate;
+    }
+
     public Entity createEntity(final String pluginIdentifier, final String modelName) {
         return getDataDefinition(pluginIdentifier, modelName).create();
     }
@@ -280,7 +287,7 @@ public abstract class ImportService {
 
     private void propagateErrors(final ImportError importError, final String filePath, final String pluginIdentifier,
             final String modelName) {
-        String logType = new StringBuilder(modelName).append(StringUtils.capitalize(L_IMPORT)).toString();
+        String logType = getLogType(modelName);
         String action = translationService.translate(L_BASIC_IMPORT_ERROR_ACTION_SAVE, LocaleContextHolder.getLocale());
 
         String fileName = new StringBuilder(Files.getNameWithoutExtension(filePath)).append(L_DOT)
@@ -302,6 +309,10 @@ public abstract class ImportService {
                 .withItem3(fieldName));
     }
 
+    public String getLogType(final String modelName) {
+        return new StringBuilder(modelName).append(StringUtils.capitalize(L_IMPORT)).toString();
+    }
+
     private String createFieldNameKey(final String pluginIdentifier, final String modelName, final String fieldName) {
         return new StringBuilder(pluginIdentifier).append(L_DOT).append(modelName).append(L_DOT).append(fieldName).append(L_DOT)
                 .append(L_LABEL).toString();
@@ -318,7 +329,7 @@ public abstract class ImportService {
         } else {
             String url = UriComponentsBuilder.newInstance().path("basic").pathSegment("logsList.html").build().toUriString();
 
-            String logType = new StringBuilder(modelName).append(StringUtils.capitalize(L_IMPORT)).toString();
+            String logType = getLogType(modelName);
             String fileName = new StringBuilder(Files.getNameWithoutExtension(filePath)).append(L_DOT)
                     .append(Files.getFileExtension(filePath)).toString();
 

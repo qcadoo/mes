@@ -436,6 +436,8 @@
         <view:view resource="view/productFamiliesAddProduct.xml"/>
         <view:view resource="view/productsAttributes.xml"/>
 
+        <view:view resource="view/eansImport.xml"/>
+
         <view:view resource="view/workstationTypesList.xml"/>
         <view:view resource="view/workstationTypeDetails.xml"/>
 

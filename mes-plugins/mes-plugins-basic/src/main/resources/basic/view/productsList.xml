@@ -52,6 +52,8 @@
             <group name="import">
                 <bigButton name="openProductsImportPage" state="enabled" icon="xlsIcon24.png"
                            action="#{window}.fireEvent(openProductsImportPage);"/>
+                <bigButton name="openEansImportPage" state="enabled" icon="xlsIcon24.png"
+                           action="#{window}.fireEvent(openEansImportPage);"/>
             </group>
         </ribbon>
 
@@ -132,6 +134,9 @@
         <listener event="openProductsImportPage"
                   class="com.qcadoo.mes.basic.listeners.ProductsListListeners"
                   method="openProductsImportPage"/>
+        <listener event="openEansImportPage"
+                  class="com.qcadoo.mes.basic.listeners.ProductsListListeners"
+                  method="openEansImportPage"/>
 
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>

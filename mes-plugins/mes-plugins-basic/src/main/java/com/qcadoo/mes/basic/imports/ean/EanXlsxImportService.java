@@ -21,26 +21,25 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic.listeners;
+package com.qcadoo.mes.basic.imports.ean;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.imports.services.XlsxImportService;
 import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
-public class ProductsListListeners {
+public class EanXlsxImportService extends XlsxImportService {
 
-    public void openProductsImportPage(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        StringBuilder url = new StringBuilder("../page/basic/productsImport.html");
 
-        view.openModal(url.toString());
+    public boolean shouldUpdate(final ViewDefinitionState view) {
+        return true;
     }
 
-    public void openEansImportPage(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        StringBuilder url = new StringBuilder("../page/basic/eansImport.html");
-
-        view.openModal(url.toString());
-    }
+	public String getLogType(final String modelName) {
+		return new StringBuilder(ProductFields.EAN).append(StringUtils.capitalize(L_IMPORT)).toString();
+	}
 
 }
