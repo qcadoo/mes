@@ -73,6 +73,9 @@
                     <layoutElement column="1" row="6">
                         <component type="checkbox" name="extendedTimeForSizeGroup" field="extendedTimeForSizeGroup"
                                    reference="extendedTimeForSizeGroup" hasDescription="true">
+                            <listener event="onChange"
+                                      class="com.qcadoo.view.api.listeners.RerenderListener"
+                                      method="onChangeRerender"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="7">
@@ -111,6 +114,9 @@
         </windowTab>
     </component>
 
-    <hooks/>
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.technologies.hooks.TechnologicalProcessDetailsHooks"
+                      method="onBeforeRender"/>
+    </hooks>
 
 </view>

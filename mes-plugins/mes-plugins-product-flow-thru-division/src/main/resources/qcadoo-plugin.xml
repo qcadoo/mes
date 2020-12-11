@@ -394,7 +394,6 @@
                     method="fillProductionFlow"/>
         </model:model-hook>
 
-
         <model:model-hook plugin="technologies" model="technology">
             <model:onSave
                     class="com.qcadoo.mes.productFlowThruDivision.hooks.TechnologyHooksPFTD"
@@ -412,7 +411,6 @@
             <model:hasMany name="materialAvailability" plugin="productFlowThruDivision"
                            model="materialAvailability" joinField="product" cascade="delete"/>
         </model:model-field>
-
 
         <model:model-hook plugin="basicProductionCounting"
                           model="productionCountingQuantity">

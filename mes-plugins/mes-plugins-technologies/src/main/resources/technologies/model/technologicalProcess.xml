@@ -43,5 +43,9 @@
 		<belongsTo name="sizeGroup" plugin="basic" model="sizeGroup"/>
 		<belongsTo name="technologicalProcessRate" plugin="basic" model="technologicalProcessRate"/>
 	</fields>
-	<hooks/>
+	<hooks>
+		<validatesWith
+				class="com.qcadoo.mes.technologies.validators.TechnologicalProcessValidators"
+				method="validatesWith"/>
+	</hooks>
 </model>
