@@ -1,9 +1,16 @@
 package com.qcadoo.mes.basic.hooks;
 
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
+import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
@@ -17,8 +24,16 @@ public class TechnologicalProcessRateHooks {
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     public void onSave(final DataDefinition dataDefinition, final Entity entity) {
         setNumber(entity);
+    }
+
+    public void onView(final DataDefinition dataDefinition, final Entity entity) {
+        entity.setField("currentRate", findCurrentRate(entity));
+
     }
 
     private void setNumber(final Entity entity) {
@@ -34,6 +49,22 @@ public class TechnologicalProcessRateHooks {
             return false;
         }
         return !StringUtils.isNotBlank(entity.getStringField("number"));
+    }
+
+
+    private BigDecimal findCurrentRate(Entity technologicalProcessRate) {
+        SearchCriteriaBuilder scb = dataDefinitionService
+                .get(BasicConstants.PLUGIN_IDENTIFIER, "technologicalProcessRateItem")
+                .find().addOrder(SearchOrders.desc("dateFrom"))
+                .add(SearchRestrictions.belongsTo("technologicalProcessRate", technologicalProcessRate))
+                .add(SearchRestrictions.or(SearchRestrictions.lt("dateFrom", new Date()), SearchRestrictions.eq("dateFrom", new Date())));
+        Entity technologicalProcessRateItem = scb.setMaxResults(1).uniqueResult();
+        if(Objects.isNull(technologicalProcessRateItem)) {
+            return null;
+        } else {
+            return technologicalProcessRateItem.getDecimalField("actualRate");
+        }
+
     }
 
 }
