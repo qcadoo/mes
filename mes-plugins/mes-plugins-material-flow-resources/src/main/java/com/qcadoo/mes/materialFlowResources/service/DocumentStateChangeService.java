@@ -56,7 +56,7 @@ public class DocumentStateChangeService {
                     params.put(DOCUMENT, documentId);
                     params.put(DATE_AND_TIME, new Date());
                     params.put(WORKER, securityService.getCurrentUserName());
-                    String query = "INSERT INTO materialflowresources_documentstatechange (id, document_id, worker, dateandtime, sourcestate, targetstate, status) "
+                    String query = "INSERT INTO materialflowresources_documentstatechange (document_id, worker, dateandtime, sourcestate, targetstate, status) "
                             + "VALUES (:document, :worker, :dateAndTime, :sourceState, :targetState, :status)";
                     jdbcTemplate.queryForObject(query, params, Long.class);
                 }
