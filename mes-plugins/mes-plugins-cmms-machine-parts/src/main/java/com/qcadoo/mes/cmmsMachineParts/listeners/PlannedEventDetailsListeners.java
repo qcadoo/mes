@@ -25,6 +25,7 @@ package com.qcadoo.mes.cmmsMachineParts.listeners;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.LookupUtils;
 import com.qcadoo.mes.cmmsMachineParts.constants.ActionForPlannedEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.constants.PlannedEventFields;
@@ -51,10 +52,6 @@ import java.util.Optional;
 @Service
 public class PlannedEventDetailsListeners {
 
-    
-
-
-
     @Autowired
     private PlannedEventDetailsHooks plannedEventDetailsHooks;
 
@@ -63,6 +60,9 @@ public class PlannedEventDetailsListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private LookupUtils lookupUtils;
 
     public void toggleEnabledFromBasedOn(final ViewDefinitionState view, final ComponentState state, final String args[]) {
         eventHooks.toggleEnabledFromBasedOn(view);
@@ -132,7 +132,7 @@ public class PlannedEventDetailsListeners {
 
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity currentEvent = form.getPersistedEntityWithIncludedFormValues();
-        List<Long> addedRelatedEventsIds = parseIds(args[0]);
+        List<Long> addedRelatedEventsIds = lookupUtils.parseIds(args[0]);
 
         for (Long addedRelatedEventId : addedRelatedEventsIds) {
             Entity addedEvent = dataDefinitionService
@@ -151,17 +151,6 @@ public class PlannedEventDetailsListeners {
         formEntity = formEntity.getDataDefinition().get(formEntity.getId());
         form.setEntity(formEntity);
         view.performEvent(view, "refresh");
-    }
-
-    private List<Long> parseIds(final String ids) {
-        List<Long> result = Lists.newArrayList();
-        String[] splittedIds = ids.replace("[", "").replace("]", "").replace("\"", "").split(",");
-
-        for (int i = 0; i < splittedIds.length; i++) {
-            result.add(Long.parseLong(splittedIds[i]));
-        }
-
-        return result;
     }
 
     public void onRemoveRelatedEvents(final ViewDefinitionState view, final ComponentState state, final String[] args) {

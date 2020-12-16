@@ -35,6 +35,8 @@
 			<validatesLength max="2048" />
 		</string>
 		<belongsTo name="operation" model="operation" required="true"/>
+		<hasMany name="technologicalProcessComponents" joinField="technologicalProcessList" model="technologicalProcessComponent"
+				 cascade="delete"/>
 	</fields>
 	<hooks>
 		<onSave

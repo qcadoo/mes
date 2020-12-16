@@ -12,4 +12,6 @@ public final class TechnologicalProcessFields {
 
     public static final String SIZE_GROUP = "sizeGroup";
 
+    public static final String TJ = "tj";
+
 }

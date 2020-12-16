@@ -1,5 +1,6 @@
 package com.qcadoo.mes.technologies.hooks;
 
+import com.qcadoo.mes.technologies.constants.TechnologicalProcessListFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +14,6 @@ import java.util.Objects;
 @Service
 public class TechnologicalProcessListHooks {
 
-    public static final String L_NUMBER = "number";
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -23,9 +23,9 @@ public class TechnologicalProcessListHooks {
 
     private void setNumber(final Entity entity) {
         if (checkIfShouldInsertNumber(entity)) {
-            String number = jdbcTemplate.queryForObject("select generate_technological_process_list_number()", Collections.emptyMap(),
-                    String.class);
-            entity.setField(L_NUMBER, number);
+            String number = jdbcTemplate.queryForObject("select generate_technological_process_list_number()",
+                    Collections.emptyMap(), String.class);
+            entity.setField(TechnologicalProcessListFields.NUMBER, number);
         }
     }
 
@@ -33,6 +33,6 @@ public class TechnologicalProcessListHooks {
         if (!Objects.isNull(entity.getId())) {
             return false;
         }
-        return !StringUtils.isNotBlank(entity.getStringField(L_NUMBER));
+        return !StringUtils.isNotBlank(entity.getStringField(TechnologicalProcessListFields.NUMBER));
     }
 }
