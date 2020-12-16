@@ -23,12 +23,7 @@
  */
 package com.qcadoo.mes.productionLines.listeners;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.LookupUtils;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.DivisionFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
@@ -43,12 +38,19 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ProductionLineDetailsListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private LookupUtils lookupUtils;
 
     @Autowired
     private FactoryStructureGenerationService factoryStructureGenerationService;
@@ -59,22 +61,13 @@ public class ProductionLineDetailsListeners {
         }
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity productionLine = form.getPersistedEntityWithIncludedFormValues();
-        List<Long> addedWorkstationIds = parseIds(args[0]);
+        List<Long> addedWorkstationIds = lookupUtils.parseIds(args[0]);
         for (Long addedWorkstationId : addedWorkstationIds) {
             Entity workstation = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION)
                     .get(addedWorkstationId);
             workstation.setField(WorkstationFieldsPL.PRODUCTION_LINE, productionLine);
             workstation.getDataDefinition().save(workstation);
         }
-    }
-
-    private List<Long> parseIds(final String ids) {
-        List<Long> result = Lists.newArrayList();
-        String[] splittedIds = ids.replace("[", "").replace("]", "").replace("\"", "").split(",");
-        for (int i = 0; i < splittedIds.length; i++) {
-            result.add(Long.parseLong(splittedIds[i]));
-        }
-        return result;
     }
 
     public void onRemoveSelectedEntity(final ViewDefinitionState view, final ComponentState state, final String[] args) {

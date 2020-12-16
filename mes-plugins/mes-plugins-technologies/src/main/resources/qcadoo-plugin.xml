@@ -108,6 +108,7 @@
         <model:model model="qualityCardStateChange" resource="model/qualityCardStateChange.xml"/>
         <model:model model="technologyOperationComponentDto" resource="model/technologyOperationComponentDto.xml"/>
         <model:model model="technologicalProcess" resource="model/technologicalProcess.xml"/>
+        <model:model model="technologicalProcessComponent" resource="model/technologicalProcessComponent.xml"/>
         <model:model model="technologicalProcessList" resource="model/technologicalProcessList.xml"/>
 
         <model:model-field plugin="basic" model="workstationType">
@@ -300,6 +301,7 @@
         <view:view resource="view/technologicalProcessDetails.xml"/>
         <view:view resource="view/technologicalProcessListsList.xml"/>
         <view:view resource="view/technologicalProcessListDetails.xml"/>
+        <view:view resource="view/technologicalProcessComponentDetails.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
 

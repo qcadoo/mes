@@ -37,7 +37,7 @@
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="9">
+                           rows="11">
                     <layoutElement column="1" row="1">
                         <component type="input" name="number" field="number" reference="number" defaultEnabled="never">
                             <option type="alignment" value="right"/>
@@ -58,6 +58,69 @@
                             <option type="fieldCode" value="number"/>
                         </component>
                     </layoutElement>
+                    <layoutElement column="1" row="5" width="3" height="7">
+                        <component type="lookup" name="technologicalProcessLookup"
+                                   reference="technologicalProcessLookup" plugin="technologies" model="technologicalProcess"
+                                   defaultVisible="false" persistent="false" hasLabel="false">
+
+                            <option type="searchable" value="name"/>
+                            <option type="orderable" value="name"/>
+
+                            <option type="expression" value="#name"/>
+                            <option type="fieldCode" value="name"/>
+
+                            <option type="multiselect" value="true"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologicalProcessListDetailsCriteriaModifiers"
+                                    method="showNotAssigned"/>
+                        </component>
+                        <component type="grid" name="technologicalProcessComponents" reference="technologicalProcessComponents"
+                                   source="#{form}.technologicalProcessComponents">
+                            <script>
+                                <![CDATA[
+                                var that = this;
+                                this.onDeleteButtonClicked = function () {
+                                    if (window.confirm("#{translate(qcadooView.grid.confirmDeleteMessage)}" + "?")) {
+                                        #{technologicalProcessComponents}.fireEvent(null,'removeSelectedEntities',[]);
+                                    }
+                                };
+                            ]]>
+                            </script>
+                            <option type="column" name="technologicalProcess" fields="technologicalProcess"
+                                    expression="#technologicalProcess['name']" width="100" link="true"/>
+                            <option type="column" name="tj" fields="tj" width="40"
+                                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#tj)"/>
+                            <option type="column" name="extendedTimeForSizeGroup" fields="extendedTimeForSizeGroup"/>
+                            <option type="column" name="increasePercent" fields="increasePercent" />
+                            <option type="column" name="sizeGroup" fields="sizeGroup" expression="#sizeGroup['number']"/>
+
+                            <option type="order" column="succession" direction="asc"/>
+
+                            <option type="searchable" value="technologicalProcess,extendedTimeForSizeGroup,increasePercent,sizeGroup"/>
+                            <option type="orderable" value="technologicalProcess,extendedTimeForSizeGroup,increasePercent,sizeGroup"/>
+
+                            <option type="correspondingView" value="technologies/technologicalProcessComponentDetails" />
+                            <option type="correspondingComponent" value="form" />
+                            <option type="weakRelation" value="true"/>
+                            <option type="correspondingLookup" value="technologicalProcessLookup"/>
+
+                            <option type="footerRow" value="true"/>
+                            <option type="columnsToSummaryTime"
+                                    value="tj"/>
+
+                            <option type="creatable" value="true"/>
+                            <option type="deletable" value="true"/>
+                            <option type="fullscreen" value="true"/>
+                            <option type="multiselect" value="true"/>
+
+                            <listener event="addExistingEntity"
+                                      method="onAddExistingEntity"
+                                      class="com.qcadoo.mes.technologies.listeners.TechnologicalProcessListListeners"/>
+                            <listener event="removeSelectedEntities"
+                                      method="onRemoveSelectedEntities"
+                                      class="com.qcadoo.mes.technologies.listeners.TechnologicalProcessListListeners"/>
+                        </component>
+                    </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>
@@ -66,6 +129,9 @@
         </windowTab>
     </component>
 
-    <hooks/>
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.technologies.hooks.TechnologicalProcessListDetailsHooks"
+                      method="onBeforeRender"/>
+    </hooks>
 
 </view>

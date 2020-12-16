@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import static com.qcadoo.mes.technologies.constants.TechnologicalProcessFields.*;
 
 @Service
-public class TechnologicalProcessDetailsHooks {
+public class TechnologicalProcessComponentDetailsHooks {
 
     public void onBeforeRender(final ViewDefinitionState view) {
         CheckBoxComponent extendedTimeForSizeGroupField = (CheckBoxComponent) view

@@ -1,26 +1,19 @@
 package com.qcadoo.mes.basic;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.security.api.SecurityService;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class LookupUtils {
@@ -187,5 +180,14 @@ public class LookupUtils {
         config.put("colNames", colModel.keySet());
 
         return config;
+    }
+
+    public List<Long> parseIds(final String ids) {
+        List<Long> result = Lists.newArrayList();
+        String[] splittedIds = ids.replace("[", "").replace("]", "").replace("\"", "").split(",");
+        for (String splittedId : splittedIds) {
+            result.add(Long.parseLong(splittedId));
+        }
+        return result;
     }
 }

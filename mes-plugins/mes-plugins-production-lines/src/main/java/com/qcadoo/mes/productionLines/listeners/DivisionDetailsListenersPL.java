@@ -23,12 +23,7 @@
  */
 package com.qcadoo.mes.productionLines.listeners;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.LookupUtils;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
@@ -40,9 +35,16 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class DivisionDetailsListenersPL {
+
+    @Autowired
+    private LookupUtils lookupUtils;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -53,7 +55,7 @@ public class DivisionDetailsListenersPL {
         }
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity division = form.getPersistedEntityWithIncludedFormValues();
-        List<Long> addedWorkstationIds = parseIds(args[0]);
+        List<Long> addedWorkstationIds = lookupUtils.parseIds(args[0]);
         for (Long addedWorkstationId : addedWorkstationIds) {
             Entity workstation = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION)
                     .get(addedWorkstationId);
@@ -61,15 +63,6 @@ public class DivisionDetailsListenersPL {
             workstation.getDataDefinition().save(workstation);
         }
 
-    }
-
-    private List<Long> parseIds(final String ids) {
-        List<Long> result = Lists.newArrayList();
-        String[] splittedIds = ids.replace("[", "").replace("]", "").replace("\"", "").split(",");
-        for (int i = 0; i < splittedIds.length; i++) {
-            result.add(Long.parseLong(splittedIds[i]));
-        }
-        return result;
     }
 
     public void onRemoveSelectedEntity(final ViewDefinitionState view, final ComponentState state, final String[] args) {

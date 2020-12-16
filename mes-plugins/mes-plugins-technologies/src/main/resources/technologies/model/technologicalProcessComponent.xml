@@ -24,15 +24,10 @@
     ***************************************************************************
 
 -->
-<model name="technologicalProcess"
+<model name="technologicalProcessComponent"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 	<fields>
-		<string name="name" required="true">
-			<validatesLength max="2048" />
-		</string>
-		<belongsTo name="workstationType" plugin="basic" model="workstationType"/>
-		<belongsTo name="workstation" plugin="basic" model="workstation"/>
 		<integer name="tj" default="0">
 			<validatesRange from="0"/>
 		</integer>
@@ -41,13 +36,13 @@
 			<validatesRange from="0"/>
 		</integer>
 		<belongsTo name="sizeGroup" plugin="basic" model="sizeGroup"/>
-		<belongsTo name="technologicalProcessRate" plugin="basic" model="technologicalProcessRate"/>
-		<hasMany name="technologicalProcessComponents" joinField="technologicalProcess" model="technologicalProcessComponent"
-				 cascade="delete"/>
+		<belongsTo name="technologicalProcessList" model="technologicalProcessList"/>
+		<priority name="succession" scope="technologicalProcessList" />
+		<belongsTo name="technologicalProcess" model="technologicalProcess" required="true"/>
 	</fields>
 	<hooks>
 		<validatesWith
-				class="com.qcadoo.mes.technologies.validators.TechnologicalProcessValidators"
+				class="com.qcadoo.mes.technologies.validators.TechnologicalProcessComponentValidators"
 				method="validatesWith"/>
 	</hooks>
 </model>
