@@ -28,10 +28,11 @@ import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.util.OrderDetailsRibbonHelper;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.function.Predicate;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderDetailsHooksBPC {
@@ -39,19 +40,19 @@ public class OrderDetailsHooksBPC {
     @Autowired
     private OrderDetailsRibbonHelper orderDetailsRibbonHelper;
 
-    private static final Predicate<Entity> NOT_DECLINED_OR_PENDING = order -> {
+    private static final Predicate<Entity> NOT_DECLINED = order -> {
         if (order == null) {
             return false;
         }
         OrderState orderState = OrderState.of(order);
-        return orderState != OrderState.DECLINED && orderState != OrderState.PENDING;
+        return orderState != OrderState.DECLINED;
     };
 
     public void disabledButtonForAppropriateState(final ViewDefinitionState view) {
         orderDetailsRibbonHelper.setButtonEnabled(view, BasicProductionCountingConstants.VIEW_RIBBON_ACTION_ITEM_GROUP,
-                BasicProductionCountingConstants.VIEW_RIBBON_ACTION_ITEM_NAME, NOT_DECLINED_OR_PENDING);
+                BasicProductionCountingConstants.VIEW_RIBBON_ACTION_ITEM_NAME, NOT_DECLINED);
         orderDetailsRibbonHelper.setButtonEnabled(view, BasicProductionCountingConstants.VIEW_RIBBON_ACTION_ITEM_GROUP,
-                BasicProductionCountingConstants.VIEW_RIBBON_ACTION_PRODUCTION_PROGRESS, NOT_DECLINED_OR_PENDING);
+                BasicProductionCountingConstants.VIEW_RIBBON_ACTION_PRODUCTION_PROGRESS, NOT_DECLINED);
     }
 
 }

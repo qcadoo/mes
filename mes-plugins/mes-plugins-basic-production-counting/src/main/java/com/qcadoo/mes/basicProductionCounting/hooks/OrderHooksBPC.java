@@ -23,17 +23,20 @@
  */
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
-import java.math.BigDecimal;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
+import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+
+import java.math.BigDecimal;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderHooksBPC {
@@ -42,8 +45,53 @@ public class OrderHooksBPC {
     private BasicProductionCountingService basicProductionCountingService;
 
     public void onSave(final DataDefinition orderDD, final Entity order) {
-        updateProductionCountingQuantitiesAndOperationRuns(order);
-        updateProducedQuantity(order);
+        if (Objects.nonNull(order.getBelongsToField(OrderFields.TECHNOLOGY))) {
+            boolean shouldCreateProductionCounting = checkIfShouldCreateProductionCounting(order);
+            if (shouldCreateProductionCounting) {
+                boolean productToProductGroupTechnologyDoesntExists = basicProductionCountingService
+                        .createProductionCounting(order);
+                if (productToProductGroupTechnologyDoesntExists) {
+                    order.addGlobalMessage("basicProductionCounting.productionCountingQuantity.error.productToProductGroupTechnologyDoesntExists");
+                }
+            } else if (checkIfShouldReCreateProductionCounting(order)) {
+                order.setField(OrderFieldsBPC.BASIC_PRODUCTION_COUNTINGS, Lists.newArrayList());
+                order.setField(OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS, Lists.newArrayList());
+                order.setField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES, Lists.newArrayList());
+                boolean productToProductGroupTechnologyDoesntExists = basicProductionCountingService
+                        .createProductionCounting(order);
+                if (productToProductGroupTechnologyDoesntExists) {
+                    order.addGlobalMessage("basicProductionCounting.productionCountingQuantity.error.productToProductGroupTechnologyDoesntExists");
+                }
+            } else {
+
+                updateProductionCountingQuantitiesAndOperationRuns(order);
+                updateProducedQuantity(order);
+            }
+        } else if (Objects.nonNull(order.getId())) {
+            order.setField(OrderFieldsBPC.BASIC_PRODUCTION_COUNTINGS, Lists.newArrayList());
+            order.setField(OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS, Lists.newArrayList());
+            order.setField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES, Lists.newArrayList());
+        }
+    }
+
+    private boolean checkIfShouldReCreateProductionCounting(Entity order) {
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        Entity technologyDb = order.getDataDefinition().get(order.getId()).getBelongsToField(OrderFields.TECHNOLOGY);
+        if (Objects.isNull(technologyDb) || !technology.getId().equals(technologyDb.getId())) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean checkIfShouldCreateProductionCounting(final Entity order) {
+        return isProductionCountingGenerated(order);
+
+    }
+
+    private boolean isProductionCountingGenerated(Entity order) {
+        return !(!order.getHasManyField(OrderFieldsBPC.BASIC_PRODUCTION_COUNTINGS).isEmpty()
+                && !order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS).isEmpty() && !order.getHasManyField(
+                OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES).isEmpty());
     }
 
     private void updateProductionCountingQuantitiesAndOperationRuns(final Entity order) {
@@ -57,8 +105,8 @@ public class OrderHooksBPC {
     }
 
     private boolean checkOrderState(final String state) {
-        return OrderStateStringValues.ACCEPTED.equals(state) || OrderStateStringValues.IN_PROGRESS.equals(state)
-                || OrderStateStringValues.INTERRUPTED.equals(state);
+        return OrderStateStringValues.PENDING.equals(state) || OrderStateStringValues.ACCEPTED.equals(state)
+                || OrderStateStringValues.IN_PROGRESS.equals(state) || OrderStateStringValues.INTERRUPTED.equals(state);
     }
 
     private void updateProducedQuantity(Entity order) {

@@ -23,33 +23,18 @@
  */
 package com.qcadoo.mes.basicProductionCounting;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 public interface BasicProductionCountingService {
 
-
-    /**
-     * Creates production counting operation run
-     * 
-     * @param order
-     *            order
-     * @param technologyOperationComponent
-     *            technology operation component
-     * @param runs
-     *            runs
-     * 
-     * @return production counting operation run entity
-     */
-    Entity createProductionCountingOperationRun(final Entity order, final Entity technologyOperationComponent,
-            final BigDecimal runs);
 
     /**
      * Updates production counting quantities
