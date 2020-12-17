@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.orders;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -40,12 +41,13 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TechnologyServiceO {
@@ -84,6 +86,11 @@ public class TechnologyServiceO {
     @Transactional
     public Entity createTechnologyIfPktDisabled(final DataDefinition orderDD, Entity order) {
         if (!isTechnologyCopied(order)) {
+            order.setField("basicProductionCountings", Lists.newArrayList());
+            order.setField("productionCountingQuantities", Lists.newArrayList());
+            order.setField("productionCountingOperationRuns", Lists.newArrayList());
+            order = order.getDataDefinition().fastSave(order);
+            order = order.getDataDefinition().get(order.getId());
             Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
             order.setField(OrderFields.TECHNOLOGY, copyTechnology(order, technologyPrototype));
             order = order.getDataDefinition().save(order);
