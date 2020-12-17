@@ -24,24 +24,23 @@
     ***************************************************************************
 
 -->
-<model name="operationProductOutComponent"
+<model name="technologyInputProductType" activable="true" auditable="true"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <belongsTo name="operationComponent" model="technologyOperationComponent"
-                   required="true"/>
-        <belongsTo name="product" plugin="basic" model="product"
-                   required="true"/>
-        <decimal name="quantity" required="true">
-            <validatesRange from="0" exclusively="true"/>
-            <validatesUnscaledValue max="9"/>
-            <validatesScale max="5"/>
+        <string name="name" required="true" unique="true">
+            <validatesLength max="1024"/>
+        </string>
+        <decimal name="averagePrice">
+            <validatesRange from="0"/>
         </decimal>
+
+        <hasMany name="operationProductInComponents" model="operationProductInComponent"
+                 joinField="technologyInputProductType" cascade="nullify"/>
     </fields>
 
-    <hooks>
-        <validatesWith class="com.qcadoo.mes.technologies.hooks.OperationProductOutComponentHooks"
-                       method="validatesWith"/>
-    </hooks>
+    <hooks/>
+
+    <identifier expression="#name"/>
 </model>

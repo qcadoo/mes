@@ -23,36 +23,14 @@
  */
 package com.qcadoo.mes.technologies.constants;
 
-public final class OperationProductInComponentFields {
+public final class TechnologyInputProductTypeFields {
 
-    private OperationProductInComponentFields() {
+    private TechnologyInputProductTypeFields() {
 
     }
 
-    public static final String TECHNOLOGY = "technology";
+    public static final String NAME = "name";
 
-    public static final String OPERATION_COMPONENT = "operationComponent";
-
-    public static final String PRIORITY = "priority";
-
-    public static final String PRODUCT = "product";
-
-    public static final String QUANTITY = "quantity";
-
-    public static final String GIVEN_QUANTITY = "givenQuantity";
-
-    public static final String GIVEN_UNIT = "givenUnit";
-
-    public static final String QUANTITY_FORMULA = "quantityFormula";
-
-    public static final String UNIT = "unit";
-
-    public static final String ITEM_NUMBER_IN_THE_EXPLODED_VIEW = "itemNumberInTheExplodedView";
-
-    public static final String TECHNOLOGY_INPUT_PRODUCT_TYPE = "technologyInputProductType";
-
-    public static final String DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES = "differentProductsInDifferentSizes";
-
-    public static final String PRODUCT_BY_SIZE_GROUPS = "productBySizeGroups";
+    public static final String AVERAGE_PRICE = "averagePrice";
 
 }

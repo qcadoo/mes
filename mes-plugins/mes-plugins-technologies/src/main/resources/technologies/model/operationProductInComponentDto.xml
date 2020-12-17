@@ -28,6 +28,7 @@
        insertable="false" updatable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
         <belongsTo name="operationComponent" model="technologyOperationComponent"
                    persistent="false"/>
@@ -67,9 +68,12 @@
 
         <boolean name="activeTechnology"/>
 
-
         <enum name="technologyState" values="01draft,02accepted,03declined,04outdated,05checked"/>
+
+        <string name="technologyInputProductTypeName"/>
     </fields>
+
     <hooks/>
+
     <masterModel plugin="technologies" model="operationProductInComponent"/>
 </model>

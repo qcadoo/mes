@@ -33,8 +33,7 @@
         <belongsTo name="operationComponent" model="technologyOperationComponent"
                    required="true"/>
         <priority name="priority" scope="operationComponent"/>
-        <belongsTo name="product" plugin="basic" model="product"
-                   required="true"/>
+        <belongsTo name="product" plugin="basic" model="product"/>
         <decimal name="quantity" required="true">
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="9"/>
@@ -48,14 +47,15 @@
         </decimal>
         <dictionary name="givenUnit" dictionary="units"/>
         <string name="quantityFormula" />
+        <belongsTo name="technologyInputProductType" model="technologyInputProductType"/>
+        <boolean name="differentProductsInDifferentSizes" default="false"/>
+
+        <hasMany name="productBySizeGroups" model="productBySizeGroup"
+                 joinField="operationProductInComponent" cascade="delete" copyable="true"/>
     </fields>
 
     <hooks>
-        <validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyTreeValidators"
-                       method="invalidateIfBelongsToAcceptedTechnology"/>
-        <validatesWith class="com.qcadoo.mes.technologies.TechnologyService"
-                       method="invalidateIfAllreadyInTheSameOperation"/>
-        <validatesWith class="com.qcadoo.mes.technologies.validators.TechnologyTreeValidators"
-                       method="invalidateIfWrongFormula"/>
+        <validatesWith class="com.qcadoo.mes.technologies.hooks.OperationProductInComponentHooks"
+                       method="validatesWith"/>
     </hooks>
 </model>
