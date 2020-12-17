@@ -76,7 +76,7 @@ public class ProductHooks {
             Entity assortmentFromDB = productFromDB.getBelongsToField(ProductFields.ASSORTMENT);
 
             boolean areSame = (Objects.isNull(assortment) ? Objects.isNull(assortmentFromDB)
-                    : assortment.getId().equals(assortmentFromDB.getId()));
+                    : (Objects.nonNull(assortmentFromDB) ? assortment.getId().equals(assortmentFromDB.getId()) : false));
 
             if (areSame) {
                 if (Objects.nonNull(model) && Objects.isNull(assortment)) {
