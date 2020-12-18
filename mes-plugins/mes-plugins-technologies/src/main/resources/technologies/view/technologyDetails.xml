@@ -570,6 +570,63 @@
             </component>
 
         </windowTab>
+        <windowTab name="technologicalProcesses">
+            <component type="flowGridLayout" name="technologicalProcessesGridLayout"
+                       columns="3" rows="3">
+                <layoutElement column="1" row="1" minHeight="3">
+                    <component type="grid" name="operationComponents" reference="operationComponents"
+                               plugin="technologies" model="technologyOperationComponent">>
+                        <option type="column" name="nodeNumber" fields="nodeNumber" link="true" width="50"/>
+                        <option type="column" name="operationNumber" fields="operation" link="true"
+                                expression="#operation['number']" width="100"/>
+                        <option type="column" name="technologicalProcessListNumber" fields="technologicalProcessList"
+                                expression="#technologicalProcessList['number']" width="100"/>
+                        <option type="column" name="technologicalProcessListName" fields="technologicalProcessList"
+                                expression="#technologicalProcessList['name']" width="100"/>
+
+                        <option type="searchable" value="nodeNumber,operationNumber,technologicalProcessListNumber,technologicalProcessListName"/>
+                        <option type="orderable" value="nodeNumber,operationNumber,technologicalProcessListNumber,technologicalProcessListName"/>
+
+                        <option type="order" column="nodeNumber" direction="desc"/>
+
+                        <option type="correspondingView"
+                                value="technologies/technologyOperationComponentProcessListDetails"/>
+                        <option type="correspondingComponent" value="form"/>
+                        <option type="correspondingViewInModal" value="true"/>
+
+                        <option type="prioritizable" value="false"/>
+                        <option type="fullscreen" value="true"/>
+                        <criteriaModifier
+                                class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyDetailsCriteriaModifiers"
+                                method="showTOCAssignedToTechnology"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="2" row="1" width="2" minHeight="3">
+                    <component type="grid" name="technologicalProcessLists" reference="technologicalProcessLists"
+                               plugin="technologies" model="technologicalProcessComponent">
+                        <option type="column" name="technologicalProcess" fields="technologicalProcess"
+                                expression="#technologicalProcess['name']" width="100"/>
+                        <option type="column" name="tj" fields="tj" width="40"
+                                expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#tj)"/>
+                        <option type="column" name="extendedTimeForSizeGroup" fields="extendedTimeForSizeGroup"/>
+                        <option type="column" name="increasePercent" fields="increasePercent" />
+                        <option type="column" name="sizeGroup" fields="sizeGroup" expression="#sizeGroup['number']"/>
+
+                        <option type="order" column="succession" direction="asc"/>
+
+                        <option type="searchable" value="technologicalProcess,extendedTimeForSizeGroup,increasePercent,sizeGroup"/>
+                        <option type="orderable" value="technologicalProcess,extendedTimeForSizeGroup,increasePercent,sizeGroup"/>
+
+                        <option type="footerRow" value="true"/>
+                        <option type="columnsToSummaryTime"
+                                value="tj"/>
+
+                        <option type="prioritizable" value="false"/>
+                        <option type="fullscreen" value="true"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
     </component>
 
     <hooks>

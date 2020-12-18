@@ -37,6 +37,8 @@
 		<belongsTo name="operation" model="operation" required="true"/>
 		<hasMany name="technologicalProcessComponents" joinField="technologicalProcessList" model="technologicalProcessComponent"
 				 cascade="delete"/>
+		<hasMany name="operationComponents"
+				 joinField="technologicalProcessList" model="technologyOperationComponent"/>
 	</fields>
 	<hooks>
 		<onSave
