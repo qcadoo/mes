@@ -54,6 +54,15 @@ public class OrderHooksBPC {
                     order.addGlobalMessage("basicProductionCounting.productionCountingQuantity.error.productToProductGroupTechnologyDoesntExists");
                 }
             } else if (checkIfShouldReCreateProductionCounting(order)) {
+                for (Entity pcq : order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES)) {
+                    pcq.getDataDefinition().delete(pcq.getId());
+                }
+                for (Entity bpc : order.getHasManyField(OrderFieldsBPC.BASIC_PRODUCTION_COUNTINGS)) {
+                    bpc.getDataDefinition().delete(bpc.getId());
+                }
+                for (Entity pqor : order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS)) {
+                    pqor.getDataDefinition().delete(pqor.getId());
+                }
                 order.setField(OrderFieldsBPC.BASIC_PRODUCTION_COUNTINGS, Lists.newArrayList());
                 order.setField(OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS, Lists.newArrayList());
                 order.setField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES, Lists.newArrayList());
@@ -89,9 +98,7 @@ public class OrderHooksBPC {
     }
 
     private boolean isProductionCountingGenerated(Entity order) {
-        return !(!order.getHasManyField(OrderFieldsBPC.BASIC_PRODUCTION_COUNTINGS).isEmpty()
-                && !order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS).isEmpty() && !order.getHasManyField(
-                OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES).isEmpty());
+        return order.getHasManyField(OrderFieldsBPC.BASIC_PRODUCTION_COUNTINGS).isEmpty();
     }
 
     private void updateProductionCountingQuantitiesAndOperationRuns(final Entity order) {

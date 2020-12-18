@@ -40,6 +40,10 @@ public class ProductionProgressModifyLockHelper {
 
     public boolean isLocked(final Entity order) {
 
+        if (order == null) {
+            return true;
+        }
+
         String state = order.getStringField(OrderFields.STATE);
 
         return (OrderStateStringValues.ACCEPTED.equals(state) || OrderStateStringValues.IN_PROGRESS.equals(state)

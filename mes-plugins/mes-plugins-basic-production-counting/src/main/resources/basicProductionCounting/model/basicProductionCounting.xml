@@ -48,5 +48,8 @@
 		<validatesWith
 			class="com.qcadoo.mes.basicProductionCounting.validators.BasicProductionCountingValidators"
 			method="validatesWith" />
+		<onSave
+				class="com.qcadoo.mes.basicProductionCounting.hooks.BasicProductionCountingHooks"
+				method="onSave" />
 	</hooks>
 </model>
