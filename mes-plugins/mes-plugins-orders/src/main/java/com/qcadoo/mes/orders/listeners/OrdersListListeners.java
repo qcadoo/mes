@@ -62,17 +62,18 @@ public class OrdersListListeners {
     private TechnologyServiceO technologyServiceO;
 
     public void generateProductionCounting(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        List<Entity> orders = getOrderDD().find()
-            .add(SearchRestrictions.eq(OrderFields.STATE, OrderStateStringValues.PENDING))
-            .add(SearchRestrictions.isNotNull(OrderFields.TECHNOLOGY))
-            .add(SearchRestrictions.isEmpty("productionCountingQuantities"))
-            .setMaxResults(50)
-                .list().getEntities();
-        if(orders.isEmpty()) {
+        List<Entity> orders = getOrderDD().find().add(SearchRestrictions.eq(OrderFields.STATE, OrderStateStringValues.PENDING))
+                .add(SearchRestrictions.isNotNull(OrderFields.TECHNOLOGY))
+                .add(SearchRestrictions.isEmpty("productionCountingQuantities")).setMaxResults(50).list().getEntities();
+        if (orders.isEmpty()) {
             view.addMessage("orders.ordersList.info.allOrdersHasGeneratedProductionCounting", ComponentState.MessageType.INFO);
         }
         for (Entity order : orders) {
             order.getDataDefinition().save(order);
+        }
+        if (!orders.isEmpty()) {
+            view.addMessage("orders.ordersList.info.generatedProductionCounting", ComponentState.MessageType.INFO,
+                    String.valueOf(orders.size()));
         }
 
     }
