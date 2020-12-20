@@ -129,6 +129,11 @@
             model="technologicalProcess" joinField="sizeGroup"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="sizeGroup">
+            <model:hasMany name="technologicalProcessComponents" plugin="technologies"
+                           model="technologicalProcessComponent" joinField="sizeGroup"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="technologicalProcessRate">
             <model:hasMany name="technologicalProcesses" plugin="technologies"
             model="technologicalProcess" joinField="technologicalProcessRate"/>
@@ -316,6 +321,7 @@
         <view:view resource="view/technologicalProcessListsList.xml"/>
         <view:view resource="view/technologicalProcessListDetails.xml"/>
         <view:view resource="view/technologicalProcessComponentDetails.xml"/>
+        <view:view resource="view/technologyOperationComponentProcessListDetails.xml"/>
 
         <view:view resource="view/technologyInputProductTypesList.xml"/>
         <view:view resource="view/technologyInputProductTypeDetails.xml"/>

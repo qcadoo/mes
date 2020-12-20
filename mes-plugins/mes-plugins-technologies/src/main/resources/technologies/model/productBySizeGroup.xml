@@ -35,5 +35,8 @@
 		<belongsTo name="product" model="product" plugin="basic" required="true"/>
 	</fields>
 
-	<hooks />
+	<hooks>
+		<validatesWith class="com.qcadoo.mes.technologies.hooks.ProductBySizeGroupHooks"
+				   method="validatesWith"/>
+	</hooks>
 </model>

@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
-import static com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeFields.STATUS;
-
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
@@ -38,21 +30,24 @@ import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.criteriaModifiers.QualityCardCriteriaModifiers;
+import com.qcadoo.mes.technologies.criteriaModifiers.TechnologyDetailsCriteriaModifiers;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.TreeComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
+
+import static com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeFields.STATUS;
 
 @Service
 public class TechnologyDetailsHooks {
@@ -231,6 +226,13 @@ public class TechnologyDetailsHooks {
             qualityCard.setFilterValue(filter);
             qualityCard.requestComponentUpdateState();
         }
+        GridComponent operationComponents = (GridComponent) viewDefinitionState.getComponentByReference("operationComponents");
+        FilterValueHolder gridFilterValueHolder = operationComponents.getFilterValue();
+
+        gridFilterValueHolder.put(TechnologyDetailsCriteriaModifiers.L_TECHNOLOGY_ID,
+                ((FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM)).getEntityId());
+
+        operationComponents.setFilterValue(gridFilterValueHolder);
     }
 
     private DataDefinition getTechnologyDD() {

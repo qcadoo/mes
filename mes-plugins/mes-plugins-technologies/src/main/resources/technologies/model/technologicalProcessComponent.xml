@@ -36,7 +36,7 @@
 			<validatesRange from="0"/>
 		</integer>
 		<belongsTo name="sizeGroup" plugin="basic" model="sizeGroup"/>
-		<belongsTo name="technologicalProcessList" model="technologicalProcessList"/>
+		<belongsTo name="technologicalProcessList" model="technologicalProcessList" required="true"/>
 		<priority name="succession" scope="technologicalProcessList" />
 		<belongsTo name="technologicalProcess" model="technologicalProcess" required="true"/>
 	</fields>

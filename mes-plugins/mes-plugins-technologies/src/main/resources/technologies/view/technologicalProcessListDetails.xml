@@ -72,7 +72,7 @@
                             <option type="multiselect" value="true"/>
                             <criteriaModifier
                                     class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologicalProcessListDetailsCriteriaModifiers"
-                                    method="showNotAssigned"/>
+                                    method="showNotAssignedTechnologicalProcesses"/>
                         </component>
                         <component type="grid" name="technologicalProcessComponents" reference="technologicalProcessComponents"
                                    source="#{form}.technologicalProcessComponents">
@@ -125,6 +125,32 @@
 
                 <option type="header" value="true"/>
                 <option type="expression" value="#number + ' - ' + #name"/>
+            </component>
+        </windowTab>
+
+        <windowTab name="technologiesTab" reference="technologiesTab">
+            <component type="gridLayout" name="technologiesTabGridLayout"
+                       columns="3" rows="10">
+                <layoutElement column="1" row="1" width="3" height="10">
+                    <component type="grid" name="technologies" reference="technologies"
+                               plugin="technologies" model="technology">
+                        <option type="column" name="number" fields="number" width="50"/>
+                        <option type="column" name="name" fields="name" width="100"/>
+                        <option type="column" name="productNumber" fields="product" expression="#product['number']" width="50"/>
+                        <option type="column" name="productName" fields="product" expression="#product['name']" width="100"/>
+                        <option type="column" name="productEntityType" fields="product" expression="'@basic.product.entityType.value.' + #product['entityType']" width="100"/>
+
+                        <option type="order" column="number" direction="desc"/>
+
+                        <option type="searchable" value="number,name,productNumber,productName"/>
+                        <option type="orderable" value="number,name,productNumber,productName"/>
+
+                        <option type="fullscreen" value="true"/>
+                        <criteriaModifier
+                                class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologicalProcessListDetailsCriteriaModifiers"
+                                method="showAssignedTechnologies"/>
+                    </component>
+                </layoutElement>
             </component>
         </windowTab>
     </component>

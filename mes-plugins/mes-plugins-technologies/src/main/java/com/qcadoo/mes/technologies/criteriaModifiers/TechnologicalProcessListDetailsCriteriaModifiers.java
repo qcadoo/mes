@@ -45,7 +45,7 @@ public class TechnologicalProcessListDetailsCriteriaModifiers {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public void showNotAssigned(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+    public void showNotAssignedTechnologicalProcesses(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
         if (filterValue.has(L_TECHNOLOGICAL_PROCESS_LIST_ID)) {
             long technologicalProcessListId = filterValue.getLong(L_TECHNOLOGICAL_PROCESS_LIST_ID);
 
@@ -60,6 +60,12 @@ public class TechnologicalProcessListDetailsCriteriaModifiers {
                             technologicalProcessListId))
                     .setProjection(SearchProjections.id());
             scb.add(SearchSubqueries.notExists(subCriteria));
+        }
+    }
+
+    public void showAssignedTechnologies(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+        if (filterValue.has(L_TECHNOLOGICAL_PROCESS_LIST_ID)) {
+            long technologicalProcessListId = filterValue.getLong(L_TECHNOLOGICAL_PROCESS_LIST_ID);
         }
     }
 
