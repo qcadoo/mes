@@ -47,10 +47,10 @@ public class OperationProductOutComponentHooks {
     public boolean validatesWith(final DataDefinition operationProductInComponentDD, final Entity operationProductInComponent) {
         boolean isValid = true;
 
-//        isValid = isValid && technologyTreeValidators.invalidateIfBelongsToAcceptedTechnology(operationProductInComponentDD,
-//                operationProductInComponent);
-//        isValid = isValid && technologyService.invalidateIfAlreadyInTheSameOperation(operationProductInComponentDD,
-//                operationProductInComponent);
+        isValid = isValid && technologyTreeValidators.invalidateIfBelongsToAcceptedTechnology(operationProductInComponentDD,
+                operationProductInComponent);
+        isValid = isValid && technologyService.invalidateIfAlreadyInTheSameOperation(operationProductInComponentDD,
+                operationProductInComponent);
 
         return isValid;
     }

@@ -257,47 +257,51 @@ public class TechnologyService {
 
     public boolean invalidateIfAlreadyInTheSameOperation(final DataDefinition operationProductComponentDD,
             final Entity operationProductComponent) {
+        Entity technologyInputProductType = operationProductComponent
+                .getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE);
         Entity product = operationProductComponent.getBelongsToField(L_PRODUCT);
         Entity operationComponent = operationProductComponent.getBelongsToField(L_OPERATION_COMPONENT);
 
-        String fieldName;
+        if (Objects.isNull(technologyInputProductType)) {
+            String fieldName;
 
-        if (TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT.equals(operationProductComponentDD.getName())) {
-            fieldName = TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS;
-        } else {
-            fieldName = TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS;
-        }
+            if (TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT.equals(operationProductComponentDD.getName())) {
+                fieldName = TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS;
+            } else {
+                fieldName = TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS;
+            }
 
-        List<Entity> products = operationComponent.getHasManyField(fieldName);
+            List<Entity> products = operationComponent.getHasManyField(fieldName);
 
-        if (Objects.isNull(product) || Objects.isNull(product.getId())) {
-            throw new IllegalStateException("Cant get product id");
-        }
+            if (Objects.isNull(product) || Objects.isNull(product.getId())) {
+                throw new IllegalStateException("Cant get product id");
+            }
 
-        if (Objects.nonNull(products) && listContainsProduct(products, product, operationProductComponent)) {
-            operationProductComponent.addError(operationProductComponentDD.getField(L_PRODUCT),
-                    "technologyOperationComponent.validate.error.productAlreadyExistInTechnologyOperation");
+            if (Objects.nonNull(products) && listContainsProduct(products, product, operationProductComponent)) {
+                operationProductComponent.addError(operationProductComponentDD.getField(L_PRODUCT),
+                        "technologyOperationComponent.validate.error.productAlreadyExistInTechnologyOperation");
 
-            return false;
-        }
+                return false;
+            }
 
-        String oppositeFieldName;
-        String errorMessage;
+            String oppositeFieldName;
+            String errorMessage;
 
-        if (TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT.equals(operationProductComponentDD.getName())) {
-            oppositeFieldName = TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS;
-            errorMessage = "technologyOperationComponent.validate.error.outProductAlreadyExistInTechnologyOperation";
-        } else {
-            oppositeFieldName = TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS;
-            errorMessage = "technologyOperationComponent.validate.error.inProductAlreadyExistInTechnologyOperation";
-        }
+            if (TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT.equals(operationProductComponentDD.getName())) {
+                oppositeFieldName = TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS;
+                errorMessage = "technologyOperationComponent.validate.error.outProductAlreadyExistInTechnologyOperation";
+            } else {
+                oppositeFieldName = TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS;
+                errorMessage = "technologyOperationComponent.validate.error.inProductAlreadyExistInTechnologyOperation";
+            }
 
-        List<Entity> oppositeProducts = operationComponent.getHasManyField(oppositeFieldName);
+            List<Entity> oppositeProducts = operationComponent.getHasManyField(oppositeFieldName);
 
-        if (Objects.nonNull(oppositeProducts) && listContainsProduct(oppositeProducts, product, operationProductComponent)) {
-            operationProductComponent.addError(operationProductComponentDD.getField(L_PRODUCT), errorMessage);
+            if (Objects.nonNull(oppositeProducts) && listContainsProduct(oppositeProducts, product, operationProductComponent)) {
+                operationProductComponent.addError(operationProductComponentDD.getField(L_PRODUCT), errorMessage);
 
-            return false;
+                return false;
+            }
         }
 
         return true;
