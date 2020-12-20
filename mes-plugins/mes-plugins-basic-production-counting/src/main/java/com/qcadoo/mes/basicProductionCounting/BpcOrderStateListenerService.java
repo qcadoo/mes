@@ -50,6 +50,8 @@ public class BpcOrderStateListenerService {
             order.setField(OrderFieldsBPC.BASIC_PRODUCTION_COUNTINGS, Lists.newArrayList());
             order.setField(OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS, Lists.newArrayList());
             order.setField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES, Lists.newArrayList());
+            //Entity saved = order.getDataDefinition().save(order);
+            stateChangeContext.setOwner(order);
         }
     }
 

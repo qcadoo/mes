@@ -63,9 +63,7 @@ public class OrderHooksBPC {
                 for (Entity pqor : order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS)) {
                     pqor.getDataDefinition().delete(pqor.getId());
                 }
-                order.setField(OrderFieldsBPC.BASIC_PRODUCTION_COUNTINGS, Lists.newArrayList());
-                order.setField(OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS, Lists.newArrayList());
-                order.setField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES, Lists.newArrayList());
+
                 boolean productToProductGroupTechnologyDoesntExists = basicProductionCountingService
                         .createProductionCounting(order);
                 if (productToProductGroupTechnologyDoesntExists) {
