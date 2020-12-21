@@ -599,10 +599,13 @@
                         <criteriaModifier
                                 class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyDetailsCriteriaModifiers"
                                 method="showTOCAssignedToTechnology"/>
+                        <listener event="onSelectedEntityChange"
+                                  class="com.qcadoo.view.api.listeners.RerenderListener"
+                                  method="onChangeRerender"/>
                     </component>
                 </layoutElement>
                 <layoutElement column="2" row="1" width="2" minHeight="3">
-                    <component type="grid" name="technologicalProcessLists" reference="technologicalProcessLists"
+                    <component type="grid" name="technologicalProcessComponents" reference="technologicalProcessComponents"
                                plugin="technologies" model="technologicalProcessComponent">
                         <option type="column" name="technologicalProcess" fields="technologicalProcess"
                                 expression="#technologicalProcess['name']" width="100"/>
@@ -623,6 +626,9 @@
 
                         <option type="prioritizable" value="false"/>
                         <option type="fullscreen" value="true"/>
+                        <criteriaModifier
+                                class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyDetailsCriteriaModifiers"
+                                method="showTechnologicalProcessComponentsAssignedToTOC"/>
                     </component>
                 </layoutElement>
             </component>

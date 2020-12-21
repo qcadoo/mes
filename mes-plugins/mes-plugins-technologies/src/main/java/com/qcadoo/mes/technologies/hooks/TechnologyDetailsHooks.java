@@ -64,6 +64,10 @@ public class TechnologyDetailsHooks {
 
     private static final String TECHNOLOGY_TREE_REFERENCE = "technologyTree";
 
+    private static final String L_OPERATION_COMPONENTS = "operationComponents";
+
+    private static final String L_TECHNOLOGICAL_PROCESS_COMPONENTS = "technologicalProcessComponents";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -226,13 +230,25 @@ public class TechnologyDetailsHooks {
             qualityCard.setFilterValue(filter);
             qualityCard.requestComponentUpdateState();
         }
-        GridComponent operationComponents = (GridComponent) viewDefinitionState.getComponentByReference("operationComponents");
-        FilterValueHolder gridFilterValueHolder = operationComponents.getFilterValue();
+        GridComponent operationComponents = (GridComponent) viewDefinitionState.getComponentByReference(L_OPERATION_COMPONENTS);
+        FilterValueHolder operationComponentsFilterValueHolder = operationComponents.getFilterValue();
 
-        gridFilterValueHolder.put(TechnologyDetailsCriteriaModifiers.L_TECHNOLOGY_ID,
+        operationComponentsFilterValueHolder.put(TechnologyDetailsCriteriaModifiers.L_TECHNOLOGY_ID,
                 ((FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM)).getEntityId());
 
-        operationComponents.setFilterValue(gridFilterValueHolder);
+        operationComponents.setFilterValue(operationComponentsFilterValueHolder);
+
+        GridComponent technologicalProcessComponents = (GridComponent) viewDefinitionState.getComponentByReference(L_TECHNOLOGICAL_PROCESS_COMPONENTS);
+        FilterValueHolder gridFilterValueHolder = technologicalProcessComponents.getFilterValue();
+
+        if(operationComponents.getSelectedEntitiesIds().isEmpty()){
+            gridFilterValueHolder.remove(TechnologyDetailsCriteriaModifiers.L_TECHNOLOGY_OPERATION_COMPONENT_ID);
+        } else {
+            gridFilterValueHolder.put(TechnologyDetailsCriteriaModifiers.L_TECHNOLOGY_OPERATION_COMPONENT_ID,
+                    operationComponents.getSelectedEntitiesIds().stream().findFirst().get());
+        }
+
+        technologicalProcessComponents.setFilterValue(gridFilterValueHolder);
     }
 
     private DataDefinition getTechnologyDD() {

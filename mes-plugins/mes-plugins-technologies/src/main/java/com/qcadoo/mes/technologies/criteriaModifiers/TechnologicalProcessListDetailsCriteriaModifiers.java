@@ -66,6 +66,18 @@ public class TechnologicalProcessListDetailsCriteriaModifiers {
     public void showAssignedTechnologies(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
         if (filterValue.has(L_TECHNOLOGICAL_PROCESS_LIST_ID)) {
             long technologicalProcessListId = filterValue.getLong(L_TECHNOLOGICAL_PROCESS_LIST_ID);
+            SearchCriteriaBuilder subCriteria = dataDefinitionService
+                    .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
+                    .findWithAlias(TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
+                    .createAlias(TechnologiesConstants.MODEL_TECHNOLOGY, TechnologiesConstants.MODEL_TECHNOLOGY, JoinType.INNER)
+                    .add(SearchRestrictions.eqField(TechnologiesConstants.MODEL_TECHNOLOGY + L_DOT + L_ID, L_THIS_ID))
+                    .add(SearchRestrictions.belongsTo(TechnologiesConstants.MODEL_TECHNOLOGICAL_PROCESS_LIST,
+                            TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGICAL_PROCESS_LIST,
+                            technologicalProcessListId))
+                    .setProjection(SearchProjections.id());
+            scb.add(SearchSubqueries.exists(subCriteria));
+        } else {
+            scb.add(SearchRestrictions.idEq(-1));
         }
     }
 

@@ -45,8 +45,7 @@
                             <option type="column" name="name" fields="name" width="300" link="true"/>
                             <option type="searchable" value="name"/>
                             <option type="orderable" value="name"/>
-                            <option type="expression"
-                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="expression" value="#number"/>
                             <option type="fieldCode" value="number"/>
                         </component>
                     </layoutElement>
