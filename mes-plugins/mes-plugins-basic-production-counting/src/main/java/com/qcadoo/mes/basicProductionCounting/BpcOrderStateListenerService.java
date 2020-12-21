@@ -47,10 +47,18 @@ public class BpcOrderStateListenerService {
 
         if (Objects.nonNull(technology.getId()) && Objects.nonNull(technologyPrototype.getId())
                 && !technology.getId().equals(technologyPrototype.getId())) {
+            for (Entity pcq : order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES)) {
+                pcq.getDataDefinition().delete(pcq.getId());
+            }
+            for (Entity bpc : order.getHasManyField(OrderFieldsBPC.BASIC_PRODUCTION_COUNTINGS)) {
+                bpc.getDataDefinition().delete(bpc.getId());
+            }
+            for (Entity pqor : order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS)) {
+                pqor.getDataDefinition().delete(pqor.getId());
+            }
             order.setField(OrderFieldsBPC.BASIC_PRODUCTION_COUNTINGS, Lists.newArrayList());
             order.setField(OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS, Lists.newArrayList());
             order.setField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES, Lists.newArrayList());
-            //Entity saved = order.getDataDefinition().save(order);
             stateChangeContext.setOwner(order);
         }
     }
