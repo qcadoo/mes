@@ -44,7 +44,7 @@
 			<option type="column" name="extendedTimeForSizeGroup" fields="extendedTimeForSizeGroup"/>
 			<option type="column" name="increasePercent" fields="increasePercent" />
 			<option type="column" name="sizeGroup" fields="sizeGroup" expression="#sizeGroup['number']"/>
-			<option type="column" name="technologicalProcessRate" fields="technologicalProcessRate" expression="#technologicalProcessRate['number']"/>
+			<option type="column" name="technologicalProcessRate" fields="technologicalProcessRate" expression="#technologicalProcessRate['name']"/>
 
 			<option type="order" column="name" direction="asc" />
 
