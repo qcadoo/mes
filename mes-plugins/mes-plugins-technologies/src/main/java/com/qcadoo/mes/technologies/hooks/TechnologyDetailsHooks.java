@@ -46,6 +46,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import static com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeFields.STATUS;
 
@@ -241,11 +242,12 @@ public class TechnologyDetailsHooks {
         GridComponent technologicalProcessComponents = (GridComponent) viewDefinitionState.getComponentByReference(L_TECHNOLOGICAL_PROCESS_COMPONENTS);
         FilterValueHolder gridFilterValueHolder = technologicalProcessComponents.getFilterValue();
 
-        if(operationComponents.getSelectedEntitiesIds().isEmpty()){
-            gridFilterValueHolder.remove(TechnologyDetailsCriteriaModifiers.L_TECHNOLOGY_OPERATION_COMPONENT_ID);
-        } else {
+        Optional<Long> selectedEntityId = operationComponents.getSelectedEntitiesIds().stream().findFirst();
+        if(selectedEntityId.isPresent()){
             gridFilterValueHolder.put(TechnologyDetailsCriteriaModifiers.L_TECHNOLOGY_OPERATION_COMPONENT_ID,
-                    operationComponents.getSelectedEntitiesIds().stream().findFirst().get());
+                    selectedEntityId.get());
+        } else {
+            gridFilterValueHolder.remove(TechnologyDetailsCriteriaModifiers.L_TECHNOLOGY_OPERATION_COMPONENT_ID);
         }
 
         technologicalProcessComponents.setFilterValue(gridFilterValueHolder);

@@ -67,11 +67,14 @@
 
         <model:model model="costCalculation" resource="model/costCalculation.xml"/>
         <model:model model="componentCost" resource="model/componentCost.xml"/>
+        <model:model model="standardLaborCost" resource="model/standardLaborCost.xml"/>
 
         <menu:menu-category name="calculations" defaultAuthorizationRole="ROLE_CALCULATIONS"/>
 
         <menu:menu-item name="costCalculation" category="calculations" defaultAuthorizationRole="ROLE_CALCULATIONS"
                         view="costCalculationList"/>
+        <menu:menu-item name="standardLaborCostsList" category="calculations" defaultAuthorizationRole="ROLE_CALCULATIONS"
+                        view="standardLaborCostsList"/>
 
         <model:model-field model="calculationOperationComponent"
                            plugin="costNormsForOperation">
@@ -91,6 +94,8 @@
 
         <view:view resource="view/costCalculationList.xml"/>
         <view:view resource="view/costCalculationDetails.xml"/>
+        <view:view resource="view/standardLaborCostsList.xml"/>
+        <view:view resource="view/standardLaborCostDetails.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/technologyDetails.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml"/>

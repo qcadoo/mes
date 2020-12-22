@@ -36,10 +36,10 @@ public class SalesPlanHooks {
     }
 
     public void onSave(final DataDefinition salesPlanDD, final Entity salesPlan) {
-        setScheduleNumber(salesPlan);
+        setSalesPlanNumber(salesPlan);
     }
 
-    private void setScheduleNumber(final Entity salesPlan) {
+    private void setSalesPlanNumber(final Entity salesPlan) {
         if (checkIfShouldInsertNumber(salesPlan)) {
             String number = jdbcTemplate.queryForObject("select generate_sales_plan_number()", Collections.emptyMap(),
                     String.class);
