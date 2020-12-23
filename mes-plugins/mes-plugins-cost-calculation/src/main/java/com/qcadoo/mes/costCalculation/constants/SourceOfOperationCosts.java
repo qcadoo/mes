@@ -26,11 +26,11 @@ package com.qcadoo.mes.costCalculation.constants;
 import org.apache.commons.lang3.StringUtils;
 
 public enum SourceOfOperationCosts {
-    TECHNOLOGY_OPERATION("01technologyOperation"), PARAMETERS("02parameters");
+    TECHNOLOGY_OPERATION("01technologyOperation"), PARAMETERS("02parameters"), STANDARD_LABOR_COSTS("03standardLaborCosts");
 
     private final String sourceOfOperationCosts;
 
-    private SourceOfOperationCosts(final String sourceOfOperationCosts) {
+    SourceOfOperationCosts(final String sourceOfOperationCosts) {
         this.sourceOfOperationCosts = sourceOfOperationCosts;
     }
 

@@ -35,4 +35,6 @@ public final class CostCalculationConstants {
 
     public static final String MODEL_COMPONENT_COST = "componentCost";
 
+    public static final String MODEL_STANDARD_LABOR_COST = "standardLaborCost";
+
 }

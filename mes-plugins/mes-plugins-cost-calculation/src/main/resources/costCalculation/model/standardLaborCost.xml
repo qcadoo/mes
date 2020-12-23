@@ -42,6 +42,7 @@
             <validatesRange from="0" exclusively="true"/>
         </decimal>
 
+        <hasMany name="parameters" joinField="standardLaborCost" plugin="basic" model="parameter"/>
     </fields>
     <hooks>
         <onSave class="com.qcadoo.mes.costCalculation.hooks.StandardLaborCostHooks"
