@@ -118,7 +118,8 @@ public class OperationProductInComponentHooks {
 
         if ((differentProductsInDifferentSizes && Objects.isNull(technologyInputProductType))
                 || (Objects.isNull(technologyInputProductType) && Objects.isNull(product))) {
-            operationProductInComponent.addGlobalError("technologies.operationProductInComponent.error.requiredFieldNotSelected");
+            operationProductInComponent.addError(operationProductInComponentDD.getField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE),"technologies.operationProductInComponent.error.requiredFieldNotSelected");
+            operationProductInComponent.addError(operationProductInComponentDD.getField(OperationProductInComponentFields.PRODUCT),"technologies.operationProductInComponent.error.requiredFieldNotSelected");
 
             return false;
         }
