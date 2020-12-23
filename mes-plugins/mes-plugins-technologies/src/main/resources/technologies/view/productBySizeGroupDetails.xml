@@ -61,6 +61,9 @@
                         <option type="expression"
                                 value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                         <option type="fieldCode" value="number"/>
+
+                        <criteriaModifier class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
+                                          method="showParticularProductOnly"/>
                     </component>
                 </layoutElement>
             </component>
