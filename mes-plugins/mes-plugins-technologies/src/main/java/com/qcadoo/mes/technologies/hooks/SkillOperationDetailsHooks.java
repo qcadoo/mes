@@ -17,8 +17,6 @@ import java.util.Objects;
 @Service
 public class SkillOperationDetailsHooks {
 
-
-
     private static final String MAX_LEVEL = "maxLevel";
 
     private static final String L_SKILL_ID = "skillId";

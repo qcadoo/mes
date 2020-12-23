@@ -23,18 +23,37 @@
  */
 package com.qcadoo.mes.basicProductionCounting;
 
-import com.google.common.collect.*;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basicProductionCounting.constants.*;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
+import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingOperationRunFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.mes.technologies.constants.*;
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
+import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.ProductToProductGroupFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -43,15 +62,25 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.RowStyle;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import static com.qcadoo.model.api.search.SearchProjections.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.list;
+import static com.qcadoo.model.api.search.SearchProjections.rowCount;
+import static com.qcadoo.model.api.search.SearchProjections.sum;
 
 @Service
 public class BasicProductionCountingServiceImpl implements BasicProductionCountingService {
@@ -98,18 +127,15 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         updateProductionCountingQuantities(order, productComponentQuantities, nonComponents);
     }
 
-    @Override
-    public Entity createProductionCountingOperationRun(final Entity order, final Entity technologyOperationComponent,
+    private Entity createProductionCountingOperationRun(final Entity technologyOperationComponent,
             final BigDecimal runs) {
         Entity productionCountingOperationRun = getProductionCountingOperationRunDD().create();
 
-        productionCountingOperationRun.setField(ProductionCountingOperationRunFields.ORDER, order);
         productionCountingOperationRun.setField(ProductionCountingOperationRunFields.TECHNOLOGY_OPERATION_COMPONENT,
                 technologyOperationComponent);
         productionCountingOperationRun.setField(ProductionCountingOperationRunFields.RUNS,
                 numberService.setScaleWithDefaultMathContext(runs));
 
-        productionCountingOperationRun = productionCountingOperationRun.getDataDefinition().save(productionCountingOperationRun);
 
         return productionCountingOperationRun;
     }
@@ -132,12 +158,12 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
 
         prepareBasicProductionCounting(order, productionCountingQuantities, basicProductionCounting);
 
-        return saveBasicProductionCounting(productionCountingQuantities, basicProductionCounting,
+        return saveBasicProductionCounting(order, productionCountingQuantities, basicProductionCounting,
                 order.getBelongsToField(OrderFields.PRODUCT));
     }
 
-    private boolean saveBasicProductionCounting(final List<Entity> productionCountingQuantities,
-            final List<Entity> basicProductionCounting, final Entity orderProduct) {
+    private boolean saveBasicProductionCounting(Entity order, final List<Entity> productionCountingQuantities, final List<Entity> basicProductionCounting,
+            final Entity orderProduct) {
         boolean productToProductGroupTechnologyDoesntExists = false;
         Multimap<Long, Entity> productionCountingQuantitiesByProduct = ArrayListMultimap.create();
 
@@ -166,14 +192,13 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             }
 
             bpc.setField(BasicProductionCountingFields.PRODUCT, product);
-            bpc = bpc.getDataDefinition().save(bpc);
 
             for (Entity pcq : pCountingQuantities) {
                 pcq.setField(ProductionCountingQuantityFields.PRODUCT, product);
-                pcq.setField(ProductionCountingQuantityFields.BASIC_PRODUCTION_COUNTING, bpc);
-                pcq.getDataDefinition().save(pcq);
             }
+            bpc.setField(BasicProductionCountingFields.PRODUCTION_COUNTING_QUANTITIES, pCountingQuantities);
         }
+        order.setField(OrderFieldsBPC.BASIC_PRODUCTION_COUNTINGS, basicProductionCounting);
         return productToProductGroupTechnologyDoesntExists;
     }
 
@@ -194,13 +219,13 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
 
             if (!alreadyAddedProducts.contains(product.getId())) {
-                basicProductionCounting.add(prepareBasicProductionCounting(order, product));
+                basicProductionCounting.add(prepareBasicProductionCounting(product));
 
                 alreadyAddedProducts.add(product.getId());
             }
         }
 
-        basicProductionCounting.add(prepareBasicProductionCounting(order, order.getBelongsToField(OrderFields.PRODUCT)));
+        basicProductionCounting.add(prepareBasicProductionCounting(order.getBelongsToField(OrderFields.PRODUCT)));
     }
 
     private void prepareProductionCountingQuantities(final Entity order, final Set<OperationProductComponentHolder> nonComponents,
@@ -245,19 +270,20 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     }
 
     private void createProductionCountingOperationRuns(final Entity order, final Map<Long, BigDecimal> operationRuns) {
+        List<Entity> productionCountingOperationRuns = Lists.newArrayList();
         for (Entry<Long, BigDecimal> operationRun : operationRuns.entrySet()) {
             Entity technologyOperationComponent = productQuantitiesService.getTechnologyOperationComponent(operationRun.getKey());
             BigDecimal runs = operationRun.getValue();
 
-            createProductionCountingOperationRun(order, technologyOperationComponent, runs);
+            productionCountingOperationRuns.add(createProductionCountingOperationRun(technologyOperationComponent, runs));
         }
+        order.setField(OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS, productionCountingOperationRuns);
     }
 
     private Entity prepareProductionCountingQuantity(final Entity order, final Entity technologyOperationComponent,
             final Entity product, final String role, final boolean isNonComponent, final BigDecimal plannedQuantity) {
         Entity productionCountingQuantity = getProductionCountingQuantityDD().create();
 
-        productionCountingQuantity.setField(ProductionCountingQuantityFields.ORDER, order);
         productionCountingQuantity.setField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT,
                 technologyOperationComponent);
         productionCountingQuantity.setField(ProductionCountingQuantityFields.PRODUCT, product);
@@ -428,10 +454,9 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         }
     }
 
-    private Entity prepareBasicProductionCounting(final Entity order, final Entity product) {
+    private Entity prepareBasicProductionCounting(final Entity product) {
         Entity basicProductionCounting = getBasicProductionCountingDD().create();
 
-        basicProductionCounting.setField(BasicProductionCountingFields.ORDER, order);
         basicProductionCounting.setField(BasicProductionCountingFields.PRODUCT, product);
         basicProductionCounting.setField(BasicProductionCountingFields.PRODUCED_QUANTITY,
                 numberService.setScaleWithDefaultMathContext(BigDecimal.ZERO));

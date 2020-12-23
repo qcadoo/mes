@@ -36,9 +36,8 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
-@Service public class DocumentDetailsHooksCMP {
-
-
+@Service
+public class DocumentDetailsHooksCMP {
 
     public void toggleEnabledForEventLookup(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);

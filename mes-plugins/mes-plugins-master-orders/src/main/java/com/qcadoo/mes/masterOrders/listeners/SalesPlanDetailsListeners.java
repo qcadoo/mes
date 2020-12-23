@@ -60,32 +60,42 @@ public class SalesPlanDetailsListeners {
         BigDecimal orderedQuantity = BigDecimal.ZERO;
         for (Entity masterOrder : masterOrders) {
             List<Entity> masterOrderProducts = masterOrder.getHasManyField(MasterOrderFields.MASTER_ORDER_PRODUCTS);
-            BigDecimal productQuantity = BigDecimal.ZERO;
-            for (Entity masterOrderProduct : masterOrderProducts) {
-                if (product.getId().equals(masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT).getId())) {
-                    productQuantity = masterOrderProduct.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY);
-                    break;
-                }
-            }
+            BigDecimal productQuantity = getProductQuantity(product, masterOrderProducts);
             if (productQuantity == null) {
                 continue;
             }
             orderedQuantity = orderedQuantity.add(productQuantity);
-            if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(product.getField(ProductFields.ENTITY_TYPE))
-                    && productQuantity.compareTo(BigDecimal.ZERO) == 0) {
-                for (Entity child : product.getHasManyField(ProductFields.PRODUCT_FAMILY_CHILDRENS)) {
-                    for (Entity masterOrderProduct : masterOrderProducts) {
-                        if (child.getId()
-                                .equals(masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT).getId())) {
-                            orderedQuantity = orderedQuantity
-                                    .add(masterOrderProduct.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY));
-                            break;
-                        }
+            orderedQuantity = getQuantityForFamily(product, orderedQuantity, masterOrderProducts, productQuantity);
+        }
+        return orderedQuantity;
+    }
+
+    private BigDecimal getQuantityForFamily(Entity product, BigDecimal orderedQuantity, List<Entity> masterOrderProducts,
+            BigDecimal productQuantity) {
+        if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(product.getField(ProductFields.ENTITY_TYPE))
+                && productQuantity.compareTo(BigDecimal.ZERO) == 0) {
+            for (Entity child : product.getHasManyField(ProductFields.PRODUCT_FAMILY_CHILDRENS)) {
+                for (Entity masterOrderProduct : masterOrderProducts) {
+                    if (child.getId().equals(masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT).getId())) {
+                        orderedQuantity = orderedQuantity
+                                .add(masterOrderProduct.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY));
+                        break;
                     }
                 }
             }
         }
         return orderedQuantity;
+    }
+
+    private BigDecimal getProductQuantity(Entity product, List<Entity> masterOrderProducts) {
+        BigDecimal productQuantity = BigDecimal.ZERO;
+        for (Entity masterOrderProduct : masterOrderProducts) {
+            if (product.getId().equals(masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT).getId())) {
+                productQuantity = masterOrderProduct.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY);
+                break;
+            }
+        }
+        return productQuantity;
     }
 
     public void showOrderedProductsForFamily(final ViewDefinitionState view, final ComponentState state, final String[] args) {

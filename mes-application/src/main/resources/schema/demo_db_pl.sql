@@ -1313,6 +1313,68 @@ $$;
 
 
 --
+-- Name: generate_standard_labor_cost_number(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION generate_standard_labor_cost_number() RETURNS text
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    _pattern text;
+    _sequence_value numeric;
+    _seq text;
+    _number text;
+BEGIN
+    _pattern := '#seq';
+
+    select nextval('costcalculation_standard_labor_cost_number_seq') into _sequence_value;
+
+    _seq := to_char(_sequence_value, 'fm000000');
+
+    if _seq like '%#%' then
+        _seq := _sequence_value;
+    end if;
+
+    _number := _pattern;
+    _number := replace(_number, '#seq', _seq);
+
+    RETURN _number;
+END;
+$$;
+
+
+--
+-- Name: generate_technological_process_list_number(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION generate_technological_process_list_number() RETURNS text
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    _pattern text;
+    _sequence_value numeric;
+    _seq text;
+    _number text;
+BEGIN
+    _pattern := '#seq';
+
+    select nextval('technologies_technological_process_list_number_seq') into _sequence_value;
+
+    _seq := to_char(_sequence_value, 'fm000000');
+
+    if _seq like '%#%' then
+        _seq := _sequence_value;
+    end if;
+
+    _number := _pattern;
+    _number := replace(_number, '#seq', _seq);
+
+    RETURN _number;
+END;
+$$;
+
+
+--
 -- Name: generate_technological_process_rate_number(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -5891,7 +5953,8 @@ CREATE TABLE technologies_technologyoperationcomponent (
     productdatanumber numeric(12,5) DEFAULT (0)::numeric,
     productionlinechange boolean DEFAULT false,
     productionline_id bigint,
-    entityversion bigint DEFAULT 0
+    entityversion bigint DEFAULT 0,
+    technologicalprocesslist_id bigint
 );
 
 
@@ -9995,7 +10058,7 @@ ALTER SEQUENCE basic_technologicalprocessrate_id_seq OWNED BY basic_technologica
 CREATE TABLE basic_technologicalprocessrateitem (
     id bigint NOT NULL,
     technologicalprocessrate_id bigint,
-    actualrate numeric(14,5),
+    actualrate numeric(9,2),
     datefrom date,
     dateto date
 );
@@ -11865,6 +11928,49 @@ CREATE SEQUENCE costcalculation_costcalculation_id_seq
 --
 
 ALTER SEQUENCE costcalculation_costcalculation_id_seq OWNED BY costcalculation_costcalculation.id;
+
+
+--
+-- Name: costcalculation_standard_labor_cost_number_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE costcalculation_standard_labor_cost_number_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: costcalculation_standardlaborcost; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE costcalculation_standardlaborcost (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(255),
+    laborcost numeric(19,5)
+);
+
+
+--
+-- Name: costcalculation_standardlaborcost_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE costcalculation_standardlaborcost_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: costcalculation_standardlaborcost_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE costcalculation_standardlaborcost_id_seq OWNED BY costcalculation_standardlaborcost.id;
 
 
 --
@@ -25211,7 +25317,9 @@ CREATE TABLE technologies_operationproductincomponent (
     givenunit character varying(255),
     entityversion bigint DEFAULT 0,
     showmaterialcomponent boolean,
-    quantityformula character varying(255)
+    quantityformula character varying(255),
+    technologyinputproducttype_id bigint,
+    differentproductsindifferentsizes boolean DEFAULT false
 );
 
 
@@ -25259,7 +25367,8 @@ CREATE TABLE technologies_operationproductincomponentdto (
     activetechnology boolean,
     technologytype character varying(255),
     hasacceptedtechnology boolean,
-    hascheckedtechnology boolean
+    hascheckedtechnology boolean,
+    technologyinputproducttypename character varying(255)
 );
 
 ALTER TABLE ONLY technologies_operationproductincomponentdto REPLICA IDENTITY NOTHING;
@@ -25336,6 +25445,37 @@ CREATE TABLE technologies_operationskill (
     requiredlevel integer,
     active boolean DEFAULT true
 );
+
+
+--
+-- Name: technologies_productbysizegroup; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE technologies_productbysizegroup (
+    id bigint NOT NULL,
+    operationproductincomponent_id bigint,
+    sizegroup_id bigint,
+    product_id bigint
+);
+
+
+--
+-- Name: technologies_productbysizegroup_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE technologies_productbysizegroup_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: technologies_productbysizegroup_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE technologies_productbysizegroup_id_seq OWNED BY technologies_productbysizegroup.id;
 
 
 --
@@ -25504,6 +25644,120 @@ ALTER SEQUENCE technologies_qualitycardstatechange_id_seq OWNED BY technologies_
 
 
 --
+-- Name: technologies_technological_process_list_number_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE technologies_technological_process_list_number_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: technologies_technologicalprocess; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE technologies_technologicalprocess (
+    id bigint NOT NULL,
+    name character varying(1024),
+    workstationtype_id bigint,
+    workstation_id bigint,
+    tj integer DEFAULT 0,
+    extendedtimeforsizegroup boolean DEFAULT false,
+    increasepercent integer,
+    sizegroup_id bigint,
+    technologicalprocessrate_id bigint
+);
+
+
+--
+-- Name: technologies_technologicalprocess_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE technologies_technologicalprocess_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: technologies_technologicalprocess_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE technologies_technologicalprocess_id_seq OWNED BY technologies_technologicalprocess.id;
+
+
+--
+-- Name: technologies_technologicalprocesscomponent; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE technologies_technologicalprocesscomponent (
+    id bigint NOT NULL,
+    tj integer DEFAULT 0,
+    extendedtimeforsizegroup boolean DEFAULT false,
+    increasepercent integer,
+    sizegroup_id bigint,
+    succession integer,
+    technologicalprocesslist_id bigint,
+    technologicalprocess_id bigint
+);
+
+
+--
+-- Name: technologies_technologicalprocesscomponent_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE technologies_technologicalprocesscomponent_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: technologies_technologicalprocesscomponent_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE technologies_technologicalprocesscomponent_id_seq OWNED BY technologies_technologicalprocesscomponent.id;
+
+
+--
+-- Name: technologies_technologicalprocesslist; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE technologies_technologicalprocesslist (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(1024),
+    operation_id bigint
+);
+
+
+--
+-- Name: technologies_technologicalprocesslist_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE technologies_technologicalprocesslist_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: technologies_technologicalprocesslist_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE technologies_technologicalprocesslist_id_seq OWNED BY technologies_technologicalprocesslist.id;
+
+
+--
 -- Name: technologies_technology_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -25600,6 +25854,41 @@ CREATE SEQUENCE technologies_technologygroup_id_seq
 --
 
 ALTER SEQUENCE technologies_technologygroup_id_seq OWNED BY technologies_technologygroup.id;
+
+
+--
+-- Name: technologies_technologyinputproducttype; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE technologies_technologyinputproducttype (
+    id bigint NOT NULL,
+    name character varying(255),
+    averageprice numeric(9,2),
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255),
+    active boolean DEFAULT true
+);
+
+
+--
+-- Name: technologies_technologyinputproducttype_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE technologies_technologyinputproducttype_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: technologies_technologyinputproducttype_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE technologies_technologyinputproducttype_id_seq OWNED BY technologies_technologyinputproducttype.id;
 
 
 --
@@ -27836,6 +28125,13 @@ ALTER TABLE ONLY costcalculation_costcalculation ALTER COLUMN id SET DEFAULT nex
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY costcalculation_standardlaborcost ALTER COLUMN id SET DEFAULT nextval('costcalculation_standardlaborcost_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY costnormsformaterials_technologyinstoperproductincomp ALTER COLUMN id SET DEFAULT nextval('costnormsformaterials_technologyinstoperproductincomp_id_seq'::regclass);
 
 
@@ -29614,6 +29910,13 @@ ALTER TABLE ONLY technologies_operationproductoutcomponent ALTER COLUMN id SET D
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY technologies_productbysizegroup ALTER COLUMN id SET DEFAULT nextval('technologies_productbysizegroup_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY technologies_productcomponent ALTER COLUMN id SET DEFAULT nextval('technologies_productcomponent_id_seq'::regclass);
 
 
@@ -29649,6 +29952,27 @@ ALTER TABLE ONLY technologies_qualitycardstatechange ALTER COLUMN id SET DEFAULT
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY technologies_technologicalprocess ALTER COLUMN id SET DEFAULT nextval('technologies_technologicalprocess_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_technologicalprocesscomponent ALTER COLUMN id SET DEFAULT nextval('technologies_technologicalprocesscomponent_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_technologicalprocesslist ALTER COLUMN id SET DEFAULT nextval('technologies_technologicalprocesslist_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY technologies_technology ALTER COLUMN id SET DEFAULT nextval('technologies_technology_id_seq'::regclass);
 
 
@@ -29664,6 +29988,13 @@ ALTER TABLE ONLY technologies_technologyattachment ALTER COLUMN id SET DEFAULT n
 --
 
 ALTER TABLE ONLY technologies_technologygroup ALTER COLUMN id SET DEFAULT nextval('technologies_technologygroup_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_technologyinputproducttype ALTER COLUMN id SET DEFAULT nextval('technologies_technologyinputproducttype_id_seq'::regclass);
 
 
 --
@@ -33373,6 +33704,28 @@ COPY costcalculation_costcalculation (id, number, product_id, defaulttechnology_
 --
 
 SELECT pg_catalog.setval('costcalculation_costcalculation_id_seq', 1, false);
+
+
+--
+-- Name: costcalculation_standard_labor_cost_number_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('costcalculation_standard_labor_cost_number_seq', 1, false);
+
+
+--
+-- Data for Name: costcalculation_standardlaborcost; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY costcalculation_standardlaborcost (id, number, name, laborcost) FROM stdin;
+\.
+
+
+--
+-- Name: costcalculation_standardlaborcost_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('costcalculation_standardlaborcost_id_seq', 1, false);
 
 
 --
@@ -38349,6 +38702,10 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 175	esilco	workerStatsReportsList	t	22	174	2	ROLE_REQUIREMENTS	0
 181	masterOrders	salesPlansList	t	7	180	20	ROLE_PLANNING	0
 182	basic	technologicalProcessRateList	t	18	181	24	ROLE_TECHNOLOGICAL_PROCESSES	0
+183	technologies	technologicalProcessesList	t	5	182	8	ROLE_TECHNOLOGICAL_PROCESSES	0
+184	technologies	technologicalProcessListsList	t	5	183	9	ROLE_TECHNOLOGICAL_PROCESSES	0
+185	costCalculation	standardLaborCostsList	t	10	184	4	ROLE_CALCULATIONS	0
+186	technologies	technologyInputProductTypesList	t	5	185	10	ROLE_TECHNOLOGIES	0
 \.
 
 
@@ -38356,7 +38713,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 182, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 186, true);
 
 
 --
@@ -38532,6 +38889,10 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 179	basic	modelsList	modelsList	\N	0
 180	masterOrders	salesPlansList	salesPlansList	\N	0
 181	basic	technologicalProcessRateList	technologicalProcessRateList	\N	0
+182	technologies	technologicalProcessesList	technologicalProcessesList	\N	0
+183	technologies	technologicalProcessListsList	technologicalProcessListsList	\N	0
+184	costCalculation	standardLaborCostsList	standardLaborCostsList	\N	0
+185	technologies	technologyInputProductTypesList	technologyInputProductTypesList	\N	0
 \.
 
 
@@ -38539,7 +38900,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 181, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 185, true);
 
 
 --
@@ -39387,7 +39748,7 @@ SELECT pg_catalog.setval('technologies_operationgroup_id_seq', 1, false);
 -- Data for Name: technologies_operationproductincomponent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY technologies_operationproductincomponent (id, operationcomponent_id, product_id, quantity, itemnumberintheexplodedview, componentslocation_id, componentsoutputlocation_id, priority, showinproductdata, productdatanumber, productsflowlocation_id, productionflow, givenquantity, givenunit, entityversion, showmaterialcomponent, quantityformula) FROM stdin;
+COPY technologies_operationproductincomponent (id, operationcomponent_id, product_id, quantity, itemnumberintheexplodedview, componentslocation_id, componentsoutputlocation_id, priority, showinproductdata, productdatanumber, productsflowlocation_id, productionflow, givenquantity, givenunit, entityversion, showmaterialcomponent, quantityformula, technologyinputproducttype_id, differentproductsindifferentsizes) FROM stdin;
 \.
 
 
@@ -39433,6 +39794,21 @@ COPY technologies_operationskill (id, operation_id, skill_id, requiredlevel, act
 --
 
 SELECT pg_catalog.setval('technologies_operationskill_id_seq', 1, false);
+
+
+--
+-- Data for Name: technologies_productbysizegroup; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY technologies_productbysizegroup (id, operationproductincomponent_id, sizegroup_id, product_id) FROM stdin;
+\.
+
+
+--
+-- Name: technologies_productbysizegroup_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('technologies_productbysizegroup_id_seq', 1, false);
 
 
 --
@@ -39511,6 +39887,58 @@ SELECT pg_catalog.setval('technologies_qualitycardstatechange_id_seq', 1, false)
 
 
 --
+-- Name: technologies_technological_process_list_number_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('technologies_technological_process_list_number_seq', 1, false);
+
+
+--
+-- Data for Name: technologies_technologicalprocess; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY technologies_technologicalprocess (id, name, workstationtype_id, workstation_id, tj, extendedtimeforsizegroup, increasepercent, sizegroup_id, technologicalprocessrate_id) FROM stdin;
+\.
+
+
+--
+-- Name: technologies_technologicalprocess_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('technologies_technologicalprocess_id_seq', 1, false);
+
+
+--
+-- Data for Name: technologies_technologicalprocesscomponent; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY technologies_technologicalprocesscomponent (id, tj, extendedtimeforsizegroup, increasepercent, sizegroup_id, succession, technologicalprocesslist_id, technologicalprocess_id) FROM stdin;
+\.
+
+
+--
+-- Name: technologies_technologicalprocesscomponent_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('technologies_technologicalprocesscomponent_id_seq', 1, false);
+
+
+--
+-- Data for Name: technologies_technologicalprocesslist; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY technologies_technologicalprocesslist (id, number, name, operation_id) FROM stdin;
+\.
+
+
+--
+-- Name: technologies_technologicalprocesslist_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('technologies_technologicalprocesslist_id_seq', 1, false);
+
+
+--
 -- Data for Name: technologies_technology; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -39563,10 +39991,25 @@ SELECT pg_catalog.setval('technologies_technologygroup_id_seq', 1, false);
 
 
 --
+-- Data for Name: technologies_technologyinputproducttype; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY technologies_technologyinputproducttype (id, name, averageprice, createdate, updatedate, createuser, updateuser, active) FROM stdin;
+\.
+
+
+--
+-- Name: technologies_technologyinputproducttype_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('technologies_technologyinputproducttype_id_seq', 1, false);
+
+
+--
 -- Data for Name: technologies_technologyoperationcomponent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY technologies_technologyoperationcomponent (id, technology_id, operation_id, parent_id, entitytype, priority, nodenumber, comment, attachment, areproductquantitiesdivisible, istjdivisible, tpz, laborworktime, productioninonecycleunit, nextoperationafterproducedquantityunit, nextoperationafterproducedquantity, nextoperationafterproducedtype, machineutilization, timenextoperation, pieceworkcost, machineworktime, productioninonecycle, laborutilization, duration, numberofoperations, tj, machinehourlycost, laborhourlycost, issubcontracting, assignedtooperation, workstationtype_id, quantityofworkstations, createdate, updatedate, createuser, updateuser, techopercomptimecalculation_id, hascorrections, division_id, showinproductdata, productdatanumber, productionlinechange, productionline_id, entityversion) FROM stdin;
+COPY technologies_technologyoperationcomponent (id, technology_id, operation_id, parent_id, entitytype, priority, nodenumber, comment, attachment, areproductquantitiesdivisible, istjdivisible, tpz, laborworktime, productioninonecycleunit, nextoperationafterproducedquantityunit, nextoperationafterproducedquantity, nextoperationafterproducedtype, machineutilization, timenextoperation, pieceworkcost, machineworktime, productioninonecycle, laborutilization, duration, numberofoperations, tj, machinehourlycost, laborhourlycost, issubcontracting, assignedtooperation, workstationtype_id, quantityofworkstations, createdate, updatedate, createuser, updateuser, techopercomptimecalculation_id, hascorrections, division_id, showinproductdata, productdatanumber, productionlinechange, productionline_id, entityversion, technologicalprocesslist_id) FROM stdin;
 \.
 
 
@@ -41633,6 +42076,14 @@ ALTER TABLE ONLY costcalculation_componentcost
 
 ALTER TABLE ONLY costcalculation_costcalculation
     ADD CONSTRAINT costcalculation_costcalculation_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: costcalculation_standardlaborcost_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY costcalculation_standardlaborcost
+    ADD CONSTRAINT costcalculation_standardlaborcost_pkey PRIMARY KEY (id);
 
 
 --
@@ -44140,6 +44591,14 @@ ALTER TABLE ONLY technologies_operationskill
 
 
 --
+-- Name: technologies_productbysizegroup_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_productbysizegroup
+    ADD CONSTRAINT technologies_productbysizegroup_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: technologies_productcomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -44180,6 +44639,30 @@ ALTER TABLE ONLY technologies_qualitycardstatechange
 
 
 --
+-- Name: technologies_technologicalprocess_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_technologicalprocess
+    ADD CONSTRAINT technologies_technologicalprocess_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: technologies_technologicalprocesscomponent_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_technologicalprocesscomponent
+    ADD CONSTRAINT technologies_technologicalprocesscomponent_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: technologies_technologicalprocesslist_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_technologicalprocesslist
+    ADD CONSTRAINT technologies_technologicalprocesslist_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: technologies_technology_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -44201,6 +44684,14 @@ ALTER TABLE ONLY technologies_technologyattachment
 
 ALTER TABLE ONLY technologies_technologygroup
     ADD CONSTRAINT technologies_technologygroup_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: technologies_technologyinputproducttype_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_technologyinputproducttype
+    ADD CONSTRAINT technologies_technologyinputproducttype_pkey PRIMARY KEY (id);
 
 
 --
@@ -46233,7 +46724,10 @@ CREATE RULE "_RETURN" AS
             WHEN (productiontracking.technologyoperationcomponent_id IS NULL) THEN ( SELECT sum(productioncountingquantity_1.plannedquantity) AS sum)
             ELSE ( SELECT sum(productioncountingquantity_2.plannedquantity) AS sum)
         END AS plannedquantity,
-    trackingoperationproductincomponent.usedquantity,
+        CASE
+            WHEN (usedbatch.id IS NULL) THEN trackingoperationproductincomponent.usedquantity
+            ELSE usedbatch.quantity
+        END AS usedquantity,
     batch.number AS batchnumber
    FROM ((((((productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent
      LEFT JOIN productioncounting_productiontracking productiontracking ON ((productiontracking.id = trackingoperationproductincomponent.productiontracking_id)))
@@ -46243,7 +46737,7 @@ CREATE RULE "_RETURN" AS
      LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_1 ON (((productioncountingquantity_1.order_id = productiontracking.order_id) AND (productioncountingquantity_1.product_id = trackingoperationproductincomponent.product_id) AND ((productioncountingquantity_1.role)::text = '01used'::text))))
      LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_2 ON (((productioncountingquantity_2.order_id = productiontracking.order_id) AND (productioncountingquantity_2.technologyoperationcomponent_id = productiontracking.technologyoperationcomponent_id) AND (productioncountingquantity_2.product_id = trackingoperationproductincomponent.product_id) AND ((productioncountingquantity_2.role)::text = '01used'::text))))
   WHERE ((productiontracking.state)::text <> ALL (ARRAY[(('03declined'::text)::character varying)::text, (('04corrected'::text)::character varying)::text]))
-  GROUP BY trackingoperationproductincomponent.id, productiontracking.id, product.id, product.number, product.unit, trackingoperationproductincomponent.usedquantity, productiontracking.technologyoperationcomponent_id, batch.number;
+  GROUP BY trackingoperationproductincomponent.id, productiontracking.id, product.id, product.number, product.unit, trackingoperationproductincomponent.usedquantity, productiontracking.technologyoperationcomponent_id, usedbatch.id, usedbatch.quantity, batch.number;
 
 
 --
@@ -46309,42 +46803,6 @@ CREATE RULE "_RETURN" AS
      LEFT JOIN productionlines_productionline productionline ON ((productionline.id = technology.productionline_id)))
      LEFT JOIN technologies_qualitycard qualitycard ON ((qualitycard.id = technology.qualitycard_id)))
   GROUP BY technology.id, product.number, product.globaltypeofmaterial, tg.number, division.name, product.name, tcontext.number, technologystatechange.dateandtime, productionline.number, assortment.name, qualitycard.number;
-
-
---
--- Name: _RETURN; Type: RULE; Schema: public; Owner: -
---
-
-CREATE RULE "_RETURN" AS
-    ON SELECT TO technologies_operationproductincomponentdto DO INSTEAD  SELECT opic.id,
-    (toc.id)::integer AS operationcomponentid,
-    product.id AS product_id,
-    (product.id)::integer AS productid,
-    product.number AS productnumber,
-    product.name AS productname,
-    product.unit AS productunit,
-    opic.quantity,
-    opic.priority,
-    opic.itemnumberintheexplodedview,
-    op.name AS operationname,
-    toc.nodenumber,
-    (tech.id)::integer AS technologyid,
-    tech.name AS technologyname,
-    tech.state AS technologystate,
-    tech.number AS technologynumber,
-    tech.master AS mastertechnology,
-    tech.active AS activetechnology,
-    tech.technologytype,
-    (count(at.id) > 0) AS hasacceptedtechnology,
-    (count(ct.id) > 0) AS hascheckedtechnology
-   FROM ((((((technologies_operationproductincomponent opic
-     LEFT JOIN technologies_technologyoperationcomponent toc ON ((toc.id = opic.operationcomponent_id)))
-     LEFT JOIN technologies_operation op ON ((op.id = toc.operation_id)))
-     LEFT JOIN basic_product product ON ((product.id = opic.product_id)))
-     LEFT JOIN technologies_technology tech ON ((tech.id = toc.technology_id)))
-     LEFT JOIN technologies_technology at ON (((at.product_id = opic.product_id) AND (at.technologytype IS NULL) AND (at.active = true) AND ((at.state)::text = '02accepted'::text))))
-     LEFT JOIN technologies_technology ct ON (((ct.product_id = opic.product_id) AND (ct.technologytype IS NULL) AND (ct.active = true) AND ((ct.state)::text = '05checked'::text))))
-  GROUP BY opic.id, toc.id, product.id, product.number, product.name, product.unit, opic.quantity, opic.priority, opic.itemnumberintheexplodedview, tech.name, tech.number, tech.state, tech.master, op.name, tech.active, tech.technologytype, tech.id;
 
 
 --
@@ -46503,6 +46961,44 @@ CREATE RULE "_RETURN" AS
      LEFT JOIN basic_additionalcode code ON ((code.product_id = product.id)))
      LEFT JOIN basic_size size ON ((size.id = product.size_id)))
   GROUP BY product.id, parent.name, assortment.name, model.name, size.number;
+
+
+--
+-- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE RULE "_RETURN" AS
+    ON SELECT TO technologies_operationproductincomponentdto DO INSTEAD  SELECT operationproductincomponent.id,
+    (technologyoperationcomponent.id)::integer AS operationcomponentid,
+    product.id AS product_id,
+    (product.id)::integer AS productid,
+    product.number AS productnumber,
+    product.name AS productname,
+    product.unit AS productunit,
+    operationproductincomponent.quantity,
+    operationproductincomponent.priority,
+    operationproductincomponent.itemnumberintheexplodedview,
+    operation.name AS operationname,
+    technologyoperationcomponent.nodenumber,
+    (technology.id)::integer AS technologyid,
+    technology.name AS technologyname,
+    technology.state AS technologystate,
+    technology.number AS technologynumber,
+    technology.master AS mastertechnology,
+    technology.active AS activetechnology,
+    technology.technologytype,
+    (count(technologyaccepted.id) > 0) AS hasacceptedtechnology,
+    (count(technologychecked.id) > 0) AS hascheckedtechnology,
+    technologyinputproducttype.name AS technologyinputproducttypename
+   FROM (((((((technologies_operationproductincomponent operationproductincomponent
+     LEFT JOIN technologies_technologyoperationcomponent technologyoperationcomponent ON ((technologyoperationcomponent.id = operationproductincomponent.operationcomponent_id)))
+     LEFT JOIN technologies_operation operation ON ((operation.id = technologyoperationcomponent.operation_id)))
+     LEFT JOIN basic_product product ON ((product.id = operationproductincomponent.product_id)))
+     LEFT JOIN technologies_technology technology ON ((technology.id = technologyoperationcomponent.technology_id)))
+     LEFT JOIN technologies_technology technologyaccepted ON (((technologyaccepted.product_id = operationproductincomponent.product_id) AND (technologyaccepted.technologytype IS NULL) AND (technologyaccepted.active = true) AND ((technologyaccepted.state)::text = '02accepted'::text))))
+     LEFT JOIN technologies_technology technologychecked ON (((technologychecked.product_id = operationproductincomponent.product_id) AND (technologychecked.technologytype IS NULL) AND (technologychecked.active = true) AND ((technologychecked.state)::text = '05checked'::text))))
+     LEFT JOIN technologies_technologyinputproducttype technologyinputproducttype ON ((technologyinputproducttype.id = operationproductincomponent.technologyinputproducttype_id)))
+  GROUP BY operationproductincomponent.id, technologyoperationcomponent.id, product.id, product.number, product.name, product.unit, operationproductincomponent.quantity, operationproductincomponent.priority, operationproductincomponent.itemnumberintheexplodedview, technology.name, technology.number, technology.state, technology.master, operation.name, technology.active, technology.technologytype, technology.id, technologyinputproducttype.name;
 
 
 --
@@ -53099,6 +53595,22 @@ ALTER TABLE ONLY basic_productattributevalue
 
 
 --
+-- Name: productbysizegroup_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_productbysizegroup
+    ADD CONSTRAINT productbysizegroup_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: productbysizegroup_sizegroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_productbysizegroup
+    ADD CONSTRAINT productbysizegroup_sizegroup_fkey FOREIGN KEY (sizegroup_id) REFERENCES basic_sizegroup(id) DEFERRABLE;
+
+
+--
 -- Name: productcatalognumbers_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -55979,6 +56491,70 @@ ALTER TABLE ONLY basic_substitutecomponent
 
 
 --
+-- Name: technologicalprocess_sizegroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_technologicalprocess
+    ADD CONSTRAINT technologicalprocess_sizegroup_fkey FOREIGN KEY (sizegroup_id) REFERENCES basic_sizegroup(id);
+
+
+--
+-- Name: technologicalprocess_technologicalprocessrate_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_technologicalprocess
+    ADD CONSTRAINT technologicalprocess_technologicalprocessrate_fkey FOREIGN KEY (technologicalprocessrate_id) REFERENCES basic_technologicalprocessrate(id);
+
+
+--
+-- Name: technologicalprocess_workstation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_technologicalprocess
+    ADD CONSTRAINT technologicalprocess_workstation_fkey FOREIGN KEY (workstation_id) REFERENCES basic_workstation(id);
+
+
+--
+-- Name: technologicalprocess_workstationtype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_technologicalprocess
+    ADD CONSTRAINT technologicalprocess_workstationtype_fkey FOREIGN KEY (workstationtype_id) REFERENCES basic_workstationtype(id);
+
+
+--
+-- Name: technologicalprocesscomponent_sizegroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_technologicalprocesscomponent
+    ADD CONSTRAINT technologicalprocesscomponent_sizegroup_fkey FOREIGN KEY (sizegroup_id) REFERENCES basic_sizegroup(id);
+
+
+--
+-- Name: technologicalprocesscomponent_technologicalprocess_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_technologicalprocesscomponent
+    ADD CONSTRAINT technologicalprocesscomponent_technologicalprocess_fkey FOREIGN KEY (technologicalprocess_id) REFERENCES technologies_technologicalprocess(id);
+
+
+--
+-- Name: technologicalprocesscomponent_technologicalprocesslist_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_technologicalprocesscomponent
+    ADD CONSTRAINT technologicalprocesscomponent_technologicalprocesslist_fkey FOREIGN KEY (technologicalprocesslist_id) REFERENCES technologies_technologicalprocesslist(id);
+
+
+--
+-- Name: technologicalprocesslist_operation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_technologicalprocesslist
+    ADD CONSTRAINT technologicalprocesslist_operation_fkey FOREIGN KEY (operation_id) REFERENCES technologies_operation(id);
+
+
+--
 -- Name: technologicalprocessrateitem_technologicalprocessrate_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -56152,6 +56728,14 @@ ALTER TABLE ONLY technologies_technologyoperationcomponent
 
 ALTER TABLE ONLY technologies_technologyoperationcomponent
     ADD CONSTRAINT technologyoperationcomponent_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES productionlines_productionline(id) DEFERRABLE;
+
+
+--
+-- Name: technologyoperationcomponent_technologicalprocesslist_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_technologyoperationcomponent
+    ADD CONSTRAINT technologyoperationcomponent_technologicalprocesslist_fkey FOREIGN KEY (technologicalprocesslist_id) REFERENCES technologies_technologicalprocesslist(id) DEFERRABLE;
 
 
 --

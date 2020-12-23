@@ -34,13 +34,14 @@ import com.qcadoo.model.api.FieldDefinition;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchResult;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductionCountingQuantityValidators {
@@ -117,7 +118,7 @@ public class ProductionCountingQuantityValidators {
             final Object newValue) {
         // I don't check if entity is updated or created (check null on id) because we should disallow also creating
         // of new ones if editing production progresses for accepted orders is locked.
-        if (BigDecimalUtils.valueEquals((BigDecimal) oldValue, (BigDecimal) newValue)) {
+        if (Objects.isNull(oldValue) || BigDecimalUtils.valueEquals((BigDecimal) oldValue, (BigDecimal) newValue)) {
             return true;
         }
         if (progressModifyLockHelper

@@ -28,8 +28,7 @@
        xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
-        <belongsTo name="order" model="order" plugin="orders"
-                           required="true" />
+        <belongsTo name="order" model="order" plugin="orders"/>
         <belongsTo name="technologyOperationComponent" model="technologyOperationComponent"
                            plugin="technologies" />
         <belongsTo name="product" model="product" plugin="basic"

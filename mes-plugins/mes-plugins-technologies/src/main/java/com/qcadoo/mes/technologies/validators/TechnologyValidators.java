@@ -40,9 +40,7 @@ public class TechnologyValidators {
     private ProductService productService;
 
     public boolean validatesWith(final DataDefinition technologyDD, final Entity technology) {
-        boolean isValid = true;
-
-        isValid = isValid && checkTechnologyDefault(technologyDD, technology);
+        boolean isValid = checkTechnologyDefault(technologyDD, technology);
         isValid = isValid && checkTechnologyPrototypeState(technologyDD, technology);
         isValid = isValid && productService.checkIfProductIsNotRemoved(technologyDD, technology);
 

@@ -7,6 +7,7 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
+import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.model.api.Entity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,9 @@ public class DocumentService {
 
     @Autowired
     private TranslationService translationService;
+
+    @Autowired
+    private DocumentStateChangeService documentStateChangeService;
 
     @Async
     public void createResourcesForDocument(Entity document) {
@@ -132,6 +136,8 @@ public class DocumentService {
         if (!document.isValid()) {
             LOG.info(failedMessage);
 
+            documentStateChangeService.buildStateChange(document, StateChangeStatus.FAILURE);
+
             return;
         }
 
@@ -175,6 +181,8 @@ public class DocumentService {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
 
             documentErrorsLogger.saveResourceStockLackErrorsToSystemLogs(document);
+
+            documentStateChangeService.buildStateChange(document.getId());
 
             LOG.info(failedMessage);
         } else {

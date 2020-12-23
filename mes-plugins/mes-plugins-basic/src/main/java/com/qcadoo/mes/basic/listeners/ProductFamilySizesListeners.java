@@ -45,6 +45,7 @@ public class ProductFamilySizesListeners {
             DataDefinition sizeDataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
                     BasicConstants.MODEL_SIZE);
             Entity productFamily = productDataDefinition.get(productId);
+            int errors = 0;
             for (Long sizeId : grid.getSelectedEntitiesIds()) {
                 Entity product = productDataDefinition.create();
                 product.setField(ProductFields.PARENT, productFamily);
@@ -59,7 +60,17 @@ public class ProductFamilySizesListeners {
                 product.setField(ProductFields.NAME, productFamily.getStringField(ProductFields.NAME));
                 product.setField(ProductFields.NUMBER,
                         productFamily.getStringField(ProductFields.NUMBER) + "-" + size.getStringField(SizeFields.NUMBER));
-                product.getDataDefinition().save(product);
+                product = product.getDataDefinition().save(product);
+                if (!product.isValid()) {
+                    errors = errors + 1;
+                    view.addMessage("basic.addProductFamilySizes.generateProducts.failure", ComponentState.MessageType.FAILURE,
+                            product.getStringField(ProductFields.NUMBER));
+                }
+            }
+            int entitiesWithoutErrors = grid.getSelectedEntitiesIds().size() - errors;
+            if (entitiesWithoutErrors > 0) {
+                view.addMessage("basic.addProductFamilySizes.generateProducts.success", ComponentState.MessageType.SUCCESS,
+                        "" + (entitiesWithoutErrors));
             }
         }
     }

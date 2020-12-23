@@ -29,8 +29,46 @@ public final class OperationProductInComponentDtoFields {
 
     }
 
+    public static final String OPERATION_COMPONENT = "operationComponent";
+
+    public static final String PRODUCT = "product";
+
+    public static final String OPERATION_COMPONENT_ID = "operationComponentId";
+
+    public static final String PRODUCT_ID = "productId";
+
+    public static final String PRODUCT_NUMBER = "productNumber";
+
+    public static final String PRODUCT_NAME = "productName";
+
+    public static final String PRODUCT_UNIT = "productUnit";
+
+    public static final String NODE_NUMBER = "nodeNumber";
+
+    public static final String OPERATION_NAME = "operationName";
+
+    public static final String TECHNOLOGY_ID = "technologyId";
+
+    public static final String TECHNOLOGY_NAME = "technologyName";
+
+    public static final String TECHNOLOGY_NUMBER = "technologyNumber";
+
+    public static final String TECHNOLOGY_TYPE = "technologyType";
+
+    public static final String PRIORITY = "priority";
+
+    public static final String QUANTITY = "quantity";
+
     public static final String HAS_ACCEPTED_TECHNOLOGY = "hasAcceptedTechnology";
 
+    public static final String MASTER_TECHNOLOGY = "masterTechnology";
+
     public static final String HAS_CHECKED_TECHNOLOGY = "hasCheckedTechnology";
+
+    public static final String ACTIVE_TECHNOLOGY = "activeTechnology";
+
+    public static final String TECHNOLOGY_STATE = "technologyState";
+
+    public static final String TECHNOLOGY_INPUT_PRODUCT_TYPE_NAME = "technologyInputProductTypeName";
 
 }

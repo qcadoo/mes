@@ -34,7 +34,7 @@ public class TechnologicalProcessRateItemHooks {
             Entity previousComponent = maybePreviousComponent.get();
             Date originalDateTo = previousComponent.getDateField(L_DATE_TO);
             if (originalDateTo == null || originalDateTo.compareTo(dateFrom.toDate()) != 0) {
-                previousComponent.setField(L_DATE_TO, dateFrom.toDate());
+                previousComponent.setField(L_DATE_TO, new DateTime(dateFrom.toDate()).minusDays(1).toDate());
                 Entity savedPrevious = dataDefinition.save(previousComponent);
                 if (!savedPrevious.isValid()) {
                     savedPrevious.getErrors().entrySet().stream()

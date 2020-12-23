@@ -37,7 +37,7 @@
             <validatesLength max="1024"/>
         </string>
         <decimal name="currentRate" persistent="false"/>
-        <hasMany name="technologicalProcessRateItems" joinField="technologicalProcessRate" model="technologicalProcessRateItem"/>
+        <hasMany name="technologicalProcessRateItems" joinField="technologicalProcessRate" model="technologicalProcessRateItem" cascade="delete"/>
 
     </fields>
 
@@ -45,6 +45,8 @@
         <onSave
                 class="com.qcadoo.mes.basic.hooks.TechnologicalProcessRateHooks"
                 method="onSave"/>
+        <onView class="com.qcadoo.mes.basic.hooks.TechnologicalProcessRateHooks"
+                method="onView" />
     </hooks>
 
 </model>

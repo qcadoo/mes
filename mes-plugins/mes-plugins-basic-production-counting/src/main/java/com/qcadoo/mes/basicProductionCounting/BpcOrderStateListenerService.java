@@ -23,13 +23,16 @@
  */
 package com.qcadoo.mes.basicProductionCounting;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import com.google.common.collect.Lists;
+import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.states.StateChangeContext;
-import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.Entity;
+
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class BpcOrderStateListenerService {
@@ -40,16 +43,23 @@ public class BpcOrderStateListenerService {
     public void onAccept(final StateChangeContext stateChangeContext) {
         final Entity order = stateChangeContext.getOwner();
         final Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        final Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
 
-        if (technology == null) {
-            stateChangeContext.addValidationError("orders.order.technology.isEmpty");
-        } else {
-            boolean productToProductGroupTechnologyDoesntExists = basicProductionCountingService.createProductionCounting(order);
-            if (productToProductGroupTechnologyDoesntExists) {
-                stateChangeContext.addMessage(
-                        "basicProductionCounting.productionCountingQuantity.error.productToProductGroupTechnologyDoesntExists",
-                        StateMessageType.INFO);
+        if (Objects.nonNull(technology.getId()) && Objects.nonNull(technologyPrototype.getId())
+                && !technology.getId().equals(technologyPrototype.getId())) {
+            for (Entity pcq : order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES)) {
+                pcq.getDataDefinition().delete(pcq.getId());
             }
+            for (Entity bpc : order.getHasManyField(OrderFieldsBPC.BASIC_PRODUCTION_COUNTINGS)) {
+                bpc.getDataDefinition().delete(bpc.getId());
+            }
+            for (Entity pqor : order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS)) {
+                pqor.getDataDefinition().delete(pqor.getId());
+            }
+            order.setField(OrderFieldsBPC.BASIC_PRODUCTION_COUNTINGS, Lists.newArrayList());
+            order.setField(OrderFieldsBPC.PRODUCTION_COUNTING_OPERATION_RUNS, Lists.newArrayList());
+            order.setField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES, Lists.newArrayList());
+            stateChangeContext.setOwner(order);
         }
     }
 

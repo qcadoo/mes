@@ -72,6 +72,16 @@ public final class TechnologiesConstants {
 
     public static final String MODEL_QUALITY_CARD_STATE_CHANGE = "qualityCardStateChange";
 
+    public static final String MODEL_TECHNOLOGICAL_PROCESS = "technologicalProcess";
+
+    public static final String MODEL_TECHNOLOGICAL_PROCESS_COMPONENT = "technologicalProcessComponent";
+
+    public static final String MODEL_TECHNOLOGICAL_PROCESS_LIST = "technologicalProcessList";
+
+    public static final String MODEL_TECHNOLOGY_INPUT_PRODUCT_TYPE = "technologyInputProductType";
+
+    public static final String MODEL_PRODUCT_BY_SIZE_GROUP = "productBySizeGroup";
+
     // VIEW
 
     public static final String VIEW_OPERATION_DETAILS = "operationDetails";

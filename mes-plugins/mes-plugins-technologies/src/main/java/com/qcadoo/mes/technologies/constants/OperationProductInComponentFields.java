@@ -43,10 +43,16 @@ public final class OperationProductInComponentFields {
 
     public static final String GIVEN_UNIT = "givenUnit";
 
-    public static final String UNIT = "unit";
-
     public static final String QUANTITY_FORMULA = "quantityFormula";
 
+    public static final String UNIT = "unit";
+
     public static final String ITEM_NUMBER_IN_THE_EXPLODED_VIEW = "itemNumberInTheExplodedView";
+
+    public static final String TECHNOLOGY_INPUT_PRODUCT_TYPE = "technologyInputProductType";
+
+    public static final String DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES = "differentProductsInDifferentSizes";
+
+    public static final String PRODUCT_BY_SIZE_GROUPS = "productBySizeGroups";
 
 }

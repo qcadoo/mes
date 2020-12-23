@@ -64,6 +64,8 @@ public class ProductsBySizeController {
                     technologyServiceO.getDefaultTechnology(spProduct.getBelongsToField(SalesPlanProductFields.PRODUCT)));
 
             spProduct.setField(SalesPlanProductFields.PLANNED_QUANTITY, position.getValue());
+            spProduct.setField(SalesPlanProductFields.ORDERED_QUANTITY, 0);
+            spProduct.setField(SalesPlanProductFields.SURPLUS_FROM_PLAN, position.getValue());
             spProduct = spProduct.getDataDefinition().save(spProduct);
             if (!spProduct.isValid()) {
                 valid = false;

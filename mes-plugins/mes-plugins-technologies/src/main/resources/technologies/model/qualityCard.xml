@@ -44,8 +44,6 @@
 
 		<hasMany name="technologies" model="technology" joinField="qualityCard"/>
 	</fields>
-	<hooks>
-		
-	</hooks>
+	<hooks/>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

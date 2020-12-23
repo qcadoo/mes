@@ -54,14 +54,12 @@
                                        hasLabel="false">
                                 <option type="required" value="true"/>
                                 <option type="labelWidth" value="10"/>
-                                <option type="alingment" value="right"/>
                             </component>
                         </layoutElement>
                         <layoutElement column="1" row="2" width="4">
                             <component type="time" name="tj" field="#{form}.tj"
                                        reference="tj" required="true">
                                 <option type="labelWidth" value="60"/>
-                                <option type="alingment" value="right"/>
                             </component>
                         </layoutElement>
                     </component>
@@ -149,7 +147,6 @@
                                    reference="nextOperationAfterProducedQuantityUNIT"
                                    defaultVisible="false" hasLabel="false">
                             <option type="required" value="true"/>
-                            <option type="alingment" value="right"/>
                         </component>
                     </layoutElement>
                 </component>

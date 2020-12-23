@@ -40,6 +40,7 @@ import static com.qcadoo.mes.orders.constants.OrderFields.DATE_FROM;
 import static com.qcadoo.mes.orders.constants.OrderFields.DATE_TO;
 import static com.qcadoo.mes.orders.constants.OrderFields.DONE_QUANTITY;
 import static com.qcadoo.mes.orders.constants.OrderFields.PRODUCTION_LINE;
+import static com.qcadoo.mes.orders.constants.OrderFields.TECHNOLOGY_PROTOTYPE;
 
 @Service
 public class OrderStateValidationService {
@@ -50,12 +51,12 @@ public class OrderStateValidationService {
     private static final String ENTITY_IS_NULL = "entity is null";
 
     public void validationOnAccepted(final StateChangeContext stateChangeContext) {
-        final List<String> references = Arrays.asList(DATE_TO, DATE_FROM, PRODUCTION_LINE);
+        final List<String> references = Arrays.asList(DATE_TO, DATE_FROM, PRODUCTION_LINE, TECHNOLOGY_PROTOTYPE);
         checkRequired(references, stateChangeContext);
     }
 
     public void validationOnInProgress(final StateChangeContext stateChangeContext) {
-        final List<String> references = Arrays.asList(DATE_TO, DATE_FROM);
+        final List<String> references = Arrays.asList(DATE_TO, DATE_FROM, TECHNOLOGY_PROTOTYPE);
         checkRequired(references, stateChangeContext);
     }
 

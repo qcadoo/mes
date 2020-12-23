@@ -25,6 +25,7 @@ package com.qcadoo.mes.materialFlowResources.constants;
 
 public final class MaterialFlowResourcesConstants {
 
+
     private MaterialFlowResourcesConstants() {
 
     }
@@ -49,6 +50,8 @@ public final class MaterialFlowResourcesConstants {
     public static final String MODEL_RESOURCE = "resource";
 
     public static final String MODEL_DOCUMENT = "document";
+
+    public static final String MODEL_DOCUMENT_STATE_CHANGE = "documentStateChange";
 
     public static final String MODEL_POSITION = "position";
 

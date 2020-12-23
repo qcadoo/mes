@@ -111,6 +111,10 @@
                     </script>
                 </smallButton>
             </group>
+            <group name="actions" defaultAuthorizationRole="ROLE_SUPERADMIN">
+                <bigButton name="generateProductionCounting" icon="calendarIcon24.png"
+                           action="#{grid}.fireEvent(generateProductionCounting)"/>
+            </group>
         </ribbon>
 
         <component type="grid" name="orders" reference="grid">
@@ -251,6 +255,7 @@
             <option type="multiselect" value="true"/>
 
             <listener event="changeState" class="com.qcadoo.mes.orders.listeners.OrdersListListeners" method="changeState"/>
+            <listener event="generateProductionCounting" class="com.qcadoo.mes.orders.listeners.OrdersListListeners" method="generateProductionCounting"/>
         </component>
 
         <option type="fixedHeight" value="true"/>

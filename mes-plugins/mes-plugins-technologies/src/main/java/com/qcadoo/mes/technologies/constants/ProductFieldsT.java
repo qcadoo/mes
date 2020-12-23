@@ -37,4 +37,6 @@ public final class ProductFieldsT {
 
     public static final String TECHNOLOGY_GROUP = "technologyGroup";
 
+    public static final String PRODUCT_BY_SIZE_GROUPS = "productBySizeGroups";
+
 }

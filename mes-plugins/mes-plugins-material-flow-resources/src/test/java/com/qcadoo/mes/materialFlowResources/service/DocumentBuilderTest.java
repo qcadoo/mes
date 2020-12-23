@@ -50,6 +50,9 @@ public class DocumentBuilderTest {
     private ReceiptDocumentForReleaseHelper receiptDocumentForReleaseHelper;
 
     @Mock
+    private DocumentStateChangeService documentStateChangeService;
+
+    @Mock
     private TransactionStatus transactionStatus;
 
     @Before
@@ -73,7 +76,7 @@ public class DocumentBuilderTest {
         given(currentUser.getId()).willReturn(1L);
 
         documentBuilder = new DocumentBuilder(dataDefinitionService, resourceManagementService, receiptDocumentForReleaseHelper,
-                userService.getCurrentUserEntity());
+                documentStateChangeService, userService.getCurrentUserEntity());
     }
 
     @Test
