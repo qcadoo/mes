@@ -60,8 +60,7 @@ public class OPICDetailsListeners {
     @Autowired
     private NumberService numberService;
 
-    public void calculateQuantityFormula(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
+    public void calculateQuantityFormula(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent operationProductInComponentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity operationProductInComponent = operationProductInComponentForm.getPersistedEntityWithIncludedFormValues();
@@ -101,7 +100,9 @@ public class OPICDetailsListeners {
 
                             operationProductInComponent.setField(OperationProductInComponentFields.QUANTITY, convertedQuantity);
                         } else {
-                            operationProductInComponent.addError(operationProductInComponent.getDataDefinition().getField(OperationProductInComponentFields.GIVEN_QUANTITY),
+                            operationProductInComponent.addError(
+                                    operationProductInComponent.getDataDefinition()
+                                            .getField(OperationProductInComponentFields.GIVEN_QUANTITY),
                                     "technologies.operationProductInComponent.validate.error.missingUnitConversion");
 
                             operationProductInComponent.setField(OperationProductInComponentFields.QUANTITY, null);
@@ -110,11 +111,15 @@ public class OPICDetailsListeners {
 
                     operationProductInComponentForm.setEntity(operationProductInComponent);
                 } else {
-                    operationProductInComponent.addError(operationProductInComponent.getDataDefinition().getField(OperationProductInComponentFields.QUANTITY_FORMULA),
+                    operationProductInComponent.addError(
+                            operationProductInComponent.getDataDefinition()
+                                    .getField(OperationProductInComponentFields.QUANTITY_FORMULA),
                             "technologies.operationProductInComponent.validate.error.badFormula");
                 }
             } catch (Exception ex) {
-                operationProductInComponent.addError(operationProductInComponent.getDataDefinition().getField(OperationProductInComponentFields.QUANTITY_FORMULA),
+                operationProductInComponent.addError(
+                        operationProductInComponent.getDataDefinition()
+                                .getField(OperationProductInComponentFields.QUANTITY_FORMULA),
                         "technologies.operationProductInComponent.validate.error.badFormula");
             } finally {
                 operationProductInComponentForm.setEntity(operationProductInComponent);
@@ -133,14 +138,17 @@ public class OPICDetailsListeners {
     }
 
     private void calculateQuantity(final ViewDefinitionState view, final Entity operationProductInComponent) {
-        Entity technologyInputProductType = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE);
+        Entity technologyInputProductType = operationProductInComponent
+                .getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE);
         Entity product = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
         String givenUnit = operationProductInComponent.getStringField(OperationProductInComponentFields.GIVEN_UNIT);
 
+        FieldComponent unitField = (FieldComponent) view.getComponentByReference(OperationProductInComponentFields.UNIT);
         FieldComponent givenQuantityField = (FieldComponent) view
                 .getComponentByReference(OperationProductInComponentFields.GIVEN_QUANTITY);
 
-        if ((Objects.isNull(technologyInputProductType) && Objects.isNull(product)) || Objects.isNull(givenUnit) || givenUnit.isEmpty() || Objects.isNull(givenQuantityField.getFieldValue())) {
+        if ((Objects.isNull(technologyInputProductType) && Objects.isNull(product)) || Objects.isNull(givenUnit)
+                || givenUnit.isEmpty() || Objects.isNull(givenQuantityField.getFieldValue())) {
             return;
         }
 
@@ -166,7 +174,9 @@ public class OPICDetailsListeners {
 
                             operationProductInComponent.setField(OperationProductInComponentFields.QUANTITY, convertedQuantity);
                         } else {
-                            operationProductInComponent.addError(operationProductInComponent.getDataDefinition().getField(OperationProductInComponentFields.GIVEN_QUANTITY),
+                            operationProductInComponent.addError(
+                                    operationProductInComponent.getDataDefinition()
+                                            .getField(OperationProductInComponentFields.GIVEN_QUANTITY),
                                     "technologies.operationProductInComponent.validate.error.missingUnitConversion");
 
                             operationProductInComponent.setField(OperationProductInComponentFields.QUANTITY, null);
@@ -175,6 +185,9 @@ public class OPICDetailsListeners {
                 } else {
                     operationProductInComponent.setField(OperationProductInComponentFields.QUANTITY, givenQuantity);
                     operationProductInComponent.setField(OperationProductInComponentFields.UNIT, givenUnit);
+
+                    unitField.setFieldValue(givenUnit);
+                    unitField.requestComponentUpdateState();
                 }
             } else {
                 operationProductInComponent.setField(OperationProductInComponentFields.QUANTITY, null);
