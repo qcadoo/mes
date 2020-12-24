@@ -67,11 +67,15 @@ public class DocumentStateChangeService {
     }
 
     public void buildSuccessfulStateChange(Entity document) {
-        Entity stateChangeEntity = internalBuild(DocumentState.ACCEPTED);
-        stateChangeEntity.setField(SOURCE_STATE, DocumentState.DRAFT.getStringValue());
-        List<Entity> newStateChanges = Lists.newArrayList(stateChangeEntity);
-        newStateChanges.addAll(document.getHasManyField(DocumentFields.STATE_CHANGES));
-        document.setField(DocumentFields.STATE_CHANGES, newStateChanges);
+        List<Entity> stateChanges = document.getHasManyField(DocumentFields.STATE_CHANGES);
+        if (stateChanges.stream().noneMatch(e -> DocumentState.ACCEPTED.getStringValue().equals(e.getStringField(TARGET_STATE))
+                && StateChangeStatus.SUCCESSFUL.getStringValue().equals(e.getStringField(STATUS)))) {
+            Entity stateChangeEntity = internalBuild(DocumentState.ACCEPTED);
+            stateChangeEntity.setField(SOURCE_STATE, DocumentState.DRAFT.getStringValue());
+            List<Entity> newStateChanges = Lists.newArrayList(stateChangeEntity);
+            newStateChanges.addAll(stateChanges);
+            document.setField(DocumentFields.STATE_CHANGES, newStateChanges);
+        }
     }
 
     private Entity internalBuild(DocumentState targetState) {
