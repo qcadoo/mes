@@ -1,6 +1,6 @@
 package com.qcadoo.mes.materialFlowResources.service;
 
-import com.google.common.collect.Lists;
+import com.beust.jcommander.internal.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
@@ -18,6 +18,7 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import static com.qcadoo.mes.materialFlowResources.constants.DocumentStateChangeConstants.*;
@@ -64,9 +65,14 @@ public class DocumentStateChangeService {
         });
     }
 
-    public Entity buildInitialStateChange(Entity document) {
-        Entity stateChangeEntity = internalBuild(DocumentState.DRAFT, StateChangeStatus.SUCCESSFUL);
-        document.setField(DocumentFields.STATE_CHANGES, Lists.newArrayList(stateChangeEntity));
+    public Entity buildStateChangeForNewDocument(Entity document, DocumentState targetState) {
+        Entity stateChangeEntity = internalBuild(targetState, StateChangeStatus.SUCCESSFUL);
+        List<Entity> stateChanges = document.getHasManyField(DocumentFields.STATE_CHANGES);
+        List<Entity> newStateChanges = Lists.newArrayList(stateChangeEntity);
+        if (!stateChanges.isEmpty()) {
+            newStateChanges.addAll(stateChanges);
+        }
+        document.setField(DocumentFields.STATE_CHANGES, newStateChanges);
         return stateChangeEntity;
     }
 
