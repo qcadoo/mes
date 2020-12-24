@@ -354,7 +354,7 @@ public class DocumentBuilder {
 
         if (!savedDocument.isValid()) {
             if (DocumentState.ACCEPTED.getStringValue().equals(savedDocument.getStringField(DocumentFields.STATE))) {
-                documentStateChangeService.buildStateChange(savedDocument.getId());
+                documentStateChangeService.buildFailureStateChangeAfterRollback(savedDocument.getId());
             }
             strategy.accept(new BuildContext(savedDocument, invalidPositions));
         }
