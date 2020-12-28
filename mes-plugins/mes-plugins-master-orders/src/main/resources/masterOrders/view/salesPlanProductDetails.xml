@@ -51,7 +51,7 @@
                                 value="#number + ' - ' + #name"/>
                         <option type="fieldCode" value="number"/>
                         <criteriaModifier
-                                class="com.qcadoo.mes.masterOrders.criteriaModifier.ProductCriteriaModifiersO"
+                                class="com.qcadoo.mes.masterOrders.criteriaModifier.ProductCriteriaModifiersMO"
                                 method="showNotAssignedProducts"/>
                         <listener event="onSelectedEntityChange"
                                   class="com.qcadoo.mes.masterOrders.listeners.SalesPlanProductDetailsListeners"
@@ -70,8 +70,8 @@
                                 value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                         <option type="fieldCode" value="number"/>
                         <criteriaModifier
-                                class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
-                                method="showAcceptedPatternTechnology"/>
+                                class="com.qcadoo.mes.orders.criteriaModifiers.TechnologyCriteriaModifiersO"
+                                method="showAcceptedPatternTechnologyForProduct"/>
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="3" width="4">
