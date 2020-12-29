@@ -43,6 +43,8 @@
         <integer name="commissionedPositionQuantity"/>
         <integer name="quantityForCommission"/>
         <string name="description"/>
+        <string name="salesPlanNumber"/>
+        <string name="salesPlanName"/>
     </fields>
 
     <masterModel plugin="masterOrders" model="masterOrder"/>
