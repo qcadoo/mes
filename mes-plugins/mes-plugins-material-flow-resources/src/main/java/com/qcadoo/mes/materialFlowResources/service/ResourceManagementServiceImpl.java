@@ -31,18 +31,45 @@ import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductAttributeValueFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.materialFlowResources.constants.*;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentPositionParametersFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
+import com.qcadoo.mes.materialFlowResources.constants.PositionAttributeValueFields;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
+import com.qcadoo.mes.materialFlowResources.constants.ResourceAttributeValueFields;
+import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
+import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
 import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
 import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessageCopyToEntityHelper;
 import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessageHolder;
 import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessageHolderFactory;
-import com.qcadoo.model.api.*;
-import com.qcadoo.model.api.search.*;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriterion;
+import com.qcadoo.model.api.search.SearchOrder;
+import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.exception.LockAcquisitionException;
 import org.slf4j.Logger;
@@ -51,12 +78,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class ResourceManagementServiceImpl implements ResourceManagementService {
@@ -483,7 +504,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         String givenUnit = position.getStringField(PositionFields.GIVEN_UNIT);
 
         for (Entity resource : resources) {
-            Entity newPosition = createNewPosition(position, product, resource);
+            Entity newPosition = createNewPosition(position, product, resource, newPositions.size());
 
             if (isFromOrder) {
                 quantity = recalculateQuantity(quantity, resource.getDecimalField(ResourceFields.CONVERSION), givenUnit,
@@ -654,7 +675,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         String givenUnit = position.getStringField(PositionFields.GIVEN_UNIT);
 
         for (Entity resource : resources) {
-            Entity newPosition = createNewPosition(position, product, resource);
+            Entity newPosition = createNewPosition(position, product, resource, newPositions.size());
 
             if (isFromOrder) {
                 quantity = recalculateQuantity(quantity, resource.getDecimalField(ResourceFields.CONVERSION), givenUnit,
@@ -1011,7 +1032,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                     + position.toString());
             LOGGER.info("RESOURCE USED: " + resource.toString());
 
-            Entity newPosition = createNewPosition(position, product, resource);
+            Entity newPosition = createNewPosition(position, product, resource, newPositions.size());
 
             newPosition.setField(PositionFields.RESOURCE, resource);
 
@@ -1046,7 +1067,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         return newPositions;
     }
 
-    private Entity createNewPosition(final Entity position, final Entity product, final Entity resource) {
+    private Entity createNewPosition(final Entity position, final Entity product, final Entity resource, int newPositionsCount) {
         Entity newPosition = position.getDataDefinition().create();
 
         newPosition.setField(PositionFields.PRODUCT, product);
@@ -1069,6 +1090,13 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         newPosition.setField(PositionFields.PICKING_DATE, position.getField(PositionFields.PICKING_DATE));
         newPosition.setField(PositionFields.POSITION_ATTRIBUTE_VALUES, prepareAttributes(resource));
 
+        if(Objects.nonNull(position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION))) {
+            if(newPositionsCount == 0) {
+                newPosition.setField(PositionFields.REST_AFTER_SHIFT_DISPOSITION, position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION));
+            } else {
+                newPosition.setField(PositionFields.REST_AFTER_SHIFT_DISPOSITION, BigDecimal.ZERO);
+            }
+        }
         return newPosition;
     }
 
