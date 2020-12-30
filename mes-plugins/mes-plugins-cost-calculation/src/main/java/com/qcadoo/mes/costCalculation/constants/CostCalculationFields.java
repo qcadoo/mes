@@ -33,19 +33,19 @@ public final class CostCalculationFields {
 
     public static final String NUMBER = "number";
 
-    public static final String PRODUCT = "product";
-
-    public static final String ORDER = "order";
-
     public static final String QUANTITY = "quantity";
 
-    public static final String DEFAULT_TECHNOLOGY = "defaultTechnology";
+    public static final String TECHNOLOGIES = "technologies";
 
-    public static final String TECHNOLOGY = "technology";
+    public static final String MATERIAL_COSTS_USED = "materialCostsUsed";
 
-    public static final String PRODUCTION_LINE = "productionLine";
+    public static final String USE_NOMINAL_COST_PRICE_NOT_SPECIFIED = "useNominalCostPriceNotSpecified";
 
-    public static final String CALCULATE_MATERIAL_COSTS_MODE = "calculateMaterialCostsMode";
+    public static final String STANDARD_LABOR_COST = "standardLaborCost";
+
+    public static final String AVERAGE_MACHINE_HOURLY_COST = "averageMachineHourlyCost";
+
+    public static final String AVERAGE_LABOR_HOURLY_COST = "averageLaborHourlyCost";
 
     public static final String SOURCE_OF_OPERATION_COSTS = "sourceOfOperationCosts";
 
@@ -98,10 +98,6 @@ public final class CostCalculationFields {
     public static final String PRINT_COST_NORMS_OF_MATERIALS = "printCostNormsOfMaterials";
 
     public static final String PRINT_OPERATION_NORMS = "printOperationNorms";
-
-    public static final String SOURCE_OF_MATERIAL_COSTS = "sourceOfMaterialCosts";
-
-    public static final String CALCULATE_OPERATION_COSTS_MODE = "calculateOperationCostsMode";
 
     public static final String DATE = "date";
 

@@ -45,7 +45,8 @@
                             </component>
                         </layoutElement>
                         <layoutElement column="1" row="2">
-                            <component type="checkbox" name="useNominalCostPriceNotSpecified" field="#{form}.useNominalCostPriceNotSpecified"
+                            <component type="checkbox" name="useNominalCostPriceNotSpecified"
+                                       field="#{form}.useNominalCostPriceNotSpecified"
                                        reference="useNominalCostPriceNotSpecified" hasDescription="true">
                                 <option type="labelWidth" value="40"/>
                             </component>
@@ -203,7 +204,6 @@
                             <component type="input" name="profitProc"
                                        defaultEnabled="false" hasLabel="false" reference="profitProc">
                                 <option type="textRepresentationOnDisabled" value="true"/>
-                                <option type="labelWidth" value="40"/>
                             </component>
                         </layoutElement>
                     </component>

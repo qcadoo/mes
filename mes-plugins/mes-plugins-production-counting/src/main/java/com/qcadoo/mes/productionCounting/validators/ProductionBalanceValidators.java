@@ -25,8 +25,8 @@ package com.qcadoo.mes.productionCounting.validators;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode;
-import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
+import com.qcadoo.mes.productionCounting.constants.CalculateMaterialCostsMode;
+import com.qcadoo.mes.productionCounting.constants.SourceOfMaterialCosts;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;

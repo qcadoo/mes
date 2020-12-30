@@ -33,7 +33,7 @@ public enum ProductsCostFields {
 
     private final String strValue;
 
-    private ProductsCostFields(final String mode, final String strValue) {
+    ProductsCostFields(final String mode, final String strValue) {
         this.mode = mode;
         this.strValue = strValue;
     }

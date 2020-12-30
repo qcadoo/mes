@@ -21,31 +21,30 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.costCalculation.constants;
+package com.qcadoo.mes.productionCounting.constants;
 
-import org.apache.commons.lang3.StringUtils;
+public enum SourceOfMaterialCosts {
+    CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT("01currentGlobalDefinitionsInProduct"), FROM_ORDERS_MATERIAL_COSTS(
+            "02fromOrdersMaterialCosts");
 
-public enum CalculateMaterialCostsMode {
-    NOMINAL("01nominal"), AVERAGE("02average"), LAST_PURCHASE("03lastPurchase"), AVERAGE_OFFER_COST("04averageOfferCost"), LAST_OFFER_COST(
-            "05lastOfferCost"), COST_FOR_ORDER("06costForOrder");
+    private String sourceOfMaterialCosts;
 
-    private final String calculateMaterialCostsMode;
-
-    private CalculateMaterialCostsMode(final String calculateMaterialCostsMode) {
-        this.calculateMaterialCostsMode = calculateMaterialCostsMode;
+    SourceOfMaterialCosts(final String sourceOfMaterialCosts) {
+        this.sourceOfMaterialCosts = sourceOfMaterialCosts;
     }
 
     public String getStringValue() {
-        return calculateMaterialCostsMode;
+        return sourceOfMaterialCosts;
     }
 
-    public static CalculateMaterialCostsMode parseString(final String rawStringValue) {
-        for (CalculateMaterialCostsMode calculateMaterialCostsMode : values()) {
-            if (StringUtils.equalsIgnoreCase(rawStringValue, calculateMaterialCostsMode.getStringValue())) {
-                return calculateMaterialCostsMode;
-            }
+    public static SourceOfMaterialCosts parseString(final String string) {
+        if ("01currentGlobalDefinitionsInProduct".equals(string)) {
+            return CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT;
+        } else if ("02fromOrdersMaterialCosts".equals(string)) {
+            return FROM_ORDERS_MATERIAL_COSTS;
         }
-        throw new IllegalArgumentException(String.format("Cannot parse CalculateMaterialCostMode from '%s'", rawStringValue));
+
+        throw new IllegalStateException("Unsupported sourceOfMaterialCosts: " + string);
     }
 
 }

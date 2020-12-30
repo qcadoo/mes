@@ -23,12 +23,13 @@
  */
 package com.qcadoo.mes.technologies.criteriaModifiers;
 
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
-
-import org.springframework.stereotype.Service;
 
 @Service
 public class TechnologyCriteriaModifiers {
@@ -38,13 +39,12 @@ public class TechnologyCriteriaModifiers {
     }
 
     public void showPatternTechnologyFromOperationProductInComponent(final SearchCriteriaBuilder scb) {
-        scb.add(SearchRestrictions.isNull("technology_a." + TechnologyFields.TECHNOLOGY_TYPE)).add(
-                SearchRestrictions.eq("technology_a.active", true));
+        scb.add(SearchRestrictions.isNull("technology_a." + TechnologyFields.TECHNOLOGY_TYPE))
+                .add(SearchRestrictions.eq("technology_a.active", true));
     }
 
     public void showPatternTechnologyFromOperationProductInComponentDto(final SearchCriteriaBuilder scb) {
-        scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE)).add(
-                SearchRestrictions.eq("activeTechnology", true));
+        scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE)).add(SearchRestrictions.eq("activeTechnology", true));
     }
 
     public void showAcceptedPatternTechnology(final SearchCriteriaBuilder scb) {
@@ -52,8 +52,14 @@ public class TechnologyCriteriaModifiers {
         scb.add(SearchRestrictions.eq(TechnologyFields.STATE, TechnologyStateStringValues.ACCEPTED));
     }
 
+    public void showAcceptedAndCheckedPatternTechnology(final SearchCriteriaBuilder scb) {
+        scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE));
+        scb.add(SearchRestrictions.in(TechnologyFields.STATE,
+                Lists.newArrayList(TechnologyStateStringValues.ACCEPTED, TechnologyStateStringValues.CHECKED)));
+    }
+
     public void showPatternTechnologyWithoutGroup(final SearchCriteriaBuilder scb) {
-        scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE)).add(
-                SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_GROUP));
+        scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE))
+                .add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_GROUP));
     }
 }

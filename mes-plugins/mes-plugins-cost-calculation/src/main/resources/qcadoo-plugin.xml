@@ -81,15 +81,6 @@
             <model:belongsTo name="costCalculation" model="costCalculation"
                              plugin="costCalculation" required="true"/>
         </model:model-field>
-        <model:model-field plugin="technologies" model="technology">
-            <model:hasMany name="costCalculations" model="costCalculation" plugin="costCalculation"
-                           cascade="delete" joinField="technology"/>
-        </model:model-field>
-
-        <model:model-field plugin="technologies" model="technology">
-            <model:hasMany name="costCalculationsDefault" model="costCalculation" plugin="costCalculation"
-                           cascade="delete" joinField="defaultTechnology"/>
-        </model:model-field>
 
         <model:model-field model="parameter" plugin="basic">
             <model:enum name="materialCostsUsed"
@@ -176,37 +167,23 @@
             </model:decimal>
         </model:model-field>
 
+        <model:model-field model="technology" plugin="technologies">
+            <model:manyToMany name="costCalculation"
+                              plugin="costCalculation" model="costCalculation"
+                              joinField="technologies"/>
+        </model:model-field>
+
         <view:view resource="view/costCalculationList.xml"/>
         <view:view resource="view/costCalculationDetails.xml"/>
         <view:view resource="view/standardLaborCostsList.xml"/>
         <view:view resource="view/standardLaborCostDetails.xml"/>
 
-        <view:view-ribbon-group resource="view/ribbonExtensions/technologyDetails.xml"/>
-        <view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml"/>
-
         <view:view-tab resource="view/tabExtensions/technologiesParameters.xml" />
-
-        <view:view-hook plugin="technologies" view="technologyDetails"
-                        type="beforeRender" class="com.qcadoo.mes.costCalculation.hooks.TechnologyDetailsHooksCC"
-                        method="updateViewCostsCalculationButtonState"/>
 
         <view:view-hook plugin="technologies" view="technologiesParameters"
                         type="beforeRender" class="com.qcadoo.mes.costCalculation.hooks.TechnologiesParametersHooksCC"
                         method="fillCurrencyAndUnitFields"/>
 
-        <view:view-hook plugin="orders" view="orderDetails"
-                        type="beforeRender" class="com.qcadoo.mes.costCalculation.hooks.OrderDetailsHooksCC"
-                        method="onBeforeRender"/>
-
-        <view:view-listener plugin="technologies" view="technologyDetails"
-                            component="form" event="showCostCalculateFromTechnology"
-                            class="com.qcadoo.mes.costCalculation.listeners.TechnologyDetailsListenersCC"
-                            method="showCostCalculateFromTechnology"/>
-
-        <view:view-listener plugin="orders" view="orderDetails"
-                            component="form" event="showCostCalculateFromOrder"
-                            class="com.qcadoo.mes.costCalculation.listeners.OrderDetailsListenersCC"
-                            method="showCostCalculateFromOrder"/>
     </modules>
 
     <features>

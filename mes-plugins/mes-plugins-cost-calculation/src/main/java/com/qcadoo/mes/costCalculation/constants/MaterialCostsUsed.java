@@ -21,30 +21,32 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.costCalculation.listeners;
+package com.qcadoo.mes.costCalculation.constants;
 
-import com.google.common.collect.Maps;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import org.springframework.stereotype.Service;
+import org.apache.commons.lang3.StringUtils;
 
-import java.util.Map;
+public enum MaterialCostsUsed {
 
-@Service
-public class OrderDetailsListenersCC {
+    NOMINAL("01nominal"), AVERAGE("02average"), LAST_PURCHASE("03lastPurchase"), AVERAGE_OFFER_COST(
+            "04averageOfferCost"), LAST_OFFER_COST("05lastOfferCost");
 
-    private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
+    private final String materialCostsUsed;
 
-    public void showCostCalculateFromOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        Long orderId = (Long) state.getFieldValue();
+    MaterialCostsUsed(final String materialCostsUsed) {
+        this.materialCostsUsed = materialCostsUsed;
+    }
 
-        if (orderId != null) {
-            Map<String, Object> parameters = Maps.newHashMap();
-            parameters.put(L_WINDOW_ACTIVE_MENU, "calculations.costCalculation");
+    public String getStringValue() {
+        return materialCostsUsed;
+    }
 
-            String url = "/page/costCalculation/costCalculationDetails.html?context={\"orderId\":\"" + orderId + "\"}";
-            view.redirectTo(url, false, true, parameters);
+    public static MaterialCostsUsed parseString(final String rawStringValue) {
+        for (MaterialCostsUsed materialCostsUsed : values()) {
+            if (StringUtils.equalsIgnoreCase(rawStringValue, materialCostsUsed.getStringValue())) {
+                return materialCostsUsed;
+            }
         }
+        throw new IllegalArgumentException(String.format("Cannot parse MaterialCostsUsed from '%s'", rawStringValue));
     }
 
 }
