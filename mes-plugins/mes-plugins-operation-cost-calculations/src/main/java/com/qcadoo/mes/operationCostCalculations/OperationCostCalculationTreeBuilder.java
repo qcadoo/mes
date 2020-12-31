@@ -23,35 +23,26 @@
  */
 package com.qcadoo.mes.operationCostCalculations;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperationConstants.MODEL_CALCULATION_OPERATION_COMPONENT;
-import static com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperationConstants.PLUGIN_IDENTIFIER;
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.OPERATION_COMPONENTS;
-import static java.util.Arrays.asList;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.EntityTreeNode;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperationConstants.MODEL_CALCULATION_OPERATION_COMPONENT;
+import static com.qcadoo.mes.costNormsForOperation.constants.CostNormsForOperationConstants.PLUGIN_IDENTIFIER;
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.OPERATION_COMPONENTS;
 
 @Service
 public class OperationCostCalculationTreeBuilder {
-
-    private static final String L_TECHNOLOGY = "technology";
-
-    private static final String L_ORDER = "order";
 
     private static final String L_OPERATION = "operation";
 
@@ -69,16 +60,10 @@ public class OperationCostCalculationTreeBuilder {
     private DataDefinitionService dataDefinitionService;
 
     @Transactional
-    public Entity copyTechnologyTree(final Entity costCalculation) {
+    public Entity copyTechnologyTree(final Entity costCalculation, final Entity technology) {
         deleteOperationsTreeIfExists(costCalculation);
 
-        Entity operationsTreeContainer;
-        if (costCalculation.getBelongsToField(L_ORDER) == null) {
-            operationsTreeContainer = costCalculation.getBelongsToField(L_TECHNOLOGY);
-        } else {
-            operationsTreeContainer = costCalculation.getBelongsToField(L_ORDER).getBelongsToField(L_TECHNOLOGY);
-        }
-        EntityTree sourceOperationsTree = operationsTreeContainer.getTreeField(OPERATION_COMPONENTS);
+        EntityTree sourceOperationsTree = technology.getTreeField(OPERATION_COMPONENTS);
         return createTechnologyInstanceForCalculation(sourceOperationsTree, costCalculation);
     }
 
@@ -96,7 +81,7 @@ public class OperationCostCalculationTreeBuilder {
         Entity tree = createCalculationOperationComponent(sourceTree.getRoot(), null, calculationOperationComponentDD,
                 parentEntity);
 
-        parentEntity.setField(L_CALCULATION_OPERATION_COMPONENTS, asList(tree));
+        parentEntity.setField(L_CALCULATION_OPERATION_COMPONENTS, Collections.singletonList(tree));
         return parentEntity;
     }
 
@@ -152,14 +137,14 @@ public class OperationCostCalculationTreeBuilder {
             return;
         }
 
-        debug("existing calculation operation components tree will be removed..");
+        debug();
         EntityTreeNode existingOperationsTreeRoot = existingOperationsTree.getRoot();
         existingOperationsTreeRoot.getDataDefinition().delete(existingOperationsTreeRoot.getId());
     }
 
-    private void debug(final String message) {
+    private void debug() {
         if (LOG.isDebugEnabled()) {
-            LOG.debug(message);
+            LOG.debug("existing calculation operation components tree will be removed..");
         }
     }
 

@@ -163,6 +163,9 @@
 					copyable="true"/>
 	</fields>
 	<hooks>
+		<validatesWith
+				class="com.qcadoo.mes.costCalculation.validators.CostCalculationValidators"
+				method="validatesWith"/>
 		<onCopy
 			class="com.qcadoo.mes.costCalculation.hooks.CostCalculationHooks"
 			method="clearGeneratedOnCopy" />

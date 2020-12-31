@@ -78,7 +78,7 @@ public class CostCalculationServiceImpl implements CostCalculationService {
                 && SourceOfOperationCosts.PARAMETERS.equals(SourceOfOperationCosts.parseString(sourceOfOperationCosts))) {
             hourlyCostFromOperation = false;
         }
-        operationsCostCalculationService.calculateOperationsCost(entity, hourlyCostFromOperation);
+        operationsCostCalculationService.calculateOperationsCost(entity, hourlyCostFromOperation, technology);
 
         productsCostCalculationService.calculateTotalProductsCost(entity, technology);
     }

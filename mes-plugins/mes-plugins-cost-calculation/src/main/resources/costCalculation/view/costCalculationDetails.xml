@@ -35,22 +35,6 @@
             <group name="generate">
                 <bigButton name="generate" icon="generateIcon24.png"
                            action="#{form}.fireEvent(generateCostCalculation);" state="disabled">
-                    <script>
-                        <![CDATA[
-							#{form}.addOnChangeListener({
-								onSetValue: function(value) {
-									if (! value || ! value.content) {
-										return;
-									}
-									if (! value.content.entityId) {
-										this.disable();
-									} else {
-										this.enable();
-									}
-								}
-							});
-						]]>
-                    </script>
                 </bigButton>
             </group>
             <group name="export">
@@ -73,65 +57,6 @@
             <component type="form" name="technologyId" reference="technologyId"
                        defaultVisible="false"/>
             <component type="form" name="form" reference="form">
-                <script>
-                    <![CDATA[
-							var generatedRibbonItem =  #{window}.getRibbonItem("generate.generate");
-
-							var pdfRibbonItem = #{window}.getRibbonItem("export.pdf");
-							var saveRibbonItem = #{window}.getRibbonItem("actions.save");
-							var saveBackRibbonItem = #{window}.getRibbonItem("actions.saveBack");
-							var saveNewRibbonItem = #{window}.getRibbonItem("actions.saveNew");
-							var copyRibbonItem = #{window}.getRibbonItem("actions.copy");
-							var cancelRibbonItem = #{window}.getRibbonItem("actions.cancel");
-
-							var entityExists = false;
-
-							this.addOnChangeListener({
-								onSetValue: function(value) {
-									if (!value || !value.content) {
-										return;
-									}
-									if (value.content.entityId) {
-										entityExists = true;
-									} else {
-										entityExists = false;
-									}
-									updateRibbon();
-								}
-							});
-							#{form}.addOnChangeListener({
-								onSetValue: function(value) {
-									updateRibbon();
-								}
-							});
-
-							function updateRibbon() {
-								if (entityExists) {
-									var isGeneratedCheckboxValue = #{generated}.getValue();
-									generatedRibbonItem.enable();
-									saveRibbonItem.disable();
-									if (isGeneratedCheckboxValue && isGeneratedCheckboxValue.content.value == "1") {
-										pdfRibbonItem.enable();
-										generatedRibbonItem.disable();
-										saveRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordAlreadyGenerated)}");
-										saveBackRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordAlreadyGenerated)}");
-										saveNewRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordAlreadyGenerated)}");
-										cancelRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordAlreadyGenerated)}");
-									} else {
-										pdfRibbonItem.disable("#{translate(costCalculation.ribbon.message.recordNotGenerated)}");
-										saveRibbonItem.enable();
-										cancelRibbonItem.enable()
-									}
-								} else {
-									copyRibbonItem.disable("#{translate(recordNotCreated)}");
-									pdfRibbonItem.disable("#{translate(recordNotCreated)}");
-									saveRibbonItem.enable();
-									cancelRibbonItem.enable()
-								}
-							}
-					]]>
-                </script>
-
                 <component type="gridLayout" name="gridLayout" columns="3"
                            rows="6">
                     <layoutElement column="1" row="1">

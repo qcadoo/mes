@@ -40,7 +40,6 @@ import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -82,7 +81,7 @@ public class CostCalculationDetailsHooks {
     @Autowired
     private NumberService numbersService;
 
-    public void onBeforeRender(final ViewDefinitionState view) throws JSONException {
+    public void onBeforeRender(final ViewDefinitionState view) {
         fillOverheadsFromParameters(view);
         setFieldsEnabled(view);
         generateNumber(view);
@@ -155,6 +154,11 @@ public class CostCalculationDetailsHooks {
                     .getComponentByReference(CostCalculationFields.INCLUDE_ADDITIONAL_TIME);
             standardLaborCost.setEnabled(
                     SourceOfOperationCosts.STANDARD_LABOR_COSTS.getStringValue().equals(sourceOfOperationCosts.getFieldValue()));
+            standardLaborCost.setRequired(
+                    SourceOfOperationCosts.STANDARD_LABOR_COSTS.getStringValue().equals(sourceOfOperationCosts.getFieldValue()));
+            if (!SourceOfOperationCosts.STANDARD_LABOR_COSTS.getStringValue().equals(sourceOfOperationCosts.getFieldValue())) {
+                standardLaborCost.setFieldValue(null);
+            }
             standardLaborCost.requestComponentUpdateState();
             includeTPZ.setEnabled(
                     !SourceOfOperationCosts.STANDARD_LABOR_COSTS.getStringValue().equals(sourceOfOperationCosts.getFieldValue()));
@@ -271,10 +275,68 @@ public class CostCalculationDetailsHooks {
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonActionItem saveNominalCosts = window.getRibbon().getGroupByName(CostCalculationFields.SAVE_COSTS)
                 .getItemByName(CostCalculationFields.NOMINAL_COSTS);
-        CheckBoxComponent generatedField = (CheckBoxComponent) view.getComponentByReference(CostCalculationFields.GENERATED);
-        if (generatedField.isChecked()) {
-            saveNominalCosts.setEnabled(true);
-            saveNominalCosts.requestUpdate(true);
+        RibbonActionItem generate = window.getRibbon().getGroupByName("generate").getItemByName("generate");
+        RibbonActionItem pdf = window.getRibbon().getGroupByName("export").getItemByName("pdf");
+        RibbonActionItem save = window.getRibbon().getGroupByName("actions").getItemByName("save");
+        RibbonActionItem saveBack = window.getRibbon().getGroupByName("actions").getItemByName("saveBack");
+        RibbonActionItem saveNew = window.getRibbon().getGroupByName("actions").getItemByName("saveNew");
+        RibbonActionItem copy = window.getRibbon().getGroupByName("actions").getItemByName("copy");
+        RibbonActionItem cancel = window.getRibbon().getGroupByName("actions").getItemByName("cancel");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        boolean entityExists = form.getEntityId() != null;
+
+        if (entityExists) {
+            CheckBoxComponent generatedField = (CheckBoxComponent) view.getComponentByReference(CostCalculationFields.GENERATED);
+            int technologiesCount = ((GridComponent) view.getComponentByReference(CostCalculationFields.TECHNOLOGIES))
+                    .getEntities().size();
+            if (technologiesCount > 0) {
+                generate.setEnabled(true);
+                generate.requestUpdate(true);
+            }
+            save.setEnabled(false);
+            save.requestUpdate(true);
+            if (generatedField.isChecked()) {
+                saveNominalCosts.setEnabled(true);
+                saveNominalCosts.requestUpdate(true);
+                if (technologiesCount == 1) {
+                    pdf.setEnabled(true);
+                    pdf.requestUpdate(true);
+                }
+                generate.setEnabled(false);
+                generate.requestUpdate(true);
+                save.setEnabled(false);
+                save.setMessage("costCalculation.ribbon.message.recordAlreadyGenerated");
+                save.requestUpdate(true);
+                saveNew.setEnabled(false);
+                saveNew.setMessage("costCalculation.ribbon.message.recordAlreadyGenerated");
+                saveNew.requestUpdate(true);
+                saveBack.setEnabled(false);
+                saveBack.setMessage("costCalculation.ribbon.message.recordAlreadyGenerated");
+                saveBack.requestUpdate(true);
+                cancel.setEnabled(false);
+                cancel.setMessage("costCalculation.ribbon.message.recordAlreadyGenerated");
+                cancel.requestUpdate(true);
+            } else {
+                pdf.setEnabled(false);
+                pdf.setMessage("costCalculation.ribbon.message.recordNotGenerated");
+                pdf.requestUpdate(true);
+                save.setEnabled(true);
+                save.requestUpdate(true);
+                cancel.setEnabled(true);
+                cancel.requestUpdate(true);
+            }
+        } else {
+            copy.setEnabled(false);
+            copy.setMessage("recordNotCreated");
+            copy.requestUpdate(true);
+            pdf.setEnabled(false);
+            pdf.setMessage("recordNotCreated");
+            pdf.requestUpdate(true);
+            save.setEnabled(true);
+            save.requestUpdate(true);
+            cancel.setEnabled(true);
+            cancel.requestUpdate(true);
         }
     }
 }
