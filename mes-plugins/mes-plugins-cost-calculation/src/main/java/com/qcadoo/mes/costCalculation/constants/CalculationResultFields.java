@@ -23,20 +23,32 @@
  */
 package com.qcadoo.mes.costCalculation.constants;
 
-public final class CostCalculationConstants {
+public final class CalculationResultFields {
 
-    private CostCalculationConstants() {
+    private CalculationResultFields() {
 
     }
 
-    public static final String PLUGIN_IDENTIFIER = "costCalculation";
+    public static final String COST_CALCULATION = "costCalculation";
 
-    public static final String MODEL_COST_CALCULATION = "costCalculation";
+    public static final String TECHNOLOGY = "technology";
 
-    public static final String MODEL_CALCULATION_RESULT = "calculationResult";
+    public static final String PRODUCT = "product";
 
-    public static final String MODEL_COMPONENT_COST = "componentCost";
+    public static final String MATERIAL_COSTS = "materialCosts";
 
-    public static final String MODEL_STANDARD_LABOR_COST = "standardLaborCost";
+    public static final String LABOUR_COST = "labourCost";
+
+    public static final String PRODUCTION_COSTS = "productionCosts";
+
+    public static final String TOTAL_COST = "totalCost";
+
+    public static final String REGISTRATION_PRICE = "registrationPrice";
+
+    public static final String TECHNICAL_PRODUCTION_COST = "technicalProductionCost";
+
+    public static final String SELLING_PRICE = "sellingPrice";
+
+    public static final String NO_MATERIAL_PRICE = "noMaterialPrice";
 
 }

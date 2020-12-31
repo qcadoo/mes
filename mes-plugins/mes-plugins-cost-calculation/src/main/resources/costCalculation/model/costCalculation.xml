@@ -34,12 +34,12 @@
 		<datetime name="date" />
 		<boolean name="generated" />
 		<string name="fileName" />
-		<decimal name="quantity" required="true" default="1">
-			<validatesRange from="0" exclusively="true"/>
-		</decimal>
 		<string name="description">
 			<validatesLength max="2024" />
 		</string>
+		<decimal name="quantity" required="true" default="1">
+			<validatesRange from="0" exclusively="true"/>
+		</decimal>
 
 		<boolean name="printCostNormsOfMaterials" default="true" />
 		<boolean name="printOperationNorms" default="true" />
@@ -47,6 +47,7 @@
 		<tree name="calculationOperationComponents" joinField="costCalculation"
 			model="calculationOperationComponent" plugin="costNormsForOperation"
 			cascade="delete" />
+
 		<decimal name="totalMaterialCosts">
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
@@ -71,43 +72,18 @@
             <validatesUnscaledValue max="14" />
             <validatesScale max="5" />
         </decimal>
-		<decimal name="productionCostMargin">
-			<validatesUnscaledValue max="14" />
-			<validatesScale max="5" />
-            <validatesRange from="0"/>
-		</decimal>
 		<decimal name="productionCostMarginValue">
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
-		</decimal>
-		<decimal name="materialCostMargin">
-			<validatesUnscaledValue max="14" />
-			<validatesScale max="5" />
-            <validatesRange from="0"/>
 		</decimal>
 		<decimal name="materialCostMarginValue">
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
-		<decimal name="additionalOverhead">
-			<validatesUnscaledValue max="14" />
-			<validatesScale max="5" />
-            <validatesRange from="0"/>
-		</decimal>
 		<decimal name="additionalOverheadValue" default="0" />
-		<decimal name="registrationPriceOverhead" >
-			<validatesUnscaledValue max="14" />
-			<validatesScale max="5" />
-            <validatesRange from="0"/>
-		</decimal>
 		<decimal name="registrationPriceOverheadValue" >
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
-		</decimal>
-		<decimal name="profit">
-			<validatesUnscaledValue max="14" />
-			<validatesScale max="5" />
-            <validatesRange from="0"/>
 		</decimal>
 		<decimal name="profitValue">
 			<validatesUnscaledValue max="14" />
@@ -156,7 +132,35 @@
 		<boolean name="includeTPZ" default="true" />
 		<boolean name="includeAdditionalTime" default="true" />
 
+		<decimal name="materialCostMargin">
+			<validatesUnscaledValue max="14" />
+			<validatesScale max="5" />
+			<validatesRange from="0"/>
+		</decimal>
+		<decimal name="productionCostMargin">
+			<validatesUnscaledValue max="14" />
+			<validatesScale max="5" />
+			<validatesRange from="0"/>
+		</decimal>
+		<decimal name="additionalOverhead">
+			<validatesUnscaledValue max="14" />
+			<validatesScale max="5" />
+			<validatesRange from="0"/>
+		</decimal>
+		<decimal name="registrationPriceOverhead" >
+			<validatesUnscaledValue max="14" />
+			<validatesScale max="5" />
+			<validatesRange from="0"/>
+		</decimal>
+		<decimal name="profit">
+			<validatesUnscaledValue max="14" />
+			<validatesScale max="5" />
+			<validatesRange from="0"/>
+		</decimal>
+
 		<hasMany name="componentCosts" joinField="costCalculation" model="componentCost"
+				 cascade="delete" />
+		<hasMany name="calculationResults" joinField="costCalculation" model="calculationResult"
 				 cascade="delete" />
 
 		<manyToMany name="technologies" plugin="technologies" model="technology" joinField="costCalculation"
@@ -164,14 +168,11 @@
 	</fields>
 	<hooks>
 		<validatesWith
-				class="com.qcadoo.mes.costCalculation.validators.CostCalculationValidators"
-				method="validatesWith"/>
+			class="com.qcadoo.mes.costCalculation.validators.CostCalculationValidators"
+			method="validatesWith"/>
 		<onCopy
 			class="com.qcadoo.mes.costCalculation.hooks.CostCalculationHooks"
 			method="clearGeneratedOnCopy" />
-		<onCopy
-			class="com.qcadoo.mes.costCalculation.hooks.CostCalculationHooks"
-			method="clearGeneratedCosts" />
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />
 </model>

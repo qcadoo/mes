@@ -23,16 +23,13 @@
  */
 package com.qcadoo.mes.costCalculation.hooks;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
-import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -61,14 +58,6 @@ public class CostCalculationDetailsHooks {
 
     private static final String L_ADDITIONAL_OVERHEAD_CURRENCY = "additionalOverheadCurrency";
 
-    private static final String L_TOTAL_COST_PER_UNIT_UNIT = "totalCostPerUnitUnit";
-
-    private static final String L_TOTAL_MACHINE_HOURLY_COSTS_CURRENCY = "totalMachineHourlyCostsCurrency";
-
-    private static final String L_TOTAL_LABOR_HOURLY_COSTS_CURRENCY = "totalLaborHourlyCostsCurrency";
-
-    private static final String L_TOTAL_PIECEWORK_COSTS_CURRENCY = "totalPieceworkCostsCurrency";
-
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
@@ -86,33 +75,7 @@ public class CostCalculationDetailsHooks {
         setFieldsEnabled(view);
         generateNumber(view);
         fillCurrencyFields(view);
-        roundResults(view);
-        setButtonEnabled(view);
-    }
-
-    private void roundResults(final ViewDefinitionState view) {
-        Set<String> referenceNames = Sets.newHashSet(CostCalculationFields.TOTAL_MATERIAL_COSTS,
-                CostCalculationFields.TOTAL_MACHINE_HOURLY_COSTS, CostCalculationFields.TOTAL_LABOR_HOURLY_COSTS,
-                CostCalculationFields.TOTAL_PIECEWORK_COSTS, CostCalculationFields.TOTAL_TECHNICAL_PRODUCTION_COSTS,
-                CostCalculationFields.PRODUCTION_COST_MARGIN_VALUE, CostCalculationFields.MATERIAL_COST_MARGIN_VALUE,
-                CostCalculationFields.ADDITIONAL_OVERHEAD_VALUE, CostCalculationFields.TOTAL_OVERHEAD,
-                CostCalculationFields.TOTAL_COSTS, CostCalculationFields.TOTAL_COST_PER_UNIT,
-                CostCalculationFields.REGISTRATION_PRICE_OVERHEAD_VALUE, CostCalculationFields.TECHNICAL_PRODUCTION_COSTS,
-                CostCalculationFields.PROFIT_VALUE, CostCalculationFields.SELL_PRICE_VALUE);
-
-        for (String name : referenceNames) {
-            FieldComponent component = (FieldComponent) view.getComponentByReference(name);
-            String value = (String) component.getFieldValue();
-            Either<Exception, Optional<BigDecimal>> eitherValue = BigDecimalUtils.tryParse(value, view.getLocale());
-            if (eitherValue.isRight()) {
-                Optional<BigDecimal> maybeValue = eitherValue.getRight();
-                if (maybeValue.isPresent()) {
-                    component.setFieldValue(
-                            numbersService.format(numbersService.setScaleWithDefaultMathContext(maybeValue.get(), 2)));
-                    component.requestComponentUpdateState();
-                }
-            }
-        }
+        setButtonsEnabled(view);
     }
 
     public void setFieldsEnabled(final ViewDefinitionState view) {
@@ -124,8 +87,7 @@ public class CostCalculationDetailsHooks {
                 CostCalculationFields.PRINT_COST_NORMS_OF_MATERIALS, CostCalculationFields.PRINT_OPERATION_NORMS,
                 CostCalculationFields.INCLUDE_TPZ, CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED,
                 CostCalculationFields.INCLUDE_ADDITIONAL_TIME, CostCalculationFields.SOURCE_OF_OPERATION_COSTS,
-                CostCalculationFields.REGISTRATION_PRICE_OVERHEAD, CostCalculationFields.PROFIT, L_PRODUCTION_COST_MARGIN_PROC,
-                L_MATERIAL_COST_MARGIN_PROC, L_ADDITIONAL_OVERHEAD_CURRENCY);
+                CostCalculationFields.REGISTRATION_PRICE_OVERHEAD, CostCalculationFields.PROFIT);
 
         Map<String, FieldComponent> componentsMap = Maps.newHashMap();
 
@@ -177,12 +139,7 @@ public class CostCalculationDetailsHooks {
     public void fillCurrencyFields(final ViewDefinitionState viewDefinitionState) {
         final String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
 
-        Set<String> referenceNames = Sets.newHashSet("totalCostsCurrency", "totalOverheadCurrency",
-                "additionalOverheadValueCurrency", "materialCostMarginValueCurrency", "productionCostMarginValueCurrency",
-                "totalTechnicalProductionCostsCurrency", L_TOTAL_PIECEWORK_COSTS_CURRENCY, L_TOTAL_LABOR_HOURLY_COSTS_CURRENCY,
-                L_TOTAL_MACHINE_HOURLY_COSTS_CURRENCY, "totalMaterialCostsCurrency", L_ADDITIONAL_OVERHEAD_CURRENCY,
-                "profitValueCurrency", "registrationPriceOverheadValueCurrency", L_TOTAL_COST_PER_UNIT_UNIT,
-                "sellPriceValueCurrency", "technicalProductionCostsCurrency", "averageMachineHourlyCostCurrency",
+        Set<String> referenceNames = Sets.newHashSet(L_ADDITIONAL_OVERHEAD_CURRENCY, "averageMachineHourlyCostCurrency",
                 "averageLaborHourlyCostCurrency");
 
         for (String referenceName : referenceNames) {
@@ -271,7 +228,7 @@ public class CostCalculationDetailsHooks {
         }
     }
 
-    private void setButtonEnabled(ViewDefinitionState view) {
+    private void setButtonsEnabled(ViewDefinitionState view) {
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonActionItem saveNominalCosts = window.getRibbon().getGroupByName(CostCalculationFields.SAVE_COSTS)
                 .getItemByName(CostCalculationFields.NOMINAL_COSTS);

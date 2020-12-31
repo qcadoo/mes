@@ -23,19 +23,21 @@
  */
 package com.qcadoo.mes.costCalculation.listeners;
 
-import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.costCalculation.CostCalculationService;
+import com.qcadoo.mes.costCalculation.constants.CalculationResultFields;
+import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costCalculation.print.CostCalculationReportService;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
-import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +45,6 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -62,6 +63,9 @@ public class CostCalculationDetailsListeners {
     @Autowired
     private ProductStructureTreeService productStructureTreeService;
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     public void generateCostCalculation(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         state.performEvent(view, "save", new String[0]);
 
@@ -79,8 +83,29 @@ public class CostCalculationDetailsListeners {
             costCalculationService.calculateSellPriceOverhead(costCalculation);
             costCalculationService.calculateSellPrice(costCalculation);
 
-            fillFields(view, costCalculation);
-
+            DataDefinition calculationResultDD = dataDefinitionService.get(CostCalculationConstants.PLUGIN_IDENTIFIER,
+                    CostCalculationConstants.MODEL_CALCULATION_RESULT);
+            Entity calculationResult = calculationResultDD.create();
+            calculationResult.setField(CalculationResultFields.COST_CALCULATION, costCalculation);
+            calculationResult.setField(CalculationResultFields.TECHNOLOGY, technology);
+            calculationResult.setField(CalculationResultFields.PRODUCT, technology.getBelongsToField(TechnologyFields.PRODUCT));
+            calculationResult.setField(CalculationResultFields.MATERIAL_COSTS,
+                    costCalculation.getDecimalField(CostCalculationFields.TOTAL_MATERIAL_COSTS));
+            calculationResult.setField(CalculationResultFields.LABOUR_COST,
+                    costCalculation.getDecimalField(CostCalculationFields.TOTAL_MACHINE_HOURLY_COSTS)
+                            .add(costCalculation.getDecimalField(CostCalculationFields.TOTAL_LABOR_HOURLY_COSTS)));
+            calculationResult.setField(CalculationResultFields.PRODUCTION_COSTS,
+                    costCalculation.getDecimalField(CostCalculationFields.TOTAL_TECHNICAL_PRODUCTION_COSTS));
+            calculationResult.setField(CalculationResultFields.TOTAL_COST,
+                    costCalculation.getDecimalField(CostCalculationFields.TOTAL_COSTS));
+            calculationResult.setField(CalculationResultFields.REGISTRATION_PRICE,
+                    costCalculation.getDecimalField(CostCalculationFields.TOTAL_COST_PER_UNIT));
+            calculationResult.setField(CalculationResultFields.TECHNICAL_PRODUCTION_COST,
+                    costCalculation.getDecimalField(CostCalculationFields.TECHNICAL_PRODUCTION_COSTS));
+            calculationResult.setField(CalculationResultFields.SELLING_PRICE,
+                    costCalculation.getDecimalField(CostCalculationFields.SELL_PRICE_VALUE));
+            calculationResult.setField(CalculationResultFields.NO_MATERIAL_PRICE, false);
+            calculationResultDD.save(calculationResult);
             costCalculationReportService.generateCostCalculationReport(view, state, args);
         }
 
@@ -96,23 +121,6 @@ public class CostCalculationDetailsListeners {
         Long costCalculationId = costCalculationForm.getEntityId();
 
         return costCalculationForm.getEntity().getDataDefinition().get(costCalculationId);
-    }
-
-    private void fillFields(final ViewDefinitionState view, final Entity costCalculation) {
-        final Set<String> costFields = Sets.newHashSet(CostCalculationFields.PRODUCTION_COST_MARGIN_VALUE,
-                CostCalculationFields.MATERIAL_COST_MARGIN_VALUE, CostCalculationFields.TOTAL_OVERHEAD,
-                CostCalculationFields.TOTAL_MATERIAL_COSTS, CostCalculationFields.TOTAL_MACHINE_HOURLY_COSTS,
-                CostCalculationFields.TOTAL_LABOR_HOURLY_COSTS, CostCalculationFields.TOTAL_PIECEWORK_COSTS,
-                CostCalculationFields.TOTAL_TECHNICAL_PRODUCTION_COSTS, CostCalculationFields.TOTAL_COSTS,
-                CostCalculationFields.TOTAL_COST_PER_UNIT, CostCalculationFields.ADDITIONAL_OVERHEAD_VALUE,
-                CostCalculationFields.REGISTRATION_PRICE_OVERHEAD_VALUE, CostCalculationFields.PROFIT_VALUE,
-                CostCalculationFields.SELL_PRICE_VALUE, CostCalculationFields.TECHNICAL_PRODUCTION_COSTS);
-
-        for (String costField : costFields) {
-            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(costField);
-            fieldComponent.setFieldValue(numberService.setScaleWithDefaultMathContext(
-                    BigDecimalUtils.convertNullToZero(costCalculation.getDecimalField(costField)), 2));
-        }
     }
 
     public void printCostCalculationReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {

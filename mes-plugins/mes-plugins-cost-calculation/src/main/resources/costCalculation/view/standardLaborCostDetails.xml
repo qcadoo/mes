@@ -35,10 +35,6 @@
         </ribbon>
 
         <windowTab name="mainTab">
-            <component type="form" name="orderId" reference="orderId"
-                       defaultVisible="false"/>
-            <component type="form" name="technologyId" reference="technologyId"
-                       defaultVisible="false"/>
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="3"
                            rows="3">

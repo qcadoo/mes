@@ -57,8 +57,6 @@ public final class CostCalculationFields {
 
     public static final String TOTAL_MACHINE_HOURLY_COSTS = "totalMachineHourlyCosts";
 
-    public static final String TOTAL_PIECEWORK_COSTS = "totalPieceworkCosts";
-
     public static final String TOTAL_LABOR_HOURLY_COSTS = "totalLaborHourlyCosts";
 
     public static final String TOTAL_TECHNICAL_PRODUCTION_COSTS = "totalTechnicalProductionCosts";
