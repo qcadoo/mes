@@ -33,7 +33,7 @@
 		</integer>
 		<boolean name="extendedTimeForSizeGroup" default="false"/>
 		<integer name="increasePercent">
-			<validatesRange from="0"/>
+			<validatesRange from="0" exclusively="true"/>
 		</integer>
 		<belongsTo name="sizeGroup" plugin="basic" model="sizeGroup"/>
 		<belongsTo name="technologicalProcessList" model="technologicalProcessList" required="true"/>
