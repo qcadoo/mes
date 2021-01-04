@@ -311,10 +311,10 @@ public class TechnologyService {
         Predicate<Entity> condition;
 
         if (Objects.isNull(operationProductComponent.getId())) {
-            condition = opProduct -> opProduct.getBelongsToField(L_PRODUCT).getId().equals(product.getId());
+            condition = opProduct -> Objects.nonNull(opProduct.getBelongsToField(L_PRODUCT)) && opProduct.getBelongsToField(L_PRODUCT).getId().equals(product.getId());
         } else {
             condition = opProduct -> !opProduct.getId().equals(operationProductComponent.getId())
-                    && opProduct.getBelongsToField(L_PRODUCT).getId().equals(product.getId());
+                    && Objects.nonNull(opProduct.getBelongsToField(L_PRODUCT)) && opProduct.getBelongsToField(L_PRODUCT).getId().equals(product.getId());
         }
 
         return list.stream().anyMatch(condition);
