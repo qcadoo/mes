@@ -26,8 +26,6 @@ package com.qcadoo.mes.productionCounting.hooks;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.util.CurrencyService;
-import com.qcadoo.mes.productionCounting.constants.CalculateMaterialCostsMode;
-import com.qcadoo.mes.productionCounting.constants.SourceOfMaterialCosts;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
@@ -35,7 +33,6 @@ import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -53,17 +50,15 @@ import java.util.List;
 public class ProductionBalanceDetailsHooks {
 
     private static final List<String> L_FIELDS_AND_CHECKBOXES = Arrays.asList(ProductionBalanceFields.NAME,
-            ProductionBalanceFields.DESCRIPTION,
-            ProductionBalanceFields.INCLUDE_WAGE_GROUPS, ProductionBalanceFields.INCLUDE_TPZ,
+            ProductionBalanceFields.DESCRIPTION, ProductionBalanceFields.INCLUDE_WAGE_GROUPS, ProductionBalanceFields.INCLUDE_TPZ,
             ProductionBalanceFields.INCLUDE_ADDITIONAL_TIME);
 
     private static final List<String> L_FIELDS = L_FIELDS_AND_CHECKBOXES.subList(0, L_FIELDS_AND_CHECKBOXES.size() - 2);
 
-    private static final List<String> L_COST_FIELDS = Arrays.asList(ProductionBalanceFields.SOURCE_OF_MATERIAL_COSTS,
-            ProductionBalanceFields.CALCULATE_MATERIAL_COSTS_MODE, ProductionBalanceFields.PRODUCTION_COST_MARGIN,
-            ProductionBalanceFields.MATERIAL_COST_MARGIN, ProductionBalanceFields.ADDITIONAL_OVERHEAD,
-            ProductionBalanceFields.SOURCE_OF_OPERATION_COSTS_PB, ProductionBalanceFields.REGISTRATION_PRICE_OVERHEAD,
-            ProductionBalanceFields.PROFIT);
+    private static final List<String> L_COST_FIELDS = Arrays.asList(ProductionBalanceFields.MATERIAL_COSTS_USED,
+            ProductionBalanceFields.PRODUCTION_COST_MARGIN, ProductionBalanceFields.MATERIAL_COST_MARGIN,
+            ProductionBalanceFields.ADDITIONAL_OVERHEAD, ProductionBalanceFields.SOURCE_OF_OPERATION_COSTS,
+            ProductionBalanceFields.REGISTRATION_PRICE_OVERHEAD, ProductionBalanceFields.PROFIT);
 
     private static final List<String> L_COST_GRIDS = Collections.singletonList(ProductionBalanceFields.ORDERS);
 
@@ -130,34 +125,6 @@ public class ProductionBalanceDetailsHooks {
         }
     }
 
-    public void onSourceOfMaterialCostsChange(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        checkIfOptionsAreAvailable(viewDefinitionState, state, args);
-        FieldComponent sourceOfMaterialCosts = (FieldComponent) viewDefinitionState
-                .getComponentByReference(ProductionBalanceFields.SOURCE_OF_MATERIAL_COSTS);
-        FieldComponent calculateMaterialCostsMode = (FieldComponent) viewDefinitionState
-                .getComponentByReference(ProductionBalanceFields.CALCULATE_MATERIAL_COSTS_MODE);
-        if (SourceOfMaterialCosts.FROM_ORDERS_MATERIAL_COSTS.getStringValue().equals(
-                sourceOfMaterialCosts.getFieldValue())) {
-            calculateMaterialCostsMode.setFieldValue(CalculateMaterialCostsMode.COST_FOR_ORDER.getStringValue());
-        }
-
-    }
-
-    public void checkIfOptionsAreAvailable(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FieldComponent sourceOfMaterialCosts = (FieldComponent) view
-                .getComponentByReference(ProductionBalanceFields.SOURCE_OF_MATERIAL_COSTS);
-        FieldComponent calculateMaterialCostsMode = (FieldComponent) view
-                .getComponentByReference(ProductionBalanceFields.CALCULATE_MATERIAL_COSTS_MODE);
-
-        if (SourceOfMaterialCosts.CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT.getStringValue().equals(
-                sourceOfMaterialCosts.getFieldValue())
-                && CalculateMaterialCostsMode.COST_FOR_ORDER.getStringValue().equals(calculateMaterialCostsMode.getFieldValue())) {
-            sourceOfMaterialCosts.addMessage("productionCounting.productionBalance.messages.optionUnavailable",
-                    ComponentState.MessageType.FAILURE);
-        }
-    }
-
     public void setTheFieldBasedOnParameters(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (form.getEntityId() == null) {
@@ -168,18 +135,18 @@ public class ProductionBalanceDetailsHooks {
             }
             Entity parameter = parameterService.getParameter();
 
-            FieldComponent sourceOfOperationCostsPB = (FieldComponent) view
-                    .getComponentByReference(ProductionBalanceFields.SOURCE_OF_OPERATION_COSTS_PB);
+            FieldComponent sourceOfOperationCosts = (FieldComponent) view
+                    .getComponentByReference(ProductionBalanceFields.SOURCE_OF_OPERATION_COSTS);
             if (parameter.getField(ParameterFieldsPC.SOURCE_OF_OPERATION_COSTS_PB) != null) {
-                sourceOfOperationCostsPB.setFieldValue(parameter.getField(ParameterFieldsPC.SOURCE_OF_OPERATION_COSTS_PB));
-                sourceOfOperationCostsPB.requestComponentUpdateState();
+                sourceOfOperationCosts.setFieldValue(parameter.getField(ParameterFieldsPC.SOURCE_OF_OPERATION_COSTS_PB));
+                sourceOfOperationCosts.requestComponentUpdateState();
             }
-            FieldComponent calculateMaterialCostsMode = (FieldComponent) view
-                    .getComponentByReference(ProductionBalanceFields.CALCULATE_MATERIAL_COSTS_MODE);
-            if (parameter.getField(ParameterFieldsPC.CALCULATE_MATERIAL_COSTS_MODE_PB) != null) {
+            FieldComponent materialCostsUsed = (FieldComponent) view
+                    .getComponentByReference(ProductionBalanceFields.MATERIAL_COSTS_USED);
+            if (parameter.getField(ParameterFieldsPC.MATERIAL_COSTS_USED_PB) != null) {
 
-                calculateMaterialCostsMode.setFieldValue(parameter.getField(ParameterFieldsPC.CALCULATE_MATERIAL_COSTS_MODE_PB));
-                calculateMaterialCostsMode.requestComponentUpdateState();
+                materialCostsUsed.setFieldValue(parameter.getField(ParameterFieldsPC.MATERIAL_COSTS_USED_PB));
+                materialCostsUsed.requestComponentUpdateState();
             }
             FieldComponent includeTPZ = (FieldComponent) view.getComponentByReference(ProductionBalanceFields.INCLUDE_TPZ);
             includeTPZ.setFieldValue(parameter.getBooleanField(ParameterFieldsPC.INCLUDE_TPZ_PB));
@@ -195,41 +162,33 @@ public class ProductionBalanceDetailsHooks {
             includeWageGroups.setFieldValue(parameter.getBooleanField(ParameterFieldsPC.INCLUDE_WAGE_GROUPS));
             includeWageGroups.requestComponentUpdateState();
 
-            FieldComponent sourceOfMaterialCosts = (FieldComponent) view
-                    .getComponentByReference(ProductionBalanceFields.SOURCE_OF_MATERIAL_COSTS);
-            if (parameter.getField(ParameterFieldsPC.SOURCE_OF_MATERIAL_COSTS_PB) != null) {
-
-                sourceOfMaterialCosts.setFieldValue(parameter.getField(ParameterFieldsPC.SOURCE_OF_MATERIAL_COSTS_PB));
-                sourceOfMaterialCosts.requestComponentUpdateState();
-            }
-
             FieldComponent productionCostMargin = (FieldComponent) view
                     .getComponentByReference(ProductionBalanceFields.PRODUCTION_COST_MARGIN);
-            productionCostMargin.setFieldValue(numberService.format(BigDecimalUtils.convertNullToZero(parameter
-                    .getDecimalField(ParameterFieldsPC.PRODUCTION_COST_MARGIN_PB))));
+            productionCostMargin.setFieldValue(numberService.format(
+                    BigDecimalUtils.convertNullToZero(parameter.getDecimalField(ParameterFieldsPC.PRODUCTION_COST_MARGIN_PB))));
             productionCostMargin.requestComponentUpdateState();
 
             FieldComponent materialCostMargin = (FieldComponent) view
                     .getComponentByReference(ProductionBalanceFields.MATERIAL_COST_MARGIN);
-            materialCostMargin.setFieldValue(numberService.format(BigDecimalUtils.convertNullToZero(parameter
-                    .getDecimalField(ParameterFieldsPC.MATERIAL_COST_MARGIN_PB))));
+            materialCostMargin.setFieldValue(numberService.format(
+                    BigDecimalUtils.convertNullToZero(parameter.getDecimalField(ParameterFieldsPC.MATERIAL_COST_MARGIN_PB))));
             materialCostMargin.requestComponentUpdateState();
 
             FieldComponent additionalOverhead = (FieldComponent) view
                     .getComponentByReference(ProductionBalanceFields.ADDITIONAL_OVERHEAD);
-            additionalOverhead.setFieldValue(numberService.format(BigDecimalUtils.convertNullToZero(parameter
-                    .getDecimalField(ParameterFieldsPC.ADDITIONAL_OVERHEAD_PB))));
+            additionalOverhead.setFieldValue(numberService.format(
+                    BigDecimalUtils.convertNullToZero(parameter.getDecimalField(ParameterFieldsPC.ADDITIONAL_OVERHEAD_PB))));
             additionalOverhead.requestComponentUpdateState();
 
             FieldComponent registrationPriceOverhead = (FieldComponent) view
                     .getComponentByReference(ProductionBalanceFields.REGISTRATION_PRICE_OVERHEAD);
-            registrationPriceOverhead.setFieldValue(numberService.format(BigDecimalUtils.convertNullToZero(parameter
-                    .getDecimalField(ParameterFieldsPC.REGISTRATION_PRICE_OVERHEAD_PB))));
+            registrationPriceOverhead.setFieldValue(numberService.format(BigDecimalUtils
+                    .convertNullToZero(parameter.getDecimalField(ParameterFieldsPC.REGISTRATION_PRICE_OVERHEAD_PB))));
             registrationPriceOverhead.requestComponentUpdateState();
 
             FieldComponent profit = (FieldComponent) view.getComponentByReference(ProductionBalanceFields.PROFIT);
-            profit.setFieldValue(numberService.format(BigDecimalUtils.convertNullToZero(parameter
-                    .getDecimalField(ParameterFieldsPC.PROFIT_PB))));
+            profit.setFieldValue(numberService
+                    .format(BigDecimalUtils.convertNullToZero(parameter.getDecimalField(ParameterFieldsPC.PROFIT_PB))));
             profit.requestComponentUpdateState();
 
             isSetFieldsFromParameter.setFieldValue(true);

@@ -24,10 +24,8 @@
 package com.qcadoo.mes.productionCounting.hooks;
 
 import com.qcadoo.mes.basic.util.CurrencyService;
-import com.qcadoo.mes.productionCounting.constants.CalculateMaterialCostsMode;
 import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.SourceOfMaterialCosts;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -68,23 +66,11 @@ public class ProductionAnalysisParametersHooks {
         materialCostMarginProc.requestComponentUpdateState();
     }
 
-    public void onSourceOfMaterialCostsChange(final ViewDefinitionState viewDefinitionState, final ComponentState state,
-            final String[] args) {
-        FieldComponent costsMode = (FieldComponent) viewDefinitionState
-                .getComponentByReference(ParameterFieldsPC.SOURCE_OF_MATERIAL_COSTS_PB);
-        if (SourceOfMaterialCosts.FROM_ORDERS_MATERIAL_COSTS.getStringValue().equals((String) costsMode.getFieldValue())) {
-            FieldComponent calculateMaterialCostsMode = (FieldComponent) viewDefinitionState
-                    .getComponentByReference(ParameterFieldsPC.CALCULATE_MATERIAL_COSTS_MODE_PB);
-            calculateMaterialCostsMode.setFieldValue(CalculateMaterialCostsMode.COST_FOR_ORDER.getStringValue());
-        }
-
-    }
-
     public void onSourceOfOperationCostsChange(final ViewDefinitionState viewDefinitionState, final ComponentState state,
             final String[] args) {
         FieldComponent costsMode = (FieldComponent) viewDefinitionState
                 .getComponentByReference(ParameterFieldsPC.SOURCE_OF_OPERATION_COSTS_PB);
-        if (SourceOfOperationCosts.TECHNOLOGY_OPERATION.getStringValue().equals((String) costsMode.getFieldValue())) {
+        if (SourceOfOperationCosts.TECHNOLOGY_OPERATION.getStringValue().equals(costsMode.getFieldValue())) {
             viewDefinitionState.addMessage("productionCounting.messages.onChangeToSourceOfOperationCosts",
                     ComponentState.MessageType.INFO, false);
         }

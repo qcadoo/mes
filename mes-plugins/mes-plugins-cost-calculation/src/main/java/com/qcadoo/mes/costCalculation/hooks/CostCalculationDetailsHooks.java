@@ -257,9 +257,9 @@ public class CostCalculationDetailsHooks {
             }
             save.setEnabled(false);
             save.requestUpdate(true);
+            saveNominalCosts.setEnabled(generatedField.isChecked());
+            saveNominalCosts.requestUpdate(true);
             if (generatedField.isChecked()) {
-                saveNominalCosts.setEnabled(true);
-                saveNominalCosts.requestUpdate(true);
                 if (technologiesCount == 1) {
                     pdf.setEnabled(true);
                     pdf.requestUpdate(true);

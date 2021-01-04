@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.costCalculation.listeners;
 
-import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.costCalculation.CostCalculationService;
 import com.qcadoo.mes.costCalculation.constants.CalculationResultFields;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
@@ -43,7 +42,6 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -134,18 +132,25 @@ public class CostCalculationDetailsListeners {
     }
 
     public void saveNominalCosts(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent formComponent = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Entity costsEntity = formComponent.getEntity();
-        Entity product = costsEntity.getBelongsToField(BasicConstants.MODEL_PRODUCT);
-        BigDecimal tkw = costsEntity.getDecimalField(CostCalculationFields.TECHNICAL_PRODUCTION_COSTS);
-        product.setField("nominalCost", numberService.setScaleWithDefaultMathContext(tkw));
-        Entity savedEntity = product.getDataDefinition().save(product);
-        if (!savedEntity.isValid()) {
+        Entity costCalculation = getEntityFromForm(view);
+        boolean hasErrors = false;
+        for (Entity calculationResult : costCalculation.getManyToManyField(CostCalculationFields.CALCULATION_RESULTS)) {
+            Entity product = calculationResult.getBelongsToField(CalculationResultFields.PRODUCT);
+            product.setField("nominalCost", numberService.setScaleWithDefaultMathContext(
+                    calculationResult.getDecimalField(CalculationResultFields.TECHNICAL_PRODUCTION_COST)));
+            Entity savedEntity = product.getDataDefinition().save(product);
+            if (!savedEntity.isValid()) {
+                hasErrors = true;
+
+            }
+        }
+        if (hasErrors) {
             view.getComponentByReference(QcadooViewConstants.L_FORM)
                     .addMessage("costCalculation.messages.success.saveCostsFailure", MessageType.FAILURE);
-        }
+        } else {
 
-        view.getComponentByReference(QcadooViewConstants.L_FORM).addMessage("costCalculation.messages.success.saveCostsSuccess",
-                MessageType.SUCCESS);
+            view.getComponentByReference(QcadooViewConstants.L_FORM)
+                    .addMessage("costCalculation.messages.success.saveCostsSuccess", MessageType.SUCCESS);
+        }
     }
 }

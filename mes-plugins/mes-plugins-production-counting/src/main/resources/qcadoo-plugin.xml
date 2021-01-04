@@ -201,13 +201,7 @@
         </model:model-field>
 
         <model:model-field model="parameter" plugin="basic">
-            <model:enum name="sourceOfMaterialCostsPB"
-                        values="01currentGlobalDefinitionsInProduct,02fromOrdersMaterialCosts"
-                        required="true" default="01currentGlobalDefinitionsInProduct"/>
-        </model:model-field>
-
-        <model:model-field model="parameter" plugin="basic">
-            <model:enum name="calculateMaterialCostsModePB"
+            <model:enum name="materialCostsUsedPB"
                         values="01nominal,02average,03lastPurchase,04averageOfferCost,05lastOfferCost,06costForOrder"
                         required="true" default="01nominal"/>
         </model:model-field>

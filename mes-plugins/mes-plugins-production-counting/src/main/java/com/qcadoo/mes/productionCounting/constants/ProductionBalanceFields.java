@@ -35,9 +35,7 @@ public final class ProductionBalanceFields {
 
     public static final String REGISTRATION_PRICE_OVERHEAD = "registrationPriceOverhead";
 
-    public static final String SOURCE_OF_MATERIAL_COSTS = "sourceOfMaterialCosts";
-
-    public static final String CALCULATE_MATERIAL_COSTS_MODE = "calculateMaterialCostsMode";
+    public static final String MATERIAL_COSTS_USED = "materialCostsUsed";
 
     public static final String PRODUCTION_COST_MARGIN = "productionCostMargin";
 
@@ -63,7 +61,7 @@ public final class ProductionBalanceFields {
 
     public static final String INCLUDE_ADDITIONAL_TIME = "includeAdditionalTime";
 
-    public static final String SOURCE_OF_OPERATION_COSTS_PB = "sourceOfOperationCostsPB";
+    public static final String SOURCE_OF_OPERATION_COSTS = "sourceOfOperationCosts";
 
     public static final String INCLUDE_WAGE_GROUPS = "includeWageGroups";
 }

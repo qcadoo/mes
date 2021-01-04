@@ -28,7 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 public enum MaterialCostsUsed {
 
     NOMINAL("01nominal"), AVERAGE("02average"), LAST_PURCHASE("03lastPurchase"), AVERAGE_OFFER_COST(
-            "04averageOfferCost"), LAST_OFFER_COST("05lastOfferCost");
+            "04averageOfferCost"), LAST_OFFER_COST("05lastOfferCost"), COST_FOR_ORDER("06costForOrder");
 
     private final String materialCostsUsed;
 

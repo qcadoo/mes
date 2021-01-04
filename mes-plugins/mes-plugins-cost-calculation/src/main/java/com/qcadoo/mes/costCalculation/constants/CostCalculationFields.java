@@ -37,6 +37,8 @@ public final class CostCalculationFields {
 
     public static final String TECHNOLOGIES = "technologies";
 
+    public static final String CALCULATION_RESULTS = "calculationResults";
+
     public static final String MATERIAL_COSTS_USED = "materialCostsUsed";
 
     public static final String USE_NOMINAL_COST_PRICE_NOT_SPECIFIED = "useNominalCostPriceNotSpecified";
