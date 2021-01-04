@@ -14,4 +14,8 @@ public final class TechnologicalProcessFields {
 
     public static final String TJ = "tj";
 
+    public static final String WORKSTATION_TYPE = "workstationType";
+
+    public static final String WORKSTATION = "workstation";
+
 }

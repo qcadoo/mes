@@ -1,9 +1,11 @@
 package com.qcadoo.mes.technologies.hooks;
 
+import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import org.springframework.stereotype.Service;
 
 import static com.qcadoo.mes.technologies.constants.TechnologicalProcessFields.*;
@@ -32,5 +34,20 @@ public class TechnologicalProcessDetailsHooks {
         }
         increasePercentField.requestComponentUpdateState();
         sizeGroupLookup.requestComponentUpdateState();
+
+        LookupComponent workstationLookup = (LookupComponent) view.getComponentByReference(WORKSTATION);
+
+        LookupComponent workstationTypeLookup = (LookupComponent) view.getComponentByReference(WORKSTATION_TYPE);
+
+        FilterValueHolder filterValueHolder = workstationLookup.getFilterValue();
+
+        if (workstationTypeLookup.getFieldValue() != null) {
+            filterValueHolder.put(WorkstationFields.WORKSTATION_TYPE, workstationTypeLookup.getEntity().getId());
+        } else {
+            filterValueHolder.remove(WorkstationFields.WORKSTATION_TYPE);
+        }
+
+        workstationLookup.setFilterValue(filterValueHolder);
+
     }
 }
