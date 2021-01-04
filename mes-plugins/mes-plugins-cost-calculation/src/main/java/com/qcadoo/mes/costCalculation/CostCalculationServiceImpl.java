@@ -157,8 +157,6 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         final BigDecimal totalOverhead = productionCostMarginValue.add(materialCostMarginValue, numberService.getMathContext())
                 .add(additionalOverhead, numberService.getMathContext());
 
-        entity.setField(CostCalculationFields.ADDITIONAL_OVERHEAD_VALUE,
-                numberService.setScaleWithDefaultMathContext(additionalOverhead));
         entity.setField(CostCalculationFields.TOTAL_OVERHEAD, numberService.setScaleWithDefaultMathContext(totalOverhead));
     }
 

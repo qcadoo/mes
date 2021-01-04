@@ -69,8 +69,6 @@ public final class CostCalculationFields {
 
     public static final String ADDITIONAL_OVERHEAD = "additionalOverhead";
 
-    public static final String ADDITIONAL_OVERHEAD_VALUE = "additionalOverheadValue";
-
     public static final String REGISTRATION_PRICE_OVERHEAD = "registrationPriceOverhead";
 
     public static final String REGISTRATION_PRICE_OVERHEAD_VALUE = "registrationPriceOverheadValue";

@@ -484,7 +484,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
         PdfPTable leftPanelColumn = pdfHelper.createPanelTable(1);
 
         leftPanelColumn.addCell(new Phrase(translationService.translate(
-                "costCalculation.costCalculationDetails.window.calculationResultsTab.formCalculationResults.sellPriceValue",
+                "costCalculation.costCalculation.sellPriceValue.label",
                 locale) + ":", FontUtils.getDejavuBold10Dark()));
 
         Object reportData = costCalculation.getDecimalField(CostCalculationFields.PROFIT);

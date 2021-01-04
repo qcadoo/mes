@@ -56,10 +56,6 @@
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
-		<decimal name="totalPieceworkCosts">
-			<validatesUnscaledValue max="14" />
-			<validatesScale max="5" />
-		</decimal>
 		<decimal name="totalLaborHourlyCosts">
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
@@ -80,7 +76,6 @@
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
-		<decimal name="additionalOverheadValue" default="0" />
 		<decimal name="registrationPriceOverheadValue" >
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />

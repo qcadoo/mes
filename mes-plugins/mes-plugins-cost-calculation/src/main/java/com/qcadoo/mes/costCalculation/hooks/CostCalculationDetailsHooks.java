@@ -58,6 +58,10 @@ public class CostCalculationDetailsHooks {
 
     private static final String L_ADDITIONAL_OVERHEAD_CURRENCY = "additionalOverheadCurrency";
 
+    public static final String COST_CALCULATION_RIBBON_MESSAGE_RECORD_ALREADY_GENERATED = "costCalculation.ribbon.message.recordAlreadyGenerated";
+
+    public static final String ACTIONS = "actions";
+
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
@@ -234,11 +238,11 @@ public class CostCalculationDetailsHooks {
                 .getItemByName(CostCalculationFields.NOMINAL_COSTS);
         RibbonActionItem generate = window.getRibbon().getGroupByName("generate").getItemByName("generate");
         RibbonActionItem pdf = window.getRibbon().getGroupByName("export").getItemByName("pdf");
-        RibbonActionItem save = window.getRibbon().getGroupByName("actions").getItemByName("save");
-        RibbonActionItem saveBack = window.getRibbon().getGroupByName("actions").getItemByName("saveBack");
-        RibbonActionItem saveNew = window.getRibbon().getGroupByName("actions").getItemByName("saveNew");
-        RibbonActionItem copy = window.getRibbon().getGroupByName("actions").getItemByName("copy");
-        RibbonActionItem cancel = window.getRibbon().getGroupByName("actions").getItemByName("cancel");
+        RibbonActionItem save = window.getRibbon().getGroupByName(ACTIONS).getItemByName("save");
+        RibbonActionItem saveBack = window.getRibbon().getGroupByName(ACTIONS).getItemByName("saveBack");
+        RibbonActionItem saveNew = window.getRibbon().getGroupByName(ACTIONS).getItemByName("saveNew");
+        RibbonActionItem copy = window.getRibbon().getGroupByName(ACTIONS).getItemByName("copy");
+        RibbonActionItem cancel = window.getRibbon().getGroupByName(ACTIONS).getItemByName("cancel");
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         boolean entityExists = form.getEntityId() != null;
@@ -263,16 +267,16 @@ public class CostCalculationDetailsHooks {
                 generate.setEnabled(false);
                 generate.requestUpdate(true);
                 save.setEnabled(false);
-                save.setMessage("costCalculation.ribbon.message.recordAlreadyGenerated");
+                save.setMessage(COST_CALCULATION_RIBBON_MESSAGE_RECORD_ALREADY_GENERATED);
                 save.requestUpdate(true);
                 saveNew.setEnabled(false);
-                saveNew.setMessage("costCalculation.ribbon.message.recordAlreadyGenerated");
+                saveNew.setMessage(COST_CALCULATION_RIBBON_MESSAGE_RECORD_ALREADY_GENERATED);
                 saveNew.requestUpdate(true);
                 saveBack.setEnabled(false);
-                saveBack.setMessage("costCalculation.ribbon.message.recordAlreadyGenerated");
+                saveBack.setMessage(COST_CALCULATION_RIBBON_MESSAGE_RECORD_ALREADY_GENERATED);
                 saveBack.requestUpdate(true);
                 cancel.setEnabled(false);
-                cancel.setMessage("costCalculation.ribbon.message.recordAlreadyGenerated");
+                cancel.setMessage(COST_CALCULATION_RIBBON_MESSAGE_RECORD_ALREADY_GENERATED);
                 cancel.requestUpdate(true);
             } else {
                 pdf.setEnabled(false);

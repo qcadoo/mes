@@ -89,21 +89,27 @@ public class CostCalculationDetailsListeners {
             calculationResult.setField(CalculationResultFields.COST_CALCULATION, costCalculation);
             calculationResult.setField(CalculationResultFields.TECHNOLOGY, technology);
             calculationResult.setField(CalculationResultFields.PRODUCT, technology.getBelongsToField(TechnologyFields.PRODUCT));
-            calculationResult.setField(CalculationResultFields.MATERIAL_COSTS,
-                    costCalculation.getDecimalField(CostCalculationFields.TOTAL_MATERIAL_COSTS));
-            calculationResult.setField(CalculationResultFields.LABOUR_COST,
-                    costCalculation.getDecimalField(CostCalculationFields.TOTAL_MACHINE_HOURLY_COSTS)
-                            .add(costCalculation.getDecimalField(CostCalculationFields.TOTAL_LABOR_HOURLY_COSTS)));
-            calculationResult.setField(CalculationResultFields.PRODUCTION_COSTS,
-                    costCalculation.getDecimalField(CostCalculationFields.TOTAL_TECHNICAL_PRODUCTION_COSTS));
-            calculationResult.setField(CalculationResultFields.TOTAL_COST,
-                    costCalculation.getDecimalField(CostCalculationFields.TOTAL_COSTS));
-            calculationResult.setField(CalculationResultFields.REGISTRATION_PRICE,
-                    costCalculation.getDecimalField(CostCalculationFields.TOTAL_COST_PER_UNIT));
+            calculationResult.setField(CalculationResultFields.MATERIAL_COSTS, numberService.setScaleWithDefaultMathContext(
+                    costCalculation.getDecimalField(CostCalculationFields.TOTAL_MATERIAL_COSTS), 2));
+            calculationResult
+                    .setField(CalculationResultFields.LABOUR_COST,
+                            numberService
+                                    .setScaleWithDefaultMathContext(
+                                            costCalculation.getDecimalField(CostCalculationFields.TOTAL_MACHINE_HOURLY_COSTS)
+                                                    .add(costCalculation
+                                                            .getDecimalField(CostCalculationFields.TOTAL_LABOR_HOURLY_COSTS)),
+                                            2));
+            calculationResult.setField(CalculationResultFields.PRODUCTION_COSTS, numberService.setScaleWithDefaultMathContext(
+                    costCalculation.getDecimalField(CostCalculationFields.TOTAL_TECHNICAL_PRODUCTION_COSTS), 2));
+            calculationResult.setField(CalculationResultFields.TOTAL_COST, numberService
+                    .setScaleWithDefaultMathContext(costCalculation.getDecimalField(CostCalculationFields.TOTAL_COSTS), 2));
+            calculationResult.setField(CalculationResultFields.REGISTRATION_PRICE, numberService.setScaleWithDefaultMathContext(
+                    costCalculation.getDecimalField(CostCalculationFields.TOTAL_COST_PER_UNIT), 2));
             calculationResult.setField(CalculationResultFields.TECHNICAL_PRODUCTION_COST,
-                    costCalculation.getDecimalField(CostCalculationFields.TECHNICAL_PRODUCTION_COSTS));
-            calculationResult.setField(CalculationResultFields.SELLING_PRICE,
-                    costCalculation.getDecimalField(CostCalculationFields.SELL_PRICE_VALUE));
+                    numberService.setScaleWithDefaultMathContext(
+                            costCalculation.getDecimalField(CostCalculationFields.TECHNICAL_PRODUCTION_COSTS), 2));
+            calculationResult.setField(CalculationResultFields.SELLING_PRICE, numberService
+                    .setScaleWithDefaultMathContext(costCalculation.getDecimalField(CostCalculationFields.SELL_PRICE_VALUE), 2));
             calculationResult.setField(CalculationResultFields.NO_MATERIAL_PRICE, false);
             calculationResultDD.save(calculationResult);
             costCalculationReportService.generateCostCalculationReport(view, state, args);
