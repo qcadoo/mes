@@ -8,6 +8,8 @@ public final class TechnologicalProcessListFields {
 
     public static final String NUMBER = "number";
 
+    public static final String OPERATION = "operation";
+
     public static final String TECHNOLOGICAL_PROCESS_COMPONENTS = "technologicalProcessComponents";
 
 }

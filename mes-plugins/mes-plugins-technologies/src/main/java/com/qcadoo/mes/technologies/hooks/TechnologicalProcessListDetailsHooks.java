@@ -28,7 +28,6 @@ public class TechnologicalProcessListDetailsHooks {
                 technologicalProcessListId);
 
         technologicalProcessLookup.setFilterValue(filterValueHolder);
-        technologicalProcessLookup.requestComponentUpdateState();
 
         GridComponent technologies = (GridComponent) view.getComponentByReference(L_TECHNOLOGIES);
         FilterValueHolder gridFilterValueHolder = technologies.getFilterValue();
