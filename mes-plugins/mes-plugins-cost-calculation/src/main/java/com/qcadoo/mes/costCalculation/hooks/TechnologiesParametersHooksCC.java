@@ -41,6 +41,9 @@ public class TechnologiesParametersHooksCC {
                 .getComponentByReference(CostCalculationConstants.MODEL_STANDARD_LABOR_COST);
         standardLaborCost.setEnabled(
                 SourceOfOperationCosts.STANDARD_LABOR_COSTS.getStringValue().equals(sourceOfOperationCosts.getFieldValue()));
+        if (!SourceOfOperationCosts.STANDARD_LABOR_COSTS.getStringValue().equals(sourceOfOperationCosts.getFieldValue())) {
+            standardLaborCost.setFieldValue(null);
+        }
         standardLaborCost.requestComponentUpdateState();
     }
 
