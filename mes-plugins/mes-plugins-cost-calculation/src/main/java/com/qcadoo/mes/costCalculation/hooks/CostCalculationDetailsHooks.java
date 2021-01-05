@@ -168,60 +168,67 @@ public class CostCalculationDetailsHooks {
     private void fillOverheadsFromParameters(ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (form.getEntityId() == null) {
-            fillWithProperty(CostCalculationFields.MATERIAL_COSTS_USED, CostCalculationFields.MATERIAL_COSTS_USED, view);
+            CheckBoxComponent isSetFieldsFromParameter = (CheckBoxComponent) view
+                    .getComponentByReference(CostCalculationFields.IS_SET_FIELDS_FROM_PARAMETER);
+            if (isSetFieldsFromParameter.isChecked()) {
+                return;
+            }
+            Entity parameter = parameterService.getParameter();
+            fillWithProperty(CostCalculationFields.MATERIAL_COSTS_USED,
+                    parameter.getStringField(CostCalculationFields.MATERIAL_COSTS_USED), view);
             fillCheckboxWithProperty(CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED,
-                    CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED, view);
-            fillWithProperty(CostCalculationFields.SOURCE_OF_OPERATION_COSTS, CostCalculationFields.SOURCE_OF_OPERATION_COSTS,
-                    view);
-            fillLookupWithProperty(CostCalculationFields.STANDARD_LABOR_COST, CostCalculationFields.STANDARD_LABOR_COST, view);
+                    parameter.getBooleanField(CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED), view);
+            fillWithProperty(CostCalculationFields.SOURCE_OF_OPERATION_COSTS,
+                    parameter.getStringField(CostCalculationFields.SOURCE_OF_OPERATION_COSTS), view);
+            fillLookupWithProperty(CostCalculationFields.STANDARD_LABOR_COST,
+                    parameter.getBelongsToField(CostCalculationFields.STANDARD_LABOR_COST), view);
             fillWithPropertyOrZero(CostCalculationFields.AVERAGE_MACHINE_HOURLY_COST,
-                    CostCalculationFields.AVERAGE_MACHINE_HOURLY_COST, view, false);
+                    parameter.getDecimalField(CostCalculationFields.AVERAGE_MACHINE_HOURLY_COST), view, false);
             fillWithPropertyOrZero(CostCalculationFields.AVERAGE_LABOR_HOURLY_COST,
-                    CostCalculationFields.AVERAGE_LABOR_HOURLY_COST, view, false);
-            fillCheckboxWithProperty(CostCalculationFields.INCLUDE_TPZ, CostCalculationFields.INCLUDE_TPZ, view);
-            fillCheckboxWithProperty(CostCalculationFields.INCLUDE_ADDITIONAL_TIME, CostCalculationFields.INCLUDE_ADDITIONAL_TIME,
-                    view);
+                    parameter.getDecimalField(CostCalculationFields.AVERAGE_LABOR_HOURLY_COST), view, false);
+            fillCheckboxWithProperty(CostCalculationFields.INCLUDE_TPZ,
+                    parameter.getBooleanField(CostCalculationFields.INCLUDE_TPZ), view);
+            fillCheckboxWithProperty(CostCalculationFields.INCLUDE_ADDITIONAL_TIME,
+                    parameter.getBooleanField(CostCalculationFields.INCLUDE_ADDITIONAL_TIME), view);
 
-            fillWithPropertyOrZero(CostCalculationFields.MATERIAL_COST_MARGIN, CostCalculationFields.MATERIAL_COST_MARGIN, view,
-                    true);
-            fillWithPropertyOrZero(CostCalculationFields.PRODUCTION_COST_MARGIN, CostCalculationFields.PRODUCTION_COST_MARGIN,
-                    view, true);
-            fillWithPropertyOrZero(CostCalculationFields.ADDITIONAL_OVERHEAD, CostCalculationFields.ADDITIONAL_OVERHEAD, view,
-                    true);
+            fillWithPropertyOrZero(CostCalculationFields.MATERIAL_COST_MARGIN,
+                    parameter.getDecimalField(CostCalculationFields.MATERIAL_COST_MARGIN), view, true);
+            fillWithPropertyOrZero(CostCalculationFields.PRODUCTION_COST_MARGIN,
+                    parameter.getDecimalField(CostCalculationFields.PRODUCTION_COST_MARGIN), view, true);
+            fillWithPropertyOrZero(CostCalculationFields.ADDITIONAL_OVERHEAD,
+                    parameter.getDecimalField(CostCalculationFields.ADDITIONAL_OVERHEAD), view, true);
             fillWithPropertyOrZero(CostCalculationFields.REGISTRATION_PRICE_OVERHEAD,
-                    CostCalculationFields.REGISTRATION_PRICE_OVERHEAD, view, true);
-            fillWithPropertyOrZero(CostCalculationFields.PROFIT, CostCalculationFields.PROFIT, view, true);
+                    parameter.getDecimalField(CostCalculationFields.REGISTRATION_PRICE_OVERHEAD), view, true);
+            fillWithPropertyOrZero(CostCalculationFields.PROFIT, parameter.getDecimalField(CostCalculationFields.PROFIT), view,
+                    true);
+            isSetFieldsFromParameter.setFieldValue(true);
+            isSetFieldsFromParameter.requestComponentUpdateState();
         }
     }
 
-    private void fillCheckboxWithProperty(String componentName, String propertyName, ViewDefinitionState view) {
+    private void fillCheckboxWithProperty(String componentName, boolean propertyValue, ViewDefinitionState view) {
         CheckBoxComponent component = (CheckBoxComponent) view.getComponentByReference(componentName);
-        boolean propertyValue = parameterService.getParameter().getBooleanField(propertyName);
         component.setFieldValue(propertyValue);
     }
 
-    private void fillLookupWithProperty(String componentName, String propertyName, ViewDefinitionState view) {
+    private void fillLookupWithProperty(String componentName, Entity propertyValue, ViewDefinitionState view) {
         LookupComponent component = (LookupComponent) view.getComponentByReference(componentName);
-        Entity propertyValue = parameterService.getParameter().getBelongsToField(propertyName);
         if (propertyValue != null) {
             component.setFieldValue(propertyValue.getId());
         }
     }
 
-    private void fillWithProperty(String componentName, String propertyName, ViewDefinitionState view) {
+    private void fillWithProperty(String componentName, String propertyValue, ViewDefinitionState view) {
         FieldComponent component = (FieldComponent) view.getComponentByReference(componentName);
-        String propertyValue = parameterService.getParameter().getStringField(propertyName);
         if (propertyValue != null) {
             component.setFieldValue(propertyValue);
         }
     }
 
-    private void fillWithPropertyOrZero(String componentName, String propertyName, ViewDefinitionState view,
+    private void fillWithPropertyOrZero(String componentName, BigDecimal propertyValue, ViewDefinitionState view,
             boolean defaultValue) {
         FieldComponent component = (FieldComponent) view.getComponentByReference(componentName);
         if (component.getFieldValue() == null) {
-            BigDecimal propertyValue = parameterService.getParameter().getDecimalField(propertyName);
-
             if (propertyValue != null) {
                 String formattedProductionCostMargin = numbersService.formatWithMinimumFractionDigits(propertyValue.setScale(2),
                         0);

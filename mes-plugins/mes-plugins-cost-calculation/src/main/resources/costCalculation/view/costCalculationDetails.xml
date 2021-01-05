@@ -188,6 +188,10 @@
                         <component type="gridLayout" name="operationCostsParametersGidLayout"
                                    columns="6" rows="6" hasBorders="false">
                             <layoutElement column="1" row="1" width="6">
+                                <component type="checkbox" name="isSetFieldsFromParameter"
+                                           defaultVisible="false" field="#{form}.isSetFieldsFromParameter"
+                                           reference="isSetFieldsFromParameter">
+                                </component>
                                 <component type="select" name="sourceOfOperationCosts"
                                            reference="sourceOfOperationCosts" field="#{form}.sourceOfOperationCosts"
                                            hasDescription="true">

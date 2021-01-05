@@ -160,6 +160,9 @@
 
 		<manyToMany name="technologies" plugin="technologies" model="technology" joinField="costCalculation"
 					copyable="true"/>
+
+		<boolean name="isSetFieldsFromParameter"
+				 persistent="false"/>
 	</fields>
 	<hooks>
 		<validatesWith

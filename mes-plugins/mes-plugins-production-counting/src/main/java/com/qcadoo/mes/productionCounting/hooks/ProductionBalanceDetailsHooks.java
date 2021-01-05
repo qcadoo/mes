@@ -128,11 +128,6 @@ public class ProductionBalanceDetailsHooks {
     public void setTheFieldBasedOnParameters(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (form.getEntityId() == null) {
-            CheckBoxComponent isSetFieldsFromParameter = (CheckBoxComponent) view
-                    .getComponentByReference("isSetFieldsFromParameter");
-            if (isSetFieldsFromParameter.isChecked()) {
-                return;
-            }
             Entity parameter = parameterService.getParameter();
 
             FieldComponent sourceOfOperationCosts = (FieldComponent) view
@@ -190,9 +185,6 @@ public class ProductionBalanceDetailsHooks {
             profit.setFieldValue(numberService
                     .format(BigDecimalUtils.convertNullToZero(parameter.getDecimalField(ParameterFieldsPC.PROFIT_PB))));
             profit.requestComponentUpdateState();
-
-            isSetFieldsFromParameter.setFieldValue(true);
-            isSetFieldsFromParameter.requestComponentUpdateState();
         }
     }
 }

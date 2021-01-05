@@ -109,4 +109,6 @@ public final class CostCalculationFields {
 
     public static final String NOMINAL_COSTS = "nominalCosts";
 
+    public static final String IS_SET_FIELDS_FROM_PARAMETER = "isSetFieldsFromParameter";
+
 }
