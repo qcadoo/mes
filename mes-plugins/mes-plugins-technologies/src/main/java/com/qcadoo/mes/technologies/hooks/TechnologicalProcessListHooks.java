@@ -35,4 +35,12 @@ public class TechnologicalProcessListHooks {
         }
         return !StringUtils.isNotBlank(entity.getStringField(TechnologicalProcessListFields.NUMBER));
     }
+
+    public boolean onDelete(final DataDefinition dataDefinition, final Entity entity) {
+        boolean canDelete = entity.getHasManyField(TechnologicalProcessListFields.OPERATION_COMPONENTS).isEmpty();
+        if (!canDelete) {
+            entity.addGlobalError("technologies.technologicalProcessList.delete.hasOperationComponents");
+        }
+        return canDelete;
+    }
 }
