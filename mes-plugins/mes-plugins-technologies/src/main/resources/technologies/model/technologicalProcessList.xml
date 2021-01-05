@@ -41,8 +41,8 @@
 				 joinField="technologicalProcessList" model="technologyOperationComponent"/>
 	</fields>
 	<hooks>
-		<onSave
-				class="com.qcadoo.mes.technologies.hooks.TechnologicalProcessListHooks"
+		<onSave class="com.qcadoo.mes.technologies.hooks.TechnologicalProcessListHooks"
 				method="onSave"/>
+		<onDelete class="com.qcadoo.mes.technologies.hooks.TechnologicalProcessListHooks" method="onDelete"/>
 	</hooks>
 </model>

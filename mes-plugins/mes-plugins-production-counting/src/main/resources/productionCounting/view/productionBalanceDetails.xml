@@ -343,10 +343,6 @@
                                     <option type="textRepresentationOnDisabled" value="true"/>
                                     <option type="labelWidth" value="40"/>
                                 </component>
-                                <component type="checkbox" name="isSetFieldsFromParameter"
-                                           defaultVisible="false" field="#{form}.isSetFieldsFromParameter"
-                                           reference="isSetFieldsFromParameter">
-                                </component>
                             </layoutElement>
                         </component>
 

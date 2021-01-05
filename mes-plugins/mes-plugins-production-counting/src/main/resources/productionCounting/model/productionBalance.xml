@@ -87,9 +87,6 @@
             <validatesScale max="5"/>
             <validatesRange from="0"/>
         </decimal>
-
-        <boolean name="isSetFieldsFromParameter"
-                 persistent="false"/>
     </fields>
 
     <hooks>

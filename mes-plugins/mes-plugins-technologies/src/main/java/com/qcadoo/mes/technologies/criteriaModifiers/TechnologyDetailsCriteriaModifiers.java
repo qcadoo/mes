@@ -66,20 +66,26 @@ public class TechnologyDetailsCriteriaModifiers {
             final FilterValueHolder filterValue) {
         if (filterValue.has(L_TECHNOLOGY_OPERATION_COMPONENT_ID)) {
             long technologyOperationComponentId = filterValue.getLong(L_TECHNOLOGY_OPERATION_COMPONENT_ID);
-            Entity technologicalProcessList = dataDefinitionService
+            Entity technologyOperationComponent = dataDefinitionService
                     .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
-                    .get(technologyOperationComponentId)
-                    .getBelongsToField(TechnologiesConstants.MODEL_TECHNOLOGICAL_PROCESS_LIST);
-            if (technologicalProcessList != null) {
-                SearchCriteriaBuilder subCriteria = dataDefinitionService
-                        .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGICAL_PROCESS_COMPONENT)
-                        .findWithAlias(TechnologiesConstants.MODEL_TECHNOLOGICAL_PROCESS_COMPONENT)
-                        .add(SearchRestrictions
-                                .eqField(TechnologiesConstants.MODEL_TECHNOLOGICAL_PROCESS_COMPONENT + L_DOT + L_ID, L_THIS_ID))
-                        .add(SearchRestrictions.belongsTo(TechnologiesConstants.MODEL_TECHNOLOGICAL_PROCESS_LIST,
-                                technologicalProcessList))
-                        .setProjection(SearchProjections.id());
-                scb.add(SearchSubqueries.exists(subCriteria));
+                    .get(technologyOperationComponentId);
+            if (technologyOperationComponent != null) {
+                Entity technologicalProcessList = technologyOperationComponent
+                        .getBelongsToField(TechnologiesConstants.MODEL_TECHNOLOGICAL_PROCESS_LIST);
+                if (technologicalProcessList != null) {
+                    SearchCriteriaBuilder subCriteria = dataDefinitionService
+                            .get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                                    TechnologiesConstants.MODEL_TECHNOLOGICAL_PROCESS_COMPONENT)
+                            .findWithAlias(TechnologiesConstants.MODEL_TECHNOLOGICAL_PROCESS_COMPONENT)
+                            .add(SearchRestrictions.eqField(
+                                    TechnologiesConstants.MODEL_TECHNOLOGICAL_PROCESS_COMPONENT + L_DOT + L_ID, L_THIS_ID))
+                            .add(SearchRestrictions.belongsTo(TechnologiesConstants.MODEL_TECHNOLOGICAL_PROCESS_LIST,
+                                    technologicalProcessList))
+                            .setProjection(SearchProjections.id());
+                    scb.add(SearchSubqueries.exists(subCriteria));
+                } else {
+                    scb.add(SearchRestrictions.idEq(-1));
+                }
             } else {
                 scb.add(SearchRestrictions.idEq(-1));
             }
