@@ -23,6 +23,14 @@
  */
 package com.qcadoo.mes.costCalculation.hooks;
 
+import java.math.BigDecimal;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
@@ -37,13 +45,6 @@ import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 @Service
 public class CostCalculationDetailsHooks {
@@ -261,9 +262,10 @@ public class CostCalculationDetailsHooks {
             if (technologiesCount > 0) {
                 generate.setEnabled(true);
                 generate.requestUpdate(true);
+            } else {
+                generate.setEnabled(false);
+                generate.requestUpdate(true);
             }
-            save.setEnabled(false);
-            save.requestUpdate(true);
             saveNominalCosts.setEnabled(generatedField.isChecked());
             saveNominalCosts.requestUpdate(true);
             if (generatedField.isChecked()) {
