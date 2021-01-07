@@ -2827,7 +2827,6 @@ CREATE TABLE arch_costcalculation_costcalculation (
     order_id bigint,
     totalmaterialcosts numeric(19,5),
     totalmachinehourlycosts numeric(19,5),
-    totalpieceworkcosts numeric(19,5),
     totallaborhourlycosts numeric(19,5),
     totaltechnicalproductioncosts numeric(19,5),
     productioncostmargin numeric(19,5) DEFAULT (0)::numeric,
@@ -2835,7 +2834,6 @@ CREATE TABLE arch_costcalculation_costcalculation (
     materialcostmargin numeric(19,5) DEFAULT (0)::numeric,
     materialcostmarginvalue numeric(19,5),
     additionaloverhead numeric(19,5) DEFAULT (0)::numeric,
-    additionaloverheadvalue numeric(12,5) DEFAULT (0)::numeric,
     totaloverhead numeric(19,5),
     totalcosts numeric(19,5),
     totalcostperunit numeric(19,5),
@@ -2846,7 +2844,6 @@ CREATE TABLE arch_costcalculation_costcalculation (
     printoperationnorms boolean DEFAULT true,
     sourceofmaterialcosts character varying(255) DEFAULT '01currentGlobalDefinitionsInProduct'::character varying,
     calculatematerialcostsmode character varying(255) DEFAULT 'nominal'::character varying,
-    calculateoperationcostsmode character varying(255) DEFAULT '01hourly'::character varying,
     date timestamp without time zone,
     generated boolean,
     filename character varying(255),
@@ -9317,12 +9314,11 @@ CREATE TABLE basic_parameter (
     dueweight numeric(12,5),
     printoperationatfirstpageinworkplans boolean DEFAULT false,
     averagelaborhourlycostpb numeric(12,5),
-    calculatematerialcostsmodepb character varying(255) DEFAULT '06costForOrder'::character varying,
+    materialcostsusedpb character varying(255) DEFAULT '06costForOrder'::character varying,
     additionaloverheadpb numeric(12,5) DEFAULT (0)::numeric,
     materialcostmarginpb numeric(12,5) DEFAULT (0)::numeric,
     includetpzpb boolean DEFAULT true,
     productioncostmarginpb numeric(12,5) DEFAULT (0)::numeric,
-    sourceofmaterialcostspb character varying(255) DEFAULT '02fromOrdersMaterialCosts'::character varying,
     averagemachinehourlycostpb numeric(12,5),
     includeadditionaltimepb boolean DEFAULT true,
     batchnumberuniqueness character varying(255) DEFAULT '01globally'::character varying,
@@ -9464,7 +9460,21 @@ CREATE TABLE basic_parameter (
     demandcausesofwastes boolean DEFAULT false,
     wmsapk character varying(255),
     wmsversion character varying(255),
-    applicationconfigured boolean DEFAULT false
+    applicationconfigured boolean DEFAULT false,
+    materialcostsused character varying(255) DEFAULT '01nominal'::character varying,
+    usenominalcostpricenotspecified boolean DEFAULT false,
+    sourceofoperationcosts character varying(255) DEFAULT '01technologyOperation'::character varying,
+    standardlaborcost_id bigint,
+    averagemachinehourlycost numeric(12,5),
+    averagelaborhourlycost numeric(12,5),
+    includetpz boolean DEFAULT false,
+    includeadditionaltime boolean DEFAULT false,
+    materialcostmargin numeric(12,5) DEFAULT 0,
+    productioncostmargin numeric(12,5) DEFAULT 0,
+    additionaloverhead numeric(12,5) DEFAULT 0,
+    registrationpriceoverhead numeric(12,5) DEFAULT 0,
+    profit numeric(12,5) DEFAULT 0,
+    applicationconfigurationfinished boolean DEFAULT false
 );
 
 
@@ -11831,6 +11841,45 @@ ALTER SEQUENCE cmmsscheduler_recurringeventstatechange_id_seq OWNED BY cmmssched
 
 
 --
+-- Name: costcalculation_calculationresult; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE costcalculation_calculationresult (
+    id bigint NOT NULL,
+    costcalculation_id bigint,
+    product_id bigint,
+    technology_id bigint,
+    materialcosts numeric(19,5),
+    labourcost numeric(19,5),
+    productioncosts numeric(19,5),
+    totalcost numeric(19,5),
+    registrationprice numeric(19,5),
+    technicalproductioncost numeric(19,5),
+    sellingprice numeric(19,5),
+    nomaterialprice boolean DEFAULT false
+);
+
+
+--
+-- Name: costcalculation_calculationresult_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE costcalculation_calculationresult_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: costcalculation_calculationresult_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE costcalculation_calculationresult_id_seq OWNED BY costcalculation_calculationresult.id;
+
+
+--
 -- Name: costcalculation_componentcost; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -11868,15 +11917,9 @@ ALTER SEQUENCE costcalculation_componentcost_id_seq OWNED BY costcalculation_com
 CREATE TABLE costcalculation_costcalculation (
     id bigint NOT NULL,
     number character varying(255),
-    product_id bigint,
-    defaulttechnology_id bigint,
-    technology_id bigint,
-    productionline_id bigint,
-    quantity numeric(12,5),
-    order_id bigint,
+    quantity numeric(12,5) DEFAULT 0,
     totalmaterialcosts numeric(19,5),
     totalmachinehourlycosts numeric(19,5),
-    totalpieceworkcosts numeric(19,5),
     totallaborhourlycosts numeric(19,5),
     totaltechnicalproductioncosts numeric(19,5),
     productioncostmargin numeric(19,5) DEFAULT (0)::numeric,
@@ -11884,7 +11927,6 @@ CREATE TABLE costcalculation_costcalculation (
     materialcostmargin numeric(19,5) DEFAULT (0)::numeric,
     materialcostmarginvalue numeric(19,5),
     additionaloverhead numeric(19,5) DEFAULT (0)::numeric,
-    additionaloverheadvalue numeric(12,5) DEFAULT (0)::numeric,
     totaloverhead numeric(19,5),
     totalcosts numeric(19,5),
     totalcostperunit numeric(19,5),
@@ -11893,9 +11935,7 @@ CREATE TABLE costcalculation_costcalculation (
     includeadditionaltime boolean DEFAULT false,
     printcostnormsofmaterials boolean DEFAULT true,
     printoperationnorms boolean DEFAULT true,
-    sourceofmaterialcosts character varying(255) DEFAULT '01currentGlobalDefinitionsInProduct'::character varying,
-    calculatematerialcostsmode character varying(255) DEFAULT 'nominal'::character varying,
-    calculateoperationcostsmode character varying(255) DEFAULT '01hourly'::character varying,
+    materialcostsused character varying(255) DEFAULT 'nominal'::character varying,
     date timestamp without time zone,
     generated boolean,
     filename character varying(255),
@@ -11907,7 +11947,11 @@ CREATE TABLE costcalculation_costcalculation (
     registrationpriceoverheadvalue numeric(19,5),
     profitvalue numeric(19,5),
     sellpricevalue numeric(19,5),
-    technicalproductioncosts numeric(19,5)
+    technicalproductioncosts numeric(19,5),
+    standardlaborcost_id bigint,
+    averagemachinehourlycost numeric(12,5),
+    averagelaborhourlycost numeric(12,5),
+    usenominalcostpricenotspecified boolean DEFAULT false
 );
 
 
@@ -15451,6 +15495,16 @@ CREATE TABLE jointable_company_workstation (
 
 
 --
+-- Name: jointable_costcalculation_technology; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE jointable_costcalculation_technology (
+    costcalculation_id bigint NOT NULL,
+    technology_id bigint NOT NULL
+);
+
+
+--
 -- Name: jointable_division_productionline; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -16024,7 +16078,8 @@ CREATE TABLE masterorders_masterorderposition_manyproducts (
     description character varying(2048),
     quantitytakenfromwarehouse numeric(14,5),
     quantityremainingtoorder numeric(14,5),
-    quantityremainingtoorderwithoutstock numeric(14,5)
+    quantityremainingtoorderwithoutstock numeric(14,5),
+    modelname character varying(1024)
 );
 
 ALTER TABLE ONLY masterorders_masterorderposition_manyproducts REPLICA IDENTITY NOTHING;
@@ -16062,8 +16117,24 @@ CREATE VIEW masterorders_masterorderpositiondto AS
     masterorders_masterorderposition_manyproducts.description,
     masterorders_masterorderposition_manyproducts.quantitytakenfromwarehouse,
     masterorders_masterorderposition_manyproducts.quantityremainingtoorder,
-    masterorders_masterorderposition_manyproducts.quantityremainingtoorderwithoutstock
+    masterorders_masterorderposition_manyproducts.quantityremainingtoorderwithoutstock,
+    masterorders_masterorderposition_manyproducts.modelname
    FROM masterorders_masterorderposition_manyproducts;
+
+
+--
+-- Name: masterorders_salesplan; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE masterorders_salesplan (
+    id bigint NOT NULL,
+    number character varying(255),
+    name character varying(255),
+    description character varying(2048),
+    state character varying(255),
+    datefrom date,
+    dateto date
+);
 
 
 --
@@ -16087,8 +16158,11 @@ CREATE VIEW masterorders_masterorderdto AS
     masterorder.state,
     masterorder.externalnumber,
     masterorder.asanataskid,
-    masterorder.description
-   FROM (((((masterorders_masterorder masterorder
+    masterorder.description,
+    salesplan.number AS salesplannumber,
+    salesplan.name AS salesplanname
+   FROM ((((((masterorders_masterorder masterorder
+     LEFT JOIN masterorders_salesplan salesplan ON ((salesplan.id = masterorder.salesplan_id)))
      LEFT JOIN masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
      LEFT JOIN basic_company company ON ((company.id = masterorder.company_id)))
      LEFT JOIN basic_company companypayer ON ((companypayer.id = masterorder.companypayer_id)))
@@ -16244,21 +16318,6 @@ CREATE SEQUENCE masterorders_sales_plan_number_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
---
--- Name: masterorders_salesplan; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE masterorders_salesplan (
-    id bigint NOT NULL,
-    number character varying(255),
-    name character varying(255),
-    description character varying(2048),
-    state character varying(255),
-    datefrom date,
-    dateto date
-);
 
 
 --
@@ -21840,16 +21899,14 @@ CREATE TABLE productioncounting_productionbalance (
     worker character varying(255),
     description character varying(255),
     filename character varying(1024),
-    calculateoperationcostsmode character varying(255) DEFAULT 'hourly'::character varying,
     includetpz boolean DEFAULT true,
     includeadditionaltime boolean DEFAULT false,
     materialcostmargin numeric(12,5) DEFAULT (0)::numeric,
-    sourceofmaterialcosts character varying(255) DEFAULT '01currentGlobalDefinitionsInProduct'::character varying,
-    calculatematerialcostsmode character varying(255) DEFAULT '01nominal'::character varying,
+    materialcostsused character varying(255) DEFAULT '01nominal'::character varying,
     productioncostmargin numeric(12,5) DEFAULT (0)::numeric,
     active boolean DEFAULT true,
     entityversion bigint DEFAULT 0,
-    sourceofoperationcostspb character varying(255) DEFAULT '01technologyOperation'::character varying,
+    sourceofoperationcosts character varying(255) DEFAULT '01technologyOperation'::character varying,
     registrationpriceoverhead numeric,
     profit numeric,
     number character varying(255),
@@ -28111,6 +28168,13 @@ ALTER TABLE ONLY cmmsscheduler_recurringeventstatechange ALTER COLUMN id SET DEF
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY costcalculation_calculationresult ALTER COLUMN id SET DEFAULT nextval('costcalculation_calculationresult_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY costcalculation_componentcost ALTER COLUMN id SET DEFAULT nextval('costcalculation_componentcost_id_seq'::regclass);
 
 
@@ -30520,7 +30584,7 @@ SELECT pg_catalog.setval('arch_costcalculation_componentcost_id_seq', 1, false);
 -- Data for Name: arch_costcalculation_costcalculation; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY arch_costcalculation_costcalculation (id, number, product_id, defaulttechnology_id, technology_id, productionline_id, quantity, order_id, totalmaterialcosts, totalmachinehourlycosts, totalpieceworkcosts, totallaborhourlycosts, totaltechnicalproductioncosts, productioncostmargin, productioncostmarginvalue, materialcostmargin, materialcostmarginvalue, additionaloverhead, additionaloverheadvalue, totaloverhead, totalcosts, totalcostperunit, description, includetpz, includeadditionaltime, printcostnormsofmaterials, printoperationnorms, sourceofmaterialcosts, calculatematerialcostsmode, calculateoperationcostsmode, date, generated, filename, includecomponents, entityversion, sourceofoperationcosts, registrationpriceoverhead, profit, registrationpriceoverheadvalue, profitvalue, sellpricevalue, technicalproductioncosts, archived) FROM stdin;
+COPY arch_costcalculation_costcalculation (id, number, product_id, defaulttechnology_id, technology_id, productionline_id, quantity, order_id, totalmaterialcosts, totalmachinehourlycosts, totallaborhourlycosts, totaltechnicalproductioncosts, productioncostmargin, productioncostmarginvalue, materialcostmargin, materialcostmarginvalue, additionaloverhead, totaloverhead, totalcosts, totalcostperunit, description, includetpz, includeadditionaltime, printcostnormsofmaterials, printoperationnorms, sourceofmaterialcosts, calculatematerialcostsmode, date, generated, filename, includecomponents, entityversion, sourceofoperationcosts, registrationpriceoverhead, profit, registrationpriceoverheadvalue, profitvalue, sellpricevalue, technicalproductioncosts, archived) FROM stdin;
 \.
 
 
@@ -32820,8 +32884,8 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, calculatematerialcostsmodepb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, sourceofmaterialcostspb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, allowtechnologytreechangeinpendingorder, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, enableoperationgroupingworkplan, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation, moveproductstosubsequentoperations, demandcausesofwastes, wmsapk, wmsversion, applicationconfigured) FROM stdin;
-1	167	124	szt.	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	02fromOrdersMaterialCosts	\N	f	01globally	14	f	\N	f	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	f	\N	\N	\N	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	f	01accepted	01order	01allInputProducts	f	t	\N	\N	\N	f	f	f	\N	\N	\N	\N	\N	150	\N	\N	f	t	f	\N	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	f	f	\N	\N	t
+COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, materialcostsusedpb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, allowtechnologytreechangeinpendingorder, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, enableoperationgroupingworkplan, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation, moveproductstosubsequentoperations, demandcausesofwastes, wmsapk, wmsversion, applicationconfigured, materialcostsused, usenominalcostpricenotspecified, sourceofoperationcosts, standardlaborcost_id, averagemachinehourlycost, averagelaborhourlycost, includetpz, includeadditionaltime, materialcostmargin, productioncostmargin, additionaloverhead, registrationpriceoverhead, profit, applicationconfigurationfinished) FROM stdin;
+1	167	124	szt.	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	\N	f	01globally	14	f	\N	f	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	f	\N	\N	\N	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	f	01accepted	01order	01allInputProducts	f	t	\N	\N	\N	f	f	f	\N	\N	\N	\N	\N	150	\N	\N	f	t	f	\N	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	f	f	\N	\N	t	01nominal	f	01technologyOperation	\N	\N	\N	f	f	0.00000	0.00000	0.00000	0.00000	0.00000	f
 \.
 
 
@@ -33677,6 +33741,21 @@ SELECT pg_catalog.setval('cmmsscheduler_recurringeventstatechange_id_seq', 1, fa
 
 
 --
+-- Data for Name: costcalculation_calculationresult; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY costcalculation_calculationresult (id, costcalculation_id, product_id, technology_id, materialcosts, labourcost, productioncosts, totalcost, registrationprice, technicalproductioncost, sellingprice, nomaterialprice) FROM stdin;
+\.
+
+
+--
+-- Name: costcalculation_calculationresult_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('costcalculation_calculationresult_id_seq', 1, false);
+
+
+--
 -- Data for Name: costcalculation_componentcost; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -33695,7 +33774,7 @@ SELECT pg_catalog.setval('costcalculation_componentcost_id_seq', 1, false);
 -- Data for Name: costcalculation_costcalculation; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY costcalculation_costcalculation (id, number, product_id, defaulttechnology_id, technology_id, productionline_id, quantity, order_id, totalmaterialcosts, totalmachinehourlycosts, totalpieceworkcosts, totallaborhourlycosts, totaltechnicalproductioncosts, productioncostmargin, productioncostmarginvalue, materialcostmargin, materialcostmarginvalue, additionaloverhead, additionaloverheadvalue, totaloverhead, totalcosts, totalcostperunit, description, includetpz, includeadditionaltime, printcostnormsofmaterials, printoperationnorms, sourceofmaterialcosts, calculatematerialcostsmode, calculateoperationcostsmode, date, generated, filename, includecomponents, entityversion, sourceofoperationcosts, registrationpriceoverhead, profit, registrationpriceoverheadvalue, profitvalue, sellpricevalue, technicalproductioncosts) FROM stdin;
+COPY costcalculation_costcalculation (id, number, quantity, totalmaterialcosts, totalmachinehourlycosts, totallaborhourlycosts, totaltechnicalproductioncosts, productioncostmargin, productioncostmarginvalue, materialcostmargin, materialcostmarginvalue, additionaloverhead, totaloverhead, totalcosts, totalcostperunit, description, includetpz, includeadditionaltime, printcostnormsofmaterials, printoperationnorms, materialcostsused, date, generated, filename, includecomponents, entityversion, sourceofoperationcosts, registrationpriceoverhead, profit, registrationpriceoverheadvalue, profitvalue, sellpricevalue, technicalproductioncosts, standardlaborcost_id, averagemachinehourlycost, averagelaborhourlycost, usenominalcostpricenotspecified) FROM stdin;
 \.
 
 
@@ -34995,6 +35074,14 @@ COPY jointable_company_subassembly (company_id, subassembly_id) FROM stdin;
 --
 
 COPY jointable_company_workstation (company_id, workstation_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: jointable_costcalculation_technology; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY jointable_costcalculation_technology (costcalculation_id, technology_id) FROM stdin;
 \.
 
 
@@ -37641,7 +37728,7 @@ SELECT pg_catalog.setval('productioncounting_productionanalysisdto_id_seq', 1, f
 -- Data for Name: productioncounting_productionbalance; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY productioncounting_productionbalance (id, generated, name, date, worker, description, filename, calculateoperationcostsmode, includetpz, includeadditionaltime, materialcostmargin, sourceofmaterialcosts, calculatematerialcostsmode, productioncostmargin, active, entityversion, sourceofoperationcostspb, registrationpriceoverhead, profit, number, additionaloverhead, includewagegroups) FROM stdin;
+COPY productioncounting_productionbalance (id, generated, name, date, worker, description, filename, includetpz, includeadditionaltime, materialcostmargin, materialcostsused, productioncostmargin, active, entityversion, sourceofoperationcosts, registrationpriceoverhead, profit, number, additionaloverhead, includewagegroups) FROM stdin;
 \.
 
 
@@ -42063,6 +42150,14 @@ ALTER TABLE ONLY goodfood_confectionprotocol
 
 
 --
+-- Name: costcalculation_calculationresult_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY costcalculation_calculationresult
+    ADD CONSTRAINT costcalculation_calculationresult_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: costcalculation_componentcost_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -42732,6 +42827,14 @@ ALTER TABLE ONLY jointable_company_subassembly
 
 ALTER TABLE ONLY jointable_company_workstation
     ADD CONSTRAINT jointable_company_workstation_pkey PRIMARY KEY (workstation_id, company_id);
+
+
+--
+-- Name: jointable_costcalculation_technology_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_costcalculation_technology
+    ADD CONSTRAINT jointable_costcalculation_technology_pkey PRIMARY KEY (costcalculation_id, technology_id);
 
 
 --
@@ -46679,17 +46782,19 @@ CREATE RULE "_RETURN" AS
     masterorder.description,
     masterorderproduct.quantitytakenfromwarehouse,
     GREATEST((((COALESCE(masterorderproduct.masterorderquantity, (0)::numeric) - COALESCE(( SELECT sum(orders.plannedquantity) AS sum), (0)::numeric)) - COALESCE(masterorderproduct.quantitytakenfromwarehouse, (0)::numeric)))::numeric(14,5), (0)::numeric(14,5)) AS quantityremainingtoorder,
-    ((COALESCE(masterorderproduct.masterorderquantity, (0)::numeric) - COALESCE(( SELECT sum(orders.plannedquantity) AS sum), (0)::numeric)))::numeric(14,5) AS quantityremainingtoorderwithoutstock
-   FROM ((((((((masterorders_masterorderproduct masterorderproduct
+    ((COALESCE(masterorderproduct.masterorderquantity, (0)::numeric) - COALESCE(( SELECT sum(orders.plannedquantity) AS sum), (0)::numeric)))::numeric(14,5) AS quantityremainingtoorderwithoutstock,
+    model.name AS modelname
+   FROM (((((((((masterorders_masterorderproduct masterorderproduct
      LEFT JOIN masterorders_masterorder masterorder ON ((masterorderproduct.masterorder_id = masterorder.id)))
      LEFT JOIN masterorders_masterorderdefinition masterorderdefinition ON ((masterorderdefinition.id = masterorder.masterorderdefinition_id)))
      LEFT JOIN basic_product _product ON ((_product.id = masterorderproduct.product_id)))
+     LEFT JOIN basic_model model ON ((model.id = _product.model_id)))
      LEFT JOIN basic_company company ON ((company.id = masterorder.company_id)))
      LEFT JOIN technologies_technology technology ON ((technology.id = masterorderproduct.technology_id)))
      LEFT JOIN orders_order orders ON (((orders.masterorder_id = masterorderproduct.masterorder_id) AND (orders.product_id = masterorderproduct.product_id))))
      LEFT JOIN basic_company companypayer ON ((companypayer.id = masterorder.companypayer_id)))
      LEFT JOIN basic_assortment assortment ON ((assortment.id = _product.assortment_id)))
-  GROUP BY masterorderdefinition.number, masterorder.id, masterorderproduct.product_id, masterorderproduct.id, masterorder.name, masterorder.deadline, masterorder.masterorderstate, masterorderproduct.masterorderpositionstatus, masterorderproduct.comments, _product.number, _product.name, _product.unit, technology.number, company.name, masterorder.active, companypayer.name, assortment.name;
+  GROUP BY masterorderdefinition.number, masterorder.id, masterorderproduct.product_id, masterorderproduct.id, masterorder.name, masterorder.deadline, masterorder.masterorderstate, masterorderproduct.masterorderpositionstatus, masterorderproduct.comments, _product.number, _product.name, _product.unit, technology.number, company.name, masterorder.active, companypayer.name, assortment.name, model.name;
 
 
 --
@@ -47979,6 +48084,30 @@ ALTER TABLE ONLY arch_costnormsforoperation_calculationoperationcomponent
 
 
 --
+-- Name: calculationresult_costcalculation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY costcalculation_calculationresult
+    ADD CONSTRAINT calculationresult_costcalculation_fkey FOREIGN KEY (costcalculation_id) REFERENCES costcalculation_costcalculation(id) DEFERRABLE;
+
+
+--
+-- Name: calculationresult_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY costcalculation_calculationresult
+    ADD CONSTRAINT calculationresult_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: calculationresult_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY costcalculation_calculationresult
+    ADD CONSTRAINT calculationresult_technology_fkey FOREIGN KEY (technology_id) REFERENCES technologies_technology(id) DEFERRABLE;
+
+
+--
 -- Name: changetechnologyparameters_technologygroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -48366,24 +48495,8 @@ ALTER TABLE ONLY subcontractorportal_cost
 -- Name: costcalculation_defaulttechnology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY costcalculation_costcalculation
-    ADD CONSTRAINT costcalculation_defaulttechnology_fkey FOREIGN KEY (defaulttechnology_id) REFERENCES technologies_technology(id) DEFERRABLE;
-
-
---
--- Name: costcalculation_defaulttechnology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY arch_costcalculation_costcalculation
     ADD CONSTRAINT costcalculation_defaulttechnology_fkey FOREIGN KEY (defaulttechnology_id) REFERENCES technologies_technology(id) DEFERRABLE;
-
-
---
--- Name: costcalculation_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY costcalculation_costcalculation
-    ADD CONSTRAINT costcalculation_order_fkey FOREIGN KEY (order_id) REFERENCES orders_order(id) DEFERRABLE;
 
 
 --
@@ -48398,24 +48511,8 @@ ALTER TABLE ONLY arch_costcalculation_costcalculation
 -- Name: costcalculation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY costcalculation_costcalculation
-    ADD CONSTRAINT costcalculation_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
--- Name: costcalculation_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY arch_costcalculation_costcalculation
     ADD CONSTRAINT costcalculation_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
-
-
---
--- Name: costcalculation_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY costcalculation_costcalculation
-    ADD CONSTRAINT costcalculation_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES productionlines_productionline(id) DEFERRABLE;
 
 
 --
@@ -48427,11 +48524,19 @@ ALTER TABLE ONLY arch_costcalculation_costcalculation
 
 
 --
--- Name: costcalculation_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: costcalculation_standardlaborcost_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY costcalculation_costcalculation
-    ADD CONSTRAINT costcalculation_technology_fkey FOREIGN KEY (technology_id) REFERENCES technologies_technology(id) DEFERRABLE;
+    ADD CONSTRAINT costcalculation_standardlaborcost_fkey FOREIGN KEY (standardlaborcost_id) REFERENCES costcalculation_standardlaborcost(id) DEFERRABLE;
+
+
+--
+-- Name: costcalculation_technology_costcalculation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_costcalculation_technology
+    ADD CONSTRAINT costcalculation_technology_costcalculation_fkey FOREIGN KEY (costcalculation_id) REFERENCES costcalculation_costcalculation(id) DEFERRABLE;
 
 
 --
@@ -48440,6 +48545,14 @@ ALTER TABLE ONLY costcalculation_costcalculation
 
 ALTER TABLE ONLY arch_costcalculation_costcalculation
     ADD CONSTRAINT costcalculation_technology_fkey FOREIGN KEY (technology_id) REFERENCES technologies_technology(id) DEFERRABLE;
+
+
+--
+-- Name: costcalculation_technology_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY jointable_costcalculation_technology
+    ADD CONSTRAINT costcalculation_technology_technology_fkey FOREIGN KEY (technology_id) REFERENCES technologies_technology(id) DEFERRABLE;
 
 
 --
@@ -52840,6 +52953,14 @@ ALTER TABLE ONLY jointable_parameter_productionline
 
 ALTER TABLE ONLY jointable_parameter_productionline
     ADD CONSTRAINT parameter_productionline_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES productionlines_productionline(id) DEFERRABLE;
+
+
+--
+-- Name: parameter_standardlaborcost_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_parameter
+    ADD CONSTRAINT parameter_standardlaborcost_fkey FOREIGN KEY (standardlaborcost_id) REFERENCES costcalculation_standardlaborcost(id) DEFERRABLE;
 
 
 --
