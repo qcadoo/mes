@@ -26,6 +26,7 @@ package com.qcadoo.mes.technologies.hooks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.util.UnitService;
@@ -47,25 +48,26 @@ public class OPICDetailsHooks {
     private UnitService unitService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        setFieldsActive(view);
         fillUnitBeforeRender(view);
+        setProductBySizeGroupsGridEnabledAndClear(view);
     }
 
-    public void fillUnitBeforeRender(final ViewDefinitionState view) {
+    private void fillUnitBeforeRender(final ViewDefinitionState view) {
         unitService.fillProductUnitBeforeRenderIfEmpty(view, OperationProductInComponentFields.UNIT);
         unitService.fillProductUnitBeforeRenderIfEmpty(view, OperationProductInComponentFields.GIVEN_UNIT);
     }
 
-    public void setFieldsActive(final ViewDefinitionState view) {
+    private void setProductBySizeGroupsGridEnabledAndClear(final ViewDefinitionState view) {
         FormComponent operationProductInComponentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         CheckBoxComponent differentProductsInDifferentSizesCheckBox = (CheckBoxComponent) view
                 .getComponentByReference(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES);
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OperationProductInComponentFields.PRODUCT);
-        GridComponent productBySizeGroupsGrid = (GridComponent) view.getComponentByReference(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS);
-
+        GridComponent productBySizeGroupsGrid = (GridComponent) view
+                .getComponentByReference(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS);
 
         Entity operationProductInComponent = operationProductInComponentForm.getEntity();
-        Entity operationComponent = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT);
+        Entity operationComponent = operationProductInComponent
+                .getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT);
         Entity technology = operationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
         Entity product = technology.getBelongsToField(TechnologyFields.PRODUCT);
         String entityType = product.getStringField(ProductFields.ENTITY_TYPE);
@@ -75,6 +77,8 @@ public class OPICDetailsHooks {
 
         if (isChecked) {
             productLookup.setFieldValue(null);
+        } else {
+            productBySizeGroupsGrid.setEntities(Lists.newArrayList());
         }
 
         differentProductsInDifferentSizesCheckBox.setEnabled(isEnabled);
