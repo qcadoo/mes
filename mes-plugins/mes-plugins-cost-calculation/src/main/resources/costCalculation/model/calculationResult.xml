@@ -24,30 +24,46 @@
     ***************************************************************************
 
 -->
-<model name="standardLaborCost" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<model name="calculationResult" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
     <fields>
-        <string name="number" unique="true">
-            <validatesLength max="255" />
-        </string>
+        <belongsTo name="costCalculation" model="costCalculation" required="true"/>
 
-        <string name="name" required="true">
-            <validatesLength max="255"/>
-        </string>
-
-        <decimal name="laborCost" required="true">
+        <belongsTo name="product" model="product" plugin="basic"
+                   required="true" />
+        <belongsTo name="technology" model="technology" plugin="technologies"
+                   required="true" />
+        <decimal name="materialCosts">
             <validatesUnscaledValue max="14" />
             <validatesScale max="5" />
-            <validatesRange from="0" exclusively="true"/>
         </decimal>
-
-        <hasMany name="parameters" joinField="standardLaborCost" plugin="basic" model="parameter"/>
-        <hasMany name="costCalculations" joinField="standardLaborCost" model="costCalculation"/>
+        <decimal name="labourCost">
+            <validatesUnscaledValue max="14" />
+            <validatesScale max="5" />
+        </decimal>
+        <decimal name="productionCosts">
+            <validatesUnscaledValue max="14" />
+            <validatesScale max="5" />
+        </decimal>
+        <decimal name="totalCost">
+            <validatesUnscaledValue max="14" />
+            <validatesScale max="5" />
+        </decimal>
+        <decimal name="registrationPrice" >
+            <validatesUnscaledValue max="14" />
+            <validatesScale max="5" />
+        </decimal>
+        <decimal name="technicalProductionCost">
+            <validatesUnscaledValue max="14" />
+            <validatesScale max="5" />
+        </decimal>
+        <decimal name="sellingPrice">
+            <validatesUnscaledValue max="14" />
+            <validatesScale max="5" />
+        </decimal>
+        <boolean name="noMaterialPrice" default="false" />
     </fields>
     <hooks>
-        <onSave class="com.qcadoo.mes.costCalculation.hooks.StandardLaborCostHooks"
-                method="onSave"/>
     </hooks>
-
 </model>

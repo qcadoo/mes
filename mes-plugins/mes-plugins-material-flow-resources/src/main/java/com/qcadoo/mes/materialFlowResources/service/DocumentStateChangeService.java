@@ -1,6 +1,6 @@
 package com.qcadoo.mes.materialFlowResources.service;
 
-import com.google.common.collect.Lists;
+import com.beust.jcommander.internal.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
@@ -18,6 +18,7 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import static com.qcadoo.mes.materialFlowResources.constants.DocumentStateChangeConstants.*;
@@ -34,43 +35,50 @@ public class DocumentStateChangeService {
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
-    public Entity buildStateChange(Entity document, StateChangeStatus stateChangeStatus) {
-        Entity stateChangeEntity = internalBuild(DocumentState.ACCEPTED, stateChangeStatus);
-        stateChangeEntity.setField(SOURCE_STATE, DocumentState.DRAFT.getStringValue());
-        stateChangeEntity.setField(DOCUMENT, document);
-        stateChangeEntity = stateChangeEntity.getDataDefinition().save(stateChangeEntity);
-        return stateChangeEntity;
+    public void buildFailureStateChange(Long documentId) {
+        Map<String, Object> params = Maps.newHashMap();
+        params.put(SOURCE_STATE, DocumentState.DRAFT.getStringValue());
+        params.put(TARGET_STATE, DocumentState.ACCEPTED.getStringValue());
+        params.put(STATUS, StateChangeStatus.FAILURE.getStringValue());
+        params.put(DOCUMENT, documentId);
+        params.put(DATE_AND_TIME, new Date());
+        params.put(WORKER, securityService.getCurrentUserName());
+        String query = "INSERT INTO materialflowresources_documentstatechange (document_id, worker, dateandtime, sourcestate, targetstate, status) "
+                + "VALUES (:document, :worker, :dateAndTime, :sourceState, :targetState, :status)";
+        jdbcTemplate.queryForObject(query, params, Long.class);
     }
 
-    public void buildStateChange(Long documentId) {
+    public void buildFailureStateChangeAfterRollback(Long documentId) {
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
 
             @Override
             public void afterCompletion(int status) {
                 super.afterCompletion(status);
                 if (TransactionSynchronization.STATUS_ROLLED_BACK == status) {
-                    Map<String, Object> params = Maps.newHashMap();
-                    params.put(SOURCE_STATE, DocumentState.DRAFT.getStringValue());
-                    params.put(TARGET_STATE, DocumentState.ACCEPTED.getStringValue());
-                    params.put(STATUS, StateChangeStatus.FAILURE.getStringValue());
-                    params.put(DOCUMENT, documentId);
-                    params.put(DATE_AND_TIME, new Date());
-                    params.put(WORKER, securityService.getCurrentUserName());
-                    String query = "INSERT INTO materialflowresources_documentstatechange (document_id, worker, dateandtime, sourcestate, targetstate, status) "
-                            + "VALUES (:document, :worker, :dateAndTime, :sourceState, :targetState, :status)";
-                    jdbcTemplate.queryForObject(query, params, Long.class);
+                    buildFailureStateChange(documentId);
                 }
             }
         });
     }
 
-    public Entity buildInitialStateChange(Entity document) {
-        Entity stateChangeEntity = internalBuild(DocumentState.DRAFT, StateChangeStatus.SUCCESSFUL);
+    public void buildInitialStateChange(Entity document) {
+        Entity stateChangeEntity = internalBuild(DocumentState.DRAFT);
         document.setField(DocumentFields.STATE_CHANGES, Lists.newArrayList(stateChangeEntity));
-        return stateChangeEntity;
     }
 
-    private Entity internalBuild(DocumentState targetState, StateChangeStatus stateChangeStatus) {
+    public void buildSuccessfulStateChange(Entity document) {
+        List<Entity> stateChanges = document.getHasManyField(DocumentFields.STATE_CHANGES);
+        if (stateChanges.stream().noneMatch(e -> DocumentState.ACCEPTED.getStringValue().equals(e.getStringField(TARGET_STATE))
+                && StateChangeStatus.SUCCESSFUL.getStringValue().equals(e.getStringField(STATUS)))) {
+            Entity stateChangeEntity = internalBuild(DocumentState.ACCEPTED);
+            stateChangeEntity.setField(SOURCE_STATE, DocumentState.DRAFT.getStringValue());
+            List<Entity> newStateChanges = Lists.newArrayList(stateChangeEntity);
+            newStateChanges.addAll(stateChanges);
+            document.setField(DocumentFields.STATE_CHANGES, newStateChanges);
+        }
+    }
+
+    private Entity internalBuild(DocumentState targetState) {
         DataDefinition dataDefinition = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                 MaterialFlowResourcesConstants.MODEL_DOCUMENT_STATE_CHANGE);
         Entity stateChangeEntity = dataDefinition.create();
@@ -80,7 +88,7 @@ public class DocumentStateChangeService {
         stateChangeEntity.setField(TARGET_STATE, targetState.getStringValue());
 
         stateChangeEntity.setField(WORKER, securityService.getCurrentUserName());
-        stateChangeEntity.setField(STATUS, stateChangeStatus.getStringValue());
+        stateChangeEntity.setField(STATUS, StateChangeStatus.SUCCESSFUL.getStringValue());
         return stateChangeEntity;
     }
 }

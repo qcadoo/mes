@@ -25,27 +25,28 @@ package com.qcadoo.mes.costCalculation.constants;
 
 import org.apache.commons.lang3.StringUtils;
 
-public enum CalculateMaterialCostsMode {
-    NOMINAL("01nominal"), AVERAGE("02average"), LAST_PURCHASE("03lastPurchase"), AVERAGE_OFFER_COST("04averageOfferCost"), LAST_OFFER_COST(
-            "05lastOfferCost"), COST_FOR_ORDER("06costForOrder");
+public enum MaterialCostsUsed {
 
-    private final String calculateMaterialCostsMode;
+    NOMINAL("01nominal"), AVERAGE("02average"), LAST_PURCHASE("03lastPurchase"), AVERAGE_OFFER_COST(
+            "04averageOfferCost"), LAST_OFFER_COST("05lastOfferCost"), COST_FOR_ORDER("06costForOrder");
 
-    private CalculateMaterialCostsMode(final String calculateMaterialCostsMode) {
-        this.calculateMaterialCostsMode = calculateMaterialCostsMode;
+    private final String materialCostsUsed;
+
+    MaterialCostsUsed(final String materialCostsUsed) {
+        this.materialCostsUsed = materialCostsUsed;
     }
 
     public String getStringValue() {
-        return calculateMaterialCostsMode;
+        return materialCostsUsed;
     }
 
-    public static CalculateMaterialCostsMode parseString(final String rawStringValue) {
-        for (CalculateMaterialCostsMode calculateMaterialCostsMode : values()) {
-            if (StringUtils.equalsIgnoreCase(rawStringValue, calculateMaterialCostsMode.getStringValue())) {
-                return calculateMaterialCostsMode;
+    public static MaterialCostsUsed parseString(final String rawStringValue) {
+        for (MaterialCostsUsed materialCostsUsed : values()) {
+            if (StringUtils.equalsIgnoreCase(rawStringValue, materialCostsUsed.getStringValue())) {
+                return materialCostsUsed;
             }
         }
-        throw new IllegalArgumentException(String.format("Cannot parse CalculateMaterialCostMode from '%s'", rawStringValue));
+        throw new IllegalArgumentException(String.format("Cannot parse MaterialCostsUsed from '%s'", rawStringValue));
     }
 
 }

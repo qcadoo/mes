@@ -39,35 +39,13 @@ public final class CalculationOperationComponentFields {
 
     public static final String ENTITY_TYPE = "entityType";
 
-    public static final String CHILDREN = "children";
-
-    public static final String TPZ = "tpz";
-
     public static final String TJ = "tj";
-
-    public static final String ARE_PRODUCT_QUANTITIES_DIVISIBLE = "areProductQuantitiesDivisible";
-
-    public static final String IS_TJ_DIVISIBLE = "isTjDivisible";
-
-    public static final String MACHINE_UTILIZATION = "machineUtilization";
-
-    public static final String LABOR_UTILIZATION = "laborUtilization";
-
-    public static final String PRODUCTION_IN_ONE_CYCLE = "productionInOneCycle";
 
     public static final String NEXT_OPERATION_AFTER_PRODUCED_TYPE = "nextOperationAfterProducedType";
 
     public static final String NEXT_OPERATION_AFTER_PRODUCED_QUANTITY = "nextOperationAfterProducedQuantity";
 
-    public static final String TIME_NEXT_OPERATION = "timeNextOperation";
-
-    public static final String OPERATION_OFFSET = "operationOffSet";
-
-    public static final String EFFECTIVE_OPERATION_REALIZATION_TIME = "effectiveOperationRealizationTime";
-
     public static final String EFFECTIVE_DATE_FROM = "effectiveDateFrom";
-
-    public static final String EFFECTIVE_DATE_TO = "effectiveDateTo";
 
     public static final String DURATION = "duration";
 
@@ -87,8 +65,6 @@ public final class CalculationOperationComponentFields {
 
     public static final String TOTAL_LABOR_OPERATION_COST = "totalLaborOperationCost";
 
-    public static final String PIECEWORK_COST = "pieceworkCost";
-
     public static final String LABOR_HOURLY_COST = "laborHourlyCost";
 
     public static final String MACHINE_HOURLY_COST = "machineHourlyCost";
@@ -96,7 +72,5 @@ public final class CalculationOperationComponentFields {
     public static final String TOTAL_MACHINE_OPERATION_COST_WITH_MARGIN = "totalMachineOperationCostWithMargin";
 
     public static final String TOTAL_LABOR_OPERATION_COST_WITH_MARGIN = "totalLaborOperationCostWithMargin";
-
-    public static final String NUMBER_OF_OPERATIONS = "numberOfOperations";
 
 }

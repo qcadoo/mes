@@ -3,7 +3,8 @@ package com.qcadoo.mes.masterOrders.hooks;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanProductFields;
-import com.qcadoo.mes.masterOrders.criteriaModifier.ProductCriteriaModifiersO;
+import com.qcadoo.mes.masterOrders.criteriaModifier.ProductCriteriaModifiersMO;
+import com.qcadoo.mes.orders.criteriaModifiers.TechnologyCriteriaModifiersO;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -29,12 +30,17 @@ public class SalesPlanProductDetailsHooks {
                 L_SURPLUS_FROM_PLAN_UNIT);
 
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(SalesPlanProductFields.PRODUCT);
+        FilterValueHolder filterValueHolder = productLookup.getFilterValue();
         Entity product = productLookup.getEntity();
 
         String unit = "";
 
         if (product != null) {
             unit = product.getStringField(ProductFields.UNIT);
+            LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(SalesPlanProductFields.TECHNOLOGY);
+            FilterValueHolder technologyFilterValueHolder = technologyLookup.getFilterValue();
+            technologyFilterValueHolder.put(TechnologyCriteriaModifiersO.PRODUCT_PARAMETER, product.getId());
+            technologyLookup.setFilterValue(technologyFilterValueHolder);
         }
 
         for (String referenceName : referenceNames) {
@@ -42,23 +48,16 @@ public class SalesPlanProductDetailsHooks {
             field.setFieldValue(unit);
             field.requestComponentUpdateState();
         }
-        setCriteriaModifierParameters(productLookup,
-                ((FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM)).getEntity());
-    }
 
-    private void setCriteriaModifierParameters(LookupComponent productLookup, Entity salesPlanProduct) {
-        FilterValueHolder filterValueHolder = productLookup.getFilterValue();
-
+        Entity salesPlanProduct = ((FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM)).getEntity();
         Long salesPlanId = salesPlanProduct.getBelongsToField(SalesPlanProductFields.SALES_PLAN).getId();
-        Entity product = salesPlanProduct.getBelongsToField(SalesPlanProductFields.PRODUCT);
+        filterValueHolder.put(ProductCriteriaModifiersMO.L_SALES_PLAN_ID, salesPlanId);
 
-        if (product != null) {
-            filterValueHolder.put(ProductCriteriaModifiersO.L_PRODUCT_ID, product.getId());
+        Entity productFromDb = salesPlanProduct.getBelongsToField(SalesPlanProductFields.PRODUCT);
+        if (productFromDb != null) {
+            filterValueHolder.put(ProductCriteriaModifiersMO.L_PRODUCT_ID, productFromDb.getId());
         }
 
-        filterValueHolder.put(ProductCriteriaModifiersO.L_SALES_PLAN_ID, salesPlanId);
-
         productLookup.setFilterValue(filterValueHolder);
-        productLookup.requestComponentUpdateState();
     }
 }

@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/windowTabExtension" 
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd" 
+	plugin="technologies"
+	view="technologiesParameters">
+
+    <windowTab name="costCalculationTab" reference="costCalculationTab">
+        <component type="gridLayout" name="costCalculationGridLayout"
+                   reference="costCalculationGridLayout" columns="3" rows="8" hasBorders="false">
+            <layoutElement column="1" row="1" height="2">
+                <component type="borderLayout" name="parametersBorderLayout"
+                           reference="parametersBorderLayout">
+                    <component type="gridLayout" name="parametersGridLayout"
+                               reference="parametersGridLayout" columns="1" rows="2">
+                        <layoutElement column="1" row="1">
+                            <component type="select" name="materialCostsUsed"
+                                       field="#{form}.materialCostsUsed"
+                                       reference="materialCostsUsed">
+                                <option type="labelWidth" value="40"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="1" row="2">
+                            <component type="checkbox" name="useNominalCostPriceNotSpecified"
+                                       field="#{form}.useNominalCostPriceNotSpecified"
+                                       reference="useNominalCostPriceNotSpecified" hasDescription="true">
+                                <option type="labelWidth" value="40"/>
+                            </component>
+                        </layoutElement>
+                    </component>
+
+                    <option type="label" value="materialCostsParameters"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="1" row="3" height="6">
+                <component type="borderLayout" name="operationCostsParametersBorderLayout">
+                    <component type="gridLayout" name="operationCostsParametersGidLayout"
+                               columns="6" rows="6" hasBorders="false">
+                        <layoutElement column="1" row="1" width="6">
+                            <component type="select" name="sourceOfOperationCosts"
+                                       field="#{form}.sourceOfOperationCosts"
+                                       reference="sourceOfOperationCosts"
+                                       hasDescription="true">
+                                <option type="labelWidth" value="40"/>
+                                <listener event="onSelectedEntityChange"
+                                          class="com.qcadoo.view.api.listeners.RerenderListener"
+                                          method="onChangeRerender"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="1" row="2" width="6">
+                            <component type="lookup" name="standardLaborCost" field="#{form}.standardLaborCost"
+                                       reference="standardLaborCost">
+                                <option type="column" name="name" fields="name" link="true"/>
+
+                                <option type="searchable" value="name"/>
+                                <option type="orderable" value="name"/>
+
+                                <option type="expression"
+                                        value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                                <option type="fieldCode" value="number"/>
+                                <option type="labelWidth" value="40"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="1" row="3" width="5">
+                            <component type="input" name="averageMachineHourlyCost"
+                                       field="#{form}.averageMachineHourlyCost" reference="averageMachineHourlyCost">
+                                <option type="labelWidth" value="48"/>
+                                <option type="alignment" value="right"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="6" row="3">
+                            <component type="input" name="averageMachineHourlyCostCurrency"
+                                       reference="averageMachineHourlyCostCurrency" defaultEnabled="false"
+                                       hasLabel="false">
+                                <option type="textRepresentationOnDisabled" value="true"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="1" row="4" width="5">
+                            <component type="input" name="averageLaborHourlyCost"
+                                       field="#{form}.averageLaborHourlyCost" reference="averageLaborHourlyCost">
+                                <option type="labelWidth" value="48"/>
+                                <option type="alignment" value="right"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="6" row="4">
+                            <component type="input" name="averageLaborHourlyCostCurrency"
+                                       reference="averageLaborHourlyCostCurrency" defaultEnabled="false"
+                                       hasLabel="false">
+                                <option type="textRepresentationOnDisabled" value="true"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="1" row="5" width="6">
+                            <component type="checkbox" name="includeTPZ" field="#{form}.includeTPZ"
+                                       reference="includeTPZ">
+                                <option type="labelWidth" value="40"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="1" row="6" width="6">
+                            <component type="checkbox" name="includeAdditionalTime"
+                                       field="#{form}.includeAdditionalTime"
+                                       reference="includeAdditionalTime">
+                                <option type="labelWidth" value="40"/>
+                            </component>
+                        </layoutElement>
+                    </component>
+
+                    <option type="label" value="operationCostsParameters"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="2" row="1" height="8">
+                <component type="borderLayout" name="overheadsBorderLayout"
+                           reference="overheadsBorderLayout">
+                    <component type="gridLayout" name="overheadsGridLayout"
+                               reference="overheadsGridLayout" columns="4" rows="5" hasBorders="false">
+                        <layoutElement column="1" row="1" width="3">
+                            <component type="input" name="materialCostMargin"
+                                       field="#{form}.materialCostMargin" reference="materialCostMargin">
+                                <option type="labelWidth" value="60"/>
+                                <option type="alignment" value="right"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="4" row="1">
+                            <component type="input" name="materialCostMarginProc"
+                                       reference="materialCostMarginProc" defaultEnabled="false"
+                                       hasLabel="false">
+                                <option type="textRepresentationOnDisabled" value="true"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="1" row="2" width="3">
+                            <component type="input" name="productionCostMargin"
+                                       field="#{form}.productionCostMargin" reference="productionCostMargin">
+                                <option type="labelWidth" value="60"/>
+                                <option type="alignment" value="right"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="4" row="2">
+                            <component type="input" name="productionCostMarginProc"
+                                       reference="productionCostMarginProc" defaultEnabled="false"
+                                       hasLabel="false">
+                                <option type="textRepresentationOnDisabled" value="true"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="1" row="3" width="3">
+                            <component type="input" name="additionalOverhead"
+                                       field="#{form}.additionalOverhead" reference="additionalOverhead">
+                                <option type="labelWidth" value="60"/>
+                                <option type="alignment" value="right"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="4" row="3">
+                            <component type="input" name="additionalOverheadCurrency"
+                                       reference="additionalOverheadCurrency" defaultEnabled="false"
+                                       hasLabel="false">
+                                <option type="textRepresentationOnDisabled" value="true"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="1" row="4" width="3">
+                            <component type="input" name="registrationPriceOverhead"
+                                       field="#{form}.registrationPriceOverhead"
+                                       reference="registrationPriceOverhead">
+                                <option type="labelWidth" value="60"/>
+                                <option type="alignment" value="right"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="4" row="4">
+                            <component type="input" name="registrationPriceOverheadProc"
+                                       defaultEnabled="false" hasLabel="false"
+                                       reference="registrationPriceOverheadProc">
+                                <option type="textRepresentationOnDisabled" value="true"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="1" row="5" width="3">
+                            <component type="input" name="profit"
+                                       field="#{form}.profit" reference="profit">
+                                <option type="labelWidth" value="60"/>
+                                <option type="alignment" value="right"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="4" row="5">
+                            <component type="input" name="profitProc"
+                                       defaultEnabled="false" hasLabel="false" reference="profitProc">
+                                <option type="textRepresentationOnDisabled" value="true"/>
+                            </component>
+                        </layoutElement>
+                    </component>
+
+                    <option type="label" value="overheads"/>
+                </component>
+            </layoutElement>
+        </component>
+    </windowTab>
+</windowTabExtension>

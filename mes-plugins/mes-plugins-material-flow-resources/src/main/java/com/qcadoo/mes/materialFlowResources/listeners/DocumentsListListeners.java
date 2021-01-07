@@ -26,7 +26,6 @@ import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.service.*;
-import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -141,7 +140,7 @@ public class DocumentsListListeners {
             document = documentDD.save(document);
 
             if (!document.isValid()) {
-                documentStateChangeService.buildStateChange(document, StateChangeStatus.FAILURE);
+                documentStateChangeService.buildFailureStateChange(document.getId());
                 continue;
             }
 
@@ -159,7 +158,7 @@ public class DocumentsListListeners {
 
                 documentErrorsLogger.saveResourceStockLackErrorsToSystemLogs(document);
 
-                documentStateChangeService.buildStateChange(document.getId());
+                documentStateChangeService.buildFailureStateChangeAfterRollback(document.getId());
 
                 document.getGlobalErrors().forEach(gridComponent::addMessage);
                 document.getErrors().values().forEach(gridComponent::addMessage);

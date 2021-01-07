@@ -19,13 +19,9 @@ public class CostCalculationDetailsHooksOFSPG {
     @Autowired
     private ParameterService parameterService;
 
-    
-
-
-
     public void onBeforeRender(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        if (form.getEntityId() == null && view.isViewAfterRedirect()) {
+        if (form.getEntityId() == null) {
             CheckBoxComponent fieldComponent = (CheckBoxComponent) view.getComponentByReference("includeComponents");
             boolean check = parameterService.getParameter().getBooleanField("includeComponents");
             fieldComponent.setChecked(check);
@@ -34,17 +30,20 @@ public class CostCalculationDetailsHooksOFSPG {
         enableSaveNominalCostForComponentButton(view);
     }
 
-    private void enableSaveNominalCostForComponentButton(final ViewDefinitionState view){
+    private void enableSaveNominalCostForComponentButton(final ViewDefinitionState view) {
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
-        RibbonActionItem saveNominalCostsForComponent = window.getRibbon().getGroupByName(CostCalculationFieldsOFSPG.SAVE_COSTS_EXTENSION).getItemByName(CostCalculationFieldsOFSPG.NOMINAL_COSTS_FOR_COMPONENTS);
+        RibbonActionItem saveNominalCostsForComponent = window.getRibbon()
+                .getGroupByName(CostCalculationFieldsOFSPG.SAVE_COSTS_EXTENSION)
+                .getItemByName(CostCalculationFieldsOFSPG.NOMINAL_COSTS_FOR_COMPONENTS);
         CheckBoxComponent generatedField = (CheckBoxComponent) view.getComponentByReference(CostCalculationFields.GENERATED);
-        CheckBoxComponent includeComponents = (CheckBoxComponent) view.getComponentByReference(CostCalculationFieldsOFSPG.INCLUDE_COMPONENTS);
+        CheckBoxComponent includeComponents = (CheckBoxComponent) view
+                .getComponentByReference(CostCalculationFieldsOFSPG.INCLUDE_COMPONENTS);
+        includeComponents.setEnabled(!generatedField.isChecked());
+        includeComponents.requestComponentUpdateState();
         boolean enable = false;
 
-        if(generatedField.isChecked() && includeComponents.isChecked()){
+        if (generatedField.isChecked() && includeComponents.isChecked()) {
             enable = true;
-        } else if(!includeComponents.isChecked()) {
-            enable = false;
         }
         saveNominalCostsForComponent.setEnabled(enable);
         saveNominalCostsForComponent.requestUpdate(true);

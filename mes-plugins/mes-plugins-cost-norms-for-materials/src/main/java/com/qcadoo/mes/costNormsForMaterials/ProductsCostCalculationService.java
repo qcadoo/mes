@@ -23,17 +23,15 @@
  */
 package com.qcadoo.mes.costNormsForMaterials;
 
-import java.math.BigDecimal;
-
 import com.qcadoo.model.api.Entity;
+
+import java.math.BigDecimal;
 
 public interface ProductsCostCalculationService {
 
-    void calculateTotalProductsCost(final Entity costCalculation, final String sourceOfMaterialCosts);
+    void calculateTotalProductsCost(final Entity costCalculation, final Entity technology);
 
     BigDecimal calculateProductCostForGivenQuantity(final Entity product, final BigDecimal quantity,
-            final String calculateMaterialCostsMode);
-
-    Entity getAppropriateCostNormForProduct(final Entity product, final Entity order, final String sourceOfMaterialCosts);
+            final String materialCostsUsed);
 
 }

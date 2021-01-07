@@ -27,7 +27,6 @@ import com.qcadoo.model.api.Entity;
 
 public interface DocumentManagementService {
 
-
     DocumentBuilder getDocumentBuilder();
 
     DocumentBuilder getDocumentBuilder(Entity user);

@@ -25,59 +25,30 @@ package com.qcadoo.mes.costCalculation.validators;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.costCalculation.constants.CalculateMaterialCostsMode;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
-import com.qcadoo.mes.costCalculation.constants.SourceOfMaterialCosts;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.states.constants.TechnologyState;
+import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
 public class CostCalculationValidators {
 
-    public boolean checkIfTheTechnologyHasCorrectState(final DataDefinition costCalculationDD, final Entity costCalculation) {
-        Entity technology = costCalculation.getBelongsToField(CostCalculationFields.TECHNOLOGY);
-        String state = technology.getStringField(TechnologyFields.STATE);
+    private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING = "qcadooView.validate.field.error.missing";
 
-        if (TechnologyState.DRAFT.getStringValue().equals(state) || TechnologyState.DECLINED.getStringValue().equals(state)) {
-            costCalculation.addError(costCalculationDD.getField(CostCalculationFields.TECHNOLOGY),
-                    "costNormsForOperation.messages.fail.incorrectState");
-
-            return false;
-        }
-
-        return true;
+    public boolean validatesWith(final DataDefinition dataDefinition, final Entity costCalculation) {
+        return checkRequiredFields(dataDefinition, costCalculation);
     }
 
-    public boolean checkIfCurrentGlobalIsSelected(final DataDefinition costCalculationDD, final Entity costCalculation) {
-        String sourceOfMaterialCosts = costCalculation.getStringField(CostCalculationFields.SOURCE_OF_MATERIAL_COSTS);
-        String calculateMaterialCostsMode = costCalculation.getStringField(CostCalculationFields.CALCULATE_MATERIAL_COSTS_MODE);
-
-        if (SourceOfMaterialCosts.CURRENT_GLOBAL_DEFINITIONS_IN_PRODUCT.getStringValue().equals(sourceOfMaterialCosts)
-                && CalculateMaterialCostsMode.COST_FOR_ORDER.getStringValue().equals(calculateMaterialCostsMode)) {
-            costCalculation.addError(costCalculationDD.getField(CostCalculationFields.CALCULATE_MATERIAL_COSTS_MODE),
-                    "costCalculation.messages.optionUnavailable");
-
-            return false;
+    public boolean checkRequiredFields(final DataDefinition dataDefinition, final Entity costCalculation) {
+        boolean isValid = true;
+        String sourceOfOperationCosts = costCalculation.getStringField(CostCalculationFields.SOURCE_OF_OPERATION_COSTS);
+        if (SourceOfOperationCosts.STANDARD_LABOR_COSTS.getStringValue().equals(sourceOfOperationCosts)
+                && costCalculation.getBelongsToField(CostCalculationFields.STANDARD_LABOR_COST) == null) {
+            costCalculation.addError(dataDefinition.getField(CostCalculationFields.STANDARD_LABOR_COST),
+                    L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
+            isValid = false;
         }
-
-        return true;
-    }
-
-    public boolean ifSourceOfMaterialIsFromOrderThenOrderIsNeeded(final DataDefinition costCalculationDD,
-            final Entity costCalculation) {
-        String sourceOfMaterialCosts = costCalculation.getStringField(CostCalculationFields.SOURCE_OF_MATERIAL_COSTS);
-        Entity order = costCalculation.getBelongsToField(CostCalculationFields.ORDER);
-
-        if (SourceOfMaterialCosts.FROM_ORDERS_MATERIAL_COSTS.getStringValue().equals(sourceOfMaterialCosts) && (order == null)) {
-            costCalculation.addError(costCalculationDD.getField(CostCalculationFields.SOURCE_OF_MATERIAL_COSTS),
-                    "costCalculation.messages.sourceOfMaterialFromOrderRequiresAnOrder");
-
-            return false;
-        }
-
-        return true;
+        return isValid;
     }
 
 }

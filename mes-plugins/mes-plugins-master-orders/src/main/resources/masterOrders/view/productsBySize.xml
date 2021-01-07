@@ -62,7 +62,7 @@
         <windowTab name="mainTab">
             <component type="form" name="masterOrderDefinitionDetails" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="1"
-                           rows="3">
+                           rows="8">
                     <layoutElement column="1" row="1">
                         <component type="checkbox" name="generated" defaultVisible="false"
                                    reference="generated" defaultEnabled="false"/>
@@ -92,7 +92,7 @@
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="3">
+                    <layoutElement column="1" row="3" height="5">
                         <component type="grid" name="productsBySizeEntryHelpers" reference="productsBySizeEntryHelpers"
                                    source="#{form}.productsBySizeEntryHelpers">
                             <script>
@@ -101,6 +101,9 @@
 
                             QCD.translations['masterOrders.productsBySize.productNotSelectedOrPositionsNotFilled'] =
                             '#{translate(masterOrders.productsBySize.productNotSelectedOrPositionsNotFilled)}';
+
+                            QCD.translations['masterOrders.productsBySize.invalidScale.max'] =
+                            '#{translate(masterOrders.productsBySize.invalidScale.max)}';
                             </script>
                             <script type="text/javascript" src="/masterOrders/public/js/productsBySize.js"></script>
 
@@ -109,11 +112,14 @@
                                       method="addPositionsToOrder"/>
 
 
+                            <option type="column" name="succession" fields="product"
+                                    expression="#product['size'].get('succession')" hidden="true"/>
+
                             <option type="column" name="size" fields="product"
                                     expression="#product['size'].get('number')"/>
                             <option type="column" name="quantity" fields="quantity" formatter="input"
                                    />
-                            <option type="order" column="size" direction="asc"/>
+                            <option type="order" column="succession" direction="asc"/>
 
                             <option type="searchable" value=""/>
                             <option type="orderable" value=""/>
@@ -122,8 +128,6 @@
 
                             <option type="paginable" value="false"/>
 
-                            <option type="fullscreen" value="true"/>
-                            <option type="fixedHeight" value="true"/>
 
                         </component>
                     </layoutElement>

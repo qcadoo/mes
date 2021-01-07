@@ -8,7 +8,6 @@ QCD.translate = function (key) {
 };
 
 thatObject.addPositionsToOrder = function (eventPerformer, ribbonItemName, entityId) {
-
 	QCD.components.elements.utils.LoadingIndicator.blockElement($("#window_windowComponents"));
 	const queryString = window.location.search;
 	const urlParams = new URLSearchParams(queryString);
@@ -20,14 +19,32 @@ thatObject.addPositionsToOrder = function (eventPerformer, ribbonItemName, entit
 	var ids = pgrid.jqGrid('getDataIDs');
 
 	var positions = [];
+	var invalid = false;
 	$.each(ids, function (i, id) {
 		var position = {};
 		position.id = id;
 		position.value = $("#quantity_" + id).val();
+		$("#quantity_" + id).removeClass('is-invalid');
+
 		if (position.value) {
-			positions.push(position);
+		    var validationAttrResult = validateDecimalWithPrecisionAndScale(position.value);
+            if (!validationAttrResult.validScale) {
+                invalid = true;
+            	$("#quantity_" + id).addClass('is-invalid');
+            } else {
+                positions.push(position);
+            }
 		}
 	});
+
+	if(invalid) {
+			QCD.components.elements.utils.LoadingIndicator.unblockElement($("#window_windowComponents"));
+    		mainController.showMessage({
+    			type: "error",
+    			content: QCD.translate('masterOrders.productsBySize.invalidScale.max')
+    		});
+    		return;
+	}
 
 	if (positions.length === 0) {
 		QCD.components.elements.utils.LoadingIndicator.unblockElement($("#window_windowComponents"));
@@ -84,6 +101,44 @@ function quantityChange(pgrid) {
 
 	document.getElementById('window.mainTab.masterOrderDefinitionDetails.gridLayout.totalQuantity_input').value = parseFloat(totalSum.toFixed(5));
 }
+
+    function validateDecimalWithPrecisionAndScale(value){
+    var precision = 14;
+    var scale = 5;
+
+        var validPrecision = true;
+        var validScale = true;
+        var isScale = false;
+        var parts;
+
+        if (value.toString().indexOf('.') > 0) {
+            parts = value.toString().split('.');
+            isScale = true;
+        } else if(value.toString().indexOf(',') > 0){
+            parts = value.toString().split(',');
+            isScale = true;
+        }
+
+
+        if(isScale && parts[1].length > scale){
+            validScale = false;
+        }
+
+        var cleanValueLength = value.toString().length;
+        if(isScale){
+            cleanValueLength = cleanValueLength -1 - parts[1].length;
+        }
+
+        if(cleanValueLength > (precision - scale)){
+            validPrecision = false;
+        }
+
+        return {
+            validPrecision : validPrecision,
+            validScale : validScale
+        };
+
+    }
 
 function nullToZeroValue(value) {
 	if (value) {

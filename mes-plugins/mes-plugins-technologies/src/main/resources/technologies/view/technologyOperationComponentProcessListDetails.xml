@@ -47,15 +47,21 @@
                             <option type="orderable" value="name"/>
                             <option type="expression" value="#number"/>
                             <option type="fieldCode" value="number"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.technologies.criteriaModifiers.TOCProcessListDetailsCriteriaModifiers"
+                                    method="showTechnologicalProcessListsForOperation"/>
                         </component>
                     </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>
-                <option type="expression" value="#nodeNumber + ' ' + #operation['number']"/>
+                <option type="expression" value="(#nodeNumber != null ? #nodeNumber + ' ' : '') + #operation['number']"/>
             </component>
         </windowTab>
     </component>
 
-    <hooks/>
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.technologies.hooks.TOCProcessListDetailsHooks"
+                      method="onBeforeRender"/>
+    </hooks>
 </view>

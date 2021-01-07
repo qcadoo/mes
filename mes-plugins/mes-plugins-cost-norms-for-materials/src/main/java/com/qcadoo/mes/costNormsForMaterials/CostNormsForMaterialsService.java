@@ -69,10 +69,6 @@ public class CostNormsForMaterialsService {
 
     private static final Logger LOG = LoggerFactory.getLogger(CostNormsForMaterialsService.class);
 
-
-
-    
-
     private static final String L_ORDER = "order";
 
     private static final String L_VIEW_DEFINITION_STATE_IS_NULL = "viewDefinitionState is null";

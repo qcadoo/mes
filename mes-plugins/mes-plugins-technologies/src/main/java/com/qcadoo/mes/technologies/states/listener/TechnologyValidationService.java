@@ -475,7 +475,7 @@ public class TechnologyValidationService {
 
     private Entity useChangingTechnologyInCheckingCycle(final StateChangeContext stateChangeContext, final Entity product,
             final Entity subTechnology) {
-        if (Objects.isNull(subTechnology)
+        if (Objects.isNull(subTechnology) && Objects.nonNull(product)
                 && stateChangeContext.getOwner().getBelongsToField(TechnologyFields.PRODUCT).getId().equals(product.getId())) {
             return stateChangeContext.getOwner();
         }

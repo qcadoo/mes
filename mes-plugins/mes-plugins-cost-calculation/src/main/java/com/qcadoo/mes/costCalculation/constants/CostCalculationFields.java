@@ -33,19 +33,21 @@ public final class CostCalculationFields {
 
     public static final String NUMBER = "number";
 
-    public static final String PRODUCT = "product";
-
-    public static final String ORDER = "order";
-
     public static final String QUANTITY = "quantity";
 
-    public static final String DEFAULT_TECHNOLOGY = "defaultTechnology";
+    public static final String TECHNOLOGIES = "technologies";
 
-    public static final String TECHNOLOGY = "technology";
+    public static final String CALCULATION_RESULTS = "calculationResults";
 
-    public static final String PRODUCTION_LINE = "productionLine";
+    public static final String MATERIAL_COSTS_USED = "materialCostsUsed";
 
-    public static final String CALCULATE_MATERIAL_COSTS_MODE = "calculateMaterialCostsMode";
+    public static final String USE_NOMINAL_COST_PRICE_NOT_SPECIFIED = "useNominalCostPriceNotSpecified";
+
+    public static final String STANDARD_LABOR_COST = "standardLaborCost";
+
+    public static final String AVERAGE_MACHINE_HOURLY_COST = "averageMachineHourlyCost";
+
+    public static final String AVERAGE_LABOR_HOURLY_COST = "averageLaborHourlyCost";
 
     public static final String SOURCE_OF_OPERATION_COSTS = "sourceOfOperationCosts";
 
@@ -56,8 +58,6 @@ public final class CostCalculationFields {
     public static final String TOTAL_MATERIAL_COSTS = "totalMaterialCosts";
 
     public static final String TOTAL_MACHINE_HOURLY_COSTS = "totalMachineHourlyCosts";
-
-    public static final String TOTAL_PIECEWORK_COSTS = "totalPieceworkCosts";
 
     public static final String TOTAL_LABOR_HOURLY_COSTS = "totalLaborHourlyCosts";
 
@@ -70,8 +70,6 @@ public final class CostCalculationFields {
     public static final String MATERIAL_COST_MARGIN_VALUE = "materialCostMarginValue";
 
     public static final String ADDITIONAL_OVERHEAD = "additionalOverhead";
-
-    public static final String ADDITIONAL_OVERHEAD_VALUE = "additionalOverheadValue";
 
     public static final String REGISTRATION_PRICE_OVERHEAD = "registrationPriceOverhead";
 
@@ -99,10 +97,6 @@ public final class CostCalculationFields {
 
     public static final String PRINT_OPERATION_NORMS = "printOperationNorms";
 
-    public static final String SOURCE_OF_MATERIAL_COSTS = "sourceOfMaterialCosts";
-
-    public static final String CALCULATE_OPERATION_COSTS_MODE = "calculateOperationCostsMode";
-
     public static final String DATE = "date";
 
     public static final String GENERATED = "generated";
@@ -114,5 +108,7 @@ public final class CostCalculationFields {
     public static final String SAVE_COSTS = "saveCosts";
 
     public static final String NOMINAL_COSTS = "nominalCosts";
+
+    public static final String IS_SET_FIELDS_FROM_PARAMETER = "isSetFieldsFromParameter";
 
 }

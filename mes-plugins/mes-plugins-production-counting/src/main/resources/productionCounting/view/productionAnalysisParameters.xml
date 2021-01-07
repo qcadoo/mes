@@ -41,27 +41,16 @@
         <windowTab name="productionBalance" reference="productionBalance">
             <component type="form" name="parameters" reference="form">
                 <component type="gridLayout" name="gridLayoutBalance"
-                           reference="gridLayoutBalance" columns="3" rows="8">
-                    <layoutElement column="1" row="1" height="2">
+                           reference="gridLayoutBalance" columns="3" rows="7">
+                    <layoutElement column="1" row="1">
                         <component type="borderLayout" name="parametersBorderLayout"
                                    reference="parametersBorderLayout">
                             <component type="gridLayout" name="parametersGridLayout"
-                                       reference="parametersGridLayout" columns="1" rows="2">
+                                       reference="parametersGridLayout" columns="1" rows="1">
                                 <layoutElement column="1" row="1">
-                                    <component type="select" name="sourceOfMaterialCostsPB"
-                                               field="#{form}.sourceOfMaterialCostsPB"
-                                               reference="sourceOfMaterialCostsPB">
-                                        <option type="labelWidth" value="40"/>
-
-                                        <listener event="onSelectedEntityChange"
-                                                  class="com.qcadoo.mes.productionCounting.hooks.ProductionAnalysisParametersHooks"
-                                                  method="onSourceOfMaterialCostsChange"/>
-                                    </component>
-                                </layoutElement>
-                                <layoutElement column="1" row="2">
-                                    <component type="select" name="calculateMaterialCostsModePB"
-                                               field="#{form}.calculateMaterialCostsModePB"
-                                               reference="calculateMaterialCostsModePB">
+                                    <component type="select" name="materialCostsUsedPB"
+                                               field="#{form}.materialCostsUsedPB"
+                                               reference="materialCostsUsedPB">
                                         <option type="labelWidth" value="40"/>
                                     </component>
                                 </layoutElement>
@@ -70,7 +59,7 @@
                             <option type="label" value="materialCostsParameters"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="3" height="6">
+                    <layoutElement column="1" row="2" height="6">
                         <component type="borderLayout" name="operationCostsParametersBorderLayout">
                             <component type="gridLayout" name="operationCostsParametersGidLayout"
                                        columns="6" rows="6" hasBorders="false">

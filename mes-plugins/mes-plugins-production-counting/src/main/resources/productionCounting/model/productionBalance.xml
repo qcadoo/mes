@@ -39,7 +39,7 @@
         </string>
 
         <boolean name="generated"/>
-        <manyToMany name="orders" plugin="orders" model="order" joinField="productionBalance" cascade="nullify"
+        <manyToMany name="orders" plugin="orders" model="order" joinField="productionBalance"
                     copyable="true"/>
 
         <datetime name="date"/>
@@ -49,30 +49,17 @@
             <validatesLength max="1024"/>
         </string>
 
-        <enum name="sourceOfOperationCostsPB"
+        <enum name="materialCostsUsed"
+              values="01nominal,02average,03lastPurchase,04averageOfferCost,05lastOfferCost,06costForOrder"
+              required="true" default="01nominal"/>
+
+        <enum name="sourceOfOperationCosts"
               values="01technologyOperation,02parameters"
               required="true" default="01technologyOperation"/>
 
         <boolean name="includeTPZ" default="true"/>
         <boolean name="includeAdditionalTime" default="true"/>
-        <decimal name="registrationPriceOverhead" default="0">
-            <validatesUnscaledValue max="7"/>
-            <validatesScale max="5"/>
-            <validatesRange from="0" exclusively="false"/>
-        </decimal>
-        <decimal name="profit" default="0">
-            <validatesUnscaledValue max="7"/>
-            <validatesScale max="5"/>
-            <validatesRange from="0" exclusively="false"/>
-        </decimal>
-
-        <enum name="sourceOfMaterialCosts"
-              values="01currentGlobalDefinitionsInProduct,02fromOrdersMaterialCosts"
-              required="true" default="01currentGlobalDefinitionsInProduct"/>
-
-        <enum name="calculateMaterialCostsMode"
-              values="01nominal,02average,03lastPurchase,04averageOfferCost,05lastOfferCost,06costForOrder"
-              required="true" default="01nominal"/>
+        <boolean name="includeWageGroups" default="false"/>
 
         <decimal name="productionCostMargin" default="0">
             <validatesUnscaledValue max="7"/>
@@ -89,15 +76,20 @@
             <validatesScale max="5"/>
         </decimal>
 
-        <boolean name="isSetFieldsFromParameter"
-                 persistent="false"/>
-        <boolean name="includeWageGroups" default="false"/>
+        <decimal name="registrationPriceOverhead" default="0">
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+            <validatesRange from="0"/>
+        </decimal>
+
+        <decimal name="profit" default="0">
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+            <validatesRange from="0"/>
+        </decimal>
     </fields>
 
     <hooks>
-        <validatesWith
-                class="com.qcadoo.mes.productionCounting.validators.ProductionBalanceValidators"
-                method="validatesWith"/>
         <onCopy
                 class="com.qcadoo.mes.productionCounting.hooks.ProductionBalanceHooks"
                 method="onCopy"/>

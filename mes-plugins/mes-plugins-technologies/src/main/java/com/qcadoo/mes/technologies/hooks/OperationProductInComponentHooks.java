@@ -32,6 +32,7 @@ import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
@@ -53,6 +54,21 @@ public class OperationProductInComponentHooks {
 
     @Autowired
     private TranslationService translationService;
+
+    public void onSave(final DataDefinition operationProductInComponentDD, final Entity operationProductInComponent) {
+        clearProductBySizeGroups(operationProductInComponent);
+    }
+
+    private void clearProductBySizeGroups(final Entity operationProductInComponent) {
+        boolean differentProductsInDifferentSizes = operationProductInComponent
+                .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES);
+        List<Entity> productBySizeGroups = operationProductInComponent
+                .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS);
+
+        if (!differentProductsInDifferentSizes && !productBySizeGroups.isEmpty()) {
+            operationProductInComponent.setField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS, Lists.newArrayList());
+        }
+    }
 
     public boolean validatesWith(final DataDefinition operationProductInComponentDD, final Entity operationProductInComponent) {
         boolean isValid = true;
@@ -118,8 +134,12 @@ public class OperationProductInComponentHooks {
 
         if ((differentProductsInDifferentSizes && Objects.isNull(technologyInputProductType))
                 || (Objects.isNull(technologyInputProductType) && Objects.isNull(product))) {
-            operationProductInComponent.addError(operationProductInComponentDD.getField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE),"technologies.operationProductInComponent.error.requiredFieldNotSelected");
-            operationProductInComponent.addError(operationProductInComponentDD.getField(OperationProductInComponentFields.PRODUCT),"technologies.operationProductInComponent.error.requiredFieldNotSelected");
+            operationProductInComponent.addError(
+                    operationProductInComponentDD.getField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE),
+                    "technologies.operationProductInComponent.error.requiredFieldNotSelected");
+            operationProductInComponent.addError(
+                    operationProductInComponentDD.getField(OperationProductInComponentFields.PRODUCT),
+                    "technologies.operationProductInComponent.error.requiredFieldNotSelected");
 
             return false;
         }

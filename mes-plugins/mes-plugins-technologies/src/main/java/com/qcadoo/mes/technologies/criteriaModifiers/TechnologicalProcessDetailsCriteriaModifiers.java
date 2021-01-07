@@ -21,29 +21,24 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.costCalculation.listeners;
+package com.qcadoo.mes.technologies.criteriaModifiers;
 
-import com.google.common.collect.Maps;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.WorkstationFields;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Service
-public class OrderDetailsListenersCC {
+public class TechnologicalProcessDetailsCriteriaModifiers {
 
-    private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
-
-    public void showCostCalculateFromOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        Long orderId = (Long) state.getFieldValue();
-
-        if (orderId != null) {
-            Map<String, Object> parameters = Maps.newHashMap();
-            parameters.put(L_WINDOW_ACTIVE_MENU, "calculations.costCalculation");
-
-            String url = "/page/costCalculation/costCalculationDetails.html?context={\"orderId\":\"" + orderId + "\"}";
-            view.redirectTo(url, false, true, parameters);
+    public void showWorkstationsForWorkstationType(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+        if (filterValue.has(WorkstationFields.WORKSTATION_TYPE)) {
+            Long workstationTypeId = filterValue.getLong(WorkstationFields.WORKSTATION_TYPE);
+            scb.add(SearchRestrictions.belongsTo(WorkstationFields.WORKSTATION_TYPE, BasicConstants.PLUGIN_IDENTIFIER,
+                    BasicConstants.MODEL_WORKSTATION_TYPE, workstationTypeId));
         }
     }
 

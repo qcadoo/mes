@@ -31,7 +31,6 @@ import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.service.DocumentStateChangeService;
 import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
 import com.qcadoo.mes.materialFlowResources.validators.DocumentValidators;
-import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,7 +97,7 @@ public class DocumentModelHooks {
             documentStateChangeService.buildInitialStateChange(document);
         }
         if (DocumentState.ACCEPTED.getStringValue().equals(document.getStringField(DocumentFields.STATE))) {
-            documentStateChangeService.buildStateChange(document, StateChangeStatus.SUCCESSFUL);
+            documentStateChangeService.buildSuccessfulStateChange(document);
         }
     }
 

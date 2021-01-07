@@ -23,25 +23,26 @@
  */
 package com.qcadoo.mes.operationCostCalculations;
 
-import java.math.BigDecimal;
-import java.util.Map;
-
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTreeNode;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Map;
 
 @Service
 public interface OperationsCostCalculationService {
 
     /**
      * 
-     * @param costCalculationOrProductionBalance
-     *            cost calculation or production balance
+     * @param costCalculation
+     *            cost calculation
      * @param hourlyCostFromOperation
+     * @param technology
+     *            technology
      */
-    void calculateOperationsCost(final Entity costCalculationOrProductionBalance, boolean hourlyCostFromOperation);
+    void calculateOperationsCost(final Entity costCalculation, boolean hourlyCostFromOperation, final Entity technology);
 
     /**
      * 

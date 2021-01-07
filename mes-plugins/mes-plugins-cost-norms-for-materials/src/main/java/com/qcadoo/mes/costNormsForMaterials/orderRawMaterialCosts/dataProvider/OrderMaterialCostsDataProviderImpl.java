@@ -23,24 +23,18 @@
  */
 package com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.dataProvider;
 
-import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
-
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.google.common.base.Optional;
 import com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMaterialsConstants;
 import com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.JoinType;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
-import com.qcadoo.model.api.search.SearchOrder;
-import com.qcadoo.model.api.search.SearchProjection;
+import com.qcadoo.model.api.search.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
 
 @Service
 final class OrderMaterialCostsDataProviderImpl implements OrderMaterialCostsDataProvider {
@@ -57,20 +51,10 @@ final class OrderMaterialCostsDataProviderImpl implements OrderMaterialCostsData
         return prepareCriteria(criteria).list().getEntities();
     }
 
-    @Override
-    public Optional<Entity> find(final OrderMaterialCostsCriteria criteria) {
-        return Optional.fromNullable(prepareCriteria(criteria).setMaxResults(1).uniqueResult());
-    }
-
-    @Override
-    public Optional<Entity> find(final Long orderId, final Long productId) {
-        return find(OrderMaterialCostsCriteria.forOrder(orderId).setProductCriteria(idEq(productId)));
-    }
-
     private SearchCriteriaBuilder prepareCriteria(final OrderMaterialCostsCriteria criteria) {
         SearchCriteriaBuilder scb = createCriteriaBuilder();
-        scb.createCriteria(TechnologyInstOperProductInCompFields.ORDER, ORDER_ALIAS, JoinType.INNER).add(
-                idEq(criteria.getOrderId()));
+        scb.createCriteria(TechnologyInstOperProductInCompFields.ORDER, ORDER_ALIAS, JoinType.INNER)
+                .add(idEq(criteria.getOrderId()));
         applyProjection(criteria, scb);
         applyProductCriteria(criteria, scb);
         applySearchOrder(criteria, scb);

@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.costCalculation;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.util.Date;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.mes.costNormsForMaterials.ProductsCostCalculationService;
@@ -43,6 +34,14 @@ import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationCompon
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class CostCalculationServiceImpl implements CostCalculationService {
@@ -59,32 +58,29 @@ public class CostCalculationServiceImpl implements CostCalculationService {
     private final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
 
     @Override
-    public Entity calculateTotalCost(final Entity entity) {
+    public Entity calculateTotalCost(final Entity entity, final Entity technology) {
         entity.setField(CostCalculationFields.DATE, new Date());
         // FIXME MAKU beware of side effects - order of computations matter!
-        calculateOperationsAndProductsCosts(entity);
+        calculateOperationsAndProductsCosts(entity, technology);
         final BigDecimal productionCosts = calculateProductionCost(entity);
         calculateMarginsAndOverheads(entity, productionCosts);
-        final BigDecimal effectiveQuantity = getEffectiveQuantity(entity);
+        final BigDecimal effectiveQuantity = getEffectiveQuantity(entity, technology);
 
         calculateTotalCosts(entity, productionCosts, effectiveQuantity);
 
         return entity.getDataDefinition().save(entity);
     }
 
-    @Override
-    public void calculateOperationsAndProductsCosts(final Entity entity) {
+    private void calculateOperationsAndProductsCosts(final Entity entity, final Entity technology) {
         boolean hourlyCostFromOperation = true;
         String sourceOfOperationCosts = entity.getStringField("sourceOfOperationCosts");
         if (sourceOfOperationCosts != null
                 && SourceOfOperationCosts.PARAMETERS.equals(SourceOfOperationCosts.parseString(sourceOfOperationCosts))) {
             hourlyCostFromOperation = false;
         }
-        operationsCostCalculationService.calculateOperationsCost(entity, hourlyCostFromOperation);
+        operationsCostCalculationService.calculateOperationsCost(entity, hourlyCostFromOperation, technology);
 
-        final String sourceOfMaterialCosts = entity.getStringField(CostCalculationFields.SOURCE_OF_MATERIAL_COSTS);
-
-        productsCostCalculationService.calculateTotalProductsCost(entity, sourceOfMaterialCosts);
+        productsCostCalculationService.calculateTotalProductsCost(entity, technology);
     }
 
     @Override
@@ -109,8 +105,7 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         }
     }
 
-    private BigDecimal getEffectiveQuantity(final Entity entity) {
-        Entity technology = entity.getBelongsToField(CostCalculationFields.TECHNOLOGY);
+    private BigDecimal getEffectiveQuantity(final Entity entity, final Entity technology) {
         Entity rootOperation = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
         BigDecimal effectiveQuantity = entity.getDecimalField(CostCalculationFields.QUANTITY);
 
@@ -162,8 +157,6 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         final BigDecimal totalOverhead = productionCostMarginValue.add(materialCostMarginValue, numberService.getMathContext())
                 .add(additionalOverhead, numberService.getMathContext());
 
-        entity.setField(CostCalculationFields.ADDITIONAL_OVERHEAD_VALUE,
-                numberService.setScaleWithDefaultMathContext(additionalOverhead));
         entity.setField(CostCalculationFields.TOTAL_OVERHEAD, numberService.setScaleWithDefaultMathContext(totalOverhead));
     }
 

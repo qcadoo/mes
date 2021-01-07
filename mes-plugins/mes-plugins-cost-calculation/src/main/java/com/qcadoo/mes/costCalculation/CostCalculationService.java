@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.costCalculation;
 
-import java.math.BigDecimal;
-
 import com.qcadoo.model.api.Entity;
+
+import java.math.BigDecimal;
 
 public interface CostCalculationService {
 
@@ -34,18 +34,12 @@ public interface CostCalculationService {
      * 
      * @param entity
      *            entity
-     * 
+     * @param technology
+     *            technology
+     *
      * @return entity
      */
-    Entity calculateTotalCost(final Entity entity);
-
-    /**
-     * Calculates operations and products costs
-     * 
-     * @param entity
-     *            entity
-     */
-    void calculateOperationsAndProductsCosts(final Entity entity);
+    Entity calculateTotalCost(final Entity entity, final Entity technology);
 
     /**
      * Calculates total costs

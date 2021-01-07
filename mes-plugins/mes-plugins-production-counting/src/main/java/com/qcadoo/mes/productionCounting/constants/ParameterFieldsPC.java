@@ -33,9 +33,7 @@ public final class ParameterFieldsPC {
 
     public static final String INCLUDE_ADDITIONAL_TIME_PB = "includeAdditionalTimePB";
 
-    public static final String SOURCE_OF_MATERIAL_COSTS_PB = "sourceOfMaterialCostsPB";
-
-    public static final String CALCULATE_MATERIAL_COSTS_MODE_PB = "calculateMaterialCostsModePB";
+    public static final String MATERIAL_COSTS_USED_PB = "materialCostsUsedPB";
 
     public static final String AVERAGE_MACHINE_HOURLY_COST_PB = "averageMachineHourlyCostPB";
 

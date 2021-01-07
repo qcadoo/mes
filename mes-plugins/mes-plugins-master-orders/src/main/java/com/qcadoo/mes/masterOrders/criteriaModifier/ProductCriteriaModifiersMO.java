@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ProductCriteriaModifiersO {
+public class ProductCriteriaModifiersMO {
 
     public static final String L_SALES_PLAN_ID = "salesPlanId";
 

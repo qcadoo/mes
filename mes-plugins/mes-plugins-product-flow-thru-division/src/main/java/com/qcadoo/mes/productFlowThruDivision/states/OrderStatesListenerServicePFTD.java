@@ -51,7 +51,6 @@ import com.qcadoo.mes.productionCounting.constants.PriceBasedOn;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.StateEnum;
-import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -168,7 +167,7 @@ public class OrderStatesListenerServicePFTD {
 
             Entity acceptedDocument = acceptInboundDocument(document);
             if (!acceptedDocument.isValid()) {
-                documentStateChangeService.buildStateChange(acceptedDocument, StateChangeStatus.FAILURE);
+                documentStateChangeService.buildFailureStateChange(acceptedDocument.getId());
                 for (ErrorMessage error : acceptedDocument.getGlobalErrors()) {
                     order.addGlobalError(error.getMessage(), error.getVars());
                 }

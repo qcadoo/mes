@@ -21,32 +21,34 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.costCalculation.listeners;
+package com.qcadoo.mes.costCalculation.constants;
 
-import java.util.Map;
+public final class CalculationResultFields {
 
-import org.springframework.stereotype.Service;
+    private CalculationResultFields() {
 
-import com.google.common.collect.Maps;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-
-@Service
-public class TechnologyDetailsListenersCC {
-
-    private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
-
-    public void showCostCalculateFromTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        Long technologyId = (Long) state.getFieldValue();
-
-        if (technologyId != null) {
-            Map<String, Object> parameters = Maps.newHashMap();
-            parameters.put(L_WINDOW_ACTIVE_MENU, "calculations.costCalculation");
-
-            String url = "../page/costCalculation/costCalculationDetails.html?context={\"technologyId\":\"" + technologyId
-                    + "\"}";
-            view.redirectTo(url, false, true, parameters);
-        }
     }
+
+    public static final String COST_CALCULATION = "costCalculation";
+
+    public static final String TECHNOLOGY = "technology";
+
+    public static final String PRODUCT = "product";
+
+    public static final String MATERIAL_COSTS = "materialCosts";
+
+    public static final String LABOUR_COST = "labourCost";
+
+    public static final String PRODUCTION_COSTS = "productionCosts";
+
+    public static final String TOTAL_COST = "totalCost";
+
+    public static final String REGISTRATION_PRICE = "registrationPrice";
+
+    public static final String TECHNICAL_PRODUCTION_COST = "technicalProductionCost";
+
+    public static final String SELLING_PRICE = "sellingPrice";
+
+    public static final String NO_MATERIAL_PRICE = "noMaterialPrice";
 
 }

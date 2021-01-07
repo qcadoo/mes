@@ -23,47 +23,31 @@
  */
 package com.qcadoo.mes.costCalculation.hooks;
 
-import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.qcadoo.commons.functional.Either;
-import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.util.CurrencyService;
-import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
-import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
-import com.qcadoo.view.api.components.lookup.FilterValueHolder;
-import com.qcadoo.view.api.ribbon.RibbonActionItem;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
-import com.qcadoo.view.constants.QcadooViewConstants;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.util.CurrencyService;
+import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
+import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
+import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class CostCalculationDetailsHooks {
-
-    
-
-
 
     private static final String L_PRODUCTION_COST_MARGIN_PROC = "productionCostMarginProc";
 
@@ -75,15 +59,9 @@ public class CostCalculationDetailsHooks {
 
     private static final String L_ADDITIONAL_OVERHEAD_CURRENCY = "additionalOverheadCurrency";
 
-    private static final String L_TOTAL_COST_PER_UNIT_UNIT = "totalCostPerUnitUnit";
+    public static final String COST_CALCULATION_RIBBON_MESSAGE_RECORD_ALREADY_GENERATED = "costCalculation.ribbon.message.recordAlreadyGenerated";
 
-    private static final String L_TOTAL_MACHINE_HOURLY_COSTS_CURRENCY = "totalMachineHourlyCostsCurrency";
-
-    private static final String L_TOTAL_LABOR_HOURLY_COSTS_CURRENCY = "totalLaborHourlyCostsCurrency";
-
-    private static final String L_TOTAL_PIECEWORK_COSTS_CURRENCY = "totalPieceworkCostsCurrency";
-
-    private static final String L_MINIMAL_QUANTITY = "minimalQuantity";
+    public static final String ACTIONS = "actions";
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
@@ -97,104 +75,24 @@ public class CostCalculationDetailsHooks {
     @Autowired
     private NumberService numbersService;
 
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    public void setCriteriaModifierParameters(final ViewDefinitionState view) {
-        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(CostCalculationFields.ORDER);
-        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(CostCalculationFields.TECHNOLOGY);
-        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(CostCalculationFields.PRODUCT);
-
-        Entity order = orderLookup.getEntity();
-        Entity product = productLookup.getEntity();
-
-        FilterValueHolder filterValueHolder = technologyLookup.getFilterValue();
-
-        if (order == null) {
-            filterValueHolder.remove(CostCalculationFields.TECHNOLOGY);
-        } else {
-            Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-
-            if (technology == null) {
-                filterValueHolder.remove(CostCalculationFields.TECHNOLOGY);
-            } else {
-                filterValueHolder.put(CostCalculationFields.TECHNOLOGY, technology.getId());
-            }
-        }
-
-        if (product == null) {
-            filterValueHolder.remove(CostCalculationFields.PRODUCT);
-        } else {
-            filterValueHolder.put(CostCalculationFields.PRODUCT, product.getId());
-        }
-
-        technologyLookup.setFilterValue(filterValueHolder);
-    }
-
-    public void onBeforeRender(final ViewDefinitionState view) throws JSONException {
-        if (view.isViewAfterRedirect()) {
-            JSONObject json = view.getJsonContext();
-            Entity technology = null;
-            Entity order = null;
-            if (json.has("window.mainTab.technologyId")) {
-                Long techId = json.getLong("window.mainTab.technologyId");
-                technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                        TechnologiesConstants.MODEL_TECHNOLOGY).get(techId);
-            } else if (json.has("window.mainTab.orderId")) {
-                Long orderId = json.getLong("window.mainTab.orderId");
-                order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
-
-                technology = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
-            }
-            if(Objects.nonNull(order) || Objects.nonNull(technology)) {
-                applyValuesToFields(view, technology, order);
-            }
-        }
-        setCriteriaModifierParameters(view);
+    public void onBeforeRender(final ViewDefinitionState view) {
+        fillOverheadsFromParameters(view);
         setFieldsEnabled(view);
         generateNumber(view);
         fillCurrencyFields(view);
-        fillOverheadsFromParameters(view);
-        roundResults(view);
-        setButtonEnabled(view);
-    }
-
-    private void roundResults(final ViewDefinitionState view) {
-        Set<String> referenceNames = Sets.newHashSet(CostCalculationFields.TOTAL_MATERIAL_COSTS,
-                CostCalculationFields.TOTAL_MACHINE_HOURLY_COSTS, CostCalculationFields.TOTAL_LABOR_HOURLY_COSTS,
-                CostCalculationFields.TOTAL_PIECEWORK_COSTS, CostCalculationFields.TOTAL_TECHNICAL_PRODUCTION_COSTS,
-                CostCalculationFields.PRODUCTION_COST_MARGIN_VALUE, CostCalculationFields.MATERIAL_COST_MARGIN_VALUE,
-                CostCalculationFields.ADDITIONAL_OVERHEAD_VALUE, CostCalculationFields.TOTAL_OVERHEAD,
-                CostCalculationFields.TOTAL_COSTS, CostCalculationFields.TOTAL_COST_PER_UNIT,
-                CostCalculationFields.REGISTRATION_PRICE_OVERHEAD_VALUE, CostCalculationFields.TECHNICAL_PRODUCTION_COSTS,
-                CostCalculationFields.PROFIT_VALUE, CostCalculationFields.SELL_PRICE_VALUE);
-
-        for (String name : referenceNames) {
-            FieldComponent component = (FieldComponent) view.getComponentByReference(name);
-            String value = (String) component.getFieldValue();
-            Either<Exception, Optional<BigDecimal>> eitherValue = BigDecimalUtils.tryParse(value, view.getLocale());
-            if (eitherValue.isRight()) {
-                Optional<BigDecimal> maybeValue = eitherValue.getRight();
-                if (maybeValue.isPresent()) {
-                    component.setFieldValue(numbersService.format(numbersService.setScaleWithDefaultMathContext(maybeValue.get(),
-                            2)));
-                    component.requestComponentUpdateState();
-                }
-            }
-        }
+        setButtonsEnabled(view);
     }
 
     public void setFieldsEnabled(final ViewDefinitionState view) {
-        Set<String> referenceNames = Sets.newHashSet(CostCalculationFields.PRODUCT, CostCalculationFields.ORDER,
-                CostCalculationFields.QUANTITY, CostCalculationFields.TECHNOLOGY, CostCalculationFields.NUMBER,
-                CostCalculationFields.PRODUCTION_LINE, CostCalculationFields.DESCRIPTION,
-                CostCalculationFields.CALCULATE_MATERIAL_COSTS_MODE, CostCalculationFields.PRODUCTION_COST_MARGIN,
+        Set<String> referenceNames = Sets.newHashSet(CostCalculationFields.QUANTITY, CostCalculationFields.NUMBER,
+                CostCalculationFields.DESCRIPTION, CostCalculationFields.MATERIAL_COSTS_USED,
+                CostCalculationFields.AVERAGE_LABOR_HOURLY_COST, CostCalculationFields.STANDARD_LABOR_COST,
+                CostCalculationFields.PRODUCTION_COST_MARGIN, CostCalculationFields.AVERAGE_MACHINE_HOURLY_COST,
                 CostCalculationFields.MATERIAL_COST_MARGIN, CostCalculationFields.ADDITIONAL_OVERHEAD,
                 CostCalculationFields.PRINT_COST_NORMS_OF_MATERIALS, CostCalculationFields.PRINT_OPERATION_NORMS,
-                CostCalculationFields.INCLUDE_TPZ, CostCalculationFields.INCLUDE_ADDITIONAL_TIME,
-                CostCalculationFields.SOURCE_OF_MATERIAL_COSTS, CostCalculationFields.SOURCE_OF_OPERATION_COSTS,
-                CostCalculationFields.REGISTRATION_PRICE_OVERHEAD, CostCalculationFields.PROFIT, L_PRODUCTION_COST_MARGIN_PROC,
-                L_MATERIAL_COST_MARGIN_PROC, L_ADDITIONAL_OVERHEAD_CURRENCY);
+                CostCalculationFields.INCLUDE_TPZ, CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED,
+                CostCalculationFields.INCLUDE_ADDITIONAL_TIME, CostCalculationFields.SOURCE_OF_OPERATION_COSTS,
+                CostCalculationFields.REGISTRATION_PRICE_OVERHEAD, CostCalculationFields.PROFIT);
 
         Map<String, FieldComponent> componentsMap = Maps.newHashMap();
 
@@ -210,12 +108,31 @@ public class CostCalculationDetailsHooks {
         for (Entry<String, FieldComponent> entry : componentsMap.entrySet()) {
             entry.getValue().setEnabled(!isGenerated);
         }
-
-        if (componentsMap.get(CostCalculationFields.TECHNOLOGY).getFieldValue() == null) {
-            componentsMap.get(CostCalculationFields.PRODUCT).setEnabled(true);
-            componentsMap.get(CostCalculationFields.QUANTITY).setEnabled(true);
-            componentsMap.get(CostCalculationFields.ORDER).setEnabled(true);
-            componentsMap.get(CostCalculationFields.TECHNOLOGY).setEnabled(true);
+        if (isGenerated) {
+            view.getComponentByReference(CostCalculationFields.TECHNOLOGIES).setEnabled(false);
+        }
+        if (!isGenerated) {
+            FieldComponent sourceOfOperationCosts = (FieldComponent) view
+                    .getComponentByReference(CostCalculationFields.SOURCE_OF_OPERATION_COSTS);
+            FieldComponent standardLaborCost = (FieldComponent) view
+                    .getComponentByReference(CostCalculationFields.STANDARD_LABOR_COST);
+            CheckBoxComponent includeTPZ = (CheckBoxComponent) view.getComponentByReference(CostCalculationFields.INCLUDE_TPZ);
+            CheckBoxComponent includeAdditionalTime = (CheckBoxComponent) view
+                    .getComponentByReference(CostCalculationFields.INCLUDE_ADDITIONAL_TIME);
+            standardLaborCost.setEnabled(
+                    SourceOfOperationCosts.STANDARD_LABOR_COSTS.getStringValue().equals(sourceOfOperationCosts.getFieldValue()));
+            standardLaborCost.setRequired(
+                    SourceOfOperationCosts.STANDARD_LABOR_COSTS.getStringValue().equals(sourceOfOperationCosts.getFieldValue()));
+            if (!SourceOfOperationCosts.STANDARD_LABOR_COSTS.getStringValue().equals(sourceOfOperationCosts.getFieldValue())) {
+                standardLaborCost.setFieldValue(null);
+            }
+            standardLaborCost.requestComponentUpdateState();
+            includeTPZ.setEnabled(
+                    !SourceOfOperationCosts.STANDARD_LABOR_COSTS.getStringValue().equals(sourceOfOperationCosts.getFieldValue()));
+            includeTPZ.requestComponentUpdateState();
+            includeAdditionalTime.setEnabled(
+                    !SourceOfOperationCosts.STANDARD_LABOR_COSTS.getStringValue().equals(sourceOfOperationCosts.getFieldValue()));
+            includeAdditionalTime.requestComponentUpdateState();
         }
     }
 
@@ -227,11 +144,8 @@ public class CostCalculationDetailsHooks {
     public void fillCurrencyFields(final ViewDefinitionState viewDefinitionState) {
         final String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
 
-        Set<String> referenceNames = Sets.newHashSet("totalCostsCurrency", "totalOverheadCurrency",
-                "additionalOverheadValueCurrency", "materialCostMarginValueCurrency", "productionCostMarginValueCurrency",
-                "totalTechnicalProductionCostsCurrency", L_TOTAL_PIECEWORK_COSTS_CURRENCY, L_TOTAL_LABOR_HOURLY_COSTS_CURRENCY,
-                L_TOTAL_MACHINE_HOURLY_COSTS_CURRENCY, "totalMaterialCostsCurrency", L_ADDITIONAL_OVERHEAD_CURRENCY,
-                "profitValueCurrency", "registrationPriceOverheadValueCurrency");
+        Set<String> referenceNames = Sets.newHashSet(L_ADDITIONAL_OVERHEAD_CURRENCY, "averageMachineHourlyCostCurrency",
+                "averageLaborHourlyCostCurrency");
 
         for (String referenceName : referenceNames) {
             FieldComponent fieldComponent = (FieldComponent) viewDefinitionState.getComponentByReference(referenceName);
@@ -244,8 +158,6 @@ public class CostCalculationDetailsHooks {
         fillComponentWithPercent(L_MATERIAL_COST_MARGIN_PROC, viewDefinitionState);
         fillComponentWithPercent(L_REGISTRATION_PRICE_OVERHEAD_PROC, viewDefinitionState);
         fillComponentWithPercent(L_PROFIT_PROC, viewDefinitionState);
-
-        fillCostPerUnitUnitField(viewDefinitionState);
     }
 
     private void fillComponentWithPercent(String componentName, ViewDefinitionState viewDefinitionState) {
@@ -254,142 +166,147 @@ public class CostCalculationDetailsHooks {
         materialCostMarginProc.requestComponentUpdateState();
     }
 
-    public void fillCostPerUnitUnitField(final ViewDefinitionState view) {
-        final String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
-
-        FieldComponent totalCostPerUnitUnit = (FieldComponent) view.getComponentByReference(L_TOTAL_COST_PER_UNIT_UNIT);
-        FieldComponent sellPriceValueCurrency = (FieldComponent) view.getComponentByReference("sellPriceValueCurrency");
-        FieldComponent technicalProductionCostsCurrency = (FieldComponent) view
-                .getComponentByReference("technicalProductionCostsCurrency");
-        LookupComponent productField = (LookupComponent) view.getComponentByReference(CostCalculationFields.PRODUCT);
-
-        Entity product = productField.getEntity();
-
-        if (product == null) {
-            return;
-        }
-        String unit = currencyAlphabeticCode + " / " + product.getStringField(ProductFields.UNIT);
-        totalCostPerUnitUnit.setFieldValue(unit);
-        totalCostPerUnitUnit.requestComponentUpdateState();
-        sellPriceValueCurrency.setFieldValue(unit);
-        sellPriceValueCurrency.requestComponentUpdateState();
-        technicalProductionCostsCurrency.setFieldValue(unit);
-        technicalProductionCostsCurrency.requestComponentUpdateState();
-
-    }
-
     private void fillOverheadsFromParameters(ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Boolean justCreated = form.getEntity().getBooleanField("justCreated");
-        if (form.getEntityId() == null && justCreated) {
-            fillWithProperty("sourceOfMaterialCosts", "sourceOfMaterialCostsPB", view);
-            fillWithProperty("calculateMaterialCostsMode", "calculateMaterialCostsModePB", view);
-            fillWithProperty("sourceOfOperationCosts", "sourceOfOperationCostsPB", view);
+        if (form.getEntityId() == null) {
+            CheckBoxComponent isSetFieldsFromParameter = (CheckBoxComponent) view
+                    .getComponentByReference(CostCalculationFields.IS_SET_FIELDS_FROM_PARAMETER);
+            if (isSetFieldsFromParameter.isChecked()) {
+                return;
+            }
+            Entity parameter = parameterService.getParameter();
+            fillWithProperty(CostCalculationFields.MATERIAL_COSTS_USED,
+                    parameter.getStringField(CostCalculationFields.MATERIAL_COSTS_USED), view);
+            fillCheckboxWithProperty(CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED,
+                    parameter.getBooleanField(CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED), view);
+            fillWithProperty(CostCalculationFields.SOURCE_OF_OPERATION_COSTS,
+                    parameter.getStringField(CostCalculationFields.SOURCE_OF_OPERATION_COSTS), view);
+            fillLookupWithProperty(CostCalculationFields.STANDARD_LABOR_COST,
+                    parameter.getBelongsToField(CostCalculationFields.STANDARD_LABOR_COST), view);
+            fillWithPropertyOrZero(CostCalculationFields.AVERAGE_MACHINE_HOURLY_COST,
+                    parameter.getDecimalField(CostCalculationFields.AVERAGE_MACHINE_HOURLY_COST), view, false);
+            fillWithPropertyOrZero(CostCalculationFields.AVERAGE_LABOR_HOURLY_COST,
+                    parameter.getDecimalField(CostCalculationFields.AVERAGE_LABOR_HOURLY_COST), view, false);
+            fillCheckboxWithProperty(CostCalculationFields.INCLUDE_TPZ,
+                    parameter.getBooleanField(CostCalculationFields.INCLUDE_TPZ), view);
+            fillCheckboxWithProperty(CostCalculationFields.INCLUDE_ADDITIONAL_TIME,
+                    parameter.getBooleanField(CostCalculationFields.INCLUDE_ADDITIONAL_TIME), view);
 
-            fillWithPropertyOrZero("productionCostMargin", "productionCostMarginPB", view);
-            fillWithPropertyOrZero("materialCostMargin", "materialCostMarginPB", view);
-            fillWithPropertyOrZero("additionalOverhead", "additionalOverheadPB", view);
-            fillWithPropertyOrZero("registrationPriceOverhead", "registrationPriceOverheadPB", view);
-            fillWithPropertyOrZero("profit", "profitPB", view);
-            view.getComponentByReference("justCreated").setFieldValue(false);
+            fillWithPropertyOrZero(CostCalculationFields.MATERIAL_COST_MARGIN,
+                    parameter.getDecimalField(CostCalculationFields.MATERIAL_COST_MARGIN), view, true);
+            fillWithPropertyOrZero(CostCalculationFields.PRODUCTION_COST_MARGIN,
+                    parameter.getDecimalField(CostCalculationFields.PRODUCTION_COST_MARGIN), view, true);
+            fillWithPropertyOrZero(CostCalculationFields.ADDITIONAL_OVERHEAD,
+                    parameter.getDecimalField(CostCalculationFields.ADDITIONAL_OVERHEAD), view, true);
+            fillWithPropertyOrZero(CostCalculationFields.REGISTRATION_PRICE_OVERHEAD,
+                    parameter.getDecimalField(CostCalculationFields.REGISTRATION_PRICE_OVERHEAD), view, true);
+            fillWithPropertyOrZero(CostCalculationFields.PROFIT, parameter.getDecimalField(CostCalculationFields.PROFIT), view,
+                    true);
+            isSetFieldsFromParameter.setFieldValue(true);
+            isSetFieldsFromParameter.requestComponentUpdateState();
         }
     }
 
-    private void fillWithProperty(String componentName, String propertyName, ViewDefinitionState view) {
+    private void fillCheckboxWithProperty(String componentName, boolean propertyValue, ViewDefinitionState view) {
+        CheckBoxComponent component = (CheckBoxComponent) view.getComponentByReference(componentName);
+        component.setFieldValue(propertyValue);
+    }
+
+    private void fillLookupWithProperty(String componentName, Entity propertyValue, ViewDefinitionState view) {
+        LookupComponent component = (LookupComponent) view.getComponentByReference(componentName);
+        if (propertyValue != null) {
+            component.setFieldValue(propertyValue.getId());
+        }
+    }
+
+    private void fillWithProperty(String componentName, String propertyValue, ViewDefinitionState view) {
         FieldComponent component = (FieldComponent) view.getComponentByReference(componentName);
-        String propertyValue = parameterService.getParameter().getStringField(propertyName);
         if (propertyValue != null) {
             component.setFieldValue(propertyValue);
         }
     }
 
-    private void fillWithPropertyOrZero(String componentName, String propertyName, ViewDefinitionState view) {
+    private void fillWithPropertyOrZero(String componentName, BigDecimal propertyValue, ViewDefinitionState view,
+            boolean defaultValue) {
         FieldComponent component = (FieldComponent) view.getComponentByReference(componentName);
         if (component.getFieldValue() == null) {
-            BigDecimal propertyValue = parameterService.getParameter().getDecimalField(propertyName);
-
             if (propertyValue != null) {
                 String formattedProductionCostMargin = numbersService.formatWithMinimumFractionDigits(propertyValue.setScale(2),
                         0);
                 component.setFieldValue(formattedProductionCostMargin);
-            } else {
+            } else if (defaultValue) {
                 component.setFieldValue(0);
             }
         }
     }
 
-    private void setButtonEnabled(ViewDefinitionState view) {
+    private void setButtonsEnabled(ViewDefinitionState view) {
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         RibbonActionItem saveNominalCosts = window.getRibbon().getGroupByName(CostCalculationFields.SAVE_COSTS)
                 .getItemByName(CostCalculationFields.NOMINAL_COSTS);
-        CheckBoxComponent generatedField = (CheckBoxComponent) view.getComponentByReference(CostCalculationFields.GENERATED);
-        if (generatedField.isChecked()) {
-            saveNominalCosts.setEnabled(true);
-            saveNominalCosts.requestUpdate(true);
-        }
-    }
+        RibbonActionItem generate = window.getRibbon().getGroupByName("generate").getItemByName("generate");
+        RibbonActionItem pdf = window.getRibbon().getGroupByName("export").getItemByName("pdf");
+        RibbonActionItem save = window.getRibbon().getGroupByName(ACTIONS).getItemByName("save");
+        RibbonActionItem saveBack = window.getRibbon().getGroupByName(ACTIONS).getItemByName("saveBack");
+        RibbonActionItem saveNew = window.getRibbon().getGroupByName(ACTIONS).getItemByName("saveNew");
+        RibbonActionItem copy = window.getRibbon().getGroupByName(ACTIONS).getItemByName("copy");
+        RibbonActionItem cancel = window.getRibbon().getGroupByName(ACTIONS).getItemByName("cancel");
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-    public void applyValuesToFields(final ViewDefinitionState view, final Entity technology, final Entity order) {
-        if (technology == null) {
-            clearFieldValues(view, order);
-            return;
-        }
+        boolean entityExists = form.getEntityId() != null;
 
-        Boolean cameFromOrder = false;
-        Boolean cameFromTechnology = false;
-
-        Set<String> referenceNames = Sets.newHashSet(CostCalculationFields.PRODUCTION_LINE,
-                CostCalculationFields.DEFAULT_TECHNOLOGY, CostCalculationFields.PRODUCT, CostCalculationFields.ORDER,
-                CostCalculationFields.QUANTITY, CostCalculationFields.TECHNOLOGY);
-
-        Map<String, FieldComponent> componentsMap = Maps.newHashMap();
-
-        for (String referenceName : referenceNames) {
-            FieldComponent fieldComponent = (FieldComponent) view.getComponentByReference(referenceName);
-            componentsMap.put(referenceName, fieldComponent);
-        }
-
-        if (order == null) {
-            cameFromTechnology = true;
-        } else {
-            cameFromOrder = true;
-        }
-
-        if (cameFromOrder) {
-            componentsMap.get(CostCalculationFields.ORDER).setFieldValue(order.getId());
-            componentsMap.get(CostCalculationFields.DEFAULT_TECHNOLOGY).setEnabled(false);
-            if (order.getBelongsToField(CostCalculationFields.PRODUCTION_LINE) != null) {
-                componentsMap.get(CostCalculationFields.PRODUCTION_LINE).setFieldValue(
-                        order.getBelongsToField(CostCalculationFields.PRODUCTION_LINE).getId());
+        if (entityExists) {
+            CheckBoxComponent generatedField = (CheckBoxComponent) view.getComponentByReference(CostCalculationFields.GENERATED);
+            int technologiesCount = ((GridComponent) view.getComponentByReference(CostCalculationFields.TECHNOLOGIES))
+                    .getEntities().size();
+            if (technologiesCount > 0) {
+                generate.setEnabled(true);
+                generate.requestUpdate(true);
+            } else {
+                generate.setEnabled(false);
+                generate.requestUpdate(true);
             }
-            componentsMap.get(CostCalculationFields.QUANTITY).setFieldValue(
-                    numbersService.format(order.getField(OrderFields.PLANNED_QUANTITY)));
+            saveNominalCosts.setEnabled(generatedField.isChecked());
+            saveNominalCosts.requestUpdate(true);
+            if (generatedField.isChecked()) {
+                if (technologiesCount == 1) {
+                    pdf.setEnabled(true);
+                    pdf.requestUpdate(true);
+                }
+                generate.setEnabled(false);
+                generate.requestUpdate(true);
+                save.setEnabled(false);
+                save.setMessage(COST_CALCULATION_RIBBON_MESSAGE_RECORD_ALREADY_GENERATED);
+                save.requestUpdate(true);
+                saveNew.setEnabled(false);
+                saveNew.setMessage(COST_CALCULATION_RIBBON_MESSAGE_RECORD_ALREADY_GENERATED);
+                saveNew.requestUpdate(true);
+                saveBack.setEnabled(false);
+                saveBack.setMessage(COST_CALCULATION_RIBBON_MESSAGE_RECORD_ALREADY_GENERATED);
+                saveBack.requestUpdate(true);
+                cancel.setEnabled(false);
+                cancel.setMessage(COST_CALCULATION_RIBBON_MESSAGE_RECORD_ALREADY_GENERATED);
+                cancel.requestUpdate(true);
+            } else {
+                pdf.setEnabled(false);
+                pdf.setMessage("costCalculation.ribbon.message.recordNotGenerated");
+                pdf.requestUpdate(true);
+                save.setEnabled(true);
+                save.requestUpdate(true);
+                cancel.setEnabled(true);
+                cancel.requestUpdate(true);
+            }
         } else {
-            componentsMap.get(CostCalculationFields.ORDER).setFieldValue(null);
-            componentsMap.get(CostCalculationFields.DEFAULT_TECHNOLOGY).setEnabled(false);
-            componentsMap.get(CostCalculationFields.QUANTITY).setFieldValue(
-                    numbersService.format(technology.getField(L_MINIMAL_QUANTITY)));
+            copy.setEnabled(false);
+            copy.setMessage("recordNotCreated");
+            copy.requestUpdate(true);
+            pdf.setEnabled(false);
+            pdf.setMessage("recordNotCreated");
+            pdf.requestUpdate(true);
+            save.setEnabled(true);
+            save.requestUpdate(true);
+            cancel.setEnabled(true);
+            cancel.requestUpdate(true);
         }
-
-        componentsMap.get(CostCalculationFields.ORDER).setEnabled(cameFromOrder);
-        componentsMap.get(CostCalculationFields.TECHNOLOGY).setFieldValue(technology.getId());
-        componentsMap.get(CostCalculationFields.TECHNOLOGY).setEnabled(cameFromTechnology);
-        componentsMap.get(CostCalculationFields.DEFAULT_TECHNOLOGY).setFieldValue(technology.getId());
-        componentsMap.get(CostCalculationFields.QUANTITY).setEnabled(!cameFromOrder);
-        componentsMap.get(CostCalculationFields.PRODUCT).setFieldValue(
-                technology.getBelongsToField(TechnologyFields.PRODUCT).getId());
-        componentsMap.get(CostCalculationFields.PRODUCT).setEnabled(false);
-    }
-
-    private void clearFieldValues(final ViewDefinitionState view, final Entity order) {
-        if(Objects.nonNull(order)) {
-            view.getComponentByReference(CostCalculationFields.ORDER)
-                    .addMessage("costCalculation.messages.lackOfTechnology", ComponentState.MessageType.FAILURE);
-        }
-        view.getComponentByReference(CostCalculationFields.DEFAULT_TECHNOLOGY).setFieldValue(null);
-        view.getComponentByReference(CostCalculationFields.TECHNOLOGY).setFieldValue(null);
-        view.getComponentByReference(CostCalculationFields.QUANTITY).setFieldValue(null);
-        view.getComponentByReference(CostCalculationFields.PRODUCT).setFieldValue(null);
-        view.getComponentByReference(CostCalculationFields.PRODUCTION_LINE).setFieldValue(null);
     }
 }

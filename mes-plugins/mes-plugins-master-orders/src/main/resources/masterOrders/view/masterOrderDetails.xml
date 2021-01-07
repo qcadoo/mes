@@ -155,6 +155,18 @@
 									}
 								}
 							});
+
+							  #{form}.addOnChangeListener({
+					onSetValue: function(value) {
+						if (!value || !value.content)
+							return;
+						if (value.content.entityId) {
+							this.enable();
+						} else {
+							this.disable();
+						}
+					}
+				});
 						]]>
                     </script>
                 </bigButton>
@@ -428,6 +440,7 @@
 
                 <option type="column" name="leftToRelease"
                         fields="leftToRelease" width="60"/>
+
                 <option type="column" name="quantityTakenFromWarehouse" fields="quantityTakenFromWarehouse" width="45"/>
                 <option type="column" name="quantityRemainingToOrder" fields="quantityRemainingToOrder" width="45"/>
                 <option type="column" name="producedOrderQuantity"
@@ -441,12 +454,15 @@
                 <option type="column" name="assortmentName" fields="assortmentName"
                         width="120"/>
 
+                <option type="column" name="modelName"
+                        fields="modelName" width="60"/>
+
                 <option type="order" column="number" direction="asc"/>
 
                 <option type="searchable"
-                        value="productNumber,productName,technologyName,masterOrderPositionStatus,comments,quantityRemainingToOrder,quantityTakenFromWarehouse,masterOrderQuantity,cumulatedOrderQuantity,leftToRelease,producedOrderQuantity,unit,assortmentName"/>
+                        value="productNumber,productName,technologyName,masterOrderPositionStatus,comments,quantityRemainingToOrder,quantityTakenFromWarehouse,masterOrderQuantity,cumulatedOrderQuantity,leftToRelease,producedOrderQuantity,unit,assortmentName,modelName"/>
                 <option type="orderable"
-                        value="productNumber,productName,technologyName,masterOrderPositionStatus,comments,quantityRemainingToOrder,quantityTakenFromWarehouse,masterOrderQuantity,cumulatedOrderQuantity,leftToRelease,producedOrderQuantity,unit,assortmentName"/>
+                        value="productNumber,productName,technologyName,masterOrderPositionStatus,comments,quantityRemainingToOrder,quantityTakenFromWarehouse,masterOrderQuantity,cumulatedOrderQuantity,leftToRelease,producedOrderQuantity,unit,assortmentName,modelName"/>
 
                 <option type="correspondingView" value="masterOrders/masterOrderProductDetails"/>
                 <option type="correspondingComponent" value="form"/>

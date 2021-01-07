@@ -53,6 +53,7 @@
         <decimal name="quantityRemainingToOrderWithoutStock"/>
         <string name="unit"/>
         <string name="assortmentName"/>
+        <string name="modelName"/>
 
         <integer name="masterOrderId"/>
         <integer name="productId"/>

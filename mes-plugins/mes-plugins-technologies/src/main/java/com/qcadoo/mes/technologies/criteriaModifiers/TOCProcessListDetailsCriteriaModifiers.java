@@ -21,25 +21,23 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.costCalculation.hooks;
+package com.qcadoo.mes.technologies.criteriaModifiers;
 
-import com.qcadoo.mes.orders.util.OrderDetailsRibbonHelper;
-import com.qcadoo.view.api.ViewDefinitionState;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import com.qcadoo.mes.technologies.constants.TechnologicalProcessListFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Service
-public class OrderDetailsHooksCC {
+public class TOCProcessListDetailsCriteriaModifiers {
 
-    @Autowired
-    private OrderDetailsRibbonHelper orderDetailsRibbonHelper;
-
-    public void onBeforeRender(final ViewDefinitionState view) {
-        orderDetailsRibbonHelper.setButtonEnabled(view, "costCalculate", "costCalculate",
-                OrderDetailsRibbonHelper.HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY,
-                Optional.of("orders.ribbon.message.mustChangeTechnologyState"));
+    public void showTechnologicalProcessListsForOperation(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+        Long operationId = filterValue.getLong(TechnologicalProcessListFields.OPERATION);
+        scb.add(SearchRestrictions.belongsTo(TechnologicalProcessListFields.OPERATION, TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_OPERATION, operationId));
     }
 
 }

@@ -36,23 +36,16 @@
 
 		<component type="grid" name="costCalculationList" reference="grid">
 			<option type="column" name="number" fields="number" link="true" />
-			<option type="column" name="order" fields="order" link="true"
-				expression="#order==null?'':#order['name']" />
-			<option type="column" name="product" fields="product"
-				expression="#product['name']" link="true" />
-			<option type="column" name="technology" fields="technology"
-				link="true" expression="#technology['name']" />
+			<option type="column" name="description" fields="description" />
 			<option type="column" name="date" fields="date" />
 			<option type="column" name="quantity" fields="quantity" />
-			<option type="column" name="totalCosts" fields="totalCosts" />
-			<option type="column" name="totalCostPerUnit" fields="totalCostPerUnit" />
-			<option type="order" column="order" direction="asc" />
+			<option type="order" column="date" direction="desc" />
 			<option type="correspondingView" value="costCalculation/costCalculationDetails" />
 			<option type="correspondingComponent" value="form" />
 			<option type="searchable"
-				value="number,order,product,technology,date,quantity,totalCosts,totalCostPerUnit" />
+				value="number,description,date,quantity" />
 			<option type="orderable"
-				value="number,order,product,technology,date,quantity,totalCosts,totalCostPerUnit" />
+				value="number,description,date,quantity" />
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
 		</component>

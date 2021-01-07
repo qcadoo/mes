@@ -4,13 +4,14 @@ import com.google.common.collect.Lists;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costNormsForMaterials.ProductsCostCalculationService;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculationOperationComponentFields;
-import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.NumberService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -20,16 +21,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 @Service
 public class CostCalculationComponentsService {
 
     private static final String L_COMPONENT = "component";
-
-    @Autowired
-    private ProductQuantitiesService productQuantitiesService;
 
     @Autowired
     private ProductsCostCalculationService productsCostCalculationService;
@@ -40,24 +35,20 @@ public class CostCalculationComponentsService {
     public void addMaterialOperationCost(final Entity costCalculation, final List<ComponentsCalculationHolder> basicComponents,
             final Map<OperationProductComponentHolder, BigDecimal> materialQuantitiesByOPC) {
         MathContext mathContext = numberService.getMathContext();
-        Entity order = costCalculation.getBelongsToField(CostCalculationFields.ORDER);
         for (Map.Entry<OperationProductComponentHolder, BigDecimal> neededProductQuantity : materialQuantitiesByOPC.entrySet()) {
             Entity product = neededProductQuantity.getKey().getProduct();
 
-            Entity productEntity = productsCostCalculationService.getAppropriateCostNormForProduct(product, order,
-                    costCalculation.getStringField(CostCalculationFields.SOURCE_OF_MATERIAL_COSTS));
-
             BigDecimal productQuantity = neededProductQuantity.getValue();
 
-            BigDecimal costForGivenQuantity = productsCostCalculationService.calculateProductCostForGivenQuantity(productEntity,
-                    productQuantity, costCalculation.getStringField(CostCalculationFields.CALCULATE_MATERIAL_COSTS_MODE));
+            BigDecimal costForGivenQuantity = productsCostCalculationService.calculateProductCostForGivenQuantity(product,
+                    productQuantity, costCalculation.getStringField(CostCalculationFields.MATERIAL_COSTS_USED));
 
             ComponentsCalculationHolder cc = basicComponents.stream()
                     .filter(bc -> bc.getToc().getId().equals(neededProductQuantity.getKey().getTechnologyOperationComponentId()))
                     .findFirst().orElse(null);
             if (Objects.nonNull(cc)) {
-                BigDecimal materialCost = BigDecimalUtils.convertNullToZero(cc.getMaterialCost()).add(
-                        BigDecimalUtils.convertNullToZero(costForGivenQuantity), mathContext);
+                BigDecimal materialCost = BigDecimalUtils.convertNullToZero(cc.getMaterialCost())
+                        .add(BigDecimalUtils.convertNullToZero(costForGivenQuantity), mathContext);
                 cc.setMaterialCost(numberService.setScaleWithDefaultMathContext(materialCost, 2));
             }
 
@@ -75,15 +66,14 @@ public class CostCalculationComponentsService {
                     .getDecimalField(CalculationOperationComponentFields.TOTAL_MACHINE_OPERATION_COST);
             BigDecimal totalLaborOperationCost = calculationOperationComponent
                     .getDecimalField(CalculationOperationComponentFields.TOTAL_LABOR_OPERATION_COST);
-            ComponentsCalculationHolder holder = components
-                    .stream()
+            ComponentsCalculationHolder holder = components.stream()
                     .filter(bc -> bc.getToc().getId()
                             .equals(calculationOperationComponent.getBelongsToField("technologyOperationComponent").getId()))
                     .findFirst().orElse(null);
 
             if (Objects.nonNull(holder)) {
-                BigDecimal cost = BigDecimalUtils.convertNullToZero(totalMachineOperationCost).add(
-                        BigDecimalUtils.convertNullToZero(totalLaborOperationCost), mathContext);
+                BigDecimal cost = BigDecimalUtils.convertNullToZero(totalMachineOperationCost)
+                        .add(BigDecimalUtils.convertNullToZero(totalLaborOperationCost), mathContext);
                 holder.setLaborCost(numberService.setScaleWithDefaultMathContext(cost, 2));
             }
         }
@@ -132,8 +122,8 @@ public class CostCalculationComponentsService {
 
             addChildCost(component, null, allOperations, entitiesById, mathContext);
 
-            BigDecimal sumOfCost = BigDecimalUtils.convertNullToZero(component.getLaborCost()).add(
-                    BigDecimalUtils.convertNullToZero(component.getMaterialCost()), mathContext);
+            BigDecimal sumOfCost = BigDecimalUtils.convertNullToZero(component.getLaborCost())
+                    .add(BigDecimalUtils.convertNullToZero(component.getMaterialCost()), mathContext);
             BigDecimal costPerUnit = sumOfCost.divide(quantity, mathContext);
             component.setSumOfCost(numberService.setScaleWithDefaultMathContext(sumOfCost, 2));
             component.setCostPerUnit(numberService.setScaleWithDefaultMathContext(costPerUnit, 2));
@@ -146,17 +136,17 @@ public class CostCalculationComponentsService {
         ComponentsCalculationHolder _component = component;
 
         if (child != null) {
-            BigDecimal materialCost = BigDecimalUtils.convertNullToZero(component.getMaterialCost()).add(
-                    BigDecimalUtils.convertNullToZero(child.getMaterialCost()), mathContext);
-            BigDecimal laborCost = BigDecimalUtils.convertNullToZero(component.getLaborCost()).add(
-                    BigDecimalUtils.convertNullToZero(child.getLaborCost()), mathContext);
+            BigDecimal materialCost = BigDecimalUtils.convertNullToZero(component.getMaterialCost())
+                    .add(BigDecimalUtils.convertNullToZero(child.getMaterialCost()), mathContext);
+            BigDecimal laborCost = BigDecimalUtils.convertNullToZero(component.getLaborCost())
+                    .add(BigDecimalUtils.convertNullToZero(child.getLaborCost()), mathContext);
             component.setLaborCost(numberService.setScaleWithDefaultMathContext(laborCost, 2));
             component.setMaterialCost(numberService.setScaleWithDefaultMathContext(materialCost, 2));
             _component = child;
         }
 
-        for (Entity toc : entitiesById.get(_component.getToc().getId()).getHasManyField(
-                TechnologyOperationComponentFields.CHILDREN)) {
+        for (Entity toc : entitiesById.get(_component.getToc().getId())
+                .getHasManyField(TechnologyOperationComponentFields.CHILDREN)) {
             ComponentsCalculationHolder nextChild = allOperations.stream().filter(op -> op.getToc().getId().equals(toc.getId()))
                     .findFirst().orElse(null);
             addChildCost(component, nextChild, allOperations, entitiesById, mathContext);

@@ -68,6 +68,7 @@
         <model:model model="costCalculation" resource="model/costCalculation.xml"/>
         <model:model model="componentCost" resource="model/componentCost.xml"/>
         <model:model model="standardLaborCost" resource="model/standardLaborCost.xml"/>
+        <model:model model="calculationResult" resource="model/calculationResult.xml"/>
 
         <menu:menu-category name="calculations" defaultAuthorizationRole="ROLE_CALCULATIONS"/>
 
@@ -81,15 +82,108 @@
             <model:belongsTo name="costCalculation" model="costCalculation"
                              plugin="costCalculation" required="true"/>
         </model:model-field>
-        <model:model-field plugin="technologies" model="technology">
-            <model:hasMany name="costCalculations" model="costCalculation" plugin="costCalculation" copyable="false"
-                           cascade="delete" joinField="technology"/>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:enum name="materialCostsUsed"
+                        values="01nominal,02average,03lastPurchase,04averageOfferCost,05lastOfferCost"
+                        required="true" default="01nominal"/>
         </model:model-field>
 
-        <model:model-field plugin="technologies" model="technology">
-            <model:hasMany name="costCalculationsDefault" model="costCalculation" plugin="costCalculation"
-                           copyable="false"
-                           cascade="delete" joinField="defaultTechnology"/>
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="useNominalCostPriceNotSpecified" default="false"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:enum name="sourceOfOperationCosts"
+                        values="01technologyOperation,02parameters,03standardLaborCosts"
+                        required="true" default="01technologyOperation"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:belongsTo name="standardLaborCost"
+                             plugin="costCalculation" model="standardLaborCost"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:decimal name="averageMachineHourlyCost">
+                <model:validatesUnscaledValue max="7"/>
+                <model:validatesScale max="5"/>
+                <model:validatesRange from="0"/>
+            </model:decimal>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:decimal name="averageLaborHourlyCost">
+                <model:validatesUnscaledValue max="7"/>
+                <model:validatesScale max="5"/>
+                <model:validatesRange from="0"/>
+            </model:decimal>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="includeTPZ" default="false"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="includeAdditionalTime" default="false"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:decimal name="materialCostMargin" default="0">
+                <model:validatesUnscaledValue max="7"/>
+                <model:validatesScale max="5"/>
+                <model:validatesRange from="0"/>
+            </model:decimal>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:decimal name="productionCostMargin" default="0">
+                <model:validatesUnscaledValue max="7"/>
+                <model:validatesScale max="5"/>
+                <model:validatesRange from="0"/>
+            </model:decimal>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:decimal name="additionalOverhead" default="0">
+                <model:validatesUnscaledValue max="7"/>
+                <model:validatesScale max="5"/>
+                <model:validatesRange from="0"/>
+            </model:decimal>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:decimal name="registrationPriceOverhead" default="0">
+                <model:validatesUnscaledValue max="7"/>
+                <model:validatesScale max="5"/>
+                <model:validatesRange from="0"/>
+            </model:decimal>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:decimal name="profit" default="0">
+                <model:validatesUnscaledValue max="7"/>
+                <model:validatesScale max="5"/>
+                <model:validatesRange from="0"/>
+            </model:decimal>
+        </model:model-field>
+
+        <model:model-field model="technology" plugin="technologies">
+            <model:manyToMany name="costCalculation"
+                              plugin="costCalculation" model="costCalculation"
+                              joinField="technologies"/>
+        </model:model-field>
+
+        <model:model-field model="technology" plugin="technologies">
+            <model:hasMany name="calculationResult"
+                              plugin="costCalculation" model="calculationResult"
+                              joinField="technology"/>
+        </model:model-field>
+
+        <model:model-field model="product" plugin="basic">
+            <model:hasMany name="calculationResult"
+                              plugin="costCalculation" model="calculationResult"
+                              joinField="product"/>
         </model:model-field>
 
         <view:view resource="view/costCalculationList.xml"/>
@@ -97,26 +191,12 @@
         <view:view resource="view/standardLaborCostsList.xml"/>
         <view:view resource="view/standardLaborCostDetails.xml"/>
 
-        <view:view-ribbon-group resource="view/ribbonExtensions/technologyDetails.xml"/>
-        <view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml"/>
+        <view:view-tab resource="view/tabExtensions/technologiesParameters.xml" />
 
-        <view:view-hook plugin="technologies" view="technologyDetails"
-                        type="beforeRender" class="com.qcadoo.mes.costCalculation.hooks.TechnologyDetailsHooksCC"
-                        method="updateViewCostsCalculationButtonState"/>
+        <view:view-hook plugin="technologies" view="technologiesParameters"
+                        type="beforeRender" class="com.qcadoo.mes.costCalculation.hooks.TechnologiesParametersHooksCC"
+                        method="fillCurrencyAndUnitFields"/>
 
-        <view:view-hook plugin="orders" view="orderDetails"
-                        type="beforeRender" class="com.qcadoo.mes.costCalculation.hooks.OrderDetailsHooksCC"
-                        method="onBeforeRender"/>
-
-        <view:view-listener plugin="technologies" view="technologyDetails"
-                            component="form" event="showCostCalculateFromTechnology"
-                            class="com.qcadoo.mes.costCalculation.listeners.TechnologyDetailsListenersCC"
-                            method="showCostCalculateFromTechnology"/>
-
-        <view:view-listener plugin="orders" view="orderDetails"
-                            component="form" event="showCostCalculateFromOrder"
-                            class="com.qcadoo.mes.costCalculation.listeners.OrderDetailsListenersCC"
-                            method="showCostCalculateFromOrder"/>
     </modules>
 
     <features>
