@@ -38,13 +38,14 @@ import com.qcadoo.mes.technologies.dto.ProductMaterialType;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductQuantitiesServiceImplBPCOverrideUtil {
@@ -64,6 +65,7 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
             BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
 
             Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+            Entity product = order.getBelongsToField(OrderFields.PRODUCT);
 
             if (technology == null) {
                 throw new IllegalStateException("Order doesn't contain technology.");
@@ -80,7 +82,7 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
                 fillNonComponents(nonComponents, order);
             } else {
                 productComponentWithQuantitiesForOrders.put(order.getId(),
-                        productQuantitiesServiceImpl.getProductComponentWithQuantitiesForTechnology(technology, plannedQuantity,
+                        productQuantitiesServiceImpl.getProductComponentWithQuantitiesForTechnology(technology, product, plannedQuantity,
                                 operationRuns, nonComponents));
             }
         }

@@ -23,14 +23,16 @@
  */
 package com.qcadoo.mes.technologies.dto;
 
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.model.api.Entity;
+
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class OperationProductComponentWithQuantityContainer {
 
@@ -38,8 +40,16 @@ public class OperationProductComponentWithQuantityContainer {
 
     private final Map<OperationProductComponentHolder, BigDecimal> operationProductComponentWithQuantities;
 
+    private final List<Entity> sizeGroups;
+
     public OperationProductComponentWithQuantityContainer() {
         this.operationProductComponentWithQuantities = Maps.newHashMap();
+        this.sizeGroups = Lists.newArrayList();
+    }
+
+    public OperationProductComponentWithQuantityContainer(List<Entity> sizeGroups) {
+        this.operationProductComponentWithQuantities = Maps.newHashMap();
+        this.sizeGroups = sizeGroups;
     }
 
     public void put(final OperationProductComponentHolder operationProductComponentHolder, BigDecimal quantity) {
@@ -55,6 +65,15 @@ public class OperationProductComponentWithQuantityContainer {
         put(operationProductComponentHolder, quantity);
     }
 
+    public void put(final Entity operationProductComponent, final Entity product, final BigDecimal quantity) {
+        Preconditions.checkNotNull(operationProductComponent, L_MISSING_OPERATION_PRODUCT_COMPONENT_ENTITY);
+
+        OperationProductComponentHolder operationProductComponentHolder = new OperationProductComponentHolder(
+                operationProductComponent, product);
+
+        put(operationProductComponentHolder, quantity);
+    }
+
     public BigDecimal get(final OperationProductComponentHolder operationProductComponentHolder) {
         return operationProductComponentWithQuantities.get(operationProductComponentHolder);
     }
@@ -64,6 +83,16 @@ public class OperationProductComponentWithQuantityContainer {
 
         OperationProductComponentHolder operationProductComponentHolder = new OperationProductComponentHolder(
                 operationProductComponent);
+
+        return get(operationProductComponentHolder);
+    }
+
+
+    public BigDecimal get(Entity operationProductComponent, Entity product) {
+        Preconditions.checkNotNull(operationProductComponent, L_MISSING_OPERATION_PRODUCT_COMPONENT_ENTITY);
+
+        OperationProductComponentHolder operationProductComponentHolder = new OperationProductComponentHolder(
+                operationProductComponent, product);
 
         return get(operationProductComponentHolder);
     }
@@ -120,6 +149,10 @@ public class OperationProductComponentWithQuantityContainer {
         }
 
         return allWithSameType;
+    }
+
+    public List<Entity> getSizeGroups() {
+        return sizeGroups;
     }
 
     @Override

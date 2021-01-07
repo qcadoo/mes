@@ -25,8 +25,12 @@ package com.qcadoo.mes.technologies.listeners;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.qcadoo.mes.technologies.constants.*;
+import com.qcadoo.mes.technologies.constants.OperationFields;
+import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
 import com.qcadoo.mes.technologies.tree.RemoveTOCService;
 import com.qcadoo.model.api.DataDefinition;
@@ -41,15 +45,15 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.TreeComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT_STRUCTURE_TREE;
 
 @Service
@@ -75,7 +79,6 @@ public class TechnologyDetailsListeners {
     private RemoveTOCService removeTOCService;
 
     public void setGridEditable(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        setGridEditable(view);
     }
 
     public void removeOnlySelectedOperation(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -93,15 +96,6 @@ public class TechnologyDetailsListeners {
 
             view.addMessage("technologies.technologyDetails.window.treeTab.technologyTree.success",
                     ComponentState.MessageType.SUCCESS);
-        }
-    }
-
-    public void setGridEditable(final ViewDefinitionState view) {
-        final TreeComponent technologyTree = (TreeComponent) view.getComponentByReference(L_TECHNOLOGY_TREE_REFERENCE);
-        final boolean gridsShouldBeEnabled = Objects.nonNull(technologyTree.getSelectedEntityId());
-
-        for (String componentReference : Sets.newHashSet(L_OUT_PRODUCTS_REFERENCE, L_IN_PRODUCTS_REFERENCE)) {
-            view.getComponentByReference(componentReference).setEnabled(gridsShouldBeEnabled);
         }
     }
 
@@ -128,7 +122,9 @@ public class TechnologyDetailsListeners {
         List<Entity> operationsWithManyOutProducts = fillProducts(technology);
 
         if (!operationsWithManyOutProducts.isEmpty()) {
-            state.addMessage("technologies.technologyDetails.window.tooManyOutProductsInOperation", MessageType.INFO,
+            state.addMessage(
+                    "technologies.technologyDetails.window.tooManyOutProductsInOperation",
+                    MessageType.INFO,
                     operationsWithManyOutProducts.stream().map(o -> o.getStringField(OperationFields.NUMBER))
                             .collect(Collectors.joining(", ")));
         }
@@ -155,8 +151,8 @@ public class TechnologyDetailsListeners {
 
                 operationProductInComponent.getDataDefinition().save(operationProductInComponent);
             } else if (operationProductOutComponents.size() > 1) {
-                operationsWithManyOutProducts
-                        .add(technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION));
+                operationsWithManyOutProducts.add(technologyOperationComponent
+                        .getBelongsToField(TechnologyOperationComponentFields.OPERATION));
             }
         }
         return operationsWithManyOutProducts;

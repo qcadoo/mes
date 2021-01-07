@@ -23,23 +23,16 @@
  */
 package com.qcadoo.mes.technologies;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.SizeFields;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
+import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
 import com.qcadoo.mes.technologies.constants.ProductComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
@@ -53,6 +46,18 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
@@ -85,7 +90,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
             final BigDecimal givenQuantity, final Map<Long, BigDecimal> operationRuns) {
         Set<OperationProductComponentHolder> nonComponents = Sets.newHashSet();
 
-        return getProductComponentWithQuantitiesForTechnology(technology, givenQuantity, operationRuns, nonComponents);
+        return getProductComponentWithQuantitiesForTechnology(technology, null, givenQuantity, operationRuns, nonComponents);
     }
 
     @Override
@@ -142,7 +147,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         Set<OperationProductComponentHolder> nonComponents = Sets.newHashSet();
 
         OperationProductComponentWithQuantityContainer productComponentWithQuantities = getProductComponentWithQuantitiesForTechnology(
-                technology, givenQuantity, operationRuns, nonComponents);
+                technology, null, givenQuantity, operationRuns, nonComponents);
 
         return getProductWithQuantities(productComponentWithQuantities, nonComponents, mrpAlgorithm,
                 TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT);
@@ -192,13 +197,30 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
 
     @Override
     public OperationProductComponentWithQuantityContainer getProductComponentWithQuantitiesForTechnology(final Entity technology,
-            final BigDecimal givenQuantity, final Map<Long, BigDecimal> operationRuns,
+            final Entity orderedProduct, final BigDecimal givenQuantity, final Map<Long, BigDecimal> operationRuns,
             final Set<OperationProductComponentHolder> nonComponents) {
-        OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = new OperationProductComponentWithQuantityContainer();
+
+        OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = null;
+
+        if (Objects.nonNull(orderedProduct)) {
+            Entity size = orderedProduct.getBelongsToField(ProductFields.SIZE);
+            if (Objects.nonNull(size)) {
+                List<Entity> sizeGroups = size.getHasManyField(SizeFields.SIZE_GROUPS);
+                if (!sizeGroups.isEmpty()) {
+                    operationProductComponentWithQuantityContainer = new OperationProductComponentWithQuantityContainer(
+                            sizeGroups);
+                } else {
+                    operationProductComponentWithQuantityContainer = new OperationProductComponentWithQuantityContainer();
+                }
+            } else {
+                operationProductComponentWithQuantityContainer = new OperationProductComponentWithQuantityContainer();
+            }
+        } else {
+            operationProductComponentWithQuantityContainer = new OperationProductComponentWithQuantityContainer();
+        }
 
         EntityTree operationComponents = getOperationComponentsFromTechnology(technology);
         Entity root = operationComponents.getRoot();
-
         if (root != null) {
             preloadProductQuantitiesAndOperationRuns(operationComponents, operationProductComponentWithQuantityContainer,
                     operationRuns);
@@ -227,8 +249,10 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                 throw new IllegalStateException("Order doesn't contain technology.");
             }
 
-            productComponentWithQuantitiesForOrders.put(order.getId(),
-                    getProductComponentWithQuantitiesForTechnology(technology, plannedQuantity, operationRuns, nonComponents));
+            productComponentWithQuantitiesForOrders.put(
+                    order.getId(),
+                    getProductComponentWithQuantitiesForTechnology(technology, null, plannedQuantity, operationRuns,
+                            nonComponents));
         }
 
         return groupOperationProductComponentWithQuantities(productComponentWithQuantitiesForOrders);
@@ -285,7 +309,26 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         for (Entity operationProductComponent : operationProductComponents) {
             BigDecimal neededQuantity = operationProductComponent.getDecimalField(L_QUANTITY);
 
-            operationProductComponentWithQuantityContainer.put(operationProductComponent, neededQuantity);
+            if (operationProductComponent.getDataDefinition().getName()
+                    .equals(TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
+                    && operationProductComponent
+                            .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES)) {
+
+                for (Entity sizeGroup : operationProductComponentWithQuantityContainer.getSizeGroups()) {
+                    List<Entity> productsByGroup = operationProductComponent
+                            .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS)
+                            .stream()
+                            .filter(pG -> pG.getBelongsToField(ProductBySizeGroupFields.SIZE_GROUP).getId()
+                                    .equals(sizeGroup.getId())).collect(Collectors.toList());
+                    for (Entity productByGroup : productsByGroup) {
+                        operationProductComponentWithQuantityContainer.put(operationProductComponent,
+                                productByGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT), neededQuantity);
+                    }
+                }
+
+            } else {
+                operationProductComponentWithQuantityContainer.put(operationProductComponent, neededQuantity);
+            }
         }
     }
 
@@ -433,11 +476,35 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
             final BigDecimal multiplier,
             final OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer) {
         for (Entity operationProductComponent : operationProductComponents) {
-            BigDecimal addedQuantity = operationProductComponentWithQuantityContainer.get(operationProductComponent);
-            BigDecimal quantity = addedQuantity.multiply(multiplier, numberService.getMathContext());
 
-            operationProductComponentWithQuantityContainer.put(operationProductComponent,
-                    quantity.setScale(5, RoundingMode.CEILING));
+            if (operationProductComponent.getDataDefinition().getName()
+                    .equals(TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
+                    && operationProductComponent
+                            .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES)) {
+                for (Entity sizeGroup : operationProductComponentWithQuantityContainer.getSizeGroups()) {
+                    List<Entity> productsByGroup = operationProductComponent
+                            .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS)
+                            .stream()
+                            .filter(pG -> pG.getBelongsToField(ProductBySizeGroupFields.SIZE_GROUP).getId()
+                                    .equals(sizeGroup.getId())).collect(Collectors.toList());
+                    for (Entity productByGroup : productsByGroup) {
+
+                        BigDecimal addedQuantity = operationProductComponentWithQuantityContainer.get(operationProductComponent,
+                                productByGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT));
+                        BigDecimal quantity = addedQuantity.multiply(multiplier, numberService.getMathContext());
+
+                        operationProductComponentWithQuantityContainer.put(operationProductComponent,
+                                productByGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT),
+                                quantity.setScale(5, RoundingMode.CEILING));
+                    }
+                }
+            } else {
+                BigDecimal addedQuantity = operationProductComponentWithQuantityContainer.get(operationProductComponent);
+                BigDecimal quantity = addedQuantity.multiply(multiplier, numberService.getMathContext());
+
+                operationProductComponentWithQuantityContainer.put(operationProductComponent,
+                        quantity.setScale(5, RoundingMode.CEILING));
+            }
         }
     }
 

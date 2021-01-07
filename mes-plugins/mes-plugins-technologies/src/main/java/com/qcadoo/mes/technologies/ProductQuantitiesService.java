@@ -23,18 +23,18 @@
  */
 package com.qcadoo.mes.technologies;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 public interface ProductQuantitiesService {
 
@@ -135,12 +135,13 @@ public interface ProductQuantitiesService {
 
     /**
      * @param technology
+     * @param orderedProduct
      * @param givenQuantity
      * @param operationRuns
      * @param nonComponents
      * @return
      */
-    OperationProductComponentWithQuantityContainer getProductComponentWithQuantitiesForTechnology(final Entity technology,
+    OperationProductComponentWithQuantityContainer getProductComponentWithQuantitiesForTechnology(final Entity technology, final Entity orderedProduct,
             final BigDecimal givenQuantity, final Map<Long, BigDecimal> operationRuns,
             final Set<OperationProductComponentHolder> nonComponents);
 
