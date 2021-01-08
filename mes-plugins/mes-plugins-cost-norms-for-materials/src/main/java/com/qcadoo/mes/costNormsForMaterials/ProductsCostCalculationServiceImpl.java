@@ -49,13 +49,13 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
     private NumberService numberService;
 
     @Override
-    public void calculateTotalProductsCost(final Entity entity, final Entity technology) {
+    public BigDecimal calculateTotalProductsCost(final Entity entity, final Entity technology) {
         Map<Entity, BigDecimal> listProductWithCost = calculateListProductsCostForPlannedQuantity(entity, technology);
         BigDecimal result = BigDecimal.ZERO;
         for (Entry<Entity, BigDecimal> productWithCost : listProductWithCost.entrySet()) {
             result = result.add(productWithCost.getValue(), numberService.getMathContext());
         }
-        entity.setField("totalMaterialCosts", numberService.setScaleWithDefaultMathContext(result));
+        return numberService.setScaleWithDefaultMathContext(result);
     }
 
     private Map<Entity, BigDecimal> calculateListProductsCostForPlannedQuantity(final Entity entity, final Entity technology) {

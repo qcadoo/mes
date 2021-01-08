@@ -37,7 +37,11 @@ public final class CalculationResultFields {
 
     public static final String MATERIAL_COSTS = "materialCosts";
 
+    public static final String MATERIAL_COST_MARGIN_VALUE = "materialCostMarginValue";
+
     public static final String LABOUR_COST = "labourCost";
+
+    public static final String LABOUR_COST_MARGIN_VALUE = "labourCostMarginValue";
 
     public static final String PRODUCTION_COSTS = "productionCosts";
 
@@ -45,7 +49,11 @@ public final class CalculationResultFields {
 
     public static final String REGISTRATION_PRICE = "registrationPrice";
 
+    public static final String REGISTRATION_PRICE_OVERHEAD_VALUE = "registrationPriceOverheadValue";
+
     public static final String TECHNICAL_PRODUCTION_COST = "technicalProductionCost";
+
+    public static final String PROFIT_VALUE = "profitValue";
 
     public static final String SELLING_PRICE = "sellingPrice";
 

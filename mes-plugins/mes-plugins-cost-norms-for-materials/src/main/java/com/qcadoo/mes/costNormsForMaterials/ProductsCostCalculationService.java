@@ -29,7 +29,7 @@ import java.math.BigDecimal;
 
 public interface ProductsCostCalculationService {
 
-    void calculateTotalProductsCost(final Entity costCalculation, final Entity technology);
+    BigDecimal calculateTotalProductsCost(final Entity costCalculation, final Entity technology);
 
     BigDecimal calculateProductCostForGivenQuantity(final Entity product, final BigDecimal quantity,
             final String materialCostsUsed);

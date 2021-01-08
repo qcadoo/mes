@@ -31,4 +31,6 @@ public final class StandardLaborCostFields {
 
     public static final String NUMBER = "number";
 
+    public static final String LABOR_COST = "laborCost";
+
 }

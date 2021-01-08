@@ -34,7 +34,6 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.testing.model.NumberServiceMock;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
@@ -47,8 +46,8 @@ import static com.qcadoo.testing.model.EntityTestUtils.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
 
 public class ProductsCostCalculationServiceTest {
 
@@ -72,15 +71,6 @@ public class ProductsCostCalculationServiceTest {
         ReflectionTestUtils.setField(productsCostCalculationService, "numberService", NumberServiceMock.scaleAware());
 
         technology = mockEntity();
-    }
-
-    private void verifySetDecimalField(final Entity entity, final String fieldName, final BigDecimal expectedValue) {
-        ArgumentCaptor<BigDecimal> decimalCaptor = ArgumentCaptor.forClass(BigDecimal.class);
-        verify(entity).setField(eq(fieldName), decimalCaptor.capture());
-        BigDecimal actualValue = decimalCaptor.getValue();
-        assertTrue(String.format("expected %s but actual value is %s", expectedValue, actualValue),
-                BigDecimalUtils.valueEquals(actualValue, expectedValue));
-        assertEquals(NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL, actualValue.scale());
     }
 
     private Entity mockCostsHolder(final Long id, final String materialCostsUsed, final BigDecimal cost,
@@ -129,10 +119,12 @@ public class ProductsCostCalculationServiceTest {
         stubProductResults(ImmutableMap.of(1L, firstProduct, 2L, secondProduct));
 
         // when
-        productsCostCalculationService.calculateTotalProductsCost(costCalculation, technology);
+        BigDecimal actualValue = productsCostCalculationService.calculateTotalProductsCost(costCalculation, technology);
 
         // then
-        verifySetDecimalField(costCalculation, "totalMaterialCosts", BigDecimal.valueOf(255));
+        assertTrue(String.format("expected %s but actual value is %s", BigDecimal.valueOf(255), actualValue),
+                BigDecimalUtils.valueEquals(actualValue, BigDecimal.valueOf(255)));
+        assertEquals(NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL, actualValue.scale());
     }
 
     @Test

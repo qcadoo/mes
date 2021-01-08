@@ -23,15 +23,9 @@
  */
 package com.qcadoo.mes.costCalculation.listeners;
 
-import com.qcadoo.mes.costCalculation.CostCalculationService;
 import com.qcadoo.mes.costCalculation.constants.CalculationResultFields;
-import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costCalculation.print.CostCalculationReportService;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
@@ -42,8 +36,6 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 import static com.google.common.base.Preconditions.checkArgument;
 
 @Service
@@ -53,68 +45,10 @@ public class CostCalculationDetailsListeners {
     private NumberService numberService;
 
     @Autowired
-    private CostCalculationService costCalculationService;
-
-    @Autowired
     private CostCalculationReportService costCalculationReportService;
 
-    @Autowired
-    private ProductStructureTreeService productStructureTreeService;
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
-
     public void generateCostCalculation(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        state.performEvent(view, "save", new String[0]);
-
-        if (state.isHasError()) {
-            return;
-        }
-
-        Entity costCalculation = getEntityFromForm(view);
-        List<Entity> technologies = costCalculation.getManyToManyField(CostCalculationFields.TECHNOLOGIES);
-        if (technologies.size() == 1) {
-            Entity technology = technologies.get(0);
-            productStructureTreeService.generateProductStructureTree(null, technology);
-            costCalculation = costCalculationService.calculateTotalCost(costCalculation, technology);
-
-            costCalculationService.calculateSellPriceOverhead(costCalculation);
-            costCalculationService.calculateSellPrice(costCalculation);
-
-            DataDefinition calculationResultDD = dataDefinitionService.get(CostCalculationConstants.PLUGIN_IDENTIFIER,
-                    CostCalculationConstants.MODEL_CALCULATION_RESULT);
-            Entity calculationResult = calculationResultDD.create();
-            calculationResult.setField(CalculationResultFields.COST_CALCULATION, costCalculation);
-            calculationResult.setField(CalculationResultFields.TECHNOLOGY, technology);
-            calculationResult.setField(CalculationResultFields.PRODUCT, technology.getBelongsToField(TechnologyFields.PRODUCT));
-            calculationResult.setField(CalculationResultFields.MATERIAL_COSTS, numberService.setScaleWithDefaultMathContext(
-                    costCalculation.getDecimalField(CostCalculationFields.TOTAL_MATERIAL_COSTS), 2));
-            calculationResult
-                    .setField(CalculationResultFields.LABOUR_COST,
-                            numberService
-                                    .setScaleWithDefaultMathContext(
-                                            costCalculation.getDecimalField(CostCalculationFields.TOTAL_MACHINE_HOURLY_COSTS)
-                                                    .add(costCalculation
-                                                            .getDecimalField(CostCalculationFields.TOTAL_LABOR_HOURLY_COSTS)),
-                                            2));
-            calculationResult.setField(CalculationResultFields.PRODUCTION_COSTS, numberService.setScaleWithDefaultMathContext(
-                    costCalculation.getDecimalField(CostCalculationFields.TOTAL_TECHNICAL_PRODUCTION_COSTS), 2));
-            calculationResult.setField(CalculationResultFields.TOTAL_COST, numberService
-                    .setScaleWithDefaultMathContext(costCalculation.getDecimalField(CostCalculationFields.TOTAL_COSTS), 2));
-            calculationResult.setField(CalculationResultFields.REGISTRATION_PRICE, numberService.setScaleWithDefaultMathContext(
-                    costCalculation.getDecimalField(CostCalculationFields.TOTAL_COST_PER_UNIT), 2));
-            calculationResult.setField(CalculationResultFields.TECHNICAL_PRODUCTION_COST,
-                    numberService.setScaleWithDefaultMathContext(
-                            costCalculation.getDecimalField(CostCalculationFields.TECHNICAL_PRODUCTION_COSTS), 2));
-            calculationResult.setField(CalculationResultFields.SELLING_PRICE, numberService
-                    .setScaleWithDefaultMathContext(costCalculation.getDecimalField(CostCalculationFields.SELL_PRICE_VALUE), 2));
-            calculationResult.setField(CalculationResultFields.NO_MATERIAL_PRICE, false);
-            calculationResultDD.save(calculationResult);
-            costCalculationReportService.generateCostCalculationReport(view, state, args);
-        }
-
-        view.getComponentByReference(QcadooViewConstants.L_FORM)
-                .addMessage("costCalculation.messages.success.calculationComplete", MessageType.SUCCESS);
+        costCalculationReportService.generateCostCalculationReport(view, state, args);
     }
 
     private Entity getEntityFromForm(final ViewDefinitionState view) {

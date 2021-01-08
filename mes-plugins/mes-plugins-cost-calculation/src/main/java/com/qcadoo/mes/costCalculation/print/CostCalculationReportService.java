@@ -23,16 +23,9 @@
  */
 package com.qcadoo.mes.costCalculation.print;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.costCalculation.CostCalculationService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -45,6 +38,15 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class CostCalculationReportService {
@@ -61,13 +63,18 @@ public class CostCalculationReportService {
     @Autowired
     private CostCalculationPdfService costCalculationPdfService;
 
+    @Autowired
+    private CostCalculationXlsService costCalculationXlsService;
+
+    @Autowired
+    private CostCalculationService costCalculationService;
+
     public void printCostCalculationReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         reportService.printGeneratedReport(view, state, new String[] { args[0], CostCalculationConstants.PLUGIN_IDENTIFIER,
                 CostCalculationConstants.MODEL_COST_CALCULATION });
     }
 
     public void generateCostCalculationReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-
         if (state instanceof FormComponent) {
             FieldComponent dateField = (FieldComponent) view.getComponentByReference(CostCalculationFields.DATE);
             CheckBoxComponent generatedField = (CheckBoxComponent) view.getComponentByReference(CostCalculationFields.GENERATED);
@@ -89,7 +96,7 @@ public class CostCalculationReportService {
                 generatedField.setChecked(true);
             }
 
-            state.performEvent(view, "save", new String[0]);
+            state.performEvent(view, "save");
 
             if (state.isHasError()) {
                 return;
@@ -105,28 +112,30 @@ public class CostCalculationReportService {
             costCalculation = getCostCalculation((Long) state.getFieldValue());
 
             try {
-                generateCostCalculationDocuments(state, costCalculation);
+                Entity costCalculationWithFileName = fileService.updateReportFileName(costCalculation, CostCalculationFields.DATE,
+                        "costCalculation.costCalculation.report.fileName");
 
-                state.performEvent(view, "reset", new String[0]);
-            } catch (IOException e) {
-                throw new IllegalStateException(e.getMessage(), e);
-            } catch (DocumentException e) {
+                List<Entity> technologies = costCalculation.getManyToManyField(CostCalculationFields.TECHNOLOGIES);
+                for (Entity technology : technologies) {
+                    costCalculationService.createCalculationResults(costCalculation, technology);
+                }
+                if (technologies.size() == 1) {
+                    costCalculationPdfService.generateDocument(costCalculationWithFileName, state.getLocale());
+                }
+                costCalculationXlsService.generateDocument(costCalculationWithFileName, state.getLocale());
+
+                state.performEvent(view, "reset");
+                view.getComponentByReference(QcadooViewConstants.L_FORM)
+                        .addMessage("costCalculation.messages.success.calculationComplete", MessageType.SUCCESS);
+            } catch (IOException | DocumentException e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
         }
     }
 
     private Entity getCostCalculation(final Long costCalculationId) {
-        return dataDefinitionService.get(CostCalculationConstants.PLUGIN_IDENTIFIER,
-                CostCalculationConstants.MODEL_COST_CALCULATION).get(costCalculationId);
+        return dataDefinitionService
+                .get(CostCalculationConstants.PLUGIN_IDENTIFIER, CostCalculationConstants.MODEL_COST_CALCULATION)
+                .get(costCalculationId);
     }
-
-    private void generateCostCalculationDocuments(final ComponentState state, final Entity costCalculation) throws IOException,
-            DocumentException {
-        Entity costCalculationWithFileName = fileService.updateReportFileName(costCalculation, CostCalculationFields.DATE,
-                "costCalculation.costCalculation.report.fileName");
-
-        costCalculationPdfService.generateDocument(costCalculationWithFileName, state.getLocale());
-    }
-
 }

@@ -29,8 +29,6 @@ public final class CostCalculationFields {
 
     }
 
-    public static final String TECHNICAL_PRODUCTION_COSTS = "technicalProductionCosts";
-
     public static final String NUMBER = "number";
 
     public static final String QUANTITY = "quantity";
@@ -55,37 +53,17 @@ public final class CostCalculationFields {
 
     public static final String MATERIAL_COST_MARGIN = "materialCostMargin";
 
-    public static final String TOTAL_MATERIAL_COSTS = "totalMaterialCosts";
-
     public static final String TOTAL_MACHINE_HOURLY_COSTS = "totalMachineHourlyCosts";
 
     public static final String TOTAL_LABOR_HOURLY_COSTS = "totalLaborHourlyCosts";
 
-    public static final String TOTAL_TECHNICAL_PRODUCTION_COSTS = "totalTechnicalProductionCosts";
-
     public static final String PRODUCTION_COST_MARGIN = "productionCostMargin";
-
-    public static final String PRODUCTION_COST_MARGIN_VALUE = "productionCostMarginValue";
-
-    public static final String MATERIAL_COST_MARGIN_VALUE = "materialCostMarginValue";
 
     public static final String ADDITIONAL_OVERHEAD = "additionalOverhead";
 
     public static final String REGISTRATION_PRICE_OVERHEAD = "registrationPriceOverhead";
 
-    public static final String REGISTRATION_PRICE_OVERHEAD_VALUE = "registrationPriceOverheadValue";
-
     public static final String PROFIT = "profit";
-
-    public static final String PROFIT_VALUE = "profitValue";
-
-    public static final String SELL_PRICE_VALUE = "sellPriceValue";
-
-    public static final String TOTAL_OVERHEAD = "totalOverhead";
-
-    public static final String TOTAL_COSTS = "totalCosts";
-
-    public static final String TOTAL_COST_PER_UNIT = "totalCostPerUnit";
 
     public static final String DESCRIPTION = "description";
 

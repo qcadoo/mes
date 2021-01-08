@@ -25,66 +25,8 @@ package com.qcadoo.mes.costCalculation;
 
 import com.qcadoo.model.api.Entity;
 
-import java.math.BigDecimal;
-
 public interface CostCalculationService {
-
-    /**
-     * Calculates total cost
-     * 
-     * @param entity
-     *            entity
-     * @param technology
-     *            technology
-     *
-     * @return entity
-     */
-    Entity calculateTotalCost(final Entity entity, final Entity technology);
-
-    /**
-     * Calculates total costs
-     * 
-     * @param entity
-     *            entity
-     * @param productionCosts
-     *            production costs
-     * @param quantity
-     *            quantity
-     */
-    void calculateTotalCosts(final Entity entity, final BigDecimal productionCosts, final BigDecimal quantity);
-
-    /**
-     * Calculates producton cost
-     * 
-     * @param entity
-     *            entity
-     * 
-     * @return productionCost
-     */
-    BigDecimal calculateProductionCost(final Entity entity);
-
-    /**
-     * Calculated total overhead
-     * 
-     * @param entity
-     *            entity
-     */
-    void calculateTotalOverhead(final Entity entity);
-
-    /**
-     * Calculated sell price overhead
-     * 
-     * @param entity
-     *            entity
-     */
-    public void calculateSellPriceOverhead(final Entity entity);
-
-    /**
-     * Calculated sell price
-     * 
-     * @param entity
-     *            entity
-     */
-    public void calculateSellPrice(final Entity entity);
+    
+    void createCalculationResults(Entity costCalculation, final Entity technology);
 
 }

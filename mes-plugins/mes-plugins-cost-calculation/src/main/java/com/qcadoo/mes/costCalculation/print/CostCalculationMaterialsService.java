@@ -73,10 +73,8 @@ public class CostCalculationMaterialsService {
             } else {
                 BigDecimal toAdd = costForGivenQuantity.multiply(materialCostMargin.divide(new BigDecimal(100), mathContext),
                         mathContext);
-                BigDecimal totalCosts = costForGivenQuantity.add(toAdd, mathContext);
-
                 list.add(new CostCalculationMaterial(product.getStringField(ProductFields.NUMBER),
-                        product.getStringField(ProductFields.UNIT), productQuantity, costForGivenQuantity, totalCosts, toAdd));
+                        product.getStringField(ProductFields.UNIT), productQuantity, costForGivenQuantity, costForGivenQuantity.add(toAdd, mathContext), toAdd));
             }
 
         }

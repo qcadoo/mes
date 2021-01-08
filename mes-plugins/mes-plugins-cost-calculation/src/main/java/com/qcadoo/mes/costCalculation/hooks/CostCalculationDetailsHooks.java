@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.costCalculation.hooks;
 
-import java.math.BigDecimal;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
@@ -45,6 +37,13 @@ import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 @Service
 public class CostCalculationDetailsHooks {
@@ -119,6 +118,10 @@ public class CostCalculationDetailsHooks {
             CheckBoxComponent includeTPZ = (CheckBoxComponent) view.getComponentByReference(CostCalculationFields.INCLUDE_TPZ);
             CheckBoxComponent includeAdditionalTime = (CheckBoxComponent) view
                     .getComponentByReference(CostCalculationFields.INCLUDE_ADDITIONAL_TIME);
+            FieldComponent averageMachineHourlyCost = (FieldComponent) view
+                    .getComponentByReference(CostCalculationFields.AVERAGE_MACHINE_HOURLY_COST);
+            FieldComponent averageLaborHourlyCost = (FieldComponent) view
+                    .getComponentByReference(CostCalculationFields.AVERAGE_LABOR_HOURLY_COST);
             standardLaborCost.setEnabled(
                     SourceOfOperationCosts.STANDARD_LABOR_COSTS.getStringValue().equals(sourceOfOperationCosts.getFieldValue()));
             standardLaborCost.setRequired(
@@ -129,10 +132,12 @@ public class CostCalculationDetailsHooks {
             standardLaborCost.requestComponentUpdateState();
             includeTPZ.setEnabled(
                     !SourceOfOperationCosts.STANDARD_LABOR_COSTS.getStringValue().equals(sourceOfOperationCosts.getFieldValue()));
-            includeTPZ.requestComponentUpdateState();
             includeAdditionalTime.setEnabled(
                     !SourceOfOperationCosts.STANDARD_LABOR_COSTS.getStringValue().equals(sourceOfOperationCosts.getFieldValue()));
-            includeAdditionalTime.requestComponentUpdateState();
+            averageMachineHourlyCost.setEnabled(
+                    SourceOfOperationCosts.PARAMETERS.getStringValue().equals(sourceOfOperationCosts.getFieldValue()));
+            averageLaborHourlyCost.setEnabled(
+                    SourceOfOperationCosts.PARAMETERS.getStringValue().equals(sourceOfOperationCosts.getFieldValue()));
         }
     }
 
@@ -246,6 +251,7 @@ public class CostCalculationDetailsHooks {
                 .getItemByName(CostCalculationFields.NOMINAL_COSTS);
         RibbonActionItem generate = window.getRibbon().getGroupByName("generate").getItemByName("generate");
         RibbonActionItem pdf = window.getRibbon().getGroupByName("export").getItemByName("pdf");
+        RibbonActionItem xls = window.getRibbon().getGroupByName("export").getItemByName("xls");
         RibbonActionItem save = window.getRibbon().getGroupByName(ACTIONS).getItemByName("save");
         RibbonActionItem saveBack = window.getRibbon().getGroupByName(ACTIONS).getItemByName("saveBack");
         RibbonActionItem saveNew = window.getRibbon().getGroupByName(ACTIONS).getItemByName("saveNew");
@@ -273,6 +279,8 @@ public class CostCalculationDetailsHooks {
                     pdf.setEnabled(true);
                     pdf.requestUpdate(true);
                 }
+                xls.setEnabled(true);
+                xls.requestUpdate(true);
                 generate.setEnabled(false);
                 generate.requestUpdate(true);
                 save.setEnabled(false);
@@ -291,6 +299,9 @@ public class CostCalculationDetailsHooks {
                 pdf.setEnabled(false);
                 pdf.setMessage("costCalculation.ribbon.message.recordNotGenerated");
                 pdf.requestUpdate(true);
+                xls.setEnabled(false);
+                xls.setMessage("costCalculation.ribbon.message.recordNotGenerated");
+                xls.requestUpdate(true);
                 save.setEnabled(true);
                 save.requestUpdate(true);
                 cancel.setEnabled(true);
@@ -303,6 +314,9 @@ public class CostCalculationDetailsHooks {
             pdf.setEnabled(false);
             pdf.setMessage("recordNotCreated");
             pdf.requestUpdate(true);
+            xls.setEnabled(false);
+            xls.setMessage("recordNotCreated");
+            xls.requestUpdate(true);
             save.setEnabled(true);
             save.requestUpdate(true);
             cancel.setEnabled(true);
