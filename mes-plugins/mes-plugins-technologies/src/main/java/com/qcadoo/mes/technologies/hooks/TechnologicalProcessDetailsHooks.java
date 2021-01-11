@@ -1,17 +1,28 @@
 package com.qcadoo.mes.technologies.hooks;
 
 import com.qcadoo.mes.basic.constants.WorkstationFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Objects;
 
 import static com.qcadoo.mes.technologies.constants.TechnologicalProcessFields.*;
 
 @Service
 public class TechnologicalProcessDetailsHooks {
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
         CheckBoxComponent extendedTimeForSizeGroupField = (CheckBoxComponent) view
@@ -49,5 +60,19 @@ public class TechnologicalProcessDetailsHooks {
 
         workstationLookup.setFilterValue(filterValueHolder);
 
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        Long technologicalProcessId = form.getEntityId();
+        if (Objects.nonNull(technologicalProcessId)) {
+            Entity workstationType = workstationTypeLookup.getEntity();
+            Entity workstationTypeFromDB = dataDefinitionService
+                    .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGICAL_PROCESS)
+                    .get(technologicalProcessId).getBelongsToField(WORKSTATION_TYPE);
+            if (workstationType == null && workstationTypeFromDB != null
+                    || workstationType != null && workstationTypeFromDB == null || workstationType != null
+                            && workstationTypeFromDB != null && !workstationType.getId().equals(workstationTypeFromDB.getId())) {
+                workstationLookup.setFieldValue(null);
+                workstationLookup.requestComponentUpdateState();
+            }
+        }
     }
 }

@@ -84,6 +84,8 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         if (SourceOfOperationCosts.STANDARD_LABOR_COSTS.equals(SourceOfOperationCosts.parseString(sourceOfOperationCosts))) {
             labourCost = costCalculation.getBelongsToField(CostCalculationFields.STANDARD_LABOR_COST)
                     .getDecimalField(StandardLaborCostFields.LABOR_COST);
+            costCalculation.setField(CostCalculationFields.TOTAL_MACHINE_HOURLY_COSTS, BigDecimal.ZERO);
+            costCalculation.setField(CostCalculationFields.TOTAL_LABOR_HOURLY_COSTS, BigDecimal.ZERO);
         } else {
             boolean hourlyCostFromOperation = true;
             if (SourceOfOperationCosts.PARAMETERS.equals(SourceOfOperationCosts.parseString(sourceOfOperationCosts))) {
