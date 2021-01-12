@@ -68,8 +68,8 @@ public class TechnologicalProcessDetailsHooks {
                     .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGICAL_PROCESS)
                     .get(technologicalProcessId).getBelongsToField(WORKSTATION_TYPE);
             if (workstationType == null && workstationTypeFromDB != null
-                    || workstationType != null && workstationTypeFromDB == null || workstationType != null
-                            && workstationTypeFromDB != null && !workstationType.getId().equals(workstationTypeFromDB.getId())) {
+                    || workstationType != null && workstationTypeFromDB == null
+                    || workstationType != null && !workstationType.getId().equals(workstationTypeFromDB.getId())) {
                 workstationLookup.setFieldValue(null);
                 workstationLookup.requestComponentUpdateState();
             }

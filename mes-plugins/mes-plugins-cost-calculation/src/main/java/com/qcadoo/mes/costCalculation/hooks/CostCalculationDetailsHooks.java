@@ -62,6 +62,8 @@ public class CostCalculationDetailsHooks {
 
     public static final String ACTIONS = "actions";
 
+    public static final String RECORD_NOT_CREATED = "recordNotCreated";
+
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
@@ -309,13 +311,13 @@ public class CostCalculationDetailsHooks {
             }
         } else {
             copy.setEnabled(false);
-            copy.setMessage("recordNotCreated");
+            copy.setMessage(RECORD_NOT_CREATED);
             copy.requestUpdate(true);
             pdf.setEnabled(false);
-            pdf.setMessage("recordNotCreated");
+            pdf.setMessage(RECORD_NOT_CREATED);
             pdf.requestUpdate(true);
             xls.setEnabled(false);
-            xls.setMessage("recordNotCreated");
+            xls.setMessage(RECORD_NOT_CREATED);
             xls.requestUpdate(true);
             save.setEnabled(true);
             save.requestUpdate(true);
