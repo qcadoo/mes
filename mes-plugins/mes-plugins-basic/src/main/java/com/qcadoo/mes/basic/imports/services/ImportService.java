@@ -276,11 +276,12 @@ public abstract class ImportService {
     private void propagateErrors(final ImportStatus importStatus, final CellBinderRegistry cellBinderRegistry,
             final String filePath, final String pluginIdentifier, final String modelName) {
         Comparator<ImportError> compareByIndex = Comparator
-                .comparing(o -> cellBinderRegistry.getIndexUsingFieldName(o.getFieldName()));
+                .comparing(error -> cellBinderRegistry.getIndexUsingFieldName(error.getFieldName()));
         Comparator<ImportError> comparator = Comparator.comparing(ImportError::getRowIndex).thenComparing(compareByIndex);
 
-        importStatus.getErrors().stream().filter(error -> Objects.nonNull(error.getFieldName())).sorted(comparator)
-                .forEach(importError -> propagateErrors(importError, filePath, pluginIdentifier, modelName));
+        importStatus.getErrors().stream().filter(error -> Objects.nonNull(error.getFieldName()))
+                .filter(error -> Objects.nonNull(cellBinderRegistry.getIndexUsingFieldName(error.getFieldName())))
+                .sorted(comparator).forEach(importError -> propagateErrors(importError, filePath, pluginIdentifier, modelName));
         importStatus.getErrors().stream().filter(error -> Objects.isNull(error.getFieldName()))
                 .forEach(importError -> propagateErrors(importError, filePath, pluginIdentifier, modelName));
     }
