@@ -249,7 +249,9 @@ public class TechnologyValidationService {
             final List<Entity> operationProductOutComponents) {
         for (Entity operationProductOutComponent : operationProductOutComponents) {
             for (Entity operationProductInComponent : operationProductInComponents) {
-                if (operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT).getId().equals(
+                Entity product = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
+
+                if (Objects.nonNull(product) && product.getId().equals(
                         operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId())) {
                     return true;
                 }
