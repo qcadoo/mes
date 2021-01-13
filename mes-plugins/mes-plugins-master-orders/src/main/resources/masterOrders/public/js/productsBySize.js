@@ -20,17 +20,25 @@ thatObject.addPositionsToOrder = function (eventPerformer, ribbonItemName, entit
 
 	var positions = [];
 	var invalid = false;
+	var invalidPrecision = false;
+	var invalidScale = false;
 	$.each(ids, function (i, id) {
 		var position = {};
 		position.id = id;
-		position.value = $("#quantity_" + id).val();
+		position.value = $("#quantity_" + id).val().replace(',', '.');
 		$("#quantity_" + id).removeClass('is-invalid');
 
 		if (position.value) {
 		    var validationAttrResult = validateDecimalWithPrecisionAndScale(position.value);
             if (!validationAttrResult.validScale) {
+                invalidScale = true;
                 invalid = true;
             	$("#quantity_" + id).addClass('is-invalid');
+
+            } else if (!validationAttrResult.validPrecision) {
+                invalidPrecision = true;
+                invalid = true;
+                $("#quantity_" + id).addClass('is-invalid');
             } else {
                 positions.push(position);
             }
@@ -39,10 +47,21 @@ thatObject.addPositionsToOrder = function (eventPerformer, ribbonItemName, entit
 
 	if(invalid) {
 			QCD.components.elements.utils.LoadingIndicator.unblockElement($("#window_windowComponents"));
-    		mainController.showMessage({
-    			type: "error",
-    			content: QCD.translate('masterOrders.productsBySize.invalidScale.max')
-    		});
+    		if(invalidPrecision) {
+    	        mainController.showMessage({
+            	    type: "error",
+            	    content: QCD.translate('masterOrders.productsBySize.invalidPrecision.max')
+                });
+    		}
+
+    		if(invalidScale) {
+        		mainController.showMessage({
+        			type: "error",
+        			content: QCD.translate('masterOrders.productsBySize.invalidScale.max')
+        		});
+    		}
+
+
     		return;
 	}
 

@@ -104,6 +104,9 @@
 
                             QCD.translations['masterOrders.productsBySize.invalidScale.max'] =
                             '#{translate(masterOrders.productsBySize.invalidScale.max)}';
+
+                            QCD.translations['masterOrders.productsBySize.invalidPrecision.max'] =
+                            '#{translate(masterOrders.productsBySize.invalidPrecision.max)}';
                             </script>
                             <script type="text/javascript" src="/masterOrders/public/js/productsBySize.js"></script>
 
