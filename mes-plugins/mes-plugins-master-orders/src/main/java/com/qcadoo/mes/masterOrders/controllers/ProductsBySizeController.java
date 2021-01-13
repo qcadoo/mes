@@ -11,9 +11,6 @@ import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.exception.EntityRuntimeException;
-
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.MediaType;
@@ -23,6 +20,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
 
 @Controller
 public class ProductsBySizeController {
@@ -39,8 +38,9 @@ public class ProductsBySizeController {
     @ResponseBody
     @RequestMapping(value = "/masterOrders/productsBySize", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public ProductsBySizeResponse productsBySize(@RequestBody ProductsBySizeRequest productsBySizeRequest) {
-        Entity helper = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
-                MasterOrdersConstants.MODEL_PRODUCTS_BY_SIZE_HELPER).get(productsBySizeRequest.getEntityId());
+        Entity helper = dataDefinitionService
+                .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_PRODUCTS_BY_SIZE_HELPER)
+                .get(productsBySizeRequest.getEntityId());
         List<Entity> helperEntries = helper.getHasManyField(ProductsBySizeHelperFields.PRODUCTS_BY_SIZE_ENTRY_HELPERS);
         Entity mo = helper.getBelongsToField(ProductsBySizeHelperFields.MASTER_ORDER);
         if (mo != null) {
@@ -51,16 +51,30 @@ public class ProductsBySizeController {
         }
     }
 
-    private ProductsBySizeResponse createSPPositions(Entity salesPlan, List<Entity> helperEntries,
+    public ProductsBySizeResponse createSPPositions(Entity salesPlan, List<Entity> helperEntries,
             List<ProductBySizePosition> positions) {
-        boolean valid = true;
+        ProductsBySizeResponse productsBySizeResponse = new ProductsBySizeResponse();
+        try {
+            tryCreateSPPositions(salesPlan, helperEntries, positions);
+        } catch (EntityRuntimeException exc) {
+            productsBySizeResponse.setStatus(ProductsBySizeResponse.SimpleResponseStatus.ERROR);
+            productsBySizeResponse
+                    .setMessage(translationService.translate("masterOrders.salesPlan.productsBySize.creationErrorForSize",
+                            LocaleContextHolder.getLocale(), exc.getEntity().getBelongsToField(SalesPlanProductFields.PRODUCT)
+                                    .getBelongsToField(ProductFields.SIZE).getStringField(SizeFields.NUMBER)));
+        }
 
+        return productsBySizeResponse;
+    }
+
+    @Transactional
+    public void tryCreateSPPositions(Entity salesPlan, List<Entity> helperEntries, List<ProductBySizePosition> positions) {
         for (ProductBySizePosition position : positions) {
             Entity product = helperEntries.stream().filter(e -> e.getId().equals(position.getId())).findAny().get()
                     .getBelongsToField("product");
 
-            Entity spProduct = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
-                    MasterOrdersConstants.MODEL_SALES_PLAN_PRODUCT).create();
+            Entity spProduct = dataDefinitionService
+                    .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_SALES_PLAN_PRODUCT).create();
 
             spProduct.setField(SalesPlanProductFields.SALES_PLAN, salesPlan);
             spProduct.setField(SalesPlanProductFields.PRODUCT, product);
@@ -72,20 +86,13 @@ public class ProductsBySizeController {
             spProduct.setField(SalesPlanProductFields.SURPLUS_FROM_PLAN, position.getValue());
             spProduct = spProduct.getDataDefinition().save(spProduct);
             if (!spProduct.isValid()) {
-                valid = false;
+                throw new EntityRuntimeException(spProduct);
             }
         }
-
-        ProductsBySizeResponse productsBySizeResponse = new ProductsBySizeResponse();
-        if (!valid) {
-            productsBySizeResponse.setStatus(ProductsBySizeResponse.SimpleResponseStatus.ERROR);
-            productsBySizeResponse.setMessage(translationService.translate("masterOrders.salesPlan.productsBySize.creationError",
-                    LocaleContextHolder.getLocale()));
-        }
-        return productsBySizeResponse;
     }
 
-    public ProductsBySizeResponse createMOPositions(Entity mo, List<Entity> helperEntries, List<ProductBySizePosition> positions) {
+    public ProductsBySizeResponse createMOPositions(Entity mo, List<Entity> helperEntries,
+            List<ProductBySizePosition> positions) {
         ProductsBySizeResponse productsBySizeResponse = new ProductsBySizeResponse();
 
         try {
@@ -102,13 +109,12 @@ public class ProductsBySizeController {
 
     @Transactional
     public void tryCreateMOPositions(Entity mo, List<Entity> helperEntries, List<ProductBySizePosition> positions) {
-
         for (ProductBySizePosition position : positions) {
             Entity product = helperEntries.stream().filter(e -> e.getId().equals(position.getId())).findAny().get()
                     .getBelongsToField("product");
 
-            Entity moProduct = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
-                    MasterOrdersConstants.MODEL_MASTER_ORDER_PRODUCT).create();
+            Entity moProduct = dataDefinitionService
+                    .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_PRODUCT).create();
 
             moProduct.setField(MasterOrderProductFields.MASTER_ORDER, mo);
             moProduct.setField(MasterOrderProductFields.PRODUCT, product);
