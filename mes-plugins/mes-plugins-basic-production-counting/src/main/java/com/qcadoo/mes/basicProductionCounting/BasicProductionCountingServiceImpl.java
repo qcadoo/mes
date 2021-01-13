@@ -38,7 +38,6 @@ import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuanti
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
@@ -513,21 +512,15 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
 
     @Override
     public Map<Long, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm algorithm) {
-        List<Entity> draftOrders = orders.stream()
-                .filter(order -> OrderState.PENDING.getStringValue().equals(order.getStringField(OrderFields.STATE)))
-                .collect(Collectors.toList());
-        List<Entity> otherOrders = orders.stream()
-                .filter(order -> !OrderState.PENDING.getStringValue().equals(order.getStringField(OrderFields.STATE)))
-                .collect(Collectors.toList());
-        Map<Long, BigDecimal> neededProductQuantities = productQuantitiesService.getNeededProductQuantities(draftOrders,
-                algorithm, true);
+        Map<Long, BigDecimal> neededProductQuantities =  Maps.newHashMap();
 
-        if (neededProductQuantities == null) {
-            neededProductQuantities = Maps.newHashMap();
-        }
-
-        for (Entity order : otherOrders) {
-            List<Entity> productionCountingQuantities = getUsedMaterialsFromProductionCountingQuantities(order);
+        for (Entity order : orders) {
+            List<Entity> productionCountingQuantities;
+            if(algorithm.getStringValue().equals(MrpAlgorithm.ONLY_MATERIALS)) {
+                productionCountingQuantities = getUsedMaterialsFromProductionCountingQuantities(order,true);
+            } else {
+                productionCountingQuantities = getUsedMaterialsFromProductionCountingQuantities(order,false);
+            }
 
             for (Entity pcq : productionCountingQuantities) {
                 Long productId = pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId();

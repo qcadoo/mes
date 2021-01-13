@@ -42,13 +42,18 @@ public class MaterialRequirementDetailsHooks {
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
-    public void generateMaterialRequirementNumber(final ViewDefinitionState view) {
+    public void onBeforeRender(final ViewDefinitionState view) {
+        generateMaterialRequirementNumber(view);
+        disableFormForExistingMaterialRequirement(view);
+    }
+
+    private void generateMaterialRequirementNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, MaterialRequirementsConstants.PLUGIN_IDENTIFIER,
                 MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT, QcadooViewConstants.L_FORM,
                 MaterialRequirementFields.NUMBER);
     }
 
-    public void disableFormForExistingMaterialRequirement(final ViewDefinitionState view) {
+    private void disableFormForExistingMaterialRequirement(final ViewDefinitionState view) {
         FormComponent materialRequirementForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (materialRequirementForm.getEntityId() == null) {
@@ -77,6 +82,14 @@ public class MaterialRequirementDetailsHooks {
         showCurrentStockLevelField.setEnabled(!isGenerated);
         includeStartDateOrderField.setEnabled(!isGenerated);
         ordersGrid.setEnabled(!isGenerated);
+
+        if(!isGenerated && includeWarehouseField.isChecked()) {
+            showCurrentStockLevelField.setEnabled(true);
+        } else {
+            showCurrentStockLevelField.setEnabled(false);
+            showCurrentStockLevelField.setChecked(false);
+            showCurrentStockLevelField.requestComponentUpdateState();
+        }
     }
 
 }

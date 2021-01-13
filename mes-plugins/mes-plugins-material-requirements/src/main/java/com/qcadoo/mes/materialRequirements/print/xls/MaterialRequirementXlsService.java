@@ -23,28 +23,40 @@
  */
 package com.qcadoo.mes.materialRequirements.print.xls;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
+import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementFields;
+import com.qcadoo.mes.materialRequirements.print.MaterialRequirementDataService;
+import com.qcadoo.mes.materialRequirements.print.MaterialRequirementEntry;
+import com.qcadoo.mes.materialRequirements.print.WarehouseDateKey;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.xls.XlsDocumentService;
 import com.qcadoo.report.api.xls.XlsHelper;
+
+import java.math.BigDecimal;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public final class MaterialRequirementXlsService extends XlsDocumentService {
@@ -64,25 +76,163 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
 
+    @Autowired
+    private MaterialRequirementDataService materialRequirementDataService;
+
+    @Autowired
+    private MaterialFlowResourcesService materialFlowResourcesService;
+
     @Override
     protected void addHeader(final HSSFSheet sheet, final Locale locale, final Entity materialRequirement) {
+        boolean includeWarehouse = materialRequirement.getBooleanField(MaterialRequirementFields.INCLUDE_WAREHOUSE);
+        boolean includeStartDateOrder = materialRequirement.getBooleanField(MaterialRequirementFields.INCLUDE_START_DATE_ORDER);
+        boolean showCurrentStockLevel = materialRequirement.getBooleanField(MaterialRequirementFields.SHOW_CURRENT_STOCK_LEVEL);
+        int column = 0;
+
         HSSFRow header = sheet.createRow(0);
-        HSSFCell cell0 = header.createCell(0);
+
+        if (includeWarehouse) {
+            HSSFCell cellWarehouse = header.createCell(column);
+            cellWarehouse.setCellValue(translationService.translate("materialRequirements.materialRequirement.report.warehouse",
+                    locale));
+            xlsHelper.setCellStyle(sheet, cellWarehouse);
+            column += 1;
+        }
+
+        if (includeStartDateOrder) {
+            HSSFCell cellStartDateOrder = header.createCell(column);
+            cellStartDateOrder.setCellValue(translationService.translate(
+                    "materialRequirements.materialRequirement.report.startDateOrder", locale));
+            xlsHelper.setCellStyle(sheet, cellStartDateOrder);
+            column += 1;
+        }
+
+        HSSFCell cell0 = header.createCell(column);
         cell0.setCellValue(translationService.translate("basic.product.number.label", locale));
         xlsHelper.setCellStyle(sheet, cell0);
-        HSSFCell cell1 = header.createCell(1);
+        column += 1;
+
+        HSSFCell cell1 = header.createCell(column);
         cell1.setCellValue(translationService.translate("basic.product.name.label", locale));
         xlsHelper.setCellStyle(sheet, cell1);
-        HSSFCell cell2 = header.createCell(2);
+        column += 1;
+
+        HSSFCell cell2 = header.createCell(column);
         cell2.setCellValue(translationService.translate("technologies.technologyOperationComponent.quantity.label", locale));
         xlsHelper.setCellStyle(sheet, cell2);
-        HSSFCell cell3 = header.createCell(3);
+        column += 1;
+
+        HSSFCell cell3 = header.createCell(column);
         cell3.setCellValue(translationService.translate("basic.product.unit.label", locale));
         xlsHelper.setCellStyle(sheet, cell3);
+        column += 1;
+
+        if (showCurrentStockLevel) {
+            HSSFCell cellStockLevel = header.createCell(column);
+            cellStockLevel.setCellValue(translationService.translate(
+                    "materialRequirements.materialRequirement.report.currentStock", locale));
+            xlsHelper.setCellStyle(sheet, cellStockLevel);
+        }
     }
 
     @Override
     protected void addSeries(final HSSFSheet sheet, final Entity materialRequirement) {
+        boolean includeWarehouse = materialRequirement.getBooleanField(MaterialRequirementFields.INCLUDE_WAREHOUSE);
+        boolean includeStartDateOrder = materialRequirement.getBooleanField(MaterialRequirementFields.INCLUDE_START_DATE_ORDER);
+
+        if(includeWarehouse || includeStartDateOrder) {
+            addGroupedSeries(sheet, materialRequirement);
+        } else {
+            addSimpleSeries(sheet, materialRequirement);
+        }
+
+    }
+
+    private void addGroupedSeries(HSSFSheet sheet, Entity materialRequirement) {
+        boolean includeWarehouse = materialRequirement.getBooleanField(MaterialRequirementFields.INCLUDE_WAREHOUSE);
+        boolean includeStartDateOrder = materialRequirement.getBooleanField(MaterialRequirementFields.INCLUDE_START_DATE_ORDER);
+        boolean showCurrentStockLevel = materialRequirement.getBooleanField(MaterialRequirementFields.SHOW_CURRENT_STOCK_LEVEL);
+        int rowNum = 1;
+        Map<WarehouseDateKey, List<MaterialRequirementEntry>> entriesMap = materialRequirementDataService
+                .getGroupedData(materialRequirement);
+        List<WarehouseDateKey> keys = Lists.newArrayList(entriesMap.keySet());
+        if (includeWarehouse) {
+            keys.sort(Comparator.comparing(WarehouseDateKey::getWarehouseNumber).thenComparing(WarehouseDateKey::getDate));
+        } else {
+            keys.sort(Comparator.comparing(WarehouseDateKey::getDate));
+        }
+
+        String actualWarehouse = "";
+        Long actualDate = 0L;
+        int column = 0;
+        for (WarehouseDateKey key : keys) {
+            List<MaterialRequirementEntry> materials = entriesMap.get(key);
+            Map<Long, BigDecimal> quantitiesInStock = Maps.newHashMap();
+            if (showCurrentStockLevel && Objects.nonNull(key.getWarehouseId())) {
+                quantitiesInStock = materialFlowResourcesService.getQuantitiesForProductIdsAndLocation(
+                        materials.stream().map(mr -> mr.getId()).collect(Collectors.toList()), key.getWarehouseId());
+            }
+
+            Map<String, MaterialRequirementEntry> neededProductQuantities = getNeededProductQuantities(materials);
+            for (Entry<String, MaterialRequirementEntry> mEntry : neededProductQuantities.entrySet()) {
+                HSSFRow row = sheet.createRow(rowNum++);
+                column = 0;
+
+                MaterialRequirementEntry material = mEntry.getValue();
+                if (includeWarehouse) {
+                    if (!actualWarehouse.equals(key.getWarehouseNumber())) {
+                        row.createCell(column).setCellValue(key.getWarehouseNumber());
+                        actualWarehouse = key.getWarehouseNumber();
+                    } else {
+                        row.createCell(column).setCellValue("");
+                    }
+                    column += 1;
+                }
+                if (includeStartDateOrder) {
+                    if (!actualDate.equals(key.getDate())) {
+                        row.createCell(column).setCellValue(DateUtils.toDateString(new Date(key.getDate())));
+                        actualDate = key.getDate();
+                    } else {
+                        row.createCell(column).setCellValue("");
+
+                    }
+                    column += 1;
+                }
+
+                row.createCell(column).setCellValue(material.getNumber());
+                column += 1;
+                row.createCell(column).setCellValue(material.getName());
+                column += 1;
+
+                row.createCell(column).setCellValue(
+                        numberService.setScaleWithDefaultMathContext(material.getPlannedQuantity()).doubleValue());
+                column += 1;
+
+                String unit = material.getUnit();
+                if (unit == null) {
+                    row.createCell(column).setCellValue("");
+                } else {
+                    row.createCell(column).setCellValue(unit);
+                }
+                column += 1;
+
+
+                if (showCurrentStockLevel) {
+                    if (Objects.nonNull(key.getWarehouseId())) {
+                        row.createCell(column).setCellValue(numberService.format(quantitiesInStock.get(material.getId())));
+                    } else {
+                        row.createCell(column).setCellValue("");
+                    }
+
+                }
+            }
+        }
+        for (int i = 0; i < column; i++) {
+            sheet.autoSizeColumn((short) i);
+        }
+    }
+
+    private void addSimpleSeries(HSSFSheet sheet, Entity materialRequirement) {
         int rowNum = 1;
         List<Entity> orders = materialRequirement.getManyToManyField(MaterialRequirementFields.ORDERS);
         MrpAlgorithm algorithm = MrpAlgorithm.parseString(materialRequirement
@@ -97,7 +247,8 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
             HSSFRow row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(product.getStringField(ProductFields.NUMBER));
             row.createCell(1).setCellValue(product.getStringField(ProductFields.NAME));
-            row.createCell(2).setCellValue(numberService.setScaleWithDefaultMathContext(neededProductQuantity.getValue()).doubleValue());
+            row.createCell(2).setCellValue(
+                    numberService.setScaleWithDefaultMathContext(neededProductQuantity.getValue()).doubleValue());
             String unit = product.getStringField(ProductFields.UNIT);
             if (unit == null) {
                 row.createCell(3).setCellValue("");
@@ -114,6 +265,22 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
     @Override
     public String getReportTitle(final Locale locale) {
         return translationService.translate("materialRequirements.materialRequirement.report.title", locale);
+    }
+
+    private Map<String, MaterialRequirementEntry> getNeededProductQuantities(List<MaterialRequirementEntry> materials) {
+        Map<String, MaterialRequirementEntry> neededProductQuantities = Maps.newHashMap();
+        for (MaterialRequirementEntry mre : materials) {
+            String product = mre.getNumber();
+
+            if (neededProductQuantities.containsKey(product)) {
+                BigDecimal pQ = mre.getPlannedQuantity().add(neededProductQuantities.get(product).getPlannedQuantity());
+                mre.setPlannedQuantity(pQ);
+                neededProductQuantities.put(product, mre);
+            } else {
+                neededProductQuantities.put(product, mre);
+            }
+        }
+        return neededProductQuantities;
     }
 
 }

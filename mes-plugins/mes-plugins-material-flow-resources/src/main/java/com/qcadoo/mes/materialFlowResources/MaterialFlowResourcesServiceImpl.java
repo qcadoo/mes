@@ -38,8 +38,6 @@ import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -47,6 +45,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
@@ -124,6 +124,36 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
             sqb.setParameter("locationId", location.getId());
             sqb.setParameterList("productIds", products.stream().map(Entity::getId).collect(Collectors.toList()));
+
+            List<Entity> productsAndQuantities = sqb.list().getEntities();
+
+            productsAndQuantities.forEach(productAndQuantity -> quantities.put((Long) productAndQuantity.getField("product"),
+                    productAndQuantity.getDecimalField("quantity")));
+        }
+
+        return quantities;
+    }
+
+    @Override
+    public Map<Long, BigDecimal> getQuantitiesForProductIdsAndLocation(final List<Long> ids, final Long locationId) {
+        Map<Long, BigDecimal> quantities = Maps.newHashMap();
+
+        if (ids.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+
+            sb.append("SELECT p.id AS product, SUM(r.quantity) AS quantity ");
+            sb.append("FROM #materialFlowResources_resource AS r ");
+            sb.append("JOIN r.product AS p ");
+            sb.append("JOIN r.location AS l ");
+
+            sb.append("GROUP BY p.id, l.id ");
+            sb.append("HAVING p.id IN (:productIds) ");
+            sb.append("AND l.id = :locationId ");
+
+            SearchQueryBuilder sqb = getResourceDD().find(sb.toString());
+
+            sqb.setParameter("locationId", locationId);
+            sqb.setParameterList("productIds", ids);
 
             List<Entity> productsAndQuantities = sqb.list().getEntities();
 
