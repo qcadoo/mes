@@ -234,6 +234,8 @@
                     <layoutElement column="1" row="1">
                         <component type="grid" name="productsFlowComponent"
                                    model="operationProductInComponent" reference="productsFlowComponent">
+                            <option type="column" name="technologyInputProductType" fields="technologyInputProductType"
+                                    expression="#technologyInputProductType['name']" link="true" width="150"/>
                             <option type="column" name="productName" fields="product"
                                     expression="#product['name']" link="true" width="150"/>
                             <option type="column" name="operationComponent" fields="operationComponent"
@@ -253,9 +255,9 @@
                             <option type="correspondingComponent" value="form"/>
                             <option type="correspondingViewInModal" value="true"/>
                             <option type="searchable"
-                                    value="productName,componentsLocation,componentsOutputLocation,operationComponent"/>
+                                    value="productName,componentsLocation,componentsOutputLocation,operationComponent,technologyInputProductType"/>
                             <option type="orderable"
-                                    value="productName,componentsLocation,componentsOutputLocation,operationComponent"/>
+                                    value="productName,componentsLocation,componentsOutputLocation,operationComponent,technologyInputProductType"/>
 
                             <criteriaModifier
                                     class="com.qcadoo.mes.productFlowThruDivision.criteriaModifiers.ProductsFlowInCriteriaModifiers"
@@ -265,6 +267,8 @@
                     <layoutElement column="1" row="2">
                         <component type="grid" name="productsFlowIntermediateIn"
                                    model="operationProductInComponent" reference="productsFlowIntermediateIn">
+                            <option type="column" name="technologyInputProductType" fields="technologyInputProductType"
+                                    expression="#technologyInputProductType['name']" link="true" width="150"/>
                             <option type="column" name="productName" fields="product"
                                     expression="#product['name']" link="true" width="150"/>
                             <option type="column" name="operationComponent" fields="operationComponent"
@@ -282,9 +286,9 @@
                             <option type="correspondingComponent" value="form"/>
                             <option type="correspondingViewInModal" value="true"/>
                             <option type="searchable"
-                                    value="productName,productsFlowLocation,operationComponent,productionFlow"/>
+                                    value="productName,productsFlowLocation,operationComponent,productionFlow,technologyInputProductType"/>
                             <option type="orderable"
-                                    value="productName,productsFlowLocation,operationComponent,productionFlow"/>
+                                    value="productName,productsFlowLocation,operationComponent,productionFlow,technologyInputProductType"/>
 
                             <criteriaModifier
                                     class="com.qcadoo.mes.productFlowThruDivision.criteriaModifiers.ProductsFlowInCriteriaModifiers"
