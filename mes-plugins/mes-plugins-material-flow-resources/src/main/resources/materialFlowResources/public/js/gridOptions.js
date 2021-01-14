@@ -1633,6 +1633,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                     editable: false
                 },
                 {
+                    name: 'restAfterShiftDispositionAddUnit',
+                    index: 'restAfterShiftDispositionAddUnit',
+                    formatter: numberFormatter,
+                    unformat: numberUnformat,
+                    editable: false
+                },
+                {
                     name: 'batch',
                     index: 'batch',
                     editable: true,

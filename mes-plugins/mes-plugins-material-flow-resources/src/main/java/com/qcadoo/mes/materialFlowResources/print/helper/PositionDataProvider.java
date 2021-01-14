@@ -31,6 +31,7 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 
 import java.math.BigDecimal;
@@ -165,8 +166,14 @@ public class PositionDataProvider {
     }
 
     public static BigDecimal quantityAddDecimalValDifferencePrint(Entity position) {
-        if (Objects.nonNull(position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION))) {
-            return position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION).stripTrailingZeros();
+        if (Objects.nonNull(position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION))
+                || Objects.nonNull(position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION_ADD_UNIT))) {
+            BigDecimal gq = BigDecimalUtils.convertNullToZero(position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION));
+            BigDecimal gqAU = BigDecimalUtils.convertNullToZero(position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION_ADD_UNIT));
+            BigDecimal addDecimalVal = gq.multiply(convertNullToZero(position.getDecimalField(PositionFields.CONVERSION)));
+            addDecimalVal = addDecimalVal.add(gqAU);
+            addDecimalVal = addDecimalVal.setScale(5, RoundingMode.HALF_UP);
+            return addDecimalVal.stripTrailingZeros();
         }
         BigDecimal quantity = position.getDecimalField(PositionFields.GIVEN_QUANTITY);
         return quantity != null ? quantity.stripTrailingZeros() : BigDecimal.ZERO;
@@ -225,33 +232,35 @@ public class PositionDataProvider {
         BigDecimal givenQuantity = BigDecimal.ZERO;
         if (Objects.nonNull(position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION))) {
             givenQuantity = position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION).stripTrailingZeros();
+            return givenQuantity != null ? givenQuantity : BigDecimal.ZERO;
         } else {
             givenQuantity = position.getDecimalField(PositionFields.GIVEN_QUANTITY);
-        }
 
-        BigDecimal conversion = position.getDecimalField(PositionFields.CONVERSION);
-        BigDecimal amount = givenQuantity.divide(conversion, MathContext.DECIMAL64).setScale(5, RoundingMode.HALF_UP);
-        amount = amount.setScale(0, RoundingMode.DOWN);
-        return amount != null ? amount.stripTrailingZeros() : BigDecimal.ZERO;
+            BigDecimal conversion = position.getDecimalField(PositionFields.CONVERSION);
+            BigDecimal amount = givenQuantity.divide(conversion, MathContext.DECIMAL64).setScale(5, RoundingMode.HALF_UP);
+            amount = amount.setScale(0, RoundingMode.DOWN);
+            return amount != null ? amount.stripTrailingZeros() : BigDecimal.ZERO;
+        }
     }
 
     public static BigDecimal restNonZeroDecimalValDifference(Entity position) {
         BigDecimal gq = BigDecimal.ZERO;
-        if (Objects.nonNull(position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION))) {
+        if (Objects.nonNull(position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION_ADD_UNIT))) {
             gq = position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION).stripTrailingZeros();
+            return gq != null ? gq : BigDecimal.ZERO;
         } else {
             gq = position.getDecimalField(PositionFields.GIVEN_QUANTITY);
+
+            BigDecimal conversion = position.getDecimalField(PositionFields.CONVERSION);
+            BigDecimal amount = gq.divide(conversion, MathContext.DECIMAL64).setScale(5, RoundingMode.HALF_UP);
+            amount = amount.setScale(0, RoundingMode.DOWN);
+
+            BigDecimal wholeAmount = amount.multiply(convertNullToZero(position.getDecimalField(PositionFields.CONVERSION)));
+            BigDecimal rest = convertNullToZero(gq).subtract(wholeAmount, MathContext.DECIMAL64);
+            rest = rest.setScale(5, RoundingMode.HALF_UP);
+
+            return rest != null ? rest.stripTrailingZeros() : BigDecimal.ZERO;
         }
-
-        BigDecimal conversion = position.getDecimalField(PositionFields.CONVERSION);
-        BigDecimal amount = gq.divide(conversion, MathContext.DECIMAL64).setScale(5, RoundingMode.HALF_UP);
-        amount = amount.setScale(0, RoundingMode.DOWN);
-
-        BigDecimal wholeAmount = amount.multiply(convertNullToZero(position.getDecimalField(PositionFields.CONVERSION)));
-        BigDecimal rest = convertNullToZero(gq).subtract(wholeAmount, MathContext.DECIMAL64);
-        rest = rest.setScale(5, RoundingMode.HALF_UP);
-
-        return rest != null ? rest.stripTrailingZeros() : BigDecimal.ZERO;
     }
 
     public static BigDecimal restNonZeroDecimalVal(Entity position) {

@@ -487,6 +487,11 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             position.setField(PositionFields.POSITION_ATTRIBUTE_VALUES,
                     newPosition.getField(PositionFields.POSITION_ATTRIBUTE_VALUES));
         }
+        if (Objects.nonNull(newPosition.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION))
+                || Objects.nonNull(newPosition.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION_ADD_UNIT))) {
+            position.setField(PositionFields.REST_AFTER_SHIFT_DISPOSITION, newPosition.getField(PositionFields.REST_AFTER_SHIFT_DISPOSITION));
+            position.setField(PositionFields.REST_AFTER_SHIFT_DISPOSITION_ADD_UNIT, newPosition.getField(PositionFields.REST_AFTER_SHIFT_DISPOSITION_ADD_UNIT));
+        }
     }
 
     private Either<BigDecimal, List<Entity>> updateResources(final Entity warehouse, final Entity position,
@@ -504,7 +509,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         String givenUnit = position.getStringField(PositionFields.GIVEN_UNIT);
 
         for (Entity resource : resources) {
-            Entity newPosition = createNewPosition(position, product, resource);
+            Entity newPosition = createNewPosition(position, product, resource, newPositions.size());
 
             if (isFromOrder) {
                 quantity = recalculateQuantity(quantity, resource.getDecimalField(ResourceFields.CONVERSION), givenUnit,
@@ -565,7 +570,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 if (BigDecimal.ZERO.compareTo(quantity) == 0
                         || BigDecimal.ZERO.compareTo(calculationQuantityService.calculateAdditionalQuantity(quantity, conversion,
-                        givenUnit)) == 0) {
+                                givenUnit)) == 0) {
                     return Either.right(newPositions);
                 }
             } else {
@@ -675,7 +680,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         String givenUnit = position.getStringField(PositionFields.GIVEN_UNIT);
 
         for (Entity resource : resources) {
-            Entity newPosition = createNewPosition(position, product, resource);
+            Entity newPosition = createNewPosition(position, product, resource, newPositions.size());
 
             if (isFromOrder) {
                 quantity = recalculateQuantity(quantity, resource.getDecimalField(ResourceFields.CONVERSION), givenUnit,
@@ -736,7 +741,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                 if (BigDecimal.ZERO.compareTo(quantity) == 0
                         || BigDecimal.ZERO.compareTo(calculationQuantityService.calculateAdditionalQuantity(quantity, conversion,
-                        givenUnit)) == 0) {
+                                givenUnit)) == 0) {
                     if (!newResource.isValid()) {
                         copyResourceErrorsToPosition(newPosition, newResource);
                     }
@@ -1032,7 +1037,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                     + position.toString());
             LOGGER.info("RESOURCE USED: " + resource.toString());
 
-            Entity newPosition = createNewPosition(position, product, resource);
+            Entity newPosition = createNewPosition(position, product, resource, newPositions.size());
 
             newPosition.setField(PositionFields.RESOURCE, resource);
 
@@ -1067,7 +1072,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         return newPositions;
     }
 
-    private Entity createNewPosition(final Entity position, final Entity product, final Entity resource) {
+    private Entity createNewPosition(final Entity position, final Entity product, final Entity resource, int newPositionsCount) {
         Entity newPosition = position.getDataDefinition().create();
 
         newPosition.setField(PositionFields.PRODUCT, product);
@@ -1090,6 +1095,18 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         newPosition.setField(PositionFields.PICKING_DATE, position.getField(PositionFields.PICKING_DATE));
         newPosition.setField(PositionFields.POSITION_ATTRIBUTE_VALUES, prepareAttributes(resource));
 
+        if (Objects.nonNull(position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION))
+                || Objects.nonNull(position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION_ADD_UNIT))) {
+            if (newPositionsCount == 0) {
+                newPosition.setField(PositionFields.REST_AFTER_SHIFT_DISPOSITION,
+                        position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION));
+                newPosition.setField(PositionFields.REST_AFTER_SHIFT_DISPOSITION_ADD_UNIT,
+                        position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION_ADD_UNIT));
+            } else {
+                newPosition.setField(PositionFields.REST_AFTER_SHIFT_DISPOSITION, BigDecimal.ZERO);
+                newPosition.setField(PositionFields.REST_AFTER_SHIFT_DISPOSITION_ADD_UNIT, BigDecimal.ZERO);
+            }
+        }
         return newPosition;
     }
 
