@@ -31,6 +31,7 @@ import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.plugin.api.PluginManager;
 import com.qcadoo.testing.model.NumberServiceMock;
 import org.junit.Before;
 import org.junit.Test;
@@ -56,10 +57,16 @@ public class ProductsCostCalculationServiceTest {
     @Mock
     private Entity costCalculation;
 
+    @Mock
+    private Entity calculationResult;
+
     private Entity technology;
 
     @Mock
     private ProductQuantitiesService productQuantitiesService;
+
+    @Mock
+    private PluginManager pluginManager;
 
     @Before
     public void init() {
@@ -68,6 +75,7 @@ public class ProductsCostCalculationServiceTest {
         MockitoAnnotations.initMocks(this);
 
         ReflectionTestUtils.setField(productsCostCalculationService, "productQuantitiesService", productQuantitiesService);
+        ReflectionTestUtils.setField(productsCostCalculationService, "pluginManager", pluginManager);
         ReflectionTestUtils.setField(productsCostCalculationService, "numberService", NumberServiceMock.scaleAware());
 
         technology = mockEntity();
@@ -119,7 +127,8 @@ public class ProductsCostCalculationServiceTest {
         stubProductResults(ImmutableMap.of(1L, firstProduct, 2L, secondProduct));
 
         // when
-        BigDecimal actualValue = productsCostCalculationService.calculateTotalProductsCost(costCalculation, technology);
+        BigDecimal actualValue = productsCostCalculationService.calculateTotalProductsCost(costCalculation, technology,
+                calculationResult);
 
         // then
         assertTrue(String.format("expected %s but actual value is %s", BigDecimal.valueOf(255), actualValue),
@@ -147,7 +156,7 @@ public class ProductsCostCalculationServiceTest {
 
         // when
         BigDecimal result = productsCostCalculationService.calculateProductCostForGivenQuantity(product, quantity,
-                costFields.getMode());
+                costFields.getMode(), false);
 
         // then
         assertTrue(BigDecimalUtils.valueEquals(result, BigDecimal.valueOf(3L)));
@@ -166,7 +175,7 @@ public class ProductsCostCalculationServiceTest {
 
         // when
         BigDecimal result = productsCostCalculationService.calculateProductCostForGivenQuantity(product, quantity,
-                materialCostsUsed);
+                materialCostsUsed, false);
 
         // then
         assertTrue(BigDecimalUtils.valueEquals(result, BigDecimal.valueOf(30L)));

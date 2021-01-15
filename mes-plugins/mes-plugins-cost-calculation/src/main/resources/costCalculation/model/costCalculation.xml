@@ -119,6 +119,7 @@
 
 		<boolean name="isSetFieldsFromParameter"
 				 persistent="false"/>
+		<boolean name="includeComponents" default="true"/>
 	</fields>
 	<hooks>
 		<validatesWith

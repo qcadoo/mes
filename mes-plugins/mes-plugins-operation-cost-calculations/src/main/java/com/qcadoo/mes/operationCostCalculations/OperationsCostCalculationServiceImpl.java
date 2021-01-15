@@ -23,6 +23,18 @@
  */
 package com.qcadoo.mes.operationCostCalculations;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
@@ -33,21 +45,12 @@ import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
 import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimes;
 import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.ProductQuantitiesWithComponentsService;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
 import com.qcadoo.model.api.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static com.google.common.base.Preconditions.checkArgument;
+import com.qcadoo.plugin.api.PluginManager;
 
 @Service
 public class OperationsCostCalculationServiceImpl implements OperationsCostCalculationService {
@@ -92,6 +95,12 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     private ProductQuantitiesService productQuantitiesService;
 
     @Autowired
+    private ProductQuantitiesWithComponentsService productQuantitiesWithComponentsService;
+
+    @Autowired
+    private PluginManager pluginManager;
+
+    @Autowired
     private OperationWorkTimeService operationWorkTimeService;
 
     @Autowired
@@ -104,7 +113,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     public void calculateOperationsCost(final Entity costCalculation, boolean hourlyCostFromOperation, final Entity technology) {
         checkArgument(costCalculation != null, "entity is null");
 
-        DataDefinition costCalculationOrProductionBalanceDD = costCalculation.getDataDefinition();
+        DataDefinition costCalculationDataDefinition = costCalculation.getDataDefinition();
 
         BigDecimal quantity = BigDecimalUtils.convertNullToZero(costCalculation.getDecimalField(L_QUANTITY));
         BigDecimal productionCostMargin = BigDecimalUtils
@@ -113,16 +122,12 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         ProductQuantitiesHolder productQuantitiesAndOperationRuns = getProductQuantitiesAndOperationRuns(technology, quantity,
                 costCalculation);
 
-        Entity copyCostCalculationOrProductionBalance = operationCostCalculationTreeBuilder.copyTechnologyTree(costCalculation,
-                technology);
+        Entity copyCostCalculation = operationCostCalculationTreeBuilder.copyTechnologyTree(costCalculation, technology);
 
-        Entity yetAnotherCostCalculationOrProductionBalance = costCalculationOrProductionBalanceDD
-                .save(copyCostCalculationOrProductionBalance);
-        Entity newCostCalculationOrProductionBalance = costCalculationOrProductionBalanceDD
-                .get(yetAnotherCostCalculationOrProductionBalance.getId());
+        Entity yetAnotherCostCalculation = costCalculationDataDefinition.save(copyCostCalculation);
+        Entity newCostCalculation = costCalculationDataDefinition.get(yetAnotherCostCalculation.getId());
 
-        EntityTree calculationOperationComponents = newCostCalculationOrProductionBalance
-                .getTreeField(L_CALCULATION_OPERATION_COMPONENTS);
+        EntityTree calculationOperationComponents = newCostCalculation.getTreeField(L_CALCULATION_OPERATION_COMPONENTS);
 
         checkArgument(calculationOperationComponents != null, "given operation components is null");
 
@@ -148,7 +153,11 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
     }
 
     private ProductQuantitiesHolder getProductQuantitiesAndOperationRuns(final Entity technology, final BigDecimal quantity,
-            final Entity costCalculationOrProductionBalance) {
+            final Entity costCalculation) {
+        boolean includeComponents = costCalculation.getBooleanField("includeComponents");
+        if (pluginManager.isPluginEnabled("ordersForSubproductsGeneration") && includeComponents) {
+            return productQuantitiesWithComponentsService.getProductComponentQuantities(technology, quantity);
+        }
         return productQuantitiesService.getProductComponentQuantities(technology, quantity);
     }
 

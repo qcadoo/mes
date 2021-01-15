@@ -89,4 +89,6 @@ public final class CostCalculationFields {
 
     public static final String IS_SET_FIELDS_FROM_PARAMETER = "isSetFieldsFromParameter";
 
+    public static final String INCLUDE_COMPONENTS = "includeComponents";
+
 }

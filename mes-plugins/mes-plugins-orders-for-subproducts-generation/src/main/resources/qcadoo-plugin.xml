@@ -96,11 +96,7 @@
 
         <model:model-field plugin="orders" model="order">
             <model:hasMany name="children" model="order"
-                           joinField="parent" cascade="delete" copyable="false"/>
-        </model:model-field>
-
-        <model:model-field model="costCalculation" plugin="costCalculation">
-            <model:boolean name="includeComponents" default="true"/>
+                           joinField="parent" cascade="delete"/>
         </model:model-field>
 
         <view:view-hook plugin="orderSupplies"

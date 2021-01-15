@@ -28,8 +28,6 @@ public final class CostCalculationFieldsOFSPG {
     private CostCalculationFieldsOFSPG() {
     }
 
-    public static final String INCLUDE_COMPONENTS = "includeComponents";
-
     public static final String NOMINAL_COSTS_FOR_COMPONENTS = "nominalCostsForComponent";
 
     public static final String SAVE_COSTS_EXTENSION = "saveCostsExtension";

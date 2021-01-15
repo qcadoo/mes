@@ -62,29 +62,24 @@ public class CostCalculationMaterialsService {
             BigDecimal productQuantity = neededProductQuantity.getValue();
 
             BigDecimal costForGivenQuantity = productsCostCalculationService.calculateProductCostForGivenQuantity(product,
-                    productQuantity, costCalculation.getStringField(CostCalculationFields.MATERIAL_COSTS_USED));
+                    productQuantity, costCalculation.getStringField(CostCalculationFields.MATERIAL_COSTS_USED),
+                    costCalculation.getBooleanField(CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED));
 
             BigDecimal materialCostMargin = costCalculation.getDecimalField(CostCalculationFields.MATERIAL_COST_MARGIN);
 
             if (materialCostMargin == null) {
-
                 list.add(new CostCalculationMaterial(product.getStringField(ProductFields.NUMBER),
                         product.getStringField(ProductFields.UNIT), productQuantity, costForGivenQuantity));
             } else {
                 BigDecimal toAdd = costForGivenQuantity.multiply(materialCostMargin.divide(new BigDecimal(100), mathContext),
                         mathContext);
                 list.add(new CostCalculationMaterial(product.getStringField(ProductFields.NUMBER),
-                        product.getStringField(ProductFields.UNIT), productQuantity, costForGivenQuantity, costForGivenQuantity.add(toAdd, mathContext), toAdd));
+                        product.getStringField(ProductFields.UNIT), productQuantity, costForGivenQuantity,
+                        costForGivenQuantity.add(toAdd, mathContext), toAdd));
             }
 
         }
-        list.sort(new Comparator<CostCalculationMaterial>() {
-
-            @Override
-            public int compare(CostCalculationMaterial o1, CostCalculationMaterial o2) {
-                return o1.getCostForGivenQuantity().compareTo(o2.getCostForGivenQuantity());
-            }
-        });
+        list.sort(Comparator.comparing(CostCalculationMaterial::getCostForGivenQuantity));
         return list;
     }
 }

@@ -5,6 +5,8 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.costCalculation.constants.CalculationResultFields;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
+import com.qcadoo.mes.costCalculation.print.utils.CostCalculationMaterial;
+import com.qcadoo.mes.costNormsForMaterials.ProductsCostCalculationService;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 @Service
 public class CostCalculationXlsService extends XlsDocumentService {
@@ -28,6 +31,12 @@ public class CostCalculationXlsService extends XlsDocumentService {
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private CostCalculationMaterialsService costCalculationMaterialsService;
+
+    @Autowired
+    private ProductsCostCalculationService productsCostCalculationService;
 
     private static final List<String> CALCULATION_RESULTS_HEADERS = Lists.newArrayList("technologyNumber", "technologyName",
             "productNumber", "quantity", "unit", "materialCosts", "labourCost", "productionCosts", "materialCostMargin",
@@ -63,6 +72,10 @@ public class CostCalculationXlsService extends XlsDocumentService {
 
     @Override
     protected void addExtraSheets(final HSSFWorkbook workbook, Entity entity, Locale locale) {
+        createMaterialCostsSheet(entity,
+                createSheet(workbook,
+                        translationService.translate("costCalculation.costCalculation.report.xls.sheet.materialCosts", locale)),
+                locale);
     }
 
     private void createCalculationResultsSheet(HSSFSheet sheet, Entity costCalculation, StylesContainer stylesContainer) {
@@ -107,6 +120,63 @@ public class CostCalculationXlsService extends XlsDocumentService {
         }
 
         for (int i = 0; i < CALCULATION_RESULTS_HEADERS.size(); i++) {
+            sheet.autoSizeColumn(i, false);
+        }
+    }
+
+    private void createMaterialCostsSheet(Entity entity, HSSFSheet sheet, Locale locale) {
+        final FontsContainer fontsContainer = new FontsContainer(sheet.getWorkbook());
+        final StylesContainer stylesContainer = new StylesContainer(sheet.getWorkbook(), fontsContainer);
+        final int rowOffset = 1;
+        HSSFRow row = sheet.createRow(0);
+        createHeaderCell(stylesContainer, row, translationService
+                .translate("costCalculation.costCalculation.report.xls.sheet.materialCosts.technologyNumber", locale), 0);
+        createHeaderCell(stylesContainer, row, translationService
+                .translate("costCalculation.costCalculation.report.xls.sheet.materialCosts.productNumber", locale), 1);
+        createHeaderCell(stylesContainer, row, translationService.translate(
+                "costCalculation.costCalculation.report.xls.sheet.materialCosts.technologyInputProductType", locale), 2);
+        createHeaderCell(stylesContainer, row, translationService.translate(
+                "costCalculation.costCalculation.report.xls.sheet.materialCosts.differentProductsInDifferentSizes", locale), 3);
+        createHeaderCell(stylesContainer, row, translationService
+                .translate("costCalculation.costCalculation.report.xls.sheet.materialCosts.componentNumber", locale), 4);
+        createHeaderCell(stylesContainer, row, translationService
+                .translate("costCalculation.costCalculation.report.xls.sheet.materialCosts.componentName", locale), 5);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate("costCalculation.costCalculation.report.xls.sheet.materialCosts.quantity", locale),
+                6);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate("costCalculation.costCalculation.report.xls.sheet.materialCosts.unit", locale), 7);
+        createHeaderCell(stylesContainer, row, translationService
+                .translate("costCalculation.costCalculation.report.xls.sheet.materialCosts.costPerUnit", locale), 8);
+        createHeaderCell(stylesContainer, row,
+                translationService.translate("costCalculation.costCalculation.report.xls.sheet.materialCosts.cost", locale), 9);
+
+        int rowCounter = 0;
+        BigDecimal quantity = entity.getDecimalField(CostCalculationFields.QUANTITY);
+        for (Entity technology : entity.getHasManyField(CostCalculationFields.TECHNOLOGIES)) {
+            Map<Long, BigDecimal> neededProductQuantities = productsCostCalculationService.getNeededProductQuantities(entity,
+                    technology, quantity);
+
+            List<CostCalculationMaterial> sortedMaterials = costCalculationMaterialsService
+                    .getSortedMaterialsFromProductQuantities(entity, neededProductQuantities);
+
+            for (CostCalculationMaterial materialCost : sortedMaterials) {
+                row = sheet.createRow(rowOffset + rowCounter);
+                createRegularCell(stylesContainer, row, 0, technology.getStringField(TechnologyFields.NUMBER));
+                createRegularCell(stylesContainer, row, 1,
+                        technology.getBelongsToField(TechnologyFields.PRODUCT).getStringField(ProductFields.NUMBER));
+                createRegularCell(stylesContainer, row, 2, "");
+                createRegularCell(stylesContainer, row, 3, "");
+                createRegularCell(stylesContainer, row, 4, materialCost.getProductNumber());
+                createRegularCell(stylesContainer, row, 5, "");
+                createNumericCell(stylesContainer, row, 6, materialCost.getProductQuantity());
+                createRegularCell(stylesContainer, row, 7, materialCost.getUnit());
+                createNumericCell(stylesContainer, row, 8, BigDecimal.ZERO);
+                createNumericCell(stylesContainer, row, 9, materialCost.getCostForGivenQuantity());
+                rowCounter++;
+            }
+        }
+        for (int i = 0; i <= 9; i++) {
             sheet.autoSizeColumn(i, false);
         }
     }

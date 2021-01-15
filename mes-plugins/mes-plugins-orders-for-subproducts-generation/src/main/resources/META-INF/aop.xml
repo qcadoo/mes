@@ -29,6 +29,5 @@
     <aspects>
         <aspect name="com.qcadoo.mes.ordersForSubproductsGeneration.OrdersFromMOProductsGenerationServiceOverrideAspect"/>
         <aspect name="com.qcadoo.mes.ordersForSubproductsGeneration.productionScheduling.aop.OperationDurationDetailsInOrderListenersOFSPGOverrideAspect"/>
-    	<aspect name="com.qcadoo.mes.ordersForSubproductsGeneration.costCalculation.aop.OperationsCostCalculationServiceImplOFSPGAspect" />
     </aspects>
 </aspectj>
