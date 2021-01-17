@@ -245,8 +245,8 @@ public class TechnologyValidationService {
         return operations;
     }
 
-    private boolean checkIfAtLeastOneCommonElement(final List<Entity> operationProductInComponents,
-            final List<Entity> operationProductOutComponents) {
+    private boolean checkIfAtLeastOneCommonElement(final List<Entity> operationProductOutComponents,
+            final List<Entity> operationProductInComponents) {
         for (Entity operationProductOutComponent : operationProductOutComponents) {
             for (Entity operationProductInComponent : operationProductInComponents) {
                 Entity product = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
