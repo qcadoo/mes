@@ -26,6 +26,7 @@ package com.qcadoo.mes.orderSupplies.coverage;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
@@ -34,15 +35,42 @@ import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.orderSupplies.OrderSuppliesService;
-import com.qcadoo.mes.orderSupplies.constants.*;
+import com.qcadoo.mes.orderSupplies.constants.CoverageLocationFields;
+import com.qcadoo.mes.orderSupplies.constants.CoverageOrderStateFields;
+import com.qcadoo.mes.orderSupplies.constants.CoverageProductFields;
+import com.qcadoo.mes.orderSupplies.constants.CoverageProductLoggingEventType;
+import com.qcadoo.mes.orderSupplies.constants.CoverageProductLoggingFields;
+import com.qcadoo.mes.orderSupplies.constants.CoverageProductLoggingState;
+import com.qcadoo.mes.orderSupplies.constants.CoverageProductState;
+import com.qcadoo.mes.orderSupplies.constants.CoverageRegisterFields;
+import com.qcadoo.mes.orderSupplies.constants.CoverageType;
+import com.qcadoo.mes.orderSupplies.constants.MaterialRequirementCoverageFields;
+import com.qcadoo.mes.orderSupplies.constants.OrderSuppliesConstants;
+import com.qcadoo.mes.orderSupplies.constants.ProductType;
 import com.qcadoo.mes.orderSupplies.register.RegisterService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
+
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,11 +80,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 @Service
 public class MaterialRequirementCoverageServiceImpl implements MaterialRequirementCoverageService {
@@ -87,10 +110,19 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
     @Autowired
     private DeliveriesService deliveriesService;
 
+    @Autowired
+    private ParameterService parameterService;
+
+    @Autowired
+    private MaterialRequirementCoverageHelper materialRequirementCoverageHelper;
+
     @Transactional
     @Override
     public void estimateProductCoverageInTime(final Entity materialRequirementCoverage) {
         LOG.info("Start generation material requirement - id : " + materialRequirementCoverage.getId());
+
+        boolean coverageBasedOnProductionCounting = parameterService.getParameter().getBooleanField(
+                "coverageBasedOnProductionCounting");
 
         Date coverageToDate = materialRequirementCoverage.getDateField(MaterialRequirementCoverageFields.COVERAGE_TO_DATE);
         Date actualDate = materialRequirementCoverage.getDateField(MaterialRequirementCoverageFields.ACTUAL_DATE);
@@ -115,17 +147,24 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
             orderStates = Collections.emptyList();
         }
 
-        fillFromRegistry(productAndCoverageProducts, coverageToDate, actualDate, orderStates);
+        if (coverageBasedOnProductionCounting) {
+            Entity assignedOrder = materialRequirementCoverage.getBelongsToField(L_ORDER);
+            fillFromProductionCounting(productAndCoverageProducts, assignedOrder, coverageToDate, actualDate, orderStates);
+        } else {
+            fillFromRegistry(productAndCoverageProducts, coverageToDate, actualDate, orderStates);
 
-        Entity assignedOrder = materialRequirementCoverage.getBelongsToField(L_ORDER);
+            Entity assignedOrder = materialRequirementCoverage.getBelongsToField(L_ORDER);
 
-        if (!orderStates.isEmpty() && Objects.nonNull(assignedOrder)) {
-            Optional<Entity> maybeState = orderStates.stream().filter(state -> state
-                    .getStringField(CoverageOrderStateFields.STATE).equals(assignedOrder.getStringField(OrderFields.STATE)))
-                    .findAny();
-            if (!maybeState.isPresent()) {
-                fillFromRegistryAssignedOrder(productAndCoverageProducts, assignedOrder, coverageToDate, actualDate);
+            if (!orderStates.isEmpty() && Objects.nonNull(assignedOrder)) {
+                Optional<Entity> maybeState = orderStates
+                        .stream()
+                        .filter(state -> state.getStringField(CoverageOrderStateFields.STATE).equals(
+                                assignedOrder.getStringField(OrderFields.STATE))).findAny();
+                if (!maybeState.isPresent()) {
+                    fillFromRegistryAssignedOrder(productAndCoverageProducts, assignedOrder, coverageToDate, actualDate);
+                }
             }
+
         }
 
         estimateProductLocationsInTime(materialRequirementCoverage, productAndCoverageProducts, coverageLocations, actualDate);
@@ -133,7 +172,11 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
         estimateProductDeliveriesInTime(materialRequirementCoverage, productAndCoverageProducts, includedDeliveries, actualDate,
                 coverageToDate, includeDraftDeliveries);
 
-        estimateProductProducedInTime(productAndCoverageProducts, coverageToDate, actualDate, orderStates);
+        if (coverageBasedOnProductionCounting) {
+            estimateProductProducedInTimeFromPQ(productAndCoverageProducts, coverageToDate, actualDate, orderStates);
+        } else {
+            estimateProductProducedInTime(productAndCoverageProducts, coverageToDate, actualDate, orderStates);
+        }
 
         additionalProcessProductCoverage(materialRequirementCoverage, productAndCoverageProducts);
 
@@ -146,6 +189,42 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
         saveCoverage(materialRequirementCoverage, filterCoverageProducts(productAndCoverageProducts, coverageType));
 
         LOG.info("Finish generation material requirement - id : " + materialRequirementCoverage.getId());
+    }
+
+    private void estimateProductProducedInTimeFromPQ(final Map<Long, Entity> productAndCoverageProducts,
+            final Date coverageToDate, final Date actualDate, final List<Entity> orderStates) {
+
+        List<String> states = Lists.newArrayList();
+
+        if (orderStates != null && !orderStates.isEmpty()) {
+            states = orderStates.stream().map(o -> o.getStringField(CoverageOrderStateFields.STATE)).collect(Collectors.toList());
+        }
+
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT registry FROM #orderSupplies_productionCountingQuantityOutput AS registry ");
+
+        query.append("WHERE registry.finishDate <= :dateTo ");
+
+        if (!states.isEmpty()) {
+            query.append("AND orderState IN (:states)");
+        }
+
+        SearchQueryBuilder queryBuilder = getCoverageRegisterDD().find(query.toString()).setParameter("dateTo", coverageToDate);
+
+        if (!states.isEmpty()) {
+            queryBuilder.setParameterList("states", states);
+        }
+
+        List<Entity> regs = queryBuilder.list().getEntities();
+
+        for (Entity reg : regs) {
+            if (BigDecimal.ZERO.compareTo(reg.getDecimalField(CoverageRegisterFields.QUANTITY)) < 0) {
+                Entity coverageProductLogging = materialRequirementCoverageHelper.createProductLoggingForOrderProduced(reg, actualDate, coverageToDate);
+
+                materialRequirementCoverageHelper.fillCoverageProductForOrderProduced(productAndCoverageProducts, Long.valueOf(reg.getIntegerField("productId")),
+                        coverageProductLogging);
+            }
+        }
     }
 
     private void estimateProductProducedInTime(final Map<Long, Entity> productAndCoverageProducts, final Date coverageToDate,
@@ -200,14 +279,14 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
             final Entity coverageProductLogging) {
         Entity addedCoverageProduct = productAndCoverageProducts.get(product.getId());
 
-        BigDecimal demandQuantity = BigDecimalUtils
-                .convertNullToZero(addedCoverageProduct.getDecimalField(CoverageProductFields.PRODUCE_QUANTITY));
+        BigDecimal demandQuantity = BigDecimalUtils.convertNullToZero(addedCoverageProduct
+                .getDecimalField(CoverageProductFields.PRODUCE_QUANTITY));
 
         demandQuantity = demandQuantity.add(coverageProductLogging.getDecimalField(CoverageProductLoggingFields.CHANGES),
                 numberService.getMathContext());
 
-        List<Entity> coverageProductLoggings = Lists
-                .newArrayList(addedCoverageProduct.getHasManyField(CoverageProductFields.COVERAGE_PRODUCT_LOGGINGS));
+        List<Entity> coverageProductLoggings = Lists.newArrayList(addedCoverageProduct
+                .getHasManyField(CoverageProductFields.COVERAGE_PRODUCT_LOGGINGS));
         coverageProductLoggings.add(coverageProductLogging);
 
         addedCoverageProduct.setField(CoverageProductFields.PRODUCE_QUANTITY,
@@ -221,8 +300,11 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
             final Date coverageToDate) {
         Entity coverageProductLogging = orderSuppliesService.getCoverageProductLoggingDD().create();
 
-        coverageProductLogging.setField(CoverageProductLoggingFields.DATE, getCoverageProductLoggingDateForOrderProduced(
-                registerEntry.getDateField(CoverageRegisterFields.DATE), actualDate));
+        coverageProductLogging
+                .setField(
+                        CoverageProductLoggingFields.DATE,
+                        getCoverageProductLoggingDateForOrderProduced(registerEntry.getDateField(CoverageRegisterFields.DATE),
+                                actualDate));
         coverageProductLogging.setField(CoverageProductLoggingFields.ORDER, registerEntry.getBelongsToField("order"));
         coverageProductLogging.setField(CoverageProductLoggingFields.OPERATION, registerEntry.getBelongsToField("operation"));
         coverageProductLogging.setField(CoverageProductLoggingFields.CHANGES,
@@ -422,6 +504,63 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
                 .collect(Collectors.toList());
     }
 
+    private void fillFromProductionCounting(final Map<Long, Entity> productAndCoverageProducts, Entity assignedOrder, final Date coverageToDate,
+            final Date actualDate, final List<Entity> orderStates) {
+        List<String> states = Lists.newArrayList();
+
+        if (!orderStates.isEmpty()) {
+            states = orderStates.stream().map(order -> order.getStringField(CoverageOrderStateFields.STATE))
+                    .collect(Collectors.toList());
+        }
+
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT registry FROM #orderSupplies_productionCountingQuantityInput AS registry ");
+
+        query.append("WHERE registry.startDate <= :dateTo ");
+
+        boolean appendOrderId = false;
+
+        if (!states.isEmpty()) {
+            if(Objects.nonNull(assignedOrder)) {
+                Optional<Entity> maybeState = orderStates
+                        .stream()
+                        .filter(state -> state.getStringField(CoverageOrderStateFields.STATE).equals(
+                                assignedOrder.getStringField(OrderFields.STATE))).findAny();
+                if (!maybeState.isPresent()) {
+                    query.append("AND (orderState IN (:states) OR orderId = :orderId) ");
+                    appendOrderId = true;
+                } else {
+                    query.append("AND orderState IN (:states)");
+                }
+            } else {
+                query.append("AND orderState IN (:states)");
+            }
+
+        }
+
+        SearchQueryBuilder queryBuilder = getCoverageRegisterDD().find(query.toString()).setParameter("dateTo", coverageToDate);
+
+        if (!states.isEmpty()) {
+            queryBuilder.setParameterList("states", states);
+        }
+
+        if(appendOrderId) {
+            queryBuilder.setLong("orderId", assignedOrder.getId());
+        }
+
+        List<Entity> regs = queryBuilder.list().getEntities();
+
+        for (Entity reg : regs) {
+            if (BigDecimal.ZERO.compareTo(reg.getDecimalField(CoverageRegisterFields.QUANTITY)) < 0) {
+                Entity coverageProductLogging = materialRequirementCoverageHelper.createCoverageProductLoggingForOrder(reg,
+                        actualDate);
+
+                materialRequirementCoverageHelper.fillCoverageProductForOrder(productAndCoverageProducts,
+                        reg.getIntegerField("productId"), reg.getStringField("productType"), coverageProductLogging);
+            }
+        }
+    }
+
     private void fillFromRegistry(final Map<Long, Entity> productAndCoverageProducts, final Date coverageToDate,
             final Date actualDate, final List<Entity> orderStates) {
         List<String> states = Lists.newArrayList();
@@ -464,9 +603,9 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
 
     private void fillFromRegistryAssignedOrder(final Map<Long, Entity> productAndCoverageProducts, final Entity assignedOrder,
             final Date coverageToDate, final Date actualDate) {
-        String query = "SELECT registry FROM #orderSupplies_coverageRegister AS registry " +
-                "WHERE registry.date <= :dateTo AND eventType IN ('04orderInput','03operationInput') " +
-                "AND order_id = :orderId ";
+        String query = "SELECT registry FROM #orderSupplies_coverageRegister AS registry "
+                + "WHERE registry.date <= :dateTo AND eventType IN ('04orderInput','03operationInput') "
+                + "AND order_id = :orderId ";
         SearchQueryBuilder queryBuilder = getCoverageRegisterDD().find(query).setParameter("dateTo", coverageToDate);
 
         queryBuilder.setParameter("orderId", assignedOrder.getId());
@@ -524,8 +663,8 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
             }
 
             for (Entity deliveryProduct : deliveryProducts) {
-                estimateProductDelivery(productAndCoverageProducts,
-                        new CoverageProductForDelivery(coverageDate, delivery, deliveryProduct));
+                estimateProductDelivery(productAndCoverageProducts, new CoverageProductForDelivery(coverageDate, delivery,
+                        deliveryProduct));
             }
         }
     }
@@ -600,14 +739,14 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
             final Entity coverageProductLogging) {
         Entity addedCoverageProduct = productAndCoverageProducts.get(product.getId());
 
-        BigDecimal deliveredQuantity = BigDecimalUtils
-                .convertNullToZero(addedCoverageProduct.getDecimalField(CoverageProductFields.DELIVERED_QUANTITY));
+        BigDecimal deliveredQuantity = BigDecimalUtils.convertNullToZero(addedCoverageProduct
+                .getDecimalField(CoverageProductFields.DELIVERED_QUANTITY));
 
         deliveredQuantity = deliveredQuantity.add(coverageProductLogging.getDecimalField(CoverageProductLoggingFields.CHANGES),
                 numberService.getMathContext());
 
-        List<Entity> coverageProductLoggings = Lists
-                .newArrayList(addedCoverageProduct.getHasManyField(CoverageProductFields.COVERAGE_PRODUCT_LOGGINGS));
+        List<Entity> coverageProductLoggings = Lists.newArrayList(addedCoverageProduct
+                .getHasManyField(CoverageProductFields.COVERAGE_PRODUCT_LOGGINGS));
         coverageProductLoggings.add(coverageProductLogging);
 
         addedCoverageProduct.setField(CoverageProductFields.DELIVERED_QUANTITY,
@@ -646,14 +785,14 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
             final String productType, final Entity coverageProductLogging) {
         Entity addedCoverageProduct = productAndCoverageProducts.get(product.getId());
 
-        BigDecimal demandQuantity = BigDecimalUtils
-                .convertNullToZero(addedCoverageProduct.getDecimalField(CoverageProductFields.DEMAND_QUANTITY));
+        BigDecimal demandQuantity = BigDecimalUtils.convertNullToZero(addedCoverageProduct
+                .getDecimalField(CoverageProductFields.DEMAND_QUANTITY));
 
         demandQuantity = demandQuantity.add(coverageProductLogging.getDecimalField(CoverageProductLoggingFields.CHANGES),
                 numberService.getMathContext());
 
-        List<Entity> coverageProductLoggings = Lists
-                .newArrayList(addedCoverageProduct.getHasManyField(CoverageProductFields.COVERAGE_PRODUCT_LOGGINGS));
+        List<Entity> coverageProductLoggings = Lists.newArrayList(addedCoverageProduct
+                .getHasManyField(CoverageProductFields.COVERAGE_PRODUCT_LOGGINGS));
         coverageProductLoggings.add(coverageProductLogging);
 
         addedCoverageProduct.setField(CoverageProductFields.DEMAND_QUANTITY,
@@ -681,19 +820,19 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
 
             List<Entity> resources = getResourceDD().find(sql).setParameter("locationId", location.getId()).list().getEntities();
 
-            Map<Long, BigDecimal> map = resources.stream()
-                    .collect(Collectors.toMap(res -> (Long) res.getField("product"), res -> res.getDecimalField("quantity")));
+            Map<Long, BigDecimal> map = resources.stream().collect(
+                    Collectors.toMap(res -> (Long) res.getField("product"), res -> res.getDecimalField("quantity")));
 
             for (Entry<Long, Entity> productAndCoverageProduct : productAndCoverageProducts.entrySet()) {
                 Entity addedCoverageProduct = productAndCoverageProduct.getValue();
 
                 BigDecimal locationsQuantity = BigDecimalUtils.convertNullToZero(map.get(productAndCoverageProduct.getKey()));
                 Entity coverageProductLogging = createCoverageProductLoggingForLocations(location, actualDate, locationsQuantity);
-                List<Entity> coverageProductLoggings = Lists
-                        .newArrayList(addedCoverageProduct.getHasManyField(CoverageProductFields.COVERAGE_PRODUCT_LOGGINGS));
+                List<Entity> coverageProductLoggings = Lists.newArrayList(addedCoverageProduct
+                        .getHasManyField(CoverageProductFields.COVERAGE_PRODUCT_LOGGINGS));
                 coverageProductLoggings.add(coverageProductLogging);
-                BigDecimal lQuantity = BigDecimalUtils
-                        .convertNullToZero(addedCoverageProduct.getDecimalField(CoverageProductFields.LOCATIONS_QUANTITY));
+                BigDecimal lQuantity = BigDecimalUtils.convertNullToZero(addedCoverageProduct
+                        .getDecimalField(CoverageProductFields.LOCATIONS_QUANTITY));
 
                 lQuantity = lQuantity.add(locationsQuantity, numberService.getMathContext());
                 addedCoverageProduct.setField(CoverageProductFields.LOCATIONS_QUANTITY, lQuantity);
@@ -718,13 +857,15 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
     }
 
     private void fillCoverageProductSupplier(final Map<Long, Entity> productAndCoverageProducts) {
-        productAndCoverageProducts.values().stream()
-                .filter(coverageProduct -> CoverageProductState.LACK.getStringValue()
-                        .equals(coverageProduct.getStringField(CoverageProductFields.STATE)))
-                .forEach(coverageProduct -> deliveriesService
-                        .getDefaultSupplierWithIntegration(
-                                coverageProduct.getBelongsToField(CoverageProductFields.PRODUCT).getId())
-                        .ifPresent(supplier -> coverageProduct.setField(CoverageProductFields.COMPANY, supplier)));
+        productAndCoverageProducts
+                .values()
+                .stream()
+                .filter(coverageProduct -> CoverageProductState.LACK.getStringValue().equals(
+                        coverageProduct.getStringField(CoverageProductFields.STATE)))
+                .forEach(
+                        coverageProduct -> deliveriesService.getDefaultSupplierWithIntegration(
+                                coverageProduct.getBelongsToField(CoverageProductFields.PRODUCT).getId()).ifPresent(
+                                supplier -> coverageProduct.setField(CoverageProductFields.COMPANY, supplier)));
     }
 
     private void fillCoverageProductStatesAndQuantities(final Map<Long, Entity> productAndCoverageProducts) {
@@ -737,14 +878,14 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
     }
 
     private void fillCoverageProductQuantities(final Entity coverageProduct) {
-        BigDecimal demandQuantity = BigDecimalUtils
-                .convertNullToZero(coverageProduct.getDecimalField(CoverageProductFields.DEMAND_QUANTITY));
-        BigDecimal deliveredQuantity = BigDecimalUtils
-                .convertNullToZero(coverageProduct.getDecimalField(CoverageProductFields.DELIVERED_QUANTITY));
-        BigDecimal locationsQuantity = BigDecimalUtils
-                .convertNullToZero(coverageProduct.getDecimalField(CoverageProductFields.LOCATIONS_QUANTITY));
-        BigDecimal produceQuantity = BigDecimalUtils
-                .convertNullToZero(coverageProduct.getDecimalField(CoverageProductFields.PRODUCE_QUANTITY));
+        BigDecimal demandQuantity = BigDecimalUtils.convertNullToZero(coverageProduct
+                .getDecimalField(CoverageProductFields.DEMAND_QUANTITY));
+        BigDecimal deliveredQuantity = BigDecimalUtils.convertNullToZero(coverageProduct
+                .getDecimalField(CoverageProductFields.DELIVERED_QUANTITY));
+        BigDecimal locationsQuantity = BigDecimalUtils.convertNullToZero(coverageProduct
+                .getDecimalField(CoverageProductFields.LOCATIONS_QUANTITY));
+        BigDecimal produceQuantity = BigDecimalUtils.convertNullToZero(coverageProduct
+                .getDecimalField(CoverageProductFields.PRODUCE_QUANTITY));
 
         BigDecimal coveredQuantity = deliveredQuantity.add(locationsQuantity, numberService.getMathContext());
         coveredQuantity = coveredQuantity.add(produceQuantity, numberService.getMathContext());
@@ -779,18 +920,18 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
     }
 
     private void fillCoverageProductLoggingsStates(final Entity coverageProduct) {
-        List<Entity> coverageProductLoggings = Lists
-                .newLinkedList(coverageProduct.getHasManyField(CoverageProductFields.COVERAGE_PRODUCT_LOGGINGS));
+        List<Entity> coverageProductLoggings = Lists.newLinkedList(coverageProduct
+                .getHasManyField(CoverageProductFields.COVERAGE_PRODUCT_LOGGINGS));
         Collections.sort(coverageProductLoggings, new Comparator<Entity>() {
 
             @Override
             public int compare(final Entity entity1, final Entity entity2) {
-                return ComparisonChain.start()
+                return ComparisonChain
+                        .start()
                         .compare(entity1.getDateField(CoverageProductLoggingFields.DATE),
                                 entity2.getDateField(CoverageProductLoggingFields.DATE))
                         .compare(entity2.getStringField(CoverageProductLoggingFields.EVENT_TYPE),
-                                entity1.getStringField(CoverageProductLoggingFields.EVENT_TYPE))
-                        .result();
+                                entity1.getStringField(CoverageProductLoggingFields.EVENT_TYPE)).result();
             }
         });
 
@@ -883,7 +1024,9 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
 
     private List<Entity> getDeliveriesFromDB(final Date coverageToDate, final boolean includeDraftDeliveries) {
         if (includeDraftDeliveries) {
-            return getDeliveryDD().find().add(SearchRestrictions.le(DeliveryFields.DELIVERY_DATE, coverageToDate))
+            return getDeliveryDD()
+                    .find()
+                    .add(SearchRestrictions.le(DeliveryFields.DELIVERY_DATE, coverageToDate))
                     .add(SearchRestrictions.or(SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.DRAFT),
                             SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.PREPARED),
                             SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.DURING_CORRECTION),
@@ -891,7 +1034,9 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
                             SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.RECEIVE_CONFIRM_WAITING)))
                     .add(SearchRestrictions.eq(DeliveryFields.ACTIVE, true)).list().getEntities();
         } else {
-            return getDeliveryDD().find().add(SearchRestrictions.le(DeliveryFields.DELIVERY_DATE, coverageToDate))
+            return getDeliveryDD()
+                    .find()
+                    .add(SearchRestrictions.le(DeliveryFields.DELIVERY_DATE, coverageToDate))
                     .add(SearchRestrictions.or(SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.APPROVED),
                             SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.RECEIVE_CONFIRM_WAITING)))
                     .add(SearchRestrictions.eq(DeliveryFields.ACTIVE, true)).list().getEntities();
@@ -909,8 +1054,8 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
     }
 
     private DataDefinition getCoverageRegisterDD() {
-        return dataDefinitionService.get(OrderSuppliesConstants.PLUGIN_IDENTIFIER,
-                OrderSuppliesConstants.MODEL_COVERAGE_REGISTER);
+        return dataDefinitionService
+                .get(OrderSuppliesConstants.PLUGIN_IDENTIFIER, OrderSuppliesConstants.MODEL_COVERAGE_REGISTER);
     }
 
     private DataDefinition getResourceDD() {
