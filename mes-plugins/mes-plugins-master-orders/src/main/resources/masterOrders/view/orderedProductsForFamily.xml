@@ -59,7 +59,7 @@
                             <option type="column" name="orderedQuantity" fields="orderedQuantity" width="40"/>
                             <option type="column" name="productUnit" fields="product" expression="#product['unit']" width="30"/>
 
-                            <option type="order" column="productNumber" direction="asc"/>
+                            <option type="order" column="productSize" direction="asc"/>
 
                             <option type="footerRow" value="true"/>
                             <option type="columnsToSummary" value="orderedQuantity"/>

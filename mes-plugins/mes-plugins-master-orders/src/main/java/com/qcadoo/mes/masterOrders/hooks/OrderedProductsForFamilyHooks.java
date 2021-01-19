@@ -2,6 +2,7 @@ package com.qcadoo.mes.masterOrders.hooks;
 
 import com.beust.jcommander.internal.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.SizeFields;
 import com.qcadoo.mes.masterOrders.constants.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -48,7 +49,10 @@ public class OrderedProductsForFamilyHooks {
         List<Entity> salesPlanProducts = Lists.newArrayList();
         DataDefinition salesPlanProductDD = getSalesPlanProductDD();
         for (Entity child : product.getHasManyField(ProductFields.PRODUCT_FAMILY_CHILDRENS).stream()
-                .sorted(Comparator.comparing(e -> e.getStringField(ProductFields.NUMBER))).collect(Collectors.toList())) {
+                .sorted(Comparator.comparing(e -> e.getBelongsToField(ProductFields.SIZE) != null
+                        ? e.getBelongsToField(ProductFields.SIZE).getIntegerField(SizeFields.SUCCESSION)
+                        : 0))
+                .collect(Collectors.toList())) {
             Entity salesPlanProductChild = salesPlanProductDD.create();
             salesPlanProductChild.setField(SalesPlanProductFields.PRODUCT, child);
             BigDecimal orderedQuantity = BigDecimal.ZERO;
