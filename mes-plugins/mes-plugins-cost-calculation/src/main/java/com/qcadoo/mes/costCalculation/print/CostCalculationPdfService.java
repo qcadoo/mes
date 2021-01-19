@@ -42,13 +42,9 @@ import com.qcadoo.mes.costNormsForOperation.constants.CalculationOperationCompon
 import com.qcadoo.mes.costNormsForOperation.constants.TechnologyOperationComponentFieldsCNFO;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
-import com.qcadoo.mes.technologies.ProductQuantitiesWithComponentsService;
-import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
-import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
@@ -129,13 +125,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
     private ParameterService parameterService;
 
     @Autowired
-    private ProductStructureTreeService productStructureTreeService;
-
-    @Autowired
     private CostCalculationComponentsService costCalculationComponentsService;
-
-    @Autowired
-    private ProductQuantitiesWithComponentsService productQuantitiesWithComponentsService;
 
     @Autowired
     private ProductsCostCalculationService productsCostCalculationService;
@@ -202,23 +192,9 @@ public class CostCalculationPdfService extends PdfDocumentService {
     }
 
     private PdfPTable addComponentsTable(final Entity costCalculation, final Entity technology, final Locale locale) {
-        BigDecimal quantity = costCalculation.getDecimalField(CostCalculationFields.QUANTITY);
-        Map<OperationProductComponentHolder, BigDecimal> materialQuantitiesByOPC = productQuantitiesWithComponentsService
-                .getNeededProductQuantitiesByOPC(technology, quantity, MrpAlgorithm.ONLY_MATERIALS);
-
-        materialQuantitiesByOPC.size();
-
-        EntityTree operationComponents = productStructureTreeService.getOperationComponentsFromTechnology(technology);
-
         List<ComponentsCalculationHolder> basicComponents = costCalculationComponentsService
-                .fillBasicComponents(operationComponents);
-        List<ComponentsCalculationHolder> allOperations = costCalculationComponentsService.fillAllOperations(operationComponents);
+                .getComponentCosts(costCalculation, technology);
 
-        costCalculationComponentsService.addMaterialOperationCost(costCalculation, allOperations, materialQuantitiesByOPC);
-
-        costCalculationComponentsService.addOperationCost(costCalculation, allOperations);
-
-        costCalculationComponentsService.fillBasicComponentsCosts(operationComponents, basicComponents, allOperations, quantity);
         List<String> componentsTableHeader = Lists.newArrayList();
         Map<String, HeaderAlignment> alignments = Maps.newHashMap();
 
@@ -576,15 +552,10 @@ public class CostCalculationPdfService extends PdfDocumentService {
             throw new IllegalStateException(e.getMessage(), e);
         }
 
-        BigDecimal quantity = costCalculation.getDecimalField(CostCalculationFields.QUANTITY);
-
-        Map<Long, BigDecimal> neededProductQuantities = productsCostCalculationService.getNeededProductQuantities(costCalculation, technology, quantity);
-
         MathContext mathContext = numberService.getMathContext();
         List<CostCalculationMaterial> sortedMaterials = costCalculationMaterialsService
-                .getSortedMaterialsFromProductQuantities(costCalculation, neededProductQuantities);
+                .getSortedMaterialsFromProductQuantities(costCalculation, technology);
         for (CostCalculationMaterial material : sortedMaterials) {
-
             materialsTable.addCell(new Phrase(material.getProductNumber(), material.getFont()));
             materialsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
             materialsTable.addCell(new Phrase(numberService.format(material.getProductQuantity()), material.getFont()));

@@ -53,9 +53,11 @@ public class CostCalculationMaterialsService {
     private NumberService numberService;
 
     public List<CostCalculationMaterial> getSortedMaterialsFromProductQuantities(final Entity costCalculation,
-            final Map<Long, BigDecimal> neededProductQuantities) {
+            final Entity technology) {
         MathContext mathContext = numberService.getMathContext();
         List<CostCalculationMaterial> list = Lists.newArrayList();
+        BigDecimal quantity = costCalculation.getDecimalField(CostCalculationFields.QUANTITY);
+        Map<Long, BigDecimal> neededProductQuantities = productsCostCalculationService.getNeededProductQuantities(costCalculation, technology, quantity);
         for (Map.Entry<Long, BigDecimal> neededProductQuantity : neededProductQuantities.entrySet()) {
             Entity product = productQuantitiesService.getProduct(neededProductQuantity.getKey());
 
