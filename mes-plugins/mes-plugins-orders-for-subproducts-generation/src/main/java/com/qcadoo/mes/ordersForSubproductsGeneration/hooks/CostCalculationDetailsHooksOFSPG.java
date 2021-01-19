@@ -37,7 +37,7 @@ public class CostCalculationDetailsHooksOFSPG {
                 .getItemByName(CostCalculationFieldsOFSPG.NOMINAL_COSTS_FOR_COMPONENTS);
         CheckBoxComponent generatedField = (CheckBoxComponent) view.getComponentByReference(CostCalculationFields.GENERATED);
         CheckBoxComponent includeComponents = (CheckBoxComponent) view
-                .getComponentByReference(CostCalculationFieldsOFSPG.INCLUDE_COMPONENTS);
+                .getComponentByReference(CostCalculationFields.INCLUDE_COMPONENTS);
         includeComponents.setEnabled(!generatedField.isChecked());
         includeComponents.requestComponentUpdateState();
         boolean enable = false;

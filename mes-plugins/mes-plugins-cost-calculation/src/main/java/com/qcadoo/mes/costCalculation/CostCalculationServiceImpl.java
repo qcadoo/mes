@@ -73,7 +73,6 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         calculationResult.setField(CalculationResultFields.COST_CALCULATION, costCalculation);
         calculationResult.setField(CalculationResultFields.TECHNOLOGY, technology);
         calculationResult.setField(CalculationResultFields.PRODUCT, technology.getBelongsToField(TechnologyFields.PRODUCT));
-        calculationResult.setField(CalculationResultFields.NO_MATERIAL_PRICE, false);
         calculationResultDD.save(calculationResult);
     }
 
@@ -99,7 +98,7 @@ public class CostCalculationServiceImpl implements CostCalculationService {
                             numberService.getMathContext());
         }
         final BigDecimal materialCosts = BigDecimalUtils
-                .convertNullToZero(productsCostCalculationService.calculateTotalProductsCost(costCalculation, technology));
+                .convertNullToZero(productsCostCalculationService.calculateTotalProductsCost(costCalculation, technology, calculationResult));
         calculationResult.setField(CalculationResultFields.MATERIAL_COSTS,
                 numberService.setScaleWithDefaultMathContext(materialCosts, 2));
         calculationResult.setField(CalculationResultFields.LABOUR_COST,

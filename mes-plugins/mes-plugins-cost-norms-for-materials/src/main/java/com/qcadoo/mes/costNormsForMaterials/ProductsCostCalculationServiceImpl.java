@@ -25,10 +25,12 @@ package com.qcadoo.mes.costNormsForMaterials;
 
 import com.qcadoo.mes.costNormsForMaterials.constants.ProductsCostFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.ProductQuantitiesWithComponentsService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.plugin.api.PluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,34 +48,57 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
     private ProductQuantitiesService productQuantitiesService;
 
     @Autowired
+    private ProductQuantitiesWithComponentsService productQuantitiesWithComponentsService;
+
+    @Autowired
+    private PluginManager pluginManager;
+
+    @Autowired
     private NumberService numberService;
 
     @Override
-    public BigDecimal calculateTotalProductsCost(final Entity entity, final Entity technology) {
-        Map<Entity, BigDecimal> listProductWithCost = calculateListProductsCostForPlannedQuantity(entity, technology);
+    public BigDecimal calculateTotalProductsCost(final Entity costCalculation, final Entity technology,
+            final Entity calculationResult) {
+        checkArgument(costCalculation != null);
+        Map<Entity, BigDecimal> listProductWithCost = getProductsWithCosts(costCalculation, technology);
         BigDecimal result = BigDecimal.ZERO;
+        boolean noMaterialPrice = false;
         for (Entry<Entity, BigDecimal> productWithCost : listProductWithCost.entrySet()) {
+            BigDecimal value = productWithCost.getValue();
+            if (BigDecimalUtils.valueEquals(value, BigDecimal.ZERO)) {
+                noMaterialPrice = true;
+            }
             result = result.add(productWithCost.getValue(), numberService.getMathContext());
         }
+        calculationResult.setField("noMaterialPrice", noMaterialPrice);
         return numberService.setScaleWithDefaultMathContext(result);
     }
 
-    private Map<Entity, BigDecimal> calculateListProductsCostForPlannedQuantity(final Entity entity, final Entity technology) {
-        checkArgument(entity != null);
-        BigDecimal quantity = BigDecimalUtils.convertNullToZero(entity.getDecimalField("quantity"));
-
-        String materialCostsUsed = entity.getStringField("materialCostsUsed");
+    private Map<Entity, BigDecimal> getProductsWithCosts(final Entity costCalculation, final Entity technology) {
+        BigDecimal quantity = BigDecimalUtils.convertNullToZero(costCalculation.getDecimalField("quantity"));
+        String materialCostsUsed = costCalculation.getStringField("materialCostsUsed");
 
         checkArgument(materialCostsUsed != null, "materialCostsUsed is null!");
-
-        return getProductWithCostForPlannedQuantities(entity, technology, quantity, materialCostsUsed);
+        boolean useNominalCostPriceNotSpecified = costCalculation.getBooleanField("useNominalCostPriceNotSpecified");
+        Map<Long, BigDecimal> neededProductQuantities = getNeededProductQuantities(costCalculation, technology, quantity);
+        Map<Entity, BigDecimal> results = new HashMap<>();
+        for (Entry<Long, BigDecimal> productQuantity : neededProductQuantities.entrySet()) {
+            Entity product = productQuantitiesService.getProduct(productQuantity.getKey());
+            BigDecimal thisProductsCost = calculateProductCostForGivenQuantity(product, productQuantity.getValue(),
+                    materialCostsUsed, useNominalCostPriceNotSpecified);
+            results.put(product, thisProductsCost);
+        }
+        return results;
     }
 
     @Override
     public BigDecimal calculateProductCostForGivenQuantity(final Entity product, final BigDecimal quantity,
-            final String materialCostsUsed) {
-        BigDecimal cost = BigDecimalUtils.convertNullToZero(product.getField(ProductsCostFields.forMode(
-                materialCostsUsed).getStrValue()));
+            final String materialCostsUsed, final boolean useNominalCostPriceNotSpecified) {
+        BigDecimal cost = BigDecimalUtils
+                .convertNullToZero(product.getField(ProductsCostFields.forMode(materialCostsUsed).getStrValue()));
+        if (useNominalCostPriceNotSpecified && BigDecimalUtils.valueEquals(cost, BigDecimal.ZERO)) {
+            cost = BigDecimalUtils.convertNullToZero(product.getField(ProductsCostFields.NOMINAL.getStrValue()));
+        }
         BigDecimal costForNumber = BigDecimalUtils.convertNullToOne(product.getDecimalField("costForNumber"));
         if (BigDecimalUtils.valueEquals(costForNumber, BigDecimal.ZERO)) {
             costForNumber = BigDecimal.ONE;
@@ -83,22 +108,13 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         return costPerUnit.multiply(quantity, numberService.getMathContext());
     }
 
-    private Map<Entity, BigDecimal> getProductWithCostForPlannedQuantities(final Entity entity, final Entity technology,
-                                                                           final BigDecimal quantity, final String materialCostsUsed) {
-        Map<Long, BigDecimal> neededProductQuantities = getNeededProductQuantities(entity, technology, quantity,
-                MrpAlgorithm.ONLY_COMPONENTS);
-        Map<Entity, BigDecimal> results = new HashMap<>();
-        for (Entry<Long, BigDecimal> productQuantity : neededProductQuantities.entrySet()) {
-            Entity product = productQuantitiesService.getProduct(productQuantity.getKey());
-            BigDecimal thisProductsCost = calculateProductCostForGivenQuantity(product, productQuantity.getValue(),
-                    materialCostsUsed);
-            results.put(product, thisProductsCost);
+    public Map<Long, BigDecimal> getNeededProductQuantities(final Entity costCalculation, final Entity technology,
+            final BigDecimal quantity) {
+        boolean includeComponents = costCalculation.getBooleanField("includeComponents");
+        if (pluginManager.isPluginEnabled("ordersForSubproductsGeneration") && includeComponents) {
+            return productQuantitiesWithComponentsService.getNeededProductQuantities(technology, quantity,
+                    MrpAlgorithm.ONLY_MATERIALS);
         }
-        return results;
-    }
-
-    private Map<Long, BigDecimal> getNeededProductQuantities(final Entity entity, final Entity technology,
-            final BigDecimal quantity, final MrpAlgorithm algorithm) {
-        return productQuantitiesService.getNeededProductQuantities(technology, quantity, algorithm);
+        return productQuantitiesService.getNeededProductQuantities(technology, quantity, MrpAlgorithm.ONLY_COMPONENTS);
     }
 }

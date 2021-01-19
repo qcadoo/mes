@@ -37,6 +37,7 @@ import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.mes.costCalculation.print.utils.CostCalculationMaterial;
+import com.qcadoo.mes.costNormsForMaterials.ProductsCostCalculationService;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculationOperationComponentFields;
 import com.qcadoo.mes.costNormsForOperation.constants.TechnologyOperationComponentFieldsCNFO;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
@@ -135,6 +136,9 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
     @Autowired
     private ProductQuantitiesWithComponentsService productQuantitiesWithComponentsService;
+
+    @Autowired
+    private ProductsCostCalculationService productsCostCalculationService;
 
     @Override
     protected void buildPdfContent(final Document document, final Entity entity, final Locale locale) throws DocumentException {
@@ -574,8 +578,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         BigDecimal quantity = costCalculation.getDecimalField(CostCalculationFields.QUANTITY);
 
-        Map<Long, BigDecimal> neededProductQuantities = getNeededProductQuantities(costCalculation, technology, quantity,
-                MrpAlgorithm.ONLY_COMPONENTS);
+        Map<Long, BigDecimal> neededProductQuantities = productsCostCalculationService.getNeededProductQuantities(costCalculation, technology, quantity);
 
         MathContext mathContext = numberService.getMathContext();
         List<CostCalculationMaterial> sortedMaterials = costCalculationMaterialsService
@@ -621,11 +624,6 @@ public class CostCalculationPdfService extends PdfDocumentService {
         materialsTable.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
 
         return materialsTable;
-    }
-
-    private Map<Long, BigDecimal> getNeededProductQuantities(final Entity costCalculationOrProductionBalance,
-            final Entity technology, final BigDecimal quantity, final MrpAlgorithm algorithm) {
-        return productQuantitiesService.getNeededProductQuantities(technology, quantity, algorithm);
     }
 
     private PdfPTable addHourlyCostsTable(final Entity costCalculation, Entity calculationResult, final Locale locale) {
@@ -757,8 +755,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         BigDecimal givenQty = costCalculation.getDecimalField(CostCalculationFields.QUANTITY);
 
-        Map<Long, BigDecimal> neededProductQuantities = getNeededProductQuantities(costCalculation, technology, givenQty,
-                MrpAlgorithm.ONLY_COMPONENTS);
+        Map<Long, BigDecimal> neededProductQuantities = productsCostCalculationService.getNeededProductQuantities(costCalculation, technology, givenQty);
 
         PdfPTable printCostNormsOfMaterialTable = pdfHelper.createTableWithHeader(optionTableHeader.size(), optionTableHeader,
                 false);
