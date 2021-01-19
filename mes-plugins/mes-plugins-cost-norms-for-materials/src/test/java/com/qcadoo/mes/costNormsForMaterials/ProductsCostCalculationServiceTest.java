@@ -145,7 +145,6 @@ public class ProductsCostCalculationServiceTest {
 
     private void performCalculationUsingGivenCostsType(final ProductsCostFields costFields) {
         // given
-        BigDecimal quantity = BigDecimal.valueOf(3L);
         BigDecimal costForNumber = BigDecimal.valueOf(5L);
 
         Entity product = mockProduct(1L, null, null, costForNumber);
@@ -155,17 +154,16 @@ public class ProductsCostCalculationServiceTest {
         stubDecimalField(product, costFields.getStrValue(), BigDecimal.valueOf(5L));
 
         // when
-        BigDecimal result = productsCostCalculationService.calculateProductCostForGivenQuantity(product, quantity,
+        BigDecimal result = productsCostCalculationService.calculateProductCostPerUnit(product,
                 costFields.getMode(), false);
 
         // then
-        assertTrue(BigDecimalUtils.valueEquals(result, BigDecimal.valueOf(3L)));
+        assertTrue(BigDecimalUtils.valueEquals(result, BigDecimal.valueOf(1L)));
     }
 
     @Test
     public void shouldCalculateProductCostCopeWithZeroInCostForNumber() throws Exception {
         // given
-        BigDecimal quantity = BigDecimal.valueOf(3L);
         BigDecimal costForNumber = BigDecimal.ZERO.setScale(30);
         BigDecimal averageCost = BigDecimal.TEN;
 
@@ -174,10 +172,10 @@ public class ProductsCostCalculationServiceTest {
         Entity product = mockProduct(1L, null, averageCost, costForNumber);
 
         // when
-        BigDecimal result = productsCostCalculationService.calculateProductCostForGivenQuantity(product, quantity,
+        BigDecimal result = productsCostCalculationService.calculateProductCostPerUnit(product,
                 materialCostsUsed, false);
 
         // then
-        assertTrue(BigDecimalUtils.valueEquals(result, BigDecimal.valueOf(30L)));
+        assertTrue(BigDecimalUtils.valueEquals(result, BigDecimal.valueOf(10L)));
     }
 }

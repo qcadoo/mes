@@ -72,14 +72,18 @@ public class CostCalculationXlsService extends XlsDocumentService {
     protected void addExtraSheets(final HSSFWorkbook workbook, Entity entity, Locale locale) {
         List<ComponentsCalculationHolder> componentCosts = Lists.newArrayList();
         Map<Long, Boolean> hasComponents = Maps.newHashMap();
+        boolean includeComponents = entity.getBooleanField(CostCalculationFields.INCLUDE_COMPONENTS);
+
         HSSFSheet sheet = workbook.getSheetAt(0);
         final FontsContainer fontsContainer = new FontsContainer(sheet.getWorkbook());
         final StylesContainer stylesContainer = new StylesContainer(sheet.getWorkbook(), fontsContainer);
-        for (Entity technology : entity.getHasManyField(CostCalculationFields.TECHNOLOGIES)) {
-            List<ComponentsCalculationHolder> technologyComponentCosts = costCalculationComponentsService
-                    .getComponentCosts(entity, technology);
-            componentCosts.addAll(technologyComponentCosts);
-            hasComponents.put(technology.getId(), !technologyComponentCosts.isEmpty());
+        if (includeComponents) {
+            for (Entity technology : entity.getHasManyField(CostCalculationFields.TECHNOLOGIES)) {
+                List<ComponentsCalculationHolder> technologyComponentCosts = costCalculationComponentsService
+                        .getComponentCosts(entity, technology);
+                componentCosts.addAll(technologyComponentCosts);
+                hasComponents.put(technology.getId(), !technologyComponentCosts.isEmpty());
+            }
         }
         createCalculationResultsSheet(sheet, entity, hasComponents, stylesContainer, locale);
         createMaterialCostsSheet(entity,
@@ -94,10 +98,11 @@ public class CostCalculationXlsService extends XlsDocumentService {
                 createSheet(workbook,
                         translationService.translate("costCalculation.costCalculation.report.xls.sheet.labourCost", locale)),
                 locale);
-        createComponentCostsSheet(componentCosts,
-                createSheet(workbook,
-                        translationService.translate("costCalculation.costCalculation.report.xls.sheet.componentCosts", locale)),
-                locale);
+        if (includeComponents) {
+            createComponentCostsSheet(componentCosts, createSheet(workbook,
+                    translationService.translate("costCalculation.costCalculation.report.xls.sheet.componentCosts", locale)),
+                    locale);
+        }
     }
 
     private void createCalculationResultsSheet(HSSFSheet sheet, Entity costCalculation, Map<Long, Boolean> hasComponents,
@@ -107,6 +112,7 @@ public class CostCalculationXlsService extends XlsDocumentService {
             HSSFRow row = sheet.createRow(rowIndex);
             Entity technology = calculationResult.getBelongsToField(CalculationResultFields.TECHNOLOGY);
             Entity product = calculationResult.getBelongsToField(CalculationResultFields.PRODUCT);
+            boolean containsComponents = hasComponents.get(technology.getId()) != null && hasComponents.get(technology.getId());
             createRegularCell(stylesContainer, row, 0, technology.getStringField(TechnologyFields.NUMBER));
             createRegularCell(stylesContainer, row, 1, technology.getStringField(TechnologyFields.NAME));
             createRegularCell(stylesContainer, row, 2, product.getStringField(ProductFields.NUMBER));
@@ -139,7 +145,7 @@ public class CostCalculationXlsService extends XlsDocumentService {
             createNumericCell(stylesContainer, row, 19, calculationResult.getDecimalField(CalculationResultFields.PROFIT_VALUE));
             createNumericCell(stylesContainer, row, 20, calculationResult.getDecimalField(CalculationResultFields.SELLING_PRICE));
             createRegularCell(stylesContainer, row, 21,
-                    hasComponents.get(technology.getId()) ? translationService.translate("qcadooView.true", locale)
+                    containsComponents ? translationService.translate("qcadooView.true", locale)
                             : translationService.translate("qcadooView.false", locale));
             rowIndex++;
         }
@@ -189,10 +195,10 @@ public class CostCalculationXlsService extends XlsDocumentService {
                 createRegularCell(stylesContainer, row, 2, "");
                 createRegularCell(stylesContainer, row, 3, "");
                 createRegularCell(stylesContainer, row, 4, materialCost.getProductNumber());
-                createRegularCell(stylesContainer, row, 5, "");
+                createRegularCell(stylesContainer, row, 5, materialCost.getProductName());
                 createNumericCell(stylesContainer, row, 6, materialCost.getProductQuantity());
                 createRegularCell(stylesContainer, row, 7, materialCost.getUnit());
-                createNumericCell(stylesContainer, row, 8, BigDecimal.ZERO);
+                createNumericCell(stylesContainer, row, 8, materialCost.getCostPerUnit());
                 createNumericCell(stylesContainer, row, 9, materialCost.getCostForGivenQuantity());
                 rowCounter++;
             }

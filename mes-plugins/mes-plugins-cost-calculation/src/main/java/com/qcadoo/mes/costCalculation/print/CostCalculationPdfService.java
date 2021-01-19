@@ -176,7 +176,7 @@ public class CostCalculationPdfService extends PdfDocumentService {
 
         document.add(addHourlyCostsTable(costCalculation, calculationResult, locale));
 
-        boolean includeComponents = costCalculation.getBooleanField("includeComponents");
+        boolean includeComponents = costCalculation.getBooleanField(CostCalculationFields.INCLUDE_COMPONENTS);
 
         if (includeComponents) {
             document.add(Chunk.NEWLINE);

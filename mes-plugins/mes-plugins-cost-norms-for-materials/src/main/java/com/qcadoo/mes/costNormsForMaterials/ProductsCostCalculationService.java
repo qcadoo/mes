@@ -32,8 +32,8 @@ public interface ProductsCostCalculationService {
 
     BigDecimal calculateTotalProductsCost(final Entity costCalculation, final Entity technology, final Entity calculationResult);
 
-    BigDecimal calculateProductCostForGivenQuantity(final Entity product, final BigDecimal quantity,
-            final String materialCostsUsed, final boolean useNominalCostPriceNotSpecified);
+    BigDecimal calculateProductCostPerUnit(final Entity product, final String materialCostsUsed,
+            final boolean useNominalCostPriceNotSpecified);
 
     Map<Long, BigDecimal> getNeededProductQuantities(final Entity costCalculation, final Entity technology,
             final BigDecimal quantity);

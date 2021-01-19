@@ -116,13 +116,13 @@ public class CostCalculationReportService {
                         "costCalculation.costCalculation.report.fileName");
 
                 List<Entity> technologies = costCalculation.getManyToManyField(CostCalculationFields.TECHNOLOGIES);
-                for (Entity technology : technologies) {
-                    costCalculationService.createCalculationResults(costCalculation, technology);
-                }
                 if (technologies.size() == 1) {
+                    for (Entity technology : technologies) {
+                        costCalculationService.createCalculationResults(costCalculation, technology);
+                    }
                     costCalculationPdfService.generateDocument(costCalculationWithFileName, state.getLocale());
                 }
-                costCalculationXlsService.generateDocument(costCalculationWithFileName, state.getLocale());
+//                costCalculationXlsService.generateDocument(costCalculationWithFileName, state.getLocale());
 
                 state.performEvent(view, "reset");
                 view.getComponentByReference(QcadooViewConstants.L_FORM)

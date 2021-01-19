@@ -84,16 +84,16 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         Map<Entity, BigDecimal> results = new HashMap<>();
         for (Entry<Long, BigDecimal> productQuantity : neededProductQuantities.entrySet()) {
             Entity product = productQuantitiesService.getProduct(productQuantity.getKey());
-            BigDecimal thisProductsCost = calculateProductCostForGivenQuantity(product, productQuantity.getValue(),
-                    materialCostsUsed, useNominalCostPriceNotSpecified);
+            BigDecimal costPerUnit = calculateProductCostPerUnit(product, materialCostsUsed, useNominalCostPriceNotSpecified);
+            BigDecimal thisProductsCost = costPerUnit.multiply(productQuantity.getValue(), numberService.getMathContext());
             results.put(product, thisProductsCost);
         }
         return results;
     }
 
     @Override
-    public BigDecimal calculateProductCostForGivenQuantity(final Entity product, final BigDecimal quantity,
-            final String materialCostsUsed, final boolean useNominalCostPriceNotSpecified) {
+    public BigDecimal calculateProductCostPerUnit(final Entity product, final String materialCostsUsed,
+            final boolean useNominalCostPriceNotSpecified) {
         BigDecimal cost = BigDecimalUtils
                 .convertNullToZero(product.getField(ProductsCostFields.forMode(materialCostsUsed).getStrValue()));
         if (useNominalCostPriceNotSpecified && BigDecimalUtils.valueEquals(cost, BigDecimal.ZERO)) {
@@ -103,9 +103,8 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         if (BigDecimalUtils.valueEquals(costForNumber, BigDecimal.ZERO)) {
             costForNumber = BigDecimal.ONE;
         }
-        BigDecimal costPerUnit = cost.divide(costForNumber, numberService.getMathContext());
 
-        return costPerUnit.multiply(quantity, numberService.getMathContext());
+        return cost.divide(costForNumber, numberService.getMathContext());
     }
 
     public Map<Long, BigDecimal> getNeededProductQuantities(final Entity costCalculation, final Entity technology,

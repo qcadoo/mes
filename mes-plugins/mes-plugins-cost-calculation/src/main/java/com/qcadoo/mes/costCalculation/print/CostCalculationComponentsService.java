@@ -1,16 +1,5 @@
 package com.qcadoo.mes.costCalculation.print;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costNormsForMaterials.ProductsCostCalculationService;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculationOperationComponentFields;
@@ -25,6 +14,16 @@ import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.NumberService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class CostCalculationComponentsService {
@@ -51,9 +50,11 @@ public class CostCalculationComponentsService {
 
             BigDecimal productQuantity = neededProductQuantity.getValue();
 
-            BigDecimal costForGivenQuantity = productsCostCalculationService.calculateProductCostForGivenQuantity(product,
-                    productQuantity, costCalculation.getStringField(CostCalculationFields.MATERIAL_COSTS_USED),
+            BigDecimal costPerUnit = productsCostCalculationService.calculateProductCostPerUnit(product,
+                    costCalculation.getStringField(CostCalculationFields.MATERIAL_COSTS_USED),
                     costCalculation.getBooleanField(CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED));
+
+            BigDecimal costForGivenQuantity = costPerUnit.multiply(productQuantity, numberService.getMathContext());
 
             ComponentsCalculationHolder cc = allOperationComponents.stream()
                     .filter(bc -> bc.getToc().getId().equals(neededProductQuantity.getKey().getTechnologyOperationComponentId()))

@@ -267,13 +267,8 @@ public class CostCalculationDetailsHooks {
             CheckBoxComponent generatedField = (CheckBoxComponent) view.getComponentByReference(CostCalculationFields.GENERATED);
             int technologiesCount = ((GridComponent) view.getComponentByReference(CostCalculationFields.TECHNOLOGIES))
                     .getEntities().size();
-            if (technologiesCount > 0) {
-                generate.setEnabled(true);
-                generate.requestUpdate(true);
-            } else {
-                generate.setEnabled(false);
-                generate.requestUpdate(true);
-            }
+            generate.setEnabled(technologiesCount > 0);
+            generate.requestUpdate(true);
             saveNominalCosts.setEnabled(generatedField.isChecked());
             saveNominalCosts.requestUpdate(true);
             if (generatedField.isChecked()) {
@@ -281,8 +276,8 @@ public class CostCalculationDetailsHooks {
                     pdf.setEnabled(true);
                     pdf.requestUpdate(true);
                 }
-                xls.setEnabled(true);
-                xls.requestUpdate(true);
+//                xls.setEnabled(true);
+//                xls.requestUpdate(true);
                 generate.setEnabled(false);
                 generate.requestUpdate(true);
                 save.setEnabled(false);
@@ -296,7 +291,6 @@ public class CostCalculationDetailsHooks {
                 saveBack.requestUpdate(true);
                 cancel.setEnabled(false);
                 cancel.setMessage(COST_CALCULATION_RIBBON_MESSAGE_RECORD_ALREADY_GENERATED);
-                cancel.requestUpdate(true);
             } else {
                 pdf.setEnabled(false);
                 pdf.setMessage("costCalculation.ribbon.message.recordNotGenerated");
@@ -307,7 +301,6 @@ public class CostCalculationDetailsHooks {
                 save.setEnabled(true);
                 save.requestUpdate(true);
                 cancel.setEnabled(true);
-                cancel.requestUpdate(true);
             }
         } else {
             copy.setEnabled(false);
@@ -322,7 +315,7 @@ public class CostCalculationDetailsHooks {
             save.setEnabled(true);
             save.requestUpdate(true);
             cancel.setEnabled(true);
-            cancel.requestUpdate(true);
         }
+        cancel.requestUpdate(true);
     }
 }
