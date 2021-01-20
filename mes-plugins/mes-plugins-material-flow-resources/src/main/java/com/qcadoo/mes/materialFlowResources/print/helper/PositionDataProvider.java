@@ -246,7 +246,7 @@ public class PositionDataProvider {
     public static BigDecimal restNonZeroDecimalValDifference(Entity position) {
         BigDecimal gq = BigDecimal.ZERO;
         if (Objects.nonNull(position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION_ADD_UNIT))) {
-            gq = position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION).stripTrailingZeros();
+            gq = position.getDecimalField(PositionFields.REST_AFTER_SHIFT_DISPOSITION_ADD_UNIT).stripTrailingZeros();
             return gq != null ? gq : BigDecimal.ZERO;
         } else {
             gq = position.getDecimalField(PositionFields.GIVEN_QUANTITY);
