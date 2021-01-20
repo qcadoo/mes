@@ -92,6 +92,10 @@
             <model:hasMany name="generatorTreeNodesOrig" joinField="originalTechnology" model="generatorTreeNode"
                            plugin="technologiesGenerator" copyable="false" cascade="delete" />
         </model:model-field>
+        <model:model-field plugin="technologies" model="technologyInputProductType">
+            <model:hasMany name="generatorTreeNodes" joinField="technologyInputProductType" model="generatorTreeNode"
+                           plugin="technologiesGenerator" copyable="false" cascade="delete" />
+        </model:model-field>
         <model:model-field plugin="technologies" model="operation">
             <model:hasMany name="generatorTreeNodes" joinField="operation" model="generatorTreeNode"
                            plugin="technologiesGenerator" copyable="false" cascade="delete" />

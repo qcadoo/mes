@@ -23,6 +23,17 @@
  */
 package com.qcadoo.mes.technologies.listeners;
 
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT_STRUCTURE_TREE;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.technologies.constants.OperationFields;
@@ -40,21 +51,12 @@ import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.TreeComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT_STRUCTURE_TREE;
 
 @Service
 public class TechnologyDetailsListeners {
@@ -181,6 +183,27 @@ public class TechnologyDetailsListeners {
         LookupComponent qualityCardLookup = (LookupComponent) view.getComponentByReference(TechnologyFields.QUALITY_CARD);
         qualityCardLookup.setFieldValue(null);
         qualityCardLookup.requestComponentUpdateState();
+    }
+
+    public void acceptTemplate(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        CheckBoxComponent isTemplateAcceptedCheckBox = (CheckBoxComponent) view.getComponentByReference(TechnologyFields.IS_TEMPLATE_ACCEPTED);
+
+        Entity technology = technologyForm.getPersistedEntityWithIncludedFormValues();
+
+        Long technologyId = technology.getId();
+
+        boolean isTemplateAccepted = isTemplateAcceptedCheckBox.isChecked();
+
+        if (Objects.nonNull(technologyId)) {
+            isTemplateAcceptedCheckBox.setChecked(!isTemplateAccepted);
+
+            technologyForm.performEvent(view, "save");
+
+            if (technologyForm.isHasError()) {
+                isTemplateAcceptedCheckBox.setChecked(isTemplateAccepted);
+            }
+        }
     }
 
     private DataDefinition getTechnologyDD() {

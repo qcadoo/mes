@@ -26,13 +26,15 @@
 <model name="generatorTechnologiesForProduct" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://schema.qcadoo.org/model" auditable="true"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
 	<fields>
 		<belongsTo name="technology" model="technology" plugin="technologies" required="true" />
 		<belongsTo name="product" model="product" plugin="basic" required="true" />
         <belongsTo name="generatorContext" model="generatorContext" />
 
     </fields>
-	<hooks>
-	</hooks>
+
+	<hooks />
+
 	<identifier expression="#number" />
 </model>

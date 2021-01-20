@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.technologies.constants;
 
-public final class TechnologyFields {
+public final class TechnologyDtoFields {
 
-    private TechnologyFields() {
+    private TechnologyDtoFields() {
 
     }
 
@@ -35,42 +35,34 @@ public final class TechnologyFields {
 
     public static final String TECHNOLOGY_TYPE = "technologyType";
 
-    public static final String TECHNOLOGY_PROTOTYPE = "technologyPrototype";
-
-    public static final String PRODUCT = "product";
-
-    public static final String TECHNOLOGY_GROUP = "technologyGroup";
+    public static final String STATE = "state";
 
     public static final String EXTERNAL_SYNCHRONIZED = "externalSynchronized";
 
     public static final String MASTER = "master";
 
-    public static final String DESCRIPTION = "description";
+    public static final String PRODUCT_NUMBER = "productNumber";
 
-    public static final String OPERATION_COMPONENTS = "operationComponents";
+    public static final String TECHNOLOGY_GROUP_NUMBER = "technologyGroupNumber";
 
-    public static final String STATE = "state";
+    public static final String DIVISION_NAME = "divisionName";
 
-    public static final String STATE_CHANGES = "stateChanges";
-
-    public static final String TECHNOLOGY_ATTACHMENTS = "technologyAttachments";
-
-    public static final String PRODUCT_STRUCTURE_TREE = "productStructureTree";
+    public static final String GENERATOR_NAME = "generatorName";
 
     public static final String STANDARD_PERFORMANCE_TECHNOLOGY = "standardPerformanceTechnology";
 
-    public static final String TEMPLATE = "template";
+    public static final String PRODUCT_GLOBAL_TYPE_OF_MATERIAL = "productGlobalTypeOfMaterial";
+
+    public static final String ATTACHMENTS_EXISTS = "attachmentsExists";
+
+    public static final String PRODUCTION_LINE_NUMBER = "productionLineNumber";
+
+    public static final String ASSORTMENT_NAME = "assortmentName";
+
+    public static final String DATE_AND_TIME = "dateAndTime";
+
+    public static final String QUALITY_CARD_NUMBER = "qualityCardNumber";
 
     public static final String IS_TEMPLATE_ACCEPTED = "isTemplateAccepted";
-
-    public static final String ORDER_ID = "orderId";
-
-    public static final String ADDITIONAL_ACTIONS = "additionalActions";
-
-    public static final String QUALITY_CARD = "qualityCard";
-
-    public static final String OPERATION_COMPONENT_DTOS = "operationComponentDtos";
-
-    public static final String ACTIVE = "active";
 
 }

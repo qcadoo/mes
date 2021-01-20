@@ -44,6 +44,8 @@ public final class GeneratorTreeNodeFields {
 
     public static final String PRODUCT = "product";
 
+    public static final String TECHNOLOGY_INPUT_PRODUCT_TYPE = "technologyInputProductType";
+
     public static final String OPERATION = "operation";
 
     public static final String PRODUCT_TECHNOLOGY = "productTechnology";
@@ -55,5 +57,7 @@ public final class GeneratorTreeNodeFields {
     public static final String TECHNOLOGY_GROUP = "technologyGroup";
 
     public static final String STANDARD_PERFORMANCE_TECHNOLOGY = "standardPerformanceTechnology";
+
+    public static final String UNIT = "unit";
 
 }

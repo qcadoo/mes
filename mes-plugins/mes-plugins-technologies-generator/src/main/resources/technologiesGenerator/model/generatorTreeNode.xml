@@ -26,6 +26,7 @@
 <model name="generatorTreeNode" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
 	<fields>
 		<!-- BEGIN tree specific fields-->
 		<belongsTo name="parent" model="generatorTreeNode" />
@@ -39,6 +40,7 @@
 		<!-- BEGIN additional fields-->
 		<decimal name="quantity" />
 		<belongsTo name="product" model="product" plugin="basic" lazy="false" />
+		<belongsTo name="technologyInputProductType" plugin="technologies" model="technologyInputProductType" lazy="false"/>
 		<belongsTo name="operation" model="operation" plugin="technologies" lazy="false" />
 		<belongsTo name="productTechnology" model="technology" plugin="technologies" lazy="false" />
 		<belongsTo name="originalTechnology" model="technology" plugin="technologies" lazy="true" />
@@ -51,8 +53,9 @@
 			<validatesScale max="5"/>
 		</decimal>
 
+		<string name="unit" />
 		<!-- END additional fields-->
 	</fields>
-	<hooks>
-	</hooks>
+
+	<hooks />
 </model>

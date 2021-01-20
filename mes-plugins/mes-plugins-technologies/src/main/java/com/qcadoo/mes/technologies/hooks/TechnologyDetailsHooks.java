@@ -23,6 +23,15 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
+import static com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeFields.STATUS;
+
+import java.util.Objects;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
@@ -37,6 +46,7 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
@@ -46,14 +56,6 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.constants.QcadooViewConstants;
-
-import java.util.Objects;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import static com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeFields.STATUS;
 
 @Service
 public class TechnologyDetailsHooks {
@@ -98,7 +100,11 @@ public class TechnologyDetailsHooks {
     }
 
     public void setTreeTabEditable(final ViewDefinitionState view) {
-        final boolean treeTabShouldBeEnabled = TechnologyState.DRAFT.equals(getTechnologyState(view))
+        CheckBoxComponent isTemplateAcceptedCheckBox = (CheckBoxComponent) view.getComponentByReference(TechnologyFields.IS_TEMPLATE_ACCEPTED);
+
+        boolean isTemplateAccepted = isTemplateAcceptedCheckBox.isChecked();
+
+        final boolean treeTabShouldBeEnabled = !isTemplateAccepted && TechnologyState.DRAFT.equals(getTechnologyState(view))
                 && technologyIsAlreadySaved(view);
 
         for (String componentReference : Sets.newHashSet(OUT_PRODUCTS_REFERENCE, IN_PRODUCTS_REFERENCE)) {
@@ -149,13 +155,15 @@ public class TechnologyDetailsHooks {
 
         if (Objects.nonNull(technologyId)) {
             Entity technology = getTechnologyDD().get(technologyId);
+
             if (Objects.isNull(technology)) {
                 return;
             }
 
             String state = technology.getStringField(TechnologyFields.STATE);
+            boolean isTemplateAccepted = technology.getBooleanField(TechnologyFields.IS_TEMPLATE_ACCEPTED);
 
-            if (!TechnologyState.DRAFT.getStringValue().equals(state)) {
+            if (isTemplateAccepted || !TechnologyState.DRAFT.getStringValue().equals(state)) {
                 disabled = true;
             }
             if (TechnologyState.ACCEPTED.getStringValue().equals(state)) {
@@ -214,13 +222,14 @@ public class TechnologyDetailsHooks {
         Entity technology = technologyForm.getEntity();
 
         String state = technology.getStringField(TechnologyFields.STATE);
+        boolean isTemplateAccepted = technology.getBooleanField(TechnologyFields.IS_TEMPLATE_ACCEPTED);
 
         String descriptionMessage = "technologies.technologyDetails.window.ribbon.import.openOperationProductInComponentsImportPage.description";
 
         boolean isSaved = Objects.nonNull(technologyForm.getEntityId());
         boolean isDraft = TechnologyState.DRAFT.getStringValue().equals(state);
 
-        openOperationProductInComponentsImportPageRibbonActionItem.setEnabled(isSaved && isDraft);
+        openOperationProductInComponentsImportPageRibbonActionItem.setEnabled(isSaved && isDraft && !isTemplateAccepted);
         openOperationProductInComponentsImportPageRibbonActionItem.setMessage(descriptionMessage);
         openOperationProductInComponentsImportPageRibbonActionItem.requestUpdate(true);
     }
@@ -229,7 +238,7 @@ public class TechnologyDetailsHooks {
         LookupComponent product = (LookupComponent) viewDefinitionState.getComponentByReference("product");
         LookupComponent qualityCard = (LookupComponent) viewDefinitionState.getComponentByReference("qualityCard");
 
-        if (product.getEntity() != null) {
+        if (Objects.nonNull(product.getEntity())) {
             FilterValueHolder filter = qualityCard.getFilterValue();
 
             filter.put(QualityCardCriteriaModifiers.L_PRODUCT_ID, product.getEntity().getId());
@@ -245,11 +254,13 @@ public class TechnologyDetailsHooks {
 
         operationComponents.setFilterValue(operationComponentsFilterValueHolder);
 
-        GridComponent technologicalProcessComponents = (GridComponent) viewDefinitionState.getComponentByReference(L_TECHNOLOGICAL_PROCESS_COMPONENTS);
+        GridComponent technologicalProcessComponents = (GridComponent) viewDefinitionState
+                .getComponentByReference(L_TECHNOLOGICAL_PROCESS_COMPONENTS);
         FilterValueHolder gridFilterValueHolder = technologicalProcessComponents.getFilterValue();
 
         Optional<Long> selectedEntityId = operationComponents.getSelectedEntitiesIds().stream().findFirst();
-        if(selectedEntityId.isPresent()){
+
+        if (selectedEntityId.isPresent()) {
             gridFilterValueHolder.put(TechnologyDetailsCriteriaModifiers.L_TECHNOLOGY_OPERATION_COMPONENT_ID,
                     selectedEntityId.get());
         } else {

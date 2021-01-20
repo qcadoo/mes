@@ -75,6 +75,21 @@
                 <bigButton name="openOperationProductInComponentsImportPage" state="enabled" icon="xlsIcon24.png"
                            action="#{form}.fireEvent(openOperationProductInComponentsImportPage);"/>
             </group>
+            <group name="template">
+                <bigButton name="acceptTemplate" state="enabled" icon="startIcon24.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    if (window.confirm(this.confirmMessage)) {
+                                        #{form}.performEvent('acceptTemplate', []);
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -104,11 +119,18 @@
 									var acceptState = #{window}.getRibbonItem("status.acceptTechnology");
 									var cancelState = #{window}.getRibbonItem("status.cancelTechnology");
 									var checkState = #{window}.getRibbonItem("status.checkTechnology");
+
+									var acceptTemplate = #{window}.getRibbonItem("template.acceptTemplate");
+
 									acceptState.disable();
 									cancelState.disable();
 									checkState.disable();
+
+									acceptTemplate.disable();
+
 									return;
 								}
+
 								updateRibbon(state);
 							}
 						});
@@ -128,7 +150,7 @@
 								} else {
 									if (message) {
 										ribbonItem.disable(message);
-									}else{
+									} else {
 										ribbonItem.disable();
 									}
 								}
@@ -141,9 +163,11 @@
 							var cancelState = #{window}.getRibbonItem("status.cancelTechnology");
 							var checkState = #{window}.getRibbonItem("status.checkTechnology");
 							var deleteItem = #{window}.getRibbonItem("actions.delete");
-							
+
 							var generateProductStructure = #{window}.getRibbonItem("productStructure.generateProductStructure");
 							var fillProducts = #{window}.getRibbonItem("fillProducts.fillProducts");
+
+							var acceptTemplate = #{window}.getRibbonItem("template.acceptTemplate");
 
 							acceptState.forState="02accepted";
 							acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}";
@@ -194,14 +218,39 @@
                                 deleteItem.disable();
                                 fillProducts.disable();
 							}
+
+							var template = #{template}.getValue().content.value;
+                            var isTemplateAccepted = #{isTemplateAccepted}.getValue().content.value;
+
+                            if ((template == '0') || (state != "01draft")) {
+                                acceptTemplate.disable()
+                            } else {
+                                acceptTemplate.enable()
+                            }
+
+                            if (isTemplateAccepted == '0') {
+                                acceptTemplate.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.template.confirm.accept)}";
+                                acceptTemplate.setLabel("#{translate(technologies.technologyDetails.window.ribbon.template.acceptTemplate)}");
+                            } else {
+                                acceptState.disable();
+								checkState.disable();
+								cancelState.disable();
+								generateProductStructure.disable();
+								toggleEditable(false);
+								deleteItem.disable();
+								fillProducts.disable();
+
+                                acceptTemplate.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.template.confirm.edit)}";
+                                acceptTemplate.setLabel("#{translate(technologies.technologyDetails.window.ribbon.template.editTemplate)}");
+                            }
+
 							if (externalSynchronized == '0') {
 								toggleEditable(false, "#{translate(technologies.technology.ribbon.message.technologyIsSynchronized)}");
 								acceptState.disable();
 								cancelState.disable();
 								checkState.disable();
-
 								generateProductStructure.enable();
-							}					
+							}
 						}
 					]]>
                 </script>
@@ -310,6 +359,8 @@
 
                 <component type="select" name="state" field="state"
                            reference="state" hasLabel="false" defaultVisible="false"/>
+                <component type="checkbox" name="isTemplateAccepted" field="isTemplateAccepted"
+                           reference="isTemplateAccepted" hasLabel="false" defaultVisible="false"/>
 
                 <option type="header" value="true"/>
                 <option type="expression"
@@ -329,6 +380,9 @@
                 <listener event="openOperationProductInComponentsImportPage"
                           class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
                           method="openOperationProductInComponentsImportPage"/>
+                <listener event="acceptTemplate"
+                          class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
+                          method="acceptTemplate"/>
             </component>
         </windowTab>
 
@@ -626,6 +680,7 @@
 
                         <option type="prioritizable" value="false"/>
                         <option type="fullscreen" value="true"/>
+
                         <criteriaModifier
                                 class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyDetailsCriteriaModifiers"
                                 method="showTechnologicalProcessComponentsAssignedToTOC"/>

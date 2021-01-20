@@ -78,7 +78,9 @@ public class TechnologyStructureNode {
         if (obj.getClass() != getClass()) {
             return false;
         }
+
         TechnologyStructureNode rhs = (TechnologyStructureNode) obj;
+
         return new EqualsBuilder().append(this.productInfo, rhs.productInfo).append(this.type, rhs.type).append(this.children,
                 rhs.children).isEquals();
     }
@@ -87,4 +89,5 @@ public class TechnologyStructureNode {
     public int hashCode() {
         return new HashCodeBuilder().append(productInfo).append(type).toHashCode();
     }
+
 }
