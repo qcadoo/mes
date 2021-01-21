@@ -45,6 +45,7 @@ import com.qcadoo.mes.materialRequirements.util.EntityOrderNumberComparator;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.FontUtils;
@@ -198,7 +199,6 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
             defaultOrderHeaderColumnWidthInt[i] = defaultOrderHeaderColumnWidth.get(i);
         }
 
-
         PdfPTable table = pdfHelper.createTableWithHeader(headersWithAlignments.size(), headers, true,
                 defaultOrderHeaderColumnWidthInt, headersWithAlignments);
 
@@ -215,28 +215,47 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
             List<MaterialRequirementEntry> materials = entriesMap.get(key);
             Map<Long, BigDecimal> quantitiesInStock = Maps.newHashMap();
             if (showCurrentStockLevel && Objects.nonNull(key.getWarehouseId())) {
-                quantitiesInStock = materialFlowResourcesService.getQuantitiesForProductIdsAndLocation(
-                        materials.stream().map(mr -> mr.getId()).collect(Collectors.toList()), key.getWarehouseId());
+                quantitiesInStock = materialFlowResourcesService.getAvailableQuantities(
+                        materials.stream().map(mr -> mr.getId().intValue()).collect(Collectors.toList()), key.getWarehouseId()
+                                .intValue());
             }
 
             Map<String, MaterialRequirementEntry> neededProductQuantities = getNeededProductQuantities(materials);
-            for (Entry<String, MaterialRequirementEntry> mEntry : neededProductQuantities.entrySet()) {
-                MaterialRequirementEntry material = mEntry.getValue();
+            List<String> materialKeys = Lists.newArrayList(neededProductQuantities.keySet());
+            materialKeys.sort(Comparator.naturalOrder());
+
+            int index = 0;
+            for (String materialKey : materialKeys) {
+                index += 1;
+                MaterialRequirementEntry material = neededProductQuantities.get(materialKey);
                 table.getDefaultCell().disableBorderSide(PdfCell.BOTTOM);
                 table.getDefaultCell().disableBorderSide(PdfCell.TOP);
+                if (index == materialKeys.size()) {
+                    table.getDefaultCell().enableBorderSide(PdfCell.BOTTOM);
+                }
+
+                boolean fillDateIfWarehouseChanged = false;
                 if (includeWarehouse) {
                     if (!actualWarehouse.equals(key.getWarehouseNumber())) {
                         table.getDefaultCell().enableBorderSide(PdfCell.TOP);
                         table.addCell(new Phrase(key.getWarehouseNumber(), FontUtils.getDejavuRegular7Dark()));
                         actualWarehouse = key.getWarehouseNumber();
+                        fillDateIfWarehouseChanged = true;
                     } else {
                         table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
                     }
                 }
                 if (includeStartDateOrder) {
-                    if (!actualDate.equals(key.getDate())) {
-                        table.getDefaultCell().enableBorderSide(PdfCell.TOP);
-                        table.addCell(new Phrase(DateUtils.toDateString(new Date(key.getDate())), FontUtils.getDejavuRegular7Dark()));
+                    if (!actualDate.equals(key.getDate()) || fillDateIfWarehouseChanged) {
+                        if (key.getDate() == 0L) {
+                            table.getDefaultCell().enableBorderSide(PdfCell.TOP);
+                            table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
+                        } else {
+                            table.getDefaultCell().enableBorderSide(PdfCell.TOP);
+                            table.addCell(new Phrase(DateUtils.toDateString(new Date(key.getDate())), FontUtils
+                                    .getDejavuRegular7Dark()));
+
+                        }
                         actualDate = key.getDate();
                     } else {
                         table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
@@ -259,11 +278,11 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
                 if (showCurrentStockLevel) {
                     if (Objects.nonNull(key.getWarehouseId())) {
                         table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-                        table.addCell(new Phrase(numberService.format(quantitiesInStock.get(material.getId())), FontUtils
-                                .getDejavuBold7Dark()));
+                        table.addCell(new Phrase(numberService.format(BigDecimalUtils.convertNullToZero(quantitiesInStock
+                                .get(material.getId()))), FontUtils.getDejavuBold7Dark()));
                         table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
                     } else {
-                        table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
+                        table.addCell(new Phrase(numberService.format(BigDecimal.ZERO), FontUtils.getDejavuRegular7Dark()));
                     }
 
                 }

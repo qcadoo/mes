@@ -68,7 +68,7 @@ public class MaterialRequirementDataService {
         Map<WarehouseDateKey, List<MaterialRequirementEntry>> data = Maps.newHashMap();
         for (MaterialRequirementEntry entry : entries) {
             WarehouseDateKey warehouseDateKey = new WarehouseDateKey(entry, includeWarehouse, includeStartDateOrder);
-            if(data.containsKey(warehouseDateKey)) {
+            if (data.containsKey(warehouseDateKey)) {
                 List<MaterialRequirementEntry> elements = data.get(warehouseDateKey);
                 elements.add(entry);
             } else {
@@ -94,10 +94,14 @@ public class MaterialRequirementDataService {
                 .getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY));
 
         if (includeStartDateOrder) {
-            materialRequirementEntry
-                    .setOrderStartDate(new DateTime(productionCountingQuantity.getBelongsToField(
-                            ProductionCountingQuantityFields.ORDER).getDateField(OrderFields.START_DATE)).withTimeAtStartOfDay()
-                            .toDate().getTime());
+            if (Objects.nonNull(productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER)
+                    .getDateField(OrderFields.START_DATE))) {
+                materialRequirementEntry.setOrderStartDate(new DateTime(productionCountingQuantity.getBelongsToField(
+                        ProductionCountingQuantityFields.ORDER).getDateField(OrderFields.START_DATE)).withTimeAtStartOfDay()
+                        .toDate().getTime());
+            } else {
+                materialRequirementEntry.setOrderStartDate(null);
+            }
         }
 
         if (includeWarehouse) {

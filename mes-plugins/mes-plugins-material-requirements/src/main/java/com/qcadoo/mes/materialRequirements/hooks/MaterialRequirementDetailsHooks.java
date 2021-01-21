@@ -83,9 +83,9 @@ public class MaterialRequirementDetailsHooks {
         includeStartDateOrderField.setEnabled(!isGenerated);
         ordersGrid.setEnabled(!isGenerated);
 
-        if(!isGenerated && includeWarehouseField.isChecked()) {
+        if (!isGenerated && includeWarehouseField.isChecked()) {
             showCurrentStockLevelField.setEnabled(true);
-        } else {
+        } else if (!isGenerated) {
             showCurrentStockLevelField.setEnabled(false);
             showCurrentStockLevelField.setChecked(false);
             showCurrentStockLevelField.requestComponentUpdateState();

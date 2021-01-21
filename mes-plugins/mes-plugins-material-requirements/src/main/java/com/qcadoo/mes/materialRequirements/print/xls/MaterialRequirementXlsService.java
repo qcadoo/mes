@@ -25,7 +25,6 @@ package com.qcadoo.mes.materialRequirements.print.xls;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -37,6 +36,7 @@ import com.qcadoo.mes.materialRequirements.print.MaterialRequirementEntry;
 import com.qcadoo.mes.materialRequirements.print.WarehouseDateKey;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.xls.XlsDocumentService;
@@ -140,7 +140,7 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
         boolean includeWarehouse = materialRequirement.getBooleanField(MaterialRequirementFields.INCLUDE_WAREHOUSE);
         boolean includeStartDateOrder = materialRequirement.getBooleanField(MaterialRequirementFields.INCLUDE_START_DATE_ORDER);
 
-        if(includeWarehouse || includeStartDateOrder) {
+        if (includeWarehouse || includeStartDateOrder) {
             addGroupedSeries(sheet, materialRequirement);
         } else {
             addSimpleSeries(sheet, materialRequirement);
@@ -169,16 +169,21 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
             List<MaterialRequirementEntry> materials = entriesMap.get(key);
             Map<Long, BigDecimal> quantitiesInStock = Maps.newHashMap();
             if (showCurrentStockLevel && Objects.nonNull(key.getWarehouseId())) {
-                quantitiesInStock = materialFlowResourcesService.getQuantitiesForProductIdsAndLocation(
-                        materials.stream().map(mr -> mr.getId()).collect(Collectors.toList()), key.getWarehouseId());
+                quantitiesInStock = materialFlowResourcesService.getAvailableQuantities(
+                        materials.stream().map(mr -> mr.getId().intValue()).collect(Collectors.toList()), key.getWarehouseId()
+                                .intValue());
             }
 
             Map<String, MaterialRequirementEntry> neededProductQuantities = getNeededProductQuantities(materials);
-            for (Entry<String, MaterialRequirementEntry> mEntry : neededProductQuantities.entrySet()) {
+            List<String> materialKeys = Lists.newArrayList(neededProductQuantities.keySet());
+            materialKeys.sort(Comparator.naturalOrder());
+            for (String materialKey : materialKeys) {
                 HSSFRow row = sheet.createRow(rowNum++);
                 column = 0;
 
-                MaterialRequirementEntry material = mEntry.getValue();
+                MaterialRequirementEntry material = neededProductQuantities.get(materialKey);
+                boolean fillDateIfWarehouseChanged = false;
+
                 if (includeWarehouse) {
                     if (!actualWarehouse.equals(key.getWarehouseNumber())) {
                         row.createCell(column).setCellValue(key.getWarehouseNumber());
@@ -189,8 +194,12 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
                     column += 1;
                 }
                 if (includeStartDateOrder) {
-                    if (!actualDate.equals(key.getDate())) {
-                        row.createCell(column).setCellValue(DateUtils.toDateString(new Date(key.getDate())));
+                    if (!actualDate.equals(key.getDate()) || fillDateIfWarehouseChanged) {
+                        if (key.getDate() == 0L) {
+                            row.createCell(column).setCellValue("");
+                        } else {
+                            row.createCell(column).setCellValue(DateUtils.toDateString(new Date(key.getDate())));
+                        }
                         actualDate = key.getDate();
                     } else {
                         row.createCell(column).setCellValue("");
@@ -216,12 +225,12 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
                 }
                 column += 1;
 
-
                 if (showCurrentStockLevel) {
                     if (Objects.nonNull(key.getWarehouseId())) {
-                        row.createCell(column).setCellValue(numberService.format(quantitiesInStock.get(material.getId())));
+                        row.createCell(column).setCellValue(
+                                numberService.format(BigDecimalUtils.convertNullToZero(quantitiesInStock.get(material.getId()))));
                     } else {
-                        row.createCell(column).setCellValue("");
+                        row.createCell(column).setCellValue(numberService.format(BigDecimal.ZERO));
                     }
 
                 }

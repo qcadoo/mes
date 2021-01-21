@@ -516,7 +516,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
 
         for (Entity order : orders) {
             List<Entity> productionCountingQuantities;
-            if(algorithm.getStringValue().equals(MrpAlgorithm.ONLY_MATERIALS)) {
+            if(algorithm.getStringValue().equals(MrpAlgorithm.ONLY_MATERIALS.getStringValue())) {
                 productionCountingQuantities = getUsedMaterialsFromProductionCountingQuantities(order,true);
             } else {
                 productionCountingQuantities = getUsedMaterialsFromProductionCountingQuantities(order,false);

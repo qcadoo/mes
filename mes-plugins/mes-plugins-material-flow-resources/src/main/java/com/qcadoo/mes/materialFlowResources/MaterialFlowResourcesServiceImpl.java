@@ -135,29 +135,25 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     }
 
     @Override
-    public Map<Long, BigDecimal> getQuantitiesForProductIdsAndLocation(final List<Long> ids, final Long locationId) {
+    public Map<Long, BigDecimal> getAvailableQuantities(final List<Integer> productsIds, final Integer locationId) {
         Map<Long, BigDecimal> quantities = Maps.newHashMap();
 
-        if (ids.size() > 0) {
+        if (productsIds.size() > 0) {
             StringBuilder sb = new StringBuilder();
 
-            sb.append("SELECT p.id AS product, SUM(r.quantity) AS quantity ");
-            sb.append("FROM #materialFlowResources_resource AS r ");
-            sb.append("JOIN r.product AS p ");
-            sb.append("JOIN r.location AS l ");
-
-            sb.append("GROUP BY p.id, l.id ");
-            sb.append("HAVING p.id IN (:productIds) ");
-            sb.append("AND l.id = :locationId ");
+            sb.append("SELECT product_id AS product, availableQuantity AS quantity ");
+            sb.append("FROM #materialFlowResources_resourceStockDto ");
+            sb.append("WHERE product_id IN (:productIds) ");
+            sb.append("AND location_id = :locationId ");
 
             SearchQueryBuilder sqb = getResourceDD().find(sb.toString());
 
             sqb.setParameter("locationId", locationId);
-            sqb.setParameterList("productIds", ids);
+            sqb.setParameterList("productIds", productsIds);
 
             List<Entity> productsAndQuantities = sqb.list().getEntities();
 
-            productsAndQuantities.forEach(productAndQuantity -> quantities.put((Long) productAndQuantity.getField("product"),
+            productsAndQuantities.forEach(productAndQuantity -> quantities.put(Long.valueOf((Integer) productAndQuantity.getField("product")),
                     productAndQuantity.getDecimalField("quantity")));
         }
 
