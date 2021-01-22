@@ -48,55 +48,11 @@
 			model="calculationOperationComponent" plugin="costNormsForOperation"
 			cascade="delete" />
 
-		<decimal name="totalMaterialCosts">
-			<validatesUnscaledValue max="14" />
-			<validatesScale max="5" />
-		</decimal>
 		<decimal name="totalMachineHourlyCosts">
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
 		<decimal name="totalLaborHourlyCosts">
-			<validatesUnscaledValue max="14" />
-			<validatesScale max="5" />
-		</decimal>
-		<decimal name="totalTechnicalProductionCosts">
-			<validatesUnscaledValue max="14" />
-			<validatesScale max="5" />
-		</decimal>
-        <decimal name="technicalProductionCosts">
-            <validatesUnscaledValue max="14" />
-            <validatesScale max="5" />
-        </decimal>
-		<decimal name="productionCostMarginValue">
-			<validatesUnscaledValue max="14" />
-			<validatesScale max="5" />
-		</decimal>
-		<decimal name="materialCostMarginValue">
-			<validatesUnscaledValue max="14" />
-			<validatesScale max="5" />
-		</decimal>
-		<decimal name="registrationPriceOverheadValue" >
-			<validatesUnscaledValue max="14" />
-			<validatesScale max="5" />
-		</decimal>
-		<decimal name="profitValue">
-			<validatesUnscaledValue max="14" />
-			<validatesScale max="5" />
-		</decimal>
-		<decimal name="sellPriceValue">
-			<validatesUnscaledValue max="14" />
-			<validatesScale max="5" />
-		</decimal>
-		<decimal name="totalOverhead">
-			<validatesUnscaledValue max="14" />
-			<validatesScale max="5" />
-		</decimal>
-		<decimal name="totalCosts">
-			<validatesUnscaledValue max="14" />
-			<validatesScale max="5" />
-		</decimal>
-		<decimal name="totalCostPerUnit">
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />
 		</decimal>
@@ -163,6 +119,7 @@
 
 		<boolean name="isSetFieldsFromParameter"
 				 persistent="false"/>
+		<boolean name="includeComponents" default="true"/>
 	</fields>
 	<hooks>
 		<validatesWith

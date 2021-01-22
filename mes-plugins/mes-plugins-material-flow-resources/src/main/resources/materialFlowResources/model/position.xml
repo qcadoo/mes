@@ -41,8 +41,13 @@
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
-        <decimal name="restAfterShiftDisposition">
-            <validatesRange from="0" exclusively="true"/>
+        <decimal name="restAfterShiftDisposition" copyable="false">
+            <validatesRange from="0" exclusively="false"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <decimal name="restAfterShiftDispositionAddUnit" copyable="false">
+            <validatesRange from="0" exclusively="false"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>

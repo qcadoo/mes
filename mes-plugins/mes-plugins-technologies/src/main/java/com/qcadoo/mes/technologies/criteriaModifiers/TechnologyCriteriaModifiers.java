@@ -49,7 +49,13 @@ public class TechnologyCriteriaModifiers {
 
     public void showAcceptedPatternTechnology(final SearchCriteriaBuilder scb) {
         scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE));
-        scb.add(SearchRestrictions.eq(TechnologyFields.STATE, TechnologyStateStringValues.ACCEPTED));
+        scb.add(SearchRestrictions.or(
+                SearchRestrictions.eq(TechnologyFields.STATE, TechnologyStateStringValues.ACCEPTED),
+                SearchRestrictions.and(
+                        SearchRestrictions.eq(TechnologyFields.TEMPLATE, true),
+                        SearchRestrictions.eq(TechnologyFields.IS_TEMPLATE_ACCEPTED, true)
+                )
+        ));
     }
 
     public void showAcceptedAndCheckedPatternTechnology(final SearchCriteriaBuilder scb) {

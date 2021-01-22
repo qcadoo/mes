@@ -245,11 +245,13 @@ public class TechnologyValidationService {
         return operations;
     }
 
-    private boolean checkIfAtLeastOneCommonElement(final List<Entity> operationProductInComponents,
-            final List<Entity> operationProductOutComponents) {
+    private boolean checkIfAtLeastOneCommonElement(final List<Entity> operationProductOutComponents,
+            final List<Entity> operationProductInComponents) {
         for (Entity operationProductOutComponent : operationProductOutComponents) {
             for (Entity operationProductInComponent : operationProductInComponents) {
-                if (operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT).getId().equals(
+                Entity product = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
+
+                if (Objects.nonNull(product) && product.getId().equals(
                         operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId())) {
                     return true;
                 }

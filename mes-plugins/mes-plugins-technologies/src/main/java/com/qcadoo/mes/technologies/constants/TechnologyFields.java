@@ -33,7 +33,15 @@ public final class TechnologyFields {
 
     public static final String NAME = "name";
 
+    public static final String TECHNOLOGY_TYPE = "technologyType";
+
+    public static final String TECHNOLOGY_PROTOTYPE = "technologyPrototype";
+
     public static final String PRODUCT = "product";
+
+    public static final String TECHNOLOGY_GROUP = "technologyGroup";
+
+    public static final String EXTERNAL_SYNCHRONIZED = "externalSynchronized";
 
     public static final String MASTER = "master";
 
@@ -45,21 +53,24 @@ public final class TechnologyFields {
 
     public static final String STATE_CHANGES = "stateChanges";
 
-    public static final String TECHNOLOGY_GROUP = "technologyGroup";
-
-    public static final String EXTERNAL_SYNCHRONIZED = "externalSynchronized";
-
-    public static final String TECHNOLOGY_TYPE = "technologyType";
-
-    public static final String TECHNOLOGY_PROTOTYPE = "technologyPrototype";
-
-    public static final String TEMPLATE = "template";
-
-    public static final String STANDARD_PERFORMANCE_TECHNOLOGY = "standardPerformanceTechnology";
+    public static final String TECHNOLOGY_ATTACHMENTS = "technologyAttachments";
 
     public static final String PRODUCT_STRUCTURE_TREE = "productStructureTree";
 
-    public static final String ACTIVE = "active";
+    public static final String STANDARD_PERFORMANCE_TECHNOLOGY = "standardPerformanceTechnology";
+
+    public static final String TEMPLATE = "template";
+
+    public static final String IS_TEMPLATE_ACCEPTED = "isTemplateAccepted";
+
+    public static final String ORDER_ID = "orderId";
+
+    public static final String ADDITIONAL_ACTIONS = "additionalActions";
 
     public static final String QUALITY_CARD = "qualityCard";
+
+    public static final String OPERATION_COMPONENT_DTOS = "operationComponentDtos";
+
+    public static final String ACTIVE = "active";
+
 }

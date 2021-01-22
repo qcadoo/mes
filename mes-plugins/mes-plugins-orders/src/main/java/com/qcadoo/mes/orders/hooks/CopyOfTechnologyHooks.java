@@ -47,11 +47,12 @@ import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
+
+import java.util.List;
+
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class CopyOfTechnologyHooks {
@@ -95,7 +96,6 @@ public class CopyOfTechnologyHooks {
         setCriteriaModifierParameters(view, order);
         technologyDetailsHooks.filterStateChangeHistory(view);
         technologyDetailsHooks.setTreeTabEditable(view);
-        technologyDetailsListeners.setGridEditable(view);
         disableForm(view, order, technology);
         enableGroupField(view, order);
     }

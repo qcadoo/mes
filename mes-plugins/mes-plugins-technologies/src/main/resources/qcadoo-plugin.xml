@@ -320,6 +320,7 @@
         <view:view resource="view/technologicalProcessDetails.xml"/>
         <view:view resource="view/technologicalProcessListsList.xml"/>
         <view:view resource="view/technologicalProcessListDetails.xml"/>
+        <view:view resource="view/addProcesses.xml"/>
         <view:view resource="view/technologicalProcessComponentDetails.xml"/>
         <view:view resource="view/technologyOperationComponentProcessListDetails.xml"/>
 

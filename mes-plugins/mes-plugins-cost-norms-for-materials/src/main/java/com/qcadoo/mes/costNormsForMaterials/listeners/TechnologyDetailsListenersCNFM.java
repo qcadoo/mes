@@ -41,8 +41,6 @@ import java.util.Map;
 @Service
 public class TechnologyDetailsListenersCNFM {
 
-    
-
     @Autowired
     private TechnologyService technologyService;
 

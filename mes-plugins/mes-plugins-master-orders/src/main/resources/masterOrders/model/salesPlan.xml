@@ -49,6 +49,9 @@
     </fields>
 
     <hooks>
+        <validatesWith
+                class="com.qcadoo.mes.masterOrders.validators.SalesPlanValidators"
+                method="onValidate"/>
         <onCreate class="com.qcadoo.mes.masterOrders.hooks.SalesPlanHooks" method="onCreate"/>
         <onCopy class="com.qcadoo.mes.masterOrders.hooks.SalesPlanHooks" method="onCopy"/>
         <onSave class="com.qcadoo.mes.masterOrders.hooks.SalesPlanHooks"

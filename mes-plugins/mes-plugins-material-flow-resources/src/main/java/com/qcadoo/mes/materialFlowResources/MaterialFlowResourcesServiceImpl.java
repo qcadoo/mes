@@ -38,8 +38,6 @@ import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -47,6 +45,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
 
@@ -128,6 +128,32 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             List<Entity> productsAndQuantities = sqb.list().getEntities();
 
             productsAndQuantities.forEach(productAndQuantity -> quantities.put((Long) productAndQuantity.getField("product"),
+                    productAndQuantity.getDecimalField("quantity")));
+        }
+
+        return quantities;
+    }
+
+    @Override
+    public Map<Long, BigDecimal> getAvailableQuantities(final List<Integer> productsIds, final Integer locationId) {
+        Map<Long, BigDecimal> quantities = Maps.newHashMap();
+
+        if (productsIds.size() > 0) {
+            StringBuilder sb = new StringBuilder();
+
+            sb.append("SELECT product_id AS product, availableQuantity AS quantity ");
+            sb.append("FROM #materialFlowResources_resourceStockDto ");
+            sb.append("WHERE product_id IN (:productIds) ");
+            sb.append("AND location_id = :locationId ");
+
+            SearchQueryBuilder sqb = getResourceDD().find(sb.toString());
+
+            sqb.setParameter("locationId", locationId);
+            sqb.setParameterList("productIds", productsIds);
+
+            List<Entity> productsAndQuantities = sqb.list().getEntities();
+
+            productsAndQuantities.forEach(productAndQuantity -> quantities.put(Long.valueOf((Integer) productAndQuantity.getField("product")),
                     productAndQuantity.getDecimalField("quantity")));
         }
 

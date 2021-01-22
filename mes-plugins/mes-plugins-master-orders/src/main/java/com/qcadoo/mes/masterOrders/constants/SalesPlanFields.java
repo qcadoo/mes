@@ -14,4 +14,8 @@ public final class SalesPlanFields {
     public static final String PRODUCTS = "products";
 
     public static final String MASTER_ORDERS = "masterOrders";
+
+    public static final String DATE_FROM = "dateFrom";
+
+    public static final String DATE_TO = "dateTo";
 }

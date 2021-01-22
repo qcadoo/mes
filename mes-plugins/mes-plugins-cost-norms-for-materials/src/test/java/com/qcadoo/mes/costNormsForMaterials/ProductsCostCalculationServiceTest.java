@@ -31,10 +31,10 @@ import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.plugin.api.PluginManager;
 import com.qcadoo.testing.model.NumberServiceMock;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
@@ -47,8 +47,8 @@ import static com.qcadoo.testing.model.EntityTestUtils.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.*;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyLong;
 
 public class ProductsCostCalculationServiceTest {
 
@@ -57,10 +57,16 @@ public class ProductsCostCalculationServiceTest {
     @Mock
     private Entity costCalculation;
 
+    @Mock
+    private Entity calculationResult;
+
     private Entity technology;
 
     @Mock
     private ProductQuantitiesService productQuantitiesService;
+
+    @Mock
+    private PluginManager pluginManager;
 
     @Before
     public void init() {
@@ -69,18 +75,10 @@ public class ProductsCostCalculationServiceTest {
         MockitoAnnotations.initMocks(this);
 
         ReflectionTestUtils.setField(productsCostCalculationService, "productQuantitiesService", productQuantitiesService);
+        ReflectionTestUtils.setField(productsCostCalculationService, "pluginManager", pluginManager);
         ReflectionTestUtils.setField(productsCostCalculationService, "numberService", NumberServiceMock.scaleAware());
 
         technology = mockEntity();
-    }
-
-    private void verifySetDecimalField(final Entity entity, final String fieldName, final BigDecimal expectedValue) {
-        ArgumentCaptor<BigDecimal> decimalCaptor = ArgumentCaptor.forClass(BigDecimal.class);
-        verify(entity).setField(eq(fieldName), decimalCaptor.capture());
-        BigDecimal actualValue = decimalCaptor.getValue();
-        assertTrue(String.format("expected %s but actual value is %s", expectedValue, actualValue),
-                BigDecimalUtils.valueEquals(actualValue, expectedValue));
-        assertEquals(NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL, actualValue.scale());
     }
 
     private Entity mockCostsHolder(final Long id, final String materialCostsUsed, final BigDecimal cost,
@@ -129,10 +127,13 @@ public class ProductsCostCalculationServiceTest {
         stubProductResults(ImmutableMap.of(1L, firstProduct, 2L, secondProduct));
 
         // when
-        productsCostCalculationService.calculateTotalProductsCost(costCalculation, technology);
+        BigDecimal actualValue = productsCostCalculationService.calculateTotalProductsCost(costCalculation, technology,
+                calculationResult);
 
         // then
-        verifySetDecimalField(costCalculation, "totalMaterialCosts", BigDecimal.valueOf(255));
+        assertTrue(String.format("expected %s but actual value is %s", BigDecimal.valueOf(255), actualValue),
+                BigDecimalUtils.valueEquals(actualValue, BigDecimal.valueOf(255)));
+        assertEquals(NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL, actualValue.scale());
     }
 
     @Test
@@ -144,7 +145,6 @@ public class ProductsCostCalculationServiceTest {
 
     private void performCalculationUsingGivenCostsType(final ProductsCostFields costFields) {
         // given
-        BigDecimal quantity = BigDecimal.valueOf(3L);
         BigDecimal costForNumber = BigDecimal.valueOf(5L);
 
         Entity product = mockProduct(1L, null, null, costForNumber);
@@ -154,17 +154,16 @@ public class ProductsCostCalculationServiceTest {
         stubDecimalField(product, costFields.getStrValue(), BigDecimal.valueOf(5L));
 
         // when
-        BigDecimal result = productsCostCalculationService.calculateProductCostForGivenQuantity(product, quantity,
-                costFields.getMode());
+        BigDecimal result = productsCostCalculationService.calculateProductCostPerUnit(product,
+                costFields.getMode(), false);
 
         // then
-        assertTrue(BigDecimalUtils.valueEquals(result, BigDecimal.valueOf(3L)));
+        assertTrue(BigDecimalUtils.valueEquals(result, BigDecimal.valueOf(1L)));
     }
 
     @Test
     public void shouldCalculateProductCostCopeWithZeroInCostForNumber() throws Exception {
         // given
-        BigDecimal quantity = BigDecimal.valueOf(3L);
         BigDecimal costForNumber = BigDecimal.ZERO.setScale(30);
         BigDecimal averageCost = BigDecimal.TEN;
 
@@ -173,10 +172,10 @@ public class ProductsCostCalculationServiceTest {
         Entity product = mockProduct(1L, null, averageCost, costForNumber);
 
         // when
-        BigDecimal result = productsCostCalculationService.calculateProductCostForGivenQuantity(product, quantity,
-                materialCostsUsed);
+        BigDecimal result = productsCostCalculationService.calculateProductCostPerUnit(product,
+                materialCostsUsed, false);
 
         // then
-        assertTrue(BigDecimalUtils.valueEquals(result, BigDecimal.valueOf(30L)));
+        assertTrue(BigDecimalUtils.valueEquals(result, BigDecimal.valueOf(10L)));
     }
 }

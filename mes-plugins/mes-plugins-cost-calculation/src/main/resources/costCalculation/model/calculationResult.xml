@@ -38,7 +38,15 @@
             <validatesUnscaledValue max="14" />
             <validatesScale max="5" />
         </decimal>
+        <decimal name="materialCostMarginValue">
+            <validatesUnscaledValue max="14" />
+            <validatesScale max="5" />
+        </decimal>
         <decimal name="labourCost">
+            <validatesUnscaledValue max="14" />
+            <validatesScale max="5" />
+        </decimal>
+        <decimal name="labourCostMarginValue">
             <validatesUnscaledValue max="14" />
             <validatesScale max="5" />
         </decimal>
@@ -54,7 +62,15 @@
             <validatesUnscaledValue max="14" />
             <validatesScale max="5" />
         </decimal>
+        <decimal name="registrationPriceOverheadValue" >
+            <validatesUnscaledValue max="14" />
+            <validatesScale max="5" />
+        </decimal>
         <decimal name="technicalProductionCost">
+            <validatesUnscaledValue max="14" />
+            <validatesScale max="5" />
+        </decimal>
+        <decimal name="profitValue">
             <validatesUnscaledValue max="14" />
             <validatesScale max="5" />
         </decimal>

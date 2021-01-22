@@ -32,6 +32,10 @@
     <component name="window" type="window" reference="window">
         <ribbon>
             <template name="standardFormTemplate"/>
+            <group name="technologicalProcesses">
+                <bigButton name="addProcesses" icon="newIcon24.png" action="#{form}.fireEvent(addProcesses);"
+                           state="disabled"/>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab" reference="mainTab">
@@ -59,21 +63,6 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="5" width="3" height="7">
-                        <component type="lookup" name="technologicalProcessLookup"
-                                   reference="technologicalProcessLookup" plugin="technologies" model="technologicalProcess"
-                                   defaultVisible="false" persistent="false" hasLabel="false">
-
-                            <option type="searchable" value="name"/>
-                            <option type="orderable" value="name"/>
-
-                            <option type="expression" value="#name"/>
-                            <option type="fieldCode" value="name"/>
-
-                            <option type="multiselect" value="true"/>
-                            <criteriaModifier
-                                    class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologicalProcessListDetailsCriteriaModifiers"
-                                    method="showNotAssignedTechnologicalProcesses"/>
-                        </component>
                         <component type="grid" name="technologicalProcessComponents" reference="technologicalProcessComponents"
                                    source="#{form}.technologicalProcessComponents">
                             <script>
@@ -101,27 +90,25 @@
 
                             <option type="correspondingView" value="technologies/technologicalProcessComponentDetails" />
                             <option type="correspondingComponent" value="form" />
-                            <option type="weakRelation" value="true"/>
-                            <option type="correspondingLookup" value="technologicalProcessLookup"/>
 
                             <option type="footerRow" value="true"/>
                             <option type="columnsToSummaryTime"
                                     value="tj"/>
 
-                            <option type="creatable" value="true"/>
                             <option type="deletable" value="true"/>
                             <option type="fullscreen" value="true"/>
                             <option type="multiselect" value="true"/>
 
-                            <listener event="addExistingEntity"
-                                      method="onAddExistingEntity"
-                                      class="com.qcadoo.mes.technologies.listeners.TechnologicalProcessListListeners"/>
                             <listener event="removeSelectedEntities"
                                       method="onRemoveSelectedEntities"
-                                      class="com.qcadoo.mes.technologies.listeners.TechnologicalProcessListListeners"/>
+                                      class="com.qcadoo.mes.technologies.listeners.TechnologicalProcessListDetailsListeners"/>
                         </component>
                     </layoutElement>
                 </component>
+
+                <listener event="addProcesses"
+                          method="addProcesses"
+                          class="com.qcadoo.mes.technologies.listeners.TechnologicalProcessListDetailsListeners"/>
 
                 <option type="header" value="true"/>
                 <option type="expression" value="#number + (#name != null ? ' - ' + #name : '')"/>

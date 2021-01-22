@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.costCalculation.hooks;
 
-import java.math.BigDecimal;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
@@ -45,6 +37,13 @@ import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 @Service
 public class CostCalculationDetailsHooks {
@@ -62,6 +61,8 @@ public class CostCalculationDetailsHooks {
     public static final String COST_CALCULATION_RIBBON_MESSAGE_RECORD_ALREADY_GENERATED = "costCalculation.ribbon.message.recordAlreadyGenerated";
 
     public static final String ACTIONS = "actions";
+
+    public static final String RECORD_NOT_CREATED = "recordNotCreated";
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
@@ -119,6 +120,10 @@ public class CostCalculationDetailsHooks {
             CheckBoxComponent includeTPZ = (CheckBoxComponent) view.getComponentByReference(CostCalculationFields.INCLUDE_TPZ);
             CheckBoxComponent includeAdditionalTime = (CheckBoxComponent) view
                     .getComponentByReference(CostCalculationFields.INCLUDE_ADDITIONAL_TIME);
+            FieldComponent averageMachineHourlyCost = (FieldComponent) view
+                    .getComponentByReference(CostCalculationFields.AVERAGE_MACHINE_HOURLY_COST);
+            FieldComponent averageLaborHourlyCost = (FieldComponent) view
+                    .getComponentByReference(CostCalculationFields.AVERAGE_LABOR_HOURLY_COST);
             standardLaborCost.setEnabled(
                     SourceOfOperationCosts.STANDARD_LABOR_COSTS.getStringValue().equals(sourceOfOperationCosts.getFieldValue()));
             standardLaborCost.setRequired(
@@ -129,10 +134,12 @@ public class CostCalculationDetailsHooks {
             standardLaborCost.requestComponentUpdateState();
             includeTPZ.setEnabled(
                     !SourceOfOperationCosts.STANDARD_LABOR_COSTS.getStringValue().equals(sourceOfOperationCosts.getFieldValue()));
-            includeTPZ.requestComponentUpdateState();
             includeAdditionalTime.setEnabled(
                     !SourceOfOperationCosts.STANDARD_LABOR_COSTS.getStringValue().equals(sourceOfOperationCosts.getFieldValue()));
-            includeAdditionalTime.requestComponentUpdateState();
+            averageMachineHourlyCost.setEnabled(
+                    SourceOfOperationCosts.PARAMETERS.getStringValue().equals(sourceOfOperationCosts.getFieldValue()));
+            averageLaborHourlyCost.setEnabled(
+                    SourceOfOperationCosts.PARAMETERS.getStringValue().equals(sourceOfOperationCosts.getFieldValue()));
         }
     }
 
@@ -246,6 +253,7 @@ public class CostCalculationDetailsHooks {
                 .getItemByName(CostCalculationFields.NOMINAL_COSTS);
         RibbonActionItem generate = window.getRibbon().getGroupByName("generate").getItemByName("generate");
         RibbonActionItem pdf = window.getRibbon().getGroupByName("export").getItemByName("pdf");
+        RibbonActionItem xls = window.getRibbon().getGroupByName("export").getItemByName("xls");
         RibbonActionItem save = window.getRibbon().getGroupByName(ACTIONS).getItemByName("save");
         RibbonActionItem saveBack = window.getRibbon().getGroupByName(ACTIONS).getItemByName("saveBack");
         RibbonActionItem saveNew = window.getRibbon().getGroupByName(ACTIONS).getItemByName("saveNew");
@@ -259,13 +267,8 @@ public class CostCalculationDetailsHooks {
             CheckBoxComponent generatedField = (CheckBoxComponent) view.getComponentByReference(CostCalculationFields.GENERATED);
             int technologiesCount = ((GridComponent) view.getComponentByReference(CostCalculationFields.TECHNOLOGIES))
                     .getEntities().size();
-            if (technologiesCount > 0) {
-                generate.setEnabled(true);
-                generate.requestUpdate(true);
-            } else {
-                generate.setEnabled(false);
-                generate.requestUpdate(true);
-            }
+            generate.setEnabled(technologiesCount > 0);
+            generate.requestUpdate(true);
             saveNominalCosts.setEnabled(generatedField.isChecked());
             saveNominalCosts.requestUpdate(true);
             if (generatedField.isChecked()) {
@@ -273,6 +276,8 @@ public class CostCalculationDetailsHooks {
                     pdf.setEnabled(true);
                     pdf.requestUpdate(true);
                 }
+//                xls.setEnabled(true);
+//                xls.requestUpdate(true);
                 generate.setEnabled(false);
                 generate.requestUpdate(true);
                 save.setEnabled(false);
@@ -286,27 +291,31 @@ public class CostCalculationDetailsHooks {
                 saveBack.requestUpdate(true);
                 cancel.setEnabled(false);
                 cancel.setMessage(COST_CALCULATION_RIBBON_MESSAGE_RECORD_ALREADY_GENERATED);
-                cancel.requestUpdate(true);
             } else {
                 pdf.setEnabled(false);
                 pdf.setMessage("costCalculation.ribbon.message.recordNotGenerated");
                 pdf.requestUpdate(true);
+                xls.setEnabled(false);
+                xls.setMessage("costCalculation.ribbon.message.recordNotGenerated");
+                xls.requestUpdate(true);
                 save.setEnabled(true);
                 save.requestUpdate(true);
                 cancel.setEnabled(true);
-                cancel.requestUpdate(true);
             }
         } else {
             copy.setEnabled(false);
-            copy.setMessage("recordNotCreated");
+            copy.setMessage(RECORD_NOT_CREATED);
             copy.requestUpdate(true);
             pdf.setEnabled(false);
-            pdf.setMessage("recordNotCreated");
+            pdf.setMessage(RECORD_NOT_CREATED);
             pdf.requestUpdate(true);
+            xls.setEnabled(false);
+            xls.setMessage(RECORD_NOT_CREATED);
+            xls.requestUpdate(true);
             save.setEnabled(true);
             save.requestUpdate(true);
             cancel.setEnabled(true);
-            cancel.requestUpdate(true);
         }
+        cancel.requestUpdate(true);
     }
 }

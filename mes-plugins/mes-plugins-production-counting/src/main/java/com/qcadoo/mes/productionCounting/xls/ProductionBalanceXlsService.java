@@ -7,24 +7,19 @@ import com.qcadoo.mes.productionCounting.xls.dto.*;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.report.api.xls.XlsDocumentService;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
-
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductionBalanceXlsService extends XlsDocumentService {
@@ -43,7 +38,6 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
 
     @Override
     protected void addHeader(HSSFSheet sheet, Locale locale, Entity entity) {
-
         final FontsContainer fontsContainer = new FontsContainer(sheet.getWorkbook());
         final StylesContainer stylesContainer = new StylesContainer(sheet.getWorkbook(), fontsContainer);
         HSSFRow headerRow = sheet.createRow(0);
@@ -109,7 +103,6 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
     }
 
     private List<Long> getOrdersIds(final Entity productionBalance) {
-
         List<Entity> orders = productionBalance.getHasManyField(ProductionBalanceFields.ORDERS);
         return orders.stream().map(Entity::getId).collect(Collectors.toList());
     }
@@ -959,7 +952,6 @@ public class ProductionBalanceXlsService extends XlsDocumentService {
             style.setAlignment(align);
             return style;
         }
-
     }
 
     private static class FontsContainer {

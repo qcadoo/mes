@@ -111,6 +111,7 @@ public class TechnologyStructureTreeBuilder {
 
             if (!defaultTechnologyId.isPresent()) {
                 Optional<TechnologyId> maybePrevTech = root.flatMap(this::findCustomizedTechFor);
+
                 return forTechnology(maybePrevTech.orElse(technologyId), Optional.of(technologyId), contextId, settings);
             }
 
@@ -121,6 +122,7 @@ public class TechnologyStructureTreeBuilder {
 
         public Optional<TechnologyStructureNode> buildNode(final ProductInfo productInfo) {
             TechnologyStructureNodeType type = TechnologyStructureNodeType.resolveFor(productInfo);
+
             if (type == TechnologyStructureNodeType.MATERIAL) {
                 return Optional.of(new TechnologyStructureNode(productInfo, type, Collections.emptyList()));
             }
@@ -129,13 +131,17 @@ public class TechnologyStructureTreeBuilder {
                 if (settings.shouldFetchTechnologiesForComponents()) {
                     return generateTreeForComponent(productInfo);
                 }
+
                 return Optional.of(new TechnologyStructureNode(productInfo, TechnologyStructureNodeType.MATERIAL, Collections
                         .emptyList()));
             }
+
             List<TechnologyStructureNode> children = getDirectComponentsFor(productInfo).stream()
                     .filter(p -> !p.equals(productInfo)).map(this::buildNode).filter(Optional::isPresent).map(Optional::get)
                     .collect(Collectors.toList());
+
             TechnologyStructureNode generatedNode = new TechnologyStructureNode(productInfo, type, children);
+
             return Optional.of(generatedNode);
         }
 
@@ -151,17 +157,22 @@ public class TechnologyStructureTreeBuilder {
 
         private Optional<TechnologyId> findCustomizedTechFor(final ProductInfo productInfo) {
             Optional<Entity> maybeExistingNode = tryFindExistingCustomizedNode(productInfo);
+
             return maybeExistingNode.map(node -> {
                 Entity technology = node.getBelongsToField(GeneratorTreeNodeFields.PRODUCT_TECHNOLOGY);
+
                 return new TechnologyId(technology.getId());
             });
         }
 
         private ImmutableList<ProductInfo> getDirectComponentsFor(final ProductInfo productInfo) {
             Optional<TechnologyOperationId> tocId = Optional.of(productInfo.getTocId());
+
             ImmutableList.Builder<ProductInfo> builder = ImmutableList.builder();
+
             builder.addAll(materialsAndComponents.get(tocId));
             builder.addAll(intermediates.get(tocId));
+
             return builder.build();
         }
 

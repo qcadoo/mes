@@ -13,6 +13,8 @@ public class ComponentsCalculationHolder {
     private BigDecimal laborCost;
     private BigDecimal sumOfCost;
     private BigDecimal costPerUnit;
+    private BigDecimal quantity;
+    private String technologyInputProductType;
 
     public ComponentsCalculationHolder(final Entity toc, final Entity product) {
         this.toc = toc;
@@ -57,6 +59,22 @@ public class ComponentsCalculationHolder {
 
     public void setCostPerUnit(BigDecimal costPerUnit) {
         this.costPerUnit = costPerUnit;
+    }
+
+    public BigDecimal getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(BigDecimal quantity) {
+        this.quantity = quantity;
+    }
+
+    public String getTechnologyInputProductType() {
+        return technologyInputProductType;
+    }
+
+    public void setTechnologyInputProductType(String technologyInputProductType) {
+        this.technologyInputProductType = technologyInputProductType;
     }
 
     @Override public boolean equals(Object o) {

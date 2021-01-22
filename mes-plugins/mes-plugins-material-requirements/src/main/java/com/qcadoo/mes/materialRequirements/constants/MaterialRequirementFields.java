@@ -45,4 +45,10 @@ public final class MaterialRequirementFields {
 
     public static final String ORDERS = "orders";
 
+    public static final String INCLUDE_WAREHOUSE = "includeWarehouse";
+
+    public static final String SHOW_CURRENT_STOCK_LEVEL = "showCurrentStockLevel";
+
+    public static final String INCLUDE_START_DATE_ORDER = "includeStartDateOrder";
+
 }

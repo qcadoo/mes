@@ -37,7 +37,13 @@ import com.qcadoo.mes.orderSupplies.constants.OrderSuppliesConstants;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.hooks.OrderHooks;
 import com.qcadoo.mes.orders.states.constants.OrderState;
-import com.qcadoo.mes.productionCounting.constants.*;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.PriceBasedOn;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
+import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.ProductToProductGroupFields;
@@ -47,15 +53,20 @@ import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
-import com.qcadoo.model.api.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class RegisterEvents {
@@ -372,6 +383,9 @@ public class RegisterEvents {
         List<Long> productIds = new ArrayList<>();
         for (Entity opic : opics) {
             Long productId = opic.getLongField("productId");
+            if(Objects.isNull(productId)) {
+                return;
+            }
             if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(opic.getStringField("productEntityType"))) {
                 Entity productToProductGroupTechnology = technologyService
                         .getProductToProductGroupTechnology(order.getBelongsToField(OrderFields.PRODUCT), productId);

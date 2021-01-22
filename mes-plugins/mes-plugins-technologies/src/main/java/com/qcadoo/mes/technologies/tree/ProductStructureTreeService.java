@@ -26,19 +26,10 @@ package com.qcadoo.mes.technologies.tree;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
-import com.qcadoo.mes.technologies.constants.ProductStructureTreeNodeFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -46,14 +37,13 @@ import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class ProductStructureTreeService {
@@ -62,7 +52,7 @@ public class ProductStructureTreeService {
 
     private static final String L_INTERMEDIATE = "intermediate";
 
-    private static final String L_COMPONENT = "component";
+    public static final String L_COMPONENT = "component";
 
     public static final String L_MATERIAL = "material";
 

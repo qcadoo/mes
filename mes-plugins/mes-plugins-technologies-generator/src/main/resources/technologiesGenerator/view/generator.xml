@@ -125,7 +125,6 @@
                 <listener event="goToGeneratedTechnologies" method="goToGeneratedTechnologies"
                           class="com.qcadoo.mes.technologiesGenerator.listeners.GeneratorViewListeners"/>
 
-
                 <component type="gridLayout" name="mainLayout" rows="9" columns="4">
                     <layoutElement column="1" row="1">
                         <component type="input" name="number" field="number"
@@ -283,7 +282,9 @@
                         </dataType>
                         <dataType name="material">
                             <option type="nodeLabelExpression"
-                                    value="'&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - ' + #product.get('name') + ' - ' + #quantity + ' ' + #product.get('unit')"/>
+                                    value="
+                                    (#technologyInputProductType != null ? '&lt;i&gt;' + #technologyInputProductType.get('name') + '&lt;/i&gt;' +' - ' : '') +
+                                    (#product != null ? '&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - ' + #product.get('name') + ' - ' + #quantity + ' ' + #product.get('unit') : #quantity + ' ' + #unit)"/>
                             <option type="nodeIcon" value="/technologies/public/css/icons/materialIcon16.png"/>
                             <option type="newIcon" value="/technologies/public/css/icons/materialIcon16.png"/>
 

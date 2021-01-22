@@ -23,19 +23,23 @@
  */
 package com.qcadoo.mes.costCalculation.print.utils;
 
-import java.awt.*;
-import java.math.BigDecimal;
-
 import com.lowagie.text.Font;
 import com.qcadoo.report.api.FontUtils;
+
+import java.awt.*;
+import java.math.BigDecimal;
 
 public class CostCalculationMaterial {
 
     private String productNumber;
 
+    private String productName;
+
     private String unit;
 
     private BigDecimal productQuantity;
+
+    private BigDecimal costPerUnit;
 
     private BigDecimal costForGivenQuantity;
 
@@ -45,11 +49,13 @@ public class CostCalculationMaterial {
 
     private Font redFont;
 
-    public CostCalculationMaterial(String productNumber, String unit, BigDecimal productQuantity,
-            BigDecimal costForGivenQuantity) {
+    public CostCalculationMaterial(String productNumber, String productName, String unit, BigDecimal productQuantity,
+            BigDecimal costPerUnit, BigDecimal costForGivenQuantity) {
         this.productNumber = productNumber;
+        this.productName = productName;
         this.unit = unit;
         this.productQuantity = productQuantity;
+        this.costPerUnit = costPerUnit;
         this.costForGivenQuantity = costForGivenQuantity;
         this.totalCost = costForGivenQuantity;
         this.toAdd = BigDecimal.ZERO;
@@ -57,11 +63,13 @@ public class CostCalculationMaterial {
         redFont.setColor(Color.RED);
     }
 
-    public CostCalculationMaterial(String productNumber, String unit, BigDecimal productQuantity, BigDecimal costForGivenQuantity,
-            BigDecimal totalCost, BigDecimal toAdd) {
+    public CostCalculationMaterial(String productNumber, String productName, String unit, BigDecimal productQuantity,
+            BigDecimal costPerUnit, BigDecimal costForGivenQuantity, BigDecimal totalCost, BigDecimal toAdd) {
         this.productNumber = productNumber;
+        this.productName = productName;
         this.unit = unit;
         this.productQuantity = productQuantity;
+        this.costPerUnit = costPerUnit;
         this.costForGivenQuantity = costForGivenQuantity;
         this.totalCost = totalCost;
         this.toAdd = toAdd;
@@ -78,6 +86,14 @@ public class CostCalculationMaterial {
         this.productNumber = productNumber;
     }
 
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
     public String getUnit() {
         return unit;
     }
@@ -92,6 +108,14 @@ public class CostCalculationMaterial {
 
     public void setProductQuantity(BigDecimal productQuantity) {
         this.productQuantity = productQuantity;
+    }
+
+    public BigDecimal getCostPerUnit() {
+        return costPerUnit;
+    }
+
+    public void setCostPerUnit(BigDecimal costPerUnit) {
+        this.costPerUnit = costPerUnit;
     }
 
     public BigDecimal getCostForGivenQuantity() {

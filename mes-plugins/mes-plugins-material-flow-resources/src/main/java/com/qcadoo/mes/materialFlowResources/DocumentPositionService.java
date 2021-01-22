@@ -144,6 +144,7 @@ public class DocumentPositionService {
             documentPositionDTO.setAdditionalCode(resultSet.getString("additionalCode"));
             documentPositionDTO.setQuantity(resultSet.getBigDecimal("quantity"));
             documentPositionDTO.setRestAfterShiftDisposition(resultSet.getBigDecimal("restAfterShiftDisposition"));
+            documentPositionDTO.setRestAfterShiftDispositionAddUnit(resultSet.getBigDecimal("restAfterShiftDispositionAddUnit"));
             documentPositionDTO.setUnit(resultSet.getString("unit"));
             documentPositionDTO.setGivenquantity(resultSet.getBigDecimal("givenquantity"));
             documentPositionDTO.setGivenunit(resultSet.getString("givenunit"));

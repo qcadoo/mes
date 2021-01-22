@@ -26,12 +26,16 @@ package com.qcadoo.mes.costNormsForMaterials;
 import com.qcadoo.model.api.Entity;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 public interface ProductsCostCalculationService {
 
-    void calculateTotalProductsCost(final Entity costCalculation, final Entity technology);
+    BigDecimal calculateTotalProductsCost(final Entity costCalculation, final Entity technology, final Entity calculationResult);
 
-    BigDecimal calculateProductCostForGivenQuantity(final Entity product, final BigDecimal quantity,
-            final String materialCostsUsed);
+    BigDecimal calculateProductCostPerUnit(final Entity product, final String materialCostsUsed,
+            final boolean useNominalCostPriceNotSpecified);
+
+    Map<Long, BigDecimal> getNeededProductQuantities(final Entity costCalculation, final Entity technology,
+            final BigDecimal quantity);
 
 }

@@ -55,6 +55,10 @@
 			<plugin>basicProductionCounting</plugin>
 			<version>[1.5.0</version>
 		</dependency>
+		<dependency>
+			<plugin>materialFlowResources</plugin>
+			<version>[1.5.0</version>
+		</dependency>
 	</dependencies>
 
 	<modules>

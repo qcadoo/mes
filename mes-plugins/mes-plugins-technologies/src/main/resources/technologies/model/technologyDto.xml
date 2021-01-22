@@ -27,6 +27,7 @@
 <model name="technologyDto" activable="true" auditable="false" deletable="false" insertable="false" updatable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
         <string name="number" />
         <string name="name" />
@@ -49,7 +50,10 @@
         <string name="assortmentName" />
         <datetime name="dateAndTime" />
         <string name="qualityCardNumber" />
+        <boolean name="isTemplateAccepted"/>
     </fields>
+
     <identifier expression="#number + ' - ' + #name"/>
+
     <masterModel plugin="technologies" model="technology" />
 </model>

@@ -26,6 +26,7 @@
 <model name="generatorContext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://schema.qcadoo.org/model" auditable="true"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
 	<fields>
         <string name="number" required="true" unique="true">
             <validatesLength max="255"/>
@@ -51,9 +52,11 @@
         <hasMany name="generatorTechnologiesForProducts" model="generatorTechnologiesForProduct" joinField="generatorContext" cascade="nullify"
                  copyable="false"/>
 	</fields>
+
 	<hooks>
         <onDelete class="com.qcadoo.mes.technologiesGenerator.hooks.GeneratorContextHooks"
                   method="onDelete"/>
 	</hooks>
+
 	<identifier expression="#number" />
 </model>

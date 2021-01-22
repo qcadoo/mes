@@ -53,40 +53,39 @@ public class CostCalculationMaterialsService {
     private NumberService numberService;
 
     public List<CostCalculationMaterial> getSortedMaterialsFromProductQuantities(final Entity costCalculation,
-            final Map<Long, BigDecimal> neededProductQuantities) {
+            final Entity technology) {
         MathContext mathContext = numberService.getMathContext();
         List<CostCalculationMaterial> list = Lists.newArrayList();
+        BigDecimal quantity = costCalculation.getDecimalField(CostCalculationFields.QUANTITY);
+        Map<Long, BigDecimal> neededProductQuantities = productsCostCalculationService.getNeededProductQuantities(costCalculation,
+                technology, quantity);
         for (Map.Entry<Long, BigDecimal> neededProductQuantity : neededProductQuantities.entrySet()) {
             Entity product = productQuantitiesService.getProduct(neededProductQuantity.getKey());
 
             BigDecimal productQuantity = neededProductQuantity.getValue();
 
-            BigDecimal costForGivenQuantity = productsCostCalculationService.calculateProductCostForGivenQuantity(product,
-                    productQuantity, costCalculation.getStringField(CostCalculationFields.MATERIAL_COSTS_USED));
+            BigDecimal costPerUnit = productsCostCalculationService.calculateProductCostPerUnit(product,
+                    costCalculation.getStringField(CostCalculationFields.MATERIAL_COSTS_USED),
+                    costCalculation.getBooleanField(CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED));
+
+            BigDecimal costForGivenQuantity = costPerUnit.multiply(productQuantity, numberService.getMathContext());
 
             BigDecimal materialCostMargin = costCalculation.getDecimalField(CostCalculationFields.MATERIAL_COST_MARGIN);
 
             if (materialCostMargin == null) {
-
                 list.add(new CostCalculationMaterial(product.getStringField(ProductFields.NUMBER),
-                        product.getStringField(ProductFields.UNIT), productQuantity, costForGivenQuantity));
+                        product.getStringField(ProductFields.NAME), product.getStringField(ProductFields.UNIT), productQuantity,
+                        costPerUnit, costForGivenQuantity));
             } else {
                 BigDecimal toAdd = costForGivenQuantity.multiply(materialCostMargin.divide(new BigDecimal(100), mathContext),
                         mathContext);
-                BigDecimal totalCosts = costForGivenQuantity.add(toAdd, mathContext);
-
                 list.add(new CostCalculationMaterial(product.getStringField(ProductFields.NUMBER),
-                        product.getStringField(ProductFields.UNIT), productQuantity, costForGivenQuantity, totalCosts, toAdd));
+                        product.getStringField(ProductFields.NAME), product.getStringField(ProductFields.UNIT), productQuantity,
+                        costPerUnit, costForGivenQuantity, costForGivenQuantity.add(toAdd, mathContext), toAdd));
             }
 
         }
-        list.sort(new Comparator<CostCalculationMaterial>() {
-
-            @Override
-            public int compare(CostCalculationMaterial o1, CostCalculationMaterial o2) {
-                return o1.getCostForGivenQuantity().compareTo(o2.getCostForGivenQuantity());
-            }
-        });
+        list.sort(Comparator.comparing(CostCalculationMaterial::getCostForGivenQuantity));
         return list;
     }
 }

@@ -347,7 +347,7 @@ public class TechnologyService {
             Entity product = technology.getBelongsToField(TechnologyFields.PRODUCT);
 
             for (Entity operationProductOutComponent : operationProductOutComponents) {
-                if (operationProductOutComponent.getBelongsToField(L_PRODUCT).getId().equals(product.getId())) {
+                if (operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId().equals(product.getId())) {
                     return operationProductOutComponent;
                 }
             }
@@ -357,8 +357,10 @@ public class TechnologyService {
 
             for (Entity operationProductOutComponent : operationProductOutComponents) {
                 for (Entity operationProductInComponent : operationProductInComponents) {
-                    if (operationProductOutComponent.getBelongsToField(L_PRODUCT).getId()
-                            .equals(operationProductInComponent.getBelongsToField(L_PRODUCT).getId())) {
+                    Entity product = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
+
+                    if (Objects.nonNull(product) && operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId()
+                            .equals(product.getId())) {
                         return operationProductOutComponent;
                     }
                 }

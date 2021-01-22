@@ -53,6 +53,7 @@ public class SalesPlanDetailsListeners {
                         salesPlanProduct.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY).subtract(orderedQuantity));
                 salesPlanProductDD.save(salesPlanProduct);
             }
+            view.addMessage("masterOrders.getOrderedQuantities.success", ComponentState.MessageType.SUCCESS);
         }
     }
 

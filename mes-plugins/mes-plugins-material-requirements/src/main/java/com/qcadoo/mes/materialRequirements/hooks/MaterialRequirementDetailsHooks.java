@@ -23,32 +23,37 @@
  */
 package com.qcadoo.mes.materialRequirements.hooks;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementFields;
 import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementsConstants;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 @Service
 public class MaterialRequirementDetailsHooks {
-
-
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
 
-    public void generateMaterialRequirementNumber(final ViewDefinitionState view) {
-        numberGeneratorService.generateAndInsertNumber(view, MaterialRequirementsConstants.PLUGIN_IDENTIFIER,
-                MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT, QcadooViewConstants.L_FORM, MaterialRequirementFields.NUMBER);
+    public void onBeforeRender(final ViewDefinitionState view) {
+        generateMaterialRequirementNumber(view);
+        disableFormForExistingMaterialRequirement(view);
     }
 
-    public void disableFormForExistingMaterialRequirement(final ViewDefinitionState view) {
+    private void generateMaterialRequirementNumber(final ViewDefinitionState view) {
+        numberGeneratorService.generateAndInsertNumber(view, MaterialRequirementsConstants.PLUGIN_IDENTIFIER,
+                MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT, QcadooViewConstants.L_FORM,
+                MaterialRequirementFields.NUMBER);
+    }
+
+    private void disableFormForExistingMaterialRequirement(final ViewDefinitionState view) {
         FormComponent materialRequirementForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (materialRequirementForm.getEntityId() == null) {
@@ -59,6 +64,12 @@ public class MaterialRequirementDetailsHooks {
         FieldComponent numberField = (FieldComponent) view.getComponentByReference(MaterialRequirementFields.NUMBER);
         FieldComponent nameField = (FieldComponent) view.getComponentByReference(MaterialRequirementFields.NAME);
         FieldComponent mrpAlgorithmField = (FieldComponent) view.getComponentByReference(MaterialRequirementFields.MRP_ALGORITHM);
+        CheckBoxComponent includeWarehouseField = (CheckBoxComponent) view
+                .getComponentByReference(MaterialRequirementFields.INCLUDE_WAREHOUSE);
+        CheckBoxComponent showCurrentStockLevelField = (CheckBoxComponent) view
+                .getComponentByReference(MaterialRequirementFields.SHOW_CURRENT_STOCK_LEVEL);
+        CheckBoxComponent includeStartDateOrderField = (CheckBoxComponent) view
+                .getComponentByReference(MaterialRequirementFields.INCLUDE_START_DATE_ORDER);
 
         GridComponent ordersGrid = (GridComponent) view.getComponentByReference(MaterialRequirementFields.ORDERS);
 
@@ -67,8 +78,18 @@ public class MaterialRequirementDetailsHooks {
         numberField.setEnabled(!isGenerated);
         nameField.setEnabled(!isGenerated);
         mrpAlgorithmField.setEnabled(!isGenerated);
-
+        includeWarehouseField.setEnabled(!isGenerated);
+        showCurrentStockLevelField.setEnabled(!isGenerated);
+        includeStartDateOrderField.setEnabled(!isGenerated);
         ordersGrid.setEnabled(!isGenerated);
+
+        if (!isGenerated && includeWarehouseField.isChecked()) {
+            showCurrentStockLevelField.setEnabled(true);
+        } else if (!isGenerated) {
+            showCurrentStockLevelField.setEnabled(false);
+            showCurrentStockLevelField.setChecked(false);
+            showCurrentStockLevelField.requestComponentUpdateState();
+        }
     }
 
 }

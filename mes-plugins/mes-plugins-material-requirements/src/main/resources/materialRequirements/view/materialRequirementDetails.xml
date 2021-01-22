@@ -138,7 +138,7 @@
 			</script>
 
 			<component type="gridLayout" name="gridLayout" columns="3"
-				rows="7">
+				rows="10">
 				<layoutElement column="1" row="1">
 					<component type="checkbox" name="generated" reference="generated"
 						field="generated" defaultEnabled="false">
@@ -170,7 +170,25 @@
 						field="mrpAlgorithm">
 					</component>
 				</layoutElement>
-				<layoutElement column="2" row="1" width="2" height="6">
+				<layoutElement column="1" row="8">
+					<component type="checkbox" name="includeWarehouse" reference="includeWarehouse"
+							   field="includeWarehouse" hasDescription="true">
+						<listener event="onChange"
+								  class="com.qcadoo.view.api.listeners.RerenderListener"
+								  method="onChangeRerender"/>
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="9">
+					<component type="checkbox" name="showCurrentStockLevel" reference="showCurrentStockLevel"
+							   field="showCurrentStockLevel" hasDescription="true">
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="10">
+					<component type="checkbox" name="includeStartDateOrder" reference="includeStartDateOrder"
+							   field="includeStartDateOrder" hasDescription="true">
+					</component>
+				</layoutElement>
+				<layoutElement column="2" row="1" width="2" height="9">
 					<component type="lookup" name="order" reference="orderLookup"
 						field="orders" defaultVisible="false" persistent="false" hasLabel="false">
 						<option type="column" name="name" fields="name" link="true"
@@ -225,10 +243,7 @@
 	<hooks>
 		<beforeRender
 			class="com.qcadoo.mes.materialRequirements.hooks.MaterialRequirementDetailsHooks"
-			method="generateMaterialRequirementNumber" />
-		<beforeRender
-			class="com.qcadoo.mes.materialRequirements.hooks.MaterialRequirementDetailsHooks"
-			method="disableFormForExistingMaterialRequirement" />
+			method="onBeforeRender" />
 	</hooks>
 
 </view>

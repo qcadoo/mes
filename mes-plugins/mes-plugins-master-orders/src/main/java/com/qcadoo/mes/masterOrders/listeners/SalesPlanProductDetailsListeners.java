@@ -5,8 +5,8 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanProductFields;
+import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.util.AdditionalUnitService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
@@ -28,24 +28,28 @@ public class SalesPlanProductDetailsListeners {
     public void fillDefaultTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(SalesPlanProductFields.PRODUCT);
         Entity product = productLookup.getEntity();
+        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(SalesPlanProductFields.TECHNOLOGY);
         if (product != null) {
-            LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(SalesPlanProductFields.TECHNOLOGY);
             Entity defaultTechnology = technologyServiceO.getDefaultTechnology(product);
-
             if (defaultTechnology != null) {
                 technologyLookup.setFieldValue(defaultTechnology.getId());
-                technologyLookup.requestComponentUpdateState();
             } else {
                 Entity productFamily = product.getBelongsToField(ProductFields.PARENT);
                 if (productFamily != null) {
                     defaultTechnology = technologyServiceO.getDefaultTechnology(productFamily);
                     if (defaultTechnology != null) {
                         technologyLookup.setFieldValue(defaultTechnology.getId());
-                        technologyLookup.requestComponentUpdateState();
+                    } else {
+                        technologyLookup.setFieldValue(null);
                     }
+                } else {
+                    technologyLookup.setFieldValue(null);
                 }
             }
+        } else {
+            technologyLookup.setFieldValue(null);
         }
+        technologyLookup.requestComponentUpdateState();
     }
 
     public void onPlannedQuantityChange(final ViewDefinitionState view, final ComponentState componentState,

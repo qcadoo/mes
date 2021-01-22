@@ -23,11 +23,11 @@
  */
 package com.qcadoo.mes.technologies.dto;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 public class OperationProductComponentHolder {
 
@@ -53,6 +53,22 @@ public class OperationProductComponentHolder {
 
     public OperationProductComponentHolder(final Entity operationProductComponent) {
         Entity product = operationProductComponent.getBelongsToField(L_PRODUCT);
+        Entity technologyOperationComponent = operationProductComponent.getBelongsToField(L_OPERATION_COMPONENT);
+
+        OperationProductComponentEntityType entityType = OperationProductComponentEntityType
+                .parseString(operationProductComponent.getDataDefinition().getName());
+
+        this.productId = product.getId();
+        this.technologyOperationComponentId = technologyOperationComponent.getId();
+        this.productDD = product.getDataDefinition();
+        this.technologyOperationComponentDD = technologyOperationComponent.getDataDefinition();
+        this.entityType = entityType;
+        this.productMaterialType = ProductMaterialType.NONE;
+        this.productionCountingQuantityId = null;
+        this.operationProductComponentId = operationProductComponent.getId();
+    }
+
+    public OperationProductComponentHolder(final Entity operationProductComponent, final Entity product) {
         Entity technologyOperationComponent = operationProductComponent.getBelongsToField(L_OPERATION_COMPONENT);
 
         OperationProductComponentEntityType entityType = OperationProductComponentEntityType

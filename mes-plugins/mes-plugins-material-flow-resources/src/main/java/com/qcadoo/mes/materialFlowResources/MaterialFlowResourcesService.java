@@ -43,6 +43,8 @@ public interface MaterialFlowResourcesService {
 
     List<Entity> getResourcesForLocationAndProduct(final Entity location, final Entity product);
 
+    Map<Long, BigDecimal> getAvailableQuantities(List<Integer> productsIds, Integer locationId);
+
     void fillUnitFieldValues(final ViewDefinitionState view);
 
     void fillCurrencyFieldValues(final ViewDefinitionState view);
