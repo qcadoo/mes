@@ -25,14 +25,11 @@ package com.qcadoo.mes.costCalculation.print;
 
 import com.qcadoo.mes.costNormsForMaterials.constants.ProductsCostFields;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
-import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.plugin.api.PluginManager;
 import com.qcadoo.testing.model.NumberServiceMock;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -46,20 +43,12 @@ public class ProductsCostCalculationServiceTest {
 
     private ProductsCostCalculationService productsCostCalculationService;
 
-    @Mock
-    private ProductQuantitiesService productQuantitiesService;
-
-    @Mock
-    private PluginManager pluginManager;
-
     @Before
     public void init() {
         productsCostCalculationService = new ProductsCostCalculationServiceImpl();
 
         MockitoAnnotations.initMocks(this);
 
-        ReflectionTestUtils.setField(productsCostCalculationService, "productQuantitiesService", productQuantitiesService);
-        ReflectionTestUtils.setField(productsCostCalculationService, "pluginManager", pluginManager);
         ReflectionTestUtils.setField(productsCostCalculationService, "numberService", NumberServiceMock.scaleAware());
 
     }
