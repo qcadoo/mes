@@ -100,11 +100,7 @@ public class TechnologyDetailsHooks {
     }
 
     public void setTreeTabEditable(final ViewDefinitionState view) {
-        CheckBoxComponent isTemplateAcceptedCheckBox = (CheckBoxComponent) view.getComponentByReference(TechnologyFields.IS_TEMPLATE_ACCEPTED);
-
-        boolean isTemplateAccepted = isTemplateAcceptedCheckBox.isChecked();
-
-        final boolean treeTabShouldBeEnabled = !isTemplateAccepted && TechnologyState.DRAFT.equals(getTechnologyState(view))
+        final boolean treeTabShouldBeEnabled = !isTemplateAccepted(view) && TechnologyState.DRAFT.equals(getTechnologyState(view))
                 && technologyIsAlreadySaved(view);
 
         for (String componentReference : Sets.newHashSet(OUT_PRODUCTS_REFERENCE, IN_PRODUCTS_REFERENCE)) {
@@ -113,6 +109,16 @@ public class TechnologyDetailsHooks {
         }
 
         view.getComponentByReference(TECHNOLOGY_TREE_REFERENCE).setEnabled(treeTabShouldBeEnabled);
+    }
+
+    private boolean isTemplateAccepted(final ViewDefinitionState view) {
+        CheckBoxComponent isTemplateAcceptedCheckBox = (CheckBoxComponent) view.getComponentByReference(TechnologyFields.IS_TEMPLATE_ACCEPTED);
+
+        if (Objects.nonNull(isTemplateAcceptedCheckBox)) {
+            return isTemplateAcceptedCheckBox.isChecked();
+        }
+
+        return false;
     }
 
     public void setTreeTabEditable(final ViewDefinitionState view, final boolean treeTabShouldBeEnabled) {
