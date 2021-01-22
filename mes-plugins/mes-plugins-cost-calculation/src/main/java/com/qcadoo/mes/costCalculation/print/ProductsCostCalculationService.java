@@ -21,21 +21,17 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.costNormsForMaterials;
+package com.qcadoo.mes.costCalculation.print;
 
 import com.qcadoo.model.api.Entity;
 
 import java.math.BigDecimal;
-import java.util.Map;
 
 public interface ProductsCostCalculationService {
 
-    BigDecimal calculateTotalProductsCost(final Entity costCalculation, final Entity technology, final Entity calculationResult);
+    BigDecimal calculateOperationProductCostPerUnit(Entity costCalculation, Entity product, Entity operationProductComponent);
 
     BigDecimal calculateProductCostPerUnit(final Entity product, final String materialCostsUsed,
             final boolean useNominalCostPriceNotSpecified);
-
-    Map<Long, BigDecimal> getNeededProductQuantities(final Entity costCalculation, final Entity technology,
-            final BigDecimal quantity);
 
 }

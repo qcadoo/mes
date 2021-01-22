@@ -90,7 +90,6 @@ public class CostCalculationDetailsHooks {
                 CostCalculationFields.AVERAGE_LABOR_HOURLY_COST, CostCalculationFields.STANDARD_LABOR_COST,
                 CostCalculationFields.PRODUCTION_COST_MARGIN, CostCalculationFields.AVERAGE_MACHINE_HOURLY_COST,
                 CostCalculationFields.MATERIAL_COST_MARGIN, CostCalculationFields.ADDITIONAL_OVERHEAD,
-                CostCalculationFields.PRINT_COST_NORMS_OF_MATERIALS, CostCalculationFields.PRINT_OPERATION_NORMS,
                 CostCalculationFields.INCLUDE_TPZ, CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED,
                 CostCalculationFields.INCLUDE_ADDITIONAL_TIME, CostCalculationFields.SOURCE_OF_OPERATION_COSTS,
                 CostCalculationFields.REGISTRATION_PRICE_OVERHEAD, CostCalculationFields.PROFIT);
@@ -252,14 +251,15 @@ public class CostCalculationDetailsHooks {
         RibbonActionItem saveNominalCosts = window.getRibbon().getGroupByName(CostCalculationFields.SAVE_COSTS)
                 .getItemByName(CostCalculationFields.NOMINAL_COSTS);
         RibbonActionItem generate = window.getRibbon().getGroupByName("generate").getItemByName("generate");
-        RibbonActionItem pdf = window.getRibbon().getGroupByName("export").getItemByName("pdf");
-        RibbonActionItem xls = window.getRibbon().getGroupByName("export").getItemByName("xls");
+        RibbonActionItem pdfButton = window.getRibbon().getGroupByName("export").getItemByName("pdf");
+        RibbonActionItem xlsButton = window.getRibbon().getGroupByName("export").getItemByName("xls");
         RibbonActionItem save = window.getRibbon().getGroupByName(ACTIONS).getItemByName("save");
         RibbonActionItem saveBack = window.getRibbon().getGroupByName(ACTIONS).getItemByName("saveBack");
         RibbonActionItem saveNew = window.getRibbon().getGroupByName(ACTIONS).getItemByName("saveNew");
         RibbonActionItem copy = window.getRibbon().getGroupByName(ACTIONS).getItemByName("copy");
         RibbonActionItem cancel = window.getRibbon().getGroupByName(ACTIONS).getItemByName("cancel");
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        boolean pdf = form.getPersistedEntityWithIncludedFormValues().getBooleanField(CostCalculationFields.PDF);
 
         boolean entityExists = form.getEntityId() != null;
 
@@ -272,12 +272,13 @@ public class CostCalculationDetailsHooks {
             saveNominalCosts.setEnabled(generatedField.isChecked());
             saveNominalCosts.requestUpdate(true);
             if (generatedField.isChecked()) {
-                if (technologiesCount == 1) {
-                    pdf.setEnabled(true);
-                    pdf.requestUpdate(true);
+                if (pdf) {
+                    pdfButton.setEnabled(true);
+                    pdfButton.requestUpdate(true);
+                } else {
+                    xlsButton.setEnabled(true);
+                    xlsButton.requestUpdate(true);
                 }
-//                xls.setEnabled(true);
-//                xls.requestUpdate(true);
                 generate.setEnabled(false);
                 generate.requestUpdate(true);
                 save.setEnabled(false);
@@ -292,12 +293,12 @@ public class CostCalculationDetailsHooks {
                 cancel.setEnabled(false);
                 cancel.setMessage(COST_CALCULATION_RIBBON_MESSAGE_RECORD_ALREADY_GENERATED);
             } else {
-                pdf.setEnabled(false);
-                pdf.setMessage("costCalculation.ribbon.message.recordNotGenerated");
-                pdf.requestUpdate(true);
-                xls.setEnabled(false);
-                xls.setMessage("costCalculation.ribbon.message.recordNotGenerated");
-                xls.requestUpdate(true);
+                pdfButton.setEnabled(false);
+                pdfButton.setMessage("costCalculation.ribbon.message.recordNotGenerated");
+                pdfButton.requestUpdate(true);
+                xlsButton.setEnabled(false);
+                xlsButton.setMessage("costCalculation.ribbon.message.recordNotGenerated");
+                xlsButton.requestUpdate(true);
                 save.setEnabled(true);
                 save.requestUpdate(true);
                 cancel.setEnabled(true);
@@ -306,12 +307,12 @@ public class CostCalculationDetailsHooks {
             copy.setEnabled(false);
             copy.setMessage(RECORD_NOT_CREATED);
             copy.requestUpdate(true);
-            pdf.setEnabled(false);
-            pdf.setMessage(RECORD_NOT_CREATED);
-            pdf.requestUpdate(true);
-            xls.setEnabled(false);
-            xls.setMessage(RECORD_NOT_CREATED);
-            xls.requestUpdate(true);
+            pdfButton.setEnabled(false);
+            pdfButton.setMessage(RECORD_NOT_CREATED);
+            pdfButton.requestUpdate(true);
+            xlsButton.setEnabled(false);
+            xlsButton.setMessage(RECORD_NOT_CREATED);
+            xlsButton.requestUpdate(true);
             save.setEnabled(true);
             save.requestUpdate(true);
             cancel.setEnabled(true);

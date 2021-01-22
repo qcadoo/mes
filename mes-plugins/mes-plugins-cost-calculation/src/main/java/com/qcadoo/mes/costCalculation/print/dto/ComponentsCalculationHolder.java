@@ -1,4 +1,4 @@
-package com.qcadoo.mes.costCalculation.print;
+package com.qcadoo.mes.costCalculation.print.dto;
 
 import com.qcadoo.model.api.Entity;
 

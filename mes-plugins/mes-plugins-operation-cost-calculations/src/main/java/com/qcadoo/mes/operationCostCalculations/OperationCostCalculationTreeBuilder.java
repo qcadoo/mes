@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.operationCostCalculations;
 
+import com.qcadoo.mes.costNormsForOperation.constants.CalculationOperationComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.*;
 import org.slf4j.Logger;
@@ -89,7 +90,7 @@ public class OperationCostCalculationTreeBuilder {
             final DataDefinition calculationOperationComponentDD, final Entity parentEntity) {
         Entity calculationOperationComponent = calculationOperationComponentDD.create();
 
-        calculationOperationComponent.setField("parent", parent);
+        calculationOperationComponent.setField(CalculationOperationComponentFields.PARENT, parent);
         calculationOperationComponent.setField(parentEntity.getDataDefinition().getName(), parentEntity);
 
         createOrCopyCalculationOperationComponent(sourceTreeNode, calculationOperationComponent, parentEntity);

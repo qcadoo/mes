@@ -82,6 +82,9 @@ public interface ProductQuantitiesService {
     Map<Long, BigDecimal> getNeededProductQuantities(final Entity technology, final BigDecimal givenQuantity,
             final MrpAlgorithm mrpAlgorithm);
 
+    Map<OperationProductComponentHolder, BigDecimal> getNeededProductQuantitiesByOPC(final Entity technology,
+            final BigDecimal givenQuantity, final MrpAlgorithm mrpAlgorithm);
+
     /**
      * @param order       Order
      * @param mrpAlgorithm MRP Algorithm

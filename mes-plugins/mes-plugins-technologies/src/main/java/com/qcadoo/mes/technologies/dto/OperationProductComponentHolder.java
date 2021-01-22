@@ -58,9 +58,9 @@ public class OperationProductComponentHolder {
         OperationProductComponentEntityType entityType = OperationProductComponentEntityType
                 .parseString(operationProductComponent.getDataDefinition().getName());
 
-        this.productId = product.getId();
+        this.productId = product != null ? product.getId() : null;
         this.technologyOperationComponentId = technologyOperationComponent.getId();
-        this.productDD = product.getDataDefinition();
+        this.productDD = product != null ? product.getDataDefinition() : null;
         this.technologyOperationComponentDD = technologyOperationComponent.getDataDefinition();
         this.entityType = entityType;
         this.productMaterialType = ProductMaterialType.NONE;
@@ -89,8 +89,8 @@ public class OperationProductComponentHolder {
             final ProductMaterialType productMaterialType) {
 
         Long productId = product.getId();
-        Long technologyOperationComponentId = (technologyOperationComponent == null) ? null : technologyOperationComponent
-                .getId();
+        Long technologyOperationComponentId = (technologyOperationComponent == null) ? null
+                : technologyOperationComponent.getId();
         DataDefinition productDD = product.getDataDefinition();
         DataDefinition technologyOperationComponentDD = (technologyOperationComponent == null) ? null
                 : technologyOperationComponent.getDataDefinition();
@@ -172,7 +172,12 @@ public class OperationProductComponentHolder {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(productId).append(technologyOperationComponentId).append(entityType).toHashCode();
+        if (productId != null) {
+            return new HashCodeBuilder().append(productId).append(technologyOperationComponentId).append(entityType).toHashCode();
+        } else {
+            return new HashCodeBuilder().append(operationProductComponentId).append(technologyOperationComponentId)
+                    .append(entityType).toHashCode();
+        }
     }
 
     @Override
@@ -187,9 +192,15 @@ public class OperationProductComponentHolder {
 
         OperationProductComponentHolder other = (OperationProductComponentHolder) obj;
 
-        return new EqualsBuilder().append(productId, other.productId)
-                .append(technologyOperationComponentId, other.technologyOperationComponentId)
-                .append(entityType, other.entityType).isEquals();
+        if (productId != null) {
+            return new EqualsBuilder().append(productId, other.productId)
+                    .append(technologyOperationComponentId, other.technologyOperationComponentId)
+                    .append(entityType, other.entityType).isEquals();
+        } else {
+            return new EqualsBuilder().append(operationProductComponentId, other.operationProductComponentId)
+                    .append(technologyOperationComponentId, other.technologyOperationComponentId)
+                    .append(entityType, other.entityType).isEquals();
+        }
     }
 
     public Long getOperationProductComponentId() {

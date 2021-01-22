@@ -37,14 +37,8 @@ public interface ProductQuantitiesWithComponentsService {
 
     ProductQuantitiesHolder getProductComponentQuantities(Entity technology, BigDecimal givenQuantity);
 
-    OperationProductComponentWithQuantityContainer getProductComponentQuantities(Entity technology, BigDecimal givenQuantity,
-            Map<Long, BigDecimal> operationRuns);
-
     OperationProductComponentWithQuantityContainer getProductComponentWithQuantitiesForTechnology(Entity technology,
             BigDecimal givenQuantity, Map<Long, BigDecimal> operationRuns, Set<OperationProductComponentHolder> nonComponents);
-
-    Map<Long, BigDecimal> getNeededProductQuantities(Entity technology, BigDecimal givenQuantity, MrpAlgorithm mrpAlgorithm);
-
 
     /**
      * @param technology    Given technology

@@ -21,12 +21,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.costCalculation;
+package com.qcadoo.mes.costCalculation.print;
 
 import com.qcadoo.model.api.Entity;
+import org.springframework.stereotype.Service;
 
-public interface CostCalculationService {
-    
-    void createCalculationResults(Entity costCalculation, final Entity technology);
+import java.math.BigDecimal;
 
+@Service
+public interface OperationsCostCalculationService {
+
+    /**
+     * 
+     * @param costCalculation
+     *            cost calculation
+     * @param technology
+     *            technology
+     */
+    BigDecimal calculateOperationsCost(final Entity costCalculation, final Entity technology);
 }

@@ -80,20 +80,6 @@
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="2" row="2">
-                        <component type="checkbox" name="printCostNormsOfMaterials"
-                                   field="printCostNormsOfMaterials" reference="printCostNormsOfMaterials"
-                                   defaultEnabled="true" hasDescription="true">
-                            <option type="labelWidth" value="60"/>
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="2" row="3">
-                        <component type="checkbox" name="printOperationNorms"
-                                   field="printOperationNorms" reference="printOperationNorms"
-                                   defaultEnabled="true" hasDescription="true">
-                            <option type="labelWidth" value="60"/>
-                        </component>
-                    </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>

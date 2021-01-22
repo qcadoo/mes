@@ -1,19 +1,14 @@
 package com.qcadoo.mes.costCalculation.print;
 
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
-import com.qcadoo.mes.costNormsForMaterials.ProductsCostCalculationService;
+import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
+import com.qcadoo.mes.costCalculation.print.dto.ComponentsCalculationHolder;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculationOperationComponentFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesWithComponentsService;
-import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologyInputProductTypeFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -40,20 +35,24 @@ public class CostCalculationComponentsService {
     @Autowired
     private NumberService numberService;
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     private void addMaterialCost(final Entity costCalculation, final List<ComponentsCalculationHolder> allOperationComponents,
             final Entity technology, final BigDecimal quantity) {
         MathContext mathContext = numberService.getMathContext();
         Map<OperationProductComponentHolder, BigDecimal> materialQuantitiesByOPC = productQuantitiesWithComponentsService
                 .getNeededProductQuantitiesByOPC(technology, quantity, MrpAlgorithm.ONLY_MATERIALS);
+        DataDefinition operationProductComponentDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT);
         for (Map.Entry<OperationProductComponentHolder, BigDecimal> neededProductQuantity : materialQuantitiesByOPC.entrySet()) {
             Entity product = neededProductQuantity.getKey().getProduct();
+            Entity operationProductComponent = operationProductComponentDD
+                    .get(neededProductQuantity.getKey().getOperationProductComponentId());
+            BigDecimal costPerUnit = productsCostCalculationService.calculateOperationProductCostPerUnit(costCalculation, product,
+                    operationProductComponent);
 
             BigDecimal productQuantity = neededProductQuantity.getValue();
-
-            BigDecimal costPerUnit = productsCostCalculationService.calculateProductCostPerUnit(product,
-                    costCalculation.getStringField(CostCalculationFields.MATERIAL_COSTS_USED),
-                    costCalculation.getBooleanField(CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED));
-
             BigDecimal costForGivenQuantity = costPerUnit.multiply(productQuantity, numberService.getMathContext());
 
             ComponentsCalculationHolder cc = allOperationComponents.stream()
@@ -68,25 +67,28 @@ public class CostCalculationComponentsService {
     }
 
     private void addLaborCost(final Entity costCalculation, List<ComponentsCalculationHolder> allOperationComponents) {
-        MathContext mathContext = numberService.getMathContext();
+        if (!SourceOfOperationCosts.STANDARD_LABOR_COSTS.equals(SourceOfOperationCosts
+                .parseString(costCalculation.getStringField(CostCalculationFields.SOURCE_OF_OPERATION_COSTS)))) {
+            MathContext mathContext = numberService.getMathContext();
 
-        List<Entity> calculationOperationComponents = costCalculation
-                .getTreeField(CostCalculationFields.CALCULATION_OPERATION_COMPONENTS);
+            List<Entity> calculationOperationComponents = costCalculation
+                    .getTreeField(CostCalculationFields.CALCULATION_OPERATION_COMPONENTS);
 
-        for (Entity calculationOperationComponent : calculationOperationComponents) {
-            BigDecimal totalMachineOperationCost = calculationOperationComponent
-                    .getDecimalField(CalculationOperationComponentFields.TOTAL_MACHINE_OPERATION_COST);
-            BigDecimal totalLaborOperationCost = calculationOperationComponent
-                    .getDecimalField(CalculationOperationComponentFields.TOTAL_LABOR_OPERATION_COST);
-            ComponentsCalculationHolder holder = allOperationComponents.stream()
-                    .filter(bc -> bc.getToc().getId()
-                            .equals(calculationOperationComponent.getBelongsToField("technologyOperationComponent").getId()))
-                    .findFirst().orElse(null);
+            for (Entity calculationOperationComponent : calculationOperationComponents) {
+                BigDecimal totalMachineOperationCost = calculationOperationComponent
+                        .getDecimalField(CalculationOperationComponentFields.TOTAL_MACHINE_OPERATION_COST);
+                BigDecimal totalLaborOperationCost = calculationOperationComponent
+                        .getDecimalField(CalculationOperationComponentFields.TOTAL_LABOR_OPERATION_COST);
+                ComponentsCalculationHolder holder = allOperationComponents.stream()
+                        .filter(bc -> bc.getToc().getId()
+                                .equals(calculationOperationComponent.getBelongsToField("technologyOperationComponent").getId()))
+                        .findFirst().orElse(null);
 
-            if (Objects.nonNull(holder)) {
-                BigDecimal cost = BigDecimalUtils.convertNullToZero(totalMachineOperationCost)
-                        .add(BigDecimalUtils.convertNullToZero(totalLaborOperationCost), mathContext);
-                holder.setLaborCost(numberService.setScaleWithDefaultMathContext(cost, 2));
+                if (Objects.nonNull(holder)) {
+                    BigDecimal cost = BigDecimalUtils.convertNullToZero(totalMachineOperationCost)
+                            .add(BigDecimalUtils.convertNullToZero(totalLaborOperationCost), mathContext);
+                    holder.setLaborCost(numberService.setScaleWithDefaultMathContext(cost, 2));
+                }
             }
         }
     }
@@ -114,18 +116,31 @@ public class CostCalculationComponentsService {
     private void fillComponentsQuantity(List<ComponentsCalculationHolder> components, Entity technology, BigDecimal quantity) {
         Map<OperationProductComponentHolder, BigDecimal> componentQuantitiesByOPC = productQuantitiesWithComponentsService
                 .getNeededProductQuantitiesByOPC(technology, quantity, MrpAlgorithm.ALL_PRODUCTS_IN);
+        DataDefinition operationProductComponentDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT);
         for (ComponentsCalculationHolder component : components) {
-            componentQuantitiesByOPC.entrySet().stream()
-                    .filter(cq -> cq.getKey().getTechnologyOperationComponentId()
-                            .equals(component.getToc().getBelongsToField(TechnologyOperationComponentFields.PARENT).getId())
-                            && cq.getKey().getProductId().equals(component.getProduct().getId()))
-                    .findFirst().ifPresent(v -> component.setQuantity(v.getValue()));
+            for (Map.Entry<OperationProductComponentHolder, BigDecimal> cq : componentQuantitiesByOPC.entrySet()) {
+                if (cq.getKey().getTechnologyOperationComponentId()
+                        .equals(component.getToc().getBelongsToField(TechnologyOperationComponentFields.PARENT).getId())
+                        && cq.getKey().getProductId().equals(component.getProduct().getId())) {
+                    component.setQuantity(cq.getValue());
+                    String technologyInputProductTypeName = "";
+                    Entity technologyInputProductType = operationProductComponentDD
+                            .get(cq.getKey().getOperationProductComponentId())
+                            .getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE);
+                    if (technologyInputProductType != null) {
+                        technologyInputProductTypeName = technologyInputProductType
+                                .getStringField(TechnologyInputProductTypeFields.NAME);
+                    }
+                    component.setTechnologyInputProductType(technologyInputProductTypeName);
+                    break;
+                }
+            }
         }
     }
 
     private void fillComponentsCosts(final EntityTree operationComponents, final List<ComponentsCalculationHolder> components,
             final List<ComponentsCalculationHolder> allOperationComponents, final BigDecimal quantity) {
-
         Map<Long, Entity> entitiesById = new LinkedHashMap<>();
         MathContext mathContext = numberService.getMathContext();
 
@@ -138,7 +153,6 @@ public class CostCalculationComponentsService {
                     .filter(op -> op.getToc().getId().equals(component.getToc().getId())).findFirst().get();
             component.setMaterialCost(holder.getMaterialCost());
             component.setLaborCost(holder.getLaborCost());
-            component.setTechnologyInputProductType(findTechnologyInputProductType(component));
 
             addChildCost(component, null, allOperationComponents, entitiesById, mathContext);
 
@@ -149,24 +163,6 @@ public class CostCalculationComponentsService {
             component.setCostPerUnit(numberService.setScaleWithDefaultMathContext(costPerUnit, 2));
         }
 
-    }
-
-    private String findTechnologyInputProductType(ComponentsCalculationHolder component) {
-        String technologyInputProductTypeName = "";
-        for (Entity opic : component.getToc().getBelongsToField(TechnologyOperationComponentFields.PARENT)
-                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS)) {
-            if (opic.getBelongsToField(OperationProductInComponentFields.PRODUCT).getId()
-                    .equals(component.getProduct().getId())) {
-                Entity technologyInputProductType = opic
-                        .getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE);
-                if (technologyInputProductType != null) {
-                    technologyInputProductTypeName = technologyInputProductType
-                            .getStringField(TechnologyInputProductTypeFields.NAME);
-                }
-                break;
-            }
-        }
-        return technologyInputProductTypeName;
     }
 
     private void addChildCost(ComponentsCalculationHolder component, ComponentsCalculationHolder child,
