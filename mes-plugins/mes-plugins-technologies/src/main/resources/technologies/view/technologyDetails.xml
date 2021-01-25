@@ -110,7 +110,10 @@
 								if (! value || ! value.content) {
 									return;
 								}
+
 								var state = #{state}.getValue().content.value;
+								var isTemplateAccepted = #{isTemplateAccepted}.getValue().content.value;
+
 								if (!state) {
 									return;
 								}
@@ -130,6 +133,16 @@
 
 									return;
 								}
+
+                                if ((isTemplateAccepted == '1') || (state == "02accepted")) {
+                                    #{attachmentsGrid}.setEnabled(false);
+                                    $("input","#fileupload").prop('disabled',true);
+                                    $('#fileupload').fileupload({dropZone: null});
+                                } else {
+                                    #{attachmentsGrid}.setEnabled(true);
+                                    $("input","#fileupload").prop('disabled',false);
+                                    $('#fileupload').fileupload({dropZone: $('#dropzone')});
+                                }
 
 								updateRibbon(state);
 							}
@@ -372,8 +385,9 @@
                 <listener event="printTechnologyDetailsReport"
                           class="com.qcadoo.mes.technologies.print.TechnologiesReportService"
                           method="printTechnologyDetailsReport"/>
-                <listener event="downloadAttachment" method="downloadAttachment"
-                          class="com.qcadoo.mes.basic.listeners.AttachmentsListeners"/>
+                <listener event="downloadAttachment"
+                          class="com.qcadoo.mes.basic.listeners.AttachmentsListeners"
+                          method="downloadAttachment"/>
                 <listener event="fillProducts"
                           class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
                           method="fillProducts"/>
@@ -511,6 +525,7 @@
                         <option type="multiselect" value="true"/>
 
                         <option type="filtersDefaultVisible" value="false"/>
+
                         <rowStyleResolver
                                 class="com.qcadoo.mes.technologies.rowStyleResolvers.OperationProductInComponentsListResolver"
                                 method="fillRowStyles"/>
@@ -605,7 +620,9 @@
                             </dataType>
                             <dataType name="material">
                                 <option type="nodeLabelExpression"
-                                        value="'&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - ' + #product.get('name') + ' - ' + #quantity + ' ' + #product.get('unit')"/>
+                                        value="
+                                        (#technologyInputProductType != null ? '&lt;i&gt;' + #technologyInputProductType.get('name') + '&lt;/i&gt;' +' - ' : '') +
+                                        (#product != null ? '&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - ' + #product.get('name') + ' - ' + #quantity + ' ' + #product.get('unit') : #quantity + ' ' + #unit)"/>
                                 <option type="nodeIcon" value="/technologies/public/css/icons/materialIcon16.png"/>
                                 <option type="newIcon" value="/technologies/public/css/icons/materialIcon16.png"/>
                             </dataType>
@@ -650,9 +667,11 @@
 
                         <option type="prioritizable" value="false"/>
                         <option type="fullscreen" value="true"/>
+
                         <criteriaModifier
                                 class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyDetailsCriteriaModifiers"
                                 method="showTOCAssignedToTechnology"/>
+
                         <listener event="onSelectedEntityChange"
                                   class="com.qcadoo.view.api.listeners.RerenderListener"
                                   method="onChangeRerender"/>

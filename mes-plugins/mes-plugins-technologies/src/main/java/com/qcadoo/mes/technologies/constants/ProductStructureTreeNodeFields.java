@@ -28,29 +28,38 @@ public final class ProductStructureTreeNodeFields {
     private ProductStructureTreeNodeFields() {
 
     }
-    public static final String TECHNOLOGY_GROUP = "technologyGroup";
+
+    public static final String NUMBER = "number";
+
+    public static final String PARENT = "parent";
+
+    public static final String CHILDREN = "children";
+
+    public static final String ENTITY_TYPE = "entityType";
+
+    public static final String PRIORITY = "priority";
+
+    public static final String NODE_NUMBER = "nodeNumber";
+
+    public static final String QUANTITY = "quantity";
+
+    public static final String PRODUCT = "product";
+
+    public static final String TECHNOLOGY_INPUT_PRODUCT_TYPE = "technologyInputProductType";
+
+    public static final String OPERATION = "operation";
 
     public static final String TECHNOLOGY = "technology";
 
     public static final String MAIN_TECHNOLOGY = "mainTechnology";
 
-    public static final String OPERATION = "operation";
-
-    public static final String NUMBER = "number";
-
-    public static final String PRODUCT = "product";
-
-    public static final String QUANTITY = "quantity";
-
     public static final String DIVISION = "division";
 
-    public static final String PARENT = "parent";
+    public static final String TECHNOLOGY_GROUP = "technologyGroup";
 
     public static final String STANDARD_PERFORMANCE_TECHNOLOGY = "standardPerformanceTechnology";
 
-    public static final String ENTITY_TYPE = "entityType";
-
-    public static final String PRIORITY = "priority";
+    public static final String UNIT = "unit";
 
     public static final String CREATE_DATE = "createDate";
 }
