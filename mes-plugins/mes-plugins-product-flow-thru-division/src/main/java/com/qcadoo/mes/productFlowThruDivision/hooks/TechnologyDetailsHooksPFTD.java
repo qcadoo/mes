@@ -23,6 +23,15 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.hooks;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
@@ -44,24 +53,24 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.*;
 
 @Service
 public class TechnologyDetailsHooksPFTD {
 
     private static final String L_PRODUCTS_COMPONENT = "productsFlowComponent";
 
-    private static final String L_PRODUCTS_FLOW_INTERMIDIATE_IN = "productsFlowIntermediateIn";
+    private static final String L_PRODUCTS_FLOW_INTERMEDIATE_IN = "productsFlowIntermediateIn";
 
-    private static final String L_PRODUCTS_FLOW_INTERMIDIATE_OUT = "productsFlowIntermediateOut";
+    private static final String L_PRODUCTS_FLOW_INTERMEDIATE_OUT = "productsFlowIntermediateOut";
 
     private static final String L_PRODUCTS_FINAL = "productsFinal";
 
@@ -105,8 +114,9 @@ public class TechnologyDetailsHooksPFTD {
             }
 
             String state = technology.getStringField(TechnologyFields.STATE);
+            boolean isTemplateAccepted = technology.getBooleanField(TechnologyFields.IS_TEMPLATE_ACCEPTED);
 
-            if (TechnologyState.DRAFT.getStringValue().equals(state)) {
+            if (!isTemplateAccepted && TechnologyState.DRAFT.getStringValue().equals(state)) {
                 enableFlowGrids(view, true, true);
                 enableRangeGrids(view, true, true);
 
@@ -137,18 +147,18 @@ public class TechnologyDetailsHooksPFTD {
 
     private void enableFlowGrids(final ViewDefinitionState view, final boolean isEnabled, final boolean isEditable) {
         GridComponent gridProductsComponent = (GridComponent) view.getComponentByReference(L_PRODUCTS_COMPONENT);
-        GridComponent gridProductsIntermidiateIn = (GridComponent) view.getComponentByReference(L_PRODUCTS_FLOW_INTERMIDIATE_IN);
-        GridComponent gridProductsIntermidiateOut = (GridComponent) view
-                .getComponentByReference(L_PRODUCTS_FLOW_INTERMIDIATE_OUT);
+        GridComponent gridProductsIntermediateIn = (GridComponent) view.getComponentByReference(L_PRODUCTS_FLOW_INTERMEDIATE_IN);
+        GridComponent gridProductsIntermediateOut = (GridComponent) view
+                .getComponentByReference(L_PRODUCTS_FLOW_INTERMEDIATE_OUT);
         GridComponent gridProductsFinal = (GridComponent) view.getComponentByReference(L_PRODUCTS_FINAL);
 
         gridProductsComponent.setEnabled(isEnabled);
-        gridProductsIntermidiateIn.setEnabled(isEnabled);
-        gridProductsIntermidiateOut.setEnabled(isEnabled);
+        gridProductsIntermediateIn.setEnabled(isEnabled);
+        gridProductsIntermediateOut.setEnabled(isEnabled);
         gridProductsFinal.setEnabled(isEnabled);
         gridProductsComponent.setEditable(isEditable);
-        gridProductsIntermidiateIn.setEditable(isEditable);
-        gridProductsIntermidiateOut.setEditable(isEditable);
+        gridProductsIntermediateIn.setEditable(isEditable);
+        gridProductsIntermediateOut.setEditable(isEditable);
         gridProductsFinal.setEditable(isEditable);
     }
 
@@ -247,11 +257,11 @@ public class TechnologyDetailsHooksPFTD {
 
             rangeField.setFieldValue(Range.MANY_DIVISIONS.getStringValue());
             rangeField.setEnabled(false);
-            rangeField.requestComponentUpdateState();
         } else {
             rangeField.setEnabled(true);
-            rangeField.requestComponentUpdateState();
         }
+
+        rangeField.requestComponentUpdateState();
     }
 
     private void setCriteriaModifierParameters(final ViewDefinitionState view) {
@@ -281,22 +291,22 @@ public class TechnologyDetailsHooksPFTD {
         }
 
         GridComponent gridProductsComponent = (GridComponent) view.getComponentByReference(L_PRODUCTS_COMPONENT);
-        GridComponent gridProductsIntermidiateIn = (GridComponent) view.getComponentByReference(L_PRODUCTS_FLOW_INTERMIDIATE_IN);
-        GridComponent gridProductsIntermidiateOut = (GridComponent) view
-                .getComponentByReference(L_PRODUCTS_FLOW_INTERMIDIATE_OUT);
+        GridComponent gridProductsIntermediateIn = (GridComponent) view.getComponentByReference(L_PRODUCTS_FLOW_INTERMEDIATE_IN);
+        GridComponent gridProductsIntermediateOut = (GridComponent) view
+                .getComponentByReference(L_PRODUCTS_FLOW_INTERMEDIATE_OUT);
         GridComponent gridProductsFinal = (GridComponent) view.getComponentByReference(L_PRODUCTS_FINAL);
 
         FilterValueHolder gridProductsComponentInHolder = gridProductsComponent.getFilterValue();
         gridProductsComponentInHolder.put(ProductsFlowInCriteriaModifiers.TECHNOLOGY_PARAMETER, technologyId);
         gridProductsComponent.setFilterValue(gridProductsComponentInHolder);
 
-        FilterValueHolder gridProductsIntermidiateInHolder = gridProductsIntermidiateIn.getFilterValue();
-        gridProductsIntermidiateInHolder.put(ProductsFlowInCriteriaModifiers.TECHNOLOGY_PARAMETER, technologyId);
-        gridProductsIntermidiateIn.setFilterValue(gridProductsIntermidiateInHolder);
+        FilterValueHolder gridProductsIntermediateInHolder = gridProductsIntermediateIn.getFilterValue();
+        gridProductsIntermediateInHolder.put(ProductsFlowInCriteriaModifiers.TECHNOLOGY_PARAMETER, technologyId);
+        gridProductsIntermediateIn.setFilterValue(gridProductsIntermediateInHolder);
 
-        FilterValueHolder gridProductsIntermidiateOutHolder = gridProductsIntermidiateOut.getFilterValue();
-        gridProductsIntermidiateOutHolder.put(ProductsFlowInCriteriaModifiers.TECHNOLOGY_PARAMETER, technologyId);
-        gridProductsIntermidiateOut.setFilterValue(gridProductsIntermidiateOutHolder);
+        FilterValueHolder gridProductsIntermediateOutHolder = gridProductsIntermediateOut.getFilterValue();
+        gridProductsIntermediateOutHolder.put(ProductsFlowInCriteriaModifiers.TECHNOLOGY_PARAMETER, technologyId);
+        gridProductsIntermediateOut.setFilterValue(gridProductsIntermediateOutHolder);
 
         FilterValueHolder gridProductsFinalOutHolder = gridProductsFinal.getFilterValue();
         gridProductsFinalOutHolder.put(ProductsFlowInCriteriaModifiers.TECHNOLOGY_PARAMETER, technologyId);
@@ -381,35 +391,43 @@ public class TechnologyDetailsHooksPFTD {
                 .getComponentByReference(TechnologyFieldsPFTD.PRODUCTS_FLOW_LOCATION);
 
         Entity componentsLocation = division.getBelongsToField(DivisionFieldsMFR.COMPONENTS_LOCATION);
+
         if (Objects.isNull(componentsLocation)) {
             componentsLocationLookup.setFieldValue(null);
         } else {
             componentsLocationLookup.setFieldValue(componentsLocation.getId());
         }
+
         componentsLocationLookup.requestComponentUpdateState();
 
         Entity componentsOutput = division.getBelongsToField(DivisionFieldsMFR.COMPONENTS_OUTPUT_LOCATION);
+
         if (Objects.isNull(componentsOutput)) {
             componentsOutputLocationLookup.setFieldValue(null);
         } else {
             componentsOutputLocationLookup.setFieldValue(componentsOutput.getId());
         }
+
         componentsOutputLocationLookup.requestComponentUpdateState();
 
         Entity productsInput = division.getBelongsToField(DivisionFieldsMFR.PRODUCTS_INPUT_LOCATION);
+
         if (Objects.isNull(productsInput)) {
             productsInputLocationLookup.setFieldValue(null);
         } else {
             productsInputLocationLookup.setFieldValue(productsInput.getId());
         }
+
         productsInputLocationLookup.requestComponentUpdateState();
 
         Entity productsFlow = division.getBelongsToField(TechnologyFieldsPFTD.PRODUCTS_FLOW_LOCATION);
+
         if (Objects.isNull(productsFlow)) {
             productsFlowLocationLookup.setFieldValue(null);
         } else {
             productsFlowLocationLookup.setFieldValue(productsFlow.getId());
         }
+
         productsFlowLocationLookup.requestComponentUpdateState();
 
         FieldComponent productionFlow = (FieldComponent) view.getComponentByReference(TechnologyFieldsPFTD.PRODUCTION_FLOW);
@@ -433,8 +451,10 @@ public class TechnologyDetailsHooksPFTD {
 
         RibbonActionItem fillLocationsInComponents = flow.getItemByName(L_FILL_LOCATIONS_IN_COMPONENTS);
 
-        fillLocationsInComponents
-                .setEnabled(TechnologyState.DRAFT.getStringValue().equals(technology.getStringField(TechnologyFields.STATE)));
+        String state = technology.getStringField(TechnologyFields.STATE);
+        boolean isTemplateAccepted = technology.getBooleanField(TechnologyFields.IS_TEMPLATE_ACCEPTED);
+
+        fillLocationsInComponents.setEnabled(!isTemplateAccepted && TechnologyState.DRAFT.getStringValue().equals(state));
         fillLocationsInComponents.requestUpdate(true);
 
         window.requestRibbonRender();
@@ -483,8 +503,9 @@ public class TechnologyDetailsHooksPFTD {
             }
 
             String state = technology.getStringField(TechnologyFields.STATE);
+            boolean isTemplateAccepted = technology.getBooleanField(TechnologyFields.IS_TEMPLATE_ACCEPTED);
 
-            if (!TechnologyState.DRAFT.getStringValue().equals(state)) {
+            if (isTemplateAccepted || !TechnologyState.DRAFT.getStringValue().equals(state)) {
                 enableFlowGrids(view, false, false);
                 enableRangeGrids(view, false, false);
 
