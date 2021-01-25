@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,9 @@ public class MaterialRequirementCoverageHelper {
         coverageProductLogging.setField(CoverageProductLoggingFields.DATE,
                 getCoverageProductLoggingDateForOrder(registerEntry, actualDate));
         coverageProductLogging.setField(CoverageProductLoggingFields.ORDER, Long.valueOf(registerEntry.getIntegerField("orderId")));
-        coverageProductLogging.setField(CoverageProductLoggingFields.OPERATION, Long.valueOf(registerEntry.getIntegerField("operationId")));
+        if(Objects.nonNull(registerEntry.getIntegerField("operationId"))) {
+            coverageProductLogging.setField(CoverageProductLoggingFields.OPERATION, Long.valueOf(registerEntry.getIntegerField("operationId")));
+        }
         coverageProductLogging.setField(CoverageProductLoggingFields.CHANGES,
                 numberService.setScaleWithDefaultMathContext(registerEntry.getDecimalField("quantity")));
         coverageProductLogging.setField(CoverageProductLoggingFields.EVENT_TYPE, registerEntry.getStringField("eventType"));
@@ -52,8 +55,9 @@ public class MaterialRequirementCoverageHelper {
                         getCoverageProductLoggingDateForOrderProduced(registerEntry.getDateField("finishDate"),
                                 actualDate));
         coverageProductLogging.setField(CoverageProductLoggingFields.ORDER, Long.valueOf(registerEntry.getIntegerField("orderId")));
-        coverageProductLogging.setField(CoverageProductLoggingFields.OPERATION, Long.valueOf(registerEntry.getIntegerField("operationId")));
-        coverageProductLogging.setField(CoverageProductLoggingFields.CHANGES,
+        if(Objects.nonNull(registerEntry.getIntegerField("operationId"))) {
+            coverageProductLogging.setField(CoverageProductLoggingFields.OPERATION, Long.valueOf(registerEntry.getIntegerField("operationId")));
+        }        coverageProductLogging.setField(CoverageProductLoggingFields.CHANGES,
                 numberService.setScaleWithDefaultMathContext(registerEntry.getDecimalField("quantity")));
         coverageProductLogging.setField(CoverageProductLoggingFields.EVENT_TYPE, registerEntry.getStringField("eventType"));
 
