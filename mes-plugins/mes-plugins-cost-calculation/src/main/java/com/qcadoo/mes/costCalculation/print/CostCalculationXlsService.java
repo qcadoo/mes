@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -129,7 +130,7 @@ public class CostCalculationXlsService extends XlsDocumentService {
         }
         if (includeComponents) {
             for (Entity technology : entity.getHasManyField(CostCalculationFields.TECHNOLOGIES)) {
-                List<ComponentsCalculationHolder> technologyComponentCosts = costCalculationComponentsService
+                Collection<ComponentsCalculationHolder> technologyComponentCosts = costCalculationComponentsService
                         .getComponentCosts(entity, technology, calculationOperationComponents);
                 componentCosts.addAll(technologyComponentCosts);
                 hasComponents.put(technology.getId(), !technologyComponentCosts.isEmpty());

@@ -69,9 +69,9 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
                     costCalculation.getStringField(CostCalculationFields.MATERIAL_COSTS_USED),
                     costCalculation.getBooleanField(CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED));
         } else {
-            costPerUnit = operationProductComponent
-                    .getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE)
-                    .getDecimalField(TechnologyInputProductTypeFields.AVERAGE_PRICE);
+            costPerUnit = BigDecimalUtils.convertNullToZero(
+                    operationProductComponent.getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE)
+                            .getDecimalField(TechnologyInputProductTypeFields.AVERAGE_PRICE));
         }
         return costPerUnit;
     }

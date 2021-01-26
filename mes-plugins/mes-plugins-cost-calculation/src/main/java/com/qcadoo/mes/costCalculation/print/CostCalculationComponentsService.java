@@ -2,6 +2,7 @@ package com.qcadoo.mes.costCalculation.print;
 
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
+import com.qcadoo.mes.costCalculation.print.dto.ComponentCostKey;
 import com.qcadoo.mes.costCalculation.print.dto.ComponentsCalculationHolder;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculationOperationComponentFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesWithComponentsService;
@@ -14,10 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -91,7 +89,7 @@ public class CostCalculationComponentsService {
         }
     }
 
-    public List<ComponentsCalculationHolder> getComponentCosts(final Entity costCalculation, final Entity technology,
+    public Collection<ComponentsCalculationHolder> getComponentCosts(final Entity costCalculation, final Entity technology,
             List<Entity> calculationOperationComponents) {
         EntityTree operationComponents = productStructureTreeService.getOperationComponentsFromTechnology(technology);
         List<ComponentsCalculationHolder> components = operationComponents.stream()
@@ -109,7 +107,32 @@ public class CostCalculationComponentsService {
         addLaborCost(costCalculation, allOperationComponents, calculationOperationComponents);
         fillComponentsQuantity(components, technology, quantity);
         fillComponentsCosts(operationComponents, components, allOperationComponents, quantity);
-        return components;
+        return groupComponentCosts(components);
+    }
+
+    private Collection<ComponentsCalculationHolder> groupComponentCosts(List<ComponentsCalculationHolder> components) {
+        Map<ComponentCostKey, ComponentsCalculationHolder> groupedComponentCosts = new HashMap<>();
+        for (ComponentsCalculationHolder componentsCalculationHolder : components) {
+            ComponentCostKey componentCostKey = new ComponentCostKey(componentsCalculationHolder.getProduct().getId(),
+                    componentsCalculationHolder.getTechnologyInputProductType());
+            if (groupedComponentCosts.containsKey(componentCostKey)) {
+                ComponentsCalculationHolder groupedComponentCost = groupedComponentCosts.get(componentCostKey);
+                groupedComponentCost.setMaterialCost(groupedComponentCost.getMaterialCost()
+                        .add(componentsCalculationHolder.getMaterialCost(), numberService.getMathContext()));
+                groupedComponentCost.setLaborCost(groupedComponentCost.getLaborCost()
+                        .add(componentsCalculationHolder.getLaborCost(), numberService.getMathContext()));
+                groupedComponentCost.setSumOfCost(groupedComponentCost.getSumOfCost()
+                        .add(componentsCalculationHolder.getSumOfCost(), numberService.getMathContext()));
+                groupedComponentCost.setQuantity(groupedComponentCost.getQuantity().add(componentsCalculationHolder.getQuantity(),
+                        numberService.getMathContext()));
+                groupedComponentCost.setCostPerUnit(groupedComponentCost.getCostPerUnit()
+                        .add(componentsCalculationHolder.getCostPerUnit(), numberService.getMathContext()));
+                groupedComponentCosts.put(componentCostKey, groupedComponentCost);
+            } else {
+                groupedComponentCosts.put(componentCostKey, componentsCalculationHolder);
+            }
+        }
+        return groupedComponentCosts.values();
     }
 
     private void fillComponentsQuantity(List<ComponentsCalculationHolder> components, Entity technology, BigDecimal quantity) {
@@ -141,7 +164,6 @@ public class CostCalculationComponentsService {
     private void fillComponentsCosts(final EntityTree operationComponents, final List<ComponentsCalculationHolder> components,
             final List<ComponentsCalculationHolder> allOperationComponents, final BigDecimal quantity) {
         Map<Long, Entity> entitiesById = new LinkedHashMap<>();
-        MathContext mathContext = numberService.getMathContext();
 
         for (Entity entity : operationComponents) {
             entitiesById.put(entity.getId(), entity);
@@ -153,15 +175,14 @@ public class CostCalculationComponentsService {
             component.setMaterialCost(holder.getMaterialCost());
             component.setLaborCost(holder.getLaborCost());
 
-            addChildCost(component, null, allOperationComponents, entitiesById, mathContext);
+            addChildCost(component, null, allOperationComponents, entitiesById, numberService.getMathContext());
 
             BigDecimal sumOfCost = BigDecimalUtils.convertNullToZero(component.getLaborCost())
-                    .add(BigDecimalUtils.convertNullToZero(component.getMaterialCost()), mathContext);
-            BigDecimal costPerUnit = sumOfCost.divide(quantity, mathContext);
+                    .add(BigDecimalUtils.convertNullToZero(component.getMaterialCost()), numberService.getMathContext());
+            BigDecimal costPerUnit = sumOfCost.divide(quantity, numberService.getMathContext());
             component.setSumOfCost(numberService.setScaleWithDefaultMathContext(sumOfCost, 2));
             component.setCostPerUnit(numberService.setScaleWithDefaultMathContext(costPerUnit, 2));
         }
-
     }
 
     private void addChildCost(ComponentsCalculationHolder component, ComponentsCalculationHolder child,
