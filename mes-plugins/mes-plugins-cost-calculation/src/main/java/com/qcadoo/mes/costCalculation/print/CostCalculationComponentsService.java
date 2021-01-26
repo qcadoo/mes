@@ -68,7 +68,6 @@ public class CostCalculationComponentsService {
             List<Entity> calculationOperationComponents) {
         if (!SourceOfOperationCosts.STANDARD_LABOR_COSTS.equals(SourceOfOperationCosts
                 .parseString(costCalculation.getStringField(CostCalculationFields.SOURCE_OF_OPERATION_COSTS)))) {
-            MathContext mathContext = numberService.getMathContext();
 
             for (Entity calculationOperationComponent : calculationOperationComponents) {
                 BigDecimal totalMachineOperationCost = calculationOperationComponent
@@ -82,7 +81,7 @@ public class CostCalculationComponentsService {
 
                 if (Objects.nonNull(holder)) {
                     BigDecimal cost = BigDecimalUtils.convertNullToZero(totalMachineOperationCost)
-                            .add(BigDecimalUtils.convertNullToZero(totalLaborOperationCost), mathContext);
+                            .add(BigDecimalUtils.convertNullToZero(totalLaborOperationCost), numberService.getMathContext());
                     holder.setLaborCost(numberService.setScaleWithDefaultMathContext(cost, 2));
                 }
             }
@@ -119,8 +118,10 @@ public class CostCalculationComponentsService {
                 ComponentsCalculationHolder groupedComponentCost = groupedComponentCosts.get(componentCostKey);
                 groupedComponentCost.setMaterialCost(groupedComponentCost.getMaterialCost()
                         .add(componentsCalculationHolder.getMaterialCost(), numberService.getMathContext()));
-                groupedComponentCost.setLaborCost(groupedComponentCost.getLaborCost()
-                        .add(componentsCalculationHolder.getLaborCost(), numberService.getMathContext()));
+                if (!Objects.isNull(groupedComponentCost.getLaborCost())) {
+                    groupedComponentCost.setLaborCost(groupedComponentCost.getLaborCost()
+                            .add(componentsCalculationHolder.getLaborCost(), numberService.getMathContext()));
+                }
                 groupedComponentCost.setSumOfCost(groupedComponentCost.getSumOfCost()
                         .add(componentsCalculationHolder.getSumOfCost(), numberService.getMathContext()));
                 groupedComponentCost.setQuantity(groupedComponentCost.getQuantity().add(componentsCalculationHolder.getQuantity(),
