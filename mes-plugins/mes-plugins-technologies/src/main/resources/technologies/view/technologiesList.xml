@@ -52,6 +52,18 @@
 						]]>
                     </script>
                 </bigButton>
+                <bigButton name="setAsDefault" icon="generateIcon24.png"
+                           state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{grid}.performEvent('setAsDefault', []);
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
             </group>
         </ribbon>
 
@@ -98,6 +110,7 @@
 						var differentStates = statesAreDifferent(selectedEntitiesArray);
 						var isSynchronized = isSomeSynchronized(selectedEntitiesArray);
 						var allMaster = isAllMaster(selectedEntitiesArray);
+						var allNotMaster = isAllNotMaster(selectedEntitiesArray);
 
 						for (var elementKey in toggleRibbonItems) {
 							var ribbonItem = getRibbonItem(toggleRibbonItems[elementKey]);
@@ -126,7 +139,9 @@
 						var cancelState = getRibbonItem("status.cancelTechnology");
 						var checkState = getRibbonItem("status.checkTechnology");
 						var changeParameters = getRibbonItem("action.changeParameters");
+						var setAsDefault = getRibbonItem("action.setAsDefault");
                         changeParameters.disable();
+                        setAsDefault.disable();
 						acceptState.disable();
 						acceptState.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.status.confirm.accepted)}";
 						acceptState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.acceptTechnology)}");
@@ -188,6 +203,12 @@
 						} else {
 						    changeParameters.disable();
 						}
+
+						if(state == "02accepted" && allNotMaster) {
+						    setAsDefault.enable();
+						} else {
+						    setAsDefault.disable();
+						}
 					}
 
 					function getRibbonItem(ribbonPath) {
@@ -220,6 +241,15 @@
 						return true;
 					}
 
+					function isAllNotMaster(selectedEntitiesArray) {
+						for (var i = 0; i < selectedEntitiesArray.length; i++) {
+							if (selectedEntitiesArray[i].fields.master == '1') {
+								return false;
+							}
+						}
+						return true;
+					}
+
 					function isSomeSynchronized(selectedEntitiesArray) {
 						for (var i = 0; i < selectedEntitiesArray.length; i++) {
 							if (selectedEntitiesArray[i].fields.externalSynchronized == '0') {
@@ -235,6 +265,8 @@
                       method="changeState"/>
             <listener event="changeParameters" class="com.qcadoo.mes.technologies.listeners.TechnologiesListListeners"
                       method="changeParameters"/>
+            <listener event="setAsDefault" class="com.qcadoo.mes.technologies.listeners.TechnologiesListListeners"
+                      method="setAsDefault"/>
 
             <option type="column" name="number" fields="number" link="true"
                     width="100"/>
