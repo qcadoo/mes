@@ -47,9 +47,6 @@ public class CostCalculationMaterial {
 
     private boolean differentProductsInDifferentSizes;
 
-    public CostCalculationMaterial() {
-    }
-
     public String getProductNumber() {
         return productNumber;
     }

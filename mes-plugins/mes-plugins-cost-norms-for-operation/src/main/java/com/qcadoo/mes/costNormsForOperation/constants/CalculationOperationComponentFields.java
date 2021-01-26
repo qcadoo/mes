@@ -35,6 +35,8 @@ public final class CalculationOperationComponentFields {
 
     public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
+    public static final String TECHNOLOGY = "technology";
+
     public static final String PARENT = "parent";
 
     public static final String ENTITY_TYPE = "entityType";

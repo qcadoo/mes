@@ -33,6 +33,8 @@
 			required="true" />
 		<belongsTo name="technologyOperationComponent" plugin="technologies"
 			model="technologyOperationComponent" required="true" />
+		<belongsTo name="technology" plugin="technologies"
+				   model="technology" persistent="false"/>
 		<belongsTo name="parent" model="calculationOperationComponent" />
 		<enum name="entityType" values="operation" required="true"
 			default="operation" />

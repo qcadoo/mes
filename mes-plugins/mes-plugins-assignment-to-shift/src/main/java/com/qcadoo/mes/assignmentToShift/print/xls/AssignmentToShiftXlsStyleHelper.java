@@ -29,7 +29,7 @@ import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.springframework.stereotype.Service;
 
@@ -37,62 +37,62 @@ import org.springframework.stereotype.Service;
 public class AssignmentToShiftXlsStyleHelper {
 
     public void setGreyDataStyleBorderTopAlignLeftBold(final HSSFSheet sheet, final HSSFCell cell) {
-        cell.setCellStyle(getHeaderStyle(sheet.getWorkbook(), HSSFCellStyle.BORDER_MEDIUM, HSSFCellStyle.BORDER_NONE,
-                HSSFCellStyle.BORDER_NONE, HSSFCellStyle.BORDER_NONE, HSSFCellStyle.ALIGN_LEFT, Font.BOLDWEIGHT_BOLD));
+        cell.setCellStyle(getHeaderStyle(sheet.getWorkbook(), BorderStyle.MEDIUM, BorderStyle.NONE,
+                BorderStyle.NONE, BorderStyle.NONE, HorizontalAlignment.LEFT));
     }
 
     public void setGreyDataStyleBorderBottomAlignLeftBold(final HSSFSheet sheet, final HSSFCell cell) {
-        cell.setCellStyle(getHeaderStyle(sheet.getWorkbook(), HSSFCellStyle.BORDER_NONE, HSSFCellStyle.BORDER_NONE,
-                HSSFCellStyle.BORDER_NONE, HSSFCellStyle.BORDER_MEDIUM, HSSFCellStyle.ALIGN_LEFT, Font.BOLDWEIGHT_BOLD));
+        cell.setCellStyle(getHeaderStyle(sheet.getWorkbook(), BorderStyle.NONE, BorderStyle.NONE,
+                BorderStyle.NONE, BorderStyle.MEDIUM, HorizontalAlignment.LEFT));
     }
 
     public void setGreyDataStyleAlignRightBold(final HSSFSheet sheet, final HSSFCell cell) {
-        cell.setCellStyle(getHeaderStyle(sheet.getWorkbook(), HSSFCellStyle.BORDER_MEDIUM, HSSFCellStyle.BORDER_NONE,
-                HSSFCellStyle.BORDER_NONE, HSSFCellStyle.BORDER_MEDIUM, HSSFCellStyle.ALIGN_RIGHT, Font.BOLDWEIGHT_BOLD));
+        cell.setCellStyle(getHeaderStyle(sheet.getWorkbook(), BorderStyle.MEDIUM, BorderStyle.NONE,
+                BorderStyle.NONE, BorderStyle.MEDIUM, HorizontalAlignment.RIGHT));
     }
 
     public void setGreyDataStyleBorderTopLeftAlignLeftBold(final HSSFSheet sheet, final HSSFCell cell) {
-        cell.setCellStyle(getHeaderStyle(sheet.getWorkbook(), HSSFCellStyle.BORDER_MEDIUM, HSSFCellStyle.BORDER_MEDIUM,
-                HSSFCellStyle.BORDER_NONE, HSSFCellStyle.BORDER_NONE, HSSFCellStyle.ALIGN_LEFT, Font.BOLDWEIGHT_BOLD));
+        cell.setCellStyle(getHeaderStyle(sheet.getWorkbook(), BorderStyle.MEDIUM, BorderStyle.MEDIUM,
+                BorderStyle.NONE, BorderStyle.NONE, HorizontalAlignment.LEFT));
     }
 
     public void setGreyDataStyleBorderTopRightAlignLeftBold(final HSSFSheet sheet, final HSSFCell cell) {
-        cell.setCellStyle(getHeaderStyle(sheet.getWorkbook(), HSSFCellStyle.BORDER_MEDIUM, HSSFCellStyle.BORDER_NONE,
-                HSSFCellStyle.BORDER_MEDIUM, HSSFCellStyle.BORDER_NONE, HSSFCellStyle.ALIGN_LEFT, Font.BOLDWEIGHT_BOLD));
+        cell.setCellStyle(getHeaderStyle(sheet.getWorkbook(), BorderStyle.MEDIUM, BorderStyle.NONE,
+                BorderStyle.MEDIUM, BorderStyle.NONE, HorizontalAlignment.LEFT));
     }
 
     public void setGreyDataStyleBorderLeftBottomAlignLeftBold(final HSSFSheet sheet, final HSSFCell cell) {
-        cell.setCellStyle(getHeaderStyle(sheet.getWorkbook(), HSSFCellStyle.BORDER_NONE, HSSFCellStyle.BORDER_MEDIUM,
-                HSSFCellStyle.BORDER_NONE, HSSFCellStyle.BORDER_MEDIUM, HSSFCellStyle.ALIGN_LEFT, Font.BOLDWEIGHT_BOLD));
+        cell.setCellStyle(getHeaderStyle(sheet.getWorkbook(), BorderStyle.NONE, BorderStyle.MEDIUM,
+                BorderStyle.NONE, BorderStyle.MEDIUM, HorizontalAlignment.LEFT));
     }
 
     public void setGreyDataStyleBorderRightBottomAlignLeftBold(final HSSFSheet sheet, final HSSFCell cell) {
-        cell.setCellStyle(getHeaderStyle(sheet.getWorkbook(), HSSFCellStyle.BORDER_NONE, HSSFCellStyle.BORDER_NONE,
-                HSSFCellStyle.BORDER_MEDIUM, HSSFCellStyle.BORDER_MEDIUM, HSSFCellStyle.ALIGN_LEFT, Font.BOLDWEIGHT_BOLD));
+        cell.setCellStyle(getHeaderStyle(sheet.getWorkbook(), BorderStyle.NONE, BorderStyle.NONE,
+                BorderStyle.MEDIUM, BorderStyle.MEDIUM, HorizontalAlignment.LEFT));
     }
 
     public void setWhiteDataStyleBorderBoxAlignLeft(final HSSFSheet sheet, final HSSFCell cell) {
-        cell.setCellStyle(getSeriesStyle(sheet.getWorkbook(), HSSFCellStyle.BORDER_THIN, HSSFCellStyle.BORDER_THIN,
-                HSSFCellStyle.BORDER_THIN, HSSFCellStyle.BORDER_THIN, HSSFCellStyle.ALIGN_LEFT, Font.BOLDWEIGHT_NORMAL));
+        cell.setCellStyle(getSeriesStyle(sheet.getWorkbook(), BorderStyle.THIN, BorderStyle.THIN,
+                BorderStyle.THIN, BorderStyle.THIN, HorizontalAlignment.LEFT, false));
     }
 
     public void setWhiteDataStyleBorderBoxAlignCenter(final HSSFSheet sheet, final HSSFCell cell) {
-        cell.setCellStyle(getSeriesStyle(sheet.getWorkbook(), HSSFCellStyle.BORDER_THIN, HSSFCellStyle.BORDER_THIN,
-                HSSFCellStyle.BORDER_THIN, HSSFCellStyle.BORDER_THIN, HSSFCellStyle.ALIGN_CENTER, Font.BOLDWEIGHT_NORMAL));
+        cell.setCellStyle(getSeriesStyle(sheet.getWorkbook(), BorderStyle.THIN, BorderStyle.THIN,
+                BorderStyle.THIN, BorderStyle.THIN, HorizontalAlignment.CENTER, false));
     }
 
     public void setWhiteDataStyleBorderBoxAlignLeftBold(final HSSFSheet sheet, final HSSFCell cell) {
-        cell.setCellStyle(getSeriesStyle(sheet.getWorkbook(), HSSFCellStyle.BORDER_THIN, HSSFCellStyle.BORDER_THIN,
-                HSSFCellStyle.BORDER_THIN, HSSFCellStyle.BORDER_THIN, HSSFCellStyle.ALIGN_LEFT, Font.BOLDWEIGHT_BOLD));
+        cell.setCellStyle(getSeriesStyle(sheet.getWorkbook(), BorderStyle.THIN, BorderStyle.THIN,
+                BorderStyle.THIN, BorderStyle.THIN, HorizontalAlignment.LEFT, true));
     }
 
     public void setWhiteDataStyleBorderBoxAlignCenterBold(final HSSFSheet sheet, final HSSFCell cell) {
-        cell.setCellStyle(getSeriesStyle(sheet.getWorkbook(), HSSFCellStyle.BORDER_THIN, HSSFCellStyle.BORDER_THIN,
-                HSSFCellStyle.BORDER_THIN, HSSFCellStyle.BORDER_THIN, HSSFCellStyle.ALIGN_CENTER, Font.BOLDWEIGHT_BOLD));
+        cell.setCellStyle(getSeriesStyle(sheet.getWorkbook(), BorderStyle.THIN, BorderStyle.THIN,
+                BorderStyle.THIN, BorderStyle.THIN, HorizontalAlignment.CENTER, true));
     }
 
-    private HSSFCellStyle getHeaderStyle(final HSSFWorkbook workbook, final short borderTop, final short borderLeft,
-            final short borderRight, final short borderBottom, final short alignment, final short boldweight) {
+    private HSSFCellStyle getHeaderStyle(final HSSFWorkbook workbook, final BorderStyle borderTop, final BorderStyle borderLeft,
+                                         final BorderStyle borderRight, final BorderStyle borderBottom, final HorizontalAlignment horizontalAlignment) {
         HSSFCellStyle style = workbook.createCellStyle();
 
         style.setBorderTop(borderTop);
@@ -100,26 +100,26 @@ public class AssignmentToShiftXlsStyleHelper {
         style.setBorderRight(borderRight);
         style.setBorderBottom(borderBottom);
 
-        style.setAlignment(alignment);
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        style.setAlignment(horizontalAlignment);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setIndention((short) 3);
         style.setWrapText(true);
 
         style.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);
-        style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
         Font font = workbook.createFont();
         font.setFontName(HSSFFont.FONT_ARIAL);
         font.setFontHeightInPoints((short) 12);
-        font.setBoldweight(boldweight);
+        font.setBold(true);
 
         style.setFont(font);
 
         return style;
     }
 
-    private HSSFCellStyle getSeriesStyle(final HSSFWorkbook workbook, final short borderTop, final short borderLeft,
-            final short borderRight, final short borderBottom, final short alignment, final short boldweight) {
+    private HSSFCellStyle getSeriesStyle(final HSSFWorkbook workbook, final BorderStyle borderTop, final BorderStyle borderLeft,
+            final BorderStyle borderRight, final BorderStyle borderBottom, final HorizontalAlignment horizontalAlignment, final boolean bold) {
         HSSFCellStyle style = workbook.createCellStyle();
 
         style.setBorderTop(borderTop);
@@ -127,14 +127,14 @@ public class AssignmentToShiftXlsStyleHelper {
         style.setBorderRight(borderRight);
         style.setBorderBottom(borderBottom);
 
-        style.setAlignment(alignment);
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        style.setAlignment(horizontalAlignment);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setWrapText(true);
 
         Font font = workbook.createFont();
         font.setFontName(HSSFFont.FONT_ARIAL);
         font.setFontHeightInPoints((short) 11);
-        font.setBoldweight(boldweight);
+        font.setBold(bold);
         style.setFont(font);
 
         return style;

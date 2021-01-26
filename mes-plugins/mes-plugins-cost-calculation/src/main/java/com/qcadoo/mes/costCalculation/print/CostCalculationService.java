@@ -56,7 +56,7 @@ public class CostCalculationService {
 
     private final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
 
-    public void createCalculationResults(Entity costCalculation, Entity technology, final BigDecimal materialCosts,
+    public Entity createCalculationResults(Entity costCalculation, Entity technology, final BigDecimal materialCosts,
             final BigDecimal labourCost, boolean noMaterialPrice) {
         DataDefinition calculationResultDD = dataDefinitionService.get(CostCalculationConstants.PLUGIN_IDENTIFIER,
                 CostCalculationConstants.MODEL_CALCULATION_RESULT);
@@ -73,7 +73,7 @@ public class CostCalculationService {
                 numberService.setScaleWithDefaultMathContext(materialCosts, 2));
         calculationResult.setField(CalculationResultFields.LABOUR_COST,
                 numberService.setScaleWithDefaultMathContext(labourCost, 2));
-        calculationResultDD.save(calculationResult);
+        return calculationResultDD.save(calculationResult);
     }
 
     private void calculateResults(final Entity costCalculation, final Entity calculationResult, final BigDecimal quantity,

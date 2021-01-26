@@ -66,13 +66,11 @@ public class CostCalculationComponentsService {
         }
     }
 
-    private void addLaborCost(final Entity costCalculation, List<ComponentsCalculationHolder> allOperationComponents) {
+    private void addLaborCost(final Entity costCalculation, List<ComponentsCalculationHolder> allOperationComponents,
+            List<Entity> calculationOperationComponents) {
         if (!SourceOfOperationCosts.STANDARD_LABOR_COSTS.equals(SourceOfOperationCosts
                 .parseString(costCalculation.getStringField(CostCalculationFields.SOURCE_OF_OPERATION_COSTS)))) {
             MathContext mathContext = numberService.getMathContext();
-
-            List<Entity> calculationOperationComponents = costCalculation
-                    .getTreeField(CostCalculationFields.CALCULATION_OPERATION_COMPONENTS);
 
             for (Entity calculationOperationComponent : calculationOperationComponents) {
                 BigDecimal totalMachineOperationCost = calculationOperationComponent
@@ -80,8 +78,8 @@ public class CostCalculationComponentsService {
                 BigDecimal totalLaborOperationCost = calculationOperationComponent
                         .getDecimalField(CalculationOperationComponentFields.TOTAL_LABOR_OPERATION_COST);
                 ComponentsCalculationHolder holder = allOperationComponents.stream()
-                        .filter(bc -> bc.getToc().getId()
-                                .equals(calculationOperationComponent.getBelongsToField("technologyOperationComponent").getId()))
+                        .filter(bc -> bc.getToc().getId().equals(calculationOperationComponent
+                                .getBelongsToField(CalculationOperationComponentFields.TECHNOLOGY_OPERATION_COMPONENT).getId()))
                         .findFirst().orElse(null);
 
                 if (Objects.nonNull(holder)) {
@@ -93,21 +91,22 @@ public class CostCalculationComponentsService {
         }
     }
 
-    public List<ComponentsCalculationHolder> getComponentCosts(final Entity costCalculation, final Entity technology) {
+    public List<ComponentsCalculationHolder> getComponentCosts(final Entity costCalculation, final Entity technology,
+            List<Entity> calculationOperationComponents) {
         EntityTree operationComponents = productStructureTreeService.getOperationComponentsFromTechnology(technology);
         List<ComponentsCalculationHolder> components = operationComponents.stream()
                 .filter(pc -> ProductStructureTreeService.L_COMPONENT
                         .equals(pc.getStringField(TechnologyOperationComponentFields.TYPE_FROM_STRUCTURE_TREE)))
                 .map(toc -> new ComponentsCalculationHolder(toc,
-                        toc.getBelongsToField(TechnologyOperationComponentFields.PRODUCT_FROM_STRUCTURE_TREE)))
+                        toc.getBelongsToField(TechnologyOperationComponentFields.PRODUCT_FROM_STRUCTURE_TREE), technology))
                 .collect(Collectors.toList());
         List<ComponentsCalculationHolder> allOperationComponents = operationComponents.stream()
                 .map(toc -> new ComponentsCalculationHolder(toc,
-                        toc.getBelongsToField(TechnologyOperationComponentFields.PRODUCT_FROM_STRUCTURE_TREE)))
+                        toc.getBelongsToField(TechnologyOperationComponentFields.PRODUCT_FROM_STRUCTURE_TREE), technology))
                 .collect(Collectors.toList());
         BigDecimal quantity = costCalculation.getDecimalField(CostCalculationFields.QUANTITY);
         addMaterialCost(costCalculation, allOperationComponents, technology, quantity);
-        addLaborCost(costCalculation, allOperationComponents);
+        addLaborCost(costCalculation, allOperationComponents, calculationOperationComponents);
         fillComponentsQuantity(components, technology, quantity);
         fillComponentsCosts(operationComponents, components, allOperationComponents, quantity);
         return components;

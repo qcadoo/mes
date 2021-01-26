@@ -50,7 +50,7 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
         if (operationProductComponent.getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES)) {
             List<Entity> productBySizeGroups = operationProductComponent
                     .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS);
-            if (productBySizeGroups.size() > 0) {
+            if (!productBySizeGroups.isEmpty()) {
                 BigDecimal productBySizeGroupsCost = BigDecimal.ZERO;
                 for (Entity productBySizeGroup : productBySizeGroups) {
                     productBySizeGroupsCost = productBySizeGroupsCost.add(

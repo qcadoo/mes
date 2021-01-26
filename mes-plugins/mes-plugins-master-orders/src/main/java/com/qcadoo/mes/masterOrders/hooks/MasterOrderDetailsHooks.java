@@ -50,10 +50,6 @@ import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.NUMBER;
 @Service
 public class MasterOrderDetailsHooks {
 
-    
-
-
-
     private static final String L_ORDERS = "orders";
 
     private static final String L_CREATE_ORDER = "createOrder";

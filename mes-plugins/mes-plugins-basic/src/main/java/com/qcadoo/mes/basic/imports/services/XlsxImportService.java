@@ -23,11 +23,13 @@
  */
 package com.qcadoo.mes.basic.imports.services;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Objects;
-import java.util.function.Function;
-
+import com.google.common.io.Files;
+import com.qcadoo.mes.basic.imports.dtos.CellBinder;
+import com.qcadoo.mes.basic.imports.dtos.CellBinderRegistry;
+import com.qcadoo.mes.basic.imports.dtos.ImportStatus;
+import com.qcadoo.mes.basic.imports.helpers.RowProcessorHelper;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchCriterion;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -36,13 +38,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import com.google.common.io.Files;
-import com.qcadoo.mes.basic.imports.dtos.CellBinder;
-import com.qcadoo.mes.basic.imports.dtos.CellBinderRegistry;
-import com.qcadoo.mes.basic.imports.dtos.ImportStatus;
-import com.qcadoo.mes.basic.imports.helpers.RowProcessorHelper;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchCriterion;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Objects;
+import java.util.function.Function;
 
 @Service
 public class XlsxImportService extends ImportService {
@@ -76,11 +75,11 @@ public class XlsxImportService extends ImportService {
                 CellBinder cell = cellBinderRegistry.getCellBinder(columnIndex);
                 String dependentFieldName = cell.getDependentFieldName();
                 if (StringUtils.isEmpty(dependentFieldName)) {
-                    rowProcessorHelper.append(row.getCell(columnIndex, Row.RETURN_BLANK_AS_NULL));
+                    rowProcessorHelper.append(row.getCell(columnIndex, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL));
                 } else {
                     int dependentIndex = getDependentIndex(dependentFieldName, cellBinderRegistry);
-                    rowProcessorHelper.append(row.getCell(columnIndex, Row.RETURN_BLANK_AS_NULL),
-                            row.getCell(dependentIndex, Row.RETURN_BLANK_AS_NULL));
+                    rowProcessorHelper.append(row.getCell(columnIndex, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL),
+                            row.getCell(dependentIndex, Row.MissingCellPolicy.RETURN_BLANK_AS_NULL));
                 }
             }
 

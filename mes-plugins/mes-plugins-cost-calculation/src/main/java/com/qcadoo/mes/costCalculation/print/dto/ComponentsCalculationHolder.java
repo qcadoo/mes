@@ -9,6 +9,7 @@ public class ComponentsCalculationHolder {
 
     private final Entity toc;
     private final Entity product;
+    private final Entity technology;
     private BigDecimal materialCost;
     private BigDecimal laborCost;
     private BigDecimal sumOfCost;
@@ -16,9 +17,10 @@ public class ComponentsCalculationHolder {
     private BigDecimal quantity;
     private String technologyInputProductType;
 
-    public ComponentsCalculationHolder(final Entity toc, final Entity product) {
+    public ComponentsCalculationHolder(final Entity toc, final Entity product, Entity technology) {
         this.toc = toc;
         this.product = product;
+        this.technology = technology;
     }
 
     public Entity getToc() {
@@ -88,5 +90,9 @@ public class ComponentsCalculationHolder {
 
     @Override public int hashCode() {
         return Objects.hash(toc.getId(), product.getId());
+    }
+
+    public Entity getTechnology() {
+        return technology;
     }
 }

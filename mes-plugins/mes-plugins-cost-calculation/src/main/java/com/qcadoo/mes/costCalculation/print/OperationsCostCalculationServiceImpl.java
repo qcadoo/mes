@@ -116,6 +116,7 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         Map<String, BigDecimal> resultsMap = estimateCostCalculationForHourly(calculationOperationComponents.getRoot(),
                 operationTimes, hourlyCostFromOperation, costCalculation);
 
+        costCalculation.setField(CostCalculationFields.CALCULATION_OPERATION_COMPONENTS, calculationOperationComponents);
         return BigDecimalUtils
                 .convertNullToZero(numberService
                         .setScaleWithDefaultMathContext(resultsMap.get(CalculationOperationComponentFields.MACHINE_HOURLY_COST)))
@@ -240,7 +241,6 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         calculationOperationComponent.setField(CalculationOperationComponentFields.OPERATION_COST,
                 numberService.setScaleWithDefaultMathContext(costs.get(CalculationOperationComponentFields.OPERATION_COST)));
 
-        calculationOperationComponent.getDataDefinition().save(calculationOperationComponent);
     }
 
     private Map<Long, Integer> getWorkstationsFromTechnology(final Entity technology) {
