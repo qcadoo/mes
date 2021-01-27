@@ -241,6 +241,8 @@
 
         <security:role identifier="ROLE_TECHNOLOGICAL_PROCESSES"/>
 
+        <security:role identifier="ROLE_CLEAN_EXTERNAL_NUMBER"/>
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="crew" resource="model/crew.xml"/>

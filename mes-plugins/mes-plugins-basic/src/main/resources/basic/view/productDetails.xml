@@ -52,6 +52,20 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="integration" defaultAuthorizationRole="ROLE_CLEAN_EXTERNAL_NUMBER">
+                <bigButton name="cleanExternalNumber" icon="generateIcon24.png"
+                           state="enabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									#{form}.performEvent('cleanExternalNumber', []);
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
             <group name="replacements">
                 <bigButton name="addManyReplacements" state="enabled" icon="genealogyIcon24.png"
                            action="#{form}.fireEvent(addManyReplacements)"/>
@@ -96,6 +110,7 @@
 						var cancel = #{window}.getRibbonItem("actions.cancel");
 						var del = #{window}.getRibbonItem("actions.delete");
 						var addManyReplacements = #{window}.getRibbonItem("replacements.addManyReplacements");
+						var cleanExternalNumber = #{window}.getRibbonItem("integration.cleanExternalNumber");
 
 						this.addOnChangeListener({
 							onSetValue: function(value) {
@@ -109,6 +124,7 @@
 								if (! value.content.entityId) {
 									cancel.disable();
 									del.disable();
+									cleanExternalNumber.disable();
 									addManyReplacements.disable("#{translate(basic.productReplacements.window.ribbon.replacements.addManyReplacements.desc)}");
 									return;
 								}
@@ -118,7 +134,11 @@
 
 								if(externalNumber != undefined && externalNumber != '') {
 									del.disable("#{translate(materialFlow.location.ribbon.message.productIsExternal)}");
+									cleanExternalNumber.enable();
+								} else {
+									cleanExternalNumber.disable();
 								}
+
 								addManyReplacements.enable("#{translate(basic.productReplacements.window.ribbon.replacements.addManyReplacements.desc)}");
 							}
 						});
@@ -214,6 +234,8 @@
                           method="getDefaultConversions"/>
                 <listener event="openAdditionalDetails" class="com.qcadoo.mes.basic.ProductService"
                           method="openAdditionalDetails"/>
+                <listener event="cleanExternalNumber" class="com.qcadoo.mes.basic.ProductService"
+                          method="cleanExternalNumber"/>
                 <listener event="productFamilySizes" class="com.qcadoo.mes.basic.ProductService"
                           method="productFamilySizes"/>
                 <listener event="downloadAttachment" method="downloadAttachment"
@@ -221,6 +243,7 @@
 
                 <listener event="addManyReplacements" class="com.qcadoo.mes.basic.listeners.ReplacementsListeners"
                           method="openReplacements"/>
+
             </component>
         </windowTab>
 
