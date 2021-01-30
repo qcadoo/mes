@@ -23,18 +23,16 @@
  */
 package com.qcadoo.mes.warehouseMinimalState.constants;
 
-public final class WarehouseMinimalStateConstants {
+public final class WarehouseMinimumStateMultiFields {
 
-    private WarehouseMinimalStateConstants() {
+	private WarehouseMinimumStateMultiFields() {
+	}
 
-    }
+	public static final String PRODUCTS = "products";
 
-    public static final String PLUGIN_IDENTIFIER = "warehouseMinimalState";
+	public static final String LOCATION = "location";
 
-    // MODEL
+	public static final String MINIMUM_STATE = "minimumState";
 
-    public static final String MODEL_WAREHOUSE_MINIMUM_STATE = "warehouseMinimumState";
-
-    public static final String MODEL_WAREHOUSE_MINIMUM_STATE_MULTI = "warehouseMinimumStateMulti";
-
+	public static final String OPTIMAL_ORDER_QUANTITY = "optimalOrderQuantity";
 }
