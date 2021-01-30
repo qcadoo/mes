@@ -110,7 +110,7 @@
 						var cancel = #{window}.getRibbonItem("actions.cancel");
 						var del = #{window}.getRibbonItem("actions.delete");
 						var addManyReplacements = #{window}.getRibbonItem("replacements.addManyReplacements");
-						var cleanExternalNumber = #{window}.getRibbonItem("integration.cleanExternalNumber");
+						var cleanExternalNumber = #{window}.getRibbonItemOrNull("integration.cleanExternalNumber");
 
 						this.addOnChangeListener({
 							onSetValue: function(value) {
@@ -124,7 +124,9 @@
 								if (! value.content.entityId) {
 									cancel.disable();
 									del.disable();
-									cleanExternalNumber.disable();
+									if(cleanExternalNumber) {
+									    cleanExternalNumber.disable();
+									}
 									addManyReplacements.disable("#{translate(basic.productReplacements.window.ribbon.replacements.addManyReplacements.desc)}");
 									return;
 								}
@@ -134,9 +136,13 @@
 
 								if(externalNumber != undefined && externalNumber != '') {
 									del.disable("#{translate(materialFlow.location.ribbon.message.productIsExternal)}");
-									cleanExternalNumber.enable();
+									if(cleanExternalNumber) {
+                                        cleanExternalNumber.enable();
+									}
 								} else {
-									cleanExternalNumber.disable();
+								    if(cleanExternalNumber) {
+									    cleanExternalNumber.disable();
+									}
 								}
 
 								addManyReplacements.enable("#{translate(basic.productReplacements.window.ribbon.replacements.addManyReplacements.desc)}");
