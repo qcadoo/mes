@@ -21,20 +21,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.warehouseMinimalState.constants;
+package com.qcadoo.mes.materialFlowResources.constants;
 
-public final class WarehouseMinimalStateConstants {
+public final class ProductFieldsMFR {
 
-    private WarehouseMinimalStateConstants() {
+    private ProductFieldsMFR() {
 
     }
 
-    public static final String PLUGIN_IDENTIFIER = "warehouseMinimalState";
+    public static final String RESOURCES = "resources";
 
-    // MODEL
+    public static final String STORAGE_LOCATION_HISTORY = "storageLocationHistory";
 
-    public static final String MODEL_WAREHOUSE_MINIMUM_STATE = "warehouseMinimumState";
+    public static final String RESOURCE_STOCKS = "resourceStocks";
 
-    public static final String MODEL_WAREHOUSE_MINIMUM_STATE_MULTI = "warehouseMinimumStateMulti";
+    public static final String RESOURCE_CORRECTIONS = "resourceCorrections";
+
+    public static final String COST_NORMS_GENERATOR = "costNormsGenerator";
 
 }
