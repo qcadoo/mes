@@ -216,7 +216,9 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
 
         String actualWarehouse = "";
         Long actualDate = 0L;
+        int keyIndex = 0;
         for (WarehouseDateKey key : keys) {
+            keyIndex += 1;
             List<MaterialRequirementEntry> materials = entriesMap.get(key);
             Map<Long, BigDecimal> quantitiesInStock = Maps.newHashMap();
             if (showCurrentStockLevel && Objects.nonNull(key.getWarehouseId())) {
@@ -235,7 +237,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
                 MaterialRequirementEntry material = neededProductQuantities.get(materialKey);
                 table.getDefaultCell().disableBorderSide(PdfCell.BOTTOM);
                 table.getDefaultCell().disableBorderSide(PdfCell.TOP);
-                if (index == materialKeys.size()) {
+                if (index == materialKeys.size() && keyIndex == keys.size()) {
                     table.getDefaultCell().enableBorderSide(PdfCell.BOTTOM);
                 }
 
