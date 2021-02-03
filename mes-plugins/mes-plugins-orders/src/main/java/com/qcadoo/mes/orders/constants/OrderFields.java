@@ -147,4 +147,6 @@ public final class OrderFields {
 
     public static final String ACTIVE = "active";
 
+    public static final String ORDER_PACKS = "orderPacks";
+
 }

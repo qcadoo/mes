@@ -178,6 +178,7 @@
         <hasMany name="technologyOperationComponentsMergeProductOut" plugin="technologies"
                        model="technologyOperationComponentMergeProductOut"
                        joinField="order" cascade="delete"/>
+        <hasMany name="orderPacks" model="orderPack" joinField="order" cascade="delete"/>
     </fields>
 
     <hooks>

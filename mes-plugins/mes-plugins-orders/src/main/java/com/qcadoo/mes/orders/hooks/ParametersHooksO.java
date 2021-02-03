@@ -47,6 +47,8 @@ public class ParametersHooksO {
 
     private static final String L_REALIZATION_LOCATIONS = "realizationLocations";
 
+    private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING = "qcadooView.validate.field.error.missing";
+
     @Autowired
     private OrderService orderService;
 
@@ -69,8 +71,25 @@ public class ParametersHooksO {
         if (parameter.getBooleanField(ParameterFieldsO.ADVISE_START_DATE_OF_THE_ORDER)
                 && StringUtils.isEmpty(parameter.getStringField(ParameterFieldsO.ORDER_START_DATE_BASED_ON))) {
             parameter.addError(parameterDD.getField(ParameterFieldsO.ORDER_START_DATE_BASED_ON),
-                    "qcadooView.validate.field.error.missing");
+                    L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
 
+            isValid = false;
+        }
+
+        boolean generatePacksForOrders = parameter.getBooleanField(GENERATE_PACKS_FOR_ORDERS);
+        if (generatePacksForOrders && parameter.getDecimalField(OPTIMAL_PACK_SIZE) == null) {
+            parameter.addError(parameterDD.getField(OPTIMAL_PACK_SIZE), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
+            isValid = false;
+        }
+        if (generatePacksForOrders && parameter.getDecimalField(REST_FEEDING_LAST_PACK) == null) {
+            parameter.addError(parameterDD.getField(REST_FEEDING_LAST_PACK), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING);
+            isValid = false;
+        }
+
+        if (parameter.getDecimalField(OPTIMAL_PACK_SIZE) != null && parameter.getDecimalField(REST_FEEDING_LAST_PACK) != null
+                && parameter.getDecimalField(REST_FEEDING_LAST_PACK)
+                        .compareTo(parameter.getDecimalField(OPTIMAL_PACK_SIZE)) >= 0) {
+            parameter.addError(parameterDD.getField(REST_FEEDING_LAST_PACK), "basic.parameter.restFeedingLastPackBiggerThanOptimalPackSize.error");
             isValid = false;
         }
 
@@ -116,7 +135,8 @@ public class ParametersHooksO {
 
         CheckBoxComponent adviseStartDateOfTheOrder = (CheckBoxComponent) view
                 .getComponentByReference(ParameterFieldsO.ADVISE_START_DATE_OF_THE_ORDER);
-        FieldComponent orderStartDateBasedOn = (FieldComponent) view.getComponentByReference(ParameterFieldsO.ORDER_START_DATE_BASED_ON);
+        FieldComponent orderStartDateBasedOn = (FieldComponent) view
+                .getComponentByReference(ParameterFieldsO.ORDER_START_DATE_BASED_ON);
 
         if (adviseStartDateOfTheOrder.isChecked()) {
             orderStartDateBasedOn.setEnabled(true);
@@ -124,6 +144,26 @@ public class ParametersHooksO {
             orderStartDateBasedOn.setEnabled(false);
             orderStartDateBasedOn.setFieldValue(null);
         }
+
+        CheckBoxComponent generatePacksForOrders = (CheckBoxComponent) view.getComponentByReference(GENERATE_PACKS_FOR_ORDERS);
+        FieldComponent optimalPackSize = (FieldComponent) view.getComponentByReference(OPTIMAL_PACK_SIZE);
+        FieldComponent restFeedingLastPack = (FieldComponent) view.getComponentByReference(REST_FEEDING_LAST_PACK);
+
+        if (generatePacksForOrders.isChecked()) {
+            optimalPackSize.setEnabled(true);
+            optimalPackSize.setRequired(true);
+            restFeedingLastPack.setEnabled(true);
+            restFeedingLastPack.setRequired(true);
+        } else {
+            optimalPackSize.setEnabled(false);
+            optimalPackSize.setFieldValue(null);
+            optimalPackSize.setRequired(false);
+            restFeedingLastPack.setEnabled(false);
+            restFeedingLastPack.setFieldValue(null);
+            restFeedingLastPack.setRequired(false);
+        }
+        optimalPackSize.requestComponentUpdateState();
+        restFeedingLastPack.requestComponentUpdateState();
     }
 
     public void showTimeFields(final ViewDefinitionState view) {

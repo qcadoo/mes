@@ -79,4 +79,10 @@ public final class ParameterFieldsO {
 
     public static final String ORDER_START_DATE_BASED_ON = "orderStartDateBasedOn";
 
+    public static final String GENERATE_PACKS_FOR_ORDERS = "generatePacksForOrders";
+
+    public static final String OPTIMAL_PACK_SIZE = "optimalPackSize";
+
+    public static final String REST_FEEDING_LAST_PACK = "restFeedingLastPack";
+
 }
