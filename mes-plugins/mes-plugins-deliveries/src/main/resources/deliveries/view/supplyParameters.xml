@@ -41,7 +41,7 @@
         <windowTab name="mainTab">
             <component type="form" name="supplyParametersForm" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="9">
+                           rows="11">
                     <layoutElement column="1" row="1" height="2">
                         <component type="textarea" name="defaultDescription"
                                    field="#{form}.defaultDescription" reference="defaultDescription"/>
@@ -86,6 +86,17 @@
                     <layoutElement column="1" row="9">
                         <component type="checkbox" name="requireSupplierIdentification" hasDescription="true"
                                    field="#{form}.requireSupplierIdentification" reference="requireSupplierIdentification">
+                            <option type="labelWidth" value="50" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="10">
+                        <component type="select" name="deliveryPriceFillBasedOn" field="#{form}.deliveryPriceFillBasedOn"
+                                   reference="deliveryPriceFillBasedOn">
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="11">
+                        <component type="checkbox" name="deliveryUseNominalCostWhenPriceNotSpecified" hasDescription="true"
+                                   field="#{form}.deliveryUseNominalCostWhenPriceNotSpecified" reference="deliveryUseNominalCostWhenPriceNotSpecified">
                             <option type="labelWidth" value="50" />
                         </component>
                     </layoutElement>

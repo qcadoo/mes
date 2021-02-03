@@ -118,6 +118,16 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">
+            <model:enum name="deliveryPriceFillBasedOn"
+                values="01lastPurchasePrice,02pricesFromLastDeliveryOffer"
+                default="01lastPurchasePrice"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="deliveryUseNominalCostWhenPriceNotSpecified" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
             <model:string name="defaultDescription">
                 <model:validatesLength max="2048"/>
             </model:string>
