@@ -96,15 +96,15 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">
-            <model:hasMany name="salesPlanMaterialProducts" model="salesPlanProduct" plugin="masterOrders" joinField="product"/>
+            <model:hasMany name="salesPlanMaterialRequirementProducts" model="salesPlanMaterialRequirementProduct" plugin="masterOrders" joinField="product"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="sizeGroup">
-            <model:hasMany name="salesPlanMaterialProducts" model="salesPlanProduct" plugin="masterOrders" joinField="sizeGroup"/>
+            <model:hasMany name="salesPlanMaterialRequirementProducts" model="salesPlanMaterialRequirementProduct" plugin="masterOrders" joinField="sizeGroup"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="company">
-            <model:hasMany name="salesPlanMaterialProducts" model="salesPlanProduct" plugin="masterOrders" joinField="supplier"/>
+            <model:hasMany name="salesPlanMaterialRequirementProducts" model="salesPlanMaterialRequirementProduct" plugin="masterOrders" joinField="supplier"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="shift">
