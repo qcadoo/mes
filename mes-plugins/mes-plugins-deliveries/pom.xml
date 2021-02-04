@@ -35,11 +35,6 @@
 			<artifactId>mes-plugins-material-flow-resources</artifactId>
 			<version>1.5-SNAPSHOT-DEV</version>
 		</dependency>
-		<dependency>
-			<groupId>com.qcadoo.mes</groupId>
-			<artifactId>mes-plugins-technologies</artifactId>
-			<version>1.5-SNAPSHOT-DEV</version>
-		</dependency>
 	</dependencies>
 
 	<build>

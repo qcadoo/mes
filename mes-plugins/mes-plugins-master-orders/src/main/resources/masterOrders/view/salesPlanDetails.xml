@@ -44,6 +44,11 @@
                            state="disabled" action="#{form}.fireEvent(showOrderedProductsForFamily);">
                 </bigButton>
             </group>
+            <group name="salesPlanMaterialRequirement">
+                <bigButton name="createSalesPlanMaterialRequirement" icon="genealogyIcon24.png"
+                           state="disabled" action="#{form}.fireEvent(createSalesPlanMaterialRequirement);">
+                </bigButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -75,6 +80,7 @@
                         </component>
                     </layoutElement>
                 </component>
+
                 <option type="header" value="true"/>
                 <option type="expression" value="#number"/>
 
@@ -83,6 +89,8 @@
                 <listener event="getOrderedQuantities" method="getOrderedQuantities"
                           class="com.qcadoo.mes.masterOrders.listeners.SalesPlanDetailsListeners"/>
                 <listener event="showOrderedProductsForFamily" method="showOrderedProductsForFamily"
+                          class="com.qcadoo.mes.masterOrders.listeners.SalesPlanDetailsListeners"/>
+                <listener event="createSalesPlanMaterialRequirement" method="createSalesPlanMaterialRequirement"
                           class="com.qcadoo.mes.masterOrders.listeners.SalesPlanDetailsListeners"/>
             </component>
         </windowTab>
@@ -138,6 +146,10 @@
 
     </component>
 
-    <hooks/>
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.masterOrders.hooks.SalesPlanDetailsHooks"
+                method="onBeforeRender"/>
+    </hooks>
 
 </view>

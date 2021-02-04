@@ -727,6 +727,10 @@
                         <option type="multiselect" value="true"/>
                         <option type="fixedHeight" value="true"/>
 
+                        <rowStyleResolver
+                                class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
+                                method="fillRowStyles"/>
+
                         <listener event="select"
                                   class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
                                   method="disableShowProductButton"/>

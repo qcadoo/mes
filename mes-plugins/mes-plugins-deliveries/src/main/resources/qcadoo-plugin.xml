@@ -72,10 +72,6 @@
             <plugin>materialFlowResources</plugin>
             <version>[1.2.1</version>
         </dependency>
-        <dependency>
-            <plugin>technologies</plugin>
-            <version>[1.2.1</version>
-        </dependency>
     </dependencies>
 
     <modules>
