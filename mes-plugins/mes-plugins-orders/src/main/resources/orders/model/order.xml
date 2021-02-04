@@ -179,6 +179,8 @@
                        model="technologyOperationComponentMergeProductOut"
                        joinField="order" cascade="delete"/>
         <hasMany name="orderPacks" model="orderPack" joinField="order" cascade="delete"/>
+        <hasMany name="orderPacksDto" joinField="order" model="orderPackDto"
+                 persistent="false"/>
     </fields>
 
     <hooks>

@@ -29,6 +29,9 @@
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
+        <belongsTo name="order" model="order" persistent="false"/>
+        <integer name="orderId"/>
+
         <string name="number"/>
         <string name="orderNumber"/>
         <enum name="orderState" values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"/>

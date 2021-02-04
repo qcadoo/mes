@@ -399,6 +399,8 @@
         <view:view resource="view/setCategory.xml"/>
         <view:view resource="view/orderPacksList.xml"/>
         <view:view resource="view/orderPackDetails.xml"/>
+        <view:view resource="view/orderPacksSingleOrderList.xml"/>
+        <view:view resource="view/orderPackSingleOrderDetails.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/productsList.xml"/>

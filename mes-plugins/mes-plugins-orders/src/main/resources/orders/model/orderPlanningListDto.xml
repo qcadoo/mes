@@ -60,6 +60,7 @@
         <decimal name="flagPercentageOfExecutionWithColor"/>
         <string name="percentageOfExecutionCellColor"/>
         <string name="company"/>
+        <boolean name="hasPacks"/>
     </fields>
     <hooks>
     </hooks>

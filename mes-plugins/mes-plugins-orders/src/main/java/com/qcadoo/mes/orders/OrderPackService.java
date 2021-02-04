@@ -26,7 +26,7 @@ public class OrderPackService {
 
     public BigDecimal getSumQuantityOrderPacksForOrderWithoutPack(Entity order, Long orderPackId) {
         if (order.getHasManyField(OrderFields.ORDER_PACKS).size() == 1 && orderPackId != null
-                || order.getHasManyField(OrderFields.ORDER_PACKS).size() == 0) {
+                || order.getHasManyField(OrderFields.ORDER_PACKS).isEmpty()) {
             return BigDecimal.ZERO;
         }
         SearchCriteriaBuilder scb = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER_PACK)
@@ -39,7 +39,7 @@ public class OrderPackService {
     }
 
     public BigDecimal getSumQuantityOrderPacksForOrder(Entity order) {
-        if (order.getHasManyField(OrderFields.ORDER_PACKS).size() == 0) {
+        if (order.getHasManyField(OrderFields.ORDER_PACKS).isEmpty()) {
             return BigDecimal.ZERO;
         }
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER_PACK).find()

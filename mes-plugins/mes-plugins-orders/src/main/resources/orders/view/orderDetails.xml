@@ -284,14 +284,29 @@
                 <bigButton name="showOperationalTasks" icon="genealogyIcon24.png">
                     <script>
                         <![CDATA[
-					this.addOnChangeListener({
-						onClick: function() {
-							if(window.canClose()) {
-								#{form}.performEvent('showOperationalTasks', []);
-							}
-						}
-					});
-				]]>
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    if(window.canClose()) {
+                                        #{form}.performEvent('showOperationalTasks', []);
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+            </group>
+            <group name="orderPacks">
+                <bigButton name="showOrderPacks" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
+					        this.addOnChangeListener({
+                                onClick: function() {
+                                    if(window.canClose()) {
+                                        #{form}.performEvent('showOrderPacks', []);
+                                    }
+                                }
+                            });
+                        ]]>
                     </script>
                 </bigButton>
             </group>
@@ -669,6 +684,8 @@
                 <listener event="printOrderReport" method="printOrderReport"
                           class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
                 <listener event="showOperationalTasks" method="showOperationalTasks"
+                          class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
+                <listener event="showOrderPacks" method="showOrderPacks"
                           class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
                 <listener event="generateOperationalTasks" method="generateOperationalTasks"
                           class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>

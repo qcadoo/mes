@@ -20,8 +20,6 @@ public class AllStoppagesFormHooks {
 
     private static final String L_PRODUCTION_TRACKING = "productionTracking";
 
-
-
     private static final String L_CONTEXT_KEY_PRODUCTION_TRACKING = "window.mainTab.form.productionTracking";
 
     private static final String L_CONTEXT_KEY_ORDER = "window.mainTab.form.order";

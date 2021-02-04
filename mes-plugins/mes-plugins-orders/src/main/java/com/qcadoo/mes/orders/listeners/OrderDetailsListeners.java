@@ -450,4 +450,20 @@ public class OrderDetailsListeners {
         return "[" + value + "]";
     }
 
+    public void showOrderPacks(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Long orderId = orderForm.getEntityId();
+
+        if (orderId == null) {
+            return;
+        }
+
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("order.id", orderId);
+
+        String url = "/page/orders/orderPacksSingleOrderList.html";
+        view.redirectTo(url, false, true, parameters);
+    }
+
 }
