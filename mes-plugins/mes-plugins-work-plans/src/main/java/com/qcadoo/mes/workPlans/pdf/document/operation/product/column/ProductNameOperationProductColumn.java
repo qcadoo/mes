@@ -27,10 +27,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.AttributeFields;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductAttributeValueFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.ProductDirection;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 
 import java.util.List;
@@ -47,6 +48,9 @@ public class ProductNameOperationProductColumn extends AbstractOperationProductC
         super(translationService);
     }
 
+    @Autowired
+    public DataDefinitionService dataDefinitionService;
+
     @Override
     public String getIdentifier() {
         return "productNameOperationProductColumn";
@@ -54,7 +58,8 @@ public class ProductNameOperationProductColumn extends AbstractOperationProductC
 
     @Override
     public String getColumnValue(Entity operationProduct) {
-        Entity product = product(operationProduct);
+        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
+                operationProduct.getIntegerField("productId").longValue());
         return buildValue(product);
     }
 
@@ -74,10 +79,6 @@ public class ProductNameOperationProductColumn extends AbstractOperationProductC
 
     private String name(Entity product) {
         return product.getStringField(ProductFields.NAME);
-    }
-
-    private Entity product(Entity operationProduct) {
-        return operationProduct.getBelongsToField(OperationProductInComponentFields.PRODUCT);
     }
 
     private String buildValue(Entity product) {

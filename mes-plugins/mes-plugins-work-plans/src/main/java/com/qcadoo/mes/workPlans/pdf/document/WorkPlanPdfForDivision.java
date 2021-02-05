@@ -38,6 +38,7 @@ import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -199,10 +200,11 @@ public class WorkPlanPdfForDivision {
 
         addOrderSummary(headerCell, order, product, operationComponent);
 
-        addOperationProductsTable(inputCell, addMaterialComponents(operationProductInComponents(operationComponent), order),
+        addOperationProductsTable(inputCell,
+                addMaterialComponents(orderOperationComponent.getProductionCountingQuantitiesIn(), order),
                 inputProductColumnAlignmentMap, ProductDirection.IN, locale);
-        addOperationProductsTable(outputCell, operationProductOutComponents(operationComponent), outputProductColumnAlignmentMap,
-                ProductDirection.OUT, locale);
+        addOperationProductsTable(outputCell, orderOperationComponent.getProductionCountingQuantitiesOut(),
+                outputProductColumnAlignmentMap, ProductDirection.OUT, locale);
 
         codeCell.addElement(createBarcode(pdfWriter, order, operationComponent));
 
@@ -324,7 +326,8 @@ public class WorkPlanPdfForDivision {
     private List<Entity> addMaterialComponents(List<Entity> productComponents, Entity order) {
         for (Entity productComponent : productComponents) {
             if (productComponent.getBooleanField(OperationProductInComponentFieldsWP.SHOW_MATERIAL_COMPONENT)) {
-                Entity product = productComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
+                Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
+                        productComponent.getIntegerField("productId").longValue());
 
                 Entity technology = getTechnologyForComponent(productComponent, order);
                 if (technology != null) {
@@ -354,24 +357,23 @@ public class WorkPlanPdfForDivision {
 
     private Entity getTechnologyForComponent(Entity productComponent, Entity order) {
         Entity product = productComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
-        List<Entity> productOrders = order.getDataDefinition().find().add(SearchRestrictions.belongsTo("parent", order))
-                .add(SearchRestrictions.belongsTo("product", product)).list().getEntities();
+        List<Entity> productOrders = order
+                .getDataDefinition()
+                .find()
+                .add(SearchRestrictions.belongsTo("parent", order))
+                .add(SearchRestrictions.belongsTo("product", BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT,
+                        productComponent.getIntegerField("productId").longValue())).list().getEntities();
         if (productOrders != null && !productOrders.isEmpty()) {
             return productOrders.get(0).getBelongsToField(OrderFields.TECHNOLOGY);
         } else {
             DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY);
-            return technologyDD.find().add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, product))
+            return technologyDD
+                    .find()
+                    .add(SearchRestrictions.belongsTo("product", BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT,
+                            productComponent.getIntegerField("productId").longValue()))
                     .add(SearchRestrictions.eq(TechnologyFields.MASTER, true)).setMaxResults(1).uniqueResult();
         }
-    }
-
-    private List<Entity> operationProductOutComponents(Entity operationComponent) {
-        return operationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
-    }
-
-    private List<Entity> operationProductInComponents(Entity operationComponent) {
-        return operationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
     }
 
     private void alignColumn(final PdfPCell cell, final ColumnAlignment columnAlignment) {
@@ -431,7 +433,7 @@ public class WorkPlanPdfForDivision {
         summary.append(" ");
         summary.append(product.getStringField(ProductFields.UNIT));
         Entity form = product.getBelongsToField(ProductFields.PRODUCT_FORM);
-        if(Objects.nonNull(form)) {
+        if (Objects.nonNull(form)) {
             summary.append(", ");
             summary.append(form.getStringField("number"));
         }

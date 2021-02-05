@@ -24,19 +24,16 @@
 package com.qcadoo.mes.workPlans.pdf.document.operation.product.column;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.TechnologyFieldsO;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.ProductDirection;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -45,10 +42,14 @@ public class QuantityPerUnitOperationProductColumn extends AbstractOperationProd
 
     private NumberService numberService;
 
+    private ParameterService parameterService;
+
     @Autowired
-    public QuantityPerUnitOperationProductColumn(TranslationService translationService, NumberService numberService) {
+    public QuantityPerUnitOperationProductColumn(TranslationService translationService, NumberService numberService,
+            ParameterService parameterService) {
         super(translationService);
         this.numberService = numberService;
+        this.parameterService = parameterService;
     }
 
     @Override
@@ -58,19 +59,22 @@ public class QuantityPerUnitOperationProductColumn extends AbstractOperationProd
 
     @Override
     public String getColumnValue(Entity operationProduct) {
-        List<Entity> orders = operationProduct.getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT)
-                .getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY).getHasManyField(TechnologyFieldsO.ORDERS);
-        BigDecimal quantity = operationProduct.getDecimalField(OperationProductInComponentFields.QUANTITY);
-        if (orders.isEmpty() || quantity == null) {
-            return StringUtils.EMPTY;
-        }
-        return String.valueOf(numberService.format(numberService.setScaleWithDefaultMathContext(quantity.divide(
-                orders.get(0).getDecimalField(OrderFields.PLANNED_QUANTITY), RoundingMode.HALF_UP))));
+        return "";
     }
 
     @Override
     public String getColumnValueForOrder(Entity order, Entity operationProduct) {
-        return "";
+        Entity parameters = parameterService.getParameter();
+        boolean takeActualProgress = parameters.getBooleanField(ParameterFieldsWP.TAKE_ACTUAL_PROGRESS_IN_WORK_PLANS);
+        BigDecimal quantity = BigDecimal.ZERO;
+
+        if (takeActualProgress) {
+            quantity = operationProduct.getDecimalField("quantity");
+        } else {
+            quantity = operationProduct.getDecimalField("plannedQuantity");
+        }
+        return String.valueOf(numberService.format(numberService.setScaleWithDefaultMathContext(quantity.divide(
+                order.getDecimalField(OrderFields.PLANNED_QUANTITY), RoundingMode.HALF_UP))));
     }
 
     @Override

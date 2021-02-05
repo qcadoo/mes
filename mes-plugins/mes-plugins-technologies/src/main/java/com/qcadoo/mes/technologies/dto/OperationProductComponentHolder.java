@@ -46,6 +46,8 @@ public class OperationProductComponentHolder {
     private final DataDefinition productDD;
 
     private final DataDefinition technologyOperationComponentDD;
+    
+    private final DataDefinition operationProductComponentDD;
 
     private final OperationProductComponentEntityType entityType;
 
@@ -66,6 +68,7 @@ public class OperationProductComponentHolder {
         this.productMaterialType = ProductMaterialType.NONE;
         this.productionCountingQuantityId = null;
         this.operationProductComponentId = operationProductComponent.getId();
+        this.operationProductComponentDD = operationProductComponent.getDataDefinition();
     }
 
     public OperationProductComponentHolder(final Entity operationProductComponent, final Entity product) {
@@ -82,6 +85,7 @@ public class OperationProductComponentHolder {
         this.productMaterialType = ProductMaterialType.NONE;
         this.productionCountingQuantityId = null;
         this.operationProductComponentId = operationProductComponent.getId();
+        this.operationProductComponentDD = operationProductComponent.getDataDefinition();
     }
 
     public OperationProductComponentHolder(final Entity product, final Entity technologyOperationComponent,
@@ -103,6 +107,7 @@ public class OperationProductComponentHolder {
         this.productMaterialType = productMaterialType;
         this.productionCountingQuantityId = (productionCountingQuantity == null) ? null : productionCountingQuantity.getId();
         this.operationProductComponentId = null;
+        this.operationProductComponentDD = null;
     }
 
     public OperationProductComponentHolder(final Long productId, final Long technologyOperationComponentId,
@@ -116,6 +121,7 @@ public class OperationProductComponentHolder {
         this.productMaterialType = ProductMaterialType.NONE;
         this.productionCountingQuantityId = null;
         this.operationProductComponentId = null;
+        this.operationProductComponentDD = null;
     }
 
     public Long getProductId() {
@@ -146,6 +152,14 @@ public class OperationProductComponentHolder {
         }
     }
 
+    public Entity getOperationProductComponent() {
+        if ((getOperationProductComponentId() == null) || (getOperationProductComponentDD() == null)) {
+            return null;
+        } else {
+            return getOperationProductComponentDD().get(getOperationProductComponentId());
+        }
+    }
+
     public Entity getTechnologyOperationComponent() {
         if ((getTechnologyOperationComponentId() == null) || (getTechnologyOperationComponentDD() == null)) {
             return null;
@@ -168,6 +182,10 @@ public class OperationProductComponentHolder {
 
     public Long getProductionCountingQuantityId() {
         return productionCountingQuantityId;
+    }
+
+    public DataDefinition getOperationProductComponentDD() {
+        return operationProductComponentDD;
     }
 
     @Override

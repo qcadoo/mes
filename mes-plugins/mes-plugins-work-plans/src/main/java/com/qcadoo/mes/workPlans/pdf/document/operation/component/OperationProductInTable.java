@@ -31,10 +31,10 @@ import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.workPlans.WorkPlansService;
 import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
+import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.holder.OrderOperationComponent;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.ProductDirection;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationProductColumn;
 import com.qcadoo.model.api.Entity;
@@ -66,8 +66,11 @@ public class OperationProductInTable {
         this.pdfHelper = pdfHelper;
     }
 
-    public void print(final Entity workPlan, final GroupingContainer groupingContainer, Entity order, final Entity operationComponent,
-            final Document document, final Locale locale) throws DocumentException {
+    public void print(final Entity workPlan, final GroupingContainer groupingContainer,
+            final OrderOperationComponent orderOperationComponent, final Document document, final Locale locale)
+            throws DocumentException {
+        Entity order = orderOperationComponent.getOrder();
+        Entity operationComponent = orderOperationComponent.getOperationComponent();
         Map<Long, Map<OperationProductColumn, ColumnAlignment>> map = groupingContainer
                 .getOperationComponentIdProductInColumnToAlignment();
         Map<OperationProductColumn, ColumnAlignment> operationProductColumnAlignmentMap = map.get(operationComponent.getId());
@@ -81,7 +84,7 @@ public class OperationProductInTable {
         PdfPTable table = pdfHelper.createTableWithHeader(columnCount, headers, false, headerAlignments);
         PdfPCell defaultCell = table.getDefaultCell();
         List<OperationProductHelper> operationProductsValue = prepareOperationProductsValue(order,
-                operationProductInComponents(operationComponent), operationProductColumnAlignmentMap.entrySet());
+                orderOperationComponent.getProductionCountingQuantitiesIn(), operationProductColumnAlignmentMap.entrySet());
         operationProductsValue = workPlansService.sortByColumn(workPlan, operationProductsValue, headers);
 
         for (OperationProductHelper operationProduct : operationProductsValue) {
@@ -104,10 +107,6 @@ public class OperationProductInTable {
         table.setSpacingBefore(9);
 
         document.add(table);
-    }
-
-    private List<Entity> operationProductInComponents(final Entity operationComponent) {
-        return operationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
     }
 
     private void alignColumn(final PdfPCell cell, final ColumnAlignment columnAlignment) {
@@ -140,7 +139,8 @@ public class OperationProductInTable {
         return ColumnAlignment.LEFT.equals(value) ? HeaderAlignment.LEFT : HeaderAlignment.RIGHT;
     }
 
-    private List<OperationProductHelper> prepareOperationProductsValue(Entity order, final List<Entity> operationProducts, final Set<Map.Entry<OperationProductColumn, ColumnAlignment>> alignments) {
+    private List<OperationProductHelper> prepareOperationProductsValue(Entity order, final List<Entity> operationProducts,
+            final Set<Map.Entry<OperationProductColumn, ColumnAlignment>> alignments) {
         List<OperationProductHelper> operationProductsValue = Lists.newArrayList();
 
         for (Entity operationProduct : operationProducts) {
@@ -149,8 +149,8 @@ public class OperationProductInTable {
 
             for (Map.Entry<OperationProductColumn, ColumnAlignment> e : alignments) {
                 String columnValue = e.getKey().getColumnValue(operationProduct);
-                if(StringUtils.isEmpty(columnValue)) {
-                    columnValue =  e.getKey().getColumnValueForOrder(order, operationProduct);
+                if (StringUtils.isEmpty(columnValue)) {
+                    columnValue = e.getKey().getColumnValueForOrder(order, operationProduct);
                 }
                 OperationProductColumnHelper operationProductColumnHelper = new OperationProductColumnHelper(e.getValue(),
                         columnValue, e.getKey().getIdentifier());

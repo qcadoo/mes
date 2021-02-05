@@ -23,17 +23,18 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container;
 
-import java.util.Map;
-import java.util.Objects;
-
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
+import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.holder.OrderOperationComponent;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationProductColumn;
 import com.qcadoo.mes.workPlans.pdf.document.order.column.OrderColumn;
 import com.qcadoo.model.api.Entity;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class EndProductGroupingContainer extends AbstractGroupingContainer {
 
@@ -46,15 +47,20 @@ public class EndProductGroupingContainer extends AbstractGroupingContainer {
     }
 
     @Override
-    public void add(final Entity order, final Entity operationComponent,
-            final OperationProductComponentWithQuantityContainer productQuantities) {
-        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+    public void add(Entity order, Entity operationComponent, List<Entity> productionCountingQuantitiesIn,
+            List<Entity> productionCountingQuantitiesOut) {
+
+    }
+
+    @Override
+    public void add(final OrderOperationComponent orderOperationComponent) {
+        Entity technology = orderOperationComponent.getOrder().getBelongsToField(OrderFields.TECHNOLOGY);
 
         if (Objects.isNull(technology)) {
             return;
         }
 
-        store(title(technology), order, operationComponent);
+        store(title(technology), orderOperationComponent);
     }
 
     private String title(final Entity technology) {

@@ -88,12 +88,6 @@
 
         <model:model model="barcodeOperationComponent" resource="model/barcodeOperationComponent.xml"/>
 
-        <model:model model="technologyOperationComponentMergeProductIn"
-                     resource="model/technologyOperationComponentMergeProductIn.xml"/>
-
-        <model:model model="technologyOperationComponentMergeProductOut"
-                     resource="model/technologyOperationComponentMergeProductOut.xml"/>
-
         <model:model model="changeTechnologyParameters"
                      resource="model/changeTechnologyParameters.xml"/>
 

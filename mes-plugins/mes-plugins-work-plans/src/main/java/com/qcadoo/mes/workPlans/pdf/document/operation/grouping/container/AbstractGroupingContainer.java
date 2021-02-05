@@ -23,10 +23,6 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
@@ -36,6 +32,10 @@ import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.holder.OrderOper
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationProductColumn;
 import com.qcadoo.mes.workPlans.pdf.document.order.column.OrderColumn;
 import com.qcadoo.model.api.Entity;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public abstract class AbstractGroupingContainer implements GroupingContainer {
 
@@ -61,9 +61,9 @@ public abstract class AbstractGroupingContainer implements GroupingContainer {
         this.titleAppend = titleAppend;
     }
 
-    protected void store(final String title, final Entity order, final Entity operationComponent) {
-        map.put(title, new OrderOperationComponent(order, operationComponent));
-        orders.add(order);
+    protected void store(final String title, final OrderOperationComponent orderOperationComponent) {
+        map.put(title, orderOperationComponent);
+        orders.add(orderOperationComponent.getOrder());
     }
 
     @Override

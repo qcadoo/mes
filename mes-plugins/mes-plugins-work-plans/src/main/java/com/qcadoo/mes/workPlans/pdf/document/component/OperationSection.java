@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.component;
 
-import java.util.Locale;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.google.common.collect.ListMultimap;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -37,6 +32,11 @@ import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.holder.OrderOperationComponent;
 import com.qcadoo.model.api.Entity;
+
+import java.util.Locale;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class OperationSection {
@@ -68,8 +68,7 @@ public class OperationSection {
             operationSectionHeader.print(document, title);
 
             for (OrderOperationComponent orderOperationComponent : groupingContainer.getTitleToOperationComponent().get(title)) {
-                operationOrderSection.print(workPlan, pdfWriter, groupingContainer, orderOperationComponent.getOrder(),
-                        orderOperationComponent.getOperationComponent(), document, locale);
+                operationOrderSection.print(workPlan, pdfWriter, groupingContainer, orderOperationComponent, document, locale);
                 if (generateEachOnSeparatePage()) {
                     document.newPage();
                 }

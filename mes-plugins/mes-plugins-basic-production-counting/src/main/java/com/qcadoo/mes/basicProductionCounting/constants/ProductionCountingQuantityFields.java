@@ -61,4 +61,6 @@ public final class ProductionCountingQuantityFields {
 
     public static final String REPLACEMENT_TO = "replacementTo";
 
+    public static final String SHOW_MATERIAL_COMPONENT_IN_WORK_PLAN = "showMaterialComponentInWorkPlan";
+
 }

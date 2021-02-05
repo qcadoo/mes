@@ -237,13 +237,14 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
 
             Entity technologyOperationComponent = operationProductComponentHolder.getTechnologyOperationComponent();
             Entity product = operationProductComponentHolder.getProduct();
+            Entity operationProductComponent = operationProductComponentHolder.getOperationProductComponent();
 
             String role = getRole(operationProductComponentHolder);
 
             boolean isNonComponent = nonComponents.contains(operationProductComponentHolder);
 
-            Entity productionCountingQuantity = prepareProductionCountingQuantity(order, technologyOperationComponent, product,
-                    role, isNonComponent, plannedQuantity);
+            Entity productionCountingQuantity = prepareProductionCountingQuantity(order, technologyOperationComponent,
+                    operationProductComponent, product, role, isNonComponent, plannedQuantity);
             productionCountingQuantities.add(productionCountingQuantity);
         }
 
@@ -280,7 +281,8 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     }
 
     private Entity prepareProductionCountingQuantity(final Entity order, final Entity technologyOperationComponent,
-            final Entity product, final String role, final boolean isNonComponent, final BigDecimal plannedQuantity) {
+            final Entity operationProductComponent, Entity product, final String role, final boolean isNonComponent,
+            final BigDecimal plannedQuantity) {
         Entity productionCountingQuantity = getProductionCountingQuantityDD().create();
 
         productionCountingQuantity.setField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT,
@@ -294,6 +296,10 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
                 numberService.setScaleWithDefaultMathContext(plannedQuantity));
         productionCountingQuantity.setField(ProductionCountingQuantityFields.FLOW_FILLED, Boolean.TRUE);
 
+        if ("01used".equals(role) && operationProductComponent.getBooleanField("showMaterialComponent")) {
+            productionCountingQuantity.setField(ProductionCountingQuantityFields.SHOW_MATERIAL_COMPONENT_IN_WORK_PLAN,
+                    operationProductComponent.getBooleanField("showMaterialComponent"));
+        }
         return productionCountingQuantity;
     }
 
@@ -512,14 +518,14 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
 
     @Override
     public Map<Long, BigDecimal> getNeededProductQuantities(final List<Entity> orders, final MrpAlgorithm algorithm) {
-        Map<Long, BigDecimal> neededProductQuantities =  Maps.newHashMap();
+        Map<Long, BigDecimal> neededProductQuantities = Maps.newHashMap();
 
         for (Entity order : orders) {
             List<Entity> productionCountingQuantities;
-            if(algorithm.getStringValue().equals(MrpAlgorithm.ONLY_MATERIALS.getStringValue())) {
-                productionCountingQuantities = getUsedMaterialsFromProductionCountingQuantities(order,true);
+            if (algorithm.getStringValue().equals(MrpAlgorithm.ONLY_MATERIALS.getStringValue())) {
+                productionCountingQuantities = getUsedMaterialsFromProductionCountingQuantities(order, true);
             } else {
-                productionCountingQuantities = getUsedMaterialsFromProductionCountingQuantities(order,false);
+                productionCountingQuantities = getUsedMaterialsFromProductionCountingQuantities(order, false);
             }
 
             for (Entity pcq : productionCountingQuantities) {
@@ -710,11 +716,10 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
                             && e.getBooleanField("differentProductsInDifferentSizes")).collect(Collectors.toList());
             for (Entity entity : forGroupSize) {
                 Optional<Entity> maybeOperationProductForSizeGroup = entity
-                        .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS)
-                        .stream()
-                        .filter(pG -> pG.getBelongsToField(ProductBySizeGroupFields.PRODUCT).getId()
-                                .equals(product.getId())).findFirst();
-                if(maybeOperationProductForSizeGroup.isPresent()){
+                        .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS).stream()
+                        .filter(pG -> pG.getBelongsToField(ProductBySizeGroupFields.PRODUCT).getId().equals(product.getId()))
+                        .findFirst();
+                if (maybeOperationProductForSizeGroup.isPresent()) {
                     return entity;
                 }
             }

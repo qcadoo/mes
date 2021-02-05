@@ -53,6 +53,7 @@
         <decimal name="producedQuantity" persistent="false"/>
 
         <boolean name="flowFilled" persistent="false" default="false"/>
+        <boolean name="showMaterialComponentInWorkPlan" default="false"/>
 
     </fields>
 

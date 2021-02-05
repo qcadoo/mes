@@ -23,19 +23,20 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container;
 
-import java.util.Map;
-import java.util.Objects;
-
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
+import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.holder.OrderOperationComponent;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationProductColumn;
 import com.qcadoo.mes.workPlans.pdf.document.order.column.OrderColumn;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class WorkstationGroupingContainer extends AbstractGroupingContainer {
 
@@ -51,19 +52,23 @@ public class WorkstationGroupingContainer extends AbstractGroupingContainer {
     }
 
     @Override
-    public void add(final Entity order, final Entity operationComponent,
-            final OperationProductComponentWithQuantityContainer productQuantities) {
-        Entity operationalTask = extractOperationalTask(order, operationComponent);
+    public void add(Entity order, Entity operationComponent, List<Entity> productionCountingQuantitiesIn,
+            List<Entity> productionCountingQuantitiesOut) {
+    }
+
+    @Override
+    public void add(final OrderOperationComponent orderOperationComponent) {
+        Entity operationalTask = extractOperationalTask(orderOperationComponent.getOrder(), orderOperationComponent.getOperationComponent());
 
         if (Objects.isNull(operationalTask)) {
-            store(nullWorkstationTitle, order, operationComponent);
+            store(nullWorkstationTitle, orderOperationComponent);
         } else {
             Entity workstation = operationalTask.getBelongsToField(OperationalTaskFields.WORKSTATION);
 
             if (Objects.isNull(workstation)) {
-                store(nullWorkstationTitle, order, operationComponent);
+                store(nullWorkstationTitle, orderOperationComponent);
             } else {
-                store(title(workstation), order, operationComponent);
+                store(title(workstation), orderOperationComponent);
             }
         }
     }
