@@ -12,13 +12,16 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import org.apache.commons.lang3.StringUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Service
-public class OrderPackDetailsHooks {
+public class OrderPackSingleOrderDetailsHooks {
 
     @Autowired
     private NumberService numberService;
@@ -26,15 +29,21 @@ public class OrderPackDetailsHooks {
     @Autowired
     private OrderPackService orderPackService;
 
-    public final void onBeforeRender(final ViewDefinitionState view) {
+    public final void onBeforeRender(final ViewDefinitionState view) throws JSONException {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OrderPackFields.ORDER);
-        Entity order = orderLookup.getEntity();
+        if (Objects.isNull(form.getEntityId())) {
+            JSONObject context = view.getJsonContext();
+            Long orderId = context.getLong("window.mainTab.orderPack.order");
+            orderLookup.setFieldValue(orderId);
+            orderLookup.requestComponentUpdateState();
+        }
 
+        Entity order = orderLookup.getEntity();
         if (order != null) {
             FieldComponent orderQuantity = (FieldComponent) view.getComponentByReference("orderQuantity");
             orderQuantity.setFieldValue(numberService.format(order.getField(OrderFields.PLANNED_QUANTITY)));
             FieldComponent quantityField = (FieldComponent) view.getComponentByReference(OrderPackFields.QUANTITY);
-            FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
             BigDecimal sumQuantityOrderPacks = orderPackService.getSumQuantityOrderPacksForOrderWithoutPack(order,
                     form.getEntityId());
             if (StringUtils.isNumeric((String) quantityField.getFieldValue())) {
