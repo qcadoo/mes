@@ -23,12 +23,18 @@
  */
 package com.qcadoo.mes.warehouseMinimalState.constants;
 
+public final class WarehouseMinimalStateConstants {
 
-public interface WarehouseMinimalStateConstants {
+    private WarehouseMinimalStateConstants() {
 
-    String PLUGIN_IDENTIFIER = "warehouseMinimalState";
+    }
+
+    public static final String PLUGIN_IDENTIFIER = "warehouseMinimalState";
 
     // MODEL
 
     public static final String MODEL_WAREHOUSE_MINIMUM_STATE = "warehouseMinimumState";
+
+    public static final String MODEL_WAREHOUSE_MINIMUM_STATE_MULTI = "warehouseMinimumStateMulti";
+
 }

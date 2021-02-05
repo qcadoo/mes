@@ -72,10 +72,6 @@
             <plugin>materialFlowResources</plugin>
             <version>[1.2.1</version>
         </dependency>
-        <dependency>
-            <plugin>technologies</plugin>
-            <version>[1.2.1</version>
-        </dependency>
     </dependencies>
 
     <modules>
@@ -115,6 +111,16 @@
         <model:model-field plugin="basic" model="shift">
             <model:hasMany name="deliveryStateChanges" plugin="deliveries"
                            model="deliveryStateChange" joinField="shift" cascade="nullify"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:enum name="deliveryPriceFillBasedOn"
+                values="01lastPurchasePrice,02pricesFromLastDeliveryOffer"
+                default="01lastPurchasePrice"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="deliveryUseNominalCostWhenPriceNotSpecified" default="false"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">

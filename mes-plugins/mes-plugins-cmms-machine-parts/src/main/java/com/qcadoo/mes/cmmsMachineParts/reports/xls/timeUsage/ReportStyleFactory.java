@@ -2,13 +2,16 @@ package com.qcadoo.mes.cmmsMachineParts.reports.xls.timeUsage;
 
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.IndexedColors;
 
 public class ReportStyleFactory {
 
     private boolean isFirst = false;
 
-    private short alignment = HSSFCellStyle.ALIGN_LEFT;
+    private HorizontalAlignment alignment = HorizontalAlignment.LEFT;
 
     private short color = IndexedColors.WHITE.getIndex();
 
@@ -17,10 +20,6 @@ public class ReportStyleFactory {
     private static final short RED = IndexedColors.RED.getIndex();
 
     private static final short GREEN = IndexedColors.LIME.getIndex();
-
-    private static final short LEFT = HSSFCellStyle.ALIGN_LEFT;
-
-    private static final short RIGHT = HSSFCellStyle.ALIGN_RIGHT;
 
     private HSSFCellStyle firstLeftWhite;
 
@@ -51,38 +50,38 @@ public class ReportStyleFactory {
     }
 
     private void init(HSSFWorkbook workbook) {
-        firstLeftWhite = createStyle(workbook, true, LEFT, WHITE);
-        firstLeftRed = createStyle(workbook, true, LEFT, RED);
-        firstLeftGreen = createStyle(workbook, true, LEFT, GREEN);
-        firstRightWhite = createStyle(workbook, true, RIGHT, WHITE);
-        firstRightRed = createStyle(workbook, true, RIGHT, RED);
-        firstRightGreen = createStyle(workbook, true, RIGHT, GREEN);
-        leftWhite = createStyle(workbook, false, LEFT, WHITE);
-        leftRed = createStyle(workbook, false, LEFT, RED);
-        leftGreen = createStyle(workbook, false, LEFT, GREEN);
-        rightWhite = createStyle(workbook, false, RIGHT, WHITE);
-        rightRed = createStyle(workbook, false, RIGHT, RED);
-        rightGreen = createStyle(workbook, false, RIGHT, GREEN);
+        firstLeftWhite = createStyle(workbook, true, HorizontalAlignment.LEFT, WHITE);
+        firstLeftRed = createStyle(workbook, true, HorizontalAlignment.LEFT, RED);
+        firstLeftGreen = createStyle(workbook, true, HorizontalAlignment.LEFT, GREEN);
+        firstRightWhite = createStyle(workbook, true, HorizontalAlignment.RIGHT, WHITE);
+        firstRightRed = createStyle(workbook, true, HorizontalAlignment.RIGHT, RED);
+        firstRightGreen = createStyle(workbook, true, HorizontalAlignment.RIGHT, GREEN);
+        leftWhite = createStyle(workbook, false, HorizontalAlignment.LEFT, WHITE);
+        leftRed = createStyle(workbook, false, HorizontalAlignment.LEFT, RED);
+        leftGreen = createStyle(workbook, false, HorizontalAlignment.LEFT, GREEN);
+        rightWhite = createStyle(workbook, false, HorizontalAlignment.RIGHT, WHITE);
+        rightRed = createStyle(workbook, false, HorizontalAlignment.RIGHT, RED);
+        rightGreen = createStyle(workbook, false, HorizontalAlignment.RIGHT, GREEN);
     }
 
-    private HSSFCellStyle createStyle(final HSSFWorkbook workbook, boolean isFirst, short align, short color) {
+    private HSSFCellStyle createStyle(final HSSFWorkbook workbook, boolean isFirst, HorizontalAlignment horizontalAlignment, short color) {
         HSSFCellStyle style = workbook.createCellStyle();
         if (isFirst) {
-            style.setBorderTop(HSSFCellStyle.BORDER_THIN);
+            style.setBorderTop(BorderStyle.THIN);
         }
         if (color != WHITE) {
             style.setFillForegroundColor(color);
-            style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         }
-        if (align == RIGHT) {
-            style.setAlignment(RIGHT);
+        if (horizontalAlignment == HorizontalAlignment.RIGHT) {
+            style.setAlignment(HorizontalAlignment.RIGHT);
         }
         return style;
     }
 
     public HSSFCellStyle getStyle() {
         if (isFirst) {
-            if (alignment == LEFT) {
+            if (alignment == HorizontalAlignment.LEFT) {
                 if (color == WHITE) {
                     return firstLeftWhite;
                 }
@@ -103,7 +102,7 @@ public class ReportStyleFactory {
                     return firstRightGreen;
                 }
             }
-        } else if (alignment == LEFT) {
+        } else if (alignment == HorizontalAlignment.LEFT) {
             if (color == WHITE) {
                 return leftWhite;
             }
@@ -132,11 +131,11 @@ public class ReportStyleFactory {
     }
 
     public void setLeftAligned() {
-        alignment = LEFT;
+        alignment = HorizontalAlignment.LEFT;
     }
 
     public void setRightAligned() {
-        alignment = RIGHT;
+        alignment = HorizontalAlignment.RIGHT;
     }
 
     public void setWhite() {

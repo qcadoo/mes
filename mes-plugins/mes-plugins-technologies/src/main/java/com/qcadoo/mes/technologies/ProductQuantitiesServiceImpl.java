@@ -23,6 +23,21 @@
  */
 package com.qcadoo.mes.technologies;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.SizeFields;
+import com.qcadoo.mes.technologies.constants.*;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
+import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
+import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
@@ -31,33 +46,6 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.constants.SizeFields;
-import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
-import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
-import com.qcadoo.mes.technologies.constants.ProductComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
-import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
@@ -152,6 +140,61 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
 
         return getProductWithQuantities(productComponentWithQuantities, nonComponents, mrpAlgorithm,
                 TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT);
+    }
+
+    @Override
+    public Map<OperationProductComponentHolder, BigDecimal> getNeededProductQuantitiesByOPC(Entity technology,
+            BigDecimal givenQuantity, MrpAlgorithm mrpAlgorithm) {
+        Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
+        Set<OperationProductComponentHolder> nonComponents = Sets.newHashSet();
+
+        OperationProductComponentWithQuantityContainer productComponentWithQuantities = getProductComponentWithQuantitiesForTechnology(
+                technology, null, givenQuantity, operationRuns, nonComponents);
+
+        OperationProductComponentWithQuantityContainer allWithSameEntityType = productComponentWithQuantities
+                .getAllWithSameEntityType(TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT);
+
+        if (mrpAlgorithm.equals(MrpAlgorithm.ALL_PRODUCTS_IN)) {
+            return getOperationProductComponentWithQuantities(allWithSameEntityType, nonComponents, false, false);
+        } else if (mrpAlgorithm.equals(MrpAlgorithm.ONLY_COMPONENTS)) {
+            return getOperationProductComponentWithQuantities(allWithSameEntityType, nonComponents, true, false);
+        } else if (mrpAlgorithm.equals(MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS)) {
+            return getOperationProductComponentWithQuantities(allWithSameEntityType, nonComponents, false, false);
+        } else {
+            return getOperationProductComponentWithQuantities(allWithSameEntityType, nonComponents, true, true);
+        }
+    }
+
+    private Map<OperationProductComponentHolder, BigDecimal> getOperationProductComponentWithQuantities(
+            final OperationProductComponentWithQuantityContainer productComponentWithQuantities,
+            final Set<OperationProductComponentHolder> nonComponents, final boolean onlyComponents, final boolean onlyMaterials) {
+        Map<OperationProductComponentHolder, BigDecimal> productWithQuantities = Maps.newHashMap();
+
+        for (Map.Entry<OperationProductComponentHolder, BigDecimal> productComponentWithQuantity : productComponentWithQuantities
+                .asMap().entrySet()) {
+            OperationProductComponentHolder operationProductComponentHolder = productComponentWithQuantity.getKey();
+
+            if (onlyComponents && nonComponents.contains(operationProductComponentHolder)) {
+                continue;
+            }
+            if (onlyMaterials) {
+                Entity product = operationProductComponentHolder.getProduct();
+                if (hasAcceptedMasterTechnology(product)) {
+                    continue;
+                }
+            }
+
+            addOPCQuantitiesToList(productComponentWithQuantity, productWithQuantities);
+        }
+
+        return productWithQuantities;
+    }
+
+    public void addOPCQuantitiesToList(final Map.Entry<OperationProductComponentHolder, BigDecimal> productComponentWithQuantity,
+            final Map<OperationProductComponentHolder, BigDecimal> productWithQuantities) {
+        OperationProductComponentHolder operationProductComponentHolder = productComponentWithQuantity.getKey();
+        BigDecimal quantity = productComponentWithQuantity.getValue();
+        productWithQuantities.put(operationProductComponentHolder, quantity);
     }
 
     @Override
@@ -312,7 +355,8 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
             if (operationProductComponent.getDataDefinition().getName()
                     .equals(TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
                     && operationProductComponent
-                            .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES)) {
+                            .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES)
+                    && !operationProductComponentWithQuantityContainer.getSizeGroups().isEmpty()) {
 
                 for (Entity sizeGroup : operationProductComponentWithQuantityContainer.getSizeGroups()) {
                     List<Entity> productsByGroup = operationProductComponent
@@ -358,8 +402,13 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
 
                 for (Entity operationProductOutComponent : operationComponent
                         .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS)) {
-                    if (operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId().equals(
-                            operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT).getId())) {
+                    if (!operationProductInComponent
+                            .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES)
+                            && !Objects.isNull(
+                                    operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT))
+                            && operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId()
+                                    .equals(operationProductInComponent
+                                            .getBelongsToField(OperationProductInComponentFields.PRODUCT).getId())) {
                         isntComponent = true;
 
                         BigDecimal outQuantity = operationProductComponentWithQuantityContainer.get(operationProductOutComponent);
@@ -411,8 +460,10 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
 
                 for (Entity operationProductOutComponent : operationComponent
                         .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS)) {
-                    if (operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId().equals(
-                            operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT).getId())) {
+                    if (!Objects.isNull(operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT))
+                            && operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId()
+                                    .equals(operationProductInComponent
+                                            .getBelongsToField(OperationProductInComponentFields.PRODUCT).getId())) {
                         isntComponent = true;
 
                         BigDecimal outQuantity = operationProductComponentWithQuantityContainer.get(operationProductOutComponent);
@@ -531,20 +582,14 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                 .getAllWithSameEntityType(operationProductComponentModelName);
 
         if (mrpAlgorithm.equals(MrpAlgorithm.ALL_PRODUCTS_IN)) {
-            return getProductWithoutSubcontractingProduct(allWithSameEntityType, nonComponents, false);
+            return getProductWithoutSubcontractingProduct(allWithSameEntityType, nonComponents, false, false);
         } else if (mrpAlgorithm.equals(MrpAlgorithm.ONLY_COMPONENTS)) {
-            return getProductWithoutSubcontractingProduct(allWithSameEntityType, nonComponents, true);
+            return getProductWithoutSubcontractingProduct(allWithSameEntityType, nonComponents, true, false);
         } else if (mrpAlgorithm.equals(MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS)) {
-            return getProductWithoutSubcontractingProduct(allWithSameEntityType, nonComponents, false);
+            return getProductWithoutSubcontractingProduct(allWithSameEntityType, nonComponents, false, false);
         } else {
             return getProductWithoutSubcontractingProduct(allWithSameEntityType, nonComponents, true, true);
         }
-    }
-
-    private Map<Long, BigDecimal> getProductWithoutSubcontractingProduct(
-            final OperationProductComponentWithQuantityContainer productComponentWithQuantities,
-            final Set<OperationProductComponentHolder> nonComponents, final boolean onlyComponents) {
-        return getProductWithoutSubcontractingProduct(productComponentWithQuantities, nonComponents, onlyComponents, false);
     }
 
     private Map<Long, BigDecimal> getProductWithoutSubcontractingProduct(

@@ -41,21 +41,9 @@
 			<validatesRange from="0" exclusively="true"/>
 		</decimal>
 
-		<boolean name="printCostNormsOfMaterials" default="true" />
-		<boolean name="printOperationNorms" default="true" />
-
 		<tree name="calculationOperationComponents" joinField="costCalculation"
 			model="calculationOperationComponent" plugin="costNormsForOperation"
 			cascade="delete" />
-
-		<decimal name="totalMachineHourlyCosts">
-			<validatesUnscaledValue max="14" />
-			<validatesScale max="5" />
-		</decimal>
-		<decimal name="totalLaborHourlyCosts">
-			<validatesUnscaledValue max="14" />
-			<validatesScale max="5" />
-		</decimal>
 
 		<enum name="materialCostsUsed"
 			values="01nominal,02average,03lastPurchase,04averageOfferCost,05lastOfferCost"
@@ -120,6 +108,7 @@
 		<boolean name="isSetFieldsFromParameter"
 				 persistent="false"/>
 		<boolean name="includeComponents" default="true"/>
+		<boolean name="pdf" default="false"/>
 	</fields>
 	<hooks>
 		<validatesWith

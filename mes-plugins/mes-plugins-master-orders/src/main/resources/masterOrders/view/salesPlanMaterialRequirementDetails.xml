@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PLANNING" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="salesPlanMaterialRequirementDetails" modelName="salesPlanMaterialRequirement">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <template name="standardFormTemplate"/>
+            <group name="genericExport">
+                <smallButton name="csv" state="enabled" icon="exportToCsvIcon16.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent('exportToCsv', [], 'exportToCsv');
+                                }
+                            });
+                        ]]>
+                    </script>
+                </smallButton>
+                <smallButton name="pdf" state="enabled" icon="pdfIcon16.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent('exportToPdf', [], 'exportToPdf');
+                                }
+                            });
+                        ]]>
+                    </script>
+                </smallButton>
+            </group>
+            <group name="generate">
+                <bigButton name="generateSalesPlanMaterialRequirement" icon="generateIcon24.png"
+                           action="#{form}.fireEvent(generateSalesPlanMaterialRequirement);" state="enabled"/>
+            </group>
+            <group name="deliveries">
+                <bigButton name="createDelivery" icon="genealogyIcon24.png"
+                           action="#{form}.fireEvent(createDelivery);" state="enabled"/>
+            </group>
+        </ribbon>
+
+        <windowTab name="mainTab">
+            <component type="form" name="salesPlan" reference="form">
+                <component type="gridLayout" name="gridLayout" columns="3"
+                           rows="5">
+                    <layoutElement column="1" row="1">
+                        <component type="input" name="number" reference="number"
+                                   field="number" defaultEnabled="never">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="lookup" name="salesPlan" reference="salesPlan"
+                                   field="salesPlan">
+                            <option type="column" name="name" fields="name" link="true"/>
+
+                            <option type="searchable" value="number,name"/>
+                            <option type="orderable" value="number,name"/>
+
+                            <option type="expression" value="#number"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
+                        <component type="checkbox" name="generated" field="generated"
+                                   reference="generated" defaultEnabled="never"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="4">
+                        <component type="input" name="worker" field="worker"
+                                   reference="worker" defaultEnabled="never"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="5">
+                        <component type="calendar" name="date" field="date"
+                                   reference="date" defaultEnabled="never">
+                            <option type="withTimePicker" value="true"/>
+                        </component>
+                    </layoutElement>
+                </component>
+
+                <option type="header" value="true"/>
+                <option type="expression" value="#number"/>
+
+                <listener event="generateSalesPlanMaterialRequirement"
+                          class="com.qcadoo.mes.masterOrders.listeners.SalesPlanMaterialRequirementDetailsListeners"
+                          method="generateSalesPlanMaterialRequirement"/>
+                <listener event="createDelivery"
+                          class="com.qcadoo.mes.masterOrders.listeners.SalesPlanMaterialRequirementDetailsListeners"
+                          method="createDelivery"/>
+            </component>
+        </windowTab>
+
+        <windowTab name="materialsTab">
+            <component type="grid" name="salesPlanMaterialRequirementProducts" source="#{form}.salesPlanMaterialRequirementProducts"
+                       reference="grid">
+                <option type="column" name="productNumber" fields="product"
+                        expression="#product.get('number')"
+                        width="100"/>
+                <option type="column" name="productName" fields="product"
+                        expression="#product.get('name')"
+                        width="100"/>
+                <option type="column" name="quantity" fields="quantity"
+                        width="60"/>
+                <option type="column" name="productUnit" fields="product"
+                        expression="#product.get('unit')"
+                        width="40"/>
+                <option type="column" name="sizeGroupNumber" fields="sizeGroup"
+                        expression="#sizeGroup?.get('number')"
+                        width="100"/>
+                <option type="column" name="sumForSizes" fields="sumForSizes"
+                        width="60"/>
+                <option type="column" name="currentStock" fields="currentStock"
+                        width="60"/>
+                <option type="column" name="neededQuantity" fields="neededQuantity"
+                        width="60"/>
+                <option type="column" name="supplierNumber" fields="supplier"
+                        expression="#supplier?.get('number')"
+                        width="60"/>
+                <option type="column" name="minimumOrderQuantity" fields="minimumOrderQuantity"
+                        width="60"/>
+                <option type="column" name="isDeliveryCreated" fields="isDeliveryCreated"
+                        width="40"/>
+
+                <option type="order" column="productNumber" direction="asc"/>
+
+                <option type="searchable"
+                        value="productNumber,productName,quantity,productUnit,sizeGroupNumber,sumForSizes,currentStock,neededQuantity,supplierNumber,minimumOrderQuantity,isDeliveryCreated"/>
+                <option type="orderable"
+                        value="productNumber,productName,quantity,productUnit,sizeGroupNumber,sumForSizes,currentStock,neededQuantity,supplierNumber,minimumOrderQuantity,isDeliveryCreated"/>
+
+                <option type="fullscreen" value="true"/>
+                <option type="multiselect" value="true"/>
+                <option type="fixedHeight" value="true"/>
+
+                <listener event="onSelect"
+                          class="com.qcadoo.view.api.listeners.RerenderListener"
+                          method="onChangeRerender"/>
+            </component>
+        </windowTab>
+
+    </component>
+
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.masterOrders.hooks.SalesPlanMaterialRequirementDetailsHooks"
+                method="onBeforeRender"/>
+    </hooks>
+
+</view>

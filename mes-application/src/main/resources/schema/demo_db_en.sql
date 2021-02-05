@@ -1123,6 +1123,37 @@ $$;
 
 
 --
+-- Name: generate_order_pack_number(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION generate_order_pack_number() RETURNS text
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    _pattern text;
+    _sequence_value numeric;
+    _seq text;
+    _number text;
+BEGIN
+    _pattern := '#seq';
+
+    select nextval('orders_order_pack_number_seq') into _sequence_value;
+
+    _seq := to_char(_sequence_value, 'fm000000');
+
+    if _seq like '%#%' then
+        _seq := _sequence_value;
+    end if;
+
+    _number := _pattern;
+    _number := replace(_number, '#seq', _seq);
+
+    RETURN _number;
+END;
+$$;
+
+
+--
 -- Name: generate_pallet_externalnumber(); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -2825,16 +2856,12 @@ CREATE TABLE arch_costcalculation_costcalculation (
     productionline_id bigint,
     quantity numeric(12,5),
     order_id bigint,
-    totalmachinehourlycosts numeric(19,5),
-    totallaborhourlycosts numeric(19,5),
     productioncostmargin numeric(19,5) DEFAULT (0)::numeric,
     materialcostmargin numeric(19,5) DEFAULT (0)::numeric,
     additionaloverhead numeric(19,5) DEFAULT (0)::numeric,
     description character varying(255),
     includetpz boolean DEFAULT true,
     includeadditionaltime boolean DEFAULT false,
-    printcostnormsofmaterials boolean DEFAULT true,
-    printoperationnorms boolean DEFAULT true,
     sourceofmaterialcosts character varying(255) DEFAULT '01currentGlobalDefinitionsInProduct'::character varying,
     calculatematerialcostsmode character varying(255) DEFAULT 'nominal'::character varying,
     date timestamp without time zone,
@@ -2936,17 +2963,12 @@ CREATE TABLE arch_costnormsforoperation_calculationoperationcomponent (
     duration integer DEFAULT 0,
     machineworktime integer DEFAULT 0,
     laborworktime integer DEFAULT 0,
-    pieces numeric(12,5) DEFAULT (0)::numeric,
     operationcost numeric(12,5) DEFAULT (0)::numeric,
-    operationmargincost numeric(12,5) DEFAULT (0)::numeric,
-    totaloperationcost numeric(12,5) DEFAULT (0)::numeric,
     totalmachineoperationcost numeric(12,5) DEFAULT (0)::numeric,
     totallaboroperationcost numeric(12,5) DEFAULT (0)::numeric,
     pieceworkcost numeric(12,5) DEFAULT (0)::numeric,
     laborhourlycost numeric(12,5) DEFAULT (0)::numeric,
     machinehourlycost numeric(12,5) DEFAULT (0)::numeric,
-    totalmachineoperationcostwithmargin numeric(12,5) DEFAULT (0)::numeric,
-    totallaboroperationcostwithmargin numeric(12,5) DEFAULT (0)::numeric,
     numberofoperations integer DEFAULT 1,
     costcalculation_id bigint,
     entityversion bigint DEFAULT 0,
@@ -9465,7 +9487,13 @@ CREATE TABLE basic_parameter (
     registrationpriceoverhead numeric(12,5) DEFAULT 0,
     profit numeric(12,5) DEFAULT 0,
     applicationconfigurationfinished boolean DEFAULT false,
-    coveragebasedonproductioncounting boolean DEFAULT false
+    coveragebasedonproductioncounting boolean DEFAULT false,
+    generatepacksfororders boolean DEFAULT false,
+    includepacksgeneratingprocessesfororder boolean DEFAULT false,
+    optimalpacksize numeric(12,5),
+    restfeedinglastpack numeric(12,5),
+    deliveryusenominalcostwhenpricenotspecified boolean DEFAULT false,
+    deliverypricefillbasedon character varying(255) DEFAULT '01lastPurchasePrice'::character varying
 );
 
 
@@ -11913,16 +11941,12 @@ CREATE TABLE costcalculation_costcalculation (
     id bigint NOT NULL,
     number character varying(255),
     quantity numeric(12,5) DEFAULT 0,
-    totalmachinehourlycosts numeric(19,5),
-    totallaborhourlycosts numeric(19,5),
     productioncostmargin numeric(19,5) DEFAULT (0)::numeric,
     materialcostmargin numeric(19,5) DEFAULT (0)::numeric,
     additionaloverhead numeric(19,5) DEFAULT (0)::numeric,
     description character varying(255),
     includetpz boolean DEFAULT true,
     includeadditionaltime boolean DEFAULT false,
-    printcostnormsofmaterials boolean DEFAULT true,
-    printoperationnorms boolean DEFAULT true,
     materialcostsused character varying(255) DEFAULT 'nominal'::character varying,
     date timestamp without time zone,
     generated boolean,
@@ -11935,7 +11959,8 @@ CREATE TABLE costcalculation_costcalculation (
     standardlaborcost_id bigint,
     averagemachinehourlycost numeric(12,5),
     averagelaborhourlycost numeric(12,5),
-    usenominalcostpricenotspecified boolean DEFAULT false
+    usenominalcostpricenotspecified boolean DEFAULT false,
+    pdf boolean DEFAULT false
 );
 
 
@@ -12068,17 +12093,12 @@ CREATE TABLE costnormsforoperation_calculationoperationcomponent (
     duration integer DEFAULT 0,
     machineworktime integer DEFAULT 0,
     laborworktime integer DEFAULT 0,
-    pieces numeric(12,5) DEFAULT (0)::numeric,
     operationcost numeric(12,5) DEFAULT (0)::numeric,
-    operationmargincost numeric(12,5) DEFAULT (0)::numeric,
-    totaloperationcost numeric(12,5) DEFAULT (0)::numeric,
     totalmachineoperationcost numeric(12,5) DEFAULT (0)::numeric,
     totallaboroperationcost numeric(12,5) DEFAULT (0)::numeric,
     pieceworkcost numeric(12,5) DEFAULT (0)::numeric,
     laborhourlycost numeric(12,5) DEFAULT (0)::numeric,
     machinehourlycost numeric(12,5) DEFAULT (0)::numeric,
-    totalmachineoperationcostwithmargin numeric(12,5) DEFAULT (0)::numeric,
-    totallaboroperationcostwithmargin numeric(12,5) DEFAULT (0)::numeric,
     numberofoperations integer DEFAULT 1,
     costcalculation_id bigint,
     entityversion bigint DEFAULT 0
@@ -16324,6 +16344,77 @@ ALTER SEQUENCE masterorders_salesplan_id_seq OWNED BY masterorders_salesplan.id;
 
 
 --
+-- Name: masterorders_salesplanmaterialrequirement; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE masterorders_salesplanmaterialrequirement (
+    id bigint NOT NULL,
+    number character varying(256),
+    salesplan_id bigint,
+    generated boolean,
+    worker character varying(255),
+    date timestamp without time zone
+);
+
+
+--
+-- Name: masterorders_salesplanmaterialrequirement_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE masterorders_salesplanmaterialrequirement_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: masterorders_salesplanmaterialrequirement_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE masterorders_salesplanmaterialrequirement_id_seq OWNED BY masterorders_salesplanmaterialrequirement.id;
+
+
+--
+-- Name: masterorders_salesplanmaterialrequirementproduct; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE masterorders_salesplanmaterialrequirementproduct (
+    id bigint NOT NULL,
+    salesplanmaterialrequirement_id bigint,
+    product_id bigint,
+    quantity numeric(14,5),
+    sizegroup_id bigint,
+    sumforsizes numeric(14,5),
+    currentstock numeric(14,5),
+    neededquantity numeric(14,5),
+    supplier_id bigint,
+    minimumorderquantity numeric(12,5),
+    isdeliverycreated boolean DEFAULT false
+);
+
+
+--
+-- Name: masterorders_salesplanmaterialrequirementproduct_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE masterorders_salesplanmaterialrequirementproduct_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: masterorders_salesplanmaterialrequirementproduct_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE masterorders_salesplanmaterialrequirementproduct_id_seq OWNED BY masterorders_salesplanmaterialrequirementproduct.id;
+
+
+--
 -- Name: masterorders_salesplanproduct; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -19026,6 +19117,18 @@ ALTER SEQUENCE orders_order_id_seq OWNED BY orders_order.id;
 
 
 --
+-- Name: orders_order_pack_number_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE orders_order_pack_number_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
 -- Name: orders_ordercategorycolor; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -19172,10 +19275,81 @@ CREATE SEQUENCE orders_orderlistdto_id_seq
 
 
 --
+-- Name: orders_orderpack; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE orders_orderpack (
+    id bigint NOT NULL,
+    number character varying(255),
+    order_id bigint,
+    quantity numeric(12,5)
+);
+
+
+--
+-- Name: orders_orderpack_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE orders_orderpack_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: orders_orderpack_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE orders_orderpack_id_seq OWNED BY orders_orderpack.id;
+
+
+--
+-- Name: orders_orderpackdto; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW orders_orderpackdto AS
+ SELECT oop.id,
+    (o.id)::integer AS orderid,
+    oop.number,
+    o.number AS ordernumber,
+    p.number AS orderproduct,
+    o.state AS orderstate,
+    s.number AS size,
+    o.plannedquantity AS orderquantity,
+    oop.quantity,
+    p.unit
+   FROM (((orders_orderpack oop
+     JOIN orders_order o ON ((o.id = oop.order_id)))
+     JOIN basic_product p ON ((o.product_id = p.id)))
+     LEFT JOIN basic_size s ON ((p.size_id = s.id)));
+
+
+--
+-- Name: orders_orderpackdto_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE orders_orderpackdto_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
 -- Name: orders_orderplanninglistdto; Type: VIEW; Schema: public; Owner: -
 --
 
 CREATE VIEW orders_orderplanninglistdto AS
+ WITH order_packs AS (
+         SELECT order_1.id AS orderid,
+            (count(pack.id) <> 0) AS haspacks
+           FROM (orders_order order_1
+             LEFT JOIN orders_orderpack pack ON ((pack.order_id = order_1.id)))
+          GROUP BY order_1.id
+        )
  SELECT ordersorder.id,
     ordersorder.active,
     ordersorder.number,
@@ -19220,14 +19394,16 @@ CREATE VIEW orders_orderplanninglistdto AS
             ELSE 'yellow-cell'::character varying(255)
         END AS percentageofexecutioncellcolor,
     ordersorder.deadline,
-    (date_part('day'::text, (date_trunc('day'::text, ordersorder.deadline) - (('now'::text)::date)::timestamp without time zone)))::integer AS daystodeadline
-   FROM ((((((orders_order ordersorder
+    (date_part('day'::text, (date_trunc('day'::text, ordersorder.deadline) - (('now'::text)::date)::timestamp without time zone)))::integer AS daystodeadline,
+    packs.haspacks
+   FROM (((((((orders_order ordersorder
      JOIN basic_product product ON ((product.id = ordersorder.product_id)))
      LEFT JOIN technologies_technology technology ON ((technology.id = ordersorder.technology_id)))
      LEFT JOIN productionlines_productionline productionline ON ((productionline.id = ordersorder.productionline_id)))
      LEFT JOIN masterorders_masterorder masterorder ON ((masterorder.id = ordersorder.masterorder_id)))
      LEFT JOIN basic_division division ON ((division.id = ordersorder.division_id)))
-     LEFT JOIN basic_company company ON ((company.id = ordersorder.company_id)));
+     LEFT JOIN basic_company company ON ((company.id = ordersorder.company_id)))
+     LEFT JOIN order_packs packs ON ((packs.orderid = ordersorder.id)));
 
 
 --
@@ -20431,7 +20607,7 @@ CREATE VIEW ordersupplies_productioncountingproducedquantity AS
    FROM ((productioncounting_trackingoperationproductoutcomponent topoc
      JOIN productioncounting_productiontracking pt ON ((pt.id = topoc.productiontracking_id)))
      JOIN orders_order o ON ((o.id = pt.order_id)))
-  WHERE (((pt.state)::text = ANY ((ARRAY['01draft'::character varying, '02accepted'::character varying])::text[])) AND ((o.state)::text = '03inProgress'::text))
+  WHERE (((pt.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02accepted'::character varying)::text])) AND ((o.state)::text = '03inProgress'::text))
   GROUP BY pt.order_id, topoc.product_id, pt.technologyoperationcomponent_id;
 
 
@@ -20447,7 +20623,7 @@ CREATE VIEW ordersupplies_productioncountingusedquantity AS
    FROM ((productioncounting_trackingoperationproductincomponent topic
      JOIN productioncounting_productiontracking pt ON ((pt.id = topic.productiontracking_id)))
      JOIN orders_order o ON ((o.id = pt.order_id)))
-  WHERE (((pt.state)::text = ANY ((ARRAY['01draft'::character varying, '02accepted'::character varying])::text[])) AND ((o.state)::text = '03inProgress'::text))
+  WHERE (((pt.state)::text = ANY (ARRAY[('01draft'::character varying)::text, ('02accepted'::character varying)::text])) AND ((o.state)::text = '03inProgress'::text))
   GROUP BY pt.order_id, topic.product_id, pt.technologyoperationcomponent_id;
 
 
@@ -20473,7 +20649,7 @@ CREATE VIEW ordersupplies_productioncountingquantityinput AS
      JOIN basic_product product ON ((product.id = pcq.product_id)))
      LEFT JOIN technologies_technologyoperationcomponent toc ON ((pcq.technologyoperationcomponent_id = toc.id)))
      LEFT JOIN ordersupplies_productioncountingusedquantity uqh ON (((uqh.order_id = pcq.order_id) AND (uqh.product_id = pcq.product_id))))
-  WHERE (((pcq.role)::text = '01used'::text) AND ((pcq.typeofmaterial)::text = ANY ((ARRAY['01component'::character varying, '02intermediate'::character varying])::text[])) AND ((o.state)::text = ANY ((ARRAY['01pending'::character varying, '02accepted'::character varying, '03inProgress'::character varying])::text[])) AND (o.active = true) AND ((o.typeofproductionrecording)::text = '02cumulated'::text))
+  WHERE (((pcq.role)::text = '01used'::text) AND ((pcq.typeofmaterial)::text = ANY (ARRAY[('01component'::character varying)::text, ('02intermediate'::character varying)::text])) AND ((o.state)::text = ANY (ARRAY[('01pending'::character varying)::text, ('02accepted'::character varying)::text, ('03inProgress'::character varying)::text])) AND (o.active = true) AND ((o.typeofproductionrecording)::text = '02cumulated'::text))
 UNION
  SELECT row_number() OVER () AS id,
     (o.id)::integer AS orderid,
@@ -20492,7 +20668,7 @@ UNION
      JOIN basic_product product ON ((product.id = pcq.product_id)))
      JOIN technologies_technologyoperationcomponent toc ON ((pcq.technologyoperationcomponent_id = toc.id)))
      LEFT JOIN ordersupplies_productioncountingusedquantity uqh ON (((uqh.order_id = pcq.order_id) AND (uqh.product_id = pcq.product_id))))
-  WHERE (((pcq.role)::text = '01used'::text) AND ((pcq.typeofmaterial)::text = ANY ((ARRAY['01component'::character varying, '02intermediate'::character varying])::text[])) AND ((o.state)::text = ANY ((ARRAY['01pending'::character varying, '02accepted'::character varying, '03inProgress'::character varying])::text[])) AND (o.active = true) AND ((o.typeofproductionrecording)::text = '03forEach'::text));
+  WHERE (((pcq.role)::text = '01used'::text) AND ((pcq.typeofmaterial)::text = ANY (ARRAY[('01component'::character varying)::text, ('02intermediate'::character varying)::text])) AND ((o.state)::text = ANY (ARRAY[('01pending'::character varying)::text, ('02accepted'::character varying)::text, ('03inProgress'::character varying)::text])) AND (o.active = true) AND ((o.typeofproductionrecording)::text = '03forEach'::text));
 
 
 --
@@ -20529,7 +20705,7 @@ CREATE VIEW ordersupplies_productioncountingquantityoutput AS
      JOIN basic_product product ON ((product.id = pcq.product_id)))
      JOIN technologies_technologyoperationcomponent toc ON ((pcq.technologyoperationcomponent_id = toc.id)))
      LEFT JOIN ordersupplies_productioncountingproducedquantity uqh ON (((uqh.order_id = pcq.order_id) AND (uqh.product_id = pcq.product_id))))
-  WHERE (((pcq.role)::text = '02produced'::text) AND ((pcq.typeofmaterial)::text = '03finalProduct'::text) AND ((o.state)::text = ANY ((ARRAY['01pending'::character varying, '02accepted'::character varying, '03inProgress'::character varying])::text[])) AND (o.active = true));
+  WHERE (((pcq.role)::text = '02produced'::text) AND ((pcq.typeofmaterial)::text = '03finalProduct'::text) AND ((o.state)::text = ANY (ARRAY[('01pending'::character varying)::text, ('02accepted'::character varying)::text, ('03inProgress'::character varying)::text])) AND (o.active = true));
 
 
 --
@@ -25703,7 +25879,9 @@ CREATE TABLE technologies_productstructuretreenode (
     operation_id bigint,
     quantity numeric(12,5),
     division_id bigint,
-    entitytype character varying(255) DEFAULT 'material'::character varying
+    entitytype character varying(255) DEFAULT 'material'::character varying,
+    unit character varying(255),
+    technologyinputproducttype_id bigint
 );
 
 
@@ -28843,6 +29021,20 @@ ALTER TABLE ONLY masterorders_salesplan ALTER COLUMN id SET DEFAULT nextval('mas
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY masterorders_salesplanmaterialrequirement ALTER COLUMN id SET DEFAULT nextval('masterorders_salesplanmaterialrequirement_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplanmaterialrequirementproduct ALTER COLUMN id SET DEFAULT nextval('masterorders_salesplanmaterialrequirementproduct_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY masterorders_salesplanproduct ALTER COLUMN id SET DEFAULT nextval('masterorders_salesplanproduct_id_seq'::regclass);
 
 
@@ -29173,6 +29365,13 @@ ALTER TABLE ONLY orders_order ALTER COLUMN id SET DEFAULT nextval('orders_order_
 --
 
 ALTER TABLE ONLY orders_ordercategorycolor ALTER COLUMN id SET DEFAULT nextval('orders_ordercategorycolor_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY orders_orderpack ALTER COLUMN id SET DEFAULT nextval('orders_orderpack_id_seq'::regclass);
 
 
 --
@@ -30699,7 +30898,7 @@ SELECT pg_catalog.setval('arch_costcalculation_componentcost_id_seq', 1, false);
 -- Data for Name: arch_costcalculation_costcalculation; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY arch_costcalculation_costcalculation (id, number, product_id, defaulttechnology_id, technology_id, productionline_id, quantity, order_id, totalmachinehourlycosts, totallaborhourlycosts, productioncostmargin, materialcostmargin, additionaloverhead, description, includetpz, includeadditionaltime, printcostnormsofmaterials, printoperationnorms, sourceofmaterialcosts, calculatematerialcostsmode, date, generated, filename, includecomponents, entityversion, sourceofoperationcosts, registrationpriceoverhead, profit, archived) FROM stdin;
+COPY arch_costcalculation_costcalculation (id, number, product_id, defaulttechnology_id, technology_id, productionline_id, quantity, order_id, productioncostmargin, materialcostmargin, additionaloverhead, description, includetpz, includeadditionaltime, sourceofmaterialcosts, calculatematerialcostsmode, date, generated, filename, includecomponents, entityversion, sourceofoperationcosts, registrationpriceoverhead, profit, archived) FROM stdin;
 \.
 
 
@@ -30729,7 +30928,7 @@ SELECT pg_catalog.setval('arch_costnormsformaterials_technologyinstoperproductin
 -- Data for Name: arch_costnormsforoperation_calculationoperationcomponent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY arch_costnormsforoperation_calculationoperationcomponent (id, nodenumber, operation_id, technologyoperationcomponent_id, parent_id, entitytype, priority, tpz, tj, areproductquantitiesdivisible, istjdivisible, machineutilization, laborutilization, productioninonecycle, nextoperationafterproducedtype, nextoperationafterproducedquantity, timenextoperation, operationoffset, effectiveoperationrealizationtime, effectivedatefrom, effectivedateto, duration, machineworktime, laborworktime, pieces, operationcost, operationmargincost, totaloperationcost, totalmachineoperationcost, totallaboroperationcost, pieceworkcost, laborhourlycost, machinehourlycost, totalmachineoperationcostwithmargin, totallaboroperationcostwithmargin, numberofoperations, costcalculation_id, entityversion, archived) FROM stdin;
+COPY arch_costnormsforoperation_calculationoperationcomponent (id, nodenumber, operation_id, technologyoperationcomponent_id, parent_id, entitytype, priority, tpz, tj, areproductquantitiesdivisible, istjdivisible, machineutilization, laborutilization, productioninonecycle, nextoperationafterproducedtype, nextoperationafterproducedquantity, timenextoperation, operationoffset, effectiveoperationrealizationtime, effectivedatefrom, effectivedateto, duration, machineworktime, laborworktime, operationcost, totalmachineoperationcost, totallaboroperationcost, pieceworkcost, laborhourlycost, machinehourlycost, numberofoperations, costcalculation_id, entityversion, archived) FROM stdin;
 \.
 
 
@@ -32999,8 +33198,8 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, materialcostsusedpb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, allowtechnologytreechangeinpendingorder, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, enableoperationgroupingworkplan, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation, moveproductstosubsequentoperations, demandcausesofwastes, wmsapk, wmsversion, applicationconfigured, materialcostsused, usenominalcostpricenotspecified, sourceofoperationcosts, standardlaborcost_id, averagemachinehourlycost, averagelaborhourlycost, includetpz, includeadditionaltime, materialcostmargin, productioncostmargin, additionaloverhead, registrationpriceoverhead, profit, applicationconfigurationfinished, coveragebasedonproductioncounting) FROM stdin;
-1	\N	5	pc	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	\N	f	01globally	14	f	\N	f	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	f	\N	\N	\N	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	f	01accepted	01order	01allInputProducts	f	t	\N	\N	\N	f	f	f	\N	\N	\N	\N	\N	150	\N	\N	f	t	f	\N	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	f	f	\N	\N	f	01nominal	f	01technologyOperation	\N	\N	\N	f	f	0.00000	0.00000	0.00000	0.00000	0.00000	f	f
+COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, materialcostsusedpb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, allowtechnologytreechangeinpendingorder, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, enableoperationgroupingworkplan, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation, moveproductstosubsequentoperations, demandcausesofwastes, wmsapk, wmsversion, applicationconfigured, materialcostsused, usenominalcostpricenotspecified, sourceofoperationcosts, standardlaborcost_id, averagemachinehourlycost, averagelaborhourlycost, includetpz, includeadditionaltime, materialcostmargin, productioncostmargin, additionaloverhead, registrationpriceoverhead, profit, applicationconfigurationfinished, coveragebasedonproductioncounting, generatepacksfororders, includepacksgeneratingprocessesfororder, optimalpacksize, restfeedinglastpack, deliveryusenominalcostwhenpricenotspecified, deliverypricefillbasedon) FROM stdin;
+1	\N	5	pc	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	\N	f	01globally	14	f	\N	f	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	f	\N	\N	\N	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	f	01accepted	01order	01allInputProducts	f	t	\N	\N	\N	f	f	f	\N	\N	\N	\N	\N	150	\N	\N	f	t	f	\N	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	f	f	\N	\N	f	01nominal	f	01technologyOperation	\N	\N	\N	f	f	0.00000	0.00000	0.00000	0.00000	0.00000	f	f	f	f	\N	\N	f	01lastPurchasePrice
 \.
 
 
@@ -33889,7 +34088,7 @@ SELECT pg_catalog.setval('costcalculation_componentcost_id_seq', 1, false);
 -- Data for Name: costcalculation_costcalculation; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY costcalculation_costcalculation (id, number, quantity, totalmachinehourlycosts, totallaborhourlycosts, productioncostmargin, materialcostmargin, additionaloverhead, description, includetpz, includeadditionaltime, printcostnormsofmaterials, printoperationnorms, materialcostsused, date, generated, filename, includecomponents, entityversion, sourceofoperationcosts, registrationpriceoverhead, profit, standardlaborcost_id, averagemachinehourlycost, averagelaborhourlycost, usenominalcostpricenotspecified) FROM stdin;
+COPY costcalculation_costcalculation (id, number, quantity, productioncostmargin, materialcostmargin, additionaloverhead, description, includetpz, includeadditionaltime, materialcostsused, date, generated, filename, includecomponents, entityversion, sourceofoperationcosts, registrationpriceoverhead, profit, standardlaborcost_id, averagemachinehourlycost, averagelaborhourlycost, usenominalcostpricenotspecified, pdf) FROM stdin;
 \.
 
 
@@ -33941,7 +34140,7 @@ SELECT pg_catalog.setval('costnormsformaterials_technologyinstoperproductincomp_
 -- Data for Name: costnormsforoperation_calculationoperationcomponent; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY costnormsforoperation_calculationoperationcomponent (id, nodenumber, operation_id, technologyoperationcomponent_id, parent_id, entitytype, priority, tpz, tj, areproductquantitiesdivisible, istjdivisible, machineutilization, laborutilization, productioninonecycle, nextoperationafterproducedtype, nextoperationafterproducedquantity, timenextoperation, operationoffset, effectiveoperationrealizationtime, effectivedatefrom, effectivedateto, duration, machineworktime, laborworktime, pieces, operationcost, operationmargincost, totaloperationcost, totalmachineoperationcost, totallaboroperationcost, pieceworkcost, laborhourlycost, machinehourlycost, totalmachineoperationcostwithmargin, totallaboroperationcostwithmargin, numberofoperations, costcalculation_id, entityversion) FROM stdin;
+COPY costnormsforoperation_calculationoperationcomponent (id, nodenumber, operation_id, technologyoperationcomponent_id, parent_id, entitytype, priority, tpz, tj, areproductquantitiesdivisible, istjdivisible, machineutilization, laborutilization, productioninonecycle, nextoperationafterproducedtype, nextoperationafterproducedquantity, timenextoperation, operationoffset, effectiveoperationrealizationtime, effectivedatefrom, effectivedateto, duration, machineworktime, laborworktime, operationcost, totalmachineoperationcost, totallaboroperationcost, pieceworkcost, laborhourlycost, machinehourlycost, numberofoperations, costcalculation_id, entityversion) FROM stdin;
 \.
 
 
@@ -36031,6 +36230,36 @@ SELECT pg_catalog.setval('masterorders_salesplan_id_seq', 1, false);
 
 
 --
+-- Data for Name: masterorders_salesplanmaterialrequirement; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY masterorders_salesplanmaterialrequirement (id, number, salesplan_id, generated, worker, date) FROM stdin;
+\.
+
+
+--
+-- Name: masterorders_salesplanmaterialrequirement_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('masterorders_salesplanmaterialrequirement_id_seq', 1, false);
+
+
+--
+-- Data for Name: masterorders_salesplanmaterialrequirementproduct; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY masterorders_salesplanmaterialrequirementproduct (id, salesplanmaterialrequirement_id, product_id, quantity, sizegroup_id, sumforsizes, currentstock, neededquantity, supplier_id, minimumorderquantity, isdeliverycreated) FROM stdin;
+\.
+
+
+--
+-- Name: masterorders_salesplanmaterialrequirementproduct_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('masterorders_salesplanmaterialrequirementproduct_id_seq', 1, false);
+
+
+--
 -- Data for Name: masterorders_salesplanproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -36962,6 +37191,13 @@ SELECT pg_catalog.setval('orders_order_id_seq', 1, false);
 
 
 --
+-- Name: orders_order_pack_number_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('orders_order_pack_number_seq', 1, false);
+
+
+--
 -- Data for Name: orders_ordercategorycolor; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -36988,6 +37224,28 @@ SELECT pg_catalog.setval('orders_orderdto_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('orders_orderlistdto_id_seq', 1, false);
+
+
+--
+-- Data for Name: orders_orderpack; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY orders_orderpack (id, number, order_id, quantity) FROM stdin;
+\.
+
+
+--
+-- Name: orders_orderpack_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('orders_orderpack_id_seq', 1, false);
+
+
+--
+-- Name: orders_orderpackdto_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('orders_orderpackdto_id_seq', 1, false);
 
 
 --
@@ -38668,6 +38926,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 123	ROLE_WMS	\N	0
 1	ROLE_HOME_PROFILE	\N	0
 124	ROLE_TECHNOLOGICAL_PROCESSES	\N	0
+125	ROLE_CLEAN_EXTERNAL_NUMBER	\N	0
 \.
 
 
@@ -38675,7 +38934,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 124, true);
+SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 125, true);
 
 
 --
@@ -38923,6 +39182,8 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 184	technologies	technologicalProcessListsList	t	5	183	9	ROLE_TECHNOLOGICAL_PROCESSES	0
 185	costCalculation	standardLaborCostsList	t	10	184	4	ROLE_CALCULATIONS	0
 186	technologies	technologyInputProductTypesList	t	5	185	10	ROLE_TECHNOLOGIES	0
+187	orders	orderPacksList	t	7	186	21	ROLE_PLANNING	0
+188	masterOrders	salesPlanMaterialRequirementsList	t	7	187	22	ROLE_PLANNING	0
 \.
 
 
@@ -38930,7 +39191,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 186, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 188, true);
 
 
 --
@@ -39110,6 +39371,8 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 183	technologies	technologicalProcessListsList	technologicalProcessListsList	\N	0
 184	costCalculation	standardLaborCostsList	standardLaborCostsList	\N	0
 185	technologies	technologyInputProductTypesList	technologyInputProductTypesList	\N	0
+186	orders	orderPacksList	orderPacksList	\N	0
+187	masterOrders	salesPlanMaterialRequirementsList	salesPlanMaterialRequirementsList	\N	0
 \.
 
 
@@ -39117,7 +39380,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 185, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 187, true);
 
 
 --
@@ -40047,7 +40310,7 @@ SELECT pg_catalog.setval('technologies_productcomponent_id_seq', 1, false);
 -- Data for Name: technologies_productstructuretreenode; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY technologies_productstructuretreenode (id, priority, technology_id, parent_id, nodenumber, number, product_id, createdate, updatedate, createuser, updateuser, entityversion, standardperformancetechnology, technologygroup_id, maintechnology_id, operation_id, quantity, division_id, entitytype) FROM stdin;
+COPY technologies_productstructuretreenode (id, priority, technology_id, parent_id, nodenumber, number, product_id, createdate, updatedate, createuser, updateuser, entityversion, standardperformancetechnology, technologygroup_id, maintechnology_id, operation_id, quantity, division_id, entitytype, unit, technologyinputproducttype_id) FROM stdin;
 \.
 
 
@@ -43344,6 +43607,22 @@ ALTER TABLE ONLY masterorders_salesplan
 
 
 --
+-- Name: masterorders_salesplanmaterialrequirement_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplanmaterialrequirement
+    ADD CONSTRAINT masterorders_salesplanmaterialrequirement_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: masterorders_salesplanmaterialrequirementproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplanmaterialrequirementproduct
+    ADD CONSTRAINT masterorders_salesplanmaterialrequirementproduct_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: masterorders_salesplanproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -43709,6 +43988,14 @@ ALTER TABLE ONLY orders_order
 
 ALTER TABLE ONLY orders_ordercategorycolor
     ADD CONSTRAINT orders_ordercategorycolor_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: orders_orderpack_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY orders_orderpack
+    ADD CONSTRAINT orders_orderpack_pkey PRIMARY KEY (id);
 
 
 --
@@ -52530,6 +52817,14 @@ ALTER TABLE ONLY deliveries_orderedproductreservation
 
 
 --
+-- Name: orderpack_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY orders_orderpack
+    ADD CONSTRAINT orderpack_order_fkey FOREIGN KEY (order_id) REFERENCES orders_order(id) DEFERRABLE;
+
+
+--
 -- Name: orders_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -54738,6 +55033,14 @@ ALTER TABLE ONLY technologies_productstructuretreenode
 
 
 --
+-- Name: productstructuretreenode_technologyinputproducttype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_productstructuretreenode
+    ADD CONSTRAINT productstructuretreenode_technologyinputproducttype_fkey FOREIGN KEY (technologyinputproducttype_id) REFERENCES technologies_technologyinputproducttype(id) DEFERRABLE;
+
+
+--
 -- Name: producttoissuecorrection_accountwithreservation_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -56103,6 +56406,46 @@ ALTER TABLE ONLY materialflowresources_resourcestock
 
 ALTER TABLE ONLY materialflowresources_resourcestock
     ADD CONSTRAINT resourcestock_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: salesplanmaterialrequirement_salesplan_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplanmaterialrequirement
+    ADD CONSTRAINT salesplanmaterialrequirement_salesplan_fkey FOREIGN KEY (salesplan_id) REFERENCES masterorders_salesplan(id) DEFERRABLE;
+
+
+--
+-- Name: salesplanmaterialrequirementproduct_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplanmaterialrequirementproduct
+    ADD CONSTRAINT salesplanmaterialrequirementproduct_company_fkey FOREIGN KEY (supplier_id) REFERENCES basic_company(id) DEFERRABLE;
+
+
+--
+-- Name: salesplanmaterialrequirementproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplanmaterialrequirementproduct
+    ADD CONSTRAINT salesplanmaterialrequirementproduct_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: salesplanmaterialrequirementproduct_salesplanmaterialrequiremen; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplanmaterialrequirementproduct
+    ADD CONSTRAINT salesplanmaterialrequirementproduct_salesplanmaterialrequiremen FOREIGN KEY (salesplanmaterialrequirement_id) REFERENCES masterorders_salesplanmaterialrequirement(id) DEFERRABLE;
+
+
+--
+-- Name: salesplanmaterialrequirementproduct_sizegroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplanmaterialrequirementproduct
+    ADD CONSTRAINT salesplanmaterialrequirementproduct_sizegroup_fkey FOREIGN KEY (sizegroup_id) REFERENCES basic_sizegroup(id) DEFERRABLE;
 
 
 --

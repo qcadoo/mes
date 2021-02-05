@@ -1,25 +1,5 @@
 package com.qcadoo.mes.cmmsMachineParts.reports.xls.sourceCost;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFFont;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.cmmsMachineParts.constants.SourceCostReportFilterFields;
@@ -29,6 +9,18 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.constants.QcadooSecurityConstants;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 @Service public class WorkerCostsXlsService {
 
@@ -99,7 +91,7 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
         Font font = workbook.createFont();
         font.setFontName(HSSFFont.FONT_ARIAL);
         font.setFontHeightInPoints((short) 10);
-        font.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        font.setBold(true);
         HSSFCellStyle style = workbook.createCellStyle();
         style.setFont(font);
 
@@ -151,18 +143,18 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
         Font font = workbook.createFont();
         font.setFontName(HSSFFont.FONT_ARIAL);
         font.setFontHeightInPoints((short) 10);
-        font.setBoldweight(Font.BOLDWEIGHT_NORMAL);
+        font.setBold(false);
         HSSFCellStyle style = workbook.createCellStyle();
         style.setFont(font);
-        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
-        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
-        style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+        style.setBorderBottom(BorderStyle.THIN);
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
         style.setWrapText(true);
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
 
         int colNumber = 0;
         for (String column : WorkerCostsXlsConstants.ALL_COLUMNS) {
@@ -179,7 +171,7 @@ import com.qcadoo.security.constants.QcadooSecurityConstants;
         Font font = workbook.createFont();
         font.setFontName(HSSFFont.FONT_ARIAL);
         font.setFontHeightInPoints((short) 10);
-        font.setBoldweight(Font.BOLDWEIGHT_NORMAL);
+        font.setBold(false);
 
         int usagesCounter = 0;
 

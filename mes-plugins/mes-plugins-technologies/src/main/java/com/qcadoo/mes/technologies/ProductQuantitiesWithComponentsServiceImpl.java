@@ -38,8 +38,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,8 +48,6 @@ import java.util.Set;
 
 @Service
 public class ProductQuantitiesWithComponentsServiceImpl implements ProductQuantitiesWithComponentsService {
-
-    private static final Logger LOG = LoggerFactory.getLogger(ProductQuantitiesWithComponentsServiceImpl.class);
 
     @Autowired
     ProductQuantitiesService productQuantitiesService;
@@ -75,21 +71,14 @@ public class ProductQuantitiesWithComponentsServiceImpl implements ProductQuanti
                 .getAllWithSameEntityType(TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT);
 
         if (mrpAlgorithm.equals(MrpAlgorithm.ALL_PRODUCTS_IN)) {
-            return getOperationProductComponentWithQuantities(allWithSameEntityType, nonComponents, false);
+            return getOperationProductComponentWithQuantities(allWithSameEntityType, nonComponents, false, false);
         } else if (mrpAlgorithm.equals(MrpAlgorithm.ONLY_COMPONENTS)) {
-            return getOperationProductComponentWithQuantities(allWithSameEntityType, nonComponents, true);
+            return getOperationProductComponentWithQuantities(allWithSameEntityType, nonComponents, true, false);
         } else if (mrpAlgorithm.equals(MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS)) {
-            return getOperationProductComponentWithQuantities(allWithSameEntityType, nonComponents, false);
+            return getOperationProductComponentWithQuantities(allWithSameEntityType, nonComponents, false, false);
         } else {
             return getOperationProductComponentWithQuantities(allWithSameEntityType, nonComponents, true, true);
         }
-
-    }
-
-    private Map<OperationProductComponentHolder, BigDecimal> getOperationProductComponentWithQuantities(
-            final OperationProductComponentWithQuantityContainer productComponentWithQuantities,
-            final Set<OperationProductComponentHolder> nonComponents, final boolean onlyComponents) {
-        return getOperationProductComponentWithQuantities(productComponentWithQuantities, nonComponents, onlyComponents, false);
     }
 
     private Map<OperationProductComponentHolder, BigDecimal> getOperationProductComponentWithQuantities(
@@ -120,8 +109,7 @@ public class ProductQuantitiesWithComponentsServiceImpl implements ProductQuanti
     private boolean hasAcceptedMasterTechnology(final Entity product) {
         DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_TECHNOLOGY);
-        Entity masterTechnology = technologyDD
-                .find()
+        Entity masterTechnology = technologyDD.find()
                 .add(SearchRestrictions.and(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, product),
                         (SearchRestrictions.eq("state", "02accepted"))))
                 .add(SearchRestrictions.eq(TechnologyFields.MASTER, true)).setMaxResults(1).uniqueResult();
@@ -140,18 +128,11 @@ public class ProductQuantitiesWithComponentsServiceImpl implements ProductQuanti
     @Override
     public ProductQuantitiesHolder getProductComponentQuantities(final Entity technology, final BigDecimal givenQuantity) {
         Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
-        OperationProductComponentWithQuantityContainer productQuantities = getProductComponentQuantities(technology,
-                givenQuantity, operationRuns);
+        Set<OperationProductComponentHolder> nonComponents = Sets.newHashSet();
+        OperationProductComponentWithQuantityContainer productQuantities = getProductComponentWithQuantitiesForTechnology(
+                technology, givenQuantity, operationRuns, nonComponents);
 
         return new ProductQuantitiesHolder(productQuantities, operationRuns);
-    }
-
-    @Override
-    public OperationProductComponentWithQuantityContainer getProductComponentQuantities(final Entity technology,
-            final BigDecimal givenQuantity, final Map<Long, BigDecimal> operationRuns) {
-        Set<OperationProductComponentHolder> nonComponents = Sets.newHashSet();
-
-        return getProductComponentWithQuantitiesForTechnology(technology, givenQuantity, operationRuns, nonComponents);
     }
 
     @Override
@@ -165,7 +146,7 @@ public class ProductQuantitiesWithComponentsServiceImpl implements ProductQuanti
                 EntityTreeUtilsService.getDetachedEntityTree(operationComponents));
 
         Entity root = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
-        Map<Long, Entity> entitiesById = new LinkedHashMap<Long, Entity>();
+        Map<Long, Entity> entitiesById = new LinkedHashMap<>();
 
         for (Entity entity : operationComponents) {
             entitiesById.put(entity.getId(), entity);
@@ -179,18 +160,4 @@ public class ProductQuantitiesWithComponentsServiceImpl implements ProductQuanti
 
         return operationProductComponentWithQuantityContainer;
     }
-
-    @Override
-    public Map<Long, BigDecimal> getNeededProductQuantities(final Entity technology, final BigDecimal givenQuantity,
-            final MrpAlgorithm mrpAlgorithm) {
-        Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
-        Set<OperationProductComponentHolder> nonComponents = Sets.newHashSet();
-
-        OperationProductComponentWithQuantityContainer productComponentWithQuantities = getProductComponentWithQuantitiesForTechnology(
-                technology, givenQuantity, operationRuns, nonComponents);
-
-        return productQuantitiesService.getProductWithQuantities(productComponentWithQuantities, nonComponents, mrpAlgorithm,
-                TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT);
-    }
-
 }

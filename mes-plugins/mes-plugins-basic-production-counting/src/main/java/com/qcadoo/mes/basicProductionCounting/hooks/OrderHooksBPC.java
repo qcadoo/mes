@@ -83,8 +83,11 @@ public class OrderHooksBPC {
 
     private boolean checkIfShouldReCreateProductionCounting(Entity order) {
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        Entity product = order.getBelongsToField(OrderFields.PRODUCT);
         Entity technologyDb = order.getDataDefinition().get(order.getId()).getBelongsToField(OrderFields.TECHNOLOGY);
-        if (Objects.isNull(technologyDb) || !technology.getId().equals(technologyDb.getId())) {
+        Entity productDb = order.getDataDefinition().get(order.getId()).getBelongsToField(OrderFields.PRODUCT);
+        if (Objects.isNull(technologyDb) || !technology.getId().equals(technologyDb.getId())
+                || !product.getId().equals(productDb.getId())) {
             return true;
         }
         return false;

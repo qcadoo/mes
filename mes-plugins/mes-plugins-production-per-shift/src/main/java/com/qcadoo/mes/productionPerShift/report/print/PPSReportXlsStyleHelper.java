@@ -25,7 +25,7 @@ package com.qcadoo.mes.productionPerShift.report.print;
 
 import org.apache.poi.hssf.usermodel.*;
 import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -83,17 +83,17 @@ public class PPSReportXlsStyleHelper {
             final boolean shouldleft, final Font font) {
         HSSFCellStyle style = workbook.createCellStyle();
 
-        style.setBorderTop(HSSFCellStyle.BORDER_MEDIUM);
-        style.setBorderLeft(HSSFCellStyle.BORDER_MEDIUM);
-        style.setBorderRight(HSSFCellStyle.BORDER_MEDIUM);
-        style.setBorderBottom(HSSFCellStyle.BORDER_MEDIUM);
+        style.setBorderTop(BorderStyle.MEDIUM);
+        style.setBorderLeft(BorderStyle.MEDIUM);
+        style.setBorderRight(BorderStyle.MEDIUM);
+        style.setBorderBottom(BorderStyle.MEDIUM);
 
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setWrapText(true);
 
         font.setFontName(HSSFFont.FONT_ARIAL);
-        font.setBoldweight(Font.BOLDWEIGHT_NORMAL);
+        font.setBold(false);
         font.setFontHeightInPoints((short) 7);
         font.setColor(HSSFFont.COLOR_NORMAL);
 
@@ -105,10 +105,10 @@ public class PPSReportXlsStyleHelper {
         }
         if (shouldBackground) {
             style.setFillForegroundColor(HSSFColor.GREY_50_PERCENT.index);
-            style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         }
         if (shouldleft) {
-            style.setAlignment(HSSFCellStyle.ALIGN_LEFT);
+            style.setAlignment(HorizontalAlignment.LEFT);
         }
 
         return style;
@@ -118,17 +118,17 @@ public class PPSReportXlsStyleHelper {
             final boolean shouldSmall, final boolean end, final boolean changeover, final Font font) {
         HSSFCellStyle style = workbook.createCellStyle();
 
-        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
-        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
-        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
+        style.setBorderBottom(BorderStyle.THIN);
 
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setWrapText(true);
 
         font.setFontName(HSSFFont.FONT_ARIAL);
-        font.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        font.setBold(true);
         font.setFontHeightInPoints((short) 9);
         font.setColor(HSSFFont.COLOR_NORMAL);
 
@@ -146,14 +146,14 @@ public class PPSReportXlsStyleHelper {
                 style.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);
 
             }
-            style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+            style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         }
         if (shouldSmall) {
             font.setFontHeightInPoints((short) 7);
             style.setFont(font);
         }
         if (end) {
-            style.setBorderRight(HSSFCellStyle.BORDER_MEDIUM);
+            style.setBorderRight(BorderStyle.MEDIUM);
         }
 
         return style;
@@ -162,24 +162,24 @@ public class PPSReportXlsStyleHelper {
     private HSSFCellStyle getHeaderStyleChangeover(final HSSFWorkbook workbook, final Font font) {
         HSSFCellStyle style = workbook.createCellStyle();
 
-        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
-        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
-        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
+        style.setBorderBottom(BorderStyle.THIN);
 
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setWrapText(true);
 
         font.setFontName(HSSFFont.FONT_ARIAL);
-        font.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        font.setBold(true);
         font.setFontHeightInPoints((short) 9);
         font.setColor(HSSFFont.COLOR_NORMAL);
 
         style.setFont(font);
 
         style.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);
-        style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
         return style;
     }
@@ -187,22 +187,22 @@ public class PPSReportXlsStyleHelper {
     private HSSFCellStyle getHeaderStyleChangeoverEnd(final HSSFWorkbook workbook, final Font font) {
         HSSFCellStyle style = workbook.createCellStyle();
 
-        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
-        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-        style.setBorderRight(HSSFCellStyle.BORDER_MEDIUM);
-        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.MEDIUM);
+        style.setBorderBottom(BorderStyle.THIN);
 
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setWrapText(true);
 
         font.setFontName(HSSFFont.FONT_ARIAL);
-        font.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        font.setBold(true);
         font.setFontHeightInPoints((short) 9);
         style.setFont(font);
 
         style.setFillForegroundColor(HSSFColor.SKY_BLUE.index);
-        style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
         return style;
     }
@@ -210,10 +210,10 @@ public class PPSReportXlsStyleHelper {
     public static HSSFCellStyle rowStyle2(final HSSFSheet sheet) {
         HSSFCellStyle style = sheet.getWorkbook().createCellStyle();
 
-        style.setBorderTop(HSSFCellStyle.BORDER_MEDIUM);
-        style.setBorderLeft(HSSFCellStyle.BORDER_MEDIUM);
-        style.setBorderRight(HSSFCellStyle.BORDER_MEDIUM);
-        style.setBorderBottom(HSSFCellStyle.BORDER_MEDIUM);
+        style.setBorderTop(BorderStyle.MEDIUM);
+        style.setBorderLeft(BorderStyle.MEDIUM);
+        style.setBorderRight(BorderStyle.MEDIUM);
+        style.setBorderBottom(BorderStyle.MEDIUM);
 
         return style;
     }

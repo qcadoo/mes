@@ -53,10 +53,6 @@ public final class CostCalculationFields {
 
     public static final String MATERIAL_COST_MARGIN = "materialCostMargin";
 
-    public static final String TOTAL_MACHINE_HOURLY_COSTS = "totalMachineHourlyCosts";
-
-    public static final String TOTAL_LABOR_HOURLY_COSTS = "totalLaborHourlyCosts";
-
     public static final String PRODUCTION_COST_MARGIN = "productionCostMargin";
 
     public static final String ADDITIONAL_OVERHEAD = "additionalOverhead";
@@ -70,10 +66,6 @@ public final class CostCalculationFields {
     public static final String INCLUDE_TPZ = "includeTPZ";
 
     public static final String INCLUDE_ADDITIONAL_TIME = "includeAdditionalTime";
-
-    public static final String PRINT_COST_NORMS_OF_MATERIALS = "printCostNormsOfMaterials";
-
-    public static final String PRINT_OPERATION_NORMS = "printOperationNorms";
 
     public static final String DATE = "date";
 
@@ -90,5 +82,7 @@ public final class CostCalculationFields {
     public static final String IS_SET_FIELDS_FROM_PARAMETER = "isSetFieldsFromParameter";
 
     public static final String INCLUDE_COMPONENTS = "includeComponents";
+
+    public static final String PDF = "pdf";
 
 }

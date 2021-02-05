@@ -24,12 +24,23 @@
 package com.qcadoo.mes.basic;
 
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.constants.*;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.SubstituteComponentFields;
+import com.qcadoo.mes.basic.constants.SubstituteFields;
+import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.basic.util.UnitService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.*;
+import com.qcadoo.model.api.search.CustomRestriction;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriterion;
+import com.qcadoo.model.api.search.SearchOrder;
+import com.qcadoo.model.api.search.SearchProjection;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.view.api.ComponentState;
@@ -38,14 +49,15 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductService {
@@ -137,6 +149,22 @@ public class ProductService {
         } else {
             return !existingProductUnit.equals(currentUnit);
         }
+    }
+
+    public void cleanExternalNumber(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Entity product = productForm.getEntity();
+
+        if (Objects.isNull(product.getId())) {
+            return;
+        }
+
+        Entity productDb = getProductDD().get(product.getId());
+        productDb.setField(ProductFields.EXTERNAL_NUMBER, null);
+        productDb = getProductDD().save(productDb);
+        productForm.setEntity(productDb);
+
     }
 
     public void openAdditionalDetails(final ViewDefinitionState view, final ComponentState state, final String[] args) {

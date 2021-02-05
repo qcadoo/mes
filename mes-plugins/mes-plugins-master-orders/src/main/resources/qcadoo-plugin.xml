@@ -63,7 +63,7 @@
             <version>[1.4.0</version>
         </dependency>
         <dependency>
-            <plugin>materialFlowResources</plugin>
+            <plugin>deliveries</plugin>
             <version>[1.4.0</version>
         </dependency>
     </dependencies>
@@ -84,6 +84,8 @@
         <model:model model="salesPlanProduct" resource="model/salesPlanProduct.xml"/>
         <model:model model="salesPlanStateChange" resource="model/salesPlanStateChange.xml"/>
         <model:model model="salesPlanProductDto" resource="model/salesPlanProductDto.xml"/>
+        <model:model model="salesPlanMaterialRequirement" resource="model/salesPlanMaterialRequirement.xml"/>
+        <model:model model="salesPlanMaterialRequirementProduct" resource="model/salesPlanMaterialRequirementProduct.xml"/>
 
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="salesPlanProducts" model="salesPlanProduct" plugin="masterOrders" joinField="product"/>
@@ -91,6 +93,18 @@
 
         <model:model-field plugin="technologies" model="technology">
             <model:hasMany name="salesPlanProducts" model="salesPlanProduct" plugin="masterOrders" joinField="technology"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="salesPlanMaterialRequirementProducts" model="salesPlanMaterialRequirementProduct" plugin="masterOrders" joinField="product"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="sizeGroup">
+            <model:hasMany name="salesPlanMaterialRequirementProducts" model="salesPlanMaterialRequirementProduct" plugin="masterOrders" joinField="sizeGroup"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="company">
+            <model:hasMany name="salesPlanMaterialRequirementProducts" model="salesPlanMaterialRequirementProduct" plugin="masterOrders" joinField="supplier"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="shift">
@@ -183,6 +197,9 @@
         <menu:menu-item name="salesPlansList" category="orders"
                         view="salesPlansList" defaultAuthorizationRole="ROLE_PLANNING"/>
 
+        <menu:menu-item name="salesPlanMaterialRequirementsList" category="orders"
+                        view="salesPlanMaterialRequirementsList" defaultAuthorizationRole="ROLE_PLANNING"/>
+
         <view:view resource="view/masterOrdersList.xml"/>
         <view:view resource="view/masterOrderDetails.xml"/>
 
@@ -200,6 +217,8 @@
         <view:view resource="view/salesPlanDetails.xml"/>
         <view:view resource="view/salesPlanProductDetails.xml"/>
         <view:view resource="view/orderedProductsForFamily.xml"/>
+        <view:view resource="view/salesPlanMaterialRequirementsList.xml"/>
+        <view:view resource="view/salesPlanMaterialRequirementDetails.xml"/>
 
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/masterOrderDefinitionsParameters.xml"/>

@@ -23,14 +23,28 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
+import java.math.BigDecimal;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.roles.DeliveryRole;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryState;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateChangeFields;
@@ -41,21 +55,17 @@ import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import com.qcadoo.view.constants.RowStyle;
 
 @Service
 public class DeliveryDetailsHooks {
@@ -423,6 +433,18 @@ public class DeliveryDetailsHooks {
         deliveryIdForMultiUpload.requestComponentUpdateState();
         deliveryMultiUploadLocale.setFieldValue(LocaleContextHolder.getLocale());
         deliveryMultiUploadLocale.requestComponentUpdateState();
+    }
+
+    public Set<String> fillRowStyles(final Entity orderedProduct) {
+        final Set<String> rowStyles = Sets.newHashSet();
+
+        BigDecimal orderedQuantity = orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY);
+
+        if (Objects.nonNull(orderedQuantity) && BigDecimal.ZERO.compareTo(orderedQuantity) == 0) {
+            rowStyles.add(RowStyle.RED_BACKGROUND);
+        }
+
+        return rowStyles;
     }
 
 }

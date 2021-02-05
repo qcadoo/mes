@@ -34,6 +34,7 @@ import com.lowagie.text.pdf.PdfCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
@@ -46,8 +47,10 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
@@ -60,7 +63,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -95,6 +97,9 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
 
     @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     @Override
     protected void buildPdfContent(final Document document, final Entity materialRequirement, final Locale locale)
@@ -211,7 +216,9 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
 
         String actualWarehouse = "";
         Long actualDate = 0L;
+        int keyIndex = 0;
         for (WarehouseDateKey key : keys) {
+            keyIndex += 1;
             List<MaterialRequirementEntry> materials = entriesMap.get(key);
             Map<Long, BigDecimal> quantitiesInStock = Maps.newHashMap();
             if (showCurrentStockLevel && Objects.nonNull(key.getWarehouseId())) {
@@ -230,7 +237,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
                 MaterialRequirementEntry material = neededProductQuantities.get(materialKey);
                 table.getDefaultCell().disableBorderSide(PdfCell.BOTTOM);
                 table.getDefaultCell().disableBorderSide(PdfCell.TOP);
-                if (index == materialKeys.size()) {
+                if (index == materialKeys.size() && keyIndex == keys.size()) {
                     table.getDefaultCell().enableBorderSide(PdfCell.BOTTOM);
                 }
 
@@ -344,12 +351,16 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         PdfPTable table = pdfHelper.createTableWithHeader(headersWithAlignments.size(), headers, true,
                 defaultOrderHeaderColumnWidth, headersWithAlignments);
 
-        for (Entry<Long, BigDecimal> neededProductQuantity : neededProductQuantities.entrySet()) {
-            Entity product = productQuantitiesService.getProduct(neededProductQuantity.getKey());
+        List<Entity> products = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).find()
+                .add(SearchRestrictions.in("id", neededProductQuantities.keySet())).list().getEntities();
+        products.sort(Comparator.comparing(p -> p.getStringField(ProductFields.NUMBER)));
+
+        for (Entity product : products) {
             table.addCell(new Phrase(product.getStringField(ProductFields.NUMBER), FontUtils.getDejavuRegular7Dark()));
             table.addCell(new Phrase(product.getStringField(ProductFields.NAME), FontUtils.getDejavuRegular7Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table.addCell(new Phrase(numberService.format(neededProductQuantity.getValue()), FontUtils.getDejavuBold7Dark()));
+            table.addCell(new Phrase(numberService.format(neededProductQuantities.get(product.getId())), FontUtils
+                    .getDejavuBold7Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
             String unit = product.getStringField(ProductFields.UNIT);
             if (unit == null) {

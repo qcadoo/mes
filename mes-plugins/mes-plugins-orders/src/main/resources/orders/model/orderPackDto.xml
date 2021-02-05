@@ -3,7 +3,7 @@
 
     ***************************************************************************
     Copyright (c) 2010 Qcadoo Limited
-    Project: Qcadoo Framework
+    Project: Qcadoo MES
     Version: 1.4
 
     This file is part of Qcadoo.
@@ -24,24 +24,25 @@
     ***************************************************************************
 
 -->
-<ribbonExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/ribbonExtension"
-    xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd"
-    plugin="deliveries"
-    view="deliveryDetails">
+<model name="orderPackDto" auditable="false" deletable="false" insertable="false" updatable="false"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
-	<group name="fill">
-    	<bigButton name="fillPrices" icon="genealogyIcon24.png" state="enabled">
-			<script>
- 				<![CDATA[
- 					this.addOnChangeListener({
- 						onClick: function() {
- 								if(window.canClose()) {
-									#{form}.performEvent('fillPrices', []);
- 								}
- 						}
- 					});
-				]]>
-			</script>
-		</bigButton>
-	</group>
-</ribbonExtension>
+    <fields>
+        <belongsTo name="order" model="order" persistent="false"/>
+        <integer name="orderId"/>
+
+        <string name="number"/>
+        <string name="orderNumber"/>
+        <enum name="orderState" values="01pending,02accepted,03inProgress,04completed,05declined,06interrupted,07abandoned"/>
+        <string name="orderProduct"/>
+        <string name="size"/>
+        <decimal name="orderQuantity"/>
+        <decimal name="quantity"/>
+        <string name="unit"/>
+    </fields>
+
+    <hooks/>
+
+    <masterModel plugin="orders" model="orderPack" />
+</model>

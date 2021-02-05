@@ -1,14 +1,13 @@
 package com.qcadoo.mes.productionPerShift.report.print;
 
-import java.util.Map;
-
+import com.google.common.collect.Maps;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.util.HSSFColor;
-import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.*;
 
-import com.google.common.collect.Maps;
+import java.util.Map;
 
 /**
  * Styles and style identifiers
@@ -56,26 +55,26 @@ public class PPSReportXlsStyleContainer {
     private void initStyle(final HSSFSheet sheet) {
         this.fontNormal = sheet.getWorkbook().createFont();
         fontNormal.setFontName(HSSFFont.FONT_ARIAL);
-        fontNormal.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        fontNormal.setBold(true);
         fontNormal.setFontHeightInPoints((short) 9);
         fontNormal.setColor(HSSFFont.COLOR_NORMAL);
 
         this.fontRed = sheet.getWorkbook().createFont();
         fontRed.setFontName(HSSFFont.FONT_ARIAL);
-        fontRed.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        fontRed.setBold(true);
         fontRed.setFontHeightInPoints((short) 9);
         fontRed.setColor(HSSFFont.COLOR_NORMAL);
         fontRed.setColor(HSSFFont.COLOR_RED);
 
         this.fontSmall = sheet.getWorkbook().createFont();
         fontSmall.setFontName(HSSFFont.FONT_ARIAL);
-        fontSmall.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        fontSmall.setBold(true);
         fontSmall.setFontHeightInPoints((short) 7);
         fontSmall.setColor(HSSFFont.COLOR_NORMAL);
 
         this.fontSmallRed = sheet.getWorkbook().createFont();
         fontSmallRed.setFontName(HSSFFont.FONT_ARIAL);
-        fontSmallRed.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        fontSmallRed.setBold(true);
         fontSmallRed.setFontHeightInPoints((short) 7);
         fontSmallRed.setColor(HSSFFont.COLOR_NORMAL);
         fontSmallRed.setColor(HSSFFont.COLOR_RED);
@@ -96,13 +95,13 @@ public class PPSReportXlsStyleContainer {
 
     private void headerStyle2Red(HSSFSheet sheet) {
         HSSFCellStyle style = sheet.getWorkbook().createCellStyle();
-        style.setBorderTop(HSSFCellStyle.BORDER_MEDIUM);
-        style.setBorderLeft(HSSFCellStyle.BORDER_MEDIUM);
-        style.setBorderRight(HSSFCellStyle.BORDER_MEDIUM);
-        style.setBorderBottom(HSSFCellStyle.BORDER_MEDIUM);
+        style.setBorderTop(BorderStyle.MEDIUM);
+        style.setBorderLeft(BorderStyle.MEDIUM);
+        style.setBorderRight(BorderStyle.MEDIUM);
+        style.setBorderBottom(BorderStyle.MEDIUM);
 
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setWrapText(true);
         style.setFont(fontSmallRed);
         styles.put(I_HeaderStyle2Red, style);
@@ -111,13 +110,13 @@ public class PPSReportXlsStyleContainer {
 
     private void headerStyle2(HSSFSheet sheet) {
         HSSFCellStyle style = sheet.getWorkbook().createCellStyle();
-        style.setBorderTop(HSSFCellStyle.BORDER_MEDIUM);
-        style.setBorderLeft(HSSFCellStyle.BORDER_MEDIUM);
-        style.setBorderRight(HSSFCellStyle.BORDER_MEDIUM);
-        style.setBorderBottom(HSSFCellStyle.BORDER_MEDIUM);
+        style.setBorderTop(BorderStyle.MEDIUM);
+        style.setBorderLeft(BorderStyle.MEDIUM);
+        style.setBorderRight(BorderStyle.MEDIUM);
+        style.setBorderBottom(BorderStyle.MEDIUM);
 
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setWrapText(true);
         style.setFont(fontSmall);
         styles.put(I_HeaderStyle2, style);
@@ -125,15 +124,15 @@ public class PPSReportXlsStyleContainer {
 
     private void headerStyle1(HSSFSheet sheet) {
         HSSFCellStyle style = sheet.getWorkbook().createCellStyle();
-        style.setBorderTop(HSSFCellStyle.BORDER_MEDIUM);
-        style.setBorderLeft(HSSFCellStyle.BORDER_MEDIUM);
-        style.setBorderRight(HSSFCellStyle.BORDER_MEDIUM);
-        style.setBorderBottom(HSSFCellStyle.BORDER_MEDIUM);
+        style.setBorderTop(BorderStyle.MEDIUM);
+        style.setBorderLeft(BorderStyle.MEDIUM);
+        style.setBorderRight(BorderStyle.MEDIUM);
+        style.setBorderBottom(BorderStyle.MEDIUM);
         style.setFillForegroundColor(HSSFColor.GREY_50_PERCENT.index);
-        style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-        style.setAlignment(HSSFCellStyle.ALIGN_LEFT);
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        style.setAlignment(HorizontalAlignment.LEFT);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setWrapText(true);
         style.setFont(fontNormal);
         styles.put(I_HeaderStyle1, style);
@@ -141,14 +140,14 @@ public class PPSReportXlsStyleContainer {
 
     private void greyDataStyleRed(HSSFSheet sheet) {
         HSSFCellStyle style = sheet.getWorkbook().createCellStyle();
-        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
-        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
-        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
+        style.setBorderBottom(BorderStyle.THIN);
         style.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);
-        style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setWrapText(true);
         style.setFont(fontRed);
         styles.put(I_GreyDataStyleRed, style);
@@ -156,13 +155,13 @@ public class PPSReportXlsStyleContainer {
 
     private void whiteDataStyleRed(HSSFSheet sheet) {
         HSSFCellStyle style = sheet.getWorkbook().createCellStyle();
-        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
-        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
-        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
+        style.setBorderBottom(BorderStyle.THIN);
 
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setWrapText(true);
         style.setFont(fontRed);
         styles.put(I_WhiteDataStyleRed, style);
@@ -172,13 +171,13 @@ public class PPSReportXlsStyleContainer {
         HSSFCellStyle style = sheet.getWorkbook().createCellStyle();
 
 
-        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
-        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
-        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
+        style.setBorderBottom(BorderStyle.THIN);
 
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setWrapText(true);
 
 
@@ -186,20 +185,20 @@ public class PPSReportXlsStyleContainer {
         style.setFont(fontNormal);
 
         style.setFillForegroundColor(HSSFColor.PALE_BLUE.index);
-        style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         styles.put(I_ChangeoverDataStyle, style);
     }
 
     private void whiteDataStyle(HSSFSheet sheet) {
         HSSFCellStyle style = sheet.getWorkbook().createCellStyle();
 
-        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
-        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
-        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
+        style.setBorderBottom(BorderStyle.THIN);
 
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setWrapText(true);
         style.setFont(fontNormal);
         styles.put(I_WhiteDataStyle, style);
@@ -207,33 +206,33 @@ public class PPSReportXlsStyleContainer {
 
     private void greyDataStyle(HSSFSheet sheet) {
         HSSFCellStyle style = sheet.getWorkbook().createCellStyle();
-        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
-        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
-        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
+        style.setBorderBottom(BorderStyle.THIN);
 
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setWrapText(true);
         style.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);
-        style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         style.setFont(fontNormal);
         styles.put(I_GreyDataStyle, style);
     }
 
     private void greyDataStyleEnd(HSSFSheet sheet) {
         HSSFCellStyle style = sheet.getWorkbook().createCellStyle();
-        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
-        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
-        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
+        style.setBorderBottom(BorderStyle.THIN);
 
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setWrapText(true);
         style.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);
-        style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
-        style.setBorderRight(HSSFCellStyle.BORDER_MEDIUM);
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        style.setBorderRight(BorderStyle.MEDIUM);
         style.setFont(fontNormal);
         styles.put(I_GreyDataStyleEnd, style);
     }
@@ -241,16 +240,16 @@ public class PPSReportXlsStyleContainer {
     private void whiteDataStyleEnd(HSSFSheet sheet) {
         HSSFCellStyle style = sheet.getWorkbook().createCellStyle();
 
-        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
-        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
-        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
+        style.setBorderBottom(BorderStyle.THIN);
 
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setWrapText(true);
         style.setFont(fontNormal);
-        style.setBorderRight(HSSFCellStyle.BORDER_MEDIUM);
+        style.setBorderRight(BorderStyle.MEDIUM);
 
         styles.put(I_WhiteDataStyleEnd, style);
     }
@@ -258,16 +257,16 @@ public class PPSReportXlsStyleContainer {
     private void greyDataStyleSmall(HSSFSheet sheet) {
         HSSFCellStyle style = sheet.getWorkbook().createCellStyle();
 
-        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
-        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
-        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
+        style.setBorderBottom(BorderStyle.THIN);
 
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setWrapText(true);
         style.setFillForegroundColor(HSSFColor.GREY_25_PERCENT.index);
-        style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         style.setFont(fontSmall);
         styles.put(I_GreyDataStyleSmall, style);
     }
@@ -275,13 +274,13 @@ public class PPSReportXlsStyleContainer {
     private void initWhiteDataStyleSmall(HSSFSheet sheet) {
         HSSFCellStyle style = sheet.getWorkbook().createCellStyle();
 
-        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
-        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
-        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
+        style.setBorderBottom(BorderStyle.THIN);
 
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
         style.setWrapText(true);
         style.setFont(fontSmall);
         styles.put(I_WhiteDataStyleSmall, style);

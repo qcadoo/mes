@@ -1,0 +1,41 @@
+<view defaultAuthorizationRole="ROLE_PLANNING" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="orderPacksSingleOrderList" modelName="order">
+
+    <component type="window" name="window" reference="window">
+        <ribbon>
+            <template name="standardGridTemplate"/>
+        </ribbon>
+
+        <component type="form" name="order" reference="order"/>
+
+        <component type="grid" name="orderPacks" reference="grid" source="#{order}.orderPacksDto"
+                   model="orderPackDto" useDto="true">
+            <option type="column" name="number" fields="number" link="true" width="40"/>
+            <option type="column" name="orderNumber" fields="orderNumber" link="true" width="50"/>
+            <option type="column" name="orderState" fields="orderState" width="40"/>
+            <option type="column" name="orderProduct" fields="orderProduct" width="50"/>
+            <option type="column" name="size" fields="size" width="60"/>
+            <option type="column" name="orderQuantity" fields="orderQuantity" width="60"/>
+            <option type="column" name="quantity" fields="quantity" width="60"/>
+            <option type="column" name="unit" fields="unit" width="50"/>
+
+            <option type="correspondingView" value="orders/orderPackSingleOrderDetails"/>
+            <option type="correspondingComponent" value="form"/>
+
+            <option type="order" column="number" direction="desc"/>
+
+            <option type="searchable"
+                    value="number,orderNumber,orderState,orderProduct,size,orderQuantity,quantity,unit"/>
+            <option type="orderable"
+                    value="number,orderNumber,orderState,orderProduct,size,orderQuantity,quantity,unit"/>
+
+            <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
+        </component>
+
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
+    </component>
+</view>

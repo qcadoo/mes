@@ -53,7 +53,7 @@
 		<decimal name="doneInPercentage"/>
 	</fields>
 
-	<hooks />
+	<hooks/>
 
 	<masterModel plugin="orders" model="operationalTask" />
 </model>

@@ -2,17 +2,19 @@ package com.qcadoo.mes.cmmsMachineParts.reports.xls.sourceCost;
 
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 
 public class ReportStyleFactory {
 
     private boolean isFirst = false;
 
-    private short alignment = HSSFCellStyle.ALIGN_LEFT;
+    private HorizontalAlignment alignment = HorizontalAlignment.LEFT;
 
-    private static final short LEFT = HSSFCellStyle.ALIGN_LEFT;
+    private static final HorizontalAlignment LEFT = HorizontalAlignment.LEFT;
 
-    private static final short RIGHT = HSSFCellStyle.ALIGN_RIGHT;
+    private static final HorizontalAlignment RIGHT = HorizontalAlignment.RIGHT;
 
     private HSSFCellStyle firstLeftWhite;
 
@@ -36,12 +38,12 @@ public class ReportStyleFactory {
         rightWhite = createStyle(workbook, false, RIGHT);
     }
 
-    private HSSFCellStyle createStyle(final HSSFWorkbook workbook, boolean isFirst, short align) {
+    private HSSFCellStyle createStyle(final HSSFWorkbook workbook, boolean isFirst, HorizontalAlignment horizontalAlignment) {
         HSSFCellStyle style = workbook.createCellStyle();
         if (isFirst) {
-            style.setBorderTop(HSSFCellStyle.BORDER_THIN);
+            style.setBorderTop(BorderStyle.THIN);
         }
-        if (align == RIGHT) {
+        if (horizontalAlignment == RIGHT) {
             style.setAlignment(RIGHT);
             style.setDataFormat(dataFormat.getFormat("[HH]:MM:SS"));
         }

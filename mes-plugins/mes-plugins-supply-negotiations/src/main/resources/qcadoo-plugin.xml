@@ -189,7 +189,6 @@
 		<view:view-tab resource="view/tabExtensions/supplyParametersForRequests.xml" />
 
 		<view:view-ribbon-group resource="view/ribbonExtensions/companyDetails.xml" />
-		<view:view-ribbon-group resource="view/ribbonExtensions/deliveryDetails.xml" />
 
 		<view:view-grid-column plugin="deliveries" view="deliveryDetails"
 			component="deliveredProducts">
@@ -226,11 +225,6 @@
 			class="com.qcadoo.mes.supplyNegotiations.listeners.CompanyDetailsListenersSN"
 			method="redirectToFilteredRequestsList" />
 
-		<view:view-listener plugin="deliveries" view="deliveryDetails"
-							component="form" event="fillOfferPrices"
-							class="com.qcadoo.mes.supplyNegotiations.listeners.DeliveryDetailsListenersSN"
-							method="fillPrices" />
-
 		<view:view-listener plugin="deliveries" view="orderedProductDetails"
 			component="product" event="onSelectedEntityChange"
 			class="com.qcadoo.mes.supplyNegotiations.listeners.OrderedProductDetailsListenersSN"
@@ -254,16 +248,6 @@
 		<view:view-hook plugin="basic" view="companyDetails"
 			type="beforeRender" class="com.qcadoo.mes.supplyNegotiations.hooks.CompanyDetailsHooksSN"
 			method="updateRibbonState" />
-
-		<view:view-hook view="deliveryDetails" type="beforeRender"
-						plugin="deliveries"
-						class="com.qcadoo.mes.supplyNegotiations.hooks.DeliveryDetailsHooksSN"
-						method="disabledButtonWhenEmptyOrders" />
-
-		<view:view-hook view="deliveryDetails" type="beforeRender"
-						plugin="deliveries"
-						class="com.qcadoo.mes.supplyNegotiations.hooks.DeliveryDetailsHooksSN"
-						method="addTooltip" />
 
 		<view:view-hook plugin="basic" view="productDetails"
 			type="beforeRender"

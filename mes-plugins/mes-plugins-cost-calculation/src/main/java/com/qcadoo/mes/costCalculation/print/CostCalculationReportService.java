@@ -23,9 +23,7 @@
  */
 package com.qcadoo.mes.costCalculation.print;
 
-import com.lowagie.text.DocumentException;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.costCalculation.CostCalculationService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -46,7 +44,6 @@ import org.springframework.util.StringUtils;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 @Service
 public class CostCalculationReportService {
@@ -61,13 +58,7 @@ public class CostCalculationReportService {
     private ReportService reportService;
 
     @Autowired
-    private CostCalculationPdfService costCalculationPdfService;
-
-    @Autowired
     private CostCalculationXlsService costCalculationXlsService;
-
-    @Autowired
-    private CostCalculationService costCalculationService;
 
     public void printCostCalculationReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         reportService.printGeneratedReport(view, state, new String[] { args[0], CostCalculationConstants.PLUGIN_IDENTIFIER,
@@ -115,19 +106,12 @@ public class CostCalculationReportService {
                 Entity costCalculationWithFileName = fileService.updateReportFileName(costCalculation, CostCalculationFields.DATE,
                         "costCalculation.costCalculation.report.fileName");
 
-                List<Entity> technologies = costCalculation.getManyToManyField(CostCalculationFields.TECHNOLOGIES);
-                if (technologies.size() == 1) {
-                    for (Entity technology : technologies) {
-                        costCalculationService.createCalculationResults(costCalculation, technology);
-                    }
-                    costCalculationPdfService.generateDocument(costCalculationWithFileName, state.getLocale());
-                }
-//                costCalculationXlsService.generateDocument(costCalculationWithFileName, state.getLocale());
+                costCalculationXlsService.generateDocument(costCalculationWithFileName, state.getLocale());
 
                 state.performEvent(view, "reset");
                 view.getComponentByReference(QcadooViewConstants.L_FORM)
                         .addMessage("costCalculation.messages.success.calculationComplete", MessageType.SUCCESS);
-            } catch (IOException | DocumentException e) {
+            } catch (IOException e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
         }

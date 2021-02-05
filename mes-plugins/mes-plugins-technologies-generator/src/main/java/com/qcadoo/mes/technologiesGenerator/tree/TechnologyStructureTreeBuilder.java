@@ -32,7 +32,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
@@ -62,8 +61,8 @@ public class TechnologyStructureTreeBuilder {
             final ContextId contextId, final GeneratorSettings settings) {
         Multimap<Optional<TechnologyOperationId>, ProductInfo> intermediates = technologyStructureTreeDataProvider
                 .findIntermediates(technologyId);
-        Preconditions.checkState(intermediates.isEmpty() || intermediates.get(Optional.empty()).size() == 1,
-                "Tree has to have exactly one root node!");
+//        Preconditions.checkState(intermediates.isEmpty() || intermediates.get(Optional.empty()).size() == 1,
+//                "Tree has to have exactly one root node!");
         Multimap<Optional<TechnologyOperationId>, ProductInfo> materialsAndComponents = technologyStructureTreeDataProvider
                 .findMaterialsAndComponents(technologyId);
         Map<TechnologyId, Entity> existingCustomizedNodes = technologyStructureTreeDataProvider

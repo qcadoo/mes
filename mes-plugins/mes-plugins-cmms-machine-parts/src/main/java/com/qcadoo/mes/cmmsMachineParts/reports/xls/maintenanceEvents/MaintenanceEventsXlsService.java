@@ -12,7 +12,6 @@ import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DataFormat;
-import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.xssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -72,7 +71,6 @@ public class MaintenanceEventsXlsService {
         font.setFontName("ARIAL");
         font.setItalic(false);
         font.setBold(false);
-        font.setBoldweight(Font.BOLDWEIGHT_NORMAL);
 
         font.setColor(HSSFColor.BLACK.index);
 
@@ -323,7 +321,7 @@ public class MaintenanceEventsXlsService {
         font.setFontName("ARIAL");
         font.setItalic(false);
         font.setBold(true);
-        font.setBoldweight(Font.BOLDWEIGHT_BOLD);
+        font.setBold(true);
 
         font.setColor(HSSFColor.BLACK.index);
         XSSFCellStyle style = xssfWorkbook.createCellStyle();

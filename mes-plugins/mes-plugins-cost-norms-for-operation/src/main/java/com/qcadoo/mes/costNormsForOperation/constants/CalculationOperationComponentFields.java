@@ -35,6 +35,8 @@ public final class CalculationOperationComponentFields {
 
     public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
+    public static final String TECHNOLOGY = "technology";
+
     public static final String PARENT = "parent";
 
     public static final String ENTITY_TYPE = "entityType";
@@ -53,13 +55,7 @@ public final class CalculationOperationComponentFields {
 
     public static final String LABOR_WORK_TIME = "laborWorkTime";
 
-    public static final String PIECES = "pieces";
-
     public static final String OPERATION_COST = "operationCost";
-
-    public static final String OPERATION_MARGIN_COST = "operationMarginCost";
-
-    public static final String TOTAL_OPERATION_COST = "totalOperationCost";
 
     public static final String TOTAL_MACHINE_OPERATION_COST = "totalMachineOperationCost";
 
@@ -68,9 +64,5 @@ public final class CalculationOperationComponentFields {
     public static final String LABOR_HOURLY_COST = "laborHourlyCost";
 
     public static final String MACHINE_HOURLY_COST = "machineHourlyCost";
-
-    public static final String TOTAL_MACHINE_OPERATION_COST_WITH_MARGIN = "totalMachineOperationCostWithMargin";
-
-    public static final String TOTAL_LABOR_OPERATION_COST_WITH_MARGIN = "totalLaborOperationCostWithMargin";
 
 }

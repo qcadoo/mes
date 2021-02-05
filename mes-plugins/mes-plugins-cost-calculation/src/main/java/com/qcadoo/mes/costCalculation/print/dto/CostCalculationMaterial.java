@@ -21,15 +21,15 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.costCalculation.print.utils;
+package com.qcadoo.mes.costCalculation.print.dto;
 
-import com.lowagie.text.Font;
-import com.qcadoo.report.api.FontUtils;
-
-import java.awt.*;
 import java.math.BigDecimal;
 
 public class CostCalculationMaterial {
+
+    private String technologyNumber;
+
+    private String finalProductNumber;
 
     private String productNumber;
 
@@ -43,40 +43,9 @@ public class CostCalculationMaterial {
 
     private BigDecimal costForGivenQuantity;
 
-    private BigDecimal totalCost;
+    private String technologyInputProductType;
 
-    private BigDecimal toAdd;
-
-    private Font redFont;
-
-    public CostCalculationMaterial(String productNumber, String productName, String unit, BigDecimal productQuantity,
-            BigDecimal costPerUnit, BigDecimal costForGivenQuantity) {
-        this.productNumber = productNumber;
-        this.productName = productName;
-        this.unit = unit;
-        this.productQuantity = productQuantity;
-        this.costPerUnit = costPerUnit;
-        this.costForGivenQuantity = costForGivenQuantity;
-        this.totalCost = costForGivenQuantity;
-        this.toAdd = BigDecimal.ZERO;
-        redFont = new Font(FontUtils.getDejavu(), 7);
-        redFont.setColor(Color.RED);
-    }
-
-    public CostCalculationMaterial(String productNumber, String productName, String unit, BigDecimal productQuantity,
-            BigDecimal costPerUnit, BigDecimal costForGivenQuantity, BigDecimal totalCost, BigDecimal toAdd) {
-        this.productNumber = productNumber;
-        this.productName = productName;
-        this.unit = unit;
-        this.productQuantity = productQuantity;
-        this.costPerUnit = costPerUnit;
-        this.costForGivenQuantity = costForGivenQuantity;
-        this.totalCost = totalCost;
-        this.toAdd = toAdd;
-        redFont = new Font(FontUtils.getDejavu(), 7);
-        redFont.setColor(Color.RED);
-
-    }
+    private boolean differentProductsInDifferentSizes;
 
     public String getProductNumber() {
         return productNumber;
@@ -126,30 +95,6 @@ public class CostCalculationMaterial {
         this.costForGivenQuantity = costForGivenQuantity;
     }
 
-    public BigDecimal getTotalCost() {
-        return totalCost;
-    }
-
-    public void setTotalCost(BigDecimal totalCost) {
-        this.totalCost = totalCost;
-    }
-
-    public Font getFont() {
-        if (costForGivenQuantity.compareTo(BigDecimal.ZERO) == 0) {
-            return redFont;
-        } else {
-            return FontUtils.getDejavuRegular7Dark();
-        }
-    }
-
-    public BigDecimal getToAdd() {
-        return toAdd;
-    }
-
-    public void setToAdd(BigDecimal toAdd) {
-        this.toAdd = toAdd;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -161,23 +106,20 @@ public class CostCalculationMaterial {
 
         CostCalculationMaterial that = (CostCalculationMaterial) o;
 
-        if (costForGivenQuantity != null ? !costForGivenQuantity.equals(that.costForGivenQuantity)
-                : that.costForGivenQuantity != null) {
+        if (!productNumber.equals(that.productNumber)) {
             return false;
         }
-        if (!productNumber.equals(that.productNumber)) {
+        if (costForGivenQuantity != null ? !costForGivenQuantity.equals(that.costForGivenQuantity)
+                : that.costForGivenQuantity != null) {
             return false;
         }
         if (productQuantity != null ? !productQuantity.equals(that.productQuantity) : that.productQuantity != null) {
             return false;
         }
-        if (toAdd != null ? !toAdd.equals(that.toAdd) : that.toAdd != null) {
-            return false;
-        }
-        if (totalCost != null ? !totalCost.equals(that.totalCost) : that.totalCost != null) {
-            return false;
-        }
         if (!unit.equals(that.unit)) {
+            return false;
+        }
+        if (!technologyInputProductType.equals(that.technologyInputProductType)) {
             return false;
         }
 
@@ -187,11 +129,42 @@ public class CostCalculationMaterial {
     @Override
     public int hashCode() {
         int result = productNumber.hashCode();
-        result = 31 * result + unit.hashCode();
-        result = 31 * result + (productQuantity != null ? productQuantity.hashCode() : 0);
         result = 31 * result + (costForGivenQuantity != null ? costForGivenQuantity.hashCode() : 0);
-        result = 31 * result + (totalCost != null ? totalCost.hashCode() : 0);
-        result = 31 * result + (toAdd != null ? toAdd.hashCode() : 0);
+        result = 31 * result + (productQuantity != null ? productQuantity.hashCode() : 0);
+        result = 31 * result + unit.hashCode();
+        result = 31 * result + technologyInputProductType.hashCode();
         return result;
+    }
+
+    public String getTechnologyInputProductType() {
+        return technologyInputProductType;
+    }
+
+    public void setTechnologyInputProductType(String technologyInputProductType) {
+        this.technologyInputProductType = technologyInputProductType;
+    }
+
+    public boolean isDifferentProductsInDifferentSizes() {
+        return differentProductsInDifferentSizes;
+    }
+
+    public void setDifferentProductsInDifferentSizes(boolean differentProductsInDifferentSizes) {
+        this.differentProductsInDifferentSizes = differentProductsInDifferentSizes;
+    }
+
+    public String getTechnologyNumber() {
+        return technologyNumber;
+    }
+
+    public void setTechnologyNumber(String technologyNumber) {
+        this.technologyNumber = technologyNumber;
+    }
+
+    public String getFinalProductNumber() {
+        return finalProductNumber;
+    }
+
+    public void setFinalProductNumber(String finalProductNumber) {
+        this.finalProductNumber = finalProductNumber;
     }
 }

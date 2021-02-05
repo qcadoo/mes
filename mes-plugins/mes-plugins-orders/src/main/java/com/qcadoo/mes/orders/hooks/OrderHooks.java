@@ -30,44 +30,27 @@ import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.ProductService;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.shift.Shift;
-import com.qcadoo.mes.orders.OperationalTasksService;
-import com.qcadoo.mes.orders.OrderService;
-import com.qcadoo.mes.orders.OrderStateChangeReasonService;
-import com.qcadoo.mes.orders.TechnologyServiceO;
-import com.qcadoo.mes.orders.constants.OperationalTaskFields;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderStartDateBasedOn;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.orders.constants.ParameterFieldsO;
+import com.qcadoo.mes.orders.*;
+import com.qcadoo.mes.orders.constants.*;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeDescriber;
 import com.qcadoo.mes.orders.states.constants.OrderStateChangeFields;
 import com.qcadoo.mes.orders.util.OrderDatesService;
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.FieldDefinition;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.utils.TimeConverterService;
-
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
-
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class OrderHooks {
@@ -116,6 +99,9 @@ public class OrderHooks {
     @Autowired
     private ShiftsService shiftsService;
 
+    @Autowired
+    private OrderPackService orderPackService;
+
     public boolean validatesWith(final DataDefinition orderDD, final Entity order) {
         Entity parameter = parameterService.getParameter();
 
@@ -126,6 +112,7 @@ public class OrderHooks {
         isValid = isValid && checkReasonOfEndDateCorrection(parameter, order);
         isValid = isValid && checkEffectiveDeviation(parameter, order);
         isValid = isValid && checkOperationalTasks(orderDD, order);
+        isValid = isValid && checkOrderPacksQuantity(orderDD, order);
 
         return isValid;
     }
@@ -357,6 +344,15 @@ public class OrderHooks {
         } else {
             return true;
         }
+    }
+
+    private boolean checkOrderPacksQuantity(final DataDefinition orderDD, final Entity order){
+        BigDecimal sumQuantityOrderPacks = orderPackService.getSumQuantityOrderPacksForOrder(order);
+        if (order.getDecimalField(OrderFields.PLANNED_QUANTITY).compareTo(sumQuantityOrderPacks) < 0) {
+            order.addError(orderDD.getField(OrderFields.PLANNED_QUANTITY), "orderPacks.validate.global.error.quantityError");
+            return false;
+        }
+        return true;
     }
 
     public void copyStartDate(final DataDefinition orderDD, final Entity order) {

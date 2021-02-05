@@ -1,37 +1,25 @@
 package com.qcadoo.mes.productionCounting.reports.trackingOperationProductInComponentAdditionalInformation;
 
-import static com.qcadoo.localization.api.utils.DateUtils.L_REPORT_DATE_TIME_FORMAT;
-import static com.qcadoo.mes.productionCounting.reports.trackingOperationProductInComponentAdditionalInformation.TrackingOperationProductInComponentAdditionalInformationReportModelConstants.ADDITIONAL_INFORMATION_REPORT_DATA;
-import static com.qcadoo.mes.productionCounting.reports.trackingOperationProductInComponentAdditionalInformation.TrackingOperationProductInComponentAdditionalInformationReportModelConstants.FROM_DATE;
-import static com.qcadoo.mes.productionCounting.reports.trackingOperationProductInComponentAdditionalInformation.TrackingOperationProductInComponentAdditionalInformationReportModelConstants.GENERATED_BY;
-import static com.qcadoo.mes.productionCounting.reports.trackingOperationProductInComponentAdditionalInformation.TrackingOperationProductInComponentAdditionalInformationReportModelConstants.TO_DATE;
-import static org.springframework.context.i18n.LocaleContextHolder.getLocale;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.report.api.xls.abstractview.AbstractXLSXView;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFFont;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.apache.poi.xssf.usermodel.XSSFCell;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.report.api.xls.abstractview.AbstractXLSXView;
+import static com.qcadoo.localization.api.utils.DateUtils.L_REPORT_DATE_TIME_FORMAT;
+import static com.qcadoo.mes.productionCounting.reports.trackingOperationProductInComponentAdditionalInformation.TrackingOperationProductInComponentAdditionalInformationReportModelConstants.*;
+import static org.springframework.context.i18n.LocaleContextHolder.getLocale;
 
 @Component
 final class TrackingOperationProductInComponentAdditionalInformationXlsView extends AbstractXLSXView {
@@ -50,18 +38,18 @@ final class TrackingOperationProductInComponentAdditionalInformationXlsView exte
     private TranslationService translationService;
 
     private static Font createFontArialBold(XSSFWorkbook workbook) {
-        return createFontArialWithGivenBoldweight(workbook, Font.BOLDWEIGHT_BOLD);
+        return createFontArialWithGivenBoldweight(workbook, true);
     }
 
     private static Font createFontArialNormal(XSSFWorkbook workbook) {
-        return createFontArialWithGivenBoldweight(workbook, Font.BOLDWEIGHT_NORMAL);
+        return createFontArialWithGivenBoldweight(workbook, false);
     }
 
-    private static Font createFontArialWithGivenBoldweight(XSSFWorkbook workbook, short boldweight) {
+    private static Font createFontArialWithGivenBoldweight(XSSFWorkbook workbook, boolean bold) {
         Font font = workbook.createFont();
         font.setFontName(HSSFFont.FONT_ARIAL);
         font.setFontHeightInPoints((short) 10);
-        font.setBoldweight(boldweight);
+        font.setBold(bold);
         return font;
     }
 
@@ -92,7 +80,7 @@ final class TrackingOperationProductInComponentAdditionalInformationXlsView exte
 
         CellStyle cellDateStyle = workbook.createCellStyle();
         cellDateStyle.setDataFormat(workbook.createDataFormat().getFormat("yyyy-mm-dd"));
-        cellDateStyle.setAlignment(CellStyle.ALIGN_LEFT);
+        cellDateStyle.setAlignment(HorizontalAlignment.LEFT);
 
         XSSFRow titleRow = sheet.createRow(0);
 
@@ -138,15 +126,15 @@ final class TrackingOperationProductInComponentAdditionalInformationXlsView exte
         Font font = createFontArialNormal(workbook);
         XSSFCellStyle style = workbook.createCellStyle();
         style.setFont(font);
-        style.setBorderBottom(HSSFCellStyle.BORDER_THIN);
-        style.setBorderTop(HSSFCellStyle.BORDER_THIN);
-        style.setBorderLeft(HSSFCellStyle.BORDER_THIN);
-        style.setBorderRight(HSSFCellStyle.BORDER_THIN);
-        style.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);
+        style.setBorderBottom(BorderStyle.THIN);
+        style.setBorderTop(BorderStyle.THIN);
+        style.setBorderLeft(BorderStyle.THIN);
+        style.setBorderRight(BorderStyle.THIN);
+        style.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         style.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
         style.setWrapText(true);
-        style.setAlignment(HSSFCellStyle.ALIGN_CENTER);
-        style.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+        style.setAlignment(HorizontalAlignment.CENTER);
+        style.setVerticalAlignment(VerticalAlignment.CENTER);
 
         for (int i = 0; i < TrackingOperationProductInComponentAdditionalInformationReportColumns.ALL_COLUMNS.length; i++) {
             String column = TrackingOperationProductInComponentAdditionalInformationReportColumns.ALL_COLUMNS[i];
@@ -160,7 +148,8 @@ final class TrackingOperationProductInComponentAdditionalInformationXlsView exte
         final int rowOffset = 4;
 
         @SuppressWarnings("unchecked")
-        List<TrackingOperationProductInComponentAdditionalInformationReportDto> records = (List<TrackingOperationProductInComponentAdditionalInformationReportDto>) model.get(ADDITIONAL_INFORMATION_REPORT_DATA);
+        List<TrackingOperationProductInComponentAdditionalInformationReportDto> records = (List<TrackingOperationProductInComponentAdditionalInformationReportDto>) model
+                .get(ADDITIONAL_INFORMATION_REPORT_DATA);
 
         int rowCounter = 0;
         for (TrackingOperationProductInComponentAdditionalInformationReportDto record : records) {

@@ -14,8 +14,6 @@ import java.util.Set;
 @Service
 public class ProductsListListenersO {
 
-
-
     public final void generateOrders(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
         GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
@@ -29,6 +27,5 @@ public class ProductsListListenersO {
 
         view.openModal(url.toString());
     }
-
 
 }

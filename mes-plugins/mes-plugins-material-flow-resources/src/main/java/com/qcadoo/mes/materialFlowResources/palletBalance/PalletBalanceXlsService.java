@@ -1,31 +1,23 @@
 package com.qcadoo.mes.materialFlowResources.palletBalance;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.apache.commons.lang3.time.DateUtils;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFPrintSetup;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialFlowResources.constants.PalletBalanceFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.xls.XlsDocumentService;
+import org.apache.commons.lang3.time.DateUtils;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.util.CellRangeAddress;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.*;
 
 @Service
 public class PalletBalanceXlsService extends XlsDocumentService {
@@ -47,21 +39,21 @@ public class PalletBalanceXlsService extends XlsDocumentService {
     private HSSFCell createRegularCell(StylesContainer stylesContainer, HSSFRow row, int column, String content) {
         HSSFCell cell = row.createCell(column);
         cell.setCellValue(content);
-        cell.setCellStyle(StylesContainer.aligned(stylesContainer.regularStyle, HSSFCellStyle.ALIGN_LEFT));
+        cell.setCellStyle(StylesContainer.aligned(stylesContainer.regularStyle, HorizontalAlignment.LEFT));
         return cell;
     }
 
     private HSSFCell createNumericCell(StylesContainer stylesContainer, HSSFRow row, int column, int value) {
         HSSFCell cell = row.createCell(column, HSSFCell.CELL_TYPE_NUMERIC);
         cell.setCellValue(value);
-        cell.setCellStyle(StylesContainer.aligned(stylesContainer.regularStyle, HSSFCellStyle.ALIGN_LEFT));
+        cell.setCellStyle(StylesContainer.aligned(stylesContainer.regularStyle, HorizontalAlignment.LEFT));
         return cell;
     }
 
-    private HSSFCell createHeaderCell(StylesContainer stylesContainer, HSSFRow row, String content, int column, short align) {
+    private HSSFCell createHeaderCell(StylesContainer stylesContainer, HSSFRow row, String content, int column, HorizontalAlignment horizontalAlignment) {
         HSSFCell cell = row.createCell(column);
         cell.setCellValue(content);
-        cell.setCellStyle(StylesContainer.aligned(stylesContainer.headerStyle, align));
+        cell.setCellStyle(StylesContainer.aligned(stylesContainer.headerStyle, horizontalAlignment));
         return cell;
     }
 
@@ -82,7 +74,7 @@ public class PalletBalanceXlsService extends XlsDocumentService {
         sheet.addMergedRegion(new CellRangeAddress(0, 1, 0, 0));
         createHeaderCell(stylesContainer, headerRow,
                 translationService.translate("materialFlowResource.palletBalance.report.date", locale), 0,
-                HSSFCellStyle.ALIGN_CENTER);
+                HorizontalAlignment.CENTER);
     }
 
     private void addTypesOfPalletHeader(HSSFSheet sheet, Locale locale, HSSFRow headerRow, HSSFRow typesOfPalletRow,
@@ -100,12 +92,12 @@ public class PalletBalanceXlsService extends XlsDocumentService {
                         headerRow, columnIndex, columnIndex + 1, stylesContainer);
                 createHeaderCell(stylesContainer, typesOfPalletRow,
                         translationService.translate("materialFlowResource.palletBalance.report.header.movesIn", locale),
-                        columnIndex, HSSFCellStyle.ALIGN_LEFT);
+                        columnIndex, HorizontalAlignment.LEFT);
                 columnIndex++;
 
                 createHeaderCell(stylesContainer, typesOfPalletRow,
                         translationService.translate("materialFlowResource.palletBalance.report.header.movesOut", locale),
-                        columnIndex, HSSFCellStyle.ALIGN_LEFT);
+                        columnIndex, HorizontalAlignment.LEFT);
                 columnIndex++;
                 lastColumnIndex = columnIndex + typesOfPalletCount - 1;
 
@@ -115,7 +107,7 @@ public class PalletBalanceXlsService extends XlsDocumentService {
                         headerRow, columnIndex, lastColumnIndex, stylesContainer);
                 for (int i = 0; i < typesOfPalletCount; i++) {
                     createHeaderCell(stylesContainer, typesOfPalletRow, typesOfPallet.get(i), columnIndex + i,
-                            HSSFCellStyle.ALIGN_LEFT);
+                            HorizontalAlignment.LEFT);
                 }
                 columnIndex = lastColumnIndex + 1;
                 lastColumnIndex += typesOfPalletCount;
@@ -126,7 +118,7 @@ public class PalletBalanceXlsService extends XlsDocumentService {
     private void addHeaderCell(HSSFSheet sheet, String content, HSSFRow headerRow, int columnIndex, int lastColumnIndex,
             StylesContainer stylesContainer) {
         sheet.addMergedRegion(new CellRangeAddress(0, 0, columnIndex, lastColumnIndex));
-        createHeaderCell(stylesContainer, headerRow, content, columnIndex, HSSFCellStyle.ALIGN_CENTER);
+        createHeaderCell(stylesContainer, headerRow, content, columnIndex, HorizontalAlignment.CENTER);
     }
 
     @Override
@@ -222,14 +214,14 @@ public class PalletBalanceXlsService extends XlsDocumentService {
 
         StylesContainer(HSSFWorkbook workbook, FontsContainer fontsContainer) {
             regularStyle = workbook.createCellStyle();
-            regularStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+            regularStyle.setVerticalAlignment(VerticalAlignment.CENTER);
 
             headerStyle = workbook.createCellStyle();
             headerStyle.setFont(fontsContainer.headerFont);
         }
 
-        private static HSSFCellStyle aligned(HSSFCellStyle style, short align) {
-            style.setAlignment(align);
+        private static HSSFCellStyle aligned(HSSFCellStyle style, HorizontalAlignment horizontalAlignment) {
+            style.setAlignment(horizontalAlignment);
             return style;
         }
 
@@ -242,7 +234,7 @@ public class PalletBalanceXlsService extends XlsDocumentService {
         FontsContainer(HSSFWorkbook workbook) {
 
             headerFont = workbook.createFont();
-            headerFont.setBoldweight(Font.BOLDWEIGHT_BOLD);
+            headerFont.setBold(true);
         }
     }
 }

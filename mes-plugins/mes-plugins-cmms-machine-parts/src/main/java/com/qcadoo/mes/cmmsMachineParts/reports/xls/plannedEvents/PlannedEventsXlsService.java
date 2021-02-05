@@ -76,7 +76,6 @@ public class PlannedEventsXlsService {
         font.setFontName("ARIAL");
         font.setItalic(false);
         font.setBold(true);
-        font.setBoldweight(Font.BOLDWEIGHT_BOLD);
 
         font.setColor(HSSFColor.BLACK.index);
         XSSFCellStyle style = workbook.createCellStyle();
@@ -97,7 +96,7 @@ public class PlannedEventsXlsService {
         Font font = workbook.createFont();
         font.setFontName(HSSFFont.FONT_ARIAL);
         font.setFontHeightInPoints((short) 10);
-        font.setBoldweight(Font.BOLDWEIGHT_NORMAL);
+        font.setBold(false);
 
         int rowCounterCopy = rowCounter;
         int partsCounter = rowCounterCopy;

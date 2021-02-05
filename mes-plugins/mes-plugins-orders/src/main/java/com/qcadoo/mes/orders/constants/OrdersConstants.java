@@ -63,6 +63,8 @@ public final class OrdersConstants {
 
     public static final String MODEL_OPERATIONAL_TASK_WITH_COLOR_DTO = "operationalTaskWithColorDto";
 
+    public static final String MODEL_ORDER_PACK = "orderPack";
+
     // VIEW
 
     public static String orderDetailsUrl(final Long id) {

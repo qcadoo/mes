@@ -21,89 +21,63 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.costCalculation;
+package com.qcadoo.mes.costCalculation.print;
 
 import com.qcadoo.mes.costCalculation.constants.*;
-import com.qcadoo.mes.costNormsForMaterials.ProductsCostCalculationService;
-import com.qcadoo.mes.operationCostCalculations.OperationsCostCalculationService;
+import com.qcadoo.mes.costCalculation.print.dto.CostCalculationMaterialBySize;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-public class CostCalculationServiceImpl implements CostCalculationService {
-
-    @Autowired
-    private OperationsCostCalculationService operationsCostCalculationService;
-
-    @Autowired
-    private ProductsCostCalculationService productsCostCalculationService;
+public class CostCalculationService {
 
     @Autowired
     private NumberService numberService;
 
     @Autowired
-    private ProductStructureTreeService productStructureTreeService;
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     private final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
 
-    @Override
-    public void createCalculationResults(Entity costCalculation, final Entity technology) {
+    public Entity createCalculationResults(Entity costCalculation, Entity technology, final BigDecimal materialCosts,
+            final BigDecimal labourCost, boolean noMaterialPrice) {
         DataDefinition calculationResultDD = dataDefinitionService.get(CostCalculationConstants.PLUGIN_IDENTIFIER,
                 CostCalculationConstants.MODEL_CALCULATION_RESULT);
         Entity calculationResult = calculationResultDD.create();
 
-        calculateResults(costCalculation, technology, calculationResult);
-
-        costCalculation = costCalculation.getDataDefinition().save(costCalculation);
+        final BigDecimal quantity = getEffectiveQuantity(costCalculation, technology);
+        calculateResults(costCalculation, calculationResult, quantity, materialCosts, labourCost);
 
         calculationResult.setField(CalculationResultFields.COST_CALCULATION, costCalculation);
         calculationResult.setField(CalculationResultFields.TECHNOLOGY, technology);
         calculationResult.setField(CalculationResultFields.PRODUCT, technology.getBelongsToField(TechnologyFields.PRODUCT));
-        calculationResultDD.save(calculationResult);
-    }
-
-    private void calculateResults(final Entity costCalculation, final Entity technology, final Entity calculationResult) {
-        productStructureTreeService.generateProductStructureTree(null, technology);
-        String sourceOfOperationCosts = costCalculation.getStringField(CostCalculationFields.SOURCE_OF_OPERATION_COSTS);
-        BigDecimal labourCost;
-        if (SourceOfOperationCosts.STANDARD_LABOR_COSTS.equals(SourceOfOperationCosts.parseString(sourceOfOperationCosts))) {
-            labourCost = costCalculation.getBelongsToField(CostCalculationFields.STANDARD_LABOR_COST)
-                    .getDecimalField(StandardLaborCostFields.LABOR_COST);
-            costCalculation.setField(CostCalculationFields.TOTAL_MACHINE_HOURLY_COSTS, BigDecimal.ZERO);
-            costCalculation.setField(CostCalculationFields.TOTAL_LABOR_HOURLY_COSTS, BigDecimal.ZERO);
-        } else {
-            boolean hourlyCostFromOperation = true;
-            if (SourceOfOperationCosts.PARAMETERS.equals(SourceOfOperationCosts.parseString(sourceOfOperationCosts))) {
-                hourlyCostFromOperation = false;
-            }
-            operationsCostCalculationService.calculateOperationsCost(costCalculation, hourlyCostFromOperation, technology);
-            labourCost = BigDecimalUtils
-                    .convertNullToZero(costCalculation.getDecimalField(CostCalculationFields.TOTAL_MACHINE_HOURLY_COSTS))
-                    .add(BigDecimalUtils
-                            .convertNullToZero(costCalculation.getDecimalField(CostCalculationFields.TOTAL_LABOR_HOURLY_COSTS)),
-                            numberService.getMathContext());
-        }
-        final BigDecimal materialCosts = BigDecimalUtils
-                .convertNullToZero(productsCostCalculationService.calculateTotalProductsCost(costCalculation, technology, calculationResult));
+        calculationResult.setField(CalculationResultFields.NO_MATERIAL_PRICE, noMaterialPrice);
         calculationResult.setField(CalculationResultFields.MATERIAL_COSTS,
                 numberService.setScaleWithDefaultMathContext(materialCosts, 2));
         calculationResult.setField(CalculationResultFields.LABOUR_COST,
                 numberService.setScaleWithDefaultMathContext(labourCost, 2));
+        return calculationResultDD.save(calculationResult);
+    }
 
+    private void calculateResults(final Entity costCalculation, final Entity calculationResult, final BigDecimal quantity,
+            final BigDecimal materialCosts, final BigDecimal labourCost) {
         final BigDecimal labourCostMarginValue = labourCost.multiply(
                 BigDecimalUtils.convertNullToZero(costCalculation.getDecimalField(CostCalculationFields.PRODUCTION_COST_MARGIN)),
                 numberService.getMathContext()).divide(ONE_HUNDRED, numberService.getMathContext());
@@ -129,7 +103,6 @@ public class CostCalculationServiceImpl implements CostCalculationService {
         calculationResult.setField(CalculationResultFields.TOTAL_COST,
                 numberService.setScaleWithDefaultMathContext(totalCost, 2));
 
-        final BigDecimal quantity = getEffectiveQuantity(costCalculation, technology);
         final BigDecimal registrationPrice = totalCost.divide(quantity, numberService.getMathContext());
 
         calculationResult.setField(CalculationResultFields.REGISTRATION_PRICE,
@@ -165,9 +138,9 @@ public class CostCalculationServiceImpl implements CostCalculationService {
 
     }
 
-    private BigDecimal getEffectiveQuantity(final Entity entity, final Entity technology) {
+    private BigDecimal getEffectiveQuantity(final Entity costCalculation, final Entity technology) {
+        BigDecimal effectiveQuantity = costCalculation.getDecimalField(CostCalculationFields.QUANTITY);
         Entity rootOperation = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
-        BigDecimal effectiveQuantity = entity.getDecimalField(CostCalculationFields.QUANTITY);
 
         boolean areProductQuantitiesDivisible = rootOperation
                 .getBooleanField(TechnologyOperationComponentFieldsTNFO.ARE_PRODUCT_QUANTITIES_DIVISIBLE);
@@ -182,5 +155,26 @@ public class CostCalculationServiceImpl implements CostCalculationService {
             }
         }
         return effectiveQuantity;
+    }
+
+    public List<CostCalculationMaterialBySize> getMaterialsBySize(Entity costCalculation) {
+        List<Long> technologiesIds = costCalculation.getHasManyField(CostCalculationFields.TECHNOLOGIES).stream()
+                .map(Entity::getId).collect(Collectors.toList());
+
+        String query = "SELECT t.number AS technologyNumber, p.number AS productNumber, "
+                + "tipt.name AS technologyInputProductType, pbsgp.number AS materialNumber, "
+                + "sg.number AS sizeGroupNumber, pbsgp.nominalCost AS nominalCost, pbsgp.averageCost AS averageCost, "
+                + "pbsgp.lastPurchaseCost AS lastPurchaseCost, pbsgp.averageOfferCost AS averageOfferCost, "
+                + "pbsgp.lastOfferCost AS lastOfferCost, pbsgp.costForNumber AS costForNumber "
+                + "FROM technologies_technology t JOIN basic_product p ON t.product_id = p.id "
+                + "JOIN technologies_technologyoperationcomponent toc ON toc.technology_id = t.id "
+                + "JOIN technologies_operationproductincomponent opic ON opic.operationcomponent_id = toc.id "
+                + "JOIN technologies_technologyinputproducttype tipt ON opic.technologyinputproducttype_id = tipt.id "
+                + "JOIN technologies_productbysizegroup pbsg ON pbsg.operationproductincomponent_id = opic.id "
+                + "JOIN basic_product pbsgp ON pbsg.product_id = pbsgp.id "
+                + "JOIN basic_sizegroup sg ON pbsg.sizegroup_id = sg.id WHERE t.id IN (:technologiesIds) "
+                + "ORDER BY technologyNumber, materialNumber ";
+        return jdbcTemplate.query(query, new MapSqlParameterSource("technologiesIds", technologiesIds),
+                BeanPropertyRowMapper.newInstance(CostCalculationMaterialBySize.class));
     }
 }

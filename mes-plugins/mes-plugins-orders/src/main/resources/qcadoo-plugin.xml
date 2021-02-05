@@ -92,6 +92,8 @@
         <model:model model="operationalTaskWithColorDto" resource="model/operationalTaskWithColorDto.xml"/>
         <model:model model="operationalTaskStateChange" resource="model/operationalTaskStateChange.xml"/>
         <model:model model="setCategory" resource="model/setCategory.xml"/>
+        <model:model model="orderPack" resource="model/orderPack.xml"/>
+        <model:model model="orderPackDto" resource="model/orderPackDto.xml"/>
 
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="positions" model="schedulePosition" plugin="orders" joinField="product"/>
@@ -245,9 +247,33 @@
             <model:boolean name="alwaysOrderItemsWithPersonalization" default="false"/>
         </model:model-field>
         <model:model-field plugin="basic" model="parameter">
-            <model:hasMany name="realizationLocations" joinField="realizationLocation" model="location" plugin="materialFlow"
-                           cascade="nullify"/>
+            <model:hasMany name="realizationLocations" joinField="realizationLocation" model="location" plugin="materialFlow"/>
         </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="generatePacksForOrders" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:decimal name="optimalPackSize">
+                <model:validatesRange from="0" exclusively="true"/>
+                <model:validatesUnscaledValue max="7"/>
+                <model:validatesScale max="5"/>
+            </model:decimal>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:decimal name="restFeedingLastPack">
+                <model:validatesRange from="0" exclusively="true"/>
+                <model:validatesUnscaledValue max="7"/>
+                <model:validatesScale max="5"/>
+            </model:decimal>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="includePacksGeneratingProcessesForOrder" default="false"/>
+        </model:model-field>
+
         <model:model-field plugin="materialFlow" model="location">
             <model:belongsTo name="realizationLocation" model="parameter"
                              plugin="basic"/>
@@ -341,6 +367,9 @@
         <menu:menu-item name="operationalTasks" category="orders"
                         view="operationalTasksList" defaultAuthorizationRole="ROLE_PLANNING"/>
 
+        <menu:menu-item name="orderPacksList" category="orders"
+                        view="orderPacksList" defaultAuthorizationRole="ROLE_PLANNING"/>
+
         <menu:menu-item-url name="planningParameters" category="parameters" url="/planningParameters.html"
                             defaultAuthorizationRole="ROLE_PARAMETERS"/>
 
@@ -368,6 +397,10 @@
         <view:view resource="view/operationalTaskDetails.xml"/>
         <view:view resource="view/planningParameters.xml"/>
         <view:view resource="view/setCategory.xml"/>
+        <view:view resource="view/orderPacksList.xml"/>
+        <view:view resource="view/orderPackDetails.xml"/>
+        <view:view resource="view/orderPacksSingleOrderList.xml"/>
+        <view:view resource="view/orderPackSingleOrderDetails.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/productsList.xml"/>
