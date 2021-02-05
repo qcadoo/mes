@@ -55,4 +55,8 @@
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
     </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.orders.hooks.OrderPacksSingleOrderListHooks" method="onBeforeRender"/>
+    </hooks>
 </view>
