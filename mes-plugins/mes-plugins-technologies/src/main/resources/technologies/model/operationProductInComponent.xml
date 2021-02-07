@@ -39,7 +39,6 @@
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
-
         <decimal name="givenQuantity">
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="9"/>
@@ -49,7 +48,6 @@
         <string name="quantityFormula" />
         <belongsTo name="technologyInputProductType" model="technologyInputProductType"/>
         <boolean name="differentProductsInDifferentSizes" default="false"/>
-
         <hasMany name="productBySizeGroups" model="productBySizeGroup"
                  joinField="operationProductInComponent" cascade="delete" copyable="true"/>
     </fields>

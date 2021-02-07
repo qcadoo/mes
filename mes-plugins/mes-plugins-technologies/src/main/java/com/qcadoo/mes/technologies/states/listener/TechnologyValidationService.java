@@ -40,6 +40,7 @@ import org.springframework.stereotype.Service;
 import com.beust.jcommander.internal.Sets;
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
@@ -58,11 +59,19 @@ import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.validators.ErrorMessage;
+import com.qcadoo.view.api.ComponentState.MessageType;
+import com.qcadoo.view.api.components.FormComponent;
 
 @Service
 public class TechnologyValidationService {
 
     private static final String L_PRODUCTION_IN_ONE_CYCLE_UNIT = "productionInOneCycleUNIT";
+
+    private static final String L_TECHNOLOGIES_TECHNOLOGY_VALIDATE_GLOBAL_ERROR_TREE_IS_NOT_VALID = "technologies.technology.validate.global.error.treeIsNotValid";
+
+    private static final String L_TECHNOLOGIES_TECHNOLOGY_VALIDATE_GLOBAL_ERROR_OPERATION_DONT_CONSUME_SUB_OPERATIONS_PRODUCTS = "technologies.technology.validate.global.error.operationDontConsumeSubOperationsProducts";
+
+    private static final String L_TECHNOLOGIES_TECHNOLOGY_VALIDATE_GLOBAL_ERROR_OPERATION_DONT_CONSUME_SUB_OPERATIONS_PRODUCTS_PLURAL = "technologies.technology.validate.global.error.operationDontConsumeSubOperationsProductsPlural";
 
     @Autowired
     private TechnologyService technologyService;
@@ -79,8 +88,8 @@ public class TechnologyValidationService {
     @Autowired
     private ProductStructureTreeService productStructureTreeService;
 
-    public void checkIfEveryOperationHasInComponents(final StateChangeContext stateContext) {
-        Entity technology = stateContext.getOwner();
+    public void checkIfEveryOperationHasInComponents(final StateChangeContext stateChangeContext) {
+        Entity technology = stateChangeContext.getOwner();
 
         final Entity savedTechnology = technology.getDataDefinition().get(technology.getId());
         final EntityTree operationComponents = savedTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
@@ -88,7 +97,7 @@ public class TechnologyValidationService {
         for (Entity operationComponent : operationComponents) {
             if (operationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS)
                     .isEmpty()) {
-                stateContext.addValidationError("technologies.technology.validate.global.error.noInputComponents",
+                stateChangeContext.addValidationError("technologies.technology.validate.global.error.noInputComponents",
                         operationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION)
                                 .getStringField(OperationFields.NUMBER),
                         operationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
@@ -98,30 +107,40 @@ public class TechnologyValidationService {
         }
     }
 
-    public void checkIfTechnologyIsNotUsedInActiveOrder(final StateChangeContext stateContext) {
-        final Entity technology = stateContext.getOwner();
+    public void checkIfTechnologyIsNotUsedInActiveOrder(final StateChangeContext stateChangeContext) {
+        final Entity technology = stateChangeContext.getOwner();
 
         if (technologyService.isTechnologyUsedInActiveOrder(technology)) {
-            stateContext.addValidationError("technologies.technology.state.error.orderInProgress");
+            stateChangeContext.addValidationError("technologies.technology.state.error.orderInProgress");
         }
     }
 
-    public void checkConsumingManyProductsFromOneSubOp(final StateChangeContext stateContext) {
-        final Entity technology = stateContext.getOwner();
+    public void checkConsumingManyProductsFromOneSubOp(final StateChangeContext stateChangeContext) {
+        final Entity technology = stateChangeContext.getOwner();
         final Map<String, Set<String>> parentChildNodeNums = technologyTreeValidationService
                 .checkConsumingManyProductsFromOneSubOp(technology.getTreeField(OPERATION_COMPONENTS));
 
         for (Map.Entry<String, Set<String>> parentChildNodeNum : parentChildNodeNums.entrySet()) {
             for (String childNodeNum : parentChildNodeNum.getValue()) {
-                stateContext.addMessage("technologies.technology.validate.global.info.consumingManyProductsFromOneSubOperations",
+                stateChangeContext.addMessage(
+                        "technologies.technology.validate.global.info.consumingManyProductsFromOneSubOperations",
                         StateMessageType.INFO, parentChildNodeNum.getKey(), childNodeNum);
             }
         }
     }
 
-    public boolean checkTopComponentsProducesProductForTechnology(final StateChangeContext stateContext) {
-        Entity technology = stateContext.getOwner();
+    public boolean checkTopComponentsProducesProductForTechnology(final StateChangeContext stateChangeContext) {
+        Entity technology = stateChangeContext.getOwner();
 
+        return checkTopComponentsProducesProductForTechnology(stateChangeContext, null, technology);
+    }
+
+    public boolean checkTopComponentsProducesProductForTechnology(final FormComponent technologyForm, final Entity technology) {
+        return checkTopComponentsProducesProductForTechnology(null, technologyForm, technology);
+    }
+
+    private boolean checkTopComponentsProducesProductForTechnology(final StateChangeContext stateChangeContext,
+            final FormComponent technologyForm, final Entity technology) {
         final Entity savedTechnology = technology.getDataDefinition().get(technology.getId());
         final Entity product = savedTechnology.getBelongsToField(TechnologyFields.PRODUCT);
         final EntityTree operationComponents = savedTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
@@ -139,13 +158,18 @@ public class TechnologyValidationService {
             }
         }
 
-        stateContext.addValidationError("technologies.technology.validate.global.error.noFinalProductInTechnologyTree");
+        if (Objects.nonNull(technologyForm)) {
+            technologyForm.addMessage("technologies.technology.validate.global.error.noFinalProductInTechnologyTree",
+                    MessageType.FAILURE);
+        } else {
+            stateChangeContext.addValidationError("technologies.technology.validate.global.error.noFinalProductInTechnologyTree");
+        }
 
         return false;
     }
 
-    public boolean checkIfTechnologyHasAtLeastOneComponent(final StateChangeContext stateContext) {
-        Entity technology = stateContext.getOwner();
+    public boolean checkIfTechnologyHasAtLeastOneComponent(final StateChangeContext stateChangeContext) {
+        Entity technology = stateChangeContext.getOwner();
 
         final Entity savedTechnology = technology.getDataDefinition().get(technology.getId());
         final EntityTree operationComponents = savedTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
@@ -154,17 +178,27 @@ public class TechnologyValidationService {
             return true;
         }
 
-        stateContext.addValidationError("technologies.technology.validate.global.error.emptyTechnologyTree");
+        stateChangeContext.addValidationError("technologies.technology.validate.global.error.emptyTechnologyTree");
 
         return false;
     }
 
-    public boolean checkIfOperationsUsesSubOperationsProds(final StateChangeContext stateContext) {
-        Entity technology = stateContext.getOwner();
+    public boolean checkIfOperationsUsesSubOperationsProds(final StateChangeContext stateChangeContext) {
+        Entity technology = stateChangeContext.getOwner();
 
         final DataDefinition technologyDD = technology.getDataDefinition();
         final Entity savedTechnology = technologyDD.get(technology.getId());
-        final EntityTree operationComponents = savedTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+
+        return checkIfOperationsUsesSubOperationsProds(stateChangeContext, null, savedTechnology);
+    }
+
+    public boolean checkIfOperationsUsesSubOperationsProds(final FormComponent technologyForm, final Entity technology) {
+        return checkIfOperationsUsesSubOperationsProds(null, technologyForm, technology);
+    }
+
+    private boolean checkIfOperationsUsesSubOperationsProds(final StateChangeContext stateChangeContext,
+            final FormComponent technologyForm, final Entity technology) {
+        final EntityTree operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
 
         Set<Entity> operations = checkIfConsumesSubOpsProds(operationComponents);
 
@@ -180,16 +214,33 @@ public class TechnologyValidationService {
             }
 
             if (operations.size() == 1) {
-                stateContext.addFieldValidationError(TechnologyFields.OPERATION_COMPONENTS,
-                        "technologies.technology.validate.global.error.treeIsNotValid");
-                stateContext.addMessage("technologies.technology.validate.global.error.operationDontConsumeSubOperationsProducts",
-                        StateMessageType.FAILURE, false, levels.toString());
+                if (Objects.nonNull(technologyForm)) {
+                    technologyForm.addMessage(L_TECHNOLOGIES_TECHNOLOGY_VALIDATE_GLOBAL_ERROR_TREE_IS_NOT_VALID,
+                            MessageType.FAILURE);
+                    technologyForm.addMessage(
+                            L_TECHNOLOGIES_TECHNOLOGY_VALIDATE_GLOBAL_ERROR_OPERATION_DONT_CONSUME_SUB_OPERATIONS_PRODUCTS,
+                            MessageType.FAILURE, false, levels.toString());
+                } else {
+                    stateChangeContext.addFieldValidationError(TechnologyFields.OPERATION_COMPONENTS,
+                            L_TECHNOLOGIES_TECHNOLOGY_VALIDATE_GLOBAL_ERROR_TREE_IS_NOT_VALID);
+                    stateChangeContext.addMessage(
+                            L_TECHNOLOGIES_TECHNOLOGY_VALIDATE_GLOBAL_ERROR_OPERATION_DONT_CONSUME_SUB_OPERATIONS_PRODUCTS,
+                            StateMessageType.FAILURE, false, levels.toString());
+                }
             } else {
-                stateContext.addFieldValidationError(TechnologyFields.OPERATION_COMPONENTS,
-                        "technologies.technology.validate.global.error.treeIsNotValid");
-                stateContext.addMessage(
-                        "technologies.technology.validate.global.error.operationDontConsumeSubOperationsProductsPlural",
-                        StateMessageType.FAILURE, false, levels.toString());
+                if (Objects.nonNull(technologyForm)) {
+                    technologyForm.addMessage(L_TECHNOLOGIES_TECHNOLOGY_VALIDATE_GLOBAL_ERROR_TREE_IS_NOT_VALID,
+                            MessageType.FAILURE);
+                    technologyForm.addMessage(
+                            L_TECHNOLOGIES_TECHNOLOGY_VALIDATE_GLOBAL_ERROR_OPERATION_DONT_CONSUME_SUB_OPERATIONS_PRODUCTS_PLURAL,
+                            MessageType.FAILURE, false, levels.toString());
+                } else {
+                    stateChangeContext.addFieldValidationError(TechnologyFields.OPERATION_COMPONENTS,
+                            L_TECHNOLOGIES_TECHNOLOGY_VALIDATE_GLOBAL_ERROR_TREE_IS_NOT_VALID);
+                    stateChangeContext.addMessage(
+                            L_TECHNOLOGIES_TECHNOLOGY_VALIDATE_GLOBAL_ERROR_OPERATION_DONT_CONSUME_SUB_OPERATIONS_PRODUCTS_PLURAL,
+                            StateMessageType.FAILURE, false, levels.toString());
+                }
             }
 
             return false;
@@ -261,8 +312,8 @@ public class TechnologyValidationService {
         return false;
     }
 
-    public boolean checkIfTreeOperationIsValid(final StateChangeContext stateContext) {
-        Entity technology = stateContext.getOwner();
+    public boolean checkIfTreeOperationIsValid(final StateChangeContext stateChangeContext) {
+        Entity technology = stateChangeContext.getOwner();
 
         if (Objects.isNull(technology) || Objects.isNull(technology.getId())) {
             return true;
@@ -292,7 +343,7 @@ public class TechnologyValidationService {
         }
 
         if (!isValid) {
-            stateContext.addValidationError("technologies.technology.validate.error.OperationTreeNotValid", message);
+            stateChangeContext.addValidationError("technologies.technology.validate.error.OperationTreeNotValid", message);
         }
 
         return isValid;
@@ -392,10 +443,25 @@ public class TechnologyValidationService {
 
     public boolean checkIfTechnologyTreeIsSet(final StateChangeContext stateChangeContext) {
         final Entity technology = stateChangeContext.getOwner();
+
+        return checkIfTechnologyTreeIsSet(stateChangeContext, null, technology);
+    }
+
+    public boolean checkIfTechnologyTreeIsSet(final FormComponent technologyForm, final Entity technology) {
+        return checkIfTechnologyTreeIsSet(null, technologyForm, technology);
+    }
+
+    public boolean checkIfTechnologyTreeIsSet(final StateChangeContext stateChangeContext, final FormComponent technologyForm,
+            final Entity technology) {
         final EntityTree operations = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
 
         if (operations.isEmpty()) {
-            stateChangeContext.addValidationError("technologies.technology.validate.global.error.emptyTechnologyTree");
+            if (Objects.nonNull(technologyForm)) {
+                technologyForm.addMessage("technologies.technology.validate.global.error.emptyTechnologyTree",
+                        MessageType.FAILURE);
+            } else {
+                stateChangeContext.addValidationError("technologies.technology.validate.global.error.emptyTechnologyTree");
+            }
 
             return false;
         }
@@ -483,6 +549,36 @@ public class TechnologyValidationService {
         }
 
         return subTechnology;
+    }
+
+    public boolean checkDifferentProductsInDifferentSizes(final StateChangeContext stateChangeContext) {
+        Entity technology = stateChangeContext.getOwner();
+
+        final Entity savedTechnology = technology.getDataDefinition().get(technology.getId());
+        final Entity product = savedTechnology.getBelongsToField(TechnologyFields.PRODUCT);
+
+        if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(product.getField(ProductFields.ENTITY_TYPE))) {
+            final EntityTree operationComponents = savedTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+
+            for (Entity operationComponent : operationComponents) {
+                final EntityList operationProductInComponents = operationComponent
+                        .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
+
+                for (Entity operationProductInComponent : operationProductInComponents) {
+                    boolean differentProductsInDifferentSizes = operationProductInComponent
+                            .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES);
+
+                    if (differentProductsInDifferentSizes) {
+                        stateChangeContext.addValidationError(
+                                "technologies.technology.validate.global.error.differentProductsInDifferentSizes");
+
+                        return false;
+                    }
+                }
+            }
+        }
+
+        return true;
     }
 
 }

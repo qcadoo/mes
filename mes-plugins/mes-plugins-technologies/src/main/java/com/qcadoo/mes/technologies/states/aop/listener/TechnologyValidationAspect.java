@@ -39,6 +39,7 @@ import com.qcadoo.mes.technologies.constants.ParameterFieldsT;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners;
 import com.qcadoo.mes.technologies.states.aop.TechnologyStateChangeAspect;
+import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangePhase;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.mes.technologies.states.listener.TechnologyValidationService;
@@ -77,11 +78,18 @@ public class TechnologyValidationAspect extends AbstractStateListenerAspect {
             return;
         }
 
-        if (parameterService.getParameter().getBooleanField(ParameterFieldsT.MOVE_PRODUCTS_TO_SUBSEQUENT_OPERATIONS)) {
+        String targetState = stateChangeContext.getStateChangeEntity().getStringField(TechnologyStateChangeFields.TARGET_STATE);
+        Entity parameter = parameterService.getParameter();
+
+        if (parameter.getBooleanField(ParameterFieldsT.MOVE_PRODUCTS_TO_SUBSEQUENT_OPERATIONS)) {
             technologyDetailsListeners.fillProducts(stateChangeContext.getOwner());
         }
 
-        technologyValidationService.checkIfEveryOperationHasInComponents(stateChangeContext);
+        if (TechnologyStateStringValues.ACCEPTED.equals(targetState) || (TechnologyStateStringValues.CHECKED.equals(targetState)
+                && !parameter.getBooleanField(ParameterFieldsT.ALLOW_CHECKED_TECHNOLOGY_WITHOUT_IN_PRODUCTS))) {
+            technologyValidationService.checkIfEveryOperationHasInComponents(stateChangeContext);
+        }
+
         technologyValidationService.checkConsumingManyProductsFromOneSubOp(stateChangeContext);
 
         Entity technology = stateChangeContext.getOwner();
@@ -93,6 +101,10 @@ public class TechnologyValidationAspect extends AbstractStateListenerAspect {
         technologyValidationService.checkTopComponentsProducesProductForTechnology(stateChangeContext);
         technologyValidationService.checkIfOperationsUsesSubOperationsProds(stateChangeContext);
         technologyValidationService.checkTechnologyCycles(stateChangeContext);
+
+        if (TechnologyStateStringValues.ACCEPTED.equals(targetState)) {
+            technologyValidationService.checkDifferentProductsInDifferentSizes(stateChangeContext);
+        }
 
         if (PluginUtils.isEnabled("timeNormsForOperations")) {
             technologyValidationService.checkIfTreeOperationIsValid(stateChangeContext);

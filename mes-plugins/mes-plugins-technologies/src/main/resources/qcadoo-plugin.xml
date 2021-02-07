@@ -234,15 +234,19 @@
         </model:model-field>
 
         <model:model-field model="parameter" plugin="basic">
-            <model:boolean name="technologiesGeneratorCopyProductSize" default="false"/>
-        </model:model-field>
-
-        <model:model-field model="parameter" plugin="basic">
             <model:boolean name="completeWarehousesFlowWhileChecking" default="false"/>
         </model:model-field>
 
         <model:model-field model="parameter" plugin="basic">
             <model:boolean name="moveProductsToSubsequentOperations" default="false"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="technologiesGeneratorCopyProductSize" default="false"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="allowCheckedTechnologyWithoutInProducts" default="false"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">

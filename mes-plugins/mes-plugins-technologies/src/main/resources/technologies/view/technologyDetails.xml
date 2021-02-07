@@ -499,6 +499,8 @@
                                defaultEnabled="false">
                         <option type="column" name="technologyInputProductTypeName" fields="technologyInputProductTypeName"
                                 link="true" width="100"/>
+                        <option type="column" name="differentProductsInDifferentSizes" fields="differentProductsInDifferentSizes"
+                                link="true" width="50"/>
                         <option type="column" name="number" fields="productNumber"
                                 link="true" width="100"/>
                         <option type="column" name="name" fields="productName"

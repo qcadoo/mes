@@ -23,6 +23,16 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
+import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT;
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.MASTER;
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT;
+
+import java.util.Collections;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.states.service.StateChangeEntityBuilder;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -35,14 +45,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.utils.TreeNumberingService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Collections;
-
-import static com.qcadoo.mes.technologies.constants.TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT;
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.MASTER;
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT;
 
 @Service
 public class TechnologyModelHooks {
@@ -75,6 +77,9 @@ public class TechnologyModelHooks {
     public void onSave(final DataDefinition technologyDD, final Entity technology) {
         if (!technology.getBooleanField(TechnologyFields.TEMPLATE)) {
             technology.setField(TechnologyFields.TEMPLATE, false);
+        }
+        if (Objects.isNull(technology.getField(TechnologyFields.IS_TEMPLATE_ACCEPTED))) {
+            technology.setField(TechnologyFields.IS_TEMPLATE_ACCEPTED, false);
         }
         setNewMasterTechnology(technologyDD, technology);
         qualityCardChange(technologyDD, technology);

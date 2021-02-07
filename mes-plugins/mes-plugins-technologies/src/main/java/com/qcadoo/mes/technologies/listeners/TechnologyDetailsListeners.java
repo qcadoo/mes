@@ -42,6 +42,7 @@ import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.states.listener.TechnologyValidationService;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
 import com.qcadoo.mes.technologies.tree.RemoveTOCService;
 import com.qcadoo.model.api.DataDefinition;
@@ -79,6 +80,9 @@ public class TechnologyDetailsListeners {
 
     @Autowired
     private RemoveTOCService removeTOCService;
+
+    @Autowired
+    private TechnologyValidationService technologyValidationService;
 
     public void setGridEditable(final ViewDefinitionState view, final ComponentState state, final String[] args) {
     }
@@ -124,9 +128,7 @@ public class TechnologyDetailsListeners {
         List<Entity> operationsWithManyOutProducts = fillProducts(technology);
 
         if (!operationsWithManyOutProducts.isEmpty()) {
-            state.addMessage(
-                    "technologies.technologyDetails.window.tooManyOutProductsInOperation",
-                    MessageType.INFO,
+            state.addMessage("technologies.technologyDetails.window.tooManyOutProductsInOperation", MessageType.INFO,
                     operationsWithManyOutProducts.stream().map(o -> o.getStringField(OperationFields.NUMBER))
                             .collect(Collectors.joining(", ")));
         }
@@ -153,8 +155,8 @@ public class TechnologyDetailsListeners {
 
                 operationProductInComponent.getDataDefinition().save(operationProductInComponent);
             } else if (operationProductOutComponents.size() > 1) {
-                operationsWithManyOutProducts.add(technologyOperationComponent
-                        .getBelongsToField(TechnologyOperationComponentFields.OPERATION));
+                operationsWithManyOutProducts
+                        .add(technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION));
             }
         }
         return operationsWithManyOutProducts;
@@ -187,7 +189,8 @@ public class TechnologyDetailsListeners {
 
     public void acceptTemplate(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        CheckBoxComponent isTemplateAcceptedCheckBox = (CheckBoxComponent) view.getComponentByReference(TechnologyFields.IS_TEMPLATE_ACCEPTED);
+        CheckBoxComponent isTemplateAcceptedCheckBox = (CheckBoxComponent) view
+                .getComponentByReference(TechnologyFields.IS_TEMPLATE_ACCEPTED);
 
         Entity technology = technologyForm.getPersistedEntityWithIncludedFormValues();
 
@@ -196,14 +199,26 @@ public class TechnologyDetailsListeners {
         boolean isTemplateAccepted = isTemplateAcceptedCheckBox.isChecked();
 
         if (Objects.nonNull(technologyId)) {
-            isTemplateAcceptedCheckBox.setChecked(!isTemplateAccepted);
+            if (isTemplateAccepted || validateTemplate(technologyForm, technology.getDataDefinition().get(technologyId))) {
+                isTemplateAcceptedCheckBox.setChecked(!isTemplateAccepted);
 
-            technologyForm.performEvent(view, "save");
+                technologyForm.performEvent(view, "save");
 
-            if (technologyForm.isHasError()) {
-                isTemplateAcceptedCheckBox.setChecked(isTemplateAccepted);
+                if (technologyForm.isHasError()) {
+                    isTemplateAcceptedCheckBox.setChecked(isTemplateAccepted);
+                }
             }
         }
+    }
+
+    private boolean validateTemplate(final FormComponent technologyForm, final Entity technology) {
+        boolean isValid = true;
+
+        isValid = isValid && technologyValidationService.checkIfTechnologyTreeIsSet(technologyForm, technology);
+        isValid = isValid && technologyValidationService.checkTopComponentsProducesProductForTechnology(technologyForm, technology);
+        isValid = isValid && technologyValidationService.checkIfOperationsUsesSubOperationsProds(technologyForm, technology);
+
+        return isValid;
     }
 
     private DataDefinition getTechnologyDD() {
