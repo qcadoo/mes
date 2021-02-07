@@ -32,7 +32,7 @@
 		<belongsTo name="parent" model="generatorTreeNode" />
 		<hasMany name="children" model="generatorTreeNode" joinField="parent" cascade="delete" />
 		<belongsTo name="generatorContext" model="generatorContext" />
-		<enum name="entityType" values="intermediate,component,material,customizedComponent" default="material" />
+		<enum name="entityType" values="intermediate,component,material,customizedComponent,productBySizeGroup" default="material" />
 		<priority name="priority" scope="parent" />
 		<string name="nodeNumber" />
 		<!-- END tree specific fields-->
@@ -41,6 +41,7 @@
 		<decimal name="quantity" />
 		<belongsTo name="product" model="product" plugin="basic" lazy="false" />
 		<belongsTo name="technologyInputProductType" plugin="technologies" model="technologyInputProductType" lazy="false"/>
+		<boolean name="differentProductsInDifferentSizes" default="false"/>
 		<belongsTo name="operation" model="operation" plugin="technologies" lazy="false" />
 		<belongsTo name="productTechnology" model="technology" plugin="technologies" lazy="false" />
 		<belongsTo name="originalTechnology" model="technology" plugin="technologies" lazy="true" />
@@ -52,8 +53,8 @@
 			<validatesUnscaledValue max="7"/>
 			<validatesScale max="5"/>
 		</decimal>
-
 		<string name="unit" />
+		<belongsTo name="sizeGroup" model="sizeGroup" plugin="basic" lazy="false"/>
 		<!-- END additional fields-->
 	</fields>
 

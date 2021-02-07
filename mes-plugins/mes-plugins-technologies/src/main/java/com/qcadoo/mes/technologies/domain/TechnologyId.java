@@ -35,4 +35,5 @@ public class TechnologyId extends ImmutableIdWrapper {
     public String toString() {
         return String.format("TechnologyId(%s)", get());
     }
+
 }

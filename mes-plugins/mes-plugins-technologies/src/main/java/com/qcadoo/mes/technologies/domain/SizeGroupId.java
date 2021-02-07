@@ -25,15 +25,15 @@ package com.qcadoo.mes.technologies.domain;
 
 import com.qcadoo.mes.basic.domain.ImmutableIdWrapper;
 
-public class TechnologyInputProductTypeId extends ImmutableIdWrapper {
+public class SizeGroupId extends ImmutableIdWrapper {
 
-    public TechnologyInputProductTypeId(final Long id) {
+    public SizeGroupId(final Long id) {
         super(id);
     }
 
     @Override
     public String toString() {
-        return String.format("TechnologyInputProductTypeId(%s)", get());
+        return String.format("SizeGroupId(%s)", get());
     }
 
 }

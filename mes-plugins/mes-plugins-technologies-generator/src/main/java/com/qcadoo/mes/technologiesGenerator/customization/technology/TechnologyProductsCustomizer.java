@@ -23,6 +23,14 @@
  */
 package com.qcadoo.mes.technologiesGenerator.customization.technology;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
@@ -37,13 +45,6 @@ import com.qcadoo.mes.technologiesGenerator.dataProvider.TechnologyMainOutCompDa
 import com.qcadoo.mes.technologiesGenerator.dataProvider.TechnologyProductComponentsDataProvider;
 import com.qcadoo.mes.technologiesGenerator.domain.OutputProductComponentId;
 import com.qcadoo.model.api.Entity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
 
 @Service
 public class TechnologyProductsCustomizer {
@@ -66,50 +67,61 @@ public class TechnologyProductsCustomizer {
     public Either<String, TechnologyId> customize(final TechnologyId technologyId, final Entity mainProduct,
             final Entity newProduct, final GeneratorSettings settings) {
         CustomizationSettings cs = new CustomizationSettings(technologyId, ProductSuffixes.from(mainProduct));
-        return technologyDataProvider
-                .tryFind(technologyId.get())
-                .map(technology -> prepareMainTechnologyProduct(technology, newProduct).<TechnologyId> flatMap(
-                        mOpicId -> customizeOutputs(cs, mOpicId, settings, mainProduct)).<TechnologyId> flatMap(x -> customizeInputs(cs, settings, mainProduct)))
+        return technologyDataProvider.tryFind(technologyId.get())
+                .map(technology -> prepareMainTechnologyProduct(technology, newProduct)
+                        .<TechnologyId> flatMap(mOpicId -> customizeOutputs(cs, mOpicId, settings, mainProduct))
+                        .<TechnologyId> flatMap(x -> customizeInputs(cs, settings, mainProduct)))
                 .orElseGet(() -> Either.left("Technology not found"));
     }
 
     public Either<String, TechnologyId> customizeForTechnologyGeneration(final TechnologyId technologyId,
             final Entity mainProduct, final Entity newProduct, final GeneratorSettings settings) {
         CustomizationSettings cs = new CustomizationSettings(technologyId, ProductSuffixes.from(mainProduct));
-        return technologyDataProvider
-                .tryFind(technologyId.get())
-                .map(technology -> prepareMainTechnologyProduct(technology, newProduct).<TechnologyId> flatMap(
-                        mOpicId -> customizeOutputsForTechnologyGeneration(cs, mOpicId, settings, mainProduct)).<TechnologyId> flatMap(
-                        x -> customizeInputsForTechnologyGeneration(cs, settings, mainProduct))).orElseGet(() -> Either.left("Technology not found"));
+        return technologyDataProvider.tryFind(technologyId.get())
+                .map(technology -> prepareMainTechnologyProduct(technology, newProduct)
+                        .<TechnologyId> flatMap(
+                                mOpicId -> customizeOutputsForTechnologyGeneration(cs, mOpicId, settings, mainProduct))
+                        .<TechnologyId> flatMap(x -> customizeInputsForTechnologyGeneration(cs, settings, mainProduct)))
+                .orElseGet(() -> Either.left("Technology not found"));
     }
 
     private Either<String, TechnologyId> customizeOutputsForTechnologyGeneration(final CustomizationSettings cs,
-            final Optional<OutputProductComponentId> excludedOutputComponentId, final GeneratorSettings settings, final Entity mainProduct) {
+            final Optional<OutputProductComponentId> excludedOutputComponentId, final GeneratorSettings settings,
+            final Entity mainProduct) {
         List<Entity> outputProductComponents = technologyProductComponentsDataProvider.findOutputs(cs.technologyId,
                 excludedOutputComponentId, true);
-        return customizeOperationProducts(outputProductComponents, OperationProductOutComponentFields.PRODUCT, cs, true, settings, mainProduct);
+        return customizeOperationProducts(outputProductComponents, OperationProductOutComponentFields.PRODUCT, cs, true, settings,
+                mainProduct);
     }
 
-    private Either<String, TechnologyId> customizeInputsForTechnologyGeneration(final CustomizationSettings cs, final GeneratorSettings settings, final Entity mainProduct) {
+    private Either<String, TechnologyId> customizeInputsForTechnologyGeneration(final CustomizationSettings cs,
+            final GeneratorSettings settings, final Entity mainProduct) {
         List<Entity> inputProductComponents = technologyProductComponentsDataProvider.findInputs(cs.technologyId, true);
-        return customizeOperationProducts(inputProductComponents, OperationProductInComponentFields.PRODUCT, cs, true, settings, mainProduct);
+        return customizeOperationProducts(inputProductComponents, OperationProductInComponentFields.PRODUCT, cs, true, settings,
+                mainProduct);
     }
 
     private Either<String, TechnologyId> customizeOutputs(final CustomizationSettings cs,
-            final Optional<OutputProductComponentId> excludedOutputComponentId, final GeneratorSettings settings, final Entity mainProduct) {
+            final Optional<OutputProductComponentId> excludedOutputComponentId, final GeneratorSettings settings,
+            final Entity mainProduct) {
         List<Entity> outputProductComponents = technologyProductComponentsDataProvider.findOutputs(cs.technologyId,
                 excludedOutputComponentId, false);
-        return customizeOperationProducts(outputProductComponents, OperationProductOutComponentFields.PRODUCT, cs, false, settings, mainProduct);
+        return customizeOperationProducts(outputProductComponents, OperationProductOutComponentFields.PRODUCT, cs, false,
+                settings, mainProduct);
     }
 
-    private Either<String, TechnologyId> customizeInputs(final CustomizationSettings cs, final GeneratorSettings settings, final Entity mainProduct) {
+    private Either<String, TechnologyId> customizeInputs(final CustomizationSettings cs, final GeneratorSettings settings,
+            final Entity mainProduct) {
         List<Entity> inputProductComponents = technologyProductComponentsDataProvider.findInputs(cs.technologyId, false);
-        return customizeOperationProducts(inputProductComponents, OperationProductInComponentFields.PRODUCT, cs, false, settings, mainProduct);
+        return customizeOperationProducts(inputProductComponents, OperationProductInComponentFields.PRODUCT, cs, false, settings,
+                mainProduct);
     }
 
     private Either<String, TechnologyId> customizeOperationProducts(final List<Entity> productComponents,
-            final String productFieldName, final CustomizationSettings cs, boolean generationMode, final GeneratorSettings settings, final Entity mainProduct) {
-        return productComponents.stream().reduce(Either.right(null), reduceStep(productFieldName, cs, generationMode, settings, mainProduct), combine)
+            final String productFieldName, final CustomizationSettings cs, boolean generationMode,
+            final GeneratorSettings settings, final Entity mainProduct) {
+        return productComponents.stream()
+                .reduce(Either.right(null), reduceStep(productFieldName, cs, generationMode, settings, mainProduct), combine)
                 .map(r -> cs.technologyId);
     }
 
@@ -117,13 +129,15 @@ public class TechnologyProductsCustomizer {
 
     private BiFunction<Either<String, ?>, Entity, Either<String, ?>> reduceStep(final String productFieldName,
             final CustomizationSettings cs, boolean generationMode, final GeneratorSettings settings, final Entity mainProduct) {
-        return (acc, operationComponent) -> acc.flatMap(x -> customizeOperationProduct(operationComponent, mainProduct, productFieldName, cs,generationMode, settings));
+        return (acc, operationComponent) -> acc.flatMap(
+                x -> customizeOperationProduct(operationComponent, mainProduct, productFieldName, cs, generationMode, settings));
     }
 
-    private Either<String, Entity> customizeOperationProduct(final Entity operationComponent, final Entity mainProduct, final String productFieldName,
-            final CustomizationSettings cs, boolean generationMode,final GeneratorSettings settings) {
+    private Either<String, Entity> customizeOperationProduct(final Entity operationComponent, final Entity mainProduct,
+            final String productFieldName, final CustomizationSettings cs, boolean generationMode,
+            final GeneratorSettings settings) {
         Entity currentProduct = operationComponent.getBelongsToField(productFieldName);
-        if(generationMode){
+        if (generationMode) {
             currentProduct = currentProduct.getBelongsToField(ProductFields.PARENT);
         }
         Entity newProduct = productCustomizer.findOrCreate(currentProduct, mainProduct, cs.productSuffixes, settings);
@@ -168,9 +182,10 @@ public class TechnologyProductsCustomizer {
 
     private Either<String, Optional<OutputProductComponentId>> customizeMainOutputComponent(final Entity newMainProduct,
             final Optional<Entity> maybeMainOpoc) {
-        return maybeMainOpoc.map(
-                mainOpoc -> customizeMainOutputProduct(newMainProduct, mainOpoc).<Optional<OutputProductComponentId>> map(
-                        Optional::of)).orElse(Either.<String, Optional<OutputProductComponentId>> right(Optional.empty()));
+        return maybeMainOpoc
+                .map(mainOpoc -> customizeMainOutputProduct(newMainProduct, mainOpoc)
+                        .<Optional<OutputProductComponentId>> map(Optional::of))
+                .orElse(Either.<String, Optional<OutputProductComponentId>> right(Optional.empty()));
     }
 
     private Either<String, OutputProductComponentId> customizeMainOutputProduct(final Entity newProduct, final Entity mainOpoc) {

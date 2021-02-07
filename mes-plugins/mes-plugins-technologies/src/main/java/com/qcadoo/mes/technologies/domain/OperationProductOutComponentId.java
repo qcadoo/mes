@@ -25,9 +25,9 @@ package com.qcadoo.mes.technologies.domain;
 
 import com.qcadoo.mes.basic.domain.ImmutableIdWrapper;
 
-public class TechnologyInputProductTypeId extends ImmutableIdWrapper {
+public class OperationProductOutComponentId extends ImmutableIdWrapper {
 
-    public TechnologyInputProductTypeId(final Long id) {
+    public OperationProductOutComponentId(final Long id) {
         super(id);
     }
 

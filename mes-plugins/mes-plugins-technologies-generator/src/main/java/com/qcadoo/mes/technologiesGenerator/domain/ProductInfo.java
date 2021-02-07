@@ -31,11 +31,15 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import com.qcadoo.mes.basic.product.domain.ProductId;
 import com.qcadoo.mes.technologies.domain.OperationId;
+import com.qcadoo.mes.technologies.domain.OperationProductInComponentId;
+import com.qcadoo.mes.technologies.domain.SizeGroupId;
 import com.qcadoo.mes.technologies.domain.TechnologyId;
 import com.qcadoo.mes.technologies.domain.TechnologyInputProductTypeId;
 import com.qcadoo.mes.technologies.tree.domain.TechnologyOperationId;
 
 public class ProductInfo {
+
+    private final Optional<OperationProductInComponentId> opicId;
 
     private final TechnologyOperationId tocId;
 
@@ -49,19 +53,25 @@ public class ProductInfo {
 
     private final Optional<TechnologyInputProductTypeId> technologyInputProductType;
 
+    private final boolean differentProductsInDifferentSizes;
+
     private final OperationId operation;
 
     private final BigDecimal quantity;
 
     private final String unit;
 
+    private final Optional<SizeGroupId> sizeGroup;
+
     private final boolean isIntermediate;
 
-    // TODO extract some builder
-    public ProductInfo(final TechnologyOperationId tocId, final Optional<TechnologyOperationId> parentId, final ProductId product,
-            final BigDecimal quantity, final Optional<TechnologyId> productTechnology,
-            final Optional<TechnologyId> originalTechnology, final Optional<TechnologyInputProductTypeId> technologyInputProductType,
-            final OperationId operation, final boolean isIntermediate, final String unit) {
+    public ProductInfo(final Optional<OperationProductInComponentId> opicId, TechnologyOperationId tocId,
+            final Optional<TechnologyOperationId> parentId, final ProductId product, final BigDecimal quantity,
+            final Optional<TechnologyId> productTechnology, final Optional<TechnologyId> originalTechnology,
+            final Optional<TechnologyInputProductTypeId> technologyInputProductType,
+            final boolean differentProductsInDifferentSizes, final OperationId operation, final boolean isIntermediate,
+            final String unit, final Optional<SizeGroupId> sizeGroup) {
+        this.opicId = opicId;
         this.tocId = tocId;
         this.parentId = parentId;
         this.product = product;
@@ -69,19 +79,25 @@ public class ProductInfo {
         this.productTechnology = productTechnology;
         this.originalTechnology = originalTechnology;
         this.technologyInputProductType = technologyInputProductType;
+        this.differentProductsInDifferentSizes = differentProductsInDifferentSizes;
         this.operation = operation;
         this.isIntermediate = isIntermediate;
         this.unit = unit;
+        this.sizeGroup = sizeGroup;
     }
 
     public ProductInfo withProductTechnology(final Optional<TechnologyId> newProductTechnology) {
-        return new ProductInfo(tocId, parentId, product, quantity, newProductTechnology, originalTechnology, technologyInputProductType,
-                operation, isIntermediate, unit);
+        return new ProductInfo(opicId, tocId, parentId, product, quantity, newProductTechnology, originalTechnology,
+                technologyInputProductType, differentProductsInDifferentSizes, operation, isIntermediate, unit, sizeGroup);
     }
 
     public ProductInfo withOriginalProductTechnology(final Optional<TechnologyId> newOriginalTechnology) {
-        return new ProductInfo(tocId, parentId, product, quantity, productTechnology, newOriginalTechnology, technologyInputProductType,
-                operation, isIntermediate, unit);
+        return new ProductInfo(opicId, tocId, parentId, product, quantity, productTechnology, newOriginalTechnology,
+                technologyInputProductType, differentProductsInDifferentSizes, operation, isIntermediate, unit, sizeGroup);
+    }
+
+    public Optional<OperationProductInComponentId> getOpicId() {
+        return opicId;
     }
 
     public TechnologyOperationId getTocId() {
@@ -96,10 +112,6 @@ public class ProductInfo {
         return quantity;
     }
 
-    public String getUnit() {
-        return unit;
-    }
-
     public Optional<TechnologyId> getProductTechnology() {
         return productTechnology;
     }
@@ -112,8 +124,20 @@ public class ProductInfo {
         return technologyInputProductType;
     }
 
+    public boolean getDifferentProductsInDifferentSizes() {
+        return differentProductsInDifferentSizes;
+    }
+
     public OperationId getOperation() {
         return operation;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public Optional<SizeGroupId> getSizeGroup() {
+        return sizeGroup;
     }
 
     public boolean isIntermediate() {
@@ -138,18 +162,21 @@ public class ProductInfo {
 
         ProductInfo rhs = (ProductInfo) obj;
 
-        return new EqualsBuilder().append(this.tocId, rhs.tocId).append(this.parentId, rhs.parentId)
-                .append(this.product, rhs.product).append(this.productTechnology, rhs.productTechnology)
-                .append(this.originalTechnology, rhs.originalTechnology).append(this.technologyInputProductType, rhs.technologyInputProductType)
+        return new EqualsBuilder().append(this.opicId, rhs.opicId).append(this.tocId, rhs.tocId)
+                .append(this.parentId, rhs.parentId).append(this.product, rhs.product)
+                .append(this.productTechnology, rhs.productTechnology).append(this.originalTechnology, rhs.originalTechnology)
+                .append(this.technologyInputProductType, rhs.technologyInputProductType)
+                .append(this.differentProductsInDifferentSizes, rhs.differentProductsInDifferentSizes)
                 .append(this.operation, rhs.operation).append(this.quantity, rhs.quantity)
-                .append(this.isIntermediate, rhs.isIntermediate).append(this.unit, rhs.unit).isEquals();
+                .append(this.isIntermediate, rhs.isIntermediate).append(this.unit, rhs.unit).append(this.sizeGroup, rhs.sizeGroup)
+                .isEquals();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(tocId).append(parentId).append(product).append(productTechnology)
-                .append(originalTechnology).append(technologyInputProductType).append(operation).append(quantity).append(isIntermediate)
-                .append(unit).toHashCode();
+        return new HashCodeBuilder().append(opicId).append(tocId).append(parentId).append(product).append(productTechnology)
+                .append(originalTechnology).append(technologyInputProductType).append(differentProductsInDifferentSizes)
+                .append(operation).append(quantity).append(unit).append(sizeGroup).append(isIntermediate).toHashCode();
     }
 
 }
