@@ -5,6 +5,8 @@ import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier;
 import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.materialFlowResources.constants.DirectionConvertingQuantityAfterChangingConverter;
+import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
@@ -17,11 +19,12 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ResourceDetailsHooks {
@@ -109,21 +112,35 @@ public class ResourceDetailsHooks {
         FieldComponent additionalUnitField = (FieldComponent) viewDefinitionState
                 .getComponentByReference(ResourceFields.GIVEN_UNIT);
 
+        FieldComponent quantityField = (FieldComponent) viewDefinitionState
+                .getComponentByReference(ResourceFields.QUANTITY);
+
         Either<Exception, Optional<BigDecimal>> maybeConversion = BigDecimalUtils
                 .tryParseAndIgnoreSeparator((String) conversionField.getFieldValue(), viewDefinitionState.getLocale());
         if (maybeConversion.isRight() && maybeConversion.getRight().isPresent()) {
             FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
             Entity resource = form.getPersistedEntityWithIncludedFormValues();
 
-            BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(
-                    resource.getDecimalField(ResourceFields.QUANTITY), maybeConversion.getRight().get(),
-                    (String) additionalUnitField.getFieldValue());
+            Entity location = resource.getBelongsToField(ResourceFields.LOCATION);
+            if (DirectionConvertingQuantityAfterChangingConverter.FROM_BASIC_TO_ADDITIONAL.getStringValue().equals(
+                    location.getStringField(LocationFieldsMFR.DIRECTION_CONVERTING_QUANTITY_AFTER_CHANGING_CONVERTER))) {
+                BigDecimal newAdditionalQuantity = calculationQuantityService.calculateAdditionalQuantity(
+                        resource.getDecimalField(ResourceFields.QUANTITY), maybeConversion.getRight().get(),
+                        (String) additionalUnitField.getFieldValue());
 
-            String quantityInAdditionalUnitFormatted = numberService.format(newAdditionalQuantity);
-            quantityInAdditionalUnitField.setFieldValue(quantityInAdditionalUnitFormatted);
+                String quantityInAdditionalUnitFormatted = numberService.format(newAdditionalQuantity);
+                quantityInAdditionalUnitField.setFieldValue(quantityInAdditionalUnitFormatted);
+            } else {
+                Entity product = resource.getBelongsToField(ResourceFields.PRODUCT);
 
-        } else {
-            quantityInAdditionalUnitField.setFieldValue(null);
+                BigDecimal quantity = calculationQuantityService.calculateQuantity(
+                        resource.getDecimalField(ResourceFields.QUANTITY_IN_ADDITIONAL_UNIT), maybeConversion.getRight().get(),
+                        product.getStringField(ProductFields.UNIT));
+
+                String quantityFormatted = numberService.format(quantity);
+                quantityField.setFieldValue(quantityFormatted);
+            }
+
         }
     }
 

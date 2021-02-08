@@ -949,6 +949,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             $('#' + rowId + '_quantity').trigger('change');
         }
 
+        function touchManuallyGivenQuantityField(rowId) {
+            givenquantityValue = undefined;
+
+            // edit inline
+            $('#' + rowId + '_givenquantity').trigger('change');
+        }
+
         function getColModelByIndex(index, c) {
             c = c || $scope.config;
             var col = c.colModel.filter(function (element, i) {
@@ -1025,7 +1032,12 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         }
                     }
                 }
-                touchManuallyQuantityField(rowId);
+                if ($scope.config.directionConvertingQuantityAfterChangingConverter == '01fromBasicToAdditional') {
+                    touchManuallyQuantityField(rowId);
+                } else {
+                    touchManuallyGivenQuantityField(rowId);
+                }
+
                 firstLoad = false;
             }
 
@@ -1167,11 +1179,13 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                  return $input;
         }
 
+        var givenquantityValue;
+
         function givenquantity_createElement(value, options) {
             var $input = $('<input type="customNumber" id="' + options.id + '" name="' + options.name + '" rowId="' + options.rowId + '" />');
             $input.val(value);
 
-            var givenquantityValue = value;
+            givenquantityValue = value;
             var givenquantityValueNew;
             $($input).bind('change keydown paste input', function () {
                 var t = $(this);
@@ -1223,18 +1237,32 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                         parseAndValidateInputNumber(t);
 
                         var rowId = getRowIdFromElement(t);
+                        if ($scope.config.directionConvertingQuantityAfterChangingConverter == '01fromBasicToAdditional') {
+                            var quantity = getFieldValue('quantity', rowId);
+                            var newGivenQuantity = null;
+                            if (quantities[rowId]) {
+                                newGivenQuantity = roundTo(t.val() * quantity);
+                            }
+                            newGivenQuantity = roundTo(newGivenQuantity);
+                            if (!newGivenQuantity || t.hasClass('error-grid')) {
+                                newGivenQuantity = '';
+                            }
 
-                        var quantity = getFieldValue('quantity', rowId);
-                        var newGivenQuantity = null;
-                        if (quantities[rowId]) {
-                            newGivenQuantity = roundTo(t.val() * quantity);
-                        }
-                        newGivenQuantity = roundTo(newGivenQuantity);
-                        if (!newGivenQuantity || t.hasClass('error-grid')) {
-                            newGivenQuantity = '';
-                        }
+                            updateFieldValue('givenquantity', newGivenQuantity, rowId);
+                         } else {
+                            var givenQuantity = getFieldValue('givenquantity', rowId);
+                            var newQuantity = null;
+                            if (quantities[rowId]) {
+                                newQuantity = roundTo(givenQuantity * (1 / t.val()));
+                            }
+                            newQuantity = roundTo(newQuantity);
+                            if (!newQuantity || t.hasClass('error-grid')) {
+                                newQuantity = '';
+                            }
 
-                        updateFieldValue('givenquantity', newGivenQuantity, rowId);
+                            updateFieldValue('quantity', newQuantity, rowId);
+                         }
+
                         if ($scope.config.outDocument && $scope.config.suggestResource) {
                             var product = getFieldValue('product', getRowIdFromElement(t));
                             var ac = getFieldValue('additionalCode', getRowIdFromElement(t));
@@ -1811,6 +1839,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 config.inBufferDocument = response.data.inBufferDocument;
                 config.suggestResource = !response.data.inBufferDocument && response.data.suggestResource;
                 config.outDocument = response.data.outDocument;
+                config.directionConvertingQuantityAfterChangingConverter = response.data.directionConvertingQuantityAfterChangingConverter;
 
                 var columns = [getColModelByIndex('id', config), getColModelByIndex('document', config), getColModelByIndex('batchId', config)];
                 var colNames = ['ID', 'document', 'batchId'];
