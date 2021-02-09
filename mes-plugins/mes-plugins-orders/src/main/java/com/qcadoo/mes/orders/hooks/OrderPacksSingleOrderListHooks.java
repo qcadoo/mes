@@ -40,6 +40,8 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 @Service
 public class OrderPacksSingleOrderListHooks {
 
+    public static final String ACTIONS = "actions";
+
     public final void onBeforeRender(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(OrdersConstants.MODEL_ORDER);
         Entity order = form.getPersistedEntityWithIncludedFormValues();
@@ -51,17 +53,11 @@ public class OrderPacksSingleOrderListHooks {
             WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
             Ribbon ribbon = window.getRibbon();
             RibbonActionItem generateOrderPacks = ribbon.getGroupByName("orderPacks").getItemByName("generateOrderPacks");
-            RibbonActionItem actionsNew = ribbon.getGroupByName("actions").getItemByName("new");
-            RibbonActionItem actionsCopy = ribbon.getGroupByName("actions").getItemByName("copy");
-            RibbonActionItem actionsDelete = ribbon.getGroupByName("actions").getItemByName("delete");
+            RibbonActionItem actionsNew = ribbon.getGroupByName(ACTIONS).getItemByName("new");
             generateOrderPacks.setEnabled(false);
             generateOrderPacks.requestUpdate(true);
             actionsNew.setEnabled(false);
             actionsNew.requestUpdate(true);
-            actionsCopy.setEnabled(false);
-            actionsCopy.requestUpdate(true);
-            actionsDelete.setEnabled(false);
-            actionsDelete.requestUpdate(true);
         }
     }
 }
