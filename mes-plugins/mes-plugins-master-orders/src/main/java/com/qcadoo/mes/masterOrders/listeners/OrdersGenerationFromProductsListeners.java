@@ -206,6 +206,19 @@ public class OrdersGenerationFromProductsListeners {
 
     }
 
+    public boolean validateDate(final DataDefinition dd, final Entity ordersGenerationHelper) {
+        Date dateFrom = ordersGenerationHelper.getDateField(DATE_FROM);
+        Date dateTo = ordersGenerationHelper.getDateField(DATE_TO);
+
+        if (dateFrom == null || dateTo == null || dateTo.after(dateFrom)) {
+            return true;
+        }
+
+        ordersGenerationHelper.addError(dd.getField(DATE_TO), "orders.validate.global.error.datesOrder");
+        return false;
+    }
+    
+
     @Transactional
     private Entity createOrder(Entity parameters, final Entity product, final BigDecimal plannedQuantity, final Date dateFrom,
             final Date dateTo) {
