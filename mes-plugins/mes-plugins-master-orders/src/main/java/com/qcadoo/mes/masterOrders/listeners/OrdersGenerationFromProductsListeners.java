@@ -1,9 +1,12 @@
-package com.qcadoo.mes.orders.listeners;
+package com.qcadoo.mes.masterOrders.listeners;
 
-import com.google.common.collect.Lists;
+import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.masterOrders.GenerationOrderResult;
+import com.qcadoo.mes.masterOrders.OrdersGenerationService;
+import com.qcadoo.mes.masterOrders.SubOrderErrorHolder;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -20,17 +23,25 @@ import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class OrdersGenerationFromProductsListeners {
@@ -43,6 +54,14 @@ public class OrdersGenerationFromProductsListeners {
 
     private static final String IGNORE_MISSING_COMPONENTS = "ignoreMissingComponents";
 
+    private static final String L_AUTOMATICALLY_GENERATE_ORDERS_FOR_COMPONENTS = "automaticallyGenerateOrdersForComponents";
+
+    private static final String L_ORDERS_GENERATED_BY_COVERAGE = "ordersGeneratedByCoverage";
+
+    private static final String L_ORDERS_GENERATION_NOT_COMPLETE_DATES = "ordersGenerationNotCompleteDates";
+
+    private static final String L_PPS_IS_AUTOMATIC = "ppsIsAutomatic";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -53,10 +72,16 @@ public class OrdersGenerationFromProductsListeners {
     private ParameterService parameterService;
 
     @Autowired
+    private TranslationService translationService;
+
+    @Autowired
     private NumberGeneratorService numberGeneratorService;
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private OrdersGenerationService ordersGenerationService;
 
     public void generateOrders(final ViewDefinitionState view, final ComponentState state, final String[] args)
             throws JSONException {
@@ -73,9 +98,10 @@ public class OrdersGenerationFromProductsListeners {
         Set<Long> ids = Arrays
                 .stream(context.getString("window.mainTab.form.gridLayout.selectedEntities").replaceAll("[\\[\\]]", "")
                         .split(",")).map(Long::valueOf).collect(Collectors.toSet());
-
+        GenerationOrderResult result = new GenerationOrderResult(translationService, parameterService);
         try {
-            generateOrders(view, ids, entity);
+            generateOrders(result, view, ids, entity);
+            result.showMessage(view);
         } catch (Exception exc) {
             view.addMessage("orders.ordersGenerationFromProducts.error.ordersNotGenerated ", ComponentState.MessageType.FAILURE);
 
@@ -83,34 +109,101 @@ public class OrdersGenerationFromProductsListeners {
         generated.setChecked(true);
     }
 
-    private void generateOrders(ViewDefinitionState view, final Set<Long> ids, final Entity ordersGenerationHelper) {
+    private void generateOrders(GenerationOrderResult result, ViewDefinitionState view, final Set<Long> ids,
+            final Entity ordersGenerationHelper) {
         Entity parameters = parameterService.getParameter();
+        boolean automaticPps = parameters.getBooleanField(L_PPS_IS_AUTOMATIC);
+
         BigDecimal plannedQuantity = ordersGenerationHelper.getDecimalField("plannedQuantity");
         Date dateFrom = ordersGenerationHelper.getDateField(DATE_FROM);
         Date dateTo = ordersGenerationHelper.getDateField(DATE_TO);
-        List<String> failNumbers = Lists.newArrayList();
-        List<String> correctNumbers = Lists.newArrayList();
+
         ids.forEach(productId -> {
             Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
                     productId);
             Entity order = createOrder(parameters, product, plannedQuantity, dateFrom, dateTo);
             if (!order.isValid()) {
-                failNumbers.add(product.getStringField(ProductFields.NUMBER));
+                result.addGeneratedOrderNumber(product.getStringField(ProductFields.NUMBER));
+
             } else {
-                correctNumbers.add(product.getStringField(ProductFields.NUMBER));
+                if (Objects.isNull(order.getBelongsToField(OrderFields.TECHNOLOGY))) {
+                    result.addOrderWithoutGeneratedSubOrders(new SubOrderErrorHolder(order.getStringField(OrderFields.NUMBER),
+                            "masterOrders.masterOrder.generationOrder.ordersWithoutGeneratedSubOrders.technologyNotSet"));
+                } else if (parameters.getBooleanField(L_AUTOMATICALLY_GENERATE_ORDERS_FOR_COMPONENTS)
+                        && parameters.getBooleanField(L_ORDERS_GENERATED_BY_COVERAGE)
+                        && Objects.nonNull(order.getDateField(OrderFields.DATE_FROM))
+                        && order.getDateField(OrderFields.DATE_FROM).before(new Date())) {
+                    result.addOrderWithoutGeneratedSubOrders(new SubOrderErrorHolder(order.getStringField(OrderFields.NUMBER),
+                            "masterOrders.masterOrder.generationOrder.ordersWithoutGeneratedSubOrders.orderStartDateEarlierThanToday"));
+                } else {
+                    ordersGenerationService.generateSubOrders(result, order);
+                }
+
+                if (order.isValid() && automaticPps
+                        && !parameters.getBooleanField(L_ORDERS_GENERATION_NOT_COMPLETE_DATES)) {
+                    List<Entity> orders = getOrderAndSubOrders(order.getId());
+                    Collections.reverse(orders);
+                    Integer lastLevel = null;
+                    Date lastDate = null;
+
+                    for (Entity ord : orders) {
+                        Date calculatedOrderStartDate = null;
+
+                        if (parameterService.getParameter().getBooleanField(ParameterFieldsO.ADVISE_START_DATE_OF_THE_ORDER)) {
+                            calculatedOrderStartDate = order.getDateField(OrderFields.START_DATE);
+                        } else {
+                            if (Objects.isNull(ord.getDateField(OrderFields.DATE_FROM))) {
+                                Optional<Entity> maybeOrder = orderService.findLastOrder(ord);
+
+                                if (maybeOrder.isPresent()) {
+                                    calculatedOrderStartDate = ord.getDateField(OrderFields.FINISH_DATE);
+                                } else {
+                                    calculatedOrderStartDate = new DateTime().toDate();
+                                }
+                            } else {
+                                Optional<Entity> maybeOrder = ordersGenerationService.findPreviousOrder(ord);
+
+                                if (maybeOrder.isPresent()) {
+                                    calculatedOrderStartDate = maybeOrder.get().getDateField(OrderFields.FINISH_DATE);
+
+                                } else {
+                                    calculatedOrderStartDate = ord.getDateField(OrderFields.FINISH_DATE);
+                                }
+                            }
+                        }
+
+                        if (Objects.isNull(calculatedOrderStartDate)) {
+                            calculatedOrderStartDate = new DateTime().toDate();
+                        }
+
+                        if (Objects.nonNull(lastLevel) && !Objects.equals(lastLevel, ord.getIntegerField("level"))) {
+                            if (Objects.nonNull(lastDate) && calculatedOrderStartDate.before(lastDate)) {
+                                calculatedOrderStartDate = lastDate;
+                            }
+                        }
+
+                        try {
+                            Date finishDate = ordersGenerationService.tryGeneratePPS(ord, calculatedOrderStartDate);
+
+                            if (Objects.nonNull(lastDate) && finishDate.after(lastDate)) {
+                                lastDate = finishDate;
+                            } else if (Objects.isNull(lastDate)) {
+                                lastDate = finishDate;
+                            }
+                        } catch (Exception ex) {
+                            result.addOrderWithoutPps(ord.getStringField(OrderFields.NUMBER));
+
+                            break;
+                        }
+
+                        lastLevel = ord.getIntegerField("level");
+                    }
+                }
+                result.addGeneratedOrderNumber(order.getStringField(OrderFields.NUMBER));
 
             }
         });
-        if (!failNumbers.isEmpty()) {
-            String numbers = String.join(", ", failNumbers);
-            view.addMessage("orders.ordersGenerationFromProducts.info.notGeneratedOrders", ComponentState.MessageType.INFO,
-                    false, numbers);
-        }
-        if (!correctNumbers.isEmpty()) {
-            String numbers = String.join(", ", correctNumbers);
-            view.addMessage("orders.ordersGenerationFromProducts.info.generatedOrders", ComponentState.MessageType.INFO, false,
-                    numbers);
-        }
+
     }
 
     @Transactional
@@ -153,17 +246,12 @@ public class OrdersGenerationFromProductsListeners {
         return descriptionBuilder.toString();
     }
 
-    public boolean validateDate(final DataDefinition dd, final Entity ordersGenerationHelper) {
-        Date dateFrom = ordersGenerationHelper.getDateField(DATE_FROM);
-        Date dateTo = ordersGenerationHelper.getDateField(DATE_TO);
+    private List<Entity> getOrderAndSubOrders(final Long orderID) {
+        String sql = "SELECT o FROM #orders_order AS o WHERE o.root = :orderID OR o.id = :orderID";
 
-        if (dateFrom == null || dateTo == null || dateTo.after(dateFrom)) {
-            return true;
-        }
-
-        ordersGenerationHelper.addError(dd.getField(DATE_TO), "orders.validate.global.error.datesOrder");
-        return false;
+        return getOrderDD().find(sql).setLong("orderID", orderID).list().getEntities();
     }
+
 
     private DataDefinition getOrderDD() {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);

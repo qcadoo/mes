@@ -71,7 +71,7 @@
                         this.addOnChangeListener({
 
 						    onSetValue: function(value) {
-                                if (generateOrders) generateOrders.enable("#{translate(orders.ordersGenerationFromProducts.ribbon.message.generateOrders)}");
+                                if (generateOrders) generateOrders.enable("#{translate(masterOrders.ordersGenerationFromProducts.ribbon.message.generateOrders)}");
 						    }
 
 						});
@@ -107,7 +107,7 @@
                 <option type="header" value="true"/>
                 <option type="expression" value="''"/>
                 <listener event="generateOrders" method="generateOrders"
-                          class="com.qcadoo.mes.orders.listeners.OrdersGenerationFromProductsListeners"/>
+                          class="com.qcadoo.mes.masterOrders.listeners.OrdersGenerationFromProductsListeners"/>
             </component>
         </windowTab>
 

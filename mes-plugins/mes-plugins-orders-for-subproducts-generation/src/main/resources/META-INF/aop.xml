@@ -27,7 +27,7 @@
         "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
 <aspectj>
     <aspects>
-        <aspect name="com.qcadoo.mes.ordersForSubproductsGeneration.OrdersFromMOProductsGenerationServiceOverrideAspect"/>
+        <aspect name="com.qcadoo.mes.ordersForSubproductsGeneration.OrdersGenerationServiceOverrideAspect"/>
         <aspect name="com.qcadoo.mes.ordersForSubproductsGeneration.productionScheduling.aop.OperationDurationDetailsInOrderListenersOFSPGOverrideAspect"/>
     </aspects>
 </aspectj>

@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 @Aspect
 @Configurable
 @RunIfEnabled(OrdersForSubproductsGenerationConstans.PLUGIN_IDENTIFIER)
-public class OrdersFromMOProductsGenerationServiceOverrideAspect {
+public class OrdersGenerationServiceOverrideAspect {
 
     public static final String PARAMETER_AUTOMATICALLY_GENERATE_ORDERS_FOR_COMPONENTS = "automaticallyGenerateOrdersForComponents";
 
@@ -40,7 +40,7 @@ public class OrdersFromMOProductsGenerationServiceOverrideAspect {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    @Pointcut("execution(public void com.qcadoo.mes.masterOrders.OrdersFromMOProductsGenerationService.generateSubOrders(..)) "
+    @Pointcut("execution(public void com.qcadoo.mes.masterOrders.OrdersGenerationService.generateSubOrders(..)) "
             + "&& args(result, order)")
     public void generateSubOrders(GenerationOrderResult result, Entity order) {
 
