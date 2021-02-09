@@ -653,20 +653,20 @@
                                defaultEnabled="false">
                         <script>
                             <![CDATA[
-											var fillPrices = #{window}.getRibbonItem("prices.fillPrices");
+                                var fillPrices = #{window}.getRibbonItem("prices.fillPrices");
 
-                                                var listener = {
-                                                    onChange: function(selectedEntitiesArray) {
-                                                        if(selectedEntitiesArray.length > 0) {
-                                                            fillPrices.enable("#{translate(deliveries.deliveryDetails.window.ribbon.prices.fillPrices)}");
-                                                        } else {
-                                                            fillPrices.disable("#{translate(deliveries.deliveryDetails.window.ribbon.prices.fillPrices)}");
-                                                        }
-                                                    }
-                                                }
-                                                this.addOnChangeListener(listener);
-
-										]]>
+                                var listener = {
+                                    onChange: function(selectedEntitiesArray) {
+                                        var state = #{state}.getValue().content.value;
+                                        if(state != "06received" && state != "04declined" && state != "07receiveConfirmWaiting" && selectedEntitiesArray.length > 0) {
+                                            fillPrices.enable("#{translate(deliveries.deliveryDetails.window.ribbon.prices.fillPrices)}");
+                                        } else {
+                                            fillPrices.disable("#{translate(deliveries.deliveryDetails.window.ribbon.prices.fillPrices)}");
+                                        }
+                                    }
+                                }
+                                this.addOnChangeListener(listener);
+                            ]]>
                         </script>
                         <option type="column" name="succession" fields="succession"
                                 width="30"/>
@@ -726,6 +726,7 @@
                         <option type="fullscreen" value="true"/>
                         <option type="multiselect" value="true"/>
                         <option type="fixedHeight" value="true"/>
+                        <option type="selectableWhenDisabled" value="true"/>
 
                         <rowStyleResolver
                                 class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
