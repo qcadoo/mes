@@ -200,7 +200,7 @@
         <menu:menu-item name="salesPlansList" category="orders"
                         view="salesPlansList" defaultAuthorizationRole="ROLE_PLANNING"/>
 
-        <menu:menu-item name="salesPlanMaterialRequirementsList" category="orders"
+        <menu:menu-item name="salesPlanMaterialRequirementsList" category="requirements"
                         view="salesPlanMaterialRequirementsList" defaultAuthorizationRole="ROLE_PLANNING"/>
 
         <view:view resource="view/masterOrdersList.xml"/>
