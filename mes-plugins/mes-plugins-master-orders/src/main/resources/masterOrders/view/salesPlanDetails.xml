@@ -41,7 +41,12 @@
                            state="enabled" action="#{form}.fireEvent(getOrderedQuantities);">
                 </bigButton>
                 <bigButton name="showOrderedProductsForFamily" icon="genealogyIcon24.png"
-                           state="disabled" action="#{form}.fireEvent(showOrderedProductsForFamily);">
+                           state="enabled" action="#{form}.fireEvent(showOrderedProductsForFamily);">
+                </bigButton>
+            </group>
+            <group name="orders">
+                <bigButton name="createOrderGroup" icon="generateIcon24.png"
+                           state="enabled" action="#{form}.fireEvent(createOrderGroup);">
                 </bigButton>
             </group>
             <group name="salesPlanMaterialRequirement">
@@ -91,6 +96,8 @@
                 <listener event="showOrderedProductsForFamily" method="showOrderedProductsForFamily"
                           class="com.qcadoo.mes.masterOrders.listeners.SalesPlanDetailsListeners"/>
                 <listener event="createSalesPlanMaterialRequirement" method="createSalesPlanMaterialRequirement"
+                          class="com.qcadoo.mes.masterOrders.listeners.SalesPlanDetailsListeners"/>
+                <listener event="createOrderGroup" method="createOrderGroup"
                           class="com.qcadoo.mes.masterOrders.listeners.SalesPlanDetailsListeners"/>
             </component>
         </windowTab>

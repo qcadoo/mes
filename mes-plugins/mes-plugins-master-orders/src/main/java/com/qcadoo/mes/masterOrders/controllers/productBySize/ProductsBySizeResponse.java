@@ -1,4 +1,4 @@
-package com.qcadoo.mes.masterOrders.controllers;
+package com.qcadoo.mes.masterOrders.controllers.productBySize;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;

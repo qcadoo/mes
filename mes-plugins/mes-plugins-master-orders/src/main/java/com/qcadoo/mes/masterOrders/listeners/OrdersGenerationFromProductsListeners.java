@@ -217,7 +217,7 @@ public class OrdersGenerationFromProductsListeners {
         ordersGenerationHelper.addError(dd.getField(DATE_TO), "orders.validate.global.error.datesOrder");
         return false;
     }
-    
+
 
     @Transactional
     private Entity createOrder(Entity parameters, final Entity product, final BigDecimal plannedQuantity, final Date dateFrom,
