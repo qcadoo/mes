@@ -27,6 +27,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
@@ -37,8 +38,10 @@ import com.qcadoo.mes.materialRequirements.print.WarehouseDateKey;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.xls.XlsDocumentService;
 import com.qcadoo.report.api.xls.XlsHelper;
 
@@ -48,7 +51,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -81,6 +83,9 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
 
     @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     @Override
     protected void addHeader(final HSSFSheet sheet, final Locale locale, final Entity materialRequirement) {
@@ -249,15 +254,17 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
 
         Map<Long, BigDecimal> neededProductQuantities = basicProductionCountingService.getNeededProductQuantities(orders,
                 algorithm);
+        List<Entity> products = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).find()
+                .add(SearchRestrictions.in("id", neededProductQuantities.keySet())).list().getEntities();
+        products.sort(Comparator.comparing(p -> p.getStringField(ProductFields.NUMBER)));
 
-        for (Entry<Long, BigDecimal> neededProductQuantity : neededProductQuantities.entrySet()) {
-            Entity product = productQuantitiesService.getProduct(neededProductQuantity.getKey());
-
+        for (Entity product : products) {
             HSSFRow row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(product.getStringField(ProductFields.NUMBER));
             row.createCell(1).setCellValue(product.getStringField(ProductFields.NAME));
             row.createCell(2).setCellValue(
-                    numberService.setScaleWithDefaultMathContext(neededProductQuantity.getValue()).doubleValue());
+                    numberService.setScaleWithDefaultMathContext(neededProductQuantities.get(product.getId()))
+                    .doubleValue());
             String unit = product.getStringField(ProductFields.UNIT);
             if (unit == null) {
                 row.createCell(3).setCellValue("");
