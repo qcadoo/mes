@@ -37,15 +37,15 @@
 
         <windowTab name="mainTab">
             <component type="form" name="orderPack" reference="form">
-                <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="5">
-                    <layoutElement column="1" row="1">
+                <component type="gridLayout" name="gridLayout" columns="5"
+                           rows="5" hasBorders="false">
+                    <layoutElement column="1" row="1" width="2">
                         <component type="input" name="number" reference="number"
                                    field="number" defaultEnabled="never">
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="2">
+                    <layoutElement column="1" row="2" width="2">
                         <component type="lookup" name="order" field="order"
                                    reference="order" defaultEnabled="never">
                             <option type="column" name="name" fields="name" link="true" />
@@ -60,65 +60,44 @@
                             <option type="fieldCode" value="number" />
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="3">
-                        <component type="gridLayout" name="orderQuantityGrid"
-                                   columns="7" rows="1" hasBorders="false">
-                            <layoutElement column="1" width="6" row="1">
-                                <component type="input" name="orderQuantity"
-                                           reference="orderQuantity" defaultEnabled="never">
-                                    <option type="labelWidth" value="55"/>
-                                    <option type="alignment" value="right"/>
-                                </component>
-                            </layoutElement>
-                            <layoutElement column="7" row="1">
-                                <component type="input" name="orderQuantityUnit" reference="orderQuantityUnit"
-                                           defaultEnabled="never">
-                                    <option type="alignment" value="right"/>
-                                    <option type="textRepresentationOnDisabled" value="true"/>
-                                </component>
-                            </layoutElement>
+                    <layoutElement column="1" row="3" width="2">
+                        <component type="input" name="orderQuantity"
+                                   reference="orderQuantity" defaultEnabled="never">
+                            <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="4">
-                        <component type="gridLayout" name="sumQuantityOrderPacksGrid"
-                                   columns="7" rows="1" hasBorders="false">
-                            <layoutElement column="1" width="6" row="1">
-                                <component type="input" name="sumQuantityOrderPacks"
-                                           reference="sumQuantityOrderPacks" defaultEnabled="never">
-                                    <option type="labelWidth" value="55"/>
-                                    <option type="alignment" value="right"/>
-                                </component>
-                            </layoutElement>
-                            <layoutElement column="7" row="1">
-                                <component type="input" name="sumQuantityOrderPacksUnit" reference="sumQuantityOrderPacksUnit"
-                                           defaultEnabled="never">
-                                    <option type="alignment" value="right"/>
-                                    <option type="textRepresentationOnDisabled" value="true"/>
-                                </component>
-                            </layoutElement>
+                    <layoutElement column="3" row="3">
+                        <component type="input" name="orderQuantityUnit" reference="orderQuantityUnit"
+                                   defaultEnabled="never" hasLabel="false">
+                            <option type="textRepresentationOnDisabled" value="true"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="5">
-                        <component type="gridLayout" name="quantity"
-                                   columns="7" rows="1" hasBorders="false">
-                            <layoutElement column="1" width="6" row="1">
-                                <component type="input" name="quantity"
-                                           reference="quantity" field="quantity">
-                                    <option type="labelWidth" value="55"/>
-                                    <option type="alignment" value="right"/>
+                    <layoutElement column="1" row="4" width="2">
+                        <component type="input" name="sumQuantityOrderPacks"
+                                   reference="sumQuantityOrderPacks" defaultEnabled="never">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="3" row="4">
+                        <component type="input" name="sumQuantityOrderPacksUnit" reference="sumQuantityOrderPacksUnit"
+                                   defaultEnabled="never" hasLabel="false">
+                            <option type="textRepresentationOnDisabled" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="5" width="2">
+                        <component type="input" name="quantity"
+                                   reference="quantity" field="quantity">
+                            <option type="alignment" value="right"/>
 
-                                    <listener event="onInputChange"
-                                              class="com.qcadoo.view.api.listeners.RerenderListener"
-                                              method="onChangeRerender"/>
-                                </component>
-                            </layoutElement>
-                            <layoutElement column="7" row="1">
-                                <component type="input" name="quantityUnit" reference="quantityUnit"
-                                           defaultEnabled="never">
-                                    <option type="alignment" value="right"/>
-                                    <option type="textRepresentationOnDisabled" value="true"/>
-                                </component>
-                            </layoutElement>
+                            <listener event="onInputChange"
+                                      class="com.qcadoo.view.api.listeners.RerenderListener"
+                                      method="onChangeRerender"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="3" row="5">
+                        <component type="input" name="quantityUnit" reference="quantityUnit"
+                                   defaultEnabled="never" hasLabel="false">
+                            <option type="textRepresentationOnDisabled" value="true"/>
                         </component>
                     </layoutElement>
                 </component>

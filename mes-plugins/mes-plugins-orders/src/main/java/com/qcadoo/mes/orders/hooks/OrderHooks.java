@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.localization.api.utils.DateUtils;
@@ -54,6 +44,15 @@ import com.qcadoo.model.api.*;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.utils.TimeConverterService;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Service
 public class OrderHooks {
@@ -62,6 +61,8 @@ public class OrderHooks {
 
     private static final List<String> sourceDateFields = Lists.newArrayList("sourceCorrectedDateFrom", "sourceCorrectedDateTo",
             "sourceStartDate", "sourceFinishDate");
+
+    public static final String ORDER_PACKS_VALIDATE_GLOBAL_ERROR_QUANTITY_ERROR = "orderPacks.validate.global.error.quantityError";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -355,9 +356,13 @@ public class OrderHooks {
     private boolean checkOrderPacksQuantity(final DataDefinition orderDD, final Entity order) {
         BigDecimal sumQuantityOrderPacks = orderPackService.getSumQuantityOrderPacksForOrder(order);
         if (order.getDecimalField(OrderFields.PLANNED_QUANTITY).compareTo(sumQuantityOrderPacks) < 0) {
-            order.addError(orderDD.getField(OrderFields.PLANNED_QUANTITY), "orderPacks.validate.global.error.quantityError");
+            order.addError(orderDD.getField(OrderFields.PLANNED_QUANTITY), ORDER_PACKS_VALIDATE_GLOBAL_ERROR_QUANTITY_ERROR);
             return false;
         }
+        return checkProductQuantities(orderDD, order, sumQuantityOrderPacks);
+    }
+
+    private boolean checkProductQuantities(DataDefinition orderDD, Entity order, BigDecimal sumQuantityOrderPacks) {
         if (order.getId() != null) {
             Entity orderFromDB = orderService.getOrder(order.getId());
             if (orderFromDB.getDecimalField(OrderFields.PLANNED_QUANTITY)
@@ -366,16 +371,16 @@ public class OrderHooks {
                         .convertNullToZero(order.getDecimalField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY))) != 0) {
                     if (order.getDecimalField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY).compareTo(sumQuantityOrderPacks) < 0) {
                         order.addError(orderDD.getField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY),
-                                "orderPacks.validate.global.error.quantityError");
+                                ORDER_PACKS_VALIDATE_GLOBAL_ERROR_QUANTITY_ERROR);
                         return false;
                     }
-                } else if (BigDecimal.ZERO.compareTo(BigDecimalUtils
-                        .convertNullToZero(order.getDecimalField(OrderFields.COMMISSIONED_PLANNED_QUANTITY))) != 0) {
-                    if (order.getDecimalField(OrderFields.COMMISSIONED_PLANNED_QUANTITY).compareTo(sumQuantityOrderPacks) < 0) {
-                        order.addError(orderDD.getField(OrderFields.COMMISSIONED_PLANNED_QUANTITY),
-                                "orderPacks.validate.global.error.quantityError");
-                        return false;
-                    }
+                } else if (BigDecimal.ZERO.compareTo(
+                        BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.COMMISSIONED_PLANNED_QUANTITY))) != 0
+                        && order.getDecimalField(OrderFields.COMMISSIONED_PLANNED_QUANTITY)
+                                .compareTo(sumQuantityOrderPacks) < 0) {
+                    order.addError(orderDD.getField(OrderFields.COMMISSIONED_PLANNED_QUANTITY),
+                            ORDER_PACKS_VALIDATE_GLOBAL_ERROR_QUANTITY_ERROR);
+                    return false;
                 }
             }
         }
