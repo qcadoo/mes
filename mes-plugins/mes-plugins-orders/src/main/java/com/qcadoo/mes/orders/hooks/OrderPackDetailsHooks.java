@@ -1,9 +1,12 @@
 package com.qcadoo.mes.orders.hooks;
 
+import com.google.common.base.Optional;
+import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.OrderPackService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderPackFields;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -11,8 +14,8 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -37,9 +40,10 @@ public class OrderPackDetailsHooks {
             FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
             BigDecimal sumQuantityOrderPacks = orderPackService.getSumQuantityOrderPacksForOrderWithoutPack(order,
                     form.getEntityId());
-            if (StringUtils.isNumeric((String) quantityField.getFieldValue())) {
-                sumQuantityOrderPacks = sumQuantityOrderPacks.add(new BigDecimal((String) quantityField.getFieldValue()),
-                        numberService.getMathContext());
+            Either<Exception, Optional<BigDecimal>> eitherNumber = BigDecimalUtils
+                    .tryParseAndIgnoreSeparator((String) quantityField.getFieldValue(), LocaleContextHolder.getLocale());
+            if (eitherNumber.isRight() && eitherNumber.getRight().isPresent()) {
+                sumQuantityOrderPacks = sumQuantityOrderPacks.add(eitherNumber.getRight().get(), numberService.getMathContext());
             }
             FieldComponent sumQuantityOrderPacksField = (FieldComponent) view.getComponentByReference("sumQuantityOrderPacks");
             sumQuantityOrderPacksField.setFieldValue(numberService.format(sumQuantityOrderPacks));
