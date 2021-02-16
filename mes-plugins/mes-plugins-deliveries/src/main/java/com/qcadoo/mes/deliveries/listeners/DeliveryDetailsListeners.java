@@ -185,6 +185,11 @@ public class DeliveryDetailsListeners {
                     DeliveryFields.SUPPLIER);
 
             if (Objects.isNull(supplier)) {
+                if (deliveryUseNominalCostWhenPriceNotSpecified) {
+                    orderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT,
+                            product.getDecimalField(ProductFieldsCNFP.NOMINAL_COST));
+                    orderedProduct.getDataDefinition().save(orderedProduct);
+                }
                 return;
             }
 
@@ -244,6 +249,9 @@ public class DeliveryDetailsListeners {
                 orderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT,
                         product.getDecimalField(ProductFieldsCNFP.NOMINAL_COST));
             } else {
+                if(Objects.isNull(lastPurchaseCost)) {
+                    orderedProduct.setField(OrderedProductFields.TOTAL_PRICE, null);
+                }
                 orderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT, lastPurchaseCost);
             }
 
