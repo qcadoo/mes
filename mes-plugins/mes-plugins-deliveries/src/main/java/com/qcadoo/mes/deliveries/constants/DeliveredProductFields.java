@@ -65,8 +65,6 @@ public final class DeliveredProductFields {
 
     public static final String RESERVATIONS = "reservations";
 
-    public static final String DELIVERED_PRODUCT_IDS = "deliveredProductIds";
-    
     public static final String VALIDATE_PALLET = "validatePallet";
 
     public static final String DAMAGED = "damaged";
