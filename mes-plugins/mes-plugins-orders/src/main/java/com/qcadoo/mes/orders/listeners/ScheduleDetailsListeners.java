@@ -18,6 +18,7 @@ import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.*;
+import com.qcadoo.plugin.api.PluginManager;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -44,6 +45,8 @@ public class ScheduleDetailsListeners {
 
     private static final String SCHEDULE_ID = "scheduleId";
 
+    private static final String ORDERS_FOR_SUBPRODUCTS_GENERATION = "ordersForSubproductsGeneration";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -55,6 +58,9 @@ public class ScheduleDetailsListeners {
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private PluginManager pluginManager;
 
     @Transactional
     public void assignOperationsToWorkstations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -101,11 +107,10 @@ public class ScheduleDetailsListeners {
     }
 
     private List<Entity> getWorkstationsFromTOC(Entity position) {
-        Entity technologyOperationComponent = position
-                .getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT);
+        Entity technologyOperationComponent = position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT);
         List<Entity> workstations;
-        if (AssignedToOperation.WORKSTATIONS.getStringValue().equals(
-                technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ASSIGNED_TO_OPERATION))) {
+        if (AssignedToOperation.WORKSTATIONS.getStringValue()
+                .equals(technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ASSIGNED_TO_OPERATION))) {
             workstations = technologyOperationComponent.getManyToManyField(TechnologyOperationComponentFields.WORKSTATIONS);
         } else {
             Entity workstationType = technologyOperationComponent
@@ -138,6 +143,10 @@ public class ScheduleDetailsListeners {
             List<Entity> children = getChildren(position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT),
                     position.getBelongsToField(SchedulePositionFields.ORDER),
                     position.getBelongsToField(SchedulePositionFields.SCHEDULE));
+            if (pluginManager.isPluginEnabled(ORDERS_FOR_SUBPRODUCTS_GENERATION)) {
+                children.addAll(getOrderChildren(position.getBelongsToField(SchedulePositionFields.ORDER),
+                        position.getBelongsToField(SchedulePositionFields.SCHEDULE)));
+            }
             for (Entity child : children) {
                 Date childEndTimeWithAdditionalTime = Date.from(child.getDateField(SchedulePositionFields.END_TIME).toInstant()
                         .plusSeconds(child.getIntegerField(SchedulePositionFields.ADDITIONAL_TIME)));
@@ -164,6 +173,16 @@ public class ScheduleDetailsListeners {
                 .add(SearchRestrictions.belongsTo("toc." + TechnologyOperationComponentFields.PARENT,
                         technologyOperationComponent))
                 .add(SearchRestrictions.belongsTo(SchedulePositionFields.ORDER, order))
+                .add(SearchRestrictions.belongsTo(SchedulePositionFields.SCHEDULE, schedule)).list().getEntities();
+    }
+
+    private List<Entity> getOrderChildren(Entity order, Entity schedule) {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).find()
+                .createAlias(SchedulePositionFields.ORDER, "o", JoinType.INNER)
+                .add(SearchRestrictions.belongsTo("o.parent", order))
+                .createAlias(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT, "toc", JoinType.INNER)
+                .add(SearchRestrictions.isNull("toc." + TechnologyOperationComponentFields.PARENT))
+                .add(SearchRestrictions.isNotNull(SchedulePositionFields.END_TIME))
                 .add(SearchRestrictions.belongsTo(SchedulePositionFields.SCHEDULE, schedule)).list().getEntities();
     }
 
@@ -194,7 +213,9 @@ public class ScheduleDetailsListeners {
         parameters.put(SCHEDULE_ID, scheduleId);
         StringBuilder query = new StringBuilder();
         query.append("SELECT sp.id FROM orders_scheduleposition sp JOIN technologies_technologyoperationcomponent toc ");
-        query.append("ON sp.technologyoperationcomponent_id = toc.id WHERE sp.schedule_id = :scheduleId ORDER BY ");
+        query.append("ON sp.technologyoperationcomponent_id = toc.id JOIN orders_order o ON sp.order_id = o.id ");
+        query.append("WHERE sp.schedule_id = :scheduleId ORDER BY ");
+        query.append("string_to_array(regexp_replace(SPLIT_PART(o.number, '-', 2), '[^0-9.]', '0', 'g'), '.')::int[] desc, ");
         query.append("string_to_array(regexp_replace(rtrim(toc.nodenumber, '.'), '[^0-9.]', '0', 'g'), '.')::int[] desc, ");
         if (ScheduleSortOrder.DESCENDING.getStringValue().equals(schedule.getStringField(ScheduleFields.SORT_ORDER))) {
             query.append("sp.machineworktime desc");
