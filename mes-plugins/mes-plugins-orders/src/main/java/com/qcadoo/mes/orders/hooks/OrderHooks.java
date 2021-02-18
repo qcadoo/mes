@@ -114,6 +114,7 @@ public class OrderHooks {
 
         boolean isValid = checkOrderDates(orderDD, order);
         isValid = isValid && checkOrderPlannedQuantity(orderDD, order);
+        isValid = isValid && checkProductQuantities(orderDD, order);
         isValid = isValid && productService.checkIfProductIsNotRemoved(orderDD, order);
         isValid = isValid && checkReasonOfStartDateCorrection(parameter, order);
         isValid = isValid && checkReasonOfEndDateCorrection(parameter, order);
@@ -353,31 +354,60 @@ public class OrderHooks {
         }
     }
 
+    private boolean checkProductQuantities(final DataDefinition orderDD, final Entity order) {
+        Entity product = order.getBelongsToField(OrderFields.PRODUCT);
+
+        if (product == null) {
+            return true;
+        }
+
+        BigDecimal commissionedPlannedQuantity = order.getDecimalField(OrderFields.COMMISSIONED_PLANNED_QUANTITY);
+
+        if (commissionedPlannedQuantity == null) {
+            order.addError(orderDD.getField(OrderFields.COMMISSIONED_PLANNED_QUANTITY),
+                    "qcadooView.validate.field.error.missing");
+
+            return false;
+        }
+        if (order.getId() != null) {
+            Entity orderFromDB = orderService.getOrder(order.getId());
+            BigDecimal commissionedCorrectedQuantity = order.getDecimalField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY);
+            String state = order.getStringField(OrderFields.STATE);
+            if ((OrderState.ACCEPTED.getStringValue().equals(state) || OrderState.IN_PROGRESS.getStringValue().equals(state)
+                    || OrderState.INTERRUPTED.getStringValue().equals(state))
+                    && orderFromDB.getDecimalField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY) != null
+                    && commissionedCorrectedQuantity == null) {
+                order.addError(orderDD.getField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY),
+                        "qcadooView.validate.field.error.missing");
+
+                return false;
+            }
+        }
+        return true;
+    }
+
     private boolean checkOrderPacksQuantity(final DataDefinition orderDD, final Entity order) {
         BigDecimal sumQuantityOrderPacks = orderPackService.getSumQuantityOrderPacksForOrder(order);
         if (order.getDecimalField(OrderFields.PLANNED_QUANTITY).compareTo(sumQuantityOrderPacks) < 0) {
             order.addError(orderDD.getField(OrderFields.PLANNED_QUANTITY), ORDER_PACKS_VALIDATE_GLOBAL_ERROR_QUANTITY_ERROR);
             return false;
         }
-        return checkProductQuantities(orderDD, order, sumQuantityOrderPacks);
+        return checkProductQuantitiesForOrderPacks(orderDD, order, sumQuantityOrderPacks);
     }
 
-    private boolean checkProductQuantities(DataDefinition orderDD, Entity order, BigDecimal sumQuantityOrderPacks) {
+    private boolean checkProductQuantitiesForOrderPacks(DataDefinition orderDD, Entity order, BigDecimal sumQuantityOrderPacks) {
         if (order.getId() != null) {
             Entity orderFromDB = orderService.getOrder(order.getId());
             if (orderFromDB.getDecimalField(OrderFields.PLANNED_QUANTITY)
                     .compareTo(order.getDecimalField(OrderFields.PLANNED_QUANTITY)) == 0) {
-                if (BigDecimal.ZERO.compareTo(BigDecimalUtils
-                        .convertNullToZero(order.getDecimalField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY))) != 0) {
+                if (order.getDecimalField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY) != null) {
                     if (order.getDecimalField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY).compareTo(sumQuantityOrderPacks) < 0) {
                         order.addError(orderDD.getField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY),
                                 ORDER_PACKS_VALIDATE_GLOBAL_ERROR_QUANTITY_ERROR);
                         return false;
                     }
-                } else if (BigDecimal.ZERO.compareTo(
-                        BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.COMMISSIONED_PLANNED_QUANTITY))) != 0
-                        && order.getDecimalField(OrderFields.COMMISSIONED_PLANNED_QUANTITY)
-                                .compareTo(sumQuantityOrderPacks) < 0) {
+                } else if (order.getDecimalField(OrderFields.COMMISSIONED_PLANNED_QUANTITY) != null && order
+                        .getDecimalField(OrderFields.COMMISSIONED_PLANNED_QUANTITY).compareTo(sumQuantityOrderPacks) < 0) {
                     order.addError(orderDD.getField(OrderFields.COMMISSIONED_PLANNED_QUANTITY),
                             ORDER_PACKS_VALIDATE_GLOBAL_ERROR_QUANTITY_ERROR);
                     return false;
@@ -623,7 +653,7 @@ public class OrderHooks {
             }
         } else {
             Entity product = order.getBelongsToField(OrderFields.PRODUCT);
-            if (BigDecimal.ZERO.compareTo(BigDecimalUtils.convertNullToZero(commissionedCorrectedQuantity)) != 0) {
+            if (commissionedCorrectedQuantity != null) {
                 order.setField(OrderFields.PLANNED_QUANTITY,
                         numberService.setScaleWithDefaultMathContext(commissionedCorrectedQuantity));
                 order.setField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT,
@@ -631,7 +661,7 @@ public class OrderHooks {
                                 additionalUnitService.getAdditionalUnit(product),
                                 numberService.setScaleWithDefaultMathContext(commissionedCorrectedQuantity),
                                 product.getStringField(ProductFields.UNIT))));
-            } else if (BigDecimal.ZERO.compareTo(BigDecimalUtils.convertNullToZero(commissionedPlannedQuantity)) != 0) {
+            } else if (commissionedPlannedQuantity != null) {
                 order.setField(OrderFields.PLANNED_QUANTITY,
                         numberService.setScaleWithDefaultMathContext(commissionedPlannedQuantity));
                 order.setField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT,

@@ -622,7 +622,7 @@ public class OrderDetailsHooks {
                 BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
                 numberService.getMathContext());
 
-        if (BigDecimal.ZERO.compareTo(remainingAmountOfProductToProduce) == 1) {
+        if (BigDecimal.ZERO.compareTo(remainingAmountOfProductToProduce) > 0) {
             remainingAmountOfProductToProduce = BigDecimal.ZERO;
         }
         remaingingAmoutOfProductToProduceField.setFieldValue(numberService.formatWithMinimumFractionDigits(
@@ -632,8 +632,13 @@ public class OrderDetailsHooks {
 
         BigDecimal doneInPercentageQuantity = BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.DONE_QUANTITY))
                 .multiply(new BigDecimal(100));
-        doneInPercentageQuantity = doneInPercentageQuantity.divide(order.getDecimalField(OrderFields.PLANNED_QUANTITY),
-                MathContext.DECIMAL64);
+        if (BigDecimal.ZERO
+                .compareTo(BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.PLANNED_QUANTITY))) == 0) {
+            doneInPercentageQuantity = BigDecimal.ZERO;
+        } else {
+            doneInPercentageQuantity = doneInPercentageQuantity.divide(order.getDecimalField(OrderFields.PLANNED_QUANTITY),
+                    MathContext.DECIMAL64);
+        }
         doneInPercentage.setFieldValue(numberService.formatWithMinimumFractionDigits(
                 doneInPercentageQuantity.setScale(0, RoundingMode.CEILING), 0));
         doneInPercentage.setEnabled(false);
