@@ -192,13 +192,15 @@ public class TechnologyDetailsListeners {
         CheckBoxComponent isTemplateAcceptedCheckBox = (CheckBoxComponent) view
                 .getComponentByReference(TechnologyFields.IS_TEMPLATE_ACCEPTED);
 
-        Entity technology = technologyForm.getPersistedEntityWithIncludedFormValues();
+        Entity technology = technologyForm.getEntity();
 
         Long technologyId = technology.getId();
 
         boolean isTemplateAccepted = isTemplateAcceptedCheckBox.isChecked();
 
         if (Objects.nonNull(technologyId)) {
+            technology = technology.getDataDefinition().save(technology);
+
             if (isTemplateAccepted || validateTemplate(technologyForm, technology.getDataDefinition().get(technologyId))) {
                 isTemplateAcceptedCheckBox.setChecked(!isTemplateAccepted);
 
