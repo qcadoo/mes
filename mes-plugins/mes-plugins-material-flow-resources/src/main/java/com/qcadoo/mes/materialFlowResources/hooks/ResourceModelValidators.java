@@ -23,7 +23,7 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
-import com.qcadoo.mes.advancedGenealogy.constants.ProductFieldsAG;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.PalletValidatorService;
 import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
@@ -95,7 +95,7 @@ public class ResourceModelValidators {
         Entity batch = resource.getBelongsToField(ResourceFields.BATCH);
 
         if (Objects.nonNull(product)) {
-            boolean batchEvidence = product.getBooleanField(ProductFieldsAG.BATCH_EVIDENCE);
+            boolean batchEvidence = product.getBooleanField(ProductFields.BATCH_EVIDENCE);
 
             if (batchEvidence && Objects.isNull(batch)) {
                 resource.addError(resourceDD.getField(ResourceFields.BATCH), "materialFlow.error.position.batch.required");
