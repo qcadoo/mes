@@ -110,7 +110,7 @@
             </div>
         </c:if>
         <div class="clear"></div>
-        <c:if test="${whatToShowOnDashboard != null}">
+        <c:if test="${showKanbanOnDashboard && whatToShowOnDashboard != null}">
             <c:choose>
                 <c:when test="${whatToShowOnDashboard == '01orders'}">
                     <div id="dashboardKanban">
