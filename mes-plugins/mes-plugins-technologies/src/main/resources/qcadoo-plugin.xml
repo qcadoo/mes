@@ -249,9 +249,12 @@
             <model:boolean name="allowCheckedTechnologyWithoutInProducts" default="false"/>
         </model:model-field>
 
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="acceptedTechnologyMarkedAsDefault" default="false"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="product">
-            <model:manyToMany name="qualityCards" plugin="technologies" model="qualityCard" joinField="products"
-                              cascade="nullify"/>
+            <model:manyToMany name="qualityCards" plugin="technologies" model="qualityCard" joinField="products"/>
         </model:model-field>
 
         <model:model-hook model="division" plugin="basic">
