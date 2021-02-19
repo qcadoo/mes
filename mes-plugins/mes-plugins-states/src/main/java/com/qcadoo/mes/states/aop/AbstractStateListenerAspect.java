@@ -40,7 +40,7 @@ public abstract class AbstractStateListenerAspect {
 
     protected static final String PHASE_EXECUTION_POINTCUT = "phaseExecution(stateChangeContext, phase)";
 
-    protected static final String CHANGE_STATE_EXECUTION_POINTCUT = "phaseExecution(stateChangeContext)";
+    protected static final String CHANGE_STATE_EXECUTION_POINTCUT = "changeStateExecution(stateChangeContext)";
 
     /**
      * Pointcut for execution state change phase
