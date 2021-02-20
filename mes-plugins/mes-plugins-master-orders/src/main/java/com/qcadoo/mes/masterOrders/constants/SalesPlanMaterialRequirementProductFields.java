@@ -39,7 +39,7 @@ public final class SalesPlanMaterialRequirementProductFields {
 
     public static final String SUM_FOR_SIZES = "sumForSizes";
 
-    public static final String CURRENT_STOCK_LEVEL = "currentStockLevel";
+    public static final String CURRENT_STOCK = "currentStock";
 
     public static final String NEEDED_QUANTITY = "neededQuantity";
 

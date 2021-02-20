@@ -38,17 +38,17 @@
         </decimal>
         <belongsTo name="sizeGroup" plugin="basic" model="sizeGroup"/>
         <decimal name="sumForSizes">
-            <validatesRange from="0" exclusively="true"/>
+            <validatesRange from="0"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
         <decimal name="currentStock">
-            <validatesRange from="0" exclusively="true"/>
+            <validatesRange from="0"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
         <decimal name="neededQuantity">
-            <validatesRange from="0" exclusively="true"/>
+            <validatesRange from="0"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>

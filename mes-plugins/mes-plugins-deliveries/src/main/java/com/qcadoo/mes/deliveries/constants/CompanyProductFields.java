@@ -35,4 +35,6 @@ public final class CompanyProductFields {
 
     public static final String PRODUCT = "product";
 
+    public static final String MINIMUM_ORDER_QUANTITY = "minimumOrderQuantity";
+
 }
