@@ -38,6 +38,12 @@ public class GenerationOrderResult {
 
     private List<String> productsWithoutAcceptedTechnologies = Lists.newArrayList();
 
+    private List<String> productOrderSimpleErrors = Lists.newArrayList();
+
+    public void addProductOrderSimpleError(String prod) {
+        productOrderSimpleErrors.add(prod);
+    }
+
     public void addNotGeneratedProductError(MasterOrderProductErrorContainer err) {
         productOrderErrors.add(err);
     }
@@ -104,6 +110,11 @@ public class GenerationOrderResult {
         if (!generatedOrderNumbers.isEmpty()) {
             view.addMessage("masterOrders.masterOrder.generationOrder.generatedOrderNumbers", ComponentState.MessageType.INFO,
                     false, String.join(", ", generatedOrderNumbers));
+        }
+
+        if (!productOrderSimpleErrors.isEmpty()) {
+            view.addMessage("masterOrders.masterOrder.generationOrder.productOrderSimpleError", ComponentState.MessageType.INFO,
+                    false, String.join(", ", productOrderSimpleErrors));
         }
 
         if (!productOrderErrors.isEmpty()) {

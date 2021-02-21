@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveriesService;
@@ -24,6 +23,7 @@ import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementFields;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementProductFields;
+import com.qcadoo.mes.masterOrders.helper.SalesPlanMaterialRequirementHelper;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -55,19 +55,19 @@ public class SalesPlanMaterialRequirementDetailsListeners {
     private SecurityService securityService;
 
     @Autowired
-    private NumberGeneratorService numberGeneratorService;
+    private NumberService numberService;
 
     @Autowired
-    private NumberService numberService;
+    private NumberGeneratorService numberGeneratorService;
 
     @Autowired
     private UnitConversionService unitConversionService;
 
     @Autowired
-    private ParameterService parameterService;
+    private DeliveriesService deliveriesService;
 
     @Autowired
-    private DeliveriesService deliveriesService;
+    private SalesPlanMaterialRequirementHelper salesPlanMaterialRequirementHelper;
 
     public void generateSalesPlanMaterialRequirement(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
@@ -88,8 +88,8 @@ public class SalesPlanMaterialRequirementDetailsListeners {
 
             Entity salesPlanMaterialRequirement = salesPlanMaterialRequirementForm.getEntity();
 
-            List<Entity> salesPlanMaterialRequirementProducts = generateSalesPlanMaterialRequirementProducts(
-                    salesPlanMaterialRequirement);
+            List<Entity> salesPlanMaterialRequirementProducts = salesPlanMaterialRequirementHelper
+                    .generateSalesPlanMaterialRequirementProducts(salesPlanMaterialRequirement);
 
             salesPlanMaterialRequirement.setField(SalesPlanMaterialRequirementFields.SALES_PLAN_MATERIAL_REQUIREMENT_PRODUCTS,
                     salesPlanMaterialRequirementProducts);
@@ -115,10 +115,6 @@ public class SalesPlanMaterialRequirementDetailsListeners {
         }
 
         return isValid;
-    }
-
-    private List<Entity> generateSalesPlanMaterialRequirementProducts(final Entity salesPlanMaterialRequirement) {
-        return Lists.newArrayList();
     }
 
     public void createDelivery(final ViewDefinitionState view, final ComponentState state, final String[] args) {

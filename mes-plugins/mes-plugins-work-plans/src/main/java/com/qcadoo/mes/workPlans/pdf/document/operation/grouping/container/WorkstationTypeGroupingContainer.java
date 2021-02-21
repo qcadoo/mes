@@ -23,16 +23,17 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container;
 
-import java.util.Map;
-import java.util.Objects;
-
 import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
+import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.holder.OrderOperationComponent;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationProductColumn;
 import com.qcadoo.mes.workPlans.pdf.document.order.column.OrderColumn;
 import com.qcadoo.model.api.Entity;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 public class WorkstationTypeGroupingContainer extends AbstractGroupingContainer {
 
@@ -48,14 +49,18 @@ public class WorkstationTypeGroupingContainer extends AbstractGroupingContainer 
     }
 
     @Override
-    public void add(final Entity order, final Entity operationComponent,
-            final OperationProductComponentWithQuantityContainer productQuantities) {
-        Entity workstationType = workstationType(operationComponent);
+    public void add(Entity order, Entity operationComponent, List<Entity> productionCountingQuantitiesIn,
+            List<Entity> productionCountingQuantitiesOut) {
+    }
+
+    @Override
+    public void add(final OrderOperationComponent orderOperationComponent) {
+        Entity workstationType = workstationType(orderOperationComponent.getOperationComponent());
 
         if (Objects.isNull(workstationType)) {
-            store(nullWorkstationTitle, order, operationComponent);
+            store(nullWorkstationTitle, orderOperationComponent);
         } else {
-            store(title(workstationType), order, operationComponent);
+            store(title(workstationType), orderOperationComponent);
         }
     }
 

@@ -32,10 +32,10 @@
         <string name="name" required="true" unique="true">
             <validatesLength max="1024"/>
         </string>
-        <belongsTo name="assortment" plugin="basic" model="assortment"/>
-        <belongsTo name="forms" plugin="basic" model="forms"/>
+        <belongsTo name="assortment" model="assortment"/>
+        <belongsTo name="forms" model="forms"/>
         <dictionary name="typeOfProduct" dictionary="typeOfProducts"/>
-        <belongsTo name="label" plugin="basic" model="label"/>
+        <belongsTo name="label" model="label"/>
 
         <hasMany name="products" model="product" joinField="model"/>
     </fields>

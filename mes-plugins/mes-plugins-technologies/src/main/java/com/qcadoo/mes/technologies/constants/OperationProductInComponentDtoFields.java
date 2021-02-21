@@ -71,4 +71,6 @@ public final class OperationProductInComponentDtoFields {
 
     public static final String TECHNOLOGY_INPUT_PRODUCT_TYPE_NAME = "technologyInputProductTypeName";
 
+    public static final String DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES = "differentProductsInDifferentSizes";
+
 }

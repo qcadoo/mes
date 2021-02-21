@@ -59,8 +59,6 @@ public final class ParameterFieldsWP {
 
     public static final String GENERATE_EACH_ON_SEPARATE_PAGE = "generateEachOnSeparatePage";
 
-    public static final String ENABLE_OPERATION_GROUPING = "enableOperationGroupingWorkPlan";
-
     public static final String HIDE_ORDERED_PRODUCT_WORK_PLAN = "hideOrderedProductWorkPlan";
 
 }

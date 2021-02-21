@@ -46,6 +46,8 @@ public final class GeneratorTreeNodeFields {
 
     public static final String TECHNOLOGY_INPUT_PRODUCT_TYPE = "technologyInputProductType";
 
+    public static final String DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES = "differentProductsInDifferentSizes";
+
     public static final String OPERATION = "operation";
 
     public static final String PRODUCT_TECHNOLOGY = "productTechnology";
@@ -60,4 +62,5 @@ public final class GeneratorTreeNodeFields {
 
     public static final String UNIT = "unit";
 
+    public static final String SIZE_GROUP = "sizeGroup";
 }

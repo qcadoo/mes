@@ -4758,7 +4758,8 @@ CREATE TABLE materialflow_location (
     entityversion bigint DEFAULT 0,
     warehousenumberinoptima character varying(255),
     draftmakesreservation boolean DEFAULT false,
-    realizationlocation_id bigint
+    realizationlocation_id bigint,
+    directionconvertingquantityafterchangingconverter character varying(255) DEFAULT '01fromBasicToAdditional'::character varying
 );
 
 
@@ -9439,7 +9440,6 @@ CREATE TABLE basic_parameter (
     includeunacceptableproduction boolean DEFAULT false,
     calculateamounttimeemployeesonacceptancerecord boolean DEFAULT false,
     notshowtasksdownloadedbyanotheremployee boolean DEFAULT false,
-    enableoperationgroupingworkplan boolean DEFAULT false,
     createcollectiveorders boolean DEFAULT false,
     completemasterorderafterorderingpositions boolean DEFAULT false,
     hideorderedproductworkplan boolean DEFAULT false,
@@ -9493,7 +9493,11 @@ CREATE TABLE basic_parameter (
     optimalpacksize numeric(12,5),
     restfeedinglastpack numeric(12,5),
     deliveryusenominalcostwhenpricenotspecified boolean DEFAULT false,
-    deliverypricefillbasedon character varying(255) DEFAULT '01lastPurchasePrice'::character varying
+    deliverypricefillbasedon character varying(255) DEFAULT '01lastPurchasePrice'::character varying,
+    allowcheckedtechnologywithoutinproducts boolean DEFAULT false,
+    requireassortment boolean DEFAULT false,
+    changeorderdatesbasedonchangegroupdates boolean DEFAULT false,
+    acceptedtechnologymarkedasdefault boolean DEFAULT false
 );
 
 
@@ -10342,7 +10346,8 @@ CREATE TABLE basicproductioncounting_productioncountingquantity (
     productionflow character varying(255),
     productsflowlocation_id bigint,
     entityversion bigint DEFAULT 0,
-    replacementto_id bigint
+    replacementto_id bigint,
+    showmaterialcomponentinworkplan boolean DEFAULT false
 );
 
 
@@ -10686,6 +10691,7 @@ CREATE VIEW basicproductioncounting_usedquantity_helper AS
 CREATE VIEW basicproductioncounting_productioncountingquantitydto AS
  SELECT pcq.id,
     (pcq.order_id)::integer AS orderid,
+    (product.id)::integer AS productid,
     product.number AS productnumber,
     product.name AS productname,
     product.unit AS productunit,
@@ -10709,6 +10715,7 @@ CREATE VIEW basicproductioncounting_productioncountingquantitydto AS
 UNION
  SELECT pcq.id,
     (pcq.order_id)::integer AS orderid,
+    (product.id)::integer AS productid,
     product.number AS productnumber,
     product.name AS productname,
     product.unit AS productunit,
@@ -16249,6 +16256,37 @@ ALTER SEQUENCE masterorders_masterorderproduct_id_seq OWNED BY masterorders_mast
 
 
 --
+-- Name: masterorders_ordersgenerationhelper; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE masterorders_ordersgenerationhelper (
+    id bigint NOT NULL,
+    plannedquantity numeric(12,5),
+    datefrom timestamp without time zone,
+    dateto timestamp without time zone
+);
+
+
+--
+-- Name: masterorders_ordersgenerationhelper_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE masterorders_ordersgenerationhelper_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: masterorders_ordersgenerationhelper_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE masterorders_ordersgenerationhelper_id_seq OWNED BY masterorders_ordersgenerationhelper.id;
+
+
+--
 -- Name: masterorders_productsbysizeentryhelper; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -16412,6 +16450,69 @@ CREATE SEQUENCE masterorders_salesplanmaterialrequirementproduct_id_seq
 --
 
 ALTER SEQUENCE masterorders_salesplanmaterialrequirementproduct_id_seq OWNED BY masterorders_salesplanmaterialrequirementproduct.id;
+
+
+--
+-- Name: masterorders_salesplanordersgroupentryhelper; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE masterorders_salesplanordersgroupentryhelper (
+    id bigint NOT NULL,
+    salesplanordersgrouphelper_id bigint,
+    productfamily_id bigint,
+    product_id bigint,
+    plannedquantity numeric(12,5),
+    orderedquantity numeric(12,5),
+    orderquantity numeric(12,5)
+);
+
+
+--
+-- Name: masterorders_salesplanordersgroupentryhelper_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE masterorders_salesplanordersgroupentryhelper_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: masterorders_salesplanordersgroupentryhelper_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE masterorders_salesplanordersgroupentryhelper_id_seq OWNED BY masterorders_salesplanordersgroupentryhelper.id;
+
+
+--
+-- Name: masterorders_salesplanordersgrouphelper; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE masterorders_salesplanordersgrouphelper (
+    id bigint NOT NULL,
+    salesplan_id bigint
+);
+
+
+--
+-- Name: masterorders_salesplanordersgrouphelper_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE masterorders_salesplanordersgrouphelper_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: masterorders_salesplanordersgrouphelper_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE masterorders_salesplanordersgrouphelper_id_seq OWNED BY masterorders_salesplanordersgrouphelper.id;
 
 
 --
@@ -19205,7 +19306,9 @@ CREATE TABLE ordersgroups_ordersgroup (
     active boolean DEFAULT true,
     masterorder_id bigint,
     parent_id bigint,
-    remainingquantityinorders numeric
+    remainingquantityinorders numeric,
+    description character varying(2048),
+    salesplan_id bigint
 );
 
 
@@ -19416,37 +19519,6 @@ CREATE SEQUENCE orders_orderplanninglistdto_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-
-
---
--- Name: orders_ordersgenerationhelper; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE orders_ordersgenerationhelper (
-    id bigint NOT NULL,
-    plannedquantity numeric(12,5),
-    datefrom timestamp without time zone,
-    dateto timestamp without time zone
-);
-
-
---
--- Name: orders_ordersgenerationhelper_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE orders_ordersgenerationhelper_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: orders_ordersgenerationhelper_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE orders_ordersgenerationhelper_id_seq OWNED BY orders_ordersgenerationhelper.id;
 
 
 --
@@ -20060,9 +20132,9 @@ CREATE VIEW ordersgroups_ordersgroupdto AS
     p.performancenorm,
     (masterorder.deadline)::date AS clientdate
    FROM (((((((ordersgroups_ordersgroup ordersgroup
-     JOIN basic_assortment assortment ON ((ordersgroup.assortment_id = assortment.id)))
-     JOIN productionlines_productionline productionline ON ((ordersgroup.productionline_id = productionline.id)))
-     JOIN masterorders_masterorder masterorder ON ((ordersgroup.masterorder_id = masterorder.id)))
+     LEFT JOIN basic_assortment assortment ON ((ordersgroup.assortment_id = assortment.id)))
+     LEFT JOIN productionlines_productionline productionline ON ((ordersgroup.productionline_id = productionline.id)))
+     LEFT JOIN masterorders_masterorder masterorder ON ((ordersgroup.masterorder_id = masterorder.id)))
      LEFT JOIN basic_company company ON ((company.id = masterorder.company_id)))
      LEFT JOIN ordersgroups_drafrptquantitydto drafrptquantity ON ((ordersgroup.id = drafrptquantity.id)))
      LEFT JOIN technology_group_numbers tgn ON ((tgn.ordersgroup_id = ordersgroup.id)))
@@ -25713,7 +25785,8 @@ CREATE TABLE technologies_operationproductincomponentdto (
     technologytype character varying(255),
     hasacceptedtechnology boolean,
     hascheckedtechnology boolean,
-    technologyinputproducttypename character varying(255)
+    technologyinputproducttypename character varying(255),
+    differentproductsindifferentsizes boolean
 );
 
 ALTER TABLE ONLY technologies_operationproductincomponentdto REPLICA IDENTITY NOTHING;
@@ -25881,7 +25954,9 @@ CREATE TABLE technologies_productstructuretreenode (
     division_id bigint,
     entitytype character varying(255) DEFAULT 'material'::character varying,
     unit character varying(255),
-    technologyinputproducttype_id bigint
+    technologyinputproducttype_id bigint,
+    differentproductsindifferentsizes boolean DEFAULT false,
+    sizegroup_id bigint
 );
 
 
@@ -26288,76 +26363,6 @@ CREATE SEQUENCE technologies_technologyoperationcomponentdto_id_seq
 
 
 --
--- Name: technologies_technologyoperationcomponentmergeproductin; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE technologies_technologyoperationcomponentmergeproductin (
-    id bigint NOT NULL,
-    operationcomponent_id bigint,
-    mergedoperationcomponent_id bigint,
-    mergedoperationproductcomponent_id bigint,
-    quantitychange numeric(12,5),
-    order_id bigint,
-    active boolean DEFAULT true,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: technologies_technologyoperationcomponentmergeproductin_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE technologies_technologyoperationcomponentmergeproductin_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: technologies_technologyoperationcomponentmergeproductin_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE technologies_technologyoperationcomponentmergeproductin_id_seq OWNED BY technologies_technologyoperationcomponentmergeproductin.id;
-
-
---
--- Name: technologies_technologyoperationcomponentmergeproductout; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE technologies_technologyoperationcomponentmergeproductout (
-    id bigint NOT NULL,
-    operationcomponent_id bigint,
-    mergedoperationcomponent_id bigint,
-    mergedoperationproductcomponent_id bigint,
-    quantitychange numeric(12,5),
-    order_id bigint,
-    active boolean DEFAULT true,
-    entityversion bigint DEFAULT 0
-);
-
-
---
--- Name: technologies_technologyoperationcomponentmergeproductout_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE technologies_technologyoperationcomponentmergeproductout_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: technologies_technologyoperationcomponentmergeproductout_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE technologies_technologyoperationcomponentmergeproductout_id_seq OWNED BY technologies_technologyoperationcomponentmergeproductout.id;
-
-
---
 -- Name: technologies_technologystatechange; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -26481,7 +26486,9 @@ CREATE TABLE technologiesgenerator_generatortreenode (
     standardperformancetechnology numeric,
     technologygroup_id bigint,
     unit character varying(255),
-    technologyinputproducttype_id bigint
+    technologyinputproducttype_id bigint,
+    differentproductsindifferentsizes boolean DEFAULT false,
+    sizegroup_id bigint
 );
 
 
@@ -29000,6 +29007,13 @@ ALTER TABLE ONLY masterorders_masterorderproduct ALTER COLUMN id SET DEFAULT nex
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY masterorders_ordersgenerationhelper ALTER COLUMN id SET DEFAULT nextval('masterorders_ordersgenerationhelper_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY masterorders_productsbysizeentryhelper ALTER COLUMN id SET DEFAULT nextval('masterorders_productsbysizeentryhelper_id_seq'::regclass);
 
 
@@ -29029,6 +29043,20 @@ ALTER TABLE ONLY masterorders_salesplanmaterialrequirement ALTER COLUMN id SET D
 --
 
 ALTER TABLE ONLY masterorders_salesplanmaterialrequirementproduct ALTER COLUMN id SET DEFAULT nextval('masterorders_salesplanmaterialrequirementproduct_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplanordersgroupentryhelper ALTER COLUMN id SET DEFAULT nextval('masterorders_salesplanordersgroupentryhelper_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplanordersgrouphelper ALTER COLUMN id SET DEFAULT nextval('masterorders_salesplanordersgrouphelper_id_seq'::regclass);
 
 
 --
@@ -29372,13 +29400,6 @@ ALTER TABLE ONLY orders_ordercategorycolor ALTER COLUMN id SET DEFAULT nextval('
 --
 
 ALTER TABLE ONLY orders_orderpack ALTER COLUMN id SET DEFAULT nextval('orders_orderpack_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY orders_ordersgenerationhelper ALTER COLUMN id SET DEFAULT nextval('orders_ordersgenerationhelper_id_seq'::regclass);
 
 
 --
@@ -30380,20 +30401,6 @@ ALTER TABLE ONLY technologies_technologyinputproducttype ALTER COLUMN id SET DEF
 --
 
 ALTER TABLE ONLY technologies_technologyoperationcomponent ALTER COLUMN id SET DEFAULT nextval('technologies_technologyoperationcomponent_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductin ALTER COLUMN id SET DEFAULT nextval('technologies_technologyoperationcomponentmergeproductin_id_seq'::regclass);
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductout ALTER COLUMN id SET DEFAULT nextval('technologies_technologyoperationcomponentmergeproductout_id_seq'::regclass);
 
 
 --
@@ -33198,8 +33205,8 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 -- Data for Name: basic_parameter; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, materialcostsusedpb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, allowtechnologytreechangeinpendingorder, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, enableoperationgroupingworkplan, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation, moveproductstosubsequentoperations, demandcausesofwastes, wmsapk, wmsversion, applicationconfigured, materialcostsused, usenominalcostpricenotspecified, sourceofoperationcosts, standardlaborcost_id, averagemachinehourlycost, averagelaborhourlycost, includetpz, includeadditionaltime, materialcostmargin, productioncostmargin, additionaloverhead, registrationpriceoverhead, profit, applicationconfigurationfinished, coveragebasedonproductioncounting, generatepacksfororders, includepacksgeneratingprocessesfororder, optimalpacksize, restfeedinglastpack, deliveryusenominalcostwhenpricenotspecified, deliverypricefillbasedon) FROM stdin;
-1	\N	5	pc	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	\N	f	01globally	14	f	\N	f	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	f	\N	\N	\N	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	f	01accepted	01order	01allInputProducts	f	t	\N	\N	\N	f	f	f	\N	\N	\N	\N	\N	150	\N	\N	f	t	f	\N	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	f	f	\N	\N	f	01nominal	f	01technologyOperation	\N	\N	\N	f	f	0.00000	0.00000	0.00000	0.00000	0.00000	f	f	f	f	\N	\N	f	01lastPurchasePrice
+COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, materialcostsusedpb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, allowtechnologytreechangeinpendingorder, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation, moveproductstosubsequentoperations, demandcausesofwastes, wmsapk, wmsversion, applicationconfigured, materialcostsused, usenominalcostpricenotspecified, sourceofoperationcosts, standardlaborcost_id, averagemachinehourlycost, averagelaborhourlycost, includetpz, includeadditionaltime, materialcostmargin, productioncostmargin, additionaloverhead, registrationpriceoverhead, profit, applicationconfigurationfinished, coveragebasedonproductioncounting, generatepacksfororders, includepacksgeneratingprocessesfororder, optimalpacksize, restfeedinglastpack, deliveryusenominalcostwhenpricenotspecified, deliverypricefillbasedon, allowcheckedtechnologywithoutinproducts, requireassortment, changeorderdatesbasedonchangegroupdates, acceptedtechnologymarkedasdefault) FROM stdin;
+1	\N	5	pc	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	\N	f	01globally	14	f	\N	f	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	f	\N	\N	\N	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	f	01accepted	01order	01allInputProducts	f	t	\N	\N	\N	f	f	f	\N	\N	\N	\N	\N	150	\N	\N	f	t	f	\N	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	t	f	\N	\N	f	01nominal	f	01technologyOperation	\N	\N	\N	f	f	0.00000	0.00000	0.00000	0.00000	0.00000	f	f	f	f	\N	\N	f	01lastPurchasePrice	f	f	f	f
 \.
 
 
@@ -33625,7 +33632,7 @@ SELECT pg_catalog.setval('basicproductioncounting_productioncountingoperationrun
 -- Data for Name: basicproductioncounting_productioncountingquantity; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basicproductioncounting_productioncountingquantity (id, order_id, product_id, plannedquantity, isnoncomponent, technologyoperationcomponent_id, basicproductioncounting_id, typeofmaterial, role, componentsoutputlocation_id, componentslocation_id, productsinputlocation_id, productionflow, productsflowlocation_id, entityversion, replacementto_id) FROM stdin;
+COPY basicproductioncounting_productioncountingquantity (id, order_id, product_id, plannedquantity, isnoncomponent, technologyoperationcomponent_id, basicproductioncounting_id, typeofmaterial, role, componentsoutputlocation_id, componentslocation_id, productsinputlocation_id, productionflow, productsflowlocation_id, entityversion, replacementto_id, showmaterialcomponentinworkplan) FROM stdin;
 \.
 
 
@@ -35794,6 +35801,11 @@ COPY jointable_group_role (group_id, role_id) FROM stdin;
 4	121
 2	122
 4	122
+2	124
+4	124
+3	124
+2	126
+4	126
 \.
 
 
@@ -36178,6 +36190,21 @@ SELECT pg_catalog.setval('masterorders_masterorderproduct_id_seq', 1, false);
 
 
 --
+-- Data for Name: masterorders_ordersgenerationhelper; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY masterorders_ordersgenerationhelper (id, plannedquantity, datefrom, dateto) FROM stdin;
+\.
+
+
+--
+-- Name: masterorders_ordersgenerationhelper_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('masterorders_ordersgenerationhelper_id_seq', 1, false);
+
+
+--
 -- Data for Name: masterorders_productsbysizeentryhelper; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -36260,6 +36287,36 @@ SELECT pg_catalog.setval('masterorders_salesplanmaterialrequirementproduct_id_se
 
 
 --
+-- Data for Name: masterorders_salesplanordersgroupentryhelper; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY masterorders_salesplanordersgroupentryhelper (id, salesplanordersgrouphelper_id, productfamily_id, product_id, plannedquantity, orderedquantity, orderquantity) FROM stdin;
+\.
+
+
+--
+-- Name: masterorders_salesplanordersgroupentryhelper_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('masterorders_salesplanordersgroupentryhelper_id_seq', 1, false);
+
+
+--
+-- Data for Name: masterorders_salesplanordersgrouphelper; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY masterorders_salesplanordersgrouphelper (id, salesplan_id) FROM stdin;
+\.
+
+
+--
+-- Name: masterorders_salesplanordersgrouphelper_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('masterorders_salesplanordersgrouphelper_id_seq', 1, false);
+
+
+--
 -- Data for Name: masterorders_salesplanproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -36300,7 +36357,7 @@ SELECT pg_catalog.setval('masterorders_salesplanstatechange_id_seq', 1, false);
 -- Data for Name: materialflow_location; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY materialflow_location (id, number, name, externalnumber, algorithm, requireprice, requirebatch, requireproductiondate, requireexpirationdate, entityversion, warehousenumberinoptima, draftmakesreservation, realizationlocation_id) FROM stdin;
+COPY materialflow_location (id, number, name, externalnumber, algorithm, requireprice, requirebatch, requireproductiondate, requireexpirationdate, entityversion, warehousenumberinoptima, draftmakesreservation, realizationlocation_id, directionconvertingquantityafterchangingconverter) FROM stdin;
 \.
 
 
@@ -37256,21 +37313,6 @@ SELECT pg_catalog.setval('orders_orderplanninglistdto_id_seq', 1, false);
 
 
 --
--- Data for Name: orders_ordersgenerationhelper; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY orders_ordersgenerationhelper (id, plannedquantity, datefrom, dateto) FROM stdin;
-\.
-
-
---
--- Name: orders_ordersgenerationhelper_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('orders_ordersgenerationhelper_id_seq', 1, false);
-
-
---
 -- Data for Name: orders_orderstatechange; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -37498,7 +37540,7 @@ SELECT pg_catalog.setval('ordersgroups_drafrptquantitydto_id_seq', 1, false);
 -- Data for Name: ordersgroups_ordersgroup; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY ordersgroups_ordersgroup (id, number, assortment_id, productionline_id, startdate, finishdate, deadline, quantity, producedquantity, remainingquantity, state, active, masterorder_id, parent_id, remainingquantityinorders) FROM stdin;
+COPY ordersgroups_ordersgroup (id, number, assortment_id, productionline_id, startdate, finishdate, deadline, quantity, producedquantity, remainingquantity, state, active, masterorder_id, parent_id, remainingquantityinorders, description, salesplan_id) FROM stdin;
 \.
 
 
@@ -38322,7 +38364,7 @@ SELECT pg_catalog.setval('productionlines_factorystructureelement_id_seq', 1, fa
 --
 
 COPY productionlines_productionline (id, number, name, division_id, place, description, supportsalltechnologies, documentation, supportsothertechnologiesworkstationtypes, quantityforotherworkstationtypes, active, eurocodsymbol, availabilityindicator, production, entityversion, placeinscada) FROM stdin;
-1	Line	Main line	\N	\N	\N	t	\N	t	1	t	\N	\N	f	0	\N
+1	Line	Main line	\N	\N	\N	t	\N	t	1	t	\N	\N	t	0	\N
 \.
 
 
@@ -38748,10 +38790,10 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 154	scheduleGantt	1.5.0	DISABLED	f	0	\N	Commercial
 150	integrationAsana	1.5.0	DISABLED	f	0	\N	Commercial
 68	advancedGenealogyForOrders	1.5.0	ENABLED	f	0	genealogy	Commercial
-155	qualityControl	1.5.0	DISABLED	f	0	\N	\N
 156	oee	1.5.0	DISABLED	f	0	\N	\N
 157	luxon	1.5.0	DISABLED	f	0	\N	\N
 158	configurator	1.5.0	ENABLED	f	0	\N	\N
+155	qualityControl	1.5.0	ENABLED	f	0	\N	\N
 \.
 
 
@@ -38927,6 +38969,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 1	ROLE_HOME_PROFILE	\N	0
 124	ROLE_TECHNOLOGICAL_PROCESSES	\N	0
 125	ROLE_CLEAN_EXTERNAL_NUMBER	\N	0
+126	ROLE_DASHBOARD_KANBAN	\N	0
 \.
 
 
@@ -38934,7 +38977,7 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 125, true);
+SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 126, true);
 
 
 --
@@ -39183,7 +39226,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 185	costCalculation	standardLaborCostsList	t	10	184	4	ROLE_CALCULATIONS	0
 186	technologies	technologyInputProductTypesList	t	5	185	10	ROLE_TECHNOLOGIES	0
 187	orders	orderPacksList	t	7	186	21	ROLE_PLANNING	0
-188	masterOrders	salesPlanMaterialRequirementsList	t	7	187	22	ROLE_PLANNING	0
+188	masterOrders	salesPlanMaterialRequirementsList	t	9	187	15	ROLE_PLANNING	0
 \.
 
 
@@ -40310,7 +40353,7 @@ SELECT pg_catalog.setval('technologies_productcomponent_id_seq', 1, false);
 -- Data for Name: technologies_productstructuretreenode; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY technologies_productstructuretreenode (id, priority, technology_id, parent_id, nodenumber, number, product_id, createdate, updatedate, createuser, updateuser, entityversion, standardperformancetechnology, technologygroup_id, maintechnology_id, operation_id, quantity, division_id, entitytype, unit, technologyinputproducttype_id) FROM stdin;
+COPY technologies_productstructuretreenode (id, priority, technology_id, parent_id, nodenumber, number, product_id, createdate, updatedate, createuser, updateuser, entityversion, standardperformancetechnology, technologygroup_id, maintechnology_id, operation_id, quantity, division_id, entitytype, unit, technologyinputproducttype_id, differentproductsindifferentsizes, sizegroup_id) FROM stdin;
 \.
 
 
@@ -40508,36 +40551,6 @@ SELECT pg_catalog.setval('technologies_technologyoperationcomponentdto_id_seq', 
 
 
 --
--- Data for Name: technologies_technologyoperationcomponentmergeproductin; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY technologies_technologyoperationcomponentmergeproductin (id, operationcomponent_id, mergedoperationcomponent_id, mergedoperationproductcomponent_id, quantitychange, order_id, active, entityversion) FROM stdin;
-\.
-
-
---
--- Name: technologies_technologyoperationcomponentmergeproductin_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('technologies_technologyoperationcomponentmergeproductin_id_seq', 1, false);
-
-
---
--- Data for Name: technologies_technologyoperationcomponentmergeproductout; Type: TABLE DATA; Schema: public; Owner: -
---
-
-COPY technologies_technologyoperationcomponentmergeproductout (id, operationcomponent_id, mergedoperationcomponent_id, mergedoperationproductcomponent_id, quantitychange, order_id, active, entityversion) FROM stdin;
-\.
-
-
---
--- Name: technologies_technologyoperationcomponentmergeproductout_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('technologies_technologyoperationcomponentmergeproductout_id_seq', 1, false);
-
-
---
 -- Data for Name: technologies_technologystatechange; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -40593,7 +40606,7 @@ SELECT pg_catalog.setval('technologiesgenerator_generatortechnologiesforproduct_
 -- Data for Name: technologiesgenerator_generatortreenode; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY technologiesgenerator_generatortreenode (id, parent_id, generatorcontext_id, entitytype, priority, nodenumber, quantity, product_id, operation_id, producttechnology_id, originaltechnology_id, division_id, entityversion, standardperformancetechnology, technologygroup_id, unit, technologyinputproducttype_id) FROM stdin;
+COPY technologiesgenerator_generatortreenode (id, parent_id, generatorcontext_id, entitytype, priority, nodenumber, quantity, product_id, operation_id, producttechnology_id, originaltechnology_id, division_id, entityversion, standardperformancetechnology, technologygroup_id, unit, technologyinputproducttype_id, differentproductsindifferentsizes, sizegroup_id) FROM stdin;
 \.
 
 
@@ -43623,6 +43636,22 @@ ALTER TABLE ONLY masterorders_salesplanmaterialrequirementproduct
 
 
 --
+-- Name: masterorders_salesplanordersgroupentryhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplanordersgroupentryhelper
+    ADD CONSTRAINT masterorders_salesplanordersgroupentryhelper_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: masterorders_salesplanordersgrouphelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplanordersgrouphelper
+    ADD CONSTRAINT masterorders_salesplanordersgrouphelper_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: masterorders_salesplanproduct_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -44002,7 +44031,7 @@ ALTER TABLE ONLY orders_orderpack
 -- Name: orders_ordersgenerationhelper_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY orders_ordersgenerationhelper
+ALTER TABLE ONLY masterorders_ordersgenerationhelper
     ADD CONSTRAINT orders_ordersgenerationhelper_pkey PRIMARY KEY (id);
 
 
@@ -45220,22 +45249,6 @@ ALTER TABLE ONLY technologies_technologyinputproducttype
 
 ALTER TABLE ONLY technologies_technologyoperationcomponent
     ADD CONSTRAINT technologies_technologyoperationcomponent_pkey PRIMARY KEY (id);
-
-
---
--- Name: technologies_technologyoperationcomponentmergeproductin_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductin
-    ADD CONSTRAINT technologies_technologyoperationcomponentmergeproductin_pkey PRIMARY KEY (id);
-
-
---
--- Name: technologies_technologyoperationcomponentmergeproductout_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductout
-    ADD CONSTRAINT technologies_technologyoperationcomponentmergeproductout_pkey PRIMARY KEY (id);
 
 
 --
@@ -47051,6 +47064,29 @@ CREATE INDEX idx_wor_planordercolumn_workplan_id ON workplans_workplanordercolum
 --
 
 CREATE RULE "_RETURN" AS
+    ON SELECT TO advancedgenealogy_batchdto DO INSTEAD  SELECT batch.id,
+    batch.number AS batchnumber,
+    batch.state,
+    batch.createuser,
+    batch.createdate,
+    batch.externalnumber,
+    batch.active,
+    product.number AS productnumber,
+    product.name AS productname,
+    company.name AS suppliername,
+    (count(attachment.id) <> 0) AS hasattachments
+   FROM (((advancedgenealogy_batch batch
+     LEFT JOIN advancedgenealogy_batchattachment attachment ON ((batch.id = attachment.batch_id)))
+     LEFT JOIN basic_product product ON ((batch.product_id = product.id)))
+     LEFT JOIN basic_company company ON ((batch.supplier_id = company.id)))
+  GROUP BY batch.id, product.number, product.name, company.name;
+
+
+--
+-- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE RULE "_RETURN" AS
     ON SELECT TO arch_masterorders_masterorderposition_manyproducts DO INSTEAD  SELECT masterorderproduct.id,
     masterorderdefinition.number AS masterorderdefinitionnumber,
     (masterorder.id)::integer AS masterorderid,
@@ -47106,6 +47142,39 @@ CREATE RULE "_RETURN" AS
      JOIN basic_product product ON ((topoc.product_id = product.id)))
   WHERE ((pt.state)::text = '01draft'::text)
   GROUP BY ordersgroup.id;
+
+
+--
+-- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE RULE "_RETURN" AS
+    ON SELECT TO basic_productdto DO INSTEAD  SELECT product.id,
+    product.number,
+    product.name,
+    product.globaltypeofmaterial,
+    product.category,
+    parent.name AS parentname,
+    product.ean,
+    product.externalnumber,
+    assortment.name AS assortmentname,
+    model.name AS modelname,
+    product.norm,
+    size.number AS sizenumber,
+    (count(attachment.id) <> 0) AS hasattachments,
+    string_agg((code.code)::text, ', '::text) AS additionalcodes,
+    product.active,
+    product.unit,
+    product.additionalunit,
+    product.entitytype
+   FROM ((((((basic_product product
+     LEFT JOIN basic_product parent ON ((product.parent_id = parent.id)))
+     LEFT JOIN basic_assortment assortment ON ((product.assortment_id = assortment.id)))
+     LEFT JOIN basic_model model ON ((product.model_id = model.id)))
+     LEFT JOIN basic_productattachment attachment ON ((attachment.product_id = product.id)))
+     LEFT JOIN basic_additionalcode code ON ((code.product_id = product.id)))
+     LEFT JOIN basic_size size ON ((size.id = product.size_id)))
+  GROUP BY product.id, parent.name, assortment.name, model.name, size.number;
 
 
 --
@@ -47236,103 +47305,6 @@ CREATE RULE "_RETURN" AS
 --
 
 CREATE RULE "_RETURN" AS
-    ON SELECT TO productioncounting_trackingoperationproductincomponenthelper DO INSTEAD  SELECT trackingoperationproductincomponent.id,
-    (productiontracking.id)::integer AS productiontracking_id,
-    (product.id)::integer AS product_id,
-    product.number AS productnumber,
-    product.name AS productname,
-    product.unit AS productunit,
-        CASE
-            WHEN (productiontracking.technologyoperationcomponent_id IS NULL) THEN ( SELECT sum(productioncountingquantity_1.plannedquantity) AS sum)
-            ELSE ( SELECT sum(productioncountingquantity_2.plannedquantity) AS sum)
-        END AS plannedquantity,
-        CASE
-            WHEN (usedbatch.id IS NULL) THEN trackingoperationproductincomponent.usedquantity
-            ELSE usedbatch.quantity
-        END AS usedquantity,
-    batch.number AS batchnumber
-   FROM ((((((productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent
-     LEFT JOIN productioncounting_productiontracking productiontracking ON ((productiontracking.id = trackingoperationproductincomponent.productiontracking_id)))
-     LEFT JOIN basic_product product ON ((product.id = trackingoperationproductincomponent.product_id)))
-     LEFT JOIN productioncounting_usedbatch usedbatch ON ((usedbatch.trackingoperationproductincomponent_id = trackingoperationproductincomponent.id)))
-     LEFT JOIN advancedgenealogy_batch batch ON ((batch.id = usedbatch.batch_id)))
-     LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_1 ON (((productioncountingquantity_1.order_id = productiontracking.order_id) AND (productioncountingquantity_1.product_id = trackingoperationproductincomponent.product_id) AND ((productioncountingquantity_1.role)::text = '01used'::text))))
-     LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_2 ON (((productioncountingquantity_2.order_id = productiontracking.order_id) AND (productioncountingquantity_2.technologyoperationcomponent_id = productiontracking.technologyoperationcomponent_id) AND (productioncountingquantity_2.product_id = trackingoperationproductincomponent.product_id) AND ((productioncountingquantity_2.role)::text = '01used'::text))))
-  WHERE ((productiontracking.state)::text <> ALL (ARRAY[(('03declined'::text)::character varying)::text, (('04corrected'::text)::character varying)::text]))
-  GROUP BY trackingoperationproductincomponent.id, productiontracking.id, product.id, product.number, product.unit, trackingoperationproductincomponent.usedquantity, productiontracking.technologyoperationcomponent_id, usedbatch.id, usedbatch.quantity, batch.number;
-
-
---
--- Name: _RETURN; Type: RULE; Schema: public; Owner: -
---
-
-CREATE RULE "_RETURN" AS
-    ON SELECT TO productioncounting_trackingoperationproductoutcomponenthelper DO INSTEAD  SELECT trackingoperationproductoutcomponent.id,
-    (productiontracking.id)::integer AS productiontracking_id,
-    (product.id)::integer AS product_id,
-    product.number AS productnumber,
-    product.name AS productname,
-    product.unit AS productunit,
-        CASE
-            WHEN (productiontracking.technologyoperationcomponent_id IS NULL) THEN ( SELECT sum(productioncountingquantity_1.plannedquantity) AS sum)
-            ELSE ( SELECT sum(productioncountingquantity_2.plannedquantity) AS sum)
-        END AS plannedquantity,
-    trackingoperationproductoutcomponent.usedquantity,
-    batch.number AS batchnumber
-   FROM (((((productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent
-     LEFT JOIN productioncounting_productiontracking productiontracking ON ((productiontracking.id = trackingoperationproductoutcomponent.productiontracking_id)))
-     LEFT JOIN basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
-     LEFT JOIN advancedgenealogy_batch batch ON ((batch.id = trackingoperationproductoutcomponent.batch_id)))
-     LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_1 ON (((productioncountingquantity_1.order_id = productiontracking.order_id) AND (productioncountingquantity_1.product_id = trackingoperationproductoutcomponent.product_id) AND ((productioncountingquantity_1.role)::text = '02produced'::text))))
-     LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_2 ON (((productioncountingquantity_2.order_id = productiontracking.order_id) AND (productioncountingquantity_2.technologyoperationcomponent_id = productiontracking.technologyoperationcomponent_id) AND (productioncountingquantity_2.product_id = trackingoperationproductoutcomponent.product_id) AND ((productioncountingquantity_2.role)::text = '02produced'::text))))
-  WHERE ((productiontracking.state)::text <> ALL (ARRAY[(('03declined'::text)::character varying)::text, (('04corrected'::text)::character varying)::text]))
-  GROUP BY trackingoperationproductoutcomponent.id, productiontracking.id, product.id, product.number, product.unit, trackingoperationproductoutcomponent.usedquantity, productiontracking.technologyoperationcomponent_id, batch.number;
-
-
---
--- Name: _RETURN; Type: RULE; Schema: public; Owner: -
---
-
-CREATE RULE "_RETURN" AS
-    ON SELECT TO technologies_technologydto DO INSTEAD  SELECT technology.id,
-    technology.name,
-    technology.number,
-    technology.externalsynchronized,
-    technology.master,
-    technology.state,
-    product.number AS productnumber,
-    product.globaltypeofmaterial AS productglobaltypeofmaterial,
-    technologygroup.number AS technologygroupnumber,
-    division.name AS divisionname,
-    product.name AS productname,
-    technology.technologytype,
-    technology.active,
-    technology.standardperformancetechnology,
-    generatorcontext.number AS generatorname,
-    (count(technologyattachment.id) <> 0) AS attachmentsexists,
-    technologystatechange.dateandtime,
-    productionline.number AS productionlinenumber,
-    assortment.name AS assortmentname,
-    qualitycard.number AS qualitycardnumber,
-    technology.istemplateaccepted
-   FROM (((((((((technologies_technology technology
-     LEFT JOIN basic_product product ON ((product.id = technology.product_id)))
-     LEFT JOIN basic_assortment assortment ON ((assortment.id = product.assortment_id)))
-     LEFT JOIN basic_division division ON ((division.id = technology.division_id)))
-     LEFT JOIN technologies_technologygroup technologygroup ON ((technologygroup.id = technology.technologygroup_id)))
-     LEFT JOIN technologies_technologyattachment technologyattachment ON ((technologyattachment.technology_id = technology.id)))
-     LEFT JOIN technologiesgenerator_generatorcontext generatorcontext ON ((generatorcontext.id = technology.generatorcontext_id)))
-     LEFT JOIN technologies_technologystatechange technologystatechange ON (((technologystatechange.technology_id = technology.id) AND ((technologystatechange.status)::text = '03successful'::text) AND (technologystatechange.sourcestate IS NULL) AND ((technologystatechange.targetstate)::text = '01draft'::text))))
-     LEFT JOIN productionlines_productionline productionline ON ((productionline.id = technology.productionline_id)))
-     LEFT JOIN technologies_qualitycard qualitycard ON ((qualitycard.id = technology.qualitycard_id)))
-  GROUP BY technology.id, product.number, product.globaltypeofmaterial, technologygroup.number, division.name, product.name, generatorcontext.number, technologystatechange.dateandtime, productionline.number, assortment.name, qualitycard.number;
-
-
---
--- Name: _RETURN; Type: RULE; Schema: public; Owner: -
---
-
-CREATE RULE "_RETURN" AS
     ON SELECT TO productioncounting_productionanalysisdto DO INSTEAD  SELECT row_number() OVER () AS id,
     bool_or(productiontracking.active) AS active,
     (productionline.id)::integer AS productionline_id,
@@ -47435,22 +47407,30 @@ UNION ALL
 --
 
 CREATE RULE "_RETURN" AS
-    ON SELECT TO advancedgenealogy_batchdto DO INSTEAD  SELECT batch.id,
-    batch.number AS batchnumber,
-    batch.state,
-    batch.createuser,
-    batch.createdate,
-    batch.externalnumber,
-    batch.active,
+    ON SELECT TO productioncounting_trackingoperationproductincomponenthelper DO INSTEAD  SELECT trackingoperationproductincomponent.id,
+    (productiontracking.id)::integer AS productiontracking_id,
+    (product.id)::integer AS product_id,
     product.number AS productnumber,
     product.name AS productname,
-    company.name AS suppliername,
-    (count(attachment.id) <> 0) AS hasattachments
-   FROM (((advancedgenealogy_batch batch
-     LEFT JOIN advancedgenealogy_batchattachment attachment ON ((batch.id = attachment.batch_id)))
-     LEFT JOIN basic_product product ON ((batch.product_id = product.id)))
-     LEFT JOIN basic_company company ON ((batch.supplier_id = company.id)))
-  GROUP BY batch.id, product.number, product.name, company.name;
+    product.unit AS productunit,
+        CASE
+            WHEN (productiontracking.technologyoperationcomponent_id IS NULL) THEN ( SELECT sum(productioncountingquantity_1.plannedquantity) AS sum)
+            ELSE ( SELECT sum(productioncountingquantity_2.plannedquantity) AS sum)
+        END AS plannedquantity,
+        CASE
+            WHEN (usedbatch.id IS NULL) THEN trackingoperationproductincomponent.usedquantity
+            ELSE usedbatch.quantity
+        END AS usedquantity,
+    batch.number AS batchnumber
+   FROM ((((((productioncounting_trackingoperationproductincomponent trackingoperationproductincomponent
+     LEFT JOIN productioncounting_productiontracking productiontracking ON ((productiontracking.id = trackingoperationproductincomponent.productiontracking_id)))
+     LEFT JOIN basic_product product ON ((product.id = trackingoperationproductincomponent.product_id)))
+     LEFT JOIN productioncounting_usedbatch usedbatch ON ((usedbatch.trackingoperationproductincomponent_id = trackingoperationproductincomponent.id)))
+     LEFT JOIN advancedgenealogy_batch batch ON ((batch.id = usedbatch.batch_id)))
+     LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_1 ON (((productioncountingquantity_1.order_id = productiontracking.order_id) AND (productioncountingquantity_1.product_id = trackingoperationproductincomponent.product_id) AND ((productioncountingquantity_1.role)::text = '01used'::text))))
+     LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_2 ON (((productioncountingquantity_2.order_id = productiontracking.order_id) AND (productioncountingquantity_2.technologyoperationcomponent_id = productiontracking.technologyoperationcomponent_id) AND (productioncountingquantity_2.product_id = trackingoperationproductincomponent.product_id) AND ((productioncountingquantity_2.role)::text = '01used'::text))))
+  WHERE ((productiontracking.state)::text <> ALL (ARRAY[(('03declined'::text)::character varying)::text, (('04corrected'::text)::character varying)::text]))
+  GROUP BY trackingoperationproductincomponent.id, productiontracking.id, product.id, product.number, product.unit, trackingoperationproductincomponent.usedquantity, productiontracking.technologyoperationcomponent_id, usedbatch.id, usedbatch.quantity, batch.number;
 
 
 --
@@ -47458,32 +47438,26 @@ CREATE RULE "_RETURN" AS
 --
 
 CREATE RULE "_RETURN" AS
-    ON SELECT TO basic_productdto DO INSTEAD  SELECT product.id,
-    product.number,
-    product.name,
-    product.globaltypeofmaterial,
-    product.category,
-    parent.name AS parentname,
-    product.ean,
-    product.externalnumber,
-    assortment.name AS assortmentname,
-    model.name AS modelname,
-    product.norm,
-    size.number AS sizenumber,
-    (count(attachment.id) <> 0) AS hasattachments,
-    string_agg((code.code)::text, ', '::text) AS additionalcodes,
-    product.active,
-    product.unit,
-    product.additionalunit,
-    product.entitytype
-   FROM ((((((basic_product product
-     LEFT JOIN basic_product parent ON ((product.parent_id = parent.id)))
-     LEFT JOIN basic_assortment assortment ON ((product.assortment_id = assortment.id)))
-     LEFT JOIN basic_model model ON ((product.model_id = model.id)))
-     LEFT JOIN basic_productattachment attachment ON ((attachment.product_id = product.id)))
-     LEFT JOIN basic_additionalcode code ON ((code.product_id = product.id)))
-     LEFT JOIN basic_size size ON ((size.id = product.size_id)))
-  GROUP BY product.id, parent.name, assortment.name, model.name, size.number;
+    ON SELECT TO productioncounting_trackingoperationproductoutcomponenthelper DO INSTEAD  SELECT trackingoperationproductoutcomponent.id,
+    (productiontracking.id)::integer AS productiontracking_id,
+    (product.id)::integer AS product_id,
+    product.number AS productnumber,
+    product.name AS productname,
+    product.unit AS productunit,
+        CASE
+            WHEN (productiontracking.technologyoperationcomponent_id IS NULL) THEN ( SELECT sum(productioncountingquantity_1.plannedquantity) AS sum)
+            ELSE ( SELECT sum(productioncountingquantity_2.plannedquantity) AS sum)
+        END AS plannedquantity,
+    trackingoperationproductoutcomponent.usedquantity,
+    batch.number AS batchnumber
+   FROM (((((productioncounting_trackingoperationproductoutcomponent trackingoperationproductoutcomponent
+     LEFT JOIN productioncounting_productiontracking productiontracking ON ((productiontracking.id = trackingoperationproductoutcomponent.productiontracking_id)))
+     LEFT JOIN basic_product product ON ((product.id = trackingoperationproductoutcomponent.product_id)))
+     LEFT JOIN advancedgenealogy_batch batch ON ((batch.id = trackingoperationproductoutcomponent.batch_id)))
+     LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_1 ON (((productioncountingquantity_1.order_id = productiontracking.order_id) AND (productioncountingquantity_1.product_id = trackingoperationproductoutcomponent.product_id) AND ((productioncountingquantity_1.role)::text = '02produced'::text))))
+     LEFT JOIN basicproductioncounting_productioncountingquantity productioncountingquantity_2 ON (((productioncountingquantity_2.order_id = productiontracking.order_id) AND (productioncountingquantity_2.technologyoperationcomponent_id = productiontracking.technologyoperationcomponent_id) AND (productioncountingquantity_2.product_id = trackingoperationproductoutcomponent.product_id) AND ((productioncountingquantity_2.role)::text = '02produced'::text))))
+  WHERE ((productiontracking.state)::text <> ALL (ARRAY[(('03declined'::text)::character varying)::text, (('04corrected'::text)::character varying)::text]))
+  GROUP BY trackingoperationproductoutcomponent.id, productiontracking.id, product.id, product.number, product.unit, trackingoperationproductoutcomponent.usedquantity, productiontracking.technologyoperationcomponent_id, batch.number;
 
 
 --
@@ -47515,7 +47489,8 @@ CREATE RULE "_RETURN" AS
     technology.technologytype,
     (count(technologyaccepted.id) > 0) AS hasacceptedtechnology,
     (count(technologychecked.id) > 0) AS hascheckedtechnology,
-    technologyinputproducttype.name AS technologyinputproducttypename
+    technologyinputproducttype.name AS technologyinputproducttypename,
+    operationproductincomponent.differentproductsindifferentsizes
    FROM (((((((technologies_operationproductincomponent operationproductincomponent
      LEFT JOIN technologies_technologyoperationcomponent technologyoperationcomponent ON ((technologyoperationcomponent.id = operationproductincomponent.operationcomponent_id)))
      LEFT JOIN technologies_operation operation ON ((operation.id = technologyoperationcomponent.operation_id)))
@@ -47525,6 +47500,45 @@ CREATE RULE "_RETURN" AS
      LEFT JOIN technologies_technology technologychecked ON (((technologychecked.product_id = operationproductincomponent.product_id) AND (technologychecked.technologytype IS NULL) AND (technologychecked.active = true) AND ((technologychecked.state)::text = '05checked'::text))))
      LEFT JOIN technologies_technologyinputproducttype technologyinputproducttype ON ((technologyinputproducttype.id = operationproductincomponent.technologyinputproducttype_id)))
   GROUP BY operationproductincomponent.id, technologyoperationcomponent.id, product.id, product.number, product.name, product.unit, operationproductincomponent.quantity, operationproductincomponent.priority, operationproductincomponent.itemnumberintheexplodedview, technology.name, technology.number, technology.state, technology.master, operation.name, technology.active, technology.technologytype, technology.id, technologyinputproducttype.name;
+
+
+--
+-- Name: _RETURN; Type: RULE; Schema: public; Owner: -
+--
+
+CREATE RULE "_RETURN" AS
+    ON SELECT TO technologies_technologydto DO INSTEAD  SELECT technology.id,
+    technology.name,
+    technology.number,
+    technology.externalsynchronized,
+    technology.master,
+    technology.state,
+    product.number AS productnumber,
+    product.globaltypeofmaterial AS productglobaltypeofmaterial,
+    technologygroup.number AS technologygroupnumber,
+    division.name AS divisionname,
+    product.name AS productname,
+    technology.technologytype,
+    technology.active,
+    technology.standardperformancetechnology,
+    generatorcontext.number AS generatorname,
+    (count(technologyattachment.id) <> 0) AS attachmentsexists,
+    technologystatechange.dateandtime,
+    productionline.number AS productionlinenumber,
+    assortment.name AS assortmentname,
+    qualitycard.number AS qualitycardnumber,
+    technology.istemplateaccepted
+   FROM (((((((((technologies_technology technology
+     LEFT JOIN basic_product product ON ((product.id = technology.product_id)))
+     LEFT JOIN basic_assortment assortment ON ((assortment.id = product.assortment_id)))
+     LEFT JOIN basic_division division ON ((division.id = technology.division_id)))
+     LEFT JOIN technologies_technologygroup technologygroup ON ((technologygroup.id = technology.technologygroup_id)))
+     LEFT JOIN technologies_technologyattachment technologyattachment ON ((technologyattachment.technology_id = technology.id)))
+     LEFT JOIN technologiesgenerator_generatorcontext generatorcontext ON ((generatorcontext.id = technology.generatorcontext_id)))
+     LEFT JOIN technologies_technologystatechange technologystatechange ON (((technologystatechange.technology_id = technology.id) AND ((technologystatechange.status)::text = '03successful'::text) AND (technologystatechange.sourcestate IS NULL) AND ((technologystatechange.targetstate)::text = '01draft'::text))))
+     LEFT JOIN productionlines_productionline productionline ON ((productionline.id = technology.productionline_id)))
+     LEFT JOIN technologies_qualitycard qualitycard ON ((qualitycard.id = technology.qualitycard_id)))
+  GROUP BY technology.id, product.number, product.globaltypeofmaterial, technologygroup.number, division.name, product.name, generatorcontext.number, technologystatechange.dateandtime, productionline.number, assortment.name, qualitycard.number;
 
 
 --
@@ -50705,6 +50719,14 @@ ALTER TABLE ONLY technologiesgenerator_generatortreenode
 
 
 --
+-- Name: generatortreenode_sizegroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologiesgenerator_generatortreenode
+    ADD CONSTRAINT generatortreenode_sizegroup_fkey FOREIGN KEY (sizegroup_id) REFERENCES basic_sizegroup(id) DEFERRABLE;
+
+
+--
 -- Name: generatortreenode_technologyinputproducttype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -52985,6 +53007,14 @@ ALTER TABLE ONLY arch_ordersgroups_ordersgroup
 
 
 --
+-- Name: ordersgroup_salesplan_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY ordersgroups_ordersgroup
+    ADD CONSTRAINT ordersgroup_salesplan_fkey FOREIGN KEY (salesplan_id) REFERENCES masterorders_salesplan(id) DEFERRABLE;
+
+
+--
 -- Name: orderstatechange_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -55025,6 +55055,14 @@ ALTER TABLE ONLY technologies_productstructuretreenode
 
 
 --
+-- Name: productstructuretreenode_sizegroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_productstructuretreenode
+    ADD CONSTRAINT productstructuretreenode_sizegroup_fkey FOREIGN KEY (sizegroup_id) REFERENCES basic_sizegroup(id) DEFERRABLE;
+
+
+--
 -- Name: productstructuretreenode_technology_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -56449,6 +56487,38 @@ ALTER TABLE ONLY masterorders_salesplanmaterialrequirementproduct
 
 
 --
+-- Name: salesplanordersgroupentryhelper_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplanordersgroupentryhelper
+    ADD CONSTRAINT salesplanordersgroupentryhelper_product_fkey FOREIGN KEY (product_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: salesplanordersgroupentryhelper_productfamily_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplanordersgroupentryhelper
+    ADD CONSTRAINT salesplanordersgroupentryhelper_productfamily_fkey FOREIGN KEY (productfamily_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: salesplanordersgroupentryhelpersale_splanordersgrouphelper_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplanordersgroupentryhelper
+    ADD CONSTRAINT salesplanordersgroupentryhelpersale_splanordersgrouphelper_fkey FOREIGN KEY (salesplanordersgrouphelper_id) REFERENCES masterorders_salesplanordersgrouphelper(id) DEFERRABLE;
+
+
+--
+-- Name: salesplanordersgrouphelper_salesplan_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY masterorders_salesplanordersgrouphelper
+    ADD CONSTRAINT salesplanordersgrouphelper_salesplan_fkey FOREIGN KEY (salesplan_id) REFERENCES masterorders_salesplan(id) DEFERRABLE;
+
+
+--
 -- Name: salesplanproduct_product_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -57396,14 +57466,6 @@ ALTER TABLE ONLY technologies_technologyoperationcomponent
 -- Name: technologyoperationcomponentmergeproductin_oc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductin
-    ADD CONSTRAINT technologyoperationcomponentmergeproductin_oc_fkey FOREIGN KEY (operationcomponent_id) REFERENCES technologies_technologyoperationcomponent(id) DEFERRABLE;
-
-
---
--- Name: technologyoperationcomponentmergeproductin_oc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductin
     ADD CONSTRAINT technologyoperationcomponentmergeproductin_oc_fkey FOREIGN KEY (operationcomponent_id) REFERENCES technologies_technologyoperationcomponent(id) DEFERRABLE;
 
@@ -57412,24 +57474,8 @@ ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductin
 -- Name: technologyoperationcomponentmergeproductin_opic_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductin
-    ADD CONSTRAINT technologyoperationcomponentmergeproductin_opic_fkey FOREIGN KEY (mergedoperationproductcomponent_id) REFERENCES technologies_operationproductincomponent(id) DEFERRABLE;
-
-
---
--- Name: technologyoperationcomponentmergeproductin_opic_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductin
     ADD CONSTRAINT technologyoperationcomponentmergeproductin_opic_fkey FOREIGN KEY (mergedoperationproductcomponent_id) REFERENCES technologies_operationproductincomponent(id) DEFERRABLE;
-
-
---
--- Name: technologyoperationcomponentmergeproductin_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductin
-    ADD CONSTRAINT technologyoperationcomponentmergeproductin_order_fkey FOREIGN KEY (order_id) REFERENCES orders_order(id) DEFERRABLE;
 
 
 --
@@ -57444,14 +57490,6 @@ ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductin
 -- Name: technologyoperationcomponentmergeproductin_toc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductin
-    ADD CONSTRAINT technologyoperationcomponentmergeproductin_toc_fkey FOREIGN KEY (mergedoperationcomponent_id) REFERENCES technologies_technologyoperationcomponent(id) DEFERRABLE;
-
-
---
--- Name: technologyoperationcomponentmergeproductin_toc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductin
     ADD CONSTRAINT technologyoperationcomponentmergeproductin_toc_fkey FOREIGN KEY (mergedoperationcomponent_id) REFERENCES technologies_technologyoperationcomponent(id) DEFERRABLE;
 
@@ -57460,14 +57498,6 @@ ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductin
 -- Name: technologyoperationcomponentmergeproductout_oc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductout
-    ADD CONSTRAINT technologyoperationcomponentmergeproductout_oc_fkey FOREIGN KEY (operationcomponent_id) REFERENCES technologies_technologyoperationcomponent(id) DEFERRABLE;
-
-
---
--- Name: technologyoperationcomponentmergeproductout_oc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductout
     ADD CONSTRAINT technologyoperationcomponentmergeproductout_oc_fkey FOREIGN KEY (operationcomponent_id) REFERENCES technologies_technologyoperationcomponent(id) DEFERRABLE;
 
@@ -57476,24 +57506,8 @@ ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductout
 -- Name: technologyoperationcomponentmergeproductout_opoc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductout
-    ADD CONSTRAINT technologyoperationcomponentmergeproductout_opoc_fkey FOREIGN KEY (mergedoperationproductcomponent_id) REFERENCES technologies_operationproductoutcomponent(id) DEFERRABLE;
-
-
---
--- Name: technologyoperationcomponentmergeproductout_opoc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
 ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductout
     ADD CONSTRAINT technologyoperationcomponentmergeproductout_opoc_fkey FOREIGN KEY (mergedoperationproductcomponent_id) REFERENCES technologies_operationproductoutcomponent(id) DEFERRABLE;
-
-
---
--- Name: technologyoperationcomponentmergeproductout_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductout
-    ADD CONSTRAINT technologyoperationcomponentmergeproductout_order_fkey FOREIGN KEY (order_id) REFERENCES orders_order(id) DEFERRABLE;
 
 
 --
@@ -57502,14 +57516,6 @@ ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductout
 
 ALTER TABLE ONLY arch_technologies_technologyoperationcomponentmergeproductout
     ADD CONSTRAINT technologyoperationcomponentmergeproductout_order_fkey FOREIGN KEY (order_id) REFERENCES arch_orders_order(id) DEFERRABLE;
-
-
---
--- Name: technologyoperationcomponentmergeproductout_toc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY technologies_technologyoperationcomponentmergeproductout
-    ADD CONSTRAINT technologyoperationcomponentmergeproductout_toc_fkey FOREIGN KEY (mergedoperationcomponent_id) REFERENCES technologies_technologyoperationcomponent(id) DEFERRABLE;
 
 
 --

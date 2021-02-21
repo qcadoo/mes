@@ -37,6 +37,7 @@ import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationProduc
 import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationProductOutTable;
 import com.qcadoo.mes.workPlans.pdf.document.operation.component.OperationProductOutTableHeader;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
+import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.holder.OrderOperationComponent;
 import com.qcadoo.model.api.Entity;
 
 import java.util.Locale;
@@ -84,8 +85,11 @@ public class OperationOrderSection {
     }
 
     public void print(final Entity workPlan, final PdfWriter pdfWriter, final GroupingContainer groupingContainer,
-            final Entity order, final Entity operationComponent, final Document document, final Locale locale)
+            final OrderOperationComponent orderOperationComponent, final Document document, final Locale locale)
             throws DocumentException {
+        Entity order = orderOperationComponent.getOrder();
+        Entity operationComponent = orderOperationComponent.getOperationComponent();
+
         operationOrderHeader.print(order, operationComponent, document, locale);
 
         if (isCommentEnabled()) {
@@ -98,12 +102,12 @@ public class OperationOrderSection {
 
         if (isOutputProductTableEnabled()) {
             operationProductOutTableHeader.print(document, locale);
-            operationProductOutTable.print(workPlan, groupingContainer, operationComponent, document, locale);
+            operationProductOutTable.print(workPlan, groupingContainer, orderOperationComponent, document, locale);
         }
 
         if (isInputProductTableEnabled()) {
             operationProductInTableHeader.print(document, locale);
-            operationProductInTable.print(workPlan, groupingContainer, order, operationComponent, document, locale);
+            operationProductInTable.print(workPlan, groupingContainer, orderOperationComponent, document, locale);
         }
 
         operationAdditionalFields.print(operationComponent, document, locale);

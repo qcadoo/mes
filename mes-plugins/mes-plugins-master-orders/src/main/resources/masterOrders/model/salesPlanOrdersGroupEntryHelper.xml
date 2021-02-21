@@ -24,14 +24,20 @@
     ***************************************************************************
 
 -->
-<model name="technologyOperationComponentMergeProductIn" activable="true"
+<model name="salesPlanOrdersGroupEntryHelper" activable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
-        <belongsTo name="operationComponent" model="technologyOperationComponent"/>
-        <belongsTo name="mergedOperationComponent" model="technologyOperationComponent"/>
-        <belongsTo name="mergedOperationProductComponent" model="operationProductInComponent"/>
-        <decimal name="quantityChange"/>
+        <belongsTo name="salesPlanOrdersGroupHelper" plugin="masterOrders" model="salesPlanOrdersGroupHelper"
+                   required="true"/>
+        <belongsTo name="productFamily" plugin="basic" model="product"/>
+        <belongsTo name="product" plugin="basic" model="product"/>
+        <decimal name="plannedQuantity"/>
+        <decimal name="orderedQuantity"/>
+        <decimal name="orderQuantity"/>
     </fields>
-    <identifier expression="#operationComponent['id']"/>
+
+    <hooks />
+
 </model>

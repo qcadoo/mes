@@ -89,6 +89,7 @@
 
         <belongsTo name="model" model="model"/>
         <belongsTo name="modelAssortment" model="assortment" persistent="false"/>
+        <boolean name="batchEvidence" default="false"/>
     </fields>
 
     <hooks>

@@ -23,30 +23,13 @@
  */
 package com.qcadoo.mes.technologies.tree;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
-import com.qcadoo.mes.technologies.constants.ProductStructureTreeNodeFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -54,6 +37,13 @@ import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ProductStructureTreeService {
@@ -65,6 +55,8 @@ public class ProductStructureTreeService {
     public static final String L_COMPONENT = "component";
 
     public static final String L_MATERIAL = "material";
+
+    private static final String L_PRODUCT_BY_SIZE_GROUP = "productBySizeGroup";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -120,7 +112,8 @@ public class ProductStructureTreeService {
     }
 
     private BigDecimal findQuantityOfProductInOperation(final Entity product, final Entity operation) {
-        EntityList operationProductOutComponents = operation.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
+        EntityList operationProductOutComponents = operation
+                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
 
         Entity operationProductOutComponent = operationProductOutComponents.find()
                 .add(SearchRestrictions.belongsTo(ProductStructureTreeNodeFields.PRODUCT, product)).setMaxResults(1)
@@ -144,6 +137,127 @@ public class ProductStructureTreeService {
         return null;
     }
 
+    public EntityTree generateProductStructureTree(final ViewDefinitionState view, final Entity technology) {
+        Entity product = technology.getBelongsToField(TechnologyFields.PRODUCT);
+        Entity operation = findOperationForProductAndTechnology(product, technology);
+        Entity technologyFromDB = technology.getDataDefinition().get(technology.getId());
+        EntityTree tree = technologyFromDB.getTreeField(TechnologyFields.PRODUCT_STRUCTURE_TREE);
+
+        if (Objects.nonNull(tree.getRoot())) {
+            Date productStructureCreateDate = tree.getRoot().getDateField(ProductStructureTreeNodeFields.CREATE_DATE);
+
+            List<Entity> treeEntities = tree.find().list().getEntities();
+
+            Entity technologyStateChange = getLastTechnologyStateChange(technologyFromDB);
+
+            if (productStructureCreateDate.before(technologyStateChange.getDateField(TechnologyStateChangeFields.DATE_AND_TIME))
+                    || checkSubTechnologiesSubstitution(treeEntities)
+                    || checkIfSubTechnologiesChanged(operation, productStructureCreateDate)) {
+                deleteProductStructureTree(treeEntities);
+            } else {
+                return tree;
+            }
+        }
+
+        Entity root = getProductStructureTreeNodeDD().create();
+
+        BigDecimal quantity = findQuantityOfProductInOperation(product, operation);
+        Entity technologyGroup = technology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP);
+        BigDecimal standardPerformanceTechnology = technology.getDecimalField(TechnologyFields.STANDARD_PERFORMANCE_TECHNOLOGY);
+
+        root.setField(ProductStructureTreeNodeFields.TECHNOLOGY, technology);
+        root.setField(ProductStructureTreeNodeFields.MAIN_TECHNOLOGY, technology);
+        root.setField(ProductStructureTreeNodeFields.PRODUCT, product);
+        root.setField(ProductStructureTreeNodeFields.OPERATION, operation);
+        root.setField(ProductStructureTreeNodeFields.QUANTITY, quantity);
+        root.setField(ProductStructureTreeNodeFields.DIVISION,
+                operation.getBelongsToField(TechnologyOperationComponentFields.DIVISION));
+        root.setField(ProductStructureTreeNodeFields.TECHNOLOGY_GROUP, technologyGroup);
+        root.setField(ProductStructureTreeNodeFields.STANDARD_PERFORMANCE_TECHNOLOGY, standardPerformanceTechnology);
+
+        List<Entity> productStructureList = Lists.newArrayList();
+
+        root = addChild(productStructureList, root, null, L_FINAL_PRODUCT);
+
+        generateTreeForSubProducts(operation, technology, productStructureList, root, view, technology);
+
+        technologyFromDB = technology.getDataDefinition().get(technology.getId());
+        return technologyFromDB.getTreeField(TechnologyFields.PRODUCT_STRUCTURE_TREE);
+    }
+
+    private boolean checkIfSubTechnologiesChanged(final Entity operation, final Date productStructureCreateDate) {
+        for (Entity operationProductInComponent : operation
+                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS)) {
+            Entity product = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
+            Entity subOperation = findOperationForProductWithinChildren(product, operation);
+            Entity subTechnology = findTechnologyForProduct(product);
+
+            if (Objects.nonNull(subTechnology)) {
+                Entity technologyStateChange = getLastTechnologyStateChange(subTechnology);
+
+                if (productStructureCreateDate
+                        .before(technologyStateChange.getDateField(TechnologyStateChangeFields.DATE_AND_TIME))) {
+                    return true;
+                }
+
+                if (Objects.isNull(subOperation)) {
+                    Entity operationForTechnology = findOperationForProductAndTechnology(product, subTechnology);
+                    boolean changed = checkIfSubTechnologiesChanged(operationForTechnology, productStructureCreateDate);
+
+                    if (changed) {
+                        return true;
+                    }
+                } else {
+                    boolean changed = checkIfSubTechnologiesChanged(subOperation, productStructureCreateDate);
+
+                    if (changed) {
+                        return true;
+                    }
+                }
+            } else if (Objects.nonNull(subOperation)) {
+                boolean changed = checkIfSubTechnologiesChanged(subOperation, productStructureCreateDate);
+
+                if (changed) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private void deleteProductStructureTree(final List<Entity> treeEntities) {
+        for (Entity entity : treeEntities) {
+            entity.getDataDefinition().delete(entity.getId());
+        }
+    }
+
+    private boolean checkSubTechnologiesSubstitution(final List<Entity> treeEntities) {
+        for (Entity entity : treeEntities) {
+            String entityType = entity.getStringField(ProductStructureTreeNodeFields.ENTITY_TYPE);
+
+            if (entityType.equals(L_INTERMEDIATE) || entityType.equals(L_FINAL_PRODUCT)) {
+                continue;
+            }
+
+            Entity product = entity.getBelongsToField(ProductStructureTreeNodeFields.PRODUCT);
+            Entity newTechnology = findTechnologyForProduct(product);
+
+            if (entityType.equals(L_MATERIAL) && Objects.nonNull(newTechnology)) {
+                return true;
+            } else if (entityType.equals(L_COMPONENT)) {
+                Entity oldTechnology = entity.getBelongsToField(ProductStructureTreeNodeFields.TECHNOLOGY);
+
+                if (Objects.nonNull(oldTechnology) && Objects.isNull(newTechnology)
+                        || Objects.nonNull(oldTechnology) && !oldTechnology.getId().equals(newTechnology.getId())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
     private void generateTreeForSubProducts(final Entity operation, final Entity technology, final List<Entity> tree,
             final Entity parent, final ViewDefinitionState view, final Entity mainTechnology) {
         EntityList operationProductInComponents = operation
@@ -153,7 +267,6 @@ public class ProductStructureTreeService {
             Entity child = getProductStructureTreeNodeDD().create();
 
             Entity product = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
-            Entity technologyInputProductType = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE);
             String unit = operationProductInComponent.getStringField(OperationProductInComponentFields.GIVEN_UNIT);
 
             Entity subOperation = findOperationForProductWithinChildren(product, operation);
@@ -212,7 +325,6 @@ public class ProductStructureTreeService {
                 child.setField(ProductStructureTreeNodeFields.TECHNOLOGY, technology);
                 child.setField(ProductStructureTreeNodeFields.MAIN_TECHNOLOGY, mainTechnology);
                 child.setField(ProductStructureTreeNodeFields.PRODUCT, product);
-                child.setField(ProductStructureTreeNodeFields.TECHNOLOGY_INPUT_PRODUCT_TYPE, technologyInputProductType);
                 child.setField(ProductStructureTreeNodeFields.QUANTITY, quantity);
                 child.setField(ProductStructureTreeNodeFields.TECHNOLOGY_GROUP, technologyGroup);
                 child.setField(ProductStructureTreeNodeFields.STANDARD_PERFORMANCE_TECHNOLOGY, standardPerformanceTechnology);
@@ -227,154 +339,49 @@ public class ProductStructureTreeService {
 
                     generateTreeForSubProducts(subOperation, technology, tree, child, view, mainTechnology);
                 } else {
+                    Entity technologyInputProductType = operationProductInComponent
+                            .getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE);
+                    boolean differentProductsInDifferentSizes = operationProductInComponent
+                            .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES);
+
+                    child.setField(ProductStructureTreeNodeFields.TECHNOLOGY_INPUT_PRODUCT_TYPE, technologyInputProductType);
+                    child.setField(ProductStructureTreeNodeFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES,
+                            differentProductsInDifferentSizes);
                     child.setField(ProductStructureTreeNodeFields.OPERATION, operation);
                     child.setField(ProductStructureTreeNodeFields.DIVISION,
                             operation.getBelongsToField(TechnologyOperationComponentFields.DIVISION));
 
-                    addChild(tree, child, parent, L_MATERIAL);
-                }
-            }
-        }
-    }
+                    child = addChild(tree, child, parent, L_MATERIAL);
 
-    public EntityTree generateProductStructureTree(final ViewDefinitionState view, final Entity technology) {
-        Entity product = technology.getBelongsToField(TechnologyFields.PRODUCT);
-        Entity operation = findOperationForProductAndTechnology(product, technology);
-        Entity technologyFromDB = technology.getDataDefinition().get(technology.getId());
-        EntityTree tree = technologyFromDB.getTreeField(TechnologyFields.PRODUCT_STRUCTURE_TREE);
-
-        if (Objects.nonNull(tree.getRoot())) {
-            Date productStructureCreateDate = tree.getRoot().getDateField(ProductStructureTreeNodeFields.CREATE_DATE);
-
-            List<Entity> treeEntities = tree.find().list().getEntities();
-
-            Entity technologyStateChange = getLastTechnologyStateChange(technologyFromDB);
-
-            if (productStructureCreateDate.before(technologyStateChange.getDateField(TechnologyStateChangeFields.DATE_AND_TIME))
-                    || checkSubTechnologiesSubstitution(treeEntities)
-                    || checkIfSubTechnologiesChanged(operation, productStructureCreateDate)) {
-                deleteProductStructureTree(treeEntities);
-            } else {
-                return tree;
-            }
-        }
-
-        Entity root = getProductStructureTreeNodeDD().create();
-
-        BigDecimal quantity = findQuantityOfProductInOperation(product, operation);
-        Entity technologyGroup = technology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP);
-        BigDecimal standardPerformanceTechnology = technology.getDecimalField(TechnologyFields.STANDARD_PERFORMANCE_TECHNOLOGY);
-
-        root.setField(ProductStructureTreeNodeFields.TECHNOLOGY, technology);
-        root.setField(ProductStructureTreeNodeFields.MAIN_TECHNOLOGY, technology);
-        root.setField(ProductStructureTreeNodeFields.PRODUCT, product);
-        root.setField(ProductStructureTreeNodeFields.OPERATION, operation);
-        root.setField(ProductStructureTreeNodeFields.QUANTITY, quantity);
-        root.setField(ProductStructureTreeNodeFields.DIVISION,
-                operation.getBelongsToField(TechnologyOperationComponentFields.DIVISION));
-        root.setField(ProductStructureTreeNodeFields.TECHNOLOGY_GROUP, technologyGroup);
-        root.setField(ProductStructureTreeNodeFields.STANDARD_PERFORMANCE_TECHNOLOGY, standardPerformanceTechnology);
-
-        List<Entity> productStructureList = Lists.newArrayList();
-
-        root = addChild(productStructureList, root, null, L_FINAL_PRODUCT);
-
-        generateTreeForSubProducts(operation, technology, productStructureList, root, view, technology);
-
-        return EntityTreeUtilsService.getDetachedEntityTree(productStructureList);
-    }
-
-    private void deleteProductStructureTree(final List<Entity> treeEntities) {
-        for (Entity entity : treeEntities) {
-            entity.getDataDefinition().delete(entity.getId());
-        }
-    }
-
-    private boolean checkSubTechnologiesSubstitution(final List<Entity> treeEntities) {
-        for (Entity entity : treeEntities) {
-            String entityType = entity.getStringField(ProductStructureTreeNodeFields.ENTITY_TYPE);
-
-            if (entityType.equals(L_INTERMEDIATE) || entityType.equals(L_FINAL_PRODUCT)) {
-                continue;
-            }
-
-            Entity product = entity.getBelongsToField(ProductStructureTreeNodeFields.PRODUCT);
-            Entity newTechnology = findTechnologyForProduct(product);
-
-            if (entityType.equals(L_MATERIAL) && Objects.nonNull(newTechnology)) {
-                return true;
-            } else if (entityType.equals(L_COMPONENT)) {
-                Entity oldTechnology = entity.getBelongsToField(ProductStructureTreeNodeFields.TECHNOLOGY);
-
-                if (Objects.nonNull(oldTechnology) && Objects.isNull(newTechnology)
-                        || Objects.nonNull(oldTechnology) && !oldTechnology.getId().equals(newTechnology.getId())) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    private boolean checkIfSubTechnologiesChanged(final Entity operation, final Date productStructureCreateDate) {
-        for (Entity operationProductInComponent : operation
-                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS)) {
-            Entity product = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
-            Entity subOperation = findOperationForProductWithinChildren(product, operation);
-            Entity subTechnology = findTechnologyForProduct(product);
-
-            if (Objects.nonNull(subTechnology)) {
-                Entity technologyStateChange = getLastTechnologyStateChange(subTechnology);
-
-                if (productStructureCreateDate
-                        .before(technologyStateChange.getDateField(TechnologyStateChangeFields.DATE_AND_TIME))) {
-                    return true;
-                }
-
-                if (Objects.isNull(subOperation)) {
-                    Entity operationForTechnology = findOperationForProductAndTechnology(product, subTechnology);
-                    boolean changed = checkIfSubTechnologiesChanged(operationForTechnology, productStructureCreateDate);
-
-                    if (changed) {
-                        return true;
-                    }
-                } else {
-                    boolean changed = checkIfSubTechnologiesChanged(subOperation, productStructureCreateDate);
-
-                    if (changed) {
-                        return true;
+                    if (differentProductsInDifferentSizes) {
+                        generateTreeForProductBySizeGroups(operationProductInComponent, operation, technology, tree, child, view,
+                                mainTechnology);
                     }
                 }
-            } else if (Objects.nonNull(subOperation)) {
-                boolean changed = checkIfSubTechnologiesChanged(subOperation, productStructureCreateDate);
-
-                if (changed) {
-                    return true;
-                }
             }
         }
-
-        return false;
     }
 
-    public Entity getLastTechnologyStateChange(final Entity technology) {
-        return technology.getHasManyField(TechnologyFields.STATE_CHANGES).find()
-                .add(SearchRestrictions.eq(TechnologyStateChangeFields.STATUS, StateChangeStatus.SUCCESSFUL.getStringValue()))
-                .addOrder(SearchOrders.desc(TechnologyStateChangeFields.DATE_AND_TIME)).setMaxResults(1).uniqueResult();
-    }
+    private void generateTreeForProductBySizeGroups(final Entity operationProductInComponent, final Entity operation,
+            final Entity technology, final List<Entity> tree, final Entity parent, final ViewDefinitionState view,
+            final Entity mainTechnology) {
+        List<Entity> productBySizeGroups = operationProductInComponent
+                .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS);
 
-    public Entity getTechnologyAcceptStateChange(final Entity technology) {
-        return technology.getHasManyField(TechnologyFields.STATE_CHANGES).find()
-                .add(SearchRestrictions.eq(TechnologyStateChangeFields.TARGET_STATE, TechnologyStateStringValues.ACCEPTED))
-                .add(SearchRestrictions.eq(TechnologyStateChangeFields.STATUS, StateChangeStatus.SUCCESSFUL.getStringValue()))
-                .addOrder(SearchOrders.desc(TechnologyStateChangeFields.DATE_AND_TIME)).setMaxResults(1).uniqueResult();
-    }
+        for (Entity productBySizeGroup : productBySizeGroups) {
+            Entity child = getProductStructureTreeNodeDD().create();
 
-    public Entity getTechnologyOutdatedStateChange(final Entity technology) {
-        return technology.getHasManyField(TechnologyFields.STATE_CHANGES).find()
-                .add(SearchRestrictions.eq(TechnologyStateChangeFields.TARGET_STATE, TechnologyStateStringValues.OUTDATED))
-                .add(SearchRestrictions.eq(TechnologyStateChangeFields.STATUS, StateChangeStatus.SUCCESSFUL.getStringValue()))
-                .addOrder(SearchOrders.desc(TechnologyStateChangeFields.DATE_AND_TIME)).setMaxResults(1).uniqueResult();
+            Entity product = productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT);
+            Entity sizeGroup = productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.SIZE_GROUP);
+
+            child.setField(ProductStructureTreeNodeFields.TECHNOLOGY, technology);
+            child.setField(ProductStructureTreeNodeFields.MAIN_TECHNOLOGY, mainTechnology);
+            child.setField(ProductStructureTreeNodeFields.PRODUCT, product);
+            child.setField(ProductStructureTreeNodeFields.SIZE_GROUP, sizeGroup);
+            child.setField(ProductStructureTreeNodeFields.OPERATION, operation);
+
+            addChild(tree, child, parent, L_PRODUCT_BY_SIZE_GROUP);
+        }
     }
 
     public EntityTree getOperationComponentsFromTechnology(final Entity technology) {
@@ -406,7 +413,8 @@ public class ProductStructureTreeService {
         for (Entity node : root.getHasManyField(TechnologyOperationComponentFields.CHILDREN)) {
             String entityType = node.getStringField(ProductStructureTreeNodeFields.ENTITY_TYPE);
 
-            if (!entityType.equals(L_MATERIAL) && !entityType.equals(L_FINAL_PRODUCT)) {
+            if (!entityType.equals(L_MATERIAL) && !entityType.equals(L_FINAL_PRODUCT)
+                    && !entityType.equals(L_PRODUCT_BY_SIZE_GROUP)) {
                 Long tocId = node.getBelongsToField(ProductStructureTreeNodeFields.OPERATION).getId();
                 Entity toc = tocDD.get(tocId);
                 Long parentId = Objects.nonNull(node.getBelongsToField(ProductStructureTreeNodeFields.PARENT))
@@ -460,6 +468,26 @@ public class ProductStructureTreeService {
         }
 
         tree.add(child);
+    }
+
+    public Entity getLastTechnologyStateChange(final Entity technology) {
+        return technology.getHasManyField(TechnologyFields.STATE_CHANGES).find()
+                .add(SearchRestrictions.eq(TechnologyStateChangeFields.STATUS, StateChangeStatus.SUCCESSFUL.getStringValue()))
+                .addOrder(SearchOrders.desc(TechnologyStateChangeFields.DATE_AND_TIME)).setMaxResults(1).uniqueResult();
+    }
+
+    public Entity getTechnologyAcceptStateChange(final Entity technology) {
+        return technology.getHasManyField(TechnologyFields.STATE_CHANGES).find()
+                .add(SearchRestrictions.eq(TechnologyStateChangeFields.TARGET_STATE, TechnologyStateStringValues.ACCEPTED))
+                .add(SearchRestrictions.eq(TechnologyStateChangeFields.STATUS, StateChangeStatus.SUCCESSFUL.getStringValue()))
+                .addOrder(SearchOrders.desc(TechnologyStateChangeFields.DATE_AND_TIME)).setMaxResults(1).uniqueResult();
+    }
+
+    public Entity getTechnologyOutdatedStateChange(final Entity technology) {
+        return technology.getHasManyField(TechnologyFields.STATE_CHANGES).find()
+                .add(SearchRestrictions.eq(TechnologyStateChangeFields.TARGET_STATE, TechnologyStateStringValues.OUTDATED))
+                .add(SearchRestrictions.eq(TechnologyStateChangeFields.STATUS, StateChangeStatus.SUCCESSFUL.getStringValue()))
+                .addOrder(SearchOrders.desc(TechnologyStateChangeFields.DATE_AND_TIME)).setMaxResults(1).uniqueResult();
     }
 
     private DataDefinition getTechnologyDD() {

@@ -23,19 +23,7 @@
  */
 package com.qcadoo.mes.deliveries.states;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
-import com.qcadoo.mes.advancedGenealogy.constants.ProductFieldsAG;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.ProductSynchronizationService;
@@ -47,6 +35,16 @@ import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.PluginManager;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static com.google.common.base.Preconditions.checkArgument;
 
 @Service
 public class DeliveryStateValidationService {
@@ -167,7 +165,7 @@ public class DeliveryStateValidationService {
         Entity product = deliveredProduct.getBelongsToField(DeliveredProductFields.PRODUCT);
         Entity batch = deliveredProduct.getBelongsToField(DeliveredProductFields.BATCH);
 
-        return (product.getBooleanField(ProductFieldsAG.BATCH_EVIDENCE) && Objects.isNull(batch));
+        return (product.getBooleanField(ProductFields.BATCH_EVIDENCE) && Objects.isNull(batch));
     }
 
     private void checkDeliveredProductsPricePerUnits(final StateChangeContext stateChangeContext) {

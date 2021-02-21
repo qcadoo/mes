@@ -171,16 +171,10 @@
 
         <hasMany name="operationalTasks" model="operationalTask" joinField="order" cascade="delete"/>
 
-        <hasMany name="technologyOperationComponentsMergeProductIn" plugin="technologies"
-                       model="technologyOperationComponentMergeProductIn"
-                       joinField="order" cascade="delete"/>
-
-        <hasMany name="technologyOperationComponentsMergeProductOut" plugin="technologies"
-                       model="technologyOperationComponentMergeProductOut"
-                       joinField="order" cascade="delete"/>
         <hasMany name="orderPacks" model="orderPack" joinField="order" cascade="delete"/>
         <hasMany name="orderPacksDto" joinField="order" model="orderPackDto"
                  persistent="false"/>
+
     </fields>
 
     <hooks>

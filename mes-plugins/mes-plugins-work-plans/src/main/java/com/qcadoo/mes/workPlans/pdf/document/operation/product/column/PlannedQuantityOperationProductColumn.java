@@ -24,7 +24,8 @@
 package com.qcadoo.mes.workPlans.pdf.document.operation.product.column;
 
 import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.ProductDirection;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -37,10 +38,14 @@ public class PlannedQuantityOperationProductColumn extends AbstractOperationProd
 
     private NumberService numberService;
 
+    private ParameterService parameterService;
+
     @Autowired
-    public PlannedQuantityOperationProductColumn(TranslationService translationService, NumberService numberService) {
+    public PlannedQuantityOperationProductColumn(TranslationService translationService, NumberService numberService,
+            ParameterService parameterService) {
         super(translationService);
         this.numberService = numberService;
+        this.parameterService = parameterService;
     }
 
     @Override
@@ -50,8 +55,15 @@ public class PlannedQuantityOperationProductColumn extends AbstractOperationProd
 
     @Override
     public String getColumnValue(Entity operationProduct) {
-        return String.valueOf(numberService.format(numberService.setScaleWithDefaultMathContext(operationProduct
-                .getDecimalField(OperationProductInComponentFields.QUANTITY))));
+        Entity parameters = parameterService.getParameter();
+        boolean takeActualProgress = parameters.getBooleanField(ParameterFieldsWP.TAKE_ACTUAL_PROGRESS_IN_WORK_PLANS);
+        if(takeActualProgress) {
+            return String.valueOf(numberService.format(numberService.setScaleWithDefaultMathContext(operationProduct
+                    .getDecimalField("quantity"))));
+        } else {
+            return String.valueOf(numberService.format(numberService.setScaleWithDefaultMathContext(operationProduct
+                    .getDecimalField("plannedQuantity"))));
+        }
     }
 
     @Override

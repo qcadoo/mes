@@ -148,6 +148,8 @@
             <option type="column" name="division" fields="division"
                     expression="#division?.get('number')"/>
             <option type="column" name="wnkNumber" fields="wnkNumber"/>
+            <option type="column" name="staff" fields="staff" expression="#staff['name'] + ' ' + #staff['surname']"/>
+
             <option type="order" column="number" direction="desc"/>
 
             <option type="searchable" value="name,number,workstationType,division,wnkNumber"/>

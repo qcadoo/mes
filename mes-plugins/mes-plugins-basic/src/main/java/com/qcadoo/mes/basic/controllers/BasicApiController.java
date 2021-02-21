@@ -115,7 +115,7 @@ public final class BasicApiController {
             ErrorMessage numberError = workstationEntity.getError(WorkstationFields.NUMBER);
             if(Objects.nonNull(numberError) && numberError.getMessage().equals("qcadooView.validate.field.error.duplicated")) {
                 WorkstationResponse response = new WorkstationResponse(WorkstationResponse.StatusCode.ERROR);
-                response.setMessage(translationService.translate("basic.dashboard.operationalTasksDefinitionWizard.error.validationError.workstationDuplicated",
+                response.setMessage(translationService.translate("basic.dashboard.operationalTasksDefinitionWizard.error.validationError.workstationTypeDuplicated",
                         LocaleContextHolder.getLocale()));
                 return response;
             }

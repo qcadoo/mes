@@ -23,42 +23,30 @@
  */
 package com.qcadoo.mes.workPlans.print;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.google.common.collect.Lists;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.technologies.ProductQuantitiesServiceImpl;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
-import com.qcadoo.mes.technologies.grouping.OperationMergeService;
 import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
 import com.qcadoo.mes.workPlans.pdf.document.WorkPlanPdf;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.factory.GroupingContainerFactory;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.report.api.pdf.PdfDocumentWithWriterService;
+
+import java.util.List;
+import java.util.Locale;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class WorkPlanPdfService extends PdfDocumentWithWriterService {
@@ -73,9 +61,6 @@ public class WorkPlanPdfService extends PdfDocumentWithWriterService {
     private WorkPlanPdf workPlanPdf;
 
     @Autowired
-    private OperationMergeService operationMergeService;
-
-    @Autowired
     private ProductQuantitiesServiceImpl productQuantitiesServiceImpl;
 
     @Autowired
@@ -87,6 +72,9 @@ public class WorkPlanPdfService extends PdfDocumentWithWriterService {
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
 
+    @Autowired
+    private ParameterService parameterService;
+
     @Override
     public String getReportTitle(final Locale locale) {
         return translationService.translate("workPlans.workPlan.report.title", locale);
@@ -95,15 +83,13 @@ public class WorkPlanPdfService extends PdfDocumentWithWriterService {
     @Override
     public void buildPdfContent(final PdfWriter writer, final Document document, final Entity workPlan, final Locale locale)
             throws DocumentException {
-        GroupingContainer groupingContainer = groupingContainerFactory.create(workPlan, locale);
 
+        GroupingContainer groupingContainer = groupingContainerFactory.create(workPlan, locale);
         for (Entity order : orders(workPlan)) {
-            OperationProductComponentWithQuantityContainer productQuantities = productQuantitiesServiceImpl
-                    .getProductComponentQuantities(order);
-            removeAlreadyExistsMergesForOrder(order);
             for (Entity operationComponent : operationComponents(technology(order))) {
-                Entity updatedComponent = updateOperationProductComponents(order, operationComponent);
-                groupingContainer.add(order, updatedComponent, productQuantities);
+                List<Entity> productionCountingQuantitiesIn = getProductionCountingQuantitiesIn(order, operationComponent);
+                List<Entity> productionCountingQuantitiesOut = getProductionCountingQuantitiesOut(order, operationComponent);
+                groupingContainer.add(order, operationComponent, productionCountingQuantitiesIn, productionCountingQuantitiesOut);
             }
         }
 
@@ -111,71 +97,28 @@ public class WorkPlanPdfService extends PdfDocumentWithWriterService {
 
     }
 
-    public Entity updateOperationProductComponents(final Entity order, final Entity operationComponent) {
-        if (!OrderState.PENDING.getStringValue().equals(order.getStringField(OrderFields.STATE))) {
-            List<Entity> productionCountingQuantities = basicProductionCountingService
-                    .getMaterialsForOperationFromProductionCountingQuantities(order, operationComponent);
+    public List<Entity> getProductionCountingQuantitiesOut(Entity order, Entity operationComponent) {
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT pcqOut FROM #orderSupplies_productionCountingQuantityOutput AS pcqOut ");
+        query.append("WHERE orderId = :orderId AND technologyOperationComponentId = :technologyOperationComponentId ");
 
-            List<Entity> inComponents = updateOperationProductComponents(operationComponent, productionCountingQuantities,
-                    TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS,
-                    ProductionCountingQuantityRole.USED.getStringValue(), dataDefinitionService.get(
-                            TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT));
-
-            List<Entity> outComponents = updateOperationProductComponents(operationComponent, productionCountingQuantities,
-                    TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS,
-                    ProductionCountingQuantityRole.PRODUCED.getStringValue(), dataDefinitionService.get(
-                            TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT));
-
-            operationComponent.setField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS, inComponents);
-            operationComponent.setField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS, outComponents);
-
-        }
-        return operationComponent;
+        return dataDefinitionService.get("orderSupplies", "productionCountingQuantityInput")
+                .find(query.toString())
+                .setParameter("orderId", order.getId().intValue())
+                .setParameter("technologyOperationComponentId", operationComponent.getId().intValue())
+                .list().getEntities();
     }
 
-    private List<Entity> updateOperationProductComponents(final Entity operationComponent,
-            final List<Entity> productionCountingQuantities, final String componentsField, final String role,
-            final DataDefinition dataDefinition) {
+    public List<Entity> getProductionCountingQuantitiesIn(Entity order, Entity operationComponent) {
+        StringBuilder query = new StringBuilder();
+        query.append("SELECT pcqIn FROM #orderSupplies_productionCountingQuantityInput AS pcqIn ");
+        query.append("WHERE orderId = :orderId AND technologyOperationComponentId = :technologyOperationComponentId ");
 
-        List<Entity> productionCountingQuantitiesForRole = productionCountingQuantities.stream()
-                .filter(pcq -> role.equals(pcq.getStringField(ProductionCountingQuantityFields.ROLE)))
-                .collect(Collectors.toList());
-        List<Long> allProductionCountingQuantityIds = productionCountingQuantitiesForRole.stream()
-                .map(pcq -> pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId()).collect(Collectors.toList());
-
-        List<Entity> existingProductComponents = operationComponent
-                .getHasManyField(componentsField)
-                .stream()
-                .filter(opic -> allProductionCountingQuantityIds.contains(opic.getBelongsToField(
-                        OperationProductInComponentFields.PRODUCT).getId())).collect(Collectors.toList());
-
-        List<Long> existingProductComponentIds = existingProductComponents.stream()
-                .map(opic -> opic.getBelongsToField(OperationProductInComponentFields.PRODUCT).getId())
-                .collect(Collectors.toList());
-
-        List<Entity> mergedProductComponents = Lists.newArrayList();
-        for (Entity pcq : productionCountingQuantitiesForRole) {
-            Entity product = pcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
-            BigDecimal plannedQuantity = pcq.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY);
-            if (existingProductComponentIds.contains(product.getId())) {
-                Optional<Entity> maybeExistingComponent = existingProductComponents
-                        .stream()
-                        .filter(component -> component.getBelongsToField(OperationProductInComponentFields.PRODUCT).getId()
-                                .equals(product.getId())).findFirst();
-                if (maybeExistingComponent.isPresent()) {
-                    Entity existingComponent = maybeExistingComponent.get();
-                    existingComponent.setField(OperationProductInComponentFields.QUANTITY, plannedQuantity);
-                    mergedProductComponents.add(existingComponent);
-                }
-            } else {
-                Entity newComponent = dataDefinition.create();
-                newComponent.setField(OperationProductInComponentFields.PRODUCT, product);
-                newComponent.setField(OperationProductInComponentFields.QUANTITY, plannedQuantity);
-                newComponent.setField(OperationProductInComponentFields.OPERATION_COMPONENT, operationComponent);
-                mergedProductComponents.add(newComponent);
-            }
-        }
-        return mergedProductComponents;
+        return dataDefinitionService.get("orderSupplies", "productionCountingQuantityInput")
+                .find(query.toString())
+                .setParameter("orderId", order.getId().intValue())
+                .setParameter("technologyOperationComponentId", operationComponent.getId().intValue())
+                .list().getEntities();
     }
 
     private List<Entity> operationComponents(Entity technology) {
@@ -188,18 +131,6 @@ public class WorkPlanPdfService extends PdfDocumentWithWriterService {
 
     private EntityList orders(Entity workPlan) {
         return workPlan.getHasManyField(WorkPlanFields.ORDERS);
-    }
-
-    private void removeAlreadyExistsMergesForOrder(Entity order) {
-        List<Entity> mergedProductInsByOrder = operationMergeService.findMergedProductInByOrder(order);
-        for (Entity entity : mergedProductInsByOrder) {
-            entity.getDataDefinition().delete(entity.getId());
-        }
-
-        List<Entity> mergedProductOutsByOrder = operationMergeService.findMergedProductOutByOrder(order);
-        for (Entity entity : mergedProductOutsByOrder) {
-            entity.getDataDefinition().delete(entity.getId());
-        }
     }
 
 }

@@ -41,6 +41,7 @@ import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.domain.OperationId;
+import com.qcadoo.mes.technologies.domain.SizeGroupId;
 import com.qcadoo.mes.technologies.domain.TechnologyId;
 import com.qcadoo.mes.technologies.domain.TechnologyInputProductTypeId;
 import com.qcadoo.mes.technologies.tree.domain.TechnologyOperationId;
@@ -192,21 +193,24 @@ public class TreeGenerator {
 
     private Entity buildEntity(final TechnologyStructureNode node, final Entity generatorContext,
             final DataDefinition dataDefinition) {
-        Entity entity = dataDefinition.create();
-        setUpChildrenField(node, generatorContext, dataDefinition, entity);
-
         ProductInfo productInfo = node.getProductInfo();
+
+        Entity entity = dataDefinition.create();
+
+        setUpChildrenField(node, generatorContext, dataDefinition, entity);
+        setBelongsToField(entity, GeneratorTreeNodeFields.GENERATOR_CONTEXT, generatorContext);
         setBelongsToField(entity, GeneratorTreeNodeFields.PRODUCT, productInfo.getProduct().get());
         setUpProductTechnologyFields(entity, productInfo);
-        setBelongsToField(entity, GeneratorTreeNodeFields.GENERATOR_CONTEXT, generatorContext);
         setUpTechnologyInputProductTypeField(entity, productInfo);
+        entity.setField(GeneratorTreeNodeFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES,
+                productInfo.getDifferentProductsInDifferentSizes());
         setUpOperationField(entity, productInfo);
         setUpDivisionField(entity, productInfo);
         setUpTechnologyGeneratorAndPerformance(entity, productInfo);
-
         entity.setField(GeneratorTreeNodeFields.QUANTITY, productInfo.getQuantity());
         entity.setField(GeneratorTreeNodeFields.ENTITY_TYPE, node.getType().getStringValue());
         entity.setField(GeneratorTreeNodeFields.UNIT, productInfo.getUnit());
+        setUpSizeGroupField(entity, productInfo);
 
         return entity.getDataDefinition().save(entity);
     }
@@ -220,7 +224,8 @@ public class TreeGenerator {
     }
 
     private void setUpTechnologyInputProductTypeField(final Entity entity, final ProductInfo productInfo) {
-        Long technologyInputProductTypeId = productInfo.getTechnologyInputProductType().map(TechnologyInputProductTypeId::get).orElse(null);
+        Long technologyInputProductTypeId = productInfo.getTechnologyInputProductType().map(TechnologyInputProductTypeId::get)
+                .orElse(null);
 
         setBelongsToField(entity, GeneratorTreeNodeFields.TECHNOLOGY_INPUT_PRODUCT_TYPE, technologyInputProductTypeId);
     }
@@ -244,6 +249,12 @@ public class TreeGenerator {
                         toc.getBelongsToField(TechnologyOperationComponentFields.DIVISION));
             }
         }
+    }
+
+    private void setUpSizeGroupField(final Entity entity, final ProductInfo productInfo) {
+        Long sizeGroupId = productInfo.getSizeGroup().map(SizeGroupId::get).orElse(null);
+
+        setBelongsToField(entity, GeneratorTreeNodeFields.SIZE_GROUP, sizeGroupId);
     }
 
     private void setUpChildrenField(final TechnologyStructureNode node, final Entity generatorContext,

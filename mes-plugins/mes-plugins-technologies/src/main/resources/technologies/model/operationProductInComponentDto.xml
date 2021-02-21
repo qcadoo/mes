@@ -33,44 +33,26 @@
         <belongsTo name="operationComponent" model="technologyOperationComponent"
                    persistent="false"/>
         <belongsTo name="product" plugin="basic" model="product"/>
-
         <integer name="operationComponentId"/>
-
         <integer name="productId"/>
-
         <string name="productNumber"/>
-
         <string name="productName"/>
-
         <string name="productUnit"/>
-
         <string name="nodeNumber"/>
-
         <string name="operationName"/>
-
         <integer name="technologyId"/>
-
         <string name="technologyName"/>
-
         <string name="technologyNumber"/>
-
         <string name="technologyType"/>
-
         <priority name="priority"/>
-
         <decimal name="quantity"/>
-
         <boolean name="hasAcceptedTechnology"/>
-
         <boolean name="masterTechnology"/>
-
         <boolean name="hasCheckedTechnology"/>
-
         <boolean name="activeTechnology"/>
-
         <enum name="technologyState" values="01draft,02accepted,03declined,04outdated,05checked"/>
-
         <string name="technologyInputProductTypeName"/>
+        <boolean name="differentProductsInDifferentSizes"/>
     </fields>
 
     <hooks/>

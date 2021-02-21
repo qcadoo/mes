@@ -47,6 +47,8 @@ public final class ProductStructureTreeNodeFields {
 
     public static final String TECHNOLOGY_INPUT_PRODUCT_TYPE = "technologyInputProductType";
 
+    public static final String DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES = "differentProductsInDifferentSizes";
+
     public static final String OPERATION = "operation";
 
     public static final String TECHNOLOGY = "technology";
@@ -60,6 +62,8 @@ public final class ProductStructureTreeNodeFields {
     public static final String STANDARD_PERFORMANCE_TECHNOLOGY = "standardPerformanceTechnology";
 
     public static final String UNIT = "unit";
+
+    public static final String SIZE_GROUP = "sizeGroup";
 
     public static final String CREATE_DATE = "createDate";
 }

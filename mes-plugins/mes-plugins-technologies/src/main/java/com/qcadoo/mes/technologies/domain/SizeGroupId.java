@@ -21,9 +21,19 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.technologies.grouping;
+package com.qcadoo.mes.technologies.domain;
 
-public interface OperationGroupingService {
+import com.qcadoo.mes.basic.domain.ImmutableIdWrapper;
 
+public class SizeGroupId extends ImmutableIdWrapper {
+
+    public SizeGroupId(final Long id) {
+        super(id);
+    }
+
+    @Override
+    public String toString() {
+        return String.format("SizeGroupId(%s)", get());
+    }
 
 }

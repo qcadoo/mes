@@ -23,21 +23,22 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container;
 
-import java.util.List;
-import java.util.Map;
-
 import com.google.common.collect.ListMultimap;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.holder.OrderOperationComponent;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationProductColumn;
 import com.qcadoo.mes.workPlans.pdf.document.order.column.OrderColumn;
 import com.qcadoo.model.api.Entity;
 
+import java.util.List;
+import java.util.Map;
+
 public interface GroupingContainer {
 
-    void add(final Entity order, final Entity operationComponent,
-            final OperationProductComponentWithQuantityContainer productQuantities);
+    void add(final Entity order, final Entity operationComponent, List<Entity> productionCountingQuantitiesIn,
+            List<Entity> productionCountingQuantitiesOut);
+
+    void add(final OrderOperationComponent orderOperationComponent);
 
     ListMultimap<String, OrderOperationComponent> getTitleToOperationComponent();
 

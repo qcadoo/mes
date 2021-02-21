@@ -87,6 +87,12 @@
         <model:model model="salesPlanMaterialRequirement" resource="model/salesPlanMaterialRequirement.xml"/>
         <model:model model="salesPlanMaterialRequirementProduct" resource="model/salesPlanMaterialRequirementProduct.xml"/>
 
+        <model:model model="ordersGenerationHelper" resource="model/ordersGenerationHelper.xml"/>
+
+        <model:model model="salesPlanOrdersGroupHelper" resource="model/salesPlanOrdersGroupHelper.xml"/>
+        <model:model model="salesPlanOrdersGroupEntryHelper" resource="model/salesPlanOrdersGroupEntryHelper.xml"/>
+
+
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="salesPlanProducts" model="salesPlanProduct" plugin="masterOrders" joinField="product"/>
         </model:model-field>
@@ -197,7 +203,7 @@
         <menu:menu-item name="salesPlansList" category="orders"
                         view="salesPlansList" defaultAuthorizationRole="ROLE_PLANNING"/>
 
-        <menu:menu-item name="salesPlanMaterialRequirementsList" category="orders"
+        <menu:menu-item name="salesPlanMaterialRequirementsList" category="requirements"
                         view="salesPlanMaterialRequirementsList" defaultAuthorizationRole="ROLE_PLANNING"/>
 
         <view:view resource="view/masterOrdersList.xml"/>
@@ -219,6 +225,12 @@
         <view:view resource="view/orderedProductsForFamily.xml"/>
         <view:view resource="view/salesPlanMaterialRequirementsList.xml"/>
         <view:view resource="view/salesPlanMaterialRequirementDetails.xml"/>
+
+        <view:view resource="view/ordersGenerationFromProducts.xml"/>
+
+        <view:view resource="view/salesPlanOrdersGroup.xml"/>
+
+        <view:view-ribbon-group resource="view/ribbonExtensions/productsList.xml"/>
 
         <view:view-tab resource="view/tabExtensions/orderDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/masterOrderDefinitionsParameters.xml"/>
@@ -242,6 +254,11 @@
                         type="beforeRender"
                         class="com.qcadoo.mes.masterOrders.hooks.OrderDetailsHooksMO"
                         method="fillMasterOrderFields"/>
+
+        <view:view-listener plugin="basic" view="productsList"
+                            component="grid" event="generateOrders"
+                            class="com.qcadoo.mes.masterOrders.listeners.ProductsListListenersMO"
+                            method="generateOrders"/>
 
         <view:resource uri="public/**/*"/>
 

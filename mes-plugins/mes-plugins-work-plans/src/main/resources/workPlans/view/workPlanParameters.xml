@@ -79,14 +79,6 @@
                             <option type="align" value="left"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="6">
-                        <component type="checkbox" name="enableOperationGroupingWorkPlan"
-                                   field="#{form}.enableOperationGroupingWorkPlan"
-                                   reference="enableOperationGroupingWorkPlan">
-                            <option type="labelWidth" value="50"/>
-                            <option type="align" value="left"/>
-                        </component>
-                    </layoutElement>
                     <layoutElement column="2" row="1" height="7">
                         <component type="grid" name="columnsForOrders"
                                    source="#{form}.parameterOrderColumns" reference="columnsForOrders">

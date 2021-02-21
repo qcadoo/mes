@@ -14,7 +14,7 @@
 
     </fields>
     <hooks>
-        <validatesWith class="com.qcadoo.mes.orders.listeners.OrdersGenerationFromProductsListeners" method="validateDate"/>
+        <validatesWith class="com.qcadoo.mes.masterOrders.listeners.OrdersGenerationFromProductsListeners" method="validateDate"/>
 
     </hooks>
 </model>

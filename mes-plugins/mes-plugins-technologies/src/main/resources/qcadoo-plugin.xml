@@ -88,12 +88,6 @@
 
         <model:model model="barcodeOperationComponent" resource="model/barcodeOperationComponent.xml"/>
 
-        <model:model model="technologyOperationComponentMergeProductIn"
-                     resource="model/technologyOperationComponentMergeProductIn.xml"/>
-
-        <model:model model="technologyOperationComponentMergeProductOut"
-                     resource="model/technologyOperationComponentMergeProductOut.xml"/>
-
         <model:model model="changeTechnologyParameters"
                      resource="model/changeTechnologyParameters.xml"/>
 
@@ -240,10 +234,6 @@
         </model:model-field>
 
         <model:model-field model="parameter" plugin="basic">
-            <model:boolean name="technologiesGeneratorCopyProductSize" default="false"/>
-        </model:model-field>
-
-        <model:model-field model="parameter" plugin="basic">
             <model:boolean name="completeWarehousesFlowWhileChecking" default="false"/>
         </model:model-field>
 
@@ -251,9 +241,20 @@
             <model:boolean name="moveProductsToSubsequentOperations" default="false"/>
         </model:model-field>
 
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="technologiesGeneratorCopyProductSize" default="false"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="allowCheckedTechnologyWithoutInProducts" default="false"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="acceptedTechnologyMarkedAsDefault" default="false"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="product">
-            <model:manyToMany name="qualityCards" plugin="technologies" model="qualityCard" joinField="products"
-                              cascade="nullify"/>
+            <model:manyToMany name="qualityCards" plugin="technologies" model="qualityCard" joinField="products"/>
         </model:model-field>
 
         <model:model-hook model="division" plugin="basic">

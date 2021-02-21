@@ -1,4 +1,4 @@
-package com.qcadoo.mes.masterOrders.controllers;
+package com.qcadoo.mes.masterOrders.controllers.productBySize;
 
 import com.google.common.collect.Lists;
 
@@ -7,6 +7,7 @@ import java.util.List;
 public class ProductsBySizeRequest {
 
     private Long entityId;
+
     private List<ProductBySizePosition> positions = Lists.newArrayList();
 
     public Long getEntityId() {

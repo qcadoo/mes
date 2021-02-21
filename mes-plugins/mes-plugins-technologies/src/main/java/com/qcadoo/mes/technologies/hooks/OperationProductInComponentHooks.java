@@ -56,7 +56,15 @@ public class OperationProductInComponentHooks {
     private TranslationService translationService;
 
     public void onSave(final DataDefinition operationProductInComponentDD, final Entity operationProductInComponent) {
+        setDifferentProductsInDifferentSizes(operationProductInComponent);
         clearProductBySizeGroups(operationProductInComponent);
+    }
+
+    private void setDifferentProductsInDifferentSizes(final Entity operationProductInComponent) {
+        if (Objects.isNull(
+                operationProductInComponent.getField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES))) {
+            operationProductInComponent.setField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES, false);
+        }
     }
 
     private void clearProductBySizeGroups(final Entity operationProductInComponent) {

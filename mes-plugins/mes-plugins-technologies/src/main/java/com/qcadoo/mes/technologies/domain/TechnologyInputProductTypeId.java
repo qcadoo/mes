@@ -35,4 +35,5 @@ public class TechnologyInputProductTypeId extends ImmutableIdWrapper {
     public String toString() {
         return String.format("TechnologyInputProductTypeId(%s)", get());
     }
+
 }

@@ -24,9 +24,11 @@
 package com.qcadoo.mes.workPlans.pdf.document.operation.product.column;
 
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.ProductDirection;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +37,12 @@ import org.springframework.stereotype.Component;
 @Component("unitOperationProductColumn")
 public class UnitOperationProductColumn extends AbstractOperationProductColumn {
 
+    private DataDefinitionService dataDefinitionService;
+
     @Autowired
-    public UnitOperationProductColumn(TranslationService translationService) {
+    public UnitOperationProductColumn(TranslationService translationService, DataDefinitionService dataDefinitionService) {
         super(translationService);
+        this.dataDefinitionService = dataDefinitionService;
     }
 
     @Override
@@ -47,7 +52,8 @@ public class UnitOperationProductColumn extends AbstractOperationProductColumn {
 
     @Override
     public String getColumnValue(Entity operationProduct) {
-        Entity product = product(operationProduct);
+        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
+                operationProduct.getIntegerField("productId").longValue());
         return product.getStringField(ProductFields.UNIT);
     }
 

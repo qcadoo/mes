@@ -23,18 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import java.math.BigDecimal;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -55,17 +43,20 @@ import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.*;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import com.qcadoo.view.constants.RowStyle;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.*;
 
 @Service
 public class DeliveryDetailsHooks {
@@ -87,6 +78,8 @@ public class DeliveryDetailsHooks {
     private static final String L_DELIVERY_POSITIONS = "deliveryPositions";
 
     private static final String L_CHANGE_STORAGE_LOCATIONS = "changeStorageLocations";
+    
+    private static final String ASSIGN_STORAGE_LOCATIONS = "assignStorageLocations";
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -163,7 +156,7 @@ public class DeliveryDetailsHooks {
         deliveredProducts.setEnabled(enabledDeliveredGrid);
     }
 
-    public void fillDeliveryAddressDefaultValue(final ViewDefinitionState view) {
+    private void fillDeliveryAddressDefaultValue(final ViewDefinitionState view) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (Objects.nonNull(deliveryForm.getEntityId())) {
@@ -178,7 +171,7 @@ public class DeliveryDetailsHooks {
         }
     }
 
-    public void fillDescriptionDefaultValue(final ViewDefinitionState view) {
+    private void fillDescriptionDefaultValue(final ViewDefinitionState view) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (Objects.nonNull(deliveryForm.getEntityId())) {
@@ -193,7 +186,7 @@ public class DeliveryDetailsHooks {
         }
     }
 
-    public void filterStateChangeHistory(final ViewDefinitionState view) {
+    private void filterStateChangeHistory(final ViewDefinitionState view) {
         final GridComponent historyGrid = (GridComponent) view.getComponentByReference(L_LOGGINGS_GRID);
         final CustomRestriction onlySuccessfulRestriction = stateChangeHistoryService.buildStatusRestriction(
                 DeliveryStateChangeFields.STATUS, Lists.newArrayList(StateChangeStatus.SUCCESSFUL.getStringValue()));
@@ -201,7 +194,7 @@ public class DeliveryDetailsHooks {
         historyGrid.setCustomRestriction(onlySuccessfulRestriction);
     }
 
-    public void updateRelatedDeliveryButtonsState(final ViewDefinitionState view) {
+    private void updateRelatedDeliveryButtonsState(final ViewDefinitionState view) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long deliveryId = deliveryForm.getEntityId();
 
@@ -232,7 +225,7 @@ public class DeliveryDetailsHooks {
         ribbonActionItem.requestUpdate(true);
     }
 
-    public void fillCurrencyFields(final ViewDefinitionState view) {
+    private void fillCurrencyFields(final ViewDefinitionState view) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         List<String> referenceNames = Lists.newArrayList("deliveredProductsCumulatedTotalPriceCurrency",
@@ -252,11 +245,11 @@ public class DeliveryDetailsHooks {
         }
     }
 
-    public void disableShowProductButton(final ViewDefinitionState view) {
+    private void disableShowProductButton(final ViewDefinitionState view) {
         deliveriesService.disableShowProductButton(view);
     }
 
-    public void fillLocationDefaultValue(final ViewDefinitionState view) {
+    private void fillLocationDefaultValue(final ViewDefinitionState view) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (Objects.nonNull(deliveryForm.getEntityId())) {
@@ -279,7 +272,7 @@ public class DeliveryDetailsHooks {
         }
     }
 
-    public void changeLocationEnabledDependOnState(final ViewDefinitionState view) {
+    private void changeLocationEnabledDependOnState(final ViewDefinitionState view) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         LookupComponent locationField = (LookupComponent) view.getComponentByReference(DeliveryFields.LOCATION);
@@ -290,16 +283,12 @@ public class DeliveryDetailsHooks {
             FieldComponent stateField = (FieldComponent) view.getComponentByReference(DeliveryFields.STATE);
             String state = stateField.getFieldValue().toString();
 
-            if (DeliveryState.DECLINED.getStringValue().equals(state) || DeliveryState.RECEIVED.getStringValue().equals(state)
-                    || DeliveryState.RECEIVE_CONFIRM_WAITING.getStringValue().equals(state)) {
-                locationField.setEnabled(false);
-            } else {
-                locationField.setEnabled(true);
-            }
+            locationField.setEnabled(!DeliveryState.DECLINED.getStringValue().equals(state) && !DeliveryState.RECEIVED.getStringValue().equals(state)
+                    && !DeliveryState.RECEIVE_CONFIRM_WAITING.getStringValue().equals(state));
         }
     }
 
-    public void updateCopyOrderedProductButtonsState(final ViewDefinitionState view) {
+    private void updateCopyOrderedProductButtonsState(final ViewDefinitionState view) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long deliveryId = deliveryForm.getEntityId();
 
@@ -339,9 +328,24 @@ public class DeliveryDetailsHooks {
     public void onBeforeRender(final ViewDefinitionState view) {
         orderGridByProductNumber(view);
         updateChangeStorageLocationButton(view);
+        updateAssignStorageLocationsButton(view);
+        generateDeliveryNumber(view);
+        fillCompanyFieldsForSupplier(view);
+        fillDeliveryAddressDefaultValue(view);
+        fillDescriptionDefaultValue(view);
+        changeFieldsEnabledDependOnState(view);
+        updateRelatedDeliveryButtonsState(view);
+        filterStateChangeHistory(view);
+        fillCurrencyFields(view);
+        disableShowProductButton(view);
+        fillLocationDefaultValue(view);
+        changeLocationEnabledDependOnState(view);
+        updateCopyOrderedProductButtonsState(view);
+        processRoles(view);
+        setDeliveryIdForMultiUploadField(view);
     }
 
-    public void updateChangeStorageLocationButton(final ViewDefinitionState view) {
+    private void updateChangeStorageLocationButton(final ViewDefinitionState view) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         GridComponent deliveredProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.DELIVERED_PRODUCTS);
 
@@ -380,8 +384,28 @@ public class DeliveryDetailsHooks {
             }
         }
 
-        changeStorageLocations.setEnabled(enabled);
-        changeStorageLocations.requestUpdate(true);
+        updateButtonState(changeStorageLocations, enabled);
+    }
+
+    private void updateAssignStorageLocationsButton(final ViewDefinitionState view) {
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
+        Ribbon ribbon = window.getRibbon();
+        RibbonGroup group = ribbon.getGroupByName(L_DELIVERY_POSITIONS);
+        RibbonActionItem assignStorageLocations = group.getItemByName(ASSIGN_STORAGE_LOCATIONS);
+
+        Long deliveryId = deliveryForm.getEntityId();
+
+        boolean enabled = false;
+
+        if (Objects.nonNull(deliveryId)) {
+            Entity delivery = deliveriesService.getDelivery(deliveryId);
+            String state = delivery.getStringField(DeliveryFields.STATE);
+            enabled = !DeliveryState.RECEIVED.getStringValue().equals(state)
+                    && !DeliveryState.RECEIVE_CONFIRM_WAITING.getStringValue().equals(state)
+                    && !DeliveryState.DECLINED.getStringValue().equals(state);
+        }
+        updateButtonState(assignStorageLocations, enabled);
     }
 
     private void orderGridByProductNumber(ViewDefinitionState view) {
@@ -419,7 +443,7 @@ public class DeliveryDetailsHooks {
         return productNumberFilter.split(",");
     }
 
-    public void setDeliveryIdForMultiUploadField(final ViewDefinitionState view) {
+    private void setDeliveryIdForMultiUploadField(final ViewDefinitionState view) {
         FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         FieldComponent deliveryIdForMultiUpload = (FieldComponent) view.getComponentByReference("deliveryIdForMultiUpload");
         FieldComponent deliveryMultiUploadLocale = (FieldComponent) view.getComponentByReference("deliveryMultiUploadLocale");

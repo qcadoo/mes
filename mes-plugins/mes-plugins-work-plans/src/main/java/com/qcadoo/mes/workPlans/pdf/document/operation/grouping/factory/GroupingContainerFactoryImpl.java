@@ -23,19 +23,10 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.grouping.factory;
 
-import java.util.Locale;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.columnExtension.constants.ColumnAlignment;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
-import com.qcadoo.mes.technologies.grouping.OperationMergeService;
 import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
 import com.qcadoo.mes.workPlans.constants.WorkPlanType;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.DivisionGroupingContainer;
@@ -50,7 +41,16 @@ import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.Workst
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationProductColumn;
 import com.qcadoo.mes.workPlans.pdf.document.order.WorkPlanColumnService;
 import com.qcadoo.mes.workPlans.pdf.document.order.column.OrderColumn;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+
+import java.util.Locale;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class GroupingContainerFactoryImpl implements GroupingContainerFactory {
@@ -61,51 +61,51 @@ public class GroupingContainerFactoryImpl implements GroupingContainerFactory {
 
     private WorkPlanColumnService workPlanColumnService;
 
-    private OperationMergeService operationMergeService;
-
     private ProductionCountingService productionCountingService;
 
     private ParameterService parameterService;
 
+    private DataDefinitionService dataDefinitionService;
+
     @Autowired
-    public GroupingContainerFactoryImpl(final TranslationService translationService,
-            final WorkPlanColumnService workPlanColumnService, final OperationMergeService operationMergeService,
+    public GroupingContainerFactoryImpl(final DataDefinitionService dataDefinitionService, final TranslationService translationService,
+            final WorkPlanColumnService workPlanColumnService,
             final ProductionCountingService productionCountingService, final ParameterService parameterService) {
         this.translationService = translationService;
         this.workPlanColumnService = workPlanColumnService;
-        this.operationMergeService = operationMergeService;
         this.productionCountingService = productionCountingService;
         this.parameterService = parameterService;
+        this.dataDefinitionService = dataDefinitionService;
     }
 
     public GroupingContainer create(final Entity workPlan, final Locale locale) {
         String type = workPlan.getStringField(WorkPlanFields.TYPE);
         if (WorkPlanType.NO_DISTINCTION.getStringValue().equals(type)) {
-            return new OperationProductInGroupingContainerDecorator(operationMergeService, noDistinction(workPlan, locale),
+            return new OperationProductInGroupingContainerDecorator(dataDefinitionService, noDistinction(workPlan, locale),
                     productionCountingService, parameterService);
         } else if (WorkPlanType.BY_END_PRODUCT.getStringValue().equals(type)) {
-            return new OperationProductInGroupingContainerDecorator(operationMergeService, byEndProduct(workPlan, locale),
+            return new OperationProductInGroupingContainerDecorator(dataDefinitionService, byEndProduct(workPlan, locale),
                     productionCountingService, parameterService);
         } else if (WorkPlanType.BY_WORKSTATION_TYPE.getStringValue().equals(type)) {
-            return new OperationProductInGroupingContainerDecorator(operationMergeService, byWorkstationType(workPlan, locale),
+            return new OperationProductInGroupingContainerDecorator(dataDefinitionService, byWorkstationType(workPlan, locale),
                     productionCountingService, parameterService);
         } else if (WorkPlanType.BY_DIVISION.getStringValue().equals(type)) {
-            return new OperationProductInGroupingContainerDecorator(operationMergeService, byDivision(workPlan, locale),
+            return new OperationProductInGroupingContainerDecorator(dataDefinitionService, byDivision(workPlan, locale),
                     productionCountingService, parameterService);
         } else if (WorkPlanType.BY_WORKSTATION.getStringValue().equals(type)) {
-            return new OperationProductInGroupingContainerDecorator(operationMergeService, byWorkstation(workPlan, locale),
+            return new OperationProductInGroupingContainerDecorator(dataDefinitionService, byWorkstation(workPlan, locale),
                     productionCountingService, parameterService);
         } else if (WorkPlanType.BY_STAFF.getStringValue().equals(type)) {
-            return new OperationProductInGroupingContainerDecorator(operationMergeService, byStaff(workPlan, locale),
+            return new OperationProductInGroupingContainerDecorator(dataDefinitionService, byStaff(workPlan, locale),
                     productionCountingService, parameterService);
         } else if (WorkPlanType.BY_PRODUCTION_LINE.getStringValue().equals(type)) {
-            return new OperationProductInGroupingContainerDecorator(operationMergeService, byProductionLine(workPlan, locale),
+            return new OperationProductInGroupingContainerDecorator(dataDefinitionService, byProductionLine(workPlan, locale),
                     productionCountingService, parameterService);
         } else {
             LOG.warn("There is no grouping container defined for work plan type: " + type);
             LOG.warn("Returning noDistinctionGroupingContainer ...");
 
-            return new OperationProductInGroupingContainerDecorator(operationMergeService, noDistinction(workPlan, locale),
+            return new OperationProductInGroupingContainerDecorator(dataDefinitionService, noDistinction(workPlan, locale),
                     productionCountingService, parameterService);
         }
     }

@@ -23,16 +23,6 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.google.common.collect.Lists;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -46,12 +36,23 @@ import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.workPlans.WorkPlansService;
 import com.qcadoo.mes.workPlans.constants.ParameterFieldsWP;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
+import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.holder.OrderOperationComponent;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.ProductDirection;
 import com.qcadoo.mes.workPlans.pdf.document.operation.product.column.OperationProductColumn;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class OperationProductOutTable {
@@ -69,8 +70,10 @@ public class OperationProductOutTable {
         this.pdfHelper = pdfHelper;
     }
 
-    public void print(final Entity workPlan, final GroupingContainer groupingContainer, final Entity operationComponent,
+    public void print(final Entity workPlan, final GroupingContainer groupingContainer, final OrderOperationComponent orderOperationComponent,
             final Document document, final Locale locale) throws DocumentException {
+        Entity operationComponent = orderOperationComponent.getOperationComponent();
+
         Map<Long, Map<OperationProductColumn, ColumnAlignment>> map = groupingContainer
                 .getOperationComponentIdProductOutColumnToAlignment();
         Map<OperationProductColumn, ColumnAlignment> operationProductColumnAlignmentMap = map.get(operationComponent.getId());
@@ -84,7 +87,7 @@ public class OperationProductOutTable {
         PdfPTable table = pdfHelper.createTableWithHeader(columnCount, headers, false, headerAlignments);
         PdfPCell defaultCell = table.getDefaultCell();
         List<OperationProductHelper> operationProductsValue = prepareOperationProductsValue(
-                operationProductOutComponents(operationComponent), operationProductColumnAlignmentMap.entrySet());
+                orderOperationComponent.getProductionCountingQuantitiesOut(), operationProductColumnAlignmentMap.entrySet());
         operationProductsValue = workPlansService.sortByColumn(workPlan, operationProductsValue, headers);
 
         for (OperationProductHelper operationProduct : operationProductsValue) {

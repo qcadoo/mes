@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.workPlans.print;
 
-import java.util.List;
-import java.util.Locale;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfWriter;
@@ -36,16 +30,21 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesServiceImpl;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
-import com.qcadoo.mes.technologies.grouping.OperationMergeService;
 import com.qcadoo.mes.workPlans.constants.WorkPlanFields;
 import com.qcadoo.mes.workPlans.pdf.document.WorkPlanPdfForDivision;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.container.GroupingContainer;
 import com.qcadoo.mes.workPlans.pdf.document.operation.grouping.factory.GroupingContainerFactory;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.report.api.pdf.PdfDocumentWithWriterService;
+
+import java.util.List;
+import java.util.Locale;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class WorkPlanForDivisionPdfService extends PdfDocumentWithWriterService {
@@ -60,9 +59,6 @@ public class WorkPlanForDivisionPdfService extends PdfDocumentWithWriterService 
     private WorkPlanPdfForDivision workPlanPdfForDivision;
 
     @Autowired
-    private OperationMergeService operationMergeService;
-
-    @Autowired
     private ProductQuantitiesServiceImpl productQuantitiesServiceImpl;
 
     @Autowired
@@ -70,6 +66,9 @@ public class WorkPlanForDivisionPdfService extends PdfDocumentWithWriterService 
 
     @Autowired
     private WorkPlanPdfService workPlanPdfService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     @Override
     public String getReportTitle(final Locale locale) {
@@ -83,12 +82,10 @@ public class WorkPlanForDivisionPdfService extends PdfDocumentWithWriterService 
         GroupingContainer groupingContainer = groupingContainerFactory.create(workPlan, locale);
 
         for (Entity order : orders(workPlan)) {
-            OperationProductComponentWithQuantityContainer productQuantities = productQuantitiesServiceImpl
-                    .getProductComponentQuantities(order);
-            removeAlreadyExistsMergesForOrder(order);
             for (Entity operationComponent : operationComponents(technology(order))) {
-                Entity updatedComponent = workPlanPdfService.updateOperationProductComponents(order, operationComponent);
-                groupingContainer.add(order, updatedComponent, productQuantities);
+                List<Entity> productionCountingQuantitiesIn = workPlanPdfService.getProductionCountingQuantitiesIn(order, operationComponent);
+                List<Entity> productionCountingQuantitiesOut = workPlanPdfService.getProductionCountingQuantitiesOut(order, operationComponent);
+                groupingContainer.add(order, operationComponent, productionCountingQuantitiesIn, productionCountingQuantitiesOut);
             }
         }
 
@@ -108,16 +105,5 @@ public class WorkPlanForDivisionPdfService extends PdfDocumentWithWriterService 
         return workPlan.getHasManyField(WorkPlanFields.ORDERS);
     }
 
-    private void removeAlreadyExistsMergesForOrder(Entity order) {
-        List<Entity> mergedProductInsByOrder = operationMergeService.findMergedProductInByOrder(order);
-        for (Entity entity : mergedProductInsByOrder) {
-            entity.getDataDefinition().delete(entity.getId());
-        }
-
-        List<Entity> mergedProductOutsByOrder = operationMergeService.findMergedProductOutByOrder(order);
-        for (Entity entity : mergedProductOutsByOrder) {
-            entity.getDataDefinition().delete(entity.getId());
-        }
-    }
 
 }

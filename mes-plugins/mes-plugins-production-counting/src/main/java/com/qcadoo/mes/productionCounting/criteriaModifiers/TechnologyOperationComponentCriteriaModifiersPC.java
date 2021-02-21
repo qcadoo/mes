@@ -23,14 +23,12 @@
  */
 package com.qcadoo.mes.productionCounting.criteriaModifiers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.technologies.grouping.OperationMergeService;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public class TechnologyOperationComponentCriteriaModifiersPC {
@@ -38,13 +36,6 @@ public class TechnologyOperationComponentCriteriaModifiersPC {
     private static final String L_ID = "id";
     private static final String L_TECHNOLOGY = "technology";
     private static final String DOT = ".";
-
-    private final OperationMergeService operationMergeService;
-
-    @Autowired
-    public TechnologyOperationComponentCriteriaModifiersPC(OperationMergeService operationMergeService) {
-        this.operationMergeService = operationMergeService;
-    }
 
     public void restrictTechnologyOperationComponentsToOrderTechnology(final SearchCriteriaBuilder scb,
             final FilterValueHolder filterValue) {

@@ -23,7 +23,11 @@
  */
 package com.qcadoo.mes.workPlans.pdf.document.operation.grouping.holder;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.model.api.Entity;
+
+import java.util.List;
+import java.util.Objects;
 
 public class OrderOperationComponent {
 
@@ -31,9 +35,16 @@ public class OrderOperationComponent {
 
     private Entity operationComponent;
 
-    public OrderOperationComponent(final Entity order, final Entity operationComponent) {
+    private List<Entity> productionCountingQuantitiesIn = Lists.newArrayList();
+
+    private List<Entity> productionCountingQuantitiesOut = Lists.newArrayList();
+
+    public OrderOperationComponent(final Entity order, final Entity operationComponent,
+            List<Entity> productionCountingQuantitiesIn, List<Entity> productionCountingQuantitiesOut) {
         this.order = order;
         this.operationComponent = operationComponent;
+        this.productionCountingQuantitiesIn = productionCountingQuantitiesIn;
+        this.productionCountingQuantitiesOut = productionCountingQuantitiesOut;
     }
 
     public Entity getOrder() {
@@ -52,4 +63,35 @@ public class OrderOperationComponent {
         this.operationComponent = operationComponent;
     }
 
+    public List<Entity> getProductionCountingQuantitiesIn() {
+        return productionCountingQuantitiesIn;
+    }
+
+    public void setProductionCountingQuantitiesIn(List<Entity> productionCountingQuantitiesIn) {
+        this.productionCountingQuantitiesIn = productionCountingQuantitiesIn;
+    }
+
+    public List<Entity> getProductionCountingQuantitiesOut() {
+        return productionCountingQuantitiesOut;
+    }
+
+    public void setProductionCountingQuantitiesOut(List<Entity> productionCountingQuantitiesOut) {
+        this.productionCountingQuantitiesOut = productionCountingQuantitiesOut;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof OrderOperationComponent))
+            return false;
+        OrderOperationComponent that = (OrderOperationComponent) o;
+        return Objects.equals(order.getId(), that.order.getId())
+                && Objects.equals(operationComponent.getId(), that.operationComponent.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(order.getId(), operationComponent.getId());
+    }
 }

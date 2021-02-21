@@ -636,15 +636,16 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
         OperationProductComponentHolder operationProductComponentHolder = productComponentWithQuantity.getKey();
 
         Entity product = operationProductComponentHolder.getProduct();
+        if (product != null) {
+            BigDecimal newQuantity = productComponentWithQuantity.getValue();
+            BigDecimal oldQuantity = productWithQuantities.get(product.getId());
 
-        BigDecimal newQuantity = productComponentWithQuantity.getValue();
-        BigDecimal oldQuantity = productWithQuantities.get(product.getId());
+            if (Objects.nonNull(oldQuantity)) {
+                newQuantity = newQuantity.add(oldQuantity);
+            }
 
-        if (Objects.nonNull(oldQuantity)) {
-            newQuantity = newQuantity.add(oldQuantity);
+            productWithQuantities.put(product.getId(), newQuantity);
         }
-
-        productWithQuantities.put(product.getId(), newQuantity);
     }
 
     @Override

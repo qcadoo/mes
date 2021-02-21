@@ -1,13 +1,5 @@
 package com.qcadoo.mes.masterOrders.listeners;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -17,6 +9,8 @@ import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.constants.ProductsBySizeHelperFields;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanFields;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementFields;
+import com.qcadoo.mes.masterOrders.constants.SalesPlanOrdersGroupEntryHelperFields;
+import com.qcadoo.mes.masterOrders.constants.SalesPlanOrdersGroupHelperFields;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanProductFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -28,6 +22,14 @@ import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 @Service
 public class SalesPlanDetailsListeners {
 
@@ -38,6 +40,83 @@ public class SalesPlanDetailsListeners {
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
+
+    public void createOrderGroup(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent salesPlanForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        GridComponent productsGrid = (GridComponent) view.getComponentByReference(SalesPlanFields.PRODUCTS);
+
+        Entity salesPlanOrdersGroupHelper = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
+                MasterOrdersConstants.MODEL_SALES_PLAN_ORDERS_GROUP_HELPER).create();
+        salesPlanOrdersGroupHelper.setField(SalesPlanOrdersGroupHelperFields.SALES_PLAN, salesPlanForm.getEntityId());
+        salesPlanOrdersGroupHelper = salesPlanOrdersGroupHelper.getDataDefinition().save(salesPlanOrdersGroupHelper);
+        Entity finalSalesPlanOrdersGroupHelper = salesPlanOrdersGroupHelper;
+
+        productsGrid.getSelectedEntitiesIds()
+                .forEach(
+                        salesPlanProductDtoId -> {
+                            Entity salesPlanProduct = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
+                                    MasterOrdersConstants.MODEL_SALES_PLAN_PRODUCT).get(salesPlanProductDtoId);
+                            Entity product = salesPlanProduct.getBelongsToField(SalesPlanProductFields.PRODUCT);
+                            if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(
+                                    product.getStringField(ProductFields.ENTITY_TYPE))) {
+                                Entity salesPlanOrdersGroupEntry = dataDefinitionService.get(
+                                        MasterOrdersConstants.PLUGIN_IDENTIFIER,
+                                        MasterOrdersConstants.MODEL_SALES_PLAN_ORDERS_GROUP_ENTRY_HELPER).create();
+
+                                salesPlanOrdersGroupEntry.setField(
+                                        SalesPlanOrdersGroupEntryHelperFields.SALES_PLAN_ORDERS_GROUP_HELPER,
+                                        finalSalesPlanOrdersGroupHelper);
+                                salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.PRODUCT, product);
+                                salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.PRODUCT_FAMILY,
+                                        product.getBelongsToField(ProductFields.PARENT));
+                                salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.ORDERED_QUANTITY,
+                                        salesPlanProduct.getDecimalField(SalesPlanProductFields.ORDERED_QUANTITY));
+                                salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.PLANNED_QUANTITY,
+                                        salesPlanProduct.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY));
+
+                                salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.ORDER_QUANTITY,
+                                        salesPlanProduct.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY));
+
+                                salesPlanOrdersGroupEntry = salesPlanOrdersGroupEntry.getDataDefinition().save(
+                                        salesPlanOrdersGroupEntry);
+                            } else {
+                                List<Entity> childs = product.getHasManyField(ProductFields.PRODUCT_FAMILY_CHILDRENS);
+                                for (Entity child : childs) {
+                                    if (Objects.nonNull(child.getBelongsToField(ProductFields.SIZE))) {
+                                        Entity salesPlanOrdersGroupEntry = dataDefinitionService.get(
+                                                MasterOrdersConstants.PLUGIN_IDENTIFIER,
+                                                MasterOrdersConstants.MODEL_SALES_PLAN_ORDERS_GROUP_ENTRY_HELPER).create();
+
+                                        salesPlanOrdersGroupEntry.setField(
+                                                SalesPlanOrdersGroupEntryHelperFields.SALES_PLAN_ORDERS_GROUP_HELPER,
+                                                finalSalesPlanOrdersGroupHelper);
+                                        salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.PRODUCT, child);
+                                        salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.PRODUCT_FAMILY,
+                                                product);
+                                        salesPlanOrdersGroupEntry.setField(
+                                                SalesPlanOrdersGroupEntryHelperFields.ORDERED_QUANTITY,
+                                                salesPlanProduct.getDecimalField(SalesPlanProductFields.ORDERED_QUANTITY));
+                                        salesPlanOrdersGroupEntry.setField(
+                                                SalesPlanOrdersGroupEntryHelperFields.PLANNED_QUANTITY,
+                                                salesPlanProduct.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY));
+
+                                        salesPlanOrdersGroupEntry.setField(
+                                                SalesPlanOrdersGroupEntryHelperFields.ORDER_QUANTITY,
+                                                salesPlanProduct.getDecimalField(SalesPlanProductFields.SURPLUS_FROM_PLAN));
+
+                                        salesPlanOrdersGroupEntry = salesPlanOrdersGroupEntry.getDataDefinition().save(
+                                                salesPlanOrdersGroupEntry);
+                                    }
+                                }
+                            }
+
+                        });
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("form.id", salesPlanOrdersGroupHelper.getId());
+
+        String url = "../page/masterOrders/salesPlanOrdersGroup.html";
+        view.openModal(url, parameters);
+    }
 
     public void addProductsBySize(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent salesPlanForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
@@ -105,8 +184,8 @@ public class SalesPlanDetailsListeners {
             for (Entity child : product.getHasManyField(ProductFields.PRODUCT_FAMILY_CHILDRENS)) {
                 for (Entity masterOrderProduct : masterOrderProducts) {
                     if (child.getId().equals(masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT).getId())) {
-                        orderedQuantity = orderedQuantity
-                                .add(masterOrderProduct.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY));
+                        orderedQuantity = orderedQuantity.add(masterOrderProduct
+                                .getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY));
 
                         break;
                     }
@@ -142,8 +221,7 @@ public class SalesPlanDetailsListeners {
         view.openModal(url, parameters);
     }
 
-    public void createSalesPlanMaterialRequirement(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
+    public void createSalesPlanMaterialRequirement(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent salesPlanForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long salesPlanId = salesPlanForm.getEntityId();

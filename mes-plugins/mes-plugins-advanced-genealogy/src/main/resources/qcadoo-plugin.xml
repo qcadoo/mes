@@ -99,10 +99,6 @@
                         default="01globally" required="true"/>
         </model:model-field>
 
-        <model:model-field plugin="basic" model="product">
-            <model:boolean name="batchEvidence" default="false"/>
-        </model:model-field>
-
         <model:model-hook plugin="basic" model="parameter">
             <model:validatesWith
                     class="com.qcadoo.mes.advancedGenealogy.hooks.ParameterValidatorsAG"

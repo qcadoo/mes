@@ -1,10 +1,11 @@
-package com.qcadoo.mes.masterOrders.controllers;
+package com.qcadoo.mes.masterOrders.controllers.productBySize;
 
 import java.math.BigDecimal;
 
 public class ProductBySizePosition {
 
     private Long id;
+
     private BigDecimal value;
 
     public Long getId() {

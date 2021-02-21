@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.technologiesGenerator.tree;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -32,9 +33,12 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.qcadoo.mes.technologies.domain.OperationProductInComponentId;
 import com.qcadoo.mes.technologies.domain.TechnologyId;
 import com.qcadoo.mes.technologies.tree.domain.TechnologyOperationId;
 import com.qcadoo.mes.technologiesGenerator.GeneratorSettings;
@@ -61,15 +65,17 @@ public class TechnologyStructureTreeBuilder {
             final ContextId contextId, final GeneratorSettings settings) {
         Multimap<Optional<TechnologyOperationId>, ProductInfo> intermediates = technologyStructureTreeDataProvider
                 .findIntermediates(technologyId);
-//        Preconditions.checkState(intermediates.isEmpty() || intermediates.get(Optional.empty()).size() == 1,
-//                "Tree has to have exactly one root node!");
+        Preconditions.checkState(intermediates.isEmpty() || intermediates.get(Optional.empty()).size() == 1,
+                "Tree has to have exactly one root node!");
         Multimap<Optional<TechnologyOperationId>, ProductInfo> materialsAndComponents = technologyStructureTreeDataProvider
                 .findMaterialsAndComponents(technologyId);
+        Multimap<Optional<TechnologyOperationId>, ProductInfo> productBySizeGroups = technologyStructureTreeDataProvider
+                .findProductBySizeGroups(technologyId);
         Map<TechnologyId, Entity> existingCustomizedNodes = technologyStructureTreeDataProvider
                 .findExistingCustomizedNodes(contextId);
 
         return new Builder(contextId, technologyId, defaultTechnologyId, settings, intermediates, materialsAndComponents,
-                existingCustomizedNodes);
+                productBySizeGroups, existingCustomizedNodes);
     }
 
     private final class Builder {
@@ -86,12 +92,15 @@ public class TechnologyStructureTreeBuilder {
 
         private final Multimap<Optional<TechnologyOperationId>, ProductInfo> materialsAndComponents;
 
+        private final Multimap<Optional<TechnologyOperationId>, ProductInfo> productBySizeGroups;
+
         private final Map<TechnologyId, Entity> existingCustomizedNodes;
 
         private Builder(final ContextId contextId, final TechnologyId technologyId,
                 final Optional<TechnologyId> defaultTechnologyId, final GeneratorSettings settings,
                 final Multimap<Optional<TechnologyOperationId>, ProductInfo> intermediates,
                 final Multimap<Optional<TechnologyOperationId>, ProductInfo> materialsAndComponents,
+                final Multimap<Optional<TechnologyOperationId>, ProductInfo> productBySizeGroups,
                 final Map<TechnologyId, Entity> existingCustomizedNodes) {
             this.contextId = contextId;
             this.technologyId = technologyId;
@@ -99,6 +108,7 @@ public class TechnologyStructureTreeBuilder {
             this.settings = settings;
             this.intermediates = intermediates;
             this.materialsAndComponents = materialsAndComponents;
+            this.productBySizeGroups = productBySizeGroups;
             this.existingCustomizedNodes = existingCustomizedNodes;
         }
 
@@ -123,7 +133,11 @@ public class TechnologyStructureTreeBuilder {
             TechnologyStructureNodeType type = TechnologyStructureNodeType.resolveFor(productInfo);
 
             if (type == TechnologyStructureNodeType.MATERIAL) {
-                return Optional.of(new TechnologyStructureNode(productInfo, type, Collections.emptyList()));
+                if (productInfo.getDifferentProductsInDifferentSizes()) {
+                    return Optional.of(new TechnologyStructureNode(productInfo, type, getProductBySizes(productInfo)));
+                } else {
+                    return Optional.of(new TechnologyStructureNode(productInfo, type, Collections.emptyList()));
+                }
             }
             if ((type == TechnologyStructureNodeType.COMPONENT || type == TechnologyStructureNodeType.CUSTOMIZED_COMPONENT)
                     && !productInfo.isIntermediate()) {
@@ -131,8 +145,8 @@ public class TechnologyStructureTreeBuilder {
                     return generateTreeForComponent(productInfo);
                 }
 
-                return Optional.of(new TechnologyStructureNode(productInfo, TechnologyStructureNodeType.MATERIAL, Collections
-                        .emptyList()));
+                return Optional.of(
+                        new TechnologyStructureNode(productInfo, TechnologyStructureNodeType.MATERIAL, Collections.emptyList()));
             }
 
             List<TechnologyStructureNode> children = getDirectComponentsFor(productInfo).stream()
@@ -144,14 +158,41 @@ public class TechnologyStructureTreeBuilder {
             return Optional.of(generatedNode);
         }
 
-        private Optional<TechnologyStructureNode> generateTreeForComponent(final ProductInfo productInfo) {
-            TechnologyId prodTech = findCustomizedTechFor(productInfo).orElseGet(
-                    () -> productInfo.getProductTechnology().orElseThrow(
-                            () -> new IllegalStateException("Missing technology for component's product")));
+        private List<TechnologyStructureNode> getProductBySizes(final ProductInfo productInfo) {
+            Optional<OperationProductInComponentId> opicId = productInfo.getOpicId();
+            Optional<TechnologyOperationId> tocId = Optional.of(productInfo.getTocId());
 
-            return forTechnology(prodTech, productInfo.getProductTechnology(), contextId, settings).map(
-                    n -> n.withProductTechnology(Optional.of(prodTech))
-                            .withOriginalTechnology(productInfo.getProductTechnology()));
+            if (opicId.isPresent()) {
+                List<TechnologyStructureNode> productBySizes = Lists.newArrayList();
+
+                filterProductBySizes(productBySizeGroups.get(tocId), opicId.get())
+                        .forEach(p -> productBySizes.add(new TechnologyStructureNode(p,
+                                TechnologyStructureNodeType.PRODUCT_BY_SIZE_GROUP, Collections.emptyList())));
+
+                return productBySizes;
+            } else {
+                return Collections.emptyList();
+            }
+        }
+
+        private List<ProductInfo> filterProductBySizes(final Collection<ProductInfo> productInfos,
+                final OperationProductInComponentId operationProductInComponentId) {
+            return productInfos.stream().filter(productInfo -> filterProductBySize(productInfo, operationProductInComponentId))
+                    .collect(Collectors.toList());
+        }
+
+        private boolean filterProductBySize(final ProductInfo productInfo,
+                final OperationProductInComponentId operationProductInComponentId) {
+            return productInfo.getOpicId().isPresent()
+                    && productInfo.getOpicId().get().get().equals(operationProductInComponentId.get());
+        }
+
+        private Optional<TechnologyStructureNode> generateTreeForComponent(final ProductInfo productInfo) {
+            TechnologyId prodTech = findCustomizedTechFor(productInfo).orElseGet(() -> productInfo.getProductTechnology()
+                    .orElseThrow(() -> new IllegalStateException("Missing technology for component's product")));
+
+            return forTechnology(prodTech, productInfo.getProductTechnology(), contextId, settings).map(n -> n
+                    .withProductTechnology(Optional.of(prodTech)).withOriginalTechnology(productInfo.getProductTechnology()));
         }
 
         private Optional<TechnologyId> findCustomizedTechFor(final ProductInfo productInfo) {
@@ -176,8 +217,8 @@ public class TechnologyStructureTreeBuilder {
         }
 
         private Optional<Entity> tryFindExistingCustomizedNode(final ProductInfo productInfo) {
-            return productInfo.getOriginalTechnology().flatMap(
-                    origTech -> Optional.ofNullable(existingCustomizedNodes.get(origTech)));
+            return productInfo.getOriginalTechnology()
+                    .flatMap(origTech -> Optional.ofNullable(existingCustomizedNodes.get(origTech)));
         }
 
     }

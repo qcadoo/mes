@@ -653,20 +653,20 @@
                                defaultEnabled="false">
                         <script>
                             <![CDATA[
-											var fillPrices = #{window}.getRibbonItem("prices.fillPrices");
+                                var fillPrices = #{window}.getRibbonItem("prices.fillPrices");
 
-                                                var listener = {
-                                                    onChange: function(selectedEntitiesArray) {
-                                                        if(selectedEntitiesArray.length > 0) {
-                                                            fillPrices.enable("#{translate(deliveries.deliveryDetails.window.ribbon.prices.fillPrices)}");
-                                                        } else {
-                                                            fillPrices.disable("#{translate(deliveries.deliveryDetails.window.ribbon.prices.fillPrices)}");
-                                                        }
-                                                    }
-                                                }
-                                                this.addOnChangeListener(listener);
-
-										]]>
+                                var listener = {
+                                    onChange: function(selectedEntitiesArray) {
+                                        var state = #{state}.getValue().content.value;
+                                        if(state != "06received" && state != "04declined" && state != "07receiveConfirmWaiting" && selectedEntitiesArray.length > 0) {
+                                            fillPrices.enable("#{translate(deliveries.deliveryDetails.window.ribbon.prices.fillPrices.desc)}");
+                                        } else {
+                                            fillPrices.disable("#{translate(deliveries.deliveryDetails.window.ribbon.prices.fillPrices.desc)}");
+                                        }
+                                    }
+                                }
+                                this.addOnChangeListener(listener);
+                            ]]>
                         </script>
                         <option type="column" name="succession" fields="succession"
                                 width="30"/>
@@ -726,6 +726,7 @@
                         <option type="fullscreen" value="true"/>
                         <option type="multiselect" value="true"/>
                         <option type="fixedHeight" value="true"/>
+                        <option type="selectableWhenDisabled" value="true"/>
 
                         <rowStyleResolver
                                 class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
@@ -837,9 +838,6 @@
 
                         <listener event="select" method="disableShowProductButton"
                                   class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"/>
-
-                        <listener event="select" method="updateChangeStorageLocationButton"
-                                  class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"/>
                     </component>
                 </layoutElement>
                 <layoutElement column="2" row="1">
@@ -931,35 +929,6 @@
     <hooks>
         <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
                       method="onBeforeRender"/>
-        <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-                      method="generateDeliveryNumber"/>
-        <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-                      method="fillCompanyFieldsForSupplier"/>
-        <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-                      method="fillDeliveryAddressDefaultValue"/>
-        <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-                      method="fillDescriptionDefaultValue"/>
-        <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-                      method="changeFieldsEnabledDependOnState"/>
-        <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-                      method="updateRelatedDeliveryButtonsState"/>
-        <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-                      method="filterStateChangeHistory"/>
-        <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-                      method="fillCurrencyFields"/>
-        <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-                      method="disableShowProductButton"/>
-        <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-                      method="fillLocationDefaultValue"/>
-        <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-                      method="changeLocationEnabledDependOnState"/>
-        <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-                      method="updateCopyOrderedProductButtonsState"/>
-        <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-                      method="processRoles"/>
-
-        <beforeRender class="com.qcadoo.mes.deliveries.hooks.DeliveryDetailsHooks"
-                      method="setDeliveryIdForMultiUploadField"/>
     </hooks>
 
 </view>

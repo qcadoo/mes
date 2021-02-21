@@ -39,6 +39,8 @@ public enum TechnologyStructureNodeType {
     MATERIAL("material") {
     },
     CUSTOMIZED_COMPONENT("customizedComponent") {
+    },
+    PRODUCT_BY_SIZE_GROUP("productBySizeGroup") {
     };
 
     private final String stringValue;

@@ -41,12 +41,8 @@ public final class ProductFields {
 
     public static final String UNIT = "unit";
 
-    public static final String SUBSTITUTES = "substitutes";
-
     public static final String SUBSTITUTE_COMPONENTS = "substituteComponents";
 
-    public static final String PRODUCTS_TO_SUBSTITUTE = "productsToSubstitute";
-    
     public static final String EXTERNAL_NUMBER = "externalNumber";
 
     public static final String DESCRIPTION = "description";
@@ -75,8 +71,6 @@ public final class ProductFields {
 
     public static final String ASSORTMENT = "assortment";
 
-    public static final String PRODUCT_ATTACHMENTS = "productAttachments";
-    
     public static final String PRODUCT_ATTRIBUTE_VALUES = "productAttributeValues";
 
     public static final String SHOW_IN_PRODUCT_DATA = "showInProductData";

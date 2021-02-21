@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo Framework
+ * Project: Qcadoo MES
  * Version: 1.4
  *
  * This file is part of Qcadoo.
@@ -21,14 +21,19 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.advancedGenealogy.constants;
+package com.qcadoo.mes.technologies.domain;
 
-public final class ProductFieldsAG {
+import com.qcadoo.mes.basic.domain.ImmutableIdWrapper;
 
-    private ProductFieldsAG() {
+public class OperationProductOutComponentId extends ImmutableIdWrapper {
 
+    public OperationProductOutComponentId(final Long id) {
+        super(id);
     }
 
-    public static final String BATCH_EVIDENCE = "batchEvidence";
+    @Override
+    public String toString() {
+        return String.format("TechnologyInputProductTypeId(%s)", get());
+    }
 
 }

@@ -25,6 +25,11 @@ package com.qcadoo.mes.advancedGenealogy.hooks;
 
 import static com.qcadoo.model.api.search.SearchProjections.alias;
 import static com.qcadoo.model.api.search.SearchProjections.id;
+import static com.qcadoo.model.api.search.SearchRestrictions.and;
+import static com.qcadoo.model.api.search.SearchRestrictions.eq;
+import static com.qcadoo.model.api.search.SearchRestrictions.idNe;
+
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -46,7 +51,41 @@ public class BatchModelValidators {
     @Autowired
     private ParameterService parameterService;
 
-    public final boolean checkIfBatchNumberIsUnique(final DataDefinition batchDD, final Entity batch) {
+    public final boolean validatesWith(final DataDefinition batchDD, final Entity batch) {
+        boolean isValid = true;
+
+        isValid = isValid && checkIfExternalNumberIsUnique(batchDD, batch);
+        isValid = isValid && checkIfBatchNumberIsUnique(batchDD, batch);
+
+        return isValid;
+    }
+
+    public boolean checkIfExternalNumberIsUnique(final DataDefinition batchDD, final Entity batch) {
+        SearchCriterion criterion = buildCriteriaForExternalNumber(batch);
+
+        if (existsAnyBatchMatchingCriterion(batchDD, criterion)) {
+            batch.addError(batchDD.getField(BatchFields.EXTERNAL_NUMBER), "test");
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private SearchCriterion buildCriteriaForExternalNumber(final Entity batch) {
+        SearchCriterion externalNumberMatches = eq(BatchFields.EXTERNAL_NUMBER,
+                batch.getStringField(BatchFields.EXTERNAL_NUMBER));
+
+        if (Objects.isNull(batch.getId())) {
+            return externalNumberMatches;
+        }
+
+        SearchCriterion isNotTheSameBatch = idNe(batch.getId());
+
+        return and(isNotTheSameBatch, externalNumberMatches);
+    }
+
+    public boolean checkIfBatchNumberIsUnique(final DataDefinition batchDD, final Entity batch) {
         BatchNumberUniqueness batchNumberUniqueness = getBatchNumberUniqueness();
 
         if (batchNumberUniqueness == null) {
@@ -68,8 +107,9 @@ public class BatchModelValidators {
 
     private boolean existsAnyBatchMatchingCriterion(final DataDefinition batchDD, final SearchCriterion criterion) {
         SearchCriteriaBuilder scb = batchDD.find();
+
         scb.add(criterion);
-        // to decrease mapping overhead
+
         scb.setProjection(alias(id(), "id"));
 
         return scb.setMaxResults(1).uniqueResult() != null;
