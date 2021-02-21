@@ -516,8 +516,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
             if (isFromOrder) {
                 quantity = recalculateQuantity(
-                        DirectionConvertingQuantityAfterChangingConverter.FROM_BASIC_TO_ADDITIONAL.getStringValue(), quantity,
-                        resource.getDecimalField(ResourceFields.CONVERSION), givenUnit,
+                        warehouse.getStringField(LocationFieldsMFR.DIRECTION_CONVERTING_QUANTITY_AFTER_CHANGING_CONVERTER),
+                        quantity, resource.getDecimalField(ResourceFields.CONVERSION), givenUnit,
                         resource.getDecimalField(ResourceFields.CONVERSION), product.getStringField(ProductFields.UNIT));
             } else {
                 quantity = recalculateQuantity(
@@ -691,8 +691,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
             if (isFromOrder) {
                 quantity = recalculateQuantity(
-                        DirectionConvertingQuantityAfterChangingConverter.FROM_BASIC_TO_ADDITIONAL.getStringValue(), quantity,
-                        resource.getDecimalField(ResourceFields.CONVERSION), givenUnit,
+                        warehouseFrom.getStringField(LocationFieldsMFR.DIRECTION_CONVERTING_QUANTITY_AFTER_CHANGING_CONVERTER),
+                        quantity, resource.getDecimalField(ResourceFields.CONVERSION), givenUnit,
                         resource.getDecimalField(ResourceFields.CONVERSION), product.getStringField(ProductFields.UNIT));
             } else {
                 quantity = recalculateQuantity(
@@ -1054,8 +1054,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
             if (isFromOrder) {
                 quantity = recalculateQuantity(
-                        DirectionConvertingQuantityAfterChangingConverter.FROM_BASIC_TO_ADDITIONAL.getStringValue(), quantity,
-                        resource.getDecimalField(ResourceFields.CONVERSION), givenUnit,
+                        warehouse.getStringField(LocationFieldsMFR.DIRECTION_CONVERTING_QUANTITY_AFTER_CHANGING_CONVERTER),
+                        quantity, resource.getDecimalField(ResourceFields.CONVERSION), givenUnit,
                         resource.getDecimalField(ResourceFields.CONVERSION), product.getStringField(ProductFields.UNIT));
             } else {
                 quantity = recalculateQuantity(
@@ -1149,10 +1149,13 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         if (conversion.compareTo(resourceConversion) != 0) {
             if (DirectionConvertingQuantityAfterChangingConverter.FROM_BASIC_TO_ADDITIONAL.getStringValue().equals(
                     directionConvertingQuantity)) {
-                BigDecimal additional = calculationQuantityService.calculateAdditionalQuantity(quantity, resourceConversion, givenUnit);
+                BigDecimal additional = calculationQuantityService.calculateAdditionalQuantity(quantity, resourceConversion,
+                        givenUnit);
                 return calculationQuantityService.calculateQuantity(additional, resourceConversion, unit);
+
             } else {
-                BigDecimal givenQuantity = calculationQuantityService.calculateAdditionalQuantity(quantity, conversion, givenUnit);
+                BigDecimal givenQuantity = calculationQuantityService
+                        .calculateAdditionalQuantity(quantity, conversion, givenUnit);
 
                 return calculationQuantityService.calculateQuantity(givenQuantity, resourceConversion, unit);
             }
