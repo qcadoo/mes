@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
@@ -31,6 +33,7 @@ import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -40,6 +43,9 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class SalesPlanMaterialRequirementHelper {
+
+    @Autowired
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -211,8 +217,7 @@ public class SalesPlanMaterialRequirementHelper {
         Set<Long> productIds = getSalesPlanMaterialRequirementProductIds(salesPlanMaterialRequirementProducts);
 
         if (!productIds.isEmpty()) {
-            List<Entity> resourceStocks = getResourceStocks(
-                    productIds.stream().map(Long::intValue).collect(Collectors.toSet()));
+            List<Entity> resourceStocks = getResourceStocks(productIds.stream().map(Long::intValue).collect(Collectors.toSet()));
             List<Entity> companyProducts = getCompanyProducts(productIds);
             Map<Long, BigDecimal> neededQuantitiesFromOrders = getNeededQuantitiesFromOrders(productIds);
 
@@ -290,7 +295,33 @@ public class SalesPlanMaterialRequirementHelper {
     private Map<Long, BigDecimal> getNeededQuantitiesFromOrders(final Set<Long> productIds) {
         Map<Long, BigDecimal> neededQuantitiesFromOrders = Maps.newHashMap();
 
-        productIds.forEach(productId -> neededQuantitiesFromOrders.put(productId, BigDecimal.ZERO));
+        StringBuilder queryBuilder = new StringBuilder();
+
+        queryBuilder.append("SELECT ");
+        queryBuilder.append("productid,  SUM(COALESCE(plannedquantity, 0) - COALESCE(usedquantity, 0)) AS neededQuantity ");
+        queryBuilder.append("FROM basicproductioncounting_productioncountingquantitydto ");
+        queryBuilder.append("WHERE productid IN (:productIds) ");
+        queryBuilder.append("AND orderid IN ( ");
+        queryBuilder.append("SELECT id FROM orders_order WHERE state NOT IN ('01pending', '04completed', '05declined', '07abandoned') ");
+        queryBuilder.append(") ");
+        queryBuilder.append("GROUP BY productid");
+
+        Map<String, Object> params = Maps.newHashMap();
+
+        params.put("productIds", productIds);
+
+        try {
+            List<Map<String, Object>> values = jdbcTemplate.queryForList(queryBuilder.toString(), params);
+
+            for (Map<String, Object> value : values) {
+                Long productId = Long.valueOf(value.get("productId").toString());
+                BigDecimal neededQuantity = BigDecimalUtils.convertNullToZero(value.get("neededQuantity"));
+
+                neededQuantitiesFromOrders.put(productId, neededQuantity);
+            }
+        } catch (EmptyResultDataAccessException e) {
+            return neededQuantitiesFromOrders;
+        }
 
         return neededQuantitiesFromOrders;
     }
