@@ -23,40 +23,23 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import static com.qcadoo.mes.basic.constants.ProductFamilyElementType.PRODUCTS_FAMILY;
-import static com.qcadoo.mes.deliveries.constants.CompanyFieldsD.PRODUCTS_FAMILIES;
-import static com.qcadoo.mes.deliveries.constants.CompanyProductFields.IS_DEFAULT;
-import static com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields.COMPANY;
-import static com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields.PRODUCT;
-
+import com.qcadoo.mes.deliveries.CompanyProductService;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.ProductService;
-import com.qcadoo.mes.deliveries.CompanyProductService;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
+import static com.qcadoo.mes.deliveries.constants.CompanyFieldsD.PRODUCTS_FAMILIES;
+import static com.qcadoo.mes.deliveries.constants.CompanyProductFields.IS_DEFAULT;
+import static com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields.COMPANY;
+import static com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields.PRODUCT;
 
 @Service
 public class CompanyProductsFamilyHooks {
 
     @Autowired
     private CompanyProductService companyProductService;
-
-    @Autowired
-    private ProductService productService;
-
-    public boolean checkIfProductIsProductsFamily(final DataDefinition companyProductsFamilyDD, final Entity companyProductsFamily) {
-        if (!productService.checkIfProductEntityTypeIsCorrect(companyProductsFamily.getBelongsToField(PRODUCT), PRODUCTS_FAMILY)) {
-            companyProductsFamily.addError(companyProductsFamilyDD.getField(PRODUCT),
-                    "basic.company.message.productIsNotProductsFamily");
-
-            return false;
-        }
-
-        return true;
-    }
 
     public boolean checkIfProductsFamilyIsNotAlreadyUsed(final DataDefinition companyProductsFamilyDD,
             final Entity companyProductsFamily) {

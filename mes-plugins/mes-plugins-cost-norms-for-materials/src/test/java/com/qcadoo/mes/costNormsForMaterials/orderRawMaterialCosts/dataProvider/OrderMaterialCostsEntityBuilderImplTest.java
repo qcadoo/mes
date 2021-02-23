@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.dataProvider;
 
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMaterialsConstants;
 import com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields;
 import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.domain.ProductWithCosts;
@@ -72,7 +73,7 @@ public class OrderMaterialCostsEntityBuilderImplTest {
         // given
         Entity order = mockEntity();
         ProductWithCosts productWithCosts = new ProductWithCosts(1L, BigDecimal.valueOf(2L), BigDecimal.valueOf(3L),
-                BigDecimal.valueOf(4L), BigDecimal.valueOf(5L), "01particularProduct");
+                BigDecimal.valueOf(4L), BigDecimal.valueOf(5L), ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue());
 
         // when
         orderMaterialCostsEntityBuilder.create(order, productWithCosts);

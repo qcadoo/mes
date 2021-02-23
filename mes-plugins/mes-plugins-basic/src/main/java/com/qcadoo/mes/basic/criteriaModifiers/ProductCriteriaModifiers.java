@@ -23,18 +23,7 @@
  */
 package com.qcadoo.mes.basic.criteriaModifiers;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.ENTITY_TYPE;
-
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.ModelFields;
-import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.constants.SubstituteFields;
+import com.qcadoo.mes.basic.constants.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -42,6 +31,13 @@ import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+import static com.qcadoo.mes.basic.constants.ProductFields.ENTITY_TYPE;
+import static com.qcadoo.mes.basic.constants.ProductFields.PARENT;
 
 @Service
 public class ProductCriteriaModifiers {
@@ -59,6 +55,11 @@ public class ProductCriteriaModifiers {
 
     public void showParticularProductOnly(final SearchCriteriaBuilder scb) {
         scb.add(SearchRestrictions.eq(ENTITY_TYPE, ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()));
+    }
+
+    public void showParticularProductWithoutFamilies(final SearchCriteriaBuilder scb) {
+        scb.add(SearchRestrictions.isNull(PARENT)).add(
+                SearchRestrictions.eq(ProductFields.ENTITY_TYPE, ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()));;
     }
 
     public void showProductsWithoutGivenProduct(final SearchCriteriaBuilder scb, final FilterValueHolder filterValueHolder) {
@@ -93,6 +94,23 @@ public class ProductCriteriaModifiers {
             ));
         } else {
             scb.add(SearchRestrictions.isNull(ProductFields.ASSORTMENT));
+        }
+    }
+
+    public void showFamiliesByMachinePartType(final SearchCriteriaBuilder searchCriteriaBuilder,
+                                              final FilterValueHolder filterValueHolder) {
+        showProductFamilyOnly(searchCriteriaBuilder);
+        if (!filterValueHolder.has(ProductFields.MACHINE_PART)) {
+            throw new IllegalArgumentException(ProductFields.MACHINE_PART);
+        }
+
+        boolean machinePart = filterValueHolder.getBoolean(ProductFields.MACHINE_PART);
+
+        if (machinePart) {
+            searchCriteriaBuilder.add(SearchRestrictions.eq(ProductFields.MACHINE_PART, true));
+        } else {
+            searchCriteriaBuilder.add(SearchRestrictions.or(SearchRestrictions.eq(ProductFields.MACHINE_PART, false),
+                    SearchRestrictions.isNull(ProductFields.MACHINE_PART)));
         }
     }
 

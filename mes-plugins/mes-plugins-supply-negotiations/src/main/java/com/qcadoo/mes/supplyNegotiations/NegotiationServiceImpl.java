@@ -23,51 +23,42 @@
  */
 package com.qcadoo.mes.supplyNegotiations;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.ENTITY_TYPE;
-import static com.qcadoo.mes.deliveries.constants.CompanyFieldsD.BUFFER;
-import static com.qcadoo.mes.deliveries.constants.CompanyProductFields.COMPANY;
-import static com.qcadoo.mes.deliveries.constants.ProductFieldsD.PRODUCTS_FAMILY_COMPANIES;
-import static com.qcadoo.mes.deliveries.constants.ProductFieldsD.PRODUCT_COMPANIES;
-import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationFields.INCLUDED_COMPANIES;
-import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationFields.NEGOTIATION_PRODUCTS;
-import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationProductFields.DUE_DATE;
-import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationProductFields.LEFT_QUANTITY;
-import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationProductFields.PRODUCT;
-import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationFields.DESIRED_DATE;
-import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationFields.NEGOTIATION;
-import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationFields.NUMBER;
-import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationFields.REQUEST_FOR_QUOTATION_PRODUCTS;
-import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationFields.SUPPLIER;
-import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationProductFields.ORDERED_QUANTITY;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
-import com.qcadoo.mes.basic.tree.ProductNumberingService;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.mes.supplyNegotiations.constants.SupplyNegotiationsConstants;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import static com.qcadoo.mes.basic.constants.ProductFields.ENTITY_TYPE;
+import static com.qcadoo.mes.basic.constants.ProductFields.PARENT;
+import static com.qcadoo.mes.deliveries.constants.CompanyFieldsD.BUFFER;
+import static com.qcadoo.mes.deliveries.constants.CompanyProductFields.COMPANY;
+import static com.qcadoo.mes.deliveries.constants.ProductFieldsD.PRODUCTS_FAMILY_COMPANIES;
+import static com.qcadoo.mes.deliveries.constants.ProductFieldsD.PRODUCT_COMPANIES;
+import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationFields.INCLUDED_COMPANIES;
+import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationFields.NEGOTIATION_PRODUCTS;
+import static com.qcadoo.mes.supplyNegotiations.constants.NegotiationProductFields.*;
+import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationFields.NEGOTIATION;
+import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationFields.*;
+import static com.qcadoo.mes.supplyNegotiations.constants.RequestForQuotationProductFields.ORDERED_QUANTITY;
 
 @Service
 public class NegotiationServiceImpl implements NegotiationService {
 
     @Autowired
     private SupplyNegotiationsService supplyNegotiationsService;
-
-    @Autowired
-    private ProductNumberingService productNumberingService;
 
     @Autowired
     private NumberGeneratorService numberGeneratorService;
@@ -124,10 +115,10 @@ public class NegotiationServiceImpl implements NegotiationService {
 
         addCompaniesWhichSellsProduct(companies, product);
 
-        List<Entity> productRoots = productNumberingService.getProductRoots(product);
+        Entity parent = product.getBelongsToField(PARENT);
 
-        for (Entity productRoot : productRoots) {
-            addCompaniesWhichSellsProduct(companies, productRoot);
+        if (parent != null) {
+            addCompaniesWhichSellsProduct(companies, parent);
         }
 
         return companies;

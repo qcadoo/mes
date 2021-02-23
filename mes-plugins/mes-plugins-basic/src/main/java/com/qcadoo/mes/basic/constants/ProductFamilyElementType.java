@@ -48,7 +48,7 @@ public enum ProductFamilyElementType {
                 && StringUtils.equalsIgnoreCase(modelName, BasicConstants.MODEL_PRODUCT);
     }
 
-    private ProductFamilyElementType(final String type) {
+    ProductFamilyElementType(final String type) {
         this.productFamilyElementType = type;
     }
 

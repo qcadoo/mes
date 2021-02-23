@@ -24,10 +24,8 @@
 package com.qcadoo.mes.deliveries;
 
 import com.qcadoo.mes.basic.ProductService;
-import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
-import com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields;
 import com.qcadoo.mes.deliveries.constants.ProductFieldsD;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -90,11 +88,9 @@ public class CompanyProductServiceImpl implements CompanyProductService {
                     }
                 }
                 List<Entity> companyProductsForProduct = product.getHasManyField(ProductFieldsD.PRODUCT_COMPANIES);
-                if (companyProductsForProduct.stream().anyMatch(
+                return companyProductsForProduct.stream().anyMatch(
                         companyProductForProduct -> companyProductForProduct.getBooleanField(CompanyProductFields.IS_DEFAULT)
-                                && !companyProductForProduct.getId().equals(companyProduct.getId()))) {
-                    return true;
-                }
+                                && !companyProductForProduct.getId().equals(companyProduct.getId()));
             }
         }
 
@@ -118,13 +114,11 @@ public class CompanyProductServiceImpl implements CompanyProductService {
                     }
                 }
                 List<Entity> companyProductsForProduct = product.getHasManyField(ProductFieldsD.PRODUCTS_FAMILY_COMPANIES);
-                if (companyProductsForProduct.stream()
+                return companyProductsForProduct.stream()
                         .anyMatch(
                                 companyProductForProduct -> (companyProductForProduct
                                         .getBooleanField(CompanyProductFields.IS_DEFAULT) && !companyProductForProduct.getId()
-                                        .equals(companyProduct.getId())))) {
-                    return true;
-                }
+                                        .equals(companyProduct.getId())));
             }
         }
 
@@ -140,28 +134,16 @@ public class CompanyProductServiceImpl implements CompanyProductService {
                 return StringUtils.EMPTY;
             } else {
                 StringBuilder productNames = new StringBuilder();
-                List<Entity> children = product.getHasManyField(ProductFields.PRODUCT_FAMILY_CHILDRENS);
+                List<Entity> children = product.getHasManyField(ProductFields.CHILDREN);
                 for (Entity child : children) {
-                    if (productService.checkIfProductEntityTypeIsCorrect(child, ProductFamilyElementType.PRODUCTS_FAMILY)) {
-                        List<Entity> familiesCompanies = child.getHasManyField(ProductFieldsD.PRODUCTS_FAMILY_COMPANIES);
-                        if (!familiesCompanies.isEmpty()) {
-                            String defaultCompaniesForFamilies = familiesCompanies
-                                    .stream()
-                                    .filter(cp -> cp.getBooleanField(CompanyProductsFamilyFields.IS_DEFAULT))
-                                    .map(cp -> cp.getBelongsToField(CompanyProductsFamilyFields.PRODUCT).getStringField(
-                                            ProductFields.NUMBER)).collect(Collectors.joining(", "));
-                            productNames.append(defaultCompaniesForFamilies);
-                        }
-                    } else {
-                        List<Entity> productCompanies = child.getHasManyField(ProductFieldsD.PRODUCT_COMPANIES);
-                        if (!productCompanies.isEmpty()) {
-                            String defaultCompaniesForProducts = productCompanies
-                                    .stream()
-                                    .filter(cp -> cp.getBooleanField(CompanyProductFields.IS_DEFAULT))
-                                    .map(cp -> cp.getBelongsToField(CompanyProductFields.PRODUCT)
-                                            .getStringField(ProductFields.NUMBER)).collect(Collectors.joining(", "));
-                            productNames.append(defaultCompaniesForProducts);
-                        }
+                    List<Entity> productCompanies = child.getHasManyField(ProductFieldsD.PRODUCT_COMPANIES);
+                    if (!productCompanies.isEmpty()) {
+                        String defaultCompaniesForProducts = productCompanies
+                                .stream()
+                                .filter(cp -> cp.getBooleanField(CompanyProductFields.IS_DEFAULT))
+                                .map(cp -> cp.getBelongsToField(CompanyProductFields.PRODUCT)
+                                        .getStringField(ProductFields.NUMBER)).collect(Collectors.joining(", "));
+                        productNames.append(defaultCompaniesForProducts);
                     }
                 }
                 LOG.warn("stop");

@@ -23,33 +23,30 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
-import static com.qcadoo.mes.basic.constants.ProductFamilyElementType.PARTICULAR_PRODUCT;
-
-import java.util.List;
-import java.util.Objects;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.ProductService;
 import com.qcadoo.mes.basic.constants.AdditionalCodeFields;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ModelFields;
-import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.tree.ProductNumberingService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.constants.UnitConversionItemFields;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ProductHooks {
-
-    @Autowired
-    private ProductNumberingService productNumberingService;
 
     @Autowired
     private ProductService productService;
@@ -59,8 +56,6 @@ public class ProductHooks {
 
     public void onSave(final DataDefinition productDD, final Entity product) {
         updateModelAndAssortment(productDD, product);
-        updateNodeNumber(productDD, product);
-        clearFamilyFromProductWhenTypeIsChanged(productDD, product);
     }
 
     private void updateModelAndAssortment(final DataDefinition productDD, final Entity product) {
@@ -76,7 +71,7 @@ public class ProductHooks {
             Entity assortmentFromDB = productFromDB.getBelongsToField(ProductFields.ASSORTMENT);
 
             boolean areSame = (Objects.isNull(assortment) ? Objects.isNull(assortmentFromDB)
-                    : (Objects.nonNull(assortmentFromDB) ? assortment.getId().equals(assortmentFromDB.getId()) : false));
+                    : (Objects.nonNull(assortmentFromDB) && assortment.getId().equals(assortmentFromDB.getId())));
 
             if (areSame) {
                 if (Objects.nonNull(model) && Objects.isNull(assortment)) {
@@ -109,68 +104,6 @@ public class ProductHooks {
                     product.setField(ProductFields.MODEL, null);
                 }
             }
-        }
-    }
-
-    public void generateNodeNumber(final DataDefinition productDD, final Entity product) {
-        productNumberingService.generateNodeNumber(product);
-    }
-
-    public void updateNodeNumber(final DataDefinition productDD, final Entity product) {
-        productNumberingService.updateNodeNumber(product);
-    }
-
-    public void clearFamilyFromProductWhenTypeIsChanged(final DataDefinition productDD, final Entity product) {
-        if (Objects.isNull(product.getId())) {
-            return;
-        }
-
-        String entityType = product.getStringField(ProductFields.ENTITY_TYPE);
-        Entity productFromDB = product.getDataDefinition().get(product.getId());
-
-        if (entityType.equals(PARTICULAR_PRODUCT.getStringValue())
-                && !entityType.equals(productFromDB.getStringField(ProductFields.ENTITY_TYPE))) {
-            deleteProductFamily(productDD, productFromDB);
-        }
-    }
-
-    private void deleteProductFamily(final DataDefinition productDD, final Entity product) {
-        List<Entity> productsWithFamily = productDD.find().add(SearchRestrictions.belongsTo(ProductFields.PARENT, product)).list()
-                .getEntities();
-
-        for (Entity entity : productsWithFamily) {
-            entity.setField(ProductFields.PARENT, null);
-            productDD.save(entity);
-        }
-    }
-
-    public boolean checkIfNotBelongsToSameFamily(final DataDefinition productDD, final Entity product) {
-        if (Objects.nonNull(product.getId())) {
-            Entity parent = product.getBelongsToField(ProductFields.PARENT);
-
-            if (Objects.nonNull(parent) && product.getId().equals(parent.getId())) {
-                product.addError(productDD.getField(ProductFields.PARENT), "basic.product.parent.belongsToSameFamily");
-
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    public boolean checkIfParentIsFamily(final DataDefinition productDD, final Entity product) {
-        Entity parent = product.getBelongsToField(ProductFields.PARENT);
-
-        if (Objects.isNull(parent)) {
-            return true;
-        }
-
-        if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(parent.getStringField(ProductFields.ENTITY_TYPE))) {
-            return true;
-        } else {
-            product.addError(productDD.getField(ProductFields.PARENT), "basic.product.parent.parentIsNotFamily");
-
-            return false;
         }
     }
 
@@ -243,6 +176,17 @@ public class ProductHooks {
 
     private DataDefinition getAdditionalCodeDD() {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_ADDITIONAL_CODE);
+    }
+
+    public void setCriteriaModifierParameters(final ViewDefinitionState view) {
+        LookupComponent parentLookup = (LookupComponent) view.getComponentByReference(ProductFields.PARENT);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Entity product = form.getPersistedEntityWithIncludedFormValues();
+
+        FilterValueHolder holder = parentLookup.getFilterValue();
+        holder.put(ProductFields.MACHINE_PART, product.getBooleanField(ProductFields.MACHINE_PART));
+        parentLookup.setFilterValue(holder);
     }
 
 }

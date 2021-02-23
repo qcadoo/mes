@@ -26,47 +26,36 @@
 -->
 <view defaultAuthorizationRole="ROLE_PRODUCT_FAMILIES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="productsFamilies" modelName="product" menuAccessible="true">
+	name="productChildren" modelName="product">
 
 	<component type="window" name="window" reference="window">
 
 		<ribbon>
-			<template name="standardGridTemplate" includeGroups="genericExport"/>
-			<group name="children">
-				<bigButton name="showChildren" icon="generateIcon24.png"
-						   state="disabled">
-					<script>
-						<![CDATA[
-							this.addOnChangeListener({
-								onClick: function() {
-									#{grid}.performEvent('showChildren', []);
-								}
-							});
-						]]>
-					</script>
-				</bigButton>
-			</group>
+			<template name="standardFormTemplate" includeItems="navigation.back" />
 		</ribbon>
 
-		<component type="grid" name="grid" reference="grid">
-			<script>
-				<![CDATA[
-					var showChildrenButton = #{window}.getRibbonItem("children.showChildren");
+		<component type="form" name="form" reference="form"/>
+		<component type="lookup" name="childrenLookup" reference="childrenLookup"
+				   field="#{form}.children" defaultVisible="false" persistent="false"
+				   hasLabel="false">
+			<option type="column" name="name" fields="name" link="true"
+					width="100"/>
 
-					var listener = {
-						onChange: function(selectedEntitiesArray) {
-							if (!selectedEntitiesArray || selectedEntitiesArray.length == 0) {
-								showChildrenButton.disable();
-							} else {
-								showChildrenButton.enable();
-							}
-						}
-					}
+			<option type="searchable" value="number,name"/>
+			<option type="orderable" value="number,name"/>
 
-					this.addOnChangeListener(listener);
-				]]>
-			</script>
-			<option type="column" name="number" fields="number"/>
+			<option type="expression"
+					value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+			<option type="fieldCode" value="number"/>
+
+			<option type="multiselect" value="true"/>
+			<criteriaModifier
+					class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
+					method="showParticularProductWithoutFamilies"/>
+		</component>
+		<component type="grid" name="children" reference="children"
+				   source="#{form}.children">
+			<option type="column" name="number" fields="number" />
 			<option type="column" name="name" fields="name" />
 
 			<option type="order" column="name" direction="asc" />
@@ -75,18 +64,16 @@
 			<option type="orderable" value="number,name" />
 
 			<option type="fullscreen" value="true" />
-			<option type="multiselect" value="false" />
-
-			<criteriaModifier
-					class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
-					method="showProductFamilyOnly"/>
-			<listener event="showChildren"
-					  class="com.qcadoo.mes.basic.listeners.ProductsFamiliesListeners"
-					  method="showChildren" />
+			<option type="multiselect" value="true" />
+			<option type="creatable" value="true"/>
+			<option type="deletable" value="true"/>
+			<option type="paginable" value="false"/>
+			<option type="weakRelation" value="true"/>
+			<option type="correspondingLookup" value="childrenLookup"/>
 		</component>
 
 		<option type="fixedHeight" value="true"/>
-		<option type="header" value="false"/>
+		<option type="header" value="false" />
 	</component>
 
 	<hooks/>

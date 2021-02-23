@@ -23,12 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -40,6 +34,11 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ProductHooksD {
@@ -119,19 +118,8 @@ public class ProductHooksD {
         Entity parent = product.getBelongsToField(ProductFields.PARENT);
 
         if (Objects.nonNull(parent)) {
-            boolean familyHasDefault = companyProductService.checkIfDefaultExistsForProductFamily(parent);
-            boolean productHasDefault;
-
-            if (familyHasDefault) {
-                ProductFamilyElementType productType = ProductFamilyElementType.from(product);
-
-                if (productType.compareTo(ProductFamilyElementType.PARTICULAR_PRODUCT) == 0) {
-                    productHasDefault = companyProductService.checkIfDefaultExistsForParticularProduct(product);
-                } else {
-                    productHasDefault = companyProductService.checkIfDefaultExistsForProductFamily(product);
-                }
-
-                if (productHasDefault) {
+            if (companyProductService.checkIfDefaultExistsForProductFamily(parent)) {
+                if (companyProductService.checkIfDefaultExistsForParticularProduct(product)) {
                     product.addError(productDD.getField(ProductFields.PARENT),
                             "basic.company.message.defaultAlreadyExistsForProductAndFamily");
 

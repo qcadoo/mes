@@ -23,15 +23,9 @@
  */
 package com.qcadoo.mes.materialFlowResources.criteriaModifiers;
 
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.materialFlow.constants.UserFieldsMF;
 import com.qcadoo.mes.materialFlow.constants.UserLocationFields;
+import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -41,6 +35,13 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.constants.QcadooSecurityConstants;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationsCriteriaModifier {
@@ -52,6 +53,7 @@ public class ReservationsCriteriaModifier {
     private DataDefinitionService dataDefinitionService;
 
     public void restrictToUserLocations(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+        scb.add(SearchRestrictions.gt(ReservationFields.QUANTITY, BigDecimal.ZERO));
         Long currentUserId = securityService.getCurrentUserId();
         if (Objects.nonNull(currentUserId)) {
             EntityList userLocations = userDataDefinition().get(currentUserId).getHasManyField(UserFieldsMF.USER_LOCATIONS);

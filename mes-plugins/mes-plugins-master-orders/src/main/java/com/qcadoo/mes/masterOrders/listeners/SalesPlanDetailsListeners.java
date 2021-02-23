@@ -3,15 +3,7 @@ package com.qcadoo.mes.masterOrders.listeners;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
-import com.qcadoo.mes.masterOrders.constants.ProductsBySizeHelperFields;
-import com.qcadoo.mes.masterOrders.constants.SalesPlanFields;
-import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementFields;
-import com.qcadoo.mes.masterOrders.constants.SalesPlanOrdersGroupEntryHelperFields;
-import com.qcadoo.mes.masterOrders.constants.SalesPlanOrdersGroupHelperFields;
-import com.qcadoo.mes.masterOrders.constants.SalesPlanProductFields;
+import com.qcadoo.mes.masterOrders.constants.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -21,14 +13,13 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class SalesPlanDetailsListeners {
@@ -80,8 +71,8 @@ public class SalesPlanDetailsListeners {
                                 salesPlanOrdersGroupEntry = salesPlanOrdersGroupEntry.getDataDefinition().save(
                                         salesPlanOrdersGroupEntry);
                             } else {
-                                List<Entity> childs = product.getHasManyField(ProductFields.PRODUCT_FAMILY_CHILDRENS);
-                                for (Entity child : childs) {
+                                List<Entity> children = product.getHasManyField(ProductFields.CHILDREN);
+                                for (Entity child : children) {
                                     if (Objects.nonNull(child.getBelongsToField(ProductFields.SIZE))) {
                                         Entity salesPlanOrdersGroupEntry = dataDefinitionService.get(
                                                 MasterOrdersConstants.PLUGIN_IDENTIFIER,
@@ -181,7 +172,7 @@ public class SalesPlanDetailsListeners {
             final List<Entity> masterOrderProducts, final BigDecimal productQuantity) {
         if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(product.getField(ProductFields.ENTITY_TYPE))
                 && productQuantity.compareTo(BigDecimal.ZERO) == 0) {
-            for (Entity child : product.getHasManyField(ProductFields.PRODUCT_FAMILY_CHILDRENS)) {
+            for (Entity child : product.getHasManyField(ProductFields.CHILDREN)) {
                 for (Entity masterOrderProduct : masterOrderProducts) {
                     if (child.getId().equals(masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT).getId())) {
                         orderedQuantity = orderedQuantity.add(masterOrderProduct

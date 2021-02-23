@@ -48,7 +48,7 @@ public class OrderedProductsForFamilyHooks {
                 .getHasManyField(SalesPlanFields.MASTER_ORDERS);
         List<Entity> salesPlanProducts = Lists.newArrayList();
         DataDefinition salesPlanProductDD = getSalesPlanProductDD();
-        for (Entity child : product.getHasManyField(ProductFields.PRODUCT_FAMILY_CHILDRENS).stream()
+        for (Entity child : product.getHasManyField(ProductFields.CHILDREN).stream()
                 .sorted(Comparator.comparing(e -> e.getBelongsToField(ProductFields.SIZE) != null
                         ? e.getBelongsToField(ProductFields.SIZE).getIntegerField(SizeFields.SUCCESSION)
                         : 0))
