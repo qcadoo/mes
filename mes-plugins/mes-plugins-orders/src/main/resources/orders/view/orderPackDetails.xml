@@ -59,6 +59,10 @@
                                     value="#number + ' - ' + #name" />
                             <option type="fieldCode" value="number" />
 
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.orders.criteriaModifiers.OrdersCriteriaModifiers"
+                                    method="showWithAppropriateStateForOrderPack"/>
+
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.view.api.listeners.RerenderListener"
                                       method="onChangeRerender"/>
