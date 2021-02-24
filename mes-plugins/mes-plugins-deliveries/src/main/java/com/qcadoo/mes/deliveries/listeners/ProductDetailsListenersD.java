@@ -58,15 +58,13 @@ public class ProductDetailsListenersD {
         Entity formParent = formProduct.getBelongsToField(ProductFields.PARENT);
         if (formParent != null) {
             Entity parent = productDD.get(formParent.getId());
-            if (companyProductService.checkIfDefaultExistsForProductFamily(parent)) {
-                if (companyProductService.checkIfDefaultExistsForParticularProduct(product)) {
-                    formProduct.addError(productDD.getField(ProductFields.PARENT),
-                            "basic.company.message.defaultAlreadyExistsForProductAndFamily");
-                    form.setEntity(formProduct);
-                }
+            if (companyProductService.checkIfDefaultExistsForProductFamily(parent)
+                    && companyProductService.checkIfDefaultExistsForParticularProduct(product)) {
+                formProduct.addError(productDD.getField(ProductFields.PARENT),
+                        "basic.company.message.defaultAlreadyExistsForProductAndFamily");
+                form.setEntity(formProduct);
             }
         }
-
     }
 
     public void toggleSuppliersGrids(final ViewDefinitionState view, final ComponentState state, final String args[]) {

@@ -117,15 +117,12 @@ public class ProductHooksD {
     public boolean checkIfDefaultSupplierIsUnique(final DataDefinition productDD, final Entity product) {
         Entity parent = product.getBelongsToField(ProductFields.PARENT);
 
-        if (Objects.nonNull(parent)) {
-            if (companyProductService.checkIfDefaultExistsForProductFamily(parent)) {
-                if (companyProductService.checkIfDefaultExistsForParticularProduct(product)) {
-                    product.addError(productDD.getField(ProductFields.PARENT),
-                            "basic.company.message.defaultAlreadyExistsForProductAndFamily");
+        if (Objects.nonNull(parent) && companyProductService.checkIfDefaultExistsForProductFamily(parent)
+                && companyProductService.checkIfDefaultExistsForParticularProduct(product)) {
+            product.addError(productDD.getField(ProductFields.PARENT),
+                    "basic.company.message.defaultAlreadyExistsForProductAndFamily");
 
-                    return false;
-                }
-            }
+            return false;
         }
 
         return true;

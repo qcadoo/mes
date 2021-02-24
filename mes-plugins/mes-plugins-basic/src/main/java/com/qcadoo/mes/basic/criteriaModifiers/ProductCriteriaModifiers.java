@@ -59,7 +59,7 @@ public class ProductCriteriaModifiers {
 
     public void showParticularProductWithoutFamilies(final SearchCriteriaBuilder scb) {
         scb.add(SearchRestrictions.isNull(PARENT)).add(
-                SearchRestrictions.eq(ProductFields.ENTITY_TYPE, ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()));;
+                SearchRestrictions.eq(ProductFields.ENTITY_TYPE, ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()));
     }
 
     public void showProductsWithoutGivenProduct(final SearchCriteriaBuilder scb, final FilterValueHolder filterValueHolder) {
