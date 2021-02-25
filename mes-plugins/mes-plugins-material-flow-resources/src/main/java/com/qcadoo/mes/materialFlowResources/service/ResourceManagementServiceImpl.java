@@ -31,46 +31,18 @@ import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductAttributeValueFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.materialFlowResources.constants.DirectionConvertingQuantityAfterChangingConverter;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentPositionParametersFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
-import com.qcadoo.mes.materialFlowResources.constants.PositionAttributeValueFields;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
-import com.qcadoo.mes.materialFlowResources.constants.ReservationFields;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceAttributeValueFields;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
-import com.qcadoo.mes.materialFlowResources.constants.StorageLocationFields;
-import com.qcadoo.mes.materialFlowResources.constants.WarehouseAlgorithm;
+import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
 import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessageCopyToEntityHelper;
 import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessageHolder;
 import com.qcadoo.mes.materialFlowResources.helpers.NotEnoughResourcesErrorMessageHolderFactory;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
-import com.qcadoo.model.api.search.SearchOrder;
-import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.search.*;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.exception.LockAcquisitionException;
 import org.slf4j.Logger;
@@ -79,6 +51,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class ResourceManagementServiceImpl implements ResourceManagementService {
@@ -439,7 +417,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                         addPositionErrors(document, saved);
                     }
                 } else {
-                    copyPositionValues(position, generatedPositions.get(0), true);
+                    copyPositionValues(position, generatedPositions.get(0));
 
                     Entity saved = position.getDataDefinition().save(position);
                     addPositionErrors(document, saved);
@@ -465,12 +443,10 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         }
     }
 
-    private void copyPositionValues(final Entity position, final Entity newPosition, boolean copyBatch) {
+    private void copyPositionValues(final Entity position, final Entity newPosition) {
         position.setField(PositionFields.PRICE, newPosition.getField(PositionFields.PRICE));
         position.setField(PositionFields.SELLING_PRICE, newPosition.getField(PositionFields.SELLING_PRICE));
-        if (copyBatch) {
-            position.setField(PositionFields.BATCH, newPosition.getField(PositionFields.BATCH));
-        }
+        position.setField(PositionFields.BATCH, newPosition.getField(PositionFields.BATCH));
         position.setField(PositionFields.PRODUCTION_DATE, newPosition.getField(PositionFields.PRODUCTION_DATE));
         position.setField(PositionFields.EXPIRATION_DATE, newPosition.getField(PositionFields.EXPIRATION_DATE));
         position.setField(PositionFields.RESOURCE, newPosition.getField(PositionFields.RESOURCE));
@@ -652,7 +628,7 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
                         addPositionErrors(document, saved);
                     }
                 } else {
-                    copyPositionValues(position, generatedPositions.get(0), true);
+                    copyPositionValues(position, generatedPositions.get(0));
                     copyPositionErrors(position, generatedPositions.get(0));
 
                     Entity saved = position.getDataDefinition().save(position);
@@ -985,15 +961,12 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
 
                         for (Entity newPosition : newPositions) {
                             newPosition.setField(PositionFields.DOCUMENT, document);
-                            if (Objects.nonNull(position.getBelongsToField(PositionFields.BATCH))) {
-                                newPosition.setField(PositionFields.BATCH, position.getBelongsToField(PositionFields.BATCH));
-                            }
                             Entity saved = newPosition.getDataDefinition().save(newPosition);
                             valid = valid && saved.isValid();
                             addPositionErrors(view, saved);
                         }
                     } else {
-                        copyPositionValues(position, newPositions.get(0), false);
+                        copyPositionValues(position, newPositions.get(0));
 
                         Entity saved = position.getDataDefinition().save(position);
                         valid = valid && saved.isValid();
@@ -1045,8 +1018,8 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
             }
 
             LOGGER.info("DOCUMENT: " + position.getBelongsToField(PositionFields.DOCUMENT).getId() + " POSITION: "
-                    + position.toString());
-            LOGGER.info("RESOURCE USED: " + resource.toString());
+                    + position);
+            LOGGER.info("RESOURCE USED: " + resource);
 
             Entity newPosition = createNewPosition(position, product, resource, newPositions.size());
 
@@ -1181,6 +1154,9 @@ public class ResourceManagementServiceImpl implements ResourceManagementService 
         newPosition.setField(PositionFields.PRODUCT, position.getBelongsToField(PositionFields.PRODUCT));
         newPosition.setField(PositionFields.GIVEN_UNIT, position.getStringField(PositionFields.GIVEN_UNIT));
         newPosition.setField(PositionFields.CONVERSION, position.getField(PositionFields.CONVERSION));
+        if (Objects.nonNull(position.getBelongsToField(PositionFields.BATCH))) {
+            newPosition.setField(PositionFields.BATCH, position.getBelongsToField(PositionFields.BATCH));
+        }
 
         setPositionQuantityAndGivenQuantity(quantity, newPosition);
 
