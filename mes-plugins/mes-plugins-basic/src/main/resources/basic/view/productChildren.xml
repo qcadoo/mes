@@ -55,13 +55,16 @@
 		</component>
 		<component type="grid" name="children" reference="children"
 				   source="#{form}.children">
-			<option type="column" name="number" fields="number" />
-			<option type="column" name="name" fields="name" />
+			<option type="column" name="number" fields="number" link="true"/>
+			<option type="column" name="name" fields="name" link="true"/>
 
 			<option type="order" column="name" direction="asc" />
 
 			<option type="searchable" value="number,name" />
 			<option type="orderable" value="number,name" />
+
+			<option type="correspondingView" value="basic/productDetails"/>
+			<option type="correspondingComponent" value="form"/>
 
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
