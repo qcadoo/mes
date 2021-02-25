@@ -24,10 +24,7 @@
 package com.qcadoo.mes.basic.hooks;
 
 import com.qcadoo.mes.basic.ProductService;
-import com.qcadoo.mes.basic.constants.AdditionalCodeFields;
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.ModelFields;
-import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -104,6 +101,22 @@ public class ProductHooks {
                     product.setField(ProductFields.MODEL, null);
                 }
             }
+        }
+    }
+
+    public boolean checkIfParentIsFamily(final DataDefinition productDD, final Entity product) {
+        Entity parent = product.getBelongsToField(ProductFields.PARENT);
+
+        if (Objects.isNull(parent)) {
+            return true;
+        }
+
+        if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(parent.getStringField(ProductFields.ENTITY_TYPE))) {
+            return true;
+        } else {
+            product.addError(productDD.getField(ProductFields.PARENT), "basic.product.parent.parentIsNotFamily");
+
+            return false;
         }
     }
 

@@ -92,6 +92,8 @@
     <hooks>
         <validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
                        method="validateAdditionalUnit"/>
+        <validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
+                       method="checkIfParentIsFamily"/>
 
         <validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
                        method="validateCodeUniqueness"/>
