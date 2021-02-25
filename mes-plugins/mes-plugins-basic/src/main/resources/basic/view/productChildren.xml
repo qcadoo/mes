@@ -32,6 +32,7 @@
 
 		<ribbon>
 			<template name="standardFormTemplate" includeItems="navigation.back" />
+			<template name="standardGridTemplate" includeItems="actions.refresh" />
 		</ribbon>
 
 		<component type="form" name="form" reference="form"/>
@@ -53,7 +54,7 @@
 					class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
 					method="showParticularProductWithoutFamilies"/>
 		</component>
-		<component type="grid" name="children" reference="children"
+		<component type="grid" name="children" reference="grid"
 				   source="#{form}.children">
 			<option type="column" name="number" fields="number" link="true"/>
 			<option type="column" name="name" fields="name" link="true"/>
