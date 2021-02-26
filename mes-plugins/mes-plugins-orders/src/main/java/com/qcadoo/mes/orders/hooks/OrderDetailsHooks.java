@@ -427,7 +427,7 @@ public class OrderDetailsHooks {
             awesomeDynamicListComponent.requestComponentUpdateState();
 
             for (FormComponent formComponent : awesomeDynamicListComponent.getFormComponents()) {
-                FieldComponent fieldComponent = (FieldComponent) formComponent
+                FieldComponent fieldComponent = formComponent
                         .findFieldComponentByName("reasonTypeOfChangingOrderState");
 
                 fieldComponent.setEnabled(enabled);

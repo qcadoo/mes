@@ -34,5 +34,6 @@ public class OrderPacksSingleOrderListListeners {
             return;
         }
         orderPackService.generateOrderPacks(order);
+        view.addMessage("orders.orderPacksGeneration.success", ComponentState.MessageType.SUCCESS);
     }
 }

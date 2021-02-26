@@ -40,7 +40,7 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 @Service
 public class OrderPacksSingleOrderListHooks {
 
-    public static final String ACTIONS = "actions";
+    private static final String ACTIONS = "actions";
 
     public final void onBeforeRender(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(OrdersConstants.MODEL_ORDER);
