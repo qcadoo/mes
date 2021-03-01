@@ -1,4 +1,17 @@
-package com.qcadoo.mes.masterOrders.helper;
+package com.qcadoo.mes.masterOrders.helpers;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -6,7 +19,11 @@ import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.mes.masterOrders.constants.*;
+import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
+import com.qcadoo.mes.masterOrders.constants.SalesPlanFields;
+import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementFields;
+import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementProductFields;
+import com.qcadoo.mes.masterOrders.constants.SalesPlanProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceStockDtoFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
@@ -15,17 +32,13 @@ import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class SalesPlanMaterialRequirementHelper {
@@ -79,16 +92,12 @@ public class SalesPlanMaterialRequirementHelper {
                         List<Entity> productBySizeGroups = getProductBySizeGroups(operationProductComponentId);
 
                         for (Entity productBySizeGroup : productBySizeGroups) {
-                            Entity salesPlanMaterialRequirementProduct = createSalesPlanMaterialRequirementProductFromProductBySizeGroup(
+                            createSalesPlanMaterialRequirementProductFromProductBySizeGroup(
                                     salesPlanMaterialRequirementProducts, productBySizeGroup, neededQuantity);
-
-                            salesPlanMaterialRequirementProducts.add(salesPlanMaterialRequirementProduct);
                         }
                     } else {
-                        Entity salesPlanMaterialRequirementProduct = createSalesPlanMaterialRequirementProductFromProduct(
+                        createSalesPlanMaterialRequirementProductFromProduct(
                                 salesPlanMaterialRequirementProducts, product, neededQuantity);
-
-                        salesPlanMaterialRequirementProducts.add(salesPlanMaterialRequirementProduct);
                     }
                 }
             }
@@ -145,9 +154,11 @@ public class SalesPlanMaterialRequirementHelper {
 
             salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.PRODUCT, product);
             salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.QUANTITY, neededQuantity);
-
             salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.IS_DELIVERY_CREATED, false);
+
+            salesPlanMaterialRequirementProducts.add(salesPlanMaterialRequirementProduct);
         }
+
         return salesPlanMaterialRequirementProduct;
     }
 
@@ -172,15 +183,16 @@ public class SalesPlanMaterialRequirementHelper {
 
             sumForSizes = sumForSizes.add(neededQuantity, numberService.getMathContext());
 
-            salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.QUANTITY, sumForSizes);
+            salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.SUM_FOR_SIZES, sumForSizes);
         } else {
             salesPlanMaterialRequirementProduct = getSalesPlanMaterialRequirementProductDD().create();
 
             salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.PRODUCT, product);
             salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.SIZE_GROUP, sizeGroup);
             salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.SUM_FOR_SIZES, neededQuantity);
-
             salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.IS_DELIVERY_CREATED, false);
+
+            salesPlanMaterialRequirementProducts.add(salesPlanMaterialRequirementProduct);
         }
 
         return salesPlanMaterialRequirementProduct;

@@ -23,7 +23,7 @@ import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementFields;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementProductFields;
-import com.qcadoo.mes.masterOrders.helper.SalesPlanMaterialRequirementHelper;
+import com.qcadoo.mes.masterOrders.helpers.SalesPlanMaterialRequirementHelper;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
