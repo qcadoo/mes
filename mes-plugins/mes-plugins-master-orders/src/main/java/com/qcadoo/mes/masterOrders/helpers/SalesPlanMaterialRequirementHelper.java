@@ -92,12 +92,12 @@ public class SalesPlanMaterialRequirementHelper {
                         List<Entity> productBySizeGroups = getProductBySizeGroups(operationProductComponentId);
 
                         for (Entity productBySizeGroup : productBySizeGroups) {
-                            createSalesPlanMaterialRequirementProductFromProductBySizeGroup(
-                                    salesPlanMaterialRequirementProducts, productBySizeGroup, neededQuantity);
+                            createSalesPlanMaterialRequirementProductFromProductBySizeGroup(salesPlanMaterialRequirementProducts,
+                                    productBySizeGroup, plannedQuantity.multiply(neededQuantity, numberService.getMathContext()));
                         }
                     } else {
-                        createSalesPlanMaterialRequirementProductFromProduct(
-                                salesPlanMaterialRequirementProducts, product, neededQuantity);
+                        createSalesPlanMaterialRequirementProductFromProduct(salesPlanMaterialRequirementProducts, product,
+                                neededQuantity);
                     }
                 }
             }
@@ -297,7 +297,8 @@ public class SalesPlanMaterialRequirementHelper {
         queryBuilder.append("FROM basicproductioncounting_productioncountingquantitydto ");
         queryBuilder.append("WHERE productid IN (:productIds) ");
         queryBuilder.append("AND orderid IN ( ");
-        queryBuilder.append("SELECT id FROM orders_order WHERE state NOT IN ('01pending', '04completed', '05declined', '07abandoned') ");
+        queryBuilder.append(
+                "SELECT id FROM orders_order WHERE state NOT IN ('01pending', '04completed', '05declined', '07abandoned') ");
         queryBuilder.append(") ");
         queryBuilder.append("GROUP BY productid");
 
