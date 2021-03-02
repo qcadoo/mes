@@ -35,6 +35,8 @@ public final class ProductionCountingConstants {
 
     public static final String MODEL_PRODUCTION_TRACKING = "productionTracking";
 
+    public static final String MODEL_PRODUCTION_TRACKING_ATTACHMENT = "productionTrackingAttachment";
+
     public static final String MODEL_FINAL_PRODUCT_ANALYSIS_ENTRY = "finalProductAnalysisEntry";
 
     public static final String MODEL_BEFORE_ADDITIONAL_ACTIONS_ANALYSIS_ENTRY = "beforeAdditionalActionsAnalysisEntry";

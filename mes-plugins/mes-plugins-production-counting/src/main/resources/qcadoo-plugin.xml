@@ -132,6 +132,8 @@
 
         <model:model model="usedBatch" resource="model/usedBatch.xml"/>
 
+        <model:model model="productionTrackingAttachment" resource="model/productionTrackingAttachment.xml"/>
+
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="productionTracking"/>
 
         <model:model-field model="parameter" plugin="basic">

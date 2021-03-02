@@ -98,6 +98,7 @@
 		<boolean name="fromTerminal" default="false" persistent="false"/>
 		<boolean name="isCorrected" default="false"/>
 
+		<hasMany name="productionTrackingAttachments" joinField="productionTracking" model="productionTrackingAttachment" cascade="delete"/>
 
 	</fields>
 
