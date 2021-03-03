@@ -58,7 +58,6 @@ public class SalesPlanMaterialRequirementDetailsHooks {
     public void onBeforeRender(final ViewDefinitionState view) {
         setRibbonEnabled(view);
         setFormEnabled(view);
-        setNumber(view);
     }
 
     private void setRibbonEnabled(final ViewDefinitionState view) {
@@ -99,12 +98,6 @@ public class SalesPlanMaterialRequirementDetailsHooks {
         boolean isGenerated = generatedCheckBox.isChecked();
 
         salesPlanMaterialRequirementForm.setFormEnabled(isEnabled || !isGenerated);
-    }
-
-    private void setNumber(final ViewDefinitionState view) {
-        numberGeneratorService.generateAndInsertNumber(view, MasterOrdersConstants.PLUGIN_IDENTIFIER,
-                MasterOrdersConstants.MODEL_SALES_PLAN_MATERIAL_REQUIREMENT, QcadooViewConstants.L_FORM,
-                SalesPlanMaterialRequirementFields.NUMBER);
     }
 
 }

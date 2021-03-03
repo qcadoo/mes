@@ -1,5 +1,13 @@
 package com.qcadoo.mes.masterOrders.listeners;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -19,7 +27,6 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
 import java.math.BigDecimal;
@@ -37,9 +44,6 @@ public class SalesPlanDetailsListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
-    @Autowired
-    private NumberGeneratorService numberGeneratorService;
 
     public void createOrderGroup(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent salesPlanForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
@@ -98,11 +102,14 @@ public class SalesPlanDetailsListeners {
 
                                         BigDecimal orderedQuantity = BigDecimal.ZERO;
                                         for (Entity masterOrder : masterOrders) {
-                                            List<Entity> masterOrderProducts = masterOrder.getHasManyField(MasterOrderFields.MASTER_ORDER_PRODUCTS);
+                                            List<Entity> masterOrderProducts = masterOrder
+                                                    .getHasManyField(MasterOrderFields.MASTER_ORDER_PRODUCTS);
                                             for (Entity masterOrderProduct : masterOrderProducts) {
-                                                if (child.getId().equals(masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT).getId())) {
-                                                    orderedQuantity = orderedQuantity
-                                                            .add(masterOrderProduct.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY));
+                                                if (child.getId().equals(
+                                                        masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT)
+                                                                .getId())) {
+                                                    orderedQuantity = orderedQuantity.add(masterOrderProduct
+                                                            .getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY));
                                                     break;
                                                 }
                                             }
@@ -115,8 +122,7 @@ public class SalesPlanDetailsListeners {
                                                 SalesPlanOrdersGroupEntryHelperFields.PLANNED_QUANTITY,
                                                 salesPlanProduct.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY));
 
-                                        salesPlanOrdersGroupEntry.setField(
-                                                SalesPlanOrdersGroupEntryHelperFields.ORDER_QUANTITY,
+                                        salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.ORDER_QUANTITY,
                                                 orderedQuantity);
 
                                         salesPlanOrdersGroupEntry = salesPlanOrdersGroupEntry.getDataDefinition().save(
@@ -126,6 +132,7 @@ public class SalesPlanDetailsListeners {
                             }
 
                         });
+
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("form.id", salesPlanOrdersGroupHelper.getId());
 
@@ -244,13 +251,13 @@ public class SalesPlanDetailsListeners {
         if (Objects.nonNull(salesPlanId)) {
             Entity salesPlan = getSalesPlan(salesPlanId);
 
-            Entity delivery = createSalesPlanMaterialRequirement(salesPlan);
+            Entity salesPlanMaterialRequirement = createSalesPlanMaterialRequirement(salesPlan);
 
-            Long deliveryId = delivery.getId();
+            Long salesPlanMaterialRequirementId = salesPlanMaterialRequirement.getId();
 
-            if (Objects.nonNull(deliveryId)) {
+            if (Objects.nonNull(salesPlanMaterialRequirementId)) {
                 Map<String, Object> parameters = Maps.newHashMap();
-                parameters.put("form.id", deliveryId);
+                parameters.put("form.id", salesPlanMaterialRequirementId);
 
                 parameters.put(L_WINDOW_ACTIVE_MENU, "orders.salesPlanMaterialRequirementsList");
 
@@ -263,10 +270,6 @@ public class SalesPlanDetailsListeners {
     private Entity createSalesPlanMaterialRequirement(final Entity salesPlan) {
         Entity salesPlanMaterialRequirement = getSalesPlanMaterialRequirementDD().create();
 
-        String number = numberGeneratorService.generateNumber(MasterOrdersConstants.PLUGIN_IDENTIFIER,
-                MasterOrdersConstants.MODEL_SALES_PLAN_MATERIAL_REQUIREMENT);
-
-        salesPlanMaterialRequirement.setField(SalesPlanMaterialRequirementFields.NUMBER, number);
         salesPlanMaterialRequirement.setField(SalesPlanMaterialRequirementFields.SALES_PLAN, salesPlan);
 
         salesPlanMaterialRequirement = salesPlanMaterialRequirement.getDataDefinition().save(salesPlanMaterialRequirement);
