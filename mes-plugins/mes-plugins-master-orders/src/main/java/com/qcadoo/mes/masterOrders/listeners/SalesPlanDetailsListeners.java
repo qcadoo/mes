@@ -3,7 +3,15 @@ package com.qcadoo.mes.masterOrders.listeners;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.masterOrders.constants.*;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
+import com.qcadoo.mes.masterOrders.constants.ProductsBySizeHelperFields;
+import com.qcadoo.mes.masterOrders.constants.SalesPlanFields;
+import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementFields;
+import com.qcadoo.mes.masterOrders.constants.SalesPlanOrdersGroupEntryHelperFields;
+import com.qcadoo.mes.masterOrders.constants.SalesPlanOrdersGroupHelperFields;
+import com.qcadoo.mes.masterOrders.constants.SalesPlanProductFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -13,13 +21,14 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class SalesPlanDetailsListeners {
@@ -35,6 +44,8 @@ public class SalesPlanDetailsListeners {
     public void createOrderGroup(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent salesPlanForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         GridComponent productsGrid = (GridComponent) view.getComponentByReference(SalesPlanFields.PRODUCTS);
+        Entity salesPlan = salesPlanForm.getEntity().getDataDefinition().get(salesPlanForm.getEntityId());
+        List<Entity> masterOrders = salesPlan.getHasManyField(SalesPlanFields.MASTER_ORDERS);
 
         Entity salesPlanOrdersGroupHelper = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
                 MasterOrdersConstants.MODEL_SALES_PLAN_ORDERS_GROUP_HELPER).create();
@@ -84,6 +95,19 @@ public class SalesPlanDetailsListeners {
                                         salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.PRODUCT, child);
                                         salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.PRODUCT_FAMILY,
                                                 product);
+
+                                        BigDecimal orderedQuantity = BigDecimal.ZERO;
+                                        for (Entity masterOrder : masterOrders) {
+                                            List<Entity> masterOrderProducts = masterOrder.getHasManyField(MasterOrderFields.MASTER_ORDER_PRODUCTS);
+                                            for (Entity masterOrderProduct : masterOrderProducts) {
+                                                if (child.getId().equals(masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT).getId())) {
+                                                    orderedQuantity = orderedQuantity
+                                                            .add(masterOrderProduct.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY));
+                                                    break;
+                                                }
+                                            }
+                                        }
+
                                         salesPlanOrdersGroupEntry.setField(
                                                 SalesPlanOrdersGroupEntryHelperFields.ORDERED_QUANTITY,
                                                 salesPlanProduct.getDecimalField(SalesPlanProductFields.ORDERED_QUANTITY));
@@ -93,7 +117,7 @@ public class SalesPlanDetailsListeners {
 
                                         salesPlanOrdersGroupEntry.setField(
                                                 SalesPlanOrdersGroupEntryHelperFields.ORDER_QUANTITY,
-                                                salesPlanProduct.getDecimalField(SalesPlanProductFields.SURPLUS_FROM_PLAN));
+                                                orderedQuantity);
 
                                         salesPlanOrdersGroupEntry = salesPlanOrdersGroupEntry.getDataDefinition().save(
                                                 salesPlanOrdersGroupEntry);
