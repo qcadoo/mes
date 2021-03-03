@@ -23,21 +23,6 @@
  */
 package com.qcadoo.mes.technologies;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.constants.SizeFields;
-import com.qcadoo.mes.technologies.constants.*;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
-import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
-import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
-import com.qcadoo.model.api.*;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
@@ -46,6 +31,33 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.SizeFields;
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
+import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
+import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
+import com.qcadoo.mes.technologies.constants.ProductComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
+import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
@@ -519,24 +531,27 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     private void multiplyOperationProductComponentQuantities(final List<Entity> operationProductComponents,
             final BigDecimal multiplier,
             final OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer) {
+        List<Entity> sizeGroups = operationProductComponentWithQuantityContainer.getSizeGroups();
+
         for (Entity operationProductComponent : operationProductComponents) {
             if (operationProductComponent.getDataDefinition().getName()
                     .equals(TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
-                    && operationProductComponent
-                            .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES)) {
-                for (Entity sizeGroup : operationProductComponentWithQuantityContainer.getSizeGroups()) {
-                    List<Entity> productsByGroup = operationProductComponent
+                    && operationProductComponent.getBooleanField(
+                            OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES)
+                    && sizeGroups.size() > 0) {
+                for (Entity sizeGroup : sizeGroups) {
+                    List<Entity> productBySizeGroups = operationProductComponent
                             .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS).stream().filter(pG -> pG
                                     .getBelongsToField(ProductBySizeGroupFields.SIZE_GROUP).getId().equals(sizeGroup.getId()))
                             .collect(Collectors.toList());
 
-                    for (Entity productByGroup : productsByGroup) {
+                    for (Entity productBySizeGroup : productBySizeGroups) {
                         BigDecimal addedQuantity = operationProductComponentWithQuantityContainer.get(operationProductComponent,
-                                productByGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT));
+                                productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT));
                         BigDecimal quantity = addedQuantity.multiply(multiplier, numberService.getMathContext());
 
                         operationProductComponentWithQuantityContainer.put(operationProductComponent,
-                                productByGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT),
+                                productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT),
                                 quantity.setScale(5, RoundingMode.CEILING));
                     }
                 }

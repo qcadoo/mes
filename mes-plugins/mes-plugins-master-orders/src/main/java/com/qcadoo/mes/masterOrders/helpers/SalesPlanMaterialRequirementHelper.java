@@ -93,7 +93,7 @@ public class SalesPlanMaterialRequirementHelper {
 
                         for (Entity productBySizeGroup : productBySizeGroups) {
                             createSalesPlanMaterialRequirementProductFromProductBySizeGroup(salesPlanMaterialRequirementProducts,
-                                    productBySizeGroup, plannedQuantity.multiply(neededQuantity, numberService.getMathContext()));
+                                    productBySizeGroup, neededQuantity);
                         }
                     } else {
                         createSalesPlanMaterialRequirementProductFromProduct(salesPlanMaterialRequirementProducts, product,
@@ -116,7 +116,11 @@ public class SalesPlanMaterialRequirementHelper {
 
                 if (Objects.nonNull(parent)) {
                     technology = productStructureTreeService.findTechnologyForProduct(parent);
+                } else {
+                    technology = productStructureTreeService.findTechnologyForProduct(product);
                 }
+            } else {
+                technology = productStructureTreeService.findTechnologyForProduct(product);
             }
         }
 
@@ -199,13 +203,19 @@ public class SalesPlanMaterialRequirementHelper {
     }
 
     private boolean filterByProduct(final Entity salesPlanMaterialRequirementProduct, final Entity product) {
-        return salesPlanMaterialRequirementProduct.getBelongsToField(SalesPlanMaterialRequirementProductFields.PRODUCT).getId()
-                .equals(product.getId());
+        Entity salesPlanMaterialRequirementProductProduct = salesPlanMaterialRequirementProduct
+                .getBelongsToField(SalesPlanMaterialRequirementProductFields.PRODUCT);
+
+        return Objects.nonNull(salesPlanMaterialRequirementProductProduct)
+                && salesPlanMaterialRequirementProductProduct.getId().equals(product.getId());
     }
 
     private boolean filterBySizeGroup(final Entity salesPlanMaterialRequirementProduct, final Entity sizeGroup) {
-        return salesPlanMaterialRequirementProduct.getBelongsToField(SalesPlanMaterialRequirementProductFields.SIZE_GROUP).getId()
-                .equals(sizeGroup.getId());
+        Entity salesPlanMaterialRequirementProductSizeGroup = salesPlanMaterialRequirementProduct
+                .getBelongsToField(SalesPlanMaterialRequirementProductFields.SIZE_GROUP);
+
+        return Objects.nonNull(salesPlanMaterialRequirementProductSizeGroup)
+                && salesPlanMaterialRequirementProductSizeGroup.getId().equals(sizeGroup.getId());
     }
 
     private void updateSalesPlanMaterialRequirementProducts(final List<Entity> salesPlanMaterialRequirementProducts) {
@@ -262,14 +272,15 @@ public class SalesPlanMaterialRequirementHelper {
     private BigDecimal getCurrentStock(final List<Entity> resourceStocks, final Long productId) {
         BigDecimal currentStock = BigDecimal.ZERO;
 
-        Optional<Entity> mayBeResourceStock = resourceStocks.stream().filter(
+        List<Entity> resourceStocksForProduct = resourceStocks.stream().filter(
                 resourceStock -> resourceStock.getIntegerField(ResourceStockDtoFields.PRODUCT_ID).equals(productId.intValue()))
-                .findAny();
+                .collect(Collectors.toList());
 
-        if (mayBeResourceStock.isPresent()) {
-            Entity resourceStock = mayBeResourceStock.get();
-
-            currentStock = resourceStock.getDecimalField(ResourceStockDtoFields.AVAILABLE_QUANTITY);
+        if (resourceStocksForProduct.size() > 0) {
+            for (Entity resourceStock : resourceStocksForProduct) {
+                currentStock = currentStock.add(resourceStock.getDecimalField(ResourceStockDtoFields.AVAILABLE_QUANTITY),
+                        numberService.getMathContext());
+            }
         }
 
         return currentStock;
