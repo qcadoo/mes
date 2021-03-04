@@ -47,7 +47,7 @@
                 method="validatePlannedQuantity" />
             <validatesUnscaledValue max="9" />
             <validatesScale max="5" />
-            <validatesRange from="0" exclusively="false"/>
+            <validatesRange from="0"/>
         </decimal>
         <decimal name="usedQuantity" persistent="false"/>
         <decimal name="producedQuantity" persistent="false"/>
