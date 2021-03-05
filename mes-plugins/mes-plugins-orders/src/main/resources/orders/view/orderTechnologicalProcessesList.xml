@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PLANNING" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="orderTechnologicalProcessesList" modelName="order">
+
+    <component type="window" name="window" reference="window">
+        <ribbon>
+            <template name="standardGridTemplate" includeItems="actions.refresh,genericExport.csv,genericExport.pdf"/>
+        </ribbon>
+
+        <component type="form" name="order" reference="order" />
+
+        <component type="grid" name="orderTechnologicalProcesses" reference="grid" source="#{order}.orderTechnologicalProcessesDto"
+                   model="orderTechnologicalProcessDto" useDto="true">
+            <option type="column" name="number" fields="number" link="true"/>
+            <option type="column" name="orderPackNumber" fields="orderPackNumber"/>
+            <option type="column" name="orderNumber" fields="orderNumber"/>
+            <option type="column" name="productNumber" fields="productNumber"/>
+            <option type="column" name="modelName" fields="modelName"/>
+            <option type="column" name="sizeNumber" fields="sizeNumber"/>
+            <option type="column" name="operationNumber" fields="operationNumber"/>
+            <option type="column" name="workstationTypeNumber" fields="workstationTypeNumber"/>
+            <option type="column" name="workstationNumber" fields="workstationNumber"/>
+            <option type="column" name="technologicalProcessName" fields="technologicalProcessName"/>
+            <option type="column" name="quantity" fields="quantity"/>
+            <option type="column" name="worker" fields="worker"/>
+            <option type="column" name="date" fields="date"/>
+            <option type="column" name="wastesQuantity" fields="wastesQuantity"/>
+
+            <option type="correspondingView" value="orders/orderTechnologicalProcessDetails"/>
+            <option type="correspondingComponent" value="form"/>
+
+            <option type="order" column="number" direction="desc"/>
+
+            <option type="searchable"
+                    value="number,orderPackNumber,orderNumber,productNumber,modelName,sizeNumber,operationNumber,workstationTypeNumber,workstationNumber,technologicalProcessName,quantity,worker,date,wastesQuantity"/>
+            <option type="orderable"
+                    value="number,orderPackNumber,orderNumber,productNumber,modelName,sizeNumber,operationNumber,workstationTypeNumber,workstationNumber,technologicalProcessName,quantity,worker,date,wastesQuantity"/>
+
+            <option type="fullscreen" value="true"/>
+            <option type="multiselect" value="true"/>
+        </component>
+
+        <option type="fixedHeight" value="true"/>
+        <option type="header" value="false"/>
+    </component>
+
+</view>

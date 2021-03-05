@@ -93,6 +93,9 @@
         <model:model model="setCategory" resource="model/setCategory.xml"/>
         <model:model model="orderPack" resource="model/orderPack.xml"/>
         <model:model model="orderPackDto" resource="model/orderPackDto.xml"/>
+        <model:model model="orderTechnologicalProcess" resource="model/orderTechnologicalProcess.xml"/>
+        <model:model model="orderTechnologicalProcessDto" resource="model/orderTechnologicalProcessDto.xml"/>
+        <model:model model="orderTechnologicalProcessPart" resource="model/orderTechnologicalProcessPart.xml"/>
 
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="positions" model="schedulePosition" plugin="orders" joinField="product"/>
@@ -391,6 +394,9 @@
         <view:view resource="view/orderPackDetails.xml"/>
         <view:view resource="view/orderPacksSingleOrderList.xml"/>
         <view:view resource="view/orderPackSingleOrderDetails.xml"/>
+        <view:view resource="view/orderTechnologicalProcessDetails.xml"/>
+        <view:view resource="view/orderTechnologicalProcessesList.xml"/>
+        <view:view resource="view/divideOrderTechnologicalProcess.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
 

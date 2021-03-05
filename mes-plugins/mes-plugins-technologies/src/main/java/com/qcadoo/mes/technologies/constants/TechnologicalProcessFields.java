@@ -6,6 +6,8 @@ public final class TechnologicalProcessFields {
 
     }
 
+    public static final String NAME = "name";
+
     public static final String EXTENDED_TIME_FOR_SIZE_GROUP = "extendedTimeForSizeGroup";
 
     public static final String INCREASE_PERCENT = "increasePercent";

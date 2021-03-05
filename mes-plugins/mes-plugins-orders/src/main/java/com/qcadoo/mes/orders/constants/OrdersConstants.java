@@ -65,6 +65,12 @@ public final class OrdersConstants {
 
     public static final String MODEL_ORDER_PACK = "orderPack";
 
+    public static final String MODEL_ORDER_TECHNOLOGICAL_PROCESS = "orderTechnologicalProcess";
+
+    public static final String MODEL_ORDER_TECHNOLOGICAL_PROCESS_DTO = "orderTechnologicalProcessDto";
+
+    public static final String MODEL_ORDER_TECHNOLOGICAL_PROCESS_PART = "orderTechnologicalProcessPart";
+
     // VIEW
 
     public static String orderDetailsUrl(final Long id) {
