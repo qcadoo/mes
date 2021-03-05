@@ -36,17 +36,16 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
-
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class MaterialRequirementDetailsListeners {
@@ -71,7 +70,6 @@ public class MaterialRequirementDetailsListeners {
                 MaterialRequirementsConstants.MODEL_MATERIAL_REQUIREMENT });
     }
 
-    // TODO KRNA generic candidate
     @Transactional
     public void generateMaterialRequirement(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
@@ -115,7 +113,7 @@ public class MaterialRequirementDetailsListeners {
                         .format(new Date()));
             }
 
-            state.performEvent(view, "save", new String[0]);
+            state.performEvent(view, "save");
 
             if (state.getFieldValue() == null || !((FormComponent) state).isValid()) {
                 worker.setFieldValue(null);
@@ -129,10 +127,8 @@ public class MaterialRequirementDetailsListeners {
 
             try {
                 materialRequirementService.generateMaterialRequirementDocuments(state, materialRequirement);
-                state.performEvent(view, "reset", new String[0]);
-            } catch (IOException e) {
-                throw new IllegalStateException(e.getMessage(), e);
-            } catch (DocumentException e) {
+                state.performEvent(view, "reset");
+            } catch (IOException | DocumentException e) {
                 throw new IllegalStateException(e.getMessage(), e);
             }
         }
