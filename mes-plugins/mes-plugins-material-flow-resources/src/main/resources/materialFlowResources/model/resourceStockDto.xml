@@ -28,23 +28,25 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd"
        activable="false" auditable="false" deletable="false" insertable="false" updatable="false">
+
     <fields>
-        <decimal name="quantity"/>
-        <decimal name="quantityInAdditionalUnit"/>
-        <decimal name="reservedQuantity"/>
-        <decimal name="availableQuantity"/>
+        <integer name="location_id"/>
+        <integer name="product_id"/>
         <string name="locationNumber"/>
         <string name="locationName"/>
-        <integer name="location_id"/>
         <string name="productNumber"/>
         <string name="productName"/>
         <string name="productUnit"/>
-        <decimal name="minimumState"/>
-        <decimal name="orderedQuantity"/>
-        <integer name="product_id"/>
-        <decimal name="totalValue"/>
         <string name="familyNumber"/>
-
+        <decimal name="minimumState"/>
+        <decimal name="quantity"/>
+        <decimal name="quantityInAdditionalUnit"/>
+        <decimal name="totalValue"/>
+        <decimal name="orderedQuantity"/>
+        <decimal name="reservedQuantity"/>
+        <decimal name="availableQuantity"/>
+        <boolean name="blockedForQualityControl" default="false"/>
     </fields>
+
     <masterModel plugin="materialFlowResources" model="resourceStock"/>
 </model>

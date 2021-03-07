@@ -23,6 +23,17 @@
  */
 package com.qcadoo.mes.materialFlowResources;
 
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.util.CurrencyService;
@@ -39,23 +50,12 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import static com.qcadoo.mes.basic.constants.BasicConstants.MODEL_PRODUCT;
-import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-
 @Service
 public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesService {
 
     private static final String L_PRICE_CURRENCY = "priceCurrency";
 
-    public static final String QUANTITY_UNIT = "quantityUNIT";
+    private static final String L_QUANTITY_UNIT = "quantityUNIT";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -65,6 +65,11 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
 
     @Autowired
     private CurrencyService currencyService;
+
+    @Override
+    public List<Entity> getWarehouseLocationsFromDB() {
+        return getLocationDD().find().list().getEntities();
+    }
 
     @Override
     public BigDecimal getResourcesQuantityForLocationAndProduct(final Entity location, final Entity product) {
@@ -85,11 +90,6 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     }
 
     @Override
-    public List<Entity> getWarehouseLocationsFromDB() {
-        return getLocationDD().find().list().getEntities();
-    }
-
-    @Override
     public List<Entity> getResourcesForLocationAndProduct(final Entity location, final Entity product) {
         return getResourceDD().find().add(SearchRestrictions.belongsTo(ResourceFields.LOCATION, location))
                 .add(SearchRestrictions.belongsTo(ResourceFields.PRODUCT, product))
@@ -107,57 +107,73 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
         Map<Long, BigDecimal> quantities = Maps.newHashMap();
 
         if (products.size() > 0) {
-            StringBuilder sb = new StringBuilder();
+            List<Integer> productIds = products.stream().map(product -> product.getId().intValue()).collect(Collectors.toList());
+            Integer locationId = location.getId().intValue();
 
-            sb.append("SELECT p.id AS product, SUM(r.quantity) AS quantity ");
-            sb.append("FROM #materialFlowResources_resource AS r ");
-            sb.append("JOIN r.product AS p ");
-            sb.append("JOIN r.location AS l ");
+            StringBuilder query = new StringBuilder();
+
+            query.append("SELECT ");
+            query.append("resourceStockDto.product_id AS product_id, resourceStockDto.availableQuantity AS availableQuantity ");
+            query.append("FROM #materialFlowResources_resourceStockDto resourceStockDto ");
+            query.append("WHERE resourceStockDto.product_id IN (:productIds) ");
+            query.append("AND resourceStockDto.location_id = :locationId ");
+
             if (withoutBlockedForQualityControl) {
-                sb.append("WHERE r.blockedForQualityControl = false ");
+                query.append("AND resourceStockDto.blockedForQualityControl = false ");
             }
-            sb.append("GROUP BY p.id, l.id ");
-            sb.append("HAVING p.id IN (:productIds) ");
-            sb.append("AND l.id = :locationId ");
 
-            SearchQueryBuilder sqb = getResourceDD().find(sb.toString());
+            SearchQueryBuilder searchQueryBuilder = getResourceStockDtoDD().find(query.toString());
 
-            sqb.setParameter("locationId", location.getId());
-            sqb.setParameterList("productIds", products.stream().map(Entity::getId).collect(Collectors.toList()));
+            searchQueryBuilder.setParameterList("productIds", productIds);
+            searchQueryBuilder.setParameter("locationId", locationId);
 
-            List<Entity> productsAndQuantities = sqb.list().getEntities();
+            List<Entity> resourceStocks = searchQueryBuilder.list().getEntities();
 
-            productsAndQuantities.forEach(productAndQuantity -> quantities.put((Long) productAndQuantity.getField("product"),
-                    productAndQuantity.getDecimalField("quantity")));
+            resourceStocks.forEach(resourceStock -> quantities.put(
+                    Long.valueOf(resourceStock.getIntegerField("product_id").intValue()),
+                    resourceStock.getDecimalField("availableQuantity")));
         }
 
         return quantities;
     }
 
     @Override
-    public Map<Long, BigDecimal> getAvailableQuantities(final List<Integer> productsIds, final Integer locationId) {
-        Map<Long, BigDecimal> quantities = Maps.newHashMap();
+    public Map<Long, Map<Long, BigDecimal>> getQuantitiesForProductsAndLocation(final List<Entity> products,
+            final List<Entity> locations) {
+        Map<Long, Map<Long, BigDecimal>> quantities = Maps.newHashMap();
 
-        if (productsIds.size() > 0) {
-            StringBuilder sb = new StringBuilder();
-
-            sb.append("SELECT product_id AS product, availableQuantity AS quantity ");
-            sb.append("FROM #materialFlowResources_resourceStockDto ");
-            sb.append("WHERE product_id IN (:productIds) ");
-            sb.append("AND location_id = :locationId ");
-
-            SearchQueryBuilder sqb = getResourceDD().find(sb.toString());
-
-            sqb.setParameter("locationId", locationId);
-            sqb.setParameterList("productIds", productsIds);
-
-            List<Entity> productsAndQuantities = sqb.list().getEntities();
-
-            productsAndQuantities.forEach(productAndQuantity -> quantities.put(Long.valueOf((Integer) productAndQuantity.getField("product")),
-                    productAndQuantity.getDecimalField("quantity")));
+        for (Entity location : locations) {
+            quantities.put(location.getId(), getQuantitiesForProductsAndLocation(products, location));
         }
 
         return quantities;
+    }
+
+    public void fillUnitFieldValues(final ViewDefinitionState view) {
+        Long productId = (Long) view.getComponentByReference(ResourceFields.PRODUCT).getFieldValue();
+
+        if (Objects.isNull(productId)) {
+            return;
+        }
+
+        Entity product = getProductDD().get(productId);
+        String unit = product.getStringField(UNIT);
+
+        FieldComponent unitField = (FieldComponent) view.getComponentByReference(L_QUANTITY_UNIT);
+        unitField.setFieldValue(unit);
+        unitField.requestComponentUpdateState();
+    }
+
+    public void fillCurrencyFieldValues(final ViewDefinitionState view) {
+        String currency = currencyService.getCurrencyAlphabeticCode();
+
+        FieldComponent currencyField = (FieldComponent) view.getComponentByReference(L_PRICE_CURRENCY);
+        currencyField.setFieldValue(currency);
+        currencyField.requestComponentUpdateState();
+    }
+
+    private DataDefinition getProductDD() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
     }
 
     private DataDefinition getLocationDD() {
@@ -169,24 +185,9 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
                 MaterialFlowResourcesConstants.MODEL_RESOURCE);
     }
 
-    public void fillUnitFieldValues(final ViewDefinitionState view) {
-        Long productId = (Long) view.getComponentByReference(ResourceFields.PRODUCT).getFieldValue();
-        if (productId == null) {
-            return;
-        }
-        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, MODEL_PRODUCT).get(productId);
-        String unit = product.getStringField(UNIT);
-
-        FieldComponent unitField = (FieldComponent) view.getComponentByReference(QUANTITY_UNIT);
-        unitField.setFieldValue(unit);
-        unitField.requestComponentUpdateState();
-    }
-
-    public void fillCurrencyFieldValues(final ViewDefinitionState view) {
-        String currency = currencyService.getCurrencyAlphabeticCode();
-        FieldComponent currencyField = (FieldComponent) view.getComponentByReference(L_PRICE_CURRENCY);
-        currencyField.setFieldValue(currency);
-        currencyField.requestComponentUpdateState();
+    private DataDefinition getResourceStockDtoDD() {
+        return dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                MaterialFlowResourcesConstants.MODEL_RESOURCE_STOCK_DTO);
     }
 
 }

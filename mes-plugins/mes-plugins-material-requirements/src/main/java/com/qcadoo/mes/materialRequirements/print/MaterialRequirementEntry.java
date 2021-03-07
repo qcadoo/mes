@@ -2,13 +2,12 @@ package com.qcadoo.mes.materialRequirements.print;
 
 import java.math.BigDecimal;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import com.qcadoo.model.api.Entity;
+
 public class MaterialRequirementEntry {
-
-    private Long warehouseId;
-
-    private String warehouseNumber;
-
-    private Long orderStartDate;
 
     private Long id;
 
@@ -20,11 +19,29 @@ public class MaterialRequirementEntry {
 
     private String unit;
 
+    private Long warehouseId;
+
+    private String warehouseNumber;
+
+    private Long orderStartDate;
+
+    private Entity product;
+
+    private Entity warehouse;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(final Long id) {
+        this.id = id;
+    }
+
     public String getNumber() {
         return number;
     }
 
-    public void setNumber(String number) {
+    public void setNumber(final String number) {
         this.number = number;
     }
 
@@ -32,7 +49,7 @@ public class MaterialRequirementEntry {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -40,7 +57,7 @@ public class MaterialRequirementEntry {
         return plannedQuantity;
     }
 
-    public void setPlannedQuantity(BigDecimal plannedQuantity) {
+    public void setPlannedQuantity(final BigDecimal plannedQuantity) {
         this.plannedQuantity = plannedQuantity;
     }
 
@@ -48,15 +65,23 @@ public class MaterialRequirementEntry {
         return unit;
     }
 
-    public void setUnit(String unit) {
+    public void setUnit(final String unit) {
         this.unit = unit;
+    }
+
+    public Long getWarehouseId() {
+        return warehouseId;
+    }
+
+    public void setWarehouseId(final Long warehouseId) {
+        this.warehouseId = warehouseId;
     }
 
     public String getWarehouseNumber() {
         return warehouseNumber;
     }
 
-    public void setWarehouseNumber(String warehouseNumber) {
+    public void setWarehouseNumber(final String warehouseNumber) {
         this.warehouseNumber = warehouseNumber;
     }
 
@@ -64,23 +89,47 @@ public class MaterialRequirementEntry {
         return orderStartDate;
     }
 
-    public void setOrderStartDate(Long orderStartDate) {
+    public void setOrderStartDate(final Long orderStartDate) {
         this.orderStartDate = orderStartDate;
     }
 
-    public Long getWarehouseId() {
-        return warehouseId;
+    public Entity getProduct() {
+        return product;
     }
 
-    public void setWarehouseId(Long warehouseId) {
-        this.warehouseId = warehouseId;
+    public void setProduct(final Entity product) {
+        this.product = product;
     }
 
-    public Long getId() {
-        return id;
+    public Entity getWarehouse() {
+        return warehouse;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setWarehouse(final Entity warehouse) {
+        this.warehouse = warehouse;
     }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        MaterialRequirementEntry that = (MaterialRequirementEntry) o;
+
+        return new EqualsBuilder().append(id, that.id).append(number, that.number).append(name, that.name)
+                .append(plannedQuantity, that.plannedQuantity).append(unit, that.unit).append(warehouseId, that.warehouseId)
+                .append(warehouseNumber, that.warehouseNumber).append(orderStartDate, that.orderStartDate).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(id).append(number).append(name).append(plannedQuantity).append(unit)
+                .append(warehouseId).append(warehouseNumber).append(orderStartDate).toHashCode();
+    }
+
 }

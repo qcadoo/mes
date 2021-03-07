@@ -6,19 +6,13 @@ public final class ResourceStockDtoFields {
 
     }
 
-    public static final String QUANTITY = "quantity";
+    public static final String LOCATION_ID = "location_id";
 
-    public static final String QUANTITY_IN_ADDITIONAL_UNIT = "quantityInAdditionalUnit";
-
-    public static final String RESERVED_QUANTITY = "reservedQuantity";
-
-    public static final String AVAILABLE_QUANTITY = "availableQuantity";
+    public static final String PRODUCT_ID = "product_id";
 
     public static final String LOCATION_NUMBER = "locationNumber";
 
     public static final String LOCATION_NAME = "locationName";
-
-    public static final String LOCATION_ID = "location_id";
 
     public static final String PRODUCT_NUMBER = "productNumber";
 
@@ -26,14 +20,22 @@ public final class ResourceStockDtoFields {
 
     public static final String PRODUCT_UNIT = "productUnit";
 
+    public static final String FAMILY_NUMBER = "familyNumber";
+
     public static final String MINIMUM_STATE = "minimumState";
 
-    public static final String ORDERED_QUANTITY = "orderedQuantity";
+    public static final String QUANTITY = "quantity";
 
-    public static final String PRODUCT_ID = "product_id";
+    public static final String QUANTITY_IN_ADDITIONAL_UNIT = "quantityInAdditionalUnit";
 
     public static final String TOTAL_VALUE = "totalValue";
 
-    public static final String FAMILY_NUMBER = "familyNumber";
+    public static final String ORDERED_QUANTITY = "orderedQuantity";
+
+    public static final String RESERVED_QUANTITY = "reservedQuantity";
+
+    public static final String AVAILABLE_QUANTITY = "availableQuantity";
+
+    public static final String BLOCKED_FOR_QUALITY_CONTROL = "blockedForQualityControl";
 
 }

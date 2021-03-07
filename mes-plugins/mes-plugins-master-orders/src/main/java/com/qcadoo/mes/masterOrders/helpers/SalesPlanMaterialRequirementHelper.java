@@ -24,8 +24,8 @@ import com.qcadoo.mes.masterOrders.constants.SalesPlanFields;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementFields;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementProductFields;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanProductFields;
+import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceStockDtoFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
@@ -44,10 +44,10 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 public class SalesPlanMaterialRequirementHelper {
 
     @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
     private NumberService numberService;
@@ -57,6 +57,9 @@ public class SalesPlanMaterialRequirementHelper {
 
     @Autowired
     private ProductStructureTreeService productStructureTreeService;
+
+    @Autowired
+    private MaterialFlowResourcesService materialFlowResourcesService;
 
     public List<Entity> generateSalesPlanMaterialRequirementProducts(final Entity salesPlanMaterialRequirement) {
         List<Entity> salesPlanMaterialRequirementProducts = Lists.newArrayList();
@@ -219,10 +222,11 @@ public class SalesPlanMaterialRequirementHelper {
     }
 
     private void updateSalesPlanMaterialRequirementProducts(final List<Entity> salesPlanMaterialRequirementProducts) {
-        Set<Long> productIds = getSalesPlanMaterialRequirementProductIds(salesPlanMaterialRequirementProducts);
+        List<Entity> products = getSalesPlanMaterialRequirementProducts(salesPlanMaterialRequirementProducts);
+        Set<Long> productIds = products.stream().map(Entity::getId).collect(Collectors.toSet());
 
         if (!productIds.isEmpty()) {
-            List<Entity> resourceStocks = getResourceStocks(productIds.stream().map(Long::intValue).collect(Collectors.toSet()));
+            Map<Long, Map<Long, BigDecimal>> resourceStocks = getResourceStocks(products);
             List<Entity> companyProducts = getCompanyProducts(productIds);
             Map<Long, BigDecimal> neededQuantitiesFromOrders = getNeededQuantitiesFromOrders(productIds);
 
@@ -257,30 +261,24 @@ public class SalesPlanMaterialRequirementHelper {
         }
     }
 
-    private Set<Long> getSalesPlanMaterialRequirementProductIds(final List<Entity> salesPlanMaterialRequirementProducts) {
+    private List<Entity> getSalesPlanMaterialRequirementProducts(final List<Entity> salesPlanMaterialRequirementProducts) {
         return salesPlanMaterialRequirementProducts.stream()
                 .map(salesPlanMaterialRequirementProduct -> salesPlanMaterialRequirementProduct
-                        .getBelongsToField(SalesPlanMaterialRequirementProductFields.PRODUCT).getId())
-                .collect(Collectors.toSet());
+                        .getBelongsToField(SalesPlanMaterialRequirementProductFields.PRODUCT))
+                .collect(Collectors.toList());
     }
 
-    private List<Entity> getResourceStocks(final Set<Integer> productIds) {
-        return getResourceStockDtoDD().find().add(SearchRestrictions.in(ResourceStockDtoFields.PRODUCT_ID, productIds)).list()
-                .getEntities();
+    private Map<Long, Map<Long, BigDecimal>> getResourceStocks(final List<Entity> products) {
+        List<Entity> locations = materialFlowResourcesService.getWarehouseLocationsFromDB();
+
+        return materialFlowResourcesService.getQuantitiesForProductsAndLocation(products, locations);
     }
 
-    private BigDecimal getCurrentStock(final List<Entity> resourceStocks, final Long productId) {
+    private BigDecimal getCurrentStock(final Map<Long, Map<Long, BigDecimal>> resourceStocks, final Long productId) {
         BigDecimal currentStock = BigDecimal.ZERO;
 
-        List<Entity> resourceStocksForProduct = resourceStocks.stream().filter(
-                resourceStock -> resourceStock.getIntegerField(ResourceStockDtoFields.PRODUCT_ID).equals(productId.intValue()))
-                .collect(Collectors.toList());
-
-        if (resourceStocksForProduct.size() > 0) {
-            for (Entity resourceStock : resourceStocksForProduct) {
-                currentStock = currentStock.add(resourceStock.getDecimalField(ResourceStockDtoFields.AVAILABLE_QUANTITY),
-                        numberService.getMathContext());
-            }
+        for (Map.Entry<Long, Map<Long, BigDecimal>> resourceStock : resourceStocks.entrySet()) {
+            currentStock = currentStock.add(BigDecimalUtils.convertNullToZero(resourceStock.getValue().get(productId)), numberService.getMathContext());
         }
 
         return currentStock;
