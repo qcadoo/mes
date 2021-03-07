@@ -31,12 +31,51 @@
 
     <component type="window" name="window" reference="window">
         <ribbon>
-            <template name="standardGridTemplate" includeItems="actions.refresh,genericExport.csv,genericExport.pdf"/>
+            <group name="navigation">
+                <bigButton name="back" icon="backIcon24.png" state="enabled">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent('goBackToOrders', []);
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+            </group>
+            <group name="actions">
+                <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{form}.performRefresh;"/>
+            </group>
+            <group name="genericExport">
+                <smallButton name="csv" icon="exportToCsvIcon16.png" state="enabled">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent('exportToCsv', [], 'exportToCsv');
+                                }
+                            });
+                        ]]>
+                    </script>
+                </smallButton>
+                <smallButton name="pdf" icon="pdfIcon16.png" state="enabled">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent('exportToPdf', [], 'exportToPdf');
+                                }
+                            });
+                        ]]>
+                    </script>
+                </smallButton>
+            </group>
         </ribbon>
 
-        <component type="form" name="order" reference="order" />
+        <component type="form" name="order" reference="form"/>
 
-        <component type="grid" name="orderTechnologicalProcesses" reference="grid" source="#{order}.orderTechnologicalProcessesDto"
+        <component type="grid" name="orderTechnologicalProcesses" reference="grid" source="#{form}.orderTechnologicalProcessesDto"
                    model="orderTechnologicalProcessDto" useDto="true">
             <option type="column" name="number" fields="number" link="true"/>
             <option type="column" name="orderPackNumber" fields="orderPackNumber"/>
@@ -65,6 +104,9 @@
 
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
+
+            <listener event="goBackToOrders" method="goBackToOrders"
+                      class="com.qcadoo.mes.orders.listeners.OrderTechnologicalProcessesListListeners"/>
         </component>
 
         <option type="fixedHeight" value="true"/>

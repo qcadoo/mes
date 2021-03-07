@@ -59,12 +59,15 @@ public class OrderTechnologicalProcessDetailsHooks {
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
 
         RibbonGroup processGroup = window.getRibbon().getGroupByName(L_PROCESS);
-        RibbonActionItem splitOrderTechnologicalProcessActionItem = processGroup.getItemByName(L_DIVIDE_ORDER_TECHNOLOGICAL_PROCESS);
+        RibbonActionItem splitOrderTechnologicalProcessActionItem = processGroup
+                .getItemByName(L_DIVIDE_ORDER_TECHNOLOGICAL_PROCESS);
 
         Entity orderTechnologicalProcess = orderTechnologicalProcessForm.getEntity();
+        Entity orderPack = orderTechnologicalProcess.getBelongsToField(OrderTechnologicalProcessFields.ORDER_PACK);
         BigDecimal quantity = orderTechnologicalProcess.getDecimalField(OrderTechnologicalProcessFields.QUANTITY);
 
-        boolean isEnabled = Objects.nonNull(orderTechnologicalProcess.getId()) && (BigDecimal.ONE.compareTo(quantity) < 0);
+        boolean isEnabled = Objects.nonNull(orderTechnologicalProcess.getId()) && Objects.nonNull(orderPack)
+                && (BigDecimal.ONE.compareTo(quantity) < 0);
 
         splitOrderTechnologicalProcessActionItem.setEnabled(isEnabled);
         splitOrderTechnologicalProcessActionItem.requestUpdate(true);

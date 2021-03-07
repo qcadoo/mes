@@ -105,7 +105,7 @@ public class DivideOrderTechnologicalProcessListeners {
 
             view.addMessage("orders.divideOrderTechnologicalProcess.divide.success", ComponentState.MessageType.SUCCESS);
 
-            performBack(view, orderTechnologicalProcess);
+            goToOrderTechnologicalProcessesList(view, orderTechnologicalProcess);
         } else {
             view.addMessage("orders.divideOrderTechnologicalProcess.divide.failure", ComponentState.MessageType.FAILURE);
         }
@@ -166,13 +166,13 @@ public class DivideOrderTechnologicalProcessListeners {
         return isValid;
     }
 
-    private void performBack(final ViewDefinitionState view, final Entity orderTechnologicalProcess) {
+    private void goToOrderTechnologicalProcessesList(final ViewDefinitionState view, final Entity orderTechnologicalProcess) {
         Entity order = orderTechnologicalProcess.getBelongsToField(OrderTechnologicalProcessFields.ORDER);
 
         Long orderId = order.getId();
 
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("order.id", orderId);
+        parameters.put("form.id", orderId);
 
         String url = "/page/orders/orderTechnologicalProcessesList.html";
         view.redirectTo(url, false, true, parameters);

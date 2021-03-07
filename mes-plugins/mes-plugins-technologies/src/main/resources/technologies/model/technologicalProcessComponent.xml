@@ -27,6 +27,7 @@
 <model name="technologicalProcessComponent"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
 	<fields>
 		<integer name="tj" default="0">
 			<validatesRange from="0"/>
@@ -37,9 +38,10 @@
 		</integer>
 		<belongsTo name="sizeGroup" plugin="basic" model="sizeGroup"/>
 		<belongsTo name="technologicalProcessList" model="technologicalProcessList" required="true"/>
-		<priority name="succession" scope="technologicalProcessList" />
 		<belongsTo name="technologicalProcess" model="technologicalProcess" required="true"/>
+		<priority name="succession" scope="technologicalProcessList" />
 	</fields>
+
 	<hooks>
 		<validatesWith
 				class="com.qcadoo.mes.technologies.validators.TechnologicalProcessComponentValidators"

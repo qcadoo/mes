@@ -23,6 +23,17 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
@@ -45,7 +56,12 @@ import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.states.service.client.util.StateChangeHistoryService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.ExpressionService;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -54,28 +70,21 @@ import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 @Service
 public class OrderDetailsHooks {
-
-    public static final String DONE_IN_PERCENTAGE_UNIT = "doneInPercentageUnit";
 
     private static final String L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START = "commentReasonTypeDeviationsOfEffectiveStart";
 
@@ -84,15 +93,27 @@ public class OrderDetailsHooks {
     private static final List<String> L_PREDEFINED_TECHNOLOGY_FIELDS = Lists.newArrayList("defaultTechnology",
             "technologyPrototype", "predefinedTechnology");
 
-    public static final String DONE_IN_PERCENTAGE = "doneInPercentage";
+    private static final String L_DONE_IN_PERCENTAGE = "doneInPercentage";
 
-    public static final String L_DIVISION = "division";
+    private static final String L_DONE_IN_PERCENTAGE_UNIT = "doneInPercentageUnit";
 
-    public static final String L_RANGE = "range";
+    private static final String L_DIVISION = "division";
 
-    public static final String L_PRODUCT_FLOW_THRU_DIVISION = "productFlowThruDivision";
+    private static final String L_RANGE = "range";
 
-    public static final String L_ONE_DIVISION = "01oneDivision";
+    private static final String L_PRODUCT_FLOW_THRU_DIVISION = "productFlowThruDivision";
+
+    private static final String L_ONE_DIVISION = "01oneDivision";
+
+    private static final String L_ORDER_DETAILS_ACTIONS = "orderDetailsActions";
+
+    private static final String L_REFRESH = "refresh";
+
+    private static final String L_NAVIGATION = "navigation";
+
+    private static final String L_BACK = "back";
+
+    private static final String L_REASON_TYPE_OF_CHANGING_ORDER_STATE = "reasonTypeOfChangingOrderState";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -154,53 +175,69 @@ public class OrderDetailsHooks {
         unitService.fillProductForAdditionalUnitBeforeRender(view);
         fillOrderDescriptionIfTechnologyHasDescription(view);
         enableOrDisableGenerateOperationalTasksButton(view);
+        enableOrDisableGenerateOrderTechnologicalProcesses(view);
+
         if (isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT))
                 && isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANNED_QUANTITY))) {
             setQuantities(view);
         }
-
     }
 
-    private void enableOrDisableGenerateOperationalTasksButton(ViewDefinitionState view) {
+    private void enableOrDisableGenerateOperationalTasksButton(final ViewDefinitionState view) {
         orderDetailsRibbonHelper.setButtonEnabled(view, "operationalTasks", "generateOperationalTasks",
                 OrderDetailsRibbonHelper.CAN_NOT_GENERATE_OPERATIONAL_TASKS,
                 Optional.of("orders.ribbon.message.canNotGenerateOperationalTasks"));
+    }
 
+    private void enableOrDisableGenerateOrderTechnologicalProcesses(final ViewDefinitionState view) {
+        orderDetailsRibbonHelper.setButtonEnabled(view, "orderTechnologicalProcesses", "generateOrderTechnologicalProcesses",
+                order -> {
+                    if (parameterService.getParameter()
+                            .getBooleanField(ParameterFieldsO.INCLUDE_PACKS_GENERATING_PROCESSES_FOR_ORDER)) {
+                        return !order.getHasManyField(OrderFields.ORDER_PACKS).isEmpty();
+                    } else {
+                        return true;
+                    }
+                }, Optional.of("orders.ribbon.message.canNotGenerateOrderTechnologicalProcesses"));
     }
 
     public final void fillProductionLine(final ViewDefinitionState view) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         LookupComponent productionLineLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCTION_LINE);
-        LookupComponent defaultTechnologyField = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
-        Entity technology = defaultTechnologyField.getEntity();
+        LookupComponent defaultTechnologyLookup = (LookupComponent) view
+                .getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
 
-        if (orderForm.getEntityId() == null && productionLineLookup.getFieldValue() == null) {
+        Entity technology = defaultTechnologyLookup.getEntity();
+
+        if (Objects.isNull(orderForm.getEntityId()) && Objects.isNull(productionLineLookup.getFieldValue())) {
             Entity defaultProductionLine = orderService.getDefaultProductionLine();
+
             fillProductionLine(productionLineLookup, technology, defaultProductionLine);
         }
     }
 
     public void fillProductionLine(final LookupComponent productionLineLookup, final Entity technology,
             final Entity defaultProductionLine) {
-        if (technology != null && PluginUtils.isEnabled(L_PRODUCT_FLOW_THRU_DIVISION)
+        if (Objects.nonNull(technology) && PluginUtils.isEnabled(L_PRODUCT_FLOW_THRU_DIVISION)
                 && L_ONE_DIVISION.equals(technology.getField(L_RANGE))
                 && Objects.nonNull(technology.getBelongsToField(OrderFields.PRODUCTION_LINE))) {
             productionLineLookup.setFieldValue(technology.getBelongsToField(OrderFields.PRODUCTION_LINE).getId());
             productionLineLookup.requestComponentUpdateState();
-        } else if (defaultProductionLine != null) {
+        } else if (Objects.nonNull(defaultProductionLine)) {
             productionLineLookup.setFieldValue(defaultProductionLine.getId());
             productionLineLookup.requestComponentUpdateState();
         }
     }
 
     public void fillDivision(final LookupComponent divisionLookup, final Entity technology, final Entity defaultProductionLine) {
-        if (technology != null && PluginUtils.isEnabled(L_PRODUCT_FLOW_THRU_DIVISION)
+        if (Objects.nonNull(technology) && PluginUtils.isEnabled(L_PRODUCT_FLOW_THRU_DIVISION)
                 && L_ONE_DIVISION.equals(technology.getField(L_RANGE))
                 && Objects.nonNull(technology.getBelongsToField(L_DIVISION))) {
             divisionLookup.setFieldValue(technology.getBelongsToField(L_DIVISION).getId());
             divisionLookup.requestComponentUpdateState();
         } else if (Objects.nonNull(defaultProductionLine)) {
             List<Entity> divisions = defaultProductionLine.getManyToManyField(ProductionLineFields.DIVISIONS);
+
             if (divisions.size() == 1) {
                 divisionLookup.setFieldValue(divisions.get(0).getId());
                 divisionLookup.requestComponentUpdateState();
@@ -220,7 +257,7 @@ public class OrderDetailsHooks {
 
         Entity product = productLookup.getEntity();
 
-        if (product != null) {
+        if (Objects.nonNull(product)) {
             FilterValueHolder holder = technologyLookup.getFilterValue();
 
             holder.put(TechnologyCriteriaModifiersO.PRODUCT_PARAMETER, product.getId());
@@ -229,7 +266,7 @@ public class OrderDetailsHooks {
 
             Entity defaultTechnology = technologyServiceO.getDefaultTechnology(product);
 
-            if (defaultTechnology != null) {
+            if (Objects.nonNull(defaultTechnology)) {
                 String defaultTechnologyValue = expressionService.getValue(defaultTechnology, "#number + ' - ' + #name",
                         view.getLocale());
 
@@ -245,10 +282,10 @@ public class OrderDetailsHooks {
 
         Long orderId = orderForm.getEntityId();
 
-        if (orderId != null) {
+        if (Objects.nonNull(orderId)) {
             Entity order = orderService.getOrder(orderId);
 
-            if (order == null) {
+            if (Objects.isNull(order)) {
                 return;
             }
 
@@ -260,10 +297,13 @@ public class OrderDetailsHooks {
         }
 
         orderForm.setFormEnabled(!disabled);
+
         Entity order = orderForm.getEntity();
         Entity company = order.getBelongsToField(OrderFields.COMPANY);
+
         LookupComponent addressLookup = (LookupComponent) view.getComponentByReference(OrderFields.ADDRESS);
-        if (company == null) {
+
+        if (Objects.isNull(company)) {
             addressLookup.setFieldValue(null);
             addressLookup.setEnabled(false);
         } else {
@@ -275,11 +315,11 @@ public class OrderDetailsHooks {
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OrderFields.PRODUCT);
         LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
         FieldComponent defaultTechnologyField = (FieldComponent) view.getComponentByReference(OrderFields.DEFAULT_TECHNOLOGY);
-        FieldComponent plannedQuantity = (FieldComponent) view.getComponentByReference("plannedQuantity");
+        FieldComponent plannedQuantity = (FieldComponent) view.getComponentByReference(OrderFields.PLANNED_QUANTITY);
 
         defaultTechnologyField.setEnabled(false);
 
-        if (productLookup.getFieldValue() == null || !hasAnyTechnologies(productLookup.getEntity())) {
+        if (Objects.isNull(productLookup.getFieldValue()) || !hasAnyTechnologies(productLookup.getEntity())) {
             technologyLookup.setRequired(false);
             plannedQuantity.setRequired(false);
         } else {
@@ -289,10 +329,7 @@ public class OrderDetailsHooks {
     }
 
     private boolean hasAnyTechnologies(final Entity product) {
-        DataDefinition technologyDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY);
-
-        SearchCriteriaBuilder searchCriteria = technologyDD.find()
+        SearchCriteriaBuilder searchCriteria = getTechnologyDD().find()
                 .add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, product)).setMaxResults(1);
 
         SearchResult searchResult = searchCriteria.list();
@@ -306,7 +343,7 @@ public class OrderDetailsHooks {
 
         stateField.setEnabled(false);
 
-        if (orderForm.getEntityId() != null) {
+        if (Objects.nonNull(orderForm.getEntityId())) {
             return;
         }
 
@@ -315,27 +352,30 @@ public class OrderDetailsHooks {
 
     public void changedEnabledFieldForSpecificOrderState(final ViewDefinitionState view) {
         final FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
         Long orderId = orderForm.getEntityId();
 
-        if (orderId == null) {
+        if (Objects.isNull(orderId)) {
             List<String> references = Lists.newArrayList(OrderFields.CORRECTED_DATE_FROM, OrderFields.CORRECTED_DATE_TO,
                     OrderFields.REASON_TYPES_CORRECTION_DATE_FROM, OrderFields.REASON_TYPES_CORRECTION_DATE_TO,
                     OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END, OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START,
                     L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END, L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START,
                     OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO, OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_FROM,
                     OrderFields.EFFECTIVE_DATE_FROM, OrderFields.EFFECTIVE_DATE_TO);
+
             changedEnabledFields(view, references, false);
+
             return;
         }
 
-        final Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                orderId);
+        final Entity order = getOrderDD().get(orderId);
 
-        if (order == null) {
+        if (Objects.isNull(order)) {
             return;
         }
 
         String orderState = order.getStringField(OrderFields.STATE);
+
         if (OrderState.PENDING.getStringValue().equals(orderState)) {
             List<String> references = Lists.newArrayList(OrderFields.CORRECTED_DATE_FROM, OrderFields.CORRECTED_DATE_TO,
                     OrderFields.REASON_TYPES_CORRECTION_DATE_FROM, OrderFields.REASON_TYPES_CORRECTION_DATE_TO,
@@ -343,6 +383,7 @@ public class OrderDetailsHooks {
                     L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END, L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START,
                     OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO, OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_FROM,
                     OrderFields.EFFECTIVE_DATE_FROM, OrderFields.EFFECTIVE_DATE_TO);
+
             changedEnabledFields(view, references, false);
         }
         if (OrderState.ACCEPTED.getStringValue().equals(orderState)) {
@@ -350,13 +391,16 @@ public class OrderDetailsHooks {
                     OrderFields.REASON_TYPES_CORRECTION_DATE_FROM, OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_FROM,
                     OrderFields.REASON_TYPES_CORRECTION_DATE_TO, OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO,
                     OrderFields.DATE_FROM, OrderFields.DATE_TO);
-            boolean canChangeProdLineForAcceptedOrders = parameterService.getParameter().getBooleanField(
-                    "canChangeProdLineForAcceptedOrders");
+
+            boolean canChangeProdLineForAcceptedOrders = parameterService.getParameter()
+                    .getBooleanField("canChangeProdLineForAcceptedOrders");
+
             if (canChangeProdLineForAcceptedOrders) {
                 LookupComponent productionLineLookup = (LookupComponent) view
                         .getComponentByReference(OrderFields.PRODUCTION_LINE);
                 productionLineLookup.setEnabled(true);
             }
+
             changedEnabledFields(view, references, true);
         }
         if (OrderState.IN_PROGRESS.getStringValue().equals(orderState)
@@ -365,6 +409,7 @@ public class OrderDetailsHooks {
                     OrderFields.CORRECTED_DATE_TO, OrderFields.REASON_TYPES_CORRECTION_DATE_TO,
                     OrderFields.COMMENT_REASON_TYPE_CORRECTION_DATE_TO, OrderFields.EFFECTIVE_DATE_FROM,
                     L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START);
+
             changedEnabledFields(view, references, true);
             changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(OrderFields.REASON_TYPES_CORRECTION_DATE_FROM),
                     false);
@@ -372,13 +417,13 @@ public class OrderDetailsHooks {
                     true);
             changedEnabledAwesomeDynamicListComponents(view,
                     Lists.newArrayList(OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START), true);
-
         }
 
         if (OrderState.COMPLETED.getStringValue().equals(orderState)) {
             List<String> references = Lists.newArrayList(OrderFields.EFFECTIVE_DATE_TO, OrderFields.DATE_TO,
                     OrderFields.EFFECTIVE_DATE_FROM, OrderFields.DATE_FROM, L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END,
                     L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START);
+
             changedEnabledFields(view, references, true);
             changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(OrderFields.REASON_TYPES_CORRECTION_DATE_FROM),
                     false);
@@ -388,13 +433,13 @@ public class OrderDetailsHooks {
                     Lists.newArrayList(OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END), true);
             changedEnabledAwesomeDynamicListComponents(view,
                     Lists.newArrayList(OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START), true);
-
         }
 
         if (OrderState.ABANDONED.getStringValue().equals(orderState)) {
             List<String> references = Lists.newArrayList(OrderFields.EFFECTIVE_DATE_TO, OrderFields.DATE_TO,
                     OrderFields.EFFECTIVE_DATE_FROM, OrderFields.DATE_FROM, L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_END,
                     L_COMMENT_REASON_TYPE_DEVIATIONS_OF_EFFECTIVE_START);
+
             changedEnabledFields(view, references, true);
             changedEnabledAwesomeDynamicListComponents(view, Lists.newArrayList(OrderFields.REASON_TYPES_CORRECTION_DATE_FROM),
                     false);
@@ -404,7 +449,6 @@ public class OrderDetailsHooks {
                     Lists.newArrayList(OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END), true);
             changedEnabledAwesomeDynamicListComponents(view,
                     Lists.newArrayList(OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START), true);
-
         }
     }
 
@@ -427,8 +471,7 @@ public class OrderDetailsHooks {
             awesomeDynamicListComponent.requestComponentUpdateState();
 
             for (FormComponent formComponent : awesomeDynamicListComponent.getFormComponents()) {
-                FieldComponent fieldComponent = formComponent
-                        .findFieldComponentByName("reasonTypeOfChangingOrderState");
+                FieldComponent fieldComponent = formComponent.findFieldComponentByName(L_REASON_TYPE_OF_CHANGING_ORDER_STATE);
 
                 fieldComponent.setEnabled(enabled);
                 fieldComponent.requestComponentUpdateState();
@@ -454,7 +497,7 @@ public class OrderDetailsHooks {
 
         Long orderId = orderForm.getEntityId();
 
-        if (orderId == null) {
+        if (Objects.isNull(orderId)) {
             return;
         }
 
@@ -471,8 +514,8 @@ public class OrderDetailsHooks {
             }
         }
 
-        RibbonActionItem refreshRibbonActionItem = ribbon.getGroupByName("orderDetailsActions").getItemByName("refresh");
-        RibbonActionItem backRibbonActionItem = ribbon.getGroupByName("navigation").getItemByName("back");
+        RibbonActionItem refreshRibbonActionItem = ribbon.getGroupByName(L_ORDER_DETAILS_ACTIONS).getItemByName(L_REFRESH);
+        RibbonActionItem backRibbonActionItem = ribbon.getGroupByName(L_NAVIGATION).getItemByName(L_BACK);
 
         refreshRibbonActionItem.setEnabled(true);
         backRibbonActionItem.setEnabled(true);
@@ -485,7 +528,7 @@ public class OrderDetailsHooks {
     public void compareDeadlineAndEndDate(final ViewDefinitionState view) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        if (orderForm.getEntityId() == null) {
+        if (Objects.isNull(orderForm.getEntityId())) {
             return;
         }
 
@@ -495,7 +538,7 @@ public class OrderDetailsHooks {
         Date finishDate = DateUtils.parseDate(finishDateComponent.getFieldValue());
         Date deadlineDate = DateUtils.parseDate(deadlineDateComponent.getFieldValue());
 
-        if (finishDate != null && deadlineDate != null && deadlineDate.before(finishDate)) {
+        if (Objects.nonNull(finishDate) && Objects.nonNull(deadlineDate) && deadlineDate.before(finishDate)) {
             orderForm.addMessage("orders.validate.global.error.deadline", MessageType.INFO, false);
         }
     }
@@ -503,7 +546,7 @@ public class OrderDetailsHooks {
     public void compareDeadlineAndStartDate(final ViewDefinitionState view) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        if (orderForm.getEntityId() == null) {
+        if (Objects.isNull(orderForm.getEntityId())) {
             return;
         }
 
@@ -512,10 +555,11 @@ public class OrderDetailsHooks {
         FieldComponent deadlineDateComponent = (FieldComponent) view.getComponentByReference(OrderFields.DEADLINE);
 
         Date startDate = DateUtils.parseDate(startDateComponent.getFieldValue());
-        Date finidhDate = DateUtils.parseDate(finishDateComponent.getFieldValue());
+        Date finishDate = DateUtils.parseDate(finishDateComponent.getFieldValue());
         Date deadlineDate = DateUtils.parseDate(deadlineDateComponent.getFieldValue());
 
-        if (startDate != null && deadlineDate != null && finidhDate == null && deadlineDate.before(startDate)) {
+        if (Objects.nonNull(startDate) && Objects.nonNull(deadlineDate) && Objects.isNull(finishDate)
+                && deadlineDate.before(startDate)) {
             orderForm.addMessage("orders.validate.global.error.deadlineBeforeStartDate", MessageType.INFO, false);
         }
     }
@@ -525,7 +569,7 @@ public class OrderDetailsHooks {
 
         Long orderId = orderForm.getEntityId();
 
-        if (orderId == null) {
+        if (Objects.isNull(orderId)) {
             return;
         }
 
@@ -534,7 +578,8 @@ public class OrderDetailsHooks {
         String state = order.getStringField(OrderFields.STATE);
 
         if (OrderState.PENDING.getStringValue().equals(state) || OrderState.ACCEPTED.getStringValue().equals(state)
-                || OrderState.IN_PROGRESS.getStringValue().equals(state) || OrderState.INTERRUPTED.getStringValue().equals(state)) {
+                || OrderState.IN_PROGRESS.getStringValue().equals(state)
+                || OrderState.INTERRUPTED.getStringValue().equals(state)) {
             FieldComponent descriptionField = (FieldComponent) view.getComponentByReference(OrderFields.DESCRIPTION);
 
             descriptionField.setEnabled(true);
@@ -570,7 +615,7 @@ public class OrderDetailsHooks {
 
         final FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        if (orderForm.getEntityId() == null) {
+        if (Objects.isNull(orderForm.getEntityId())) {
             return;
         }
 
@@ -588,50 +633,51 @@ public class OrderDetailsHooks {
                 || !isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANNED_QUANTITY))) {
             return;
         }
-        if (product != null
-                && (order.getDecimalField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT) == null || !isValidQuantityForAdditionalUnit(
-                        order, product))) {
+        if (Objects.nonNull(product) && (Objects.isNull(order.getDecimalField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT))
+                || !isValidQuantityForAdditionalUnit(order, product))) {
             additionalUnitService.setQuantityFieldForAdditionalUnit(view, order);
         }
     }
 
     private void setDoneQuantity(final ViewDefinitionState view) {
-        if (!isValidDecimalField(view, Lists.newArrayList(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED, OrderFields.PLANNED_QUANTITY))) {
+        if (!isValidDecimalField(view,
+                Lists.newArrayList(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED, OrderFields.PLANNED_QUANTITY))) {
             return;
         }
 
         final FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        if (orderForm.getEntityId() == null) {
+        if (Objects.isNull(orderForm.getEntityId())) {
             return;
         }
 
         Entity order = orderForm.getEntity();
 
-        FieldComponent doneInPercentage = (FieldComponent) view.getComponentByReference(DONE_IN_PERCENTAGE);
-        FieldComponent doneInPercentageUnit = (FieldComponent) view.getComponentByReference(DONE_IN_PERCENTAGE_UNIT);
+        FieldComponent doneInPercentage = (FieldComponent) view.getComponentByReference(L_DONE_IN_PERCENTAGE);
+        FieldComponent doneInPercentageUnit = (FieldComponent) view.getComponentByReference(L_DONE_IN_PERCENTAGE_UNIT);
         FieldComponent doneQuantityField = (FieldComponent) view.getComponentByReference(OrderFields.DONE_QUANTITY);
-        FieldComponent remaingingAmoutOfProductToProduceField = (FieldComponent) view
+        FieldComponent remainingAmountOfProductToProduceField = (FieldComponent) view
                 .getComponentByReference(OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE);
 
         doneQuantityField.setFieldValue(numberService.format(order.getField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)));
         doneQuantityField.requestComponentUpdateState();
 
-        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils.convertNullToZero(
-                order.getDecimalField(OrderFields.PLANNED_QUANTITY)).subtract(
-                BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
-                numberService.getMathContext());
+        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils
+                .convertNullToZero(order.getDecimalField(OrderFields.PLANNED_QUANTITY))
+                .subtract(BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
+                        numberService.getMathContext());
 
         if (BigDecimal.ZERO.compareTo(remainingAmountOfProductToProduce) > 0) {
             remainingAmountOfProductToProduce = BigDecimal.ZERO;
         }
-        remaingingAmoutOfProductToProduceField.setFieldValue(numberService.formatWithMinimumFractionDigits(
-                remainingAmountOfProductToProduce, 0));
 
-        remaingingAmoutOfProductToProduceField.requestComponentUpdateState();
+        remainingAmountOfProductToProduceField
+                .setFieldValue(numberService.formatWithMinimumFractionDigits(remainingAmountOfProductToProduce, 0));
+        remainingAmountOfProductToProduceField.requestComponentUpdateState();
 
         BigDecimal doneInPercentageQuantity = BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.DONE_QUANTITY))
                 .multiply(new BigDecimal(100));
+
         if (BigDecimal.ZERO
                 .compareTo(BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.PLANNED_QUANTITY))) == 0) {
             doneInPercentageQuantity = BigDecimal.ZERO;
@@ -639,20 +685,21 @@ public class OrderDetailsHooks {
             doneInPercentageQuantity = doneInPercentageQuantity.divide(order.getDecimalField(OrderFields.PLANNED_QUANTITY),
                     MathContext.DECIMAL64);
         }
-        doneInPercentage.setFieldValue(numberService.formatWithMinimumFractionDigits(
-                doneInPercentageQuantity.setScale(0, RoundingMode.CEILING), 0));
+
+        doneInPercentage.setFieldValue(
+                numberService.formatWithMinimumFractionDigits(doneInPercentageQuantity.setScale(0, RoundingMode.CEILING), 0));
         doneInPercentage.setEnabled(false);
         doneInPercentageUnit.setFieldValue("%");
     }
 
-    private boolean isValidDecimalField(final ViewDefinitionState view, final List<String> fileds) {
+    private boolean isValidDecimalField(final ViewDefinitionState view, final List<String> fields) {
         boolean isValid = true;
 
         FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity entity = orderForm.getEntity();
 
-        for (String field : fileds) {
+        for (String field : fields) {
             try {
                 entity.getDecimalField(field);
             } catch (IllegalArgumentException e) {
@@ -671,18 +718,18 @@ public class OrderDetailsHooks {
                 additionalUnitService.getAdditionalUnit(product), order.getDecimalField(OrderFields.PLANNED_QUANTITY),
                 product.getStringField(ProductFields.UNIT));
         BigDecimal currentVariable = order.getDecimalField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT);
+
         return expectedVariable.compareTo(currentVariable) == 0;
     }
 
-    public void fillOrderDescriptionIfTechnologyHasDescription(ViewDefinitionState view) {
+    public void fillOrderDescriptionIfTechnologyHasDescription(final ViewDefinitionState view) {
         LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(OrderFields.TECHNOLOGY_PROTOTYPE);
         FieldComponent descriptionField = (FieldComponent) view.getComponentByReference(OrderFields.DESCRIPTION);
         FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         LookupComponent masterOrderLookup = (LookupComponent) view.getComponentByReference("masterOrder");
         FieldComponent oldTechnologyField = (FieldComponent) view.getComponentByReference("oldTechnologyId");
 
-        boolean fillOrderDescriptionBasedOnTechnology = dataDefinitionService
-                .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PARAMETER).find().setMaxResults(1).uniqueResult()
+        boolean fillOrderDescriptionBasedOnTechnology = parameterService.getParameter()
                 .getBooleanField(ParameterFieldsO.FILL_ORDER_DESCRIPTION_BASED_ON_TECHNOLOGY_DESCRIPTION);
         boolean technologyChanged = false;
 
@@ -693,20 +740,21 @@ public class OrderDetailsHooks {
 
         if (!((String) oldTechnologyField.getFieldValue()).isEmpty()) {
             Long oldTechnologyId = Long.parseLong((String) oldTechnologyField.getFieldValue());
-            oldTechnology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_TECHNOLOGY).get(oldTechnologyId);
+
+            oldTechnology = getTechnologyDD().get(oldTechnologyId);
         }
 
-        if (technology != null) {
+        if (Objects.nonNull(technology)) {
             oldTechnologyField.setFieldValue(technology.getId());
             oldTechnologyField.requestComponentUpdateState();
-            if (oldTechnology != null) {
+
+            if (Objects.nonNull(oldTechnology)) {
                 if (!oldTechnology.getId().equals(technology.getId())) {
                     technologyChanged = true;
                 }
             }
         } else {
-            if (oldTechnology != null) {
+            if (Objects.nonNull(oldTechnology)) {
                 technologyChanged = true;
             }
         }
@@ -715,8 +763,10 @@ public class OrderDetailsHooks {
                 fillOrderDescriptionBasedOnTechnology);
 
         String currentDescription = order.getStringField(OrderFields.DESCRIPTION);
+
         descriptionField.setFieldValue("");
         descriptionField.requestComponentUpdateState();
+
         if (technologyChanged) {
             if (fillOrderDescriptionBasedOnTechnology) {
                 descriptionField.setFieldValue(orderDescription);
@@ -724,12 +774,22 @@ public class OrderDetailsHooks {
                 descriptionField.setFieldValue(currentDescription);
             }
         } else {
-            if (currentDescription != null && !currentDescription.isEmpty()) {
+            if (Objects.nonNull(currentDescription) && !currentDescription.isEmpty()) {
                 descriptionField.setFieldValue(currentDescription);
             } else {
                 descriptionField.setFieldValue(orderDescription);
             }
         }
+
         descriptionField.requestComponentUpdateState();
     }
+
+    private DataDefinition getTechnologyDD() {
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY);
+    }
+
+    private DataDefinition getOrderDD() {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER);
+    }
+
 }
