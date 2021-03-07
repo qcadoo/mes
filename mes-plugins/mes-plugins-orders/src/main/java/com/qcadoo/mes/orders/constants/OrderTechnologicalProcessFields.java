@@ -21,14 +21,34 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.cmmsMachineParts.constants;
+package com.qcadoo.mes.orders.constants;
 
-public final class ProductFieldsCMP {
+public final class OrderTechnologicalProcessFields {
 
-    private ProductFieldsCMP() {
+    private OrderTechnologicalProcessFields() {
 
     }
 
-    public static final String MACHINE_PART = "machinePart";
+    public static final String NUMBER = "number";
+
+    public static final String ORDER_PACK = "orderPack";
+
+    public static final String ORDER = "order";
+
+    public static final String PRODUCT = "product";
+
+    public static final String OPERATION = "operation";
+
+    public static final String TECHNOLOGICAL_PROCESS = "technologicalProcess";
+
+    public static final String QUANTITY = "quantity";
+
+    public static final String WORKER = "worker";
+
+    public static final String DATE = "date";
+
+    public static final String WASTES_QUANTITY = "wastesQuantity";
+
+    public static final String ORDER_TECHNOLOGICAL_PROCESS_PARTS = "orderTechnologicalProcessParts";
 
 }

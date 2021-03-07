@@ -198,9 +198,6 @@
         <model:model-field plugin="basic" model="product">
             <model:string name="drawingNumber"/>
         </model:model-field>
-        <model:model-field plugin="basic" model="product">
-            <model:boolean name="machinePart"/>
-        </model:model-field>
 
         <model:model-field plugin="basic" model="shift">
             <model:hasMany name="maintenanceEventStateChanges" model="maintenanceEventStateChange" joinField="shift"

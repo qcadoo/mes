@@ -194,7 +194,7 @@
                         <option type="fieldCode" value="number"/>
 
                         <criteriaModifier
-                                class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.ProductCriteriaModifiersCMP"
+                                class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
                                 method="showFamiliesByMachinePartType"/>
                         <listener event="onSelectedEntityChange"
                                   class="com.qcadoo.mes.deliveries.listeners.ProductDetailsListenersD"
@@ -453,7 +453,7 @@
         <beforeRender
                 class="com.qcadoo.mes.cmmsMachineParts.hooks.MachinePartDetailsHooks"
                 method="setMachinePartIdForMultiUploadField" />
-        <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.ProductHooksCMP"
+        <beforeRender class="com.qcadoo.mes.basic.hooks.ProductHooks"
                       method="setCriteriaModifierParameters"/>
     </hooks>
 </view>

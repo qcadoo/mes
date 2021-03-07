@@ -20,8 +20,6 @@ public class MaterialRequirementEntry {
 
     private String unit;
 
-    private BigDecimal stockStatus;
-
     public String getNumber() {
         return number;
     }
@@ -52,14 +50,6 @@ public class MaterialRequirementEntry {
 
     public void setUnit(String unit) {
         this.unit = unit;
-    }
-
-    public BigDecimal getStockStatus() {
-        return stockStatus;
-    }
-
-    public void setStockStatus(BigDecimal stockStatus) {
-        this.stockStatus = stockStatus;
     }
 
     public String getWarehouseNumber() {

@@ -46,7 +46,7 @@
         <hasMany name="substituteComponents" model="substituteComponent"
                  joinField="baseProduct" cascade="delete"/>
         <hasMany name="productsToSubstitute" model="substituteComponent"
-                 joinField="product" cascade="nullify"/>
+                 joinField="product"/>
 
         <string name="externalNumber" unique="true"/>
         <string name="description">
@@ -56,14 +56,10 @@
         <hasMany name="conversionItems" joinField="product" model="unitConversionItem"
                  plugin="qcadooModel" cascade="delete"/>
 
-        <!-- PRODUCTS FAMILY TREE -->
         <belongsTo name="parent" model="product"/>
-        <hasMany name="productFamilyChildrens" joinField="parent"
+        <hasMany name="children" joinField="parent"
                  model="product"/>
-        <tree name="productFamilyChildrenTree" joinField="parent" model="product"
-              persistent="false"/>
-        <integer name="priority" persistent="false"/>
-        <string name="nodeNumber"/>
+
         <enum name="entityType" values="01particularProduct,02productsFamily"
               default="01particularProduct" required="true"/>
 
@@ -90,30 +86,24 @@
         <belongsTo name="model" model="model"/>
         <belongsTo name="modelAssortment" model="assortment" persistent="false"/>
         <boolean name="batchEvidence" default="false"/>
+        <boolean name="machinePart"/>
     </fields>
 
     <hooks>
         <validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
-                       method="checkIfNotBelongsToSameFamily"/>
+                       method="validateAdditionalUnit"/>
         <validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
                        method="checkIfParentIsFamily"/>
 
         <validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
-                       method="validateAdditionalUnit"/>
-
-        <validatesWith class="com.qcadoo.mes.basic.hooks.ProductHooks"
                        method="validateCodeUniqueness"/>
 
-        <onCreate class="com.qcadoo.mes.basic.hooks.ProductHooks"
-                  method="generateNodeNumber"/>
         <onCreate class="com.qcadoo.mes.basic.ProductService" method="fillUnit"/>
         <onCreate class="com.qcadoo.mes.basic.hooks.ProductHooks"
                   method="calculateConversionOnCreate"/>
 
         <onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="onSave"/>
-        <onSave class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearFamilyFromProductWhenTypeIsChanged"/>
 
-        <onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="generateNodeNumber"/>
         <onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearExternalIdOnCopy"/>
         <onCopy class="com.qcadoo.mes.basic.hooks.ProductHooks" method="clearFieldsOnCopy"/>
 

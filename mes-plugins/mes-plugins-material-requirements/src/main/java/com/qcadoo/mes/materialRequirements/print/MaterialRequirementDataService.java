@@ -5,35 +5,27 @@ import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.materialFlow.constants.LocationFields;
 import com.qcadoo.mes.materialRequirements.constants.MaterialRequirementFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 @Service
 public class MaterialRequirementDataService {
-
-    private static final String L_COMPONENTS_LOCATION = "componentsLocation";
-
-    private static final String L_NUMBER = "number";
 
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
 
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
-
     public Map<WarehouseDateKey, List<MaterialRequirementEntry>> getGroupedData(Entity materialRequirement) {
-        Map<WarehouseDateKey, List<MaterialRequirementEntry>> data = Maps.newHashMap();
+        Map<WarehouseDateKey, List<MaterialRequirementEntry>> data;
 
         List<Entity> orders = materialRequirement.getHasManyField(MaterialRequirementFields.ORDERS);
 
@@ -105,9 +97,9 @@ public class MaterialRequirementDataService {
         }
 
         if (includeWarehouse) {
-            Entity warehouse = productionCountingQuantity.getBelongsToField(L_COMPONENTS_LOCATION);
+            Entity warehouse = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.COMPONENTS_LOCATION);
             if (Objects.nonNull(warehouse)) {
-                materialRequirementEntry.setWarehouseNumber(warehouse.getStringField(L_NUMBER));
+                materialRequirementEntry.setWarehouseNumber(warehouse.getStringField(LocationFields.NUMBER));
                 materialRequirementEntry.setWarehouseId(warehouse.getId());
             }
         }

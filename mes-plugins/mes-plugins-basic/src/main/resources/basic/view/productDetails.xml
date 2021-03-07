@@ -258,7 +258,11 @@
                        rows="2">
                 <layoutElement column="1" row="1">
                     <component type="select" name="entityType" field="#{form}.entityType"
-                               reference="entityType"/>
+                               reference="entityType">
+                        <listener event="onSelectedEntityChange"
+                                  class="com.qcadoo.view.api.listeners.RerenderListener"
+                                  method="onChangeRerender"/>
+                    </component>
                 </layoutElement>
                 <layoutElement column="1" row="2">
                     <component type="lookup" name="parent" field="#{form}.parent"
@@ -273,7 +277,7 @@
                         <option type="fieldCode" value="number"/>
 
                         <criteriaModifier
-                                class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.ProductCriteriaModifiersCMP"
+                                class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
                                 method="showFamiliesByMachinePartType"/>
                     </component>
                 </layoutElement>
@@ -518,7 +522,7 @@
     <hooks>
         <beforeRender class="com.qcadoo.mes.basic.hooks.ProductDetailsHooks"
                       method="onBeforeRender"/>
-        <beforeRender class="com.qcadoo.mes.cmmsMachineParts.hooks.ProductHooksCMP"
+        <beforeRender class="com.qcadoo.mes.basic.hooks.ProductHooks"
                       method="setCriteriaModifierParameters"/>
     </hooks>
 </view>

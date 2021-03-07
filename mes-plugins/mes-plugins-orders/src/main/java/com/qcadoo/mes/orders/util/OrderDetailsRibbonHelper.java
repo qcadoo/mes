@@ -23,6 +23,14 @@
  */
 package com.qcadoo.mes.orders.util;
 
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.ImmutableSet;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -36,12 +44,6 @@ import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.Predicate;
 
 @Service
 public class OrderDetailsRibbonHelper {
@@ -50,17 +52,20 @@ public class OrderDetailsRibbonHelper {
             TechnologyState.CHECKED);
 
     public static final Predicate<Entity> HAS_CHECKED_OR_ACCEPTED_TECHNOLOGY = order -> {
-        if (order == null) {
+        if (Objects.isNull(order)) {
             return false;
         }
+
         Entity orderTechnology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        return orderTechnology != null && SUPPORTED_TECHNOLOGY_STATES.contains(TechnologyState.of(orderTechnology));
+
+        return Objects.nonNull(orderTechnology) && SUPPORTED_TECHNOLOGY_STATES.contains(TechnologyState.of(orderTechnology));
     };
 
     public static final Predicate<Entity> DIFFERENT_STATE_THAN_PENDING = order -> {
-        if (order == null) {
+        if (Objects.isNull(order)) {
             return false;
         }
+
         return !OrderStateStringValues.PENDING.equals(order.getStringField(OrderFields.STATE));
     };
 
@@ -69,15 +74,18 @@ public class OrderDetailsRibbonHelper {
     public static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
 
     public static final Predicate<Entity> CAN_NOT_GENERATE_OPERATIONAL_TASKS = order -> {
-        if (order == null) {
+        if (Objects.isNull(order)) {
             return false;
         }
-        if(!OrderStateStringValues.ACCEPTED.equals(order.getStringField(OrderFields.STATE))) {
+
+        if (!OrderStateStringValues.ACCEPTED.equals(order.getStringField(OrderFields.STATE))) {
             return false;
         }
-        if(!FOR_EACH.equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
+
+        if (!FOR_EACH.equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
             return false;
         }
+
         return order.getHasManyField(OrderFields.OPERATIONAL_TASKS).isEmpty();
     };
 
@@ -86,33 +94,43 @@ public class OrderDetailsRibbonHelper {
 
     public void setButtonEnabled(final ViewDefinitionState view, final String ribbonGroupName, final String ribbonItemName,
             final Predicate<Entity> predicate) {
-        setButtonEnabled(view, ribbonGroupName, ribbonItemName, predicate, Optional.<String>empty());
+        setButtonEnabled(view, ribbonGroupName, ribbonItemName, predicate, Optional.<String> empty());
     }
 
     public void setButtonEnabled(final ViewDefinitionState view, final String ribbonGroupName, final String ribbonItemName,
-                                 final Predicate<Entity> predicate, final Optional<String> message) {
+            final Predicate<Entity> predicate, final Optional<String> message) {
         RibbonActionItem ribbonItem = getRibbonItem(view, ribbonGroupName, ribbonItemName);
+
         Entity order = getOrderEntity(view);
-        boolean enabled = order != null && predicate.test(order);
-        if (ribbonItem == null) {
+
+        boolean enabled = Objects.nonNull(order) && predicate.test(order);
+
+        if (Objects.isNull(ribbonItem)) {
             return;
         }
+
         ribbonItem.setEnabled(enabled);
+
         if (!enabled && message.isPresent()) {
             ribbonItem.setMessage(message.get());
         }
+
         ribbonItem.requestUpdate(true);
     }
 
     private Entity getOrderEntity(final ViewDefinitionState view) {
-        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        if (form == null) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        if (Objects.isNull(orderForm)) {
             return null;
         }
-        Long orderId = form.getEntityId();
-        if (orderId == null) {
+
+        Long orderId = orderForm.getEntityId();
+
+        if (Objects.isNull(orderId)) {
             return null;
         }
+
         return orderService.getOrder(orderId);
     }
 
@@ -121,9 +139,11 @@ public class OrderDetailsRibbonHelper {
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         Ribbon ribbon = window.getRibbon();
         RibbonGroup ribbonGroup = ribbon.getGroupByName(ribbonGroupName);
-        if (ribbonGroup == null) {
+
+        if (Objects.isNull(ribbonGroup)) {
             return null;
         }
+
         return ribbonGroup.getItemByName(ribbonItemName);
     }
 

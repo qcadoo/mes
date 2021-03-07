@@ -85,4 +85,6 @@ public final class ParameterFieldsO {
 
     public static final String REST_FEEDING_LAST_PACK = "restFeedingLastPack";
 
+    public static final String INCLUDE_PACKS_GENERATING_PROCESSES_FOR_ORDER = "includePacksGeneratingProcessesForOrder";
+
 }

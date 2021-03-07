@@ -25,11 +25,7 @@ package com.qcadoo.mes.materialRequirements.print.pdf;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Paragraph;
-import com.lowagie.text.Phrase;
+import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
@@ -44,7 +40,6 @@ import com.qcadoo.mes.materialRequirements.print.MaterialRequirementEntry;
 import com.qcadoo.mes.materialRequirements.print.WarehouseDateKey;
 import com.qcadoo.mes.materialRequirements.util.EntityOrderNumberComparator;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -55,20 +50,14 @@ import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
-
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public final class MaterialRequirementPdfService extends PdfDocumentService {
@@ -76,9 +65,6 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
     private final int[] defaultMatReqHeaderColumnWidth = new int[] { 25, 25, 24, 13, 13 };
 
     private final int[] defaultOrderHeaderColumnWidth = new int[] { 37, 37, 13, 13 };
-
-    @Autowired
-    private ProductQuantitiesService productQuantitiesService;
 
     @Autowired
     private TranslationService translationService;

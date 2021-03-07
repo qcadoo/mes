@@ -170,12 +170,11 @@
 
         <model:model-field plugin="basic" model="company">
             <model:hasMany name="products" joinField="company"
-                           plugin="deliveries" model="companyProduct" cascade="delete" copyable="false"/>
+                           plugin="deliveries" model="companyProduct" cascade="delete"/>
         </model:model-field>
         <model:model-field plugin="basic" model="company">
             <model:hasMany name="productsFamilies" joinField="company"
-                           plugin="deliveries" model="companyProductsFamily" cascade="delete"
-                           copyable="false"/>
+                           plugin="deliveries" model="companyProductsFamily" cascade="delete"/>
         </model:model-field>
         <model:model-field plugin="basic" model="company">
             <model:integer name="buffer"/>
@@ -185,7 +184,7 @@
         </model:model-field>
         <model:model-field plugin="basic" model="company">
             <model:hasMany name="deliveries" joinField="supplier"
-                           plugin="deliveries" model="delivery" cascade="nullify"/>
+                           plugin="deliveries" model="delivery"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">

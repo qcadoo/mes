@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.technologies.states.aop.listener;
 
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
@@ -47,7 +48,7 @@ public class TechnologyMasterUnmarkingAspect extends AbstractStateListenerAspect
             @RunForStateTransition(targetState = TechnologyStateStringValues.DECLINED) })
     @After(PHASE_EXECUTION_POINTCUT)
     public void postHookOnOutdatingOrDeclining(final StateChangeContext stateChangeContext, final int phase) {
-        stateChangeContext.getOwner().setField("master", false);
+        stateChangeContext.getOwner().setField(TechnologyFields.MASTER, false);
     }
 
     @Pointcut(TechnologyStateChangeAspect.SELECTOR_POINTCUT)

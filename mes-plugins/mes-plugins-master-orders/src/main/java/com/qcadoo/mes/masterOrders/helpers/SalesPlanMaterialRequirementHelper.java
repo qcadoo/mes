@@ -1,4 +1,4 @@
-package com.qcadoo.mes.masterOrders.helper;
+package com.qcadoo.mes.masterOrders.helpers;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -24,7 +24,6 @@ import com.qcadoo.mes.masterOrders.constants.SalesPlanFields;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementFields;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementProductFields;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanProductFields;
-import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceStockDtoFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
@@ -52,9 +51,6 @@ public class SalesPlanMaterialRequirementHelper {
 
     @Autowired
     private NumberService numberService;
-
-    @Autowired
-    private MaterialFlowResourcesService materialFlowResourcesService;
 
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
@@ -96,16 +92,12 @@ public class SalesPlanMaterialRequirementHelper {
                         List<Entity> productBySizeGroups = getProductBySizeGroups(operationProductComponentId);
 
                         for (Entity productBySizeGroup : productBySizeGroups) {
-                            Entity salesPlanMaterialRequirementProduct = createSalesPlanMaterialRequirementProductFromProductBySizeGroup(
-                                    salesPlanMaterialRequirementProducts, productBySizeGroup, neededQuantity);
-
-                            salesPlanMaterialRequirementProducts.add(salesPlanMaterialRequirementProduct);
+                            createSalesPlanMaterialRequirementProductFromProductBySizeGroup(salesPlanMaterialRequirementProducts,
+                                    productBySizeGroup, neededQuantity);
                         }
                     } else {
-                        Entity salesPlanMaterialRequirementProduct = createSalesPlanMaterialRequirementProductFromProduct(
-                                salesPlanMaterialRequirementProducts, product, neededQuantity);
-
-                        salesPlanMaterialRequirementProducts.add(salesPlanMaterialRequirementProduct);
+                        createSalesPlanMaterialRequirementProductFromProduct(salesPlanMaterialRequirementProducts, product,
+                                neededQuantity);
                     }
                 }
             }
@@ -118,13 +110,17 @@ public class SalesPlanMaterialRequirementHelper {
         if (Objects.isNull(technology)) {
             Entity product = salesPlanProduct.getBelongsToField(SalesPlanProductFields.PRODUCT);
 
-            if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue()
+            if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()
                     .equals(product.getStringField(ProductFields.ENTITY_TYPE))) {
                 Entity parent = product.getBelongsToField(ProductFields.PARENT);
 
                 if (Objects.nonNull(parent)) {
                     technology = productStructureTreeService.findTechnologyForProduct(parent);
+                } else {
+                    technology = productStructureTreeService.findTechnologyForProduct(product);
                 }
+            } else {
+                technology = productStructureTreeService.findTechnologyForProduct(product);
             }
         }
 
@@ -162,9 +158,11 @@ public class SalesPlanMaterialRequirementHelper {
 
             salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.PRODUCT, product);
             salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.QUANTITY, neededQuantity);
-
             salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.IS_DELIVERY_CREATED, false);
+
+            salesPlanMaterialRequirementProducts.add(salesPlanMaterialRequirementProduct);
         }
+
         return salesPlanMaterialRequirementProduct;
     }
 
@@ -189,28 +187,35 @@ public class SalesPlanMaterialRequirementHelper {
 
             sumForSizes = sumForSizes.add(neededQuantity, numberService.getMathContext());
 
-            salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.QUANTITY, sumForSizes);
+            salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.SUM_FOR_SIZES, sumForSizes);
         } else {
             salesPlanMaterialRequirementProduct = getSalesPlanMaterialRequirementProductDD().create();
 
             salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.PRODUCT, product);
             salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.SIZE_GROUP, sizeGroup);
             salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.SUM_FOR_SIZES, neededQuantity);
-
             salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.IS_DELIVERY_CREATED, false);
+
+            salesPlanMaterialRequirementProducts.add(salesPlanMaterialRequirementProduct);
         }
 
         return salesPlanMaterialRequirementProduct;
     }
 
     private boolean filterByProduct(final Entity salesPlanMaterialRequirementProduct, final Entity product) {
-        return salesPlanMaterialRequirementProduct.getBelongsToField(SalesPlanMaterialRequirementProductFields.PRODUCT).getId()
-                .equals(product.getId());
+        Entity salesPlanMaterialRequirementProductProduct = salesPlanMaterialRequirementProduct
+                .getBelongsToField(SalesPlanMaterialRequirementProductFields.PRODUCT);
+
+        return Objects.nonNull(salesPlanMaterialRequirementProductProduct)
+                && salesPlanMaterialRequirementProductProduct.getId().equals(product.getId());
     }
 
     private boolean filterBySizeGroup(final Entity salesPlanMaterialRequirementProduct, final Entity sizeGroup) {
-        return salesPlanMaterialRequirementProduct.getBelongsToField(SalesPlanMaterialRequirementProductFields.SIZE_GROUP).getId()
-                .equals(sizeGroup.getId());
+        Entity salesPlanMaterialRequirementProductSizeGroup = salesPlanMaterialRequirementProduct
+                .getBelongsToField(SalesPlanMaterialRequirementProductFields.SIZE_GROUP);
+
+        return Objects.nonNull(salesPlanMaterialRequirementProductSizeGroup)
+                && salesPlanMaterialRequirementProductSizeGroup.getId().equals(sizeGroup.getId());
     }
 
     private void updateSalesPlanMaterialRequirementProducts(final List<Entity> salesPlanMaterialRequirementProducts) {
@@ -267,14 +272,15 @@ public class SalesPlanMaterialRequirementHelper {
     private BigDecimal getCurrentStock(final List<Entity> resourceStocks, final Long productId) {
         BigDecimal currentStock = BigDecimal.ZERO;
 
-        Optional<Entity> mayBeResourceStock = resourceStocks.stream().filter(
+        List<Entity> resourceStocksForProduct = resourceStocks.stream().filter(
                 resourceStock -> resourceStock.getIntegerField(ResourceStockDtoFields.PRODUCT_ID).equals(productId.intValue()))
-                .findAny();
+                .collect(Collectors.toList());
 
-        if (mayBeResourceStock.isPresent()) {
-            Entity resourceStock = mayBeResourceStock.get();
-
-            currentStock = resourceStock.getDecimalField(ResourceStockDtoFields.AVAILABLE_QUANTITY);
+        if (resourceStocksForProduct.size() > 0) {
+            for (Entity resourceStock : resourceStocksForProduct) {
+                currentStock = currentStock.add(resourceStock.getDecimalField(ResourceStockDtoFields.AVAILABLE_QUANTITY),
+                        numberService.getMathContext());
+            }
         }
 
         return currentStock;
@@ -302,7 +308,8 @@ public class SalesPlanMaterialRequirementHelper {
         queryBuilder.append("FROM basicproductioncounting_productioncountingquantitydto ");
         queryBuilder.append("WHERE productid IN (:productIds) ");
         queryBuilder.append("AND orderid IN ( ");
-        queryBuilder.append("SELECT id FROM orders_order WHERE state NOT IN ('01pending', '04completed', '05declined', '07abandoned') ");
+        queryBuilder.append(
+                "SELECT id FROM orders_order WHERE state NOT IN ('01pending', '04completed', '05declined', '07abandoned') ");
         queryBuilder.append(") ");
         queryBuilder.append("GROUP BY productid");
 

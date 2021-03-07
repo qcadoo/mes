@@ -656,7 +656,7 @@
                        columns="3" rows="3">
                 <layoutElement column="1" row="1" minHeight="3">
                     <component type="grid" name="operationComponents" reference="operationComponents"
-                               plugin="technologies" model="technologyOperationComponent">>
+                               plugin="technologies" model="technologyOperationComponent">
                         <option type="column" name="nodeNumber" fields="nodeNumber" link="true" width="50"/>
                         <option type="column" name="operationNumber" fields="operation" link="true"
                                 expression="#operation['number']" width="100"/>

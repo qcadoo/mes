@@ -23,54 +23,28 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.criteriaModifiers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers;
-import com.qcadoo.mes.cmmsMachineParts.constants.ProductFieldsCMP;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductCriteriaModifiersCMP {
-
-    public static final String L_MACHINE_PART = "machinePart";
 
     @Autowired
     private ProductCriteriaModifiers productCriteriaModifiers;
 
     public void showMachineParts(final SearchCriteriaBuilder searchCriteriaBuilder) {
-        searchCriteriaBuilder.add(SearchRestrictions.eq(ProductFieldsCMP.MACHINE_PART, true));
+        searchCriteriaBuilder.add(SearchRestrictions.eq(ProductFields.MACHINE_PART, true));
     }
 
     public void showMachinePartsWithoutGivenProduct(final SearchCriteriaBuilder searchCriteriaBuilder,
             final FilterValueHolder filterValueHolder) {
         productCriteriaModifiers.showProductsWithoutGivenProduct(searchCriteriaBuilder, filterValueHolder);
 
-        searchCriteriaBuilder.add(SearchRestrictions.eq(ProductFieldsCMP.MACHINE_PART, true));
+        searchCriteriaBuilder.add(SearchRestrictions.eq(ProductFields.MACHINE_PART, true));
     }
-
-    public void showFamiliesByMachinePartType(final SearchCriteriaBuilder searchCriteriaBuilder,
-            final FilterValueHolder filterValueHolder) {
-        if (!filterValueHolder.has(L_MACHINE_PART)) {
-            throw new IllegalArgumentException(L_MACHINE_PART);
-        }
-
-        boolean machinePart = filterValueHolder.getBoolean(L_MACHINE_PART);
-
-        searchCriteriaBuilder.add(SearchRestrictions.eq(ProductFields.ENTITY_TYPE,
-                ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue()));
-
-        if (machinePart) {
-            searchCriteriaBuilder.add(SearchRestrictions.eq(ProductFieldsCMP.MACHINE_PART, true));
-
-        } else {
-            searchCriteriaBuilder.add(SearchRestrictions.or(SearchRestrictions.eq(ProductFieldsCMP.MACHINE_PART, false),
-                    SearchRestrictions.isNull(ProductFieldsCMP.MACHINE_PART)));
-        }
-    }
-
 }

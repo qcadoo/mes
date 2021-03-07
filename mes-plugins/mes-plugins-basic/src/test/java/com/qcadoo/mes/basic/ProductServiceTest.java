@@ -23,24 +23,6 @@
  */
 package com.qcadoo.mes.basic;
 
-import static com.qcadoo.mes.basic.constants.ProductFamilyElementType.PARTICULAR_PRODUCT;
-import static com.qcadoo.mes.basic.constants.ProductFamilyElementType.PRODUCTS_FAMILY;
-import static com.qcadoo.mes.basic.constants.ProductFields.ENTITY_TYPE;
-import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.test.util.ReflectionTestUtils;
-
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.SubstituteComponentFields;
 import com.qcadoo.mes.basic.constants.SubstituteFields;
@@ -48,6 +30,18 @@ import com.qcadoo.mes.basic.util.UnitService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 
 public class ProductServiceTest {
 
@@ -75,30 +69,6 @@ public class ProductServiceTest {
 
         ReflectionTestUtils.setField(productService, "dataDefinitionService", dataDefinitionService);
         ReflectionTestUtils.setField(productService, "unitService", unitService);
-    }
-
-    @Test
-    public void shouldReturnTrueWhenCheckIfProductEntityTypeIsCorrect() throws Exception {
-        // given
-        given(product.getStringField(ENTITY_TYPE)).willReturn(PARTICULAR_PRODUCT.getStringValue());
-
-        // when
-        boolean result = productService.checkIfProductEntityTypeIsCorrect(product, PARTICULAR_PRODUCT);
-
-        // then
-        assertTrue(result);
-    }
-
-    @Test
-    public void shouldReturnFalseWhenCheckIfProductEntityTypeIsCorrect() throws Exception {
-        // given
-        given(product.getStringField(ENTITY_TYPE)).willReturn(PARTICULAR_PRODUCT.getStringValue());
-
-        // when
-        boolean result = productService.checkIfProductEntityTypeIsCorrect(product, PRODUCTS_FAMILY);
-
-        // then
-        assertFalse(result);
     }
 
     @Test

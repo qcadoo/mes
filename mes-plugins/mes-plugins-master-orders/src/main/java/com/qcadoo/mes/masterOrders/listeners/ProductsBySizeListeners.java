@@ -36,7 +36,7 @@ public class ProductsBySizeListeners {
     private void prepareProductsList(ViewDefinitionState view, Entity product) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        List<Entity> childs = product.getHasManyField(ProductFields.PRODUCT_FAMILY_CHILDRENS);
+        List<Entity> childs = product.getHasManyField(ProductFields.CHILDREN);
         for (Entity child : childs) {
             if (Objects.nonNull(child.getBelongsToField(ProductFields.SIZE))) {
                 Entity entry = dataDefinitionService

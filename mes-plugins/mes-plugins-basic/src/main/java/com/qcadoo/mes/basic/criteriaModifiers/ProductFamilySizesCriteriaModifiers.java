@@ -36,7 +36,7 @@ public class ProductFamilySizesCriteriaModifiers {
             Entity productFamily = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT)
                     .get(productId);
 
-            List<Entity> products = productFamily.getHasManyField(ProductFields.PRODUCT_FAMILY_CHILDRENS);
+            List<Entity> products = productFamily.getHasManyField(ProductFields.CHILDREN);
 
             for (Entity product : products) {
                 Entity size = product.getBelongsToField(ProductFields.SIZE);

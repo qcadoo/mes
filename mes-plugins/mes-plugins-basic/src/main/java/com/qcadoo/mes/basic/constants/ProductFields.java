@@ -51,13 +51,7 @@ public final class ProductFields {
 
     public static final String PARENT = "parent";
 
-    public static final String PRODUCT_FAMILY_CHILDRENS = "productFamilyChildrens";
-
-    public static final String PRODUCT_FAMILY_CHILDREN_TREE = "productFamilyChildrenTree";
-
-    public static final String PRIORITY = "priority";
-
-    public static final String NODE_NUMBER = "nodeNumber";
+    public static final String CHILDREN = "children";
 
     public static final String ENTITY_TYPE = "entityType";
     
@@ -86,5 +80,7 @@ public final class ProductFields {
     public static final String MODEL = "model";
 
     public static final String MODEL_ASSORTMENT = "modelAssortment";
+
+    public static final String MACHINE_PART = "machinePart";
 
 }

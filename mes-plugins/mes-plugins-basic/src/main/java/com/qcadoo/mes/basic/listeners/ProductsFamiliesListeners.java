@@ -24,66 +24,29 @@
 package com.qcadoo.mes.basic.listeners;
 
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.hooks.ProductsFamiliesHooks;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.TreeComponent;
-import com.qcadoo.view.api.components.WindowComponent;
-import com.qcadoo.view.api.ribbon.RibbonActionItem;
-import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.PRODUCT_FAMILY_CHILDREN_TREE;
 
 @Service
 public class ProductsFamiliesListeners {
 
-    @Autowired
-    private ProductsFamiliesHooks productsFamiliesHooks;
+    public final void showChildren(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
-    public final void generateHierarchyTree(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        productsFamiliesHooks.generateTreeWhenIdIsSet(view);
-        disableEditButtonAfterGenerating(view);
-    }
+        if(!grid.getSelectedEntitiesIds().isEmpty()) {
+            Long productId = grid.getSelectedEntitiesIds().stream().findFirst().get();
 
-    private void disableEditButtonAfterGenerating(final ViewDefinitionState view) {
-        TreeComponent tree = (TreeComponent) view.getComponentByReference(PRODUCT_FAMILY_CHILDREN_TREE);
-        boolean enabled = false;
-        if ((tree != null) && (tree.getSelectedEntityId() != null)) {
-            enabled = true;
+            Map<String, Object> parameters = Maps.newHashMap();
+            parameters.put("form.id", productId);
+
+            String url = "../page/basic/productChildren.html";
+            view.redirectTo(url, false, true, parameters);
         }
-        setEditButtonEnabled(view, enabled);
     }
-
-    public final void editSelectedProduct(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        TreeComponent tree = (TreeComponent) view.getComponentByReference(PRODUCT_FAMILY_CHILDREN_TREE);
-        Long productId = tree.getSelectedEntityId();
-
-        if (productId == null) {
-            return;
-        }
-
-        Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("form.id", productId);
-
-        String url = "../page/basic/productDetails.html";
-        view.redirectTo(url, false, true, parameters);
-    }
-
-    public final void enabledEditButton(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        setEditButtonEnabled(view, true);
-    }
-
-    private void setEditButtonEnabled(final ViewDefinitionState view, final boolean isEnabled) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
-        RibbonGroup edit = (RibbonGroup) window.getRibbon().getGroupByName("edit");
-        RibbonActionItem editSelectedProductFromTree = edit.getItemByName("editSelectedProduct");
-        editSelectedProductFromTree.setEnabled(isEnabled);
-        editSelectedProductFromTree.requestUpdate(true);
-    }
-
 }

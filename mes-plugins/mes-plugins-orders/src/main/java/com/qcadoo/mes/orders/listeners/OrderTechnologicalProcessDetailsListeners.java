@@ -21,29 +21,36 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic.listeners;
+package com.qcadoo.mes.orders.listeners;
+
+import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.model.api.Entity;
+import com.google.common.collect.Maps;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
-public class ProductFamiliesAddProductListeners {
+public class OrderTechnologicalProcessDetailsListeners {
 
-    public final void addSelectedProductsToFamily(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Entity formEntity = form.getEntity();
-        GridComponent childrenGrid = (GridComponent) view.getComponentByReference("children");
-        for (Entity child : childrenGrid.getSelectedEntities()) {
-            child.setField(ProductFields.PARENT, formEntity.getField(ProductFields.PARENT));
-            child.getDataDefinition().save(child);
+    public void divideOrderTechnologicalProcess(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent orderTechnologicalProcessForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Long orderTechnologicalProcessId = orderTechnologicalProcessForm.getEntityId();
+
+        if (Objects.isNull(orderTechnologicalProcessId)) {
+            return;
         }
+
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("form.id", orderTechnologicalProcessId);
+
+        String url = "/page/orders/divideOrderTechnologicalProcess.html";
+        view.redirectTo(url, false, true, parameters);
     }
+
 }

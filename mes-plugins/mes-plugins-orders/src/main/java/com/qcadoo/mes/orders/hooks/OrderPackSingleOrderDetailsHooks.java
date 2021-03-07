@@ -35,6 +35,7 @@ public class OrderPackSingleOrderDetailsHooks {
     public final void onBeforeRender(final ViewDefinitionState view) throws JSONException {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OrderPackFields.ORDER);
+
         if (Objects.isNull(form.getEntityId())) {
             JSONObject context = view.getJsonContext();
             Long orderId = context.getLong("window.mainTab.orderPack.order");
@@ -43,8 +44,13 @@ public class OrderPackSingleOrderDetailsHooks {
         }
 
         Entity order = orderLookup.getEntity();
+
+        FieldComponent orderQuantity = (FieldComponent) view.getComponentByReference("orderQuantity");
+        FieldComponent sumQuantityOrderPacksField = (FieldComponent) view.getComponentByReference("sumQuantityOrderPacks");
+        FieldComponent orderQuantityUnit = (FieldComponent) view.getComponentByReference("orderQuantityUnit");
+        FieldComponent sumQuantityOrderPacksUnit = (FieldComponent) view.getComponentByReference("sumQuantityOrderPacksUnit");
+        FieldComponent quantityUnit = (FieldComponent) view.getComponentByReference("quantityUnit");
         if (order != null) {
-            FieldComponent orderQuantity = (FieldComponent) view.getComponentByReference("orderQuantity");
             orderQuantity.setFieldValue(numberService.format(order.getField(OrderFields.PLANNED_QUANTITY)));
             FieldComponent quantityField = (FieldComponent) view.getComponentByReference(OrderPackFields.QUANTITY);
             BigDecimal sumQuantityOrderPacks = orderPackService.getSumQuantityOrderPacksForOrderWithoutPack(order,
@@ -54,19 +60,17 @@ public class OrderPackSingleOrderDetailsHooks {
             if (eitherNumber.isRight() && eitherNumber.getRight().isPresent()) {
                 sumQuantityOrderPacks = sumQuantityOrderPacks.add(eitherNumber.getRight().get(), numberService.getMathContext());
             }
-            FieldComponent sumQuantityOrderPacksField = (FieldComponent) view.getComponentByReference("sumQuantityOrderPacks");
             sumQuantityOrderPacksField.setFieldValue(numberService.format(sumQuantityOrderPacks));
             String unit = order.getBelongsToField(OrderFields.PRODUCT).getStringField(ProductFields.UNIT);
-            FieldComponent orderQuantityUnit = (FieldComponent) view.getComponentByReference("orderQuantityUnit");
             orderQuantityUnit.setFieldValue(unit);
-            orderQuantityUnit.requestComponentUpdateState();
-            FieldComponent sumQuantityOrderPacksUnit = (FieldComponent) view.getComponentByReference("sumQuantityOrderPacksUnit");
             sumQuantityOrderPacksUnit.setFieldValue(unit);
-            sumQuantityOrderPacksUnit.requestComponentUpdateState();
-            FieldComponent quantityUnit = (FieldComponent) view.getComponentByReference("quantityUnit");
             quantityUnit.setFieldValue(unit);
-            quantityUnit.requestComponentUpdateState();
+        } else {
+            orderQuantity.setFieldValue(null);
+            sumQuantityOrderPacksField.setFieldValue(null);
+            orderQuantityUnit.setFieldValue(null);
+            sumQuantityOrderPacksUnit.setFieldValue(null);
+            quantityUnit.setFieldValue(null);
         }
-
     }
 }

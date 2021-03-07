@@ -172,9 +172,10 @@
         <hasMany name="operationalTasks" model="operationalTask" joinField="order" cascade="delete"/>
 
         <hasMany name="orderPacks" model="orderPack" joinField="order" cascade="delete"/>
-        <hasMany name="orderPacksDto" joinField="order" model="orderPackDto"
-                 persistent="false"/>
+        <hasMany name="orderPacksDto" model="orderPackDto" joinField="order" persistent="false"/>
 
+        <hasMany name="orderTechnologicalProcesses" model="orderTechnologicalProcess" joinField="order" cascade="delete"/>
+        <hasMany name="orderTechnologicalProcessesDto" model="orderTechnologicalProcessDto" joinField="order" persistent="false"/>
     </fields>
 
     <hooks>

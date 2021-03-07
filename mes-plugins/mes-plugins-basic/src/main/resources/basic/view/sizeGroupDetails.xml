@@ -49,9 +49,14 @@
                     <component type="lookup" name="sizeLookup" reference="sizeLookup"
                                field="#{form}.sizes" defaultVisible="false" persistent="false"
                                hasLabel="false">
+                        <option type="column" name="succession" fields="succession"/>
 
-                        <option type="searchable" value="number"/>
-                        <option type="orderable" value="number"/>
+                        <option type="defaultVisibleColumns" value="lookupCode"/>
+
+                        <option type="order" column="succession" direction="asc"/>
+
+                        <option type="searchable" value="number,succession"/>
+                        <option type="orderable" value="number,succession"/>
 
                         <option type="expression" value="#number"/>
                         <option type="fieldCode" value="number"/>
@@ -66,11 +71,14 @@
                     <component type="grid" name="sizes" reference="sizes"
                                source="#{form}.sizes">
                         <option type="column" name="number" fields="number"/>
+                        <option type="column" name="succession" fields="succession"/>
 
-                        <option type="order" column="number" direction="asc"/>
+                        <option type="defaultVisibleColumns" value="number"/>
 
-                        <option type="searchable" value="number"/>
-                        <option type="orderable" value="number"/>
+                        <option type="order" column="succession" direction="asc"/>
+
+                        <option type="searchable" value="number,succession"/>
+                        <option type="orderable" value="number,succession"/>
 
                         <option type="correspondingLookup" value="sizeLookup"/>
 

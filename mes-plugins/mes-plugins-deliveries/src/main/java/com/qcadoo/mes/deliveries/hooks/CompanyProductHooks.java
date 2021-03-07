@@ -23,38 +23,22 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import static com.qcadoo.mes.basic.constants.ProductFamilyElementType.PARTICULAR_PRODUCT;
+import com.qcadoo.mes.deliveries.CompanyProductService;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import static com.qcadoo.mes.deliveries.constants.CompanyFieldsD.PRODUCTS;
 import static com.qcadoo.mes.deliveries.constants.CompanyProductFields.COMPANY;
 import static com.qcadoo.mes.deliveries.constants.CompanyProductFields.IS_DEFAULT;
 import static com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields.PRODUCT;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.basic.ProductService;
-import com.qcadoo.mes.deliveries.CompanyProductService;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
 
 @Service
 public class CompanyProductHooks {
 
     @Autowired
     private CompanyProductService companyProductService;
-
-    @Autowired
-    private ProductService productService;
-
-    public boolean checkIfProductIsParticularProduct(final DataDefinition companyProductDD, final Entity companyProduct) {
-        if (!productService.checkIfProductEntityTypeIsCorrect(companyProduct.getBelongsToField(PRODUCT), PARTICULAR_PRODUCT)) {
-            companyProduct.addError(companyProductDD.getField(PRODUCT), "basic.company.message.productIsNotParticularProduct");
-
-            return false;
-        }
-
-        return true;
-    }
 
     public boolean checkIfProductIsNotAlreadyUsed(final DataDefinition companyProductDD, final Entity companyProduct) {
         if (!companyProductService.checkIfProductIsNotUsed(companyProduct, PRODUCT, COMPANY, PRODUCTS)) {

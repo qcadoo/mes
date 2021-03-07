@@ -3,6 +3,7 @@ package com.qcadoo.mes.orders.hooks;
 import com.qcadoo.mes.orders.OrderPackService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderPackFields;
+import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -48,6 +49,12 @@ public class OrderPackHooks {
 
     public boolean validatesWith(final DataDefinition dataDefinition, final Entity entity) {
         Entity order = entity.getBelongsToField(OrderPackFields.ORDER);
+        String orderState = order.getStringField(OrderFields.STATE);
+        if (OrderState.COMPLETED.getStringValue().equals(orderState) || OrderState.DECLINED.getStringValue().equals(orderState)
+                || OrderState.ABANDONED.getStringValue().equals(orderState)) {
+            entity.addError(dataDefinition.getField(OrderPackFields.ORDER), "orderPacks.validate.global.error.orderStateError");
+            return false;
+        }
         BigDecimal sumQuantityOrderPacks = orderPackService.getSumQuantityOrderPacksForOrderWithoutPack(order, entity.getId())
                 .add(entity.getDecimalField(OrderPackFields.QUANTITY), numberService.getMathContext());
         if (order.getDecimalField(OrderFields.PLANNED_QUANTITY).compareTo(sumQuantityOrderPacks) < 0) {

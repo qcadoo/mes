@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PRODUCT_FAMILIES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="productChildren" modelName="product">
+
+	<component type="window" name="window" reference="window">
+
+		<ribbon>
+			<template name="standardFormTemplate" includeItems="navigation.back" />
+			<template name="standardGridTemplate" includeItems="actions.refresh" />
+		</ribbon>
+
+		<component type="form" name="form" reference="form">
+			<option type="header" value="true"/>
+			<option type="expression" value="#number + ', ' + #name"/>
+		</component>
+		<component type="lookup" name="childrenLookup" reference="childrenLookup"
+				   field="#{form}.children" defaultVisible="false" persistent="false"
+				   hasLabel="false">
+			<option type="column" name="name" fields="name" link="true"
+					width="100"/>
+
+			<option type="searchable" value="number,name"/>
+			<option type="orderable" value="number,name"/>
+
+			<option type="expression"
+					value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+			<option type="fieldCode" value="number"/>
+
+			<option type="multiselect" value="true"/>
+			<criteriaModifier
+					class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
+					method="showParticularProductWithoutFamilies"/>
+		</component>
+		<component type="grid" name="children" reference="grid"
+				   source="#{form}.children">
+			<option type="column" name="number" fields="number" link="true"/>
+			<option type="column" name="name" fields="name" link="true"/>
+
+			<option type="order" column="name" direction="asc" />
+
+			<option type="searchable" value="number,name" />
+			<option type="orderable" value="number,name" />
+
+			<option type="correspondingView" value="basic/productDetails"/>
+			<option type="correspondingComponent" value="form"/>
+
+			<option type="fullscreen" value="true" />
+			<option type="multiselect" value="true" />
+			<option type="creatable" value="true"/>
+			<option type="deletable" value="true"/>
+			<option type="paginable" value="false"/>
+			<option type="weakRelation" value="true"/>
+			<option type="correspondingLookup" value="childrenLookup"/>
+		</component>
+
+		<option type="fixedHeight" value="true"/>
+	</component>
+
+	<hooks/>
+</view>

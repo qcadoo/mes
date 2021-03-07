@@ -26,6 +26,7 @@ package com.qcadoo.mes.cmmsMachineParts.hooks;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -35,10 +36,8 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 @Service
 public class MachinePartDetailsHooks {
 
-
-
     public void setMachinePartCheckbox(final ViewDefinitionState view) {
-        CheckBoxComponent machinePartCheckbox = (CheckBoxComponent) view.getComponentByReference("machinePart");
+        CheckBoxComponent machinePartCheckbox = (CheckBoxComponent) view.getComponentByReference(ProductFields.MACHINE_PART);
         machinePartCheckbox.setChecked(true);
         machinePartCheckbox.requestComponentUpdateState();
     }

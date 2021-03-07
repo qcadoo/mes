@@ -21,35 +21,36 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.cmmsMachineParts.hooks;
+package com.qcadoo.mes.orders.listeners;
+
+import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.cmmsMachineParts.constants.ProductFieldsCMP;
-import com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.ProductCriteriaModifiersCMP;
-import com.qcadoo.model.api.Entity;
+import com.google.common.collect.Maps;
+import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
-public class ProductHooksCMP {
+public class OrderTechnologicalProcessesListListeners {
 
+    public void goBackToOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
+        Long orderId = orderForm.getEntityId();
 
-    private static final String L_PARENT = "parent";
+        if (Objects.isNull(orderId)) {
+            return;
+        }
 
-    public void setCriteriaModifierParameters(final ViewDefinitionState view) {
-        LookupComponent parentLookup = (LookupComponent) view.getComponentByReference(L_PARENT);
-        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("form.id", orderId);
 
-        Entity product = form.getPersistedEntityWithIncludedFormValues();
-
-        FilterValueHolder holder = parentLookup.getFilterValue();
-        holder.put(ProductCriteriaModifiersCMP.L_MACHINE_PART, product.getBooleanField(ProductFieldsCMP.MACHINE_PART));
-        parentLookup.setFilterValue(holder);
+        String url = "/page/orders/orderDetails.html";
+        view.redirectTo(url, false, true, parameters);
     }
 
 }

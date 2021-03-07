@@ -652,27 +652,7 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         Entity productFamily = product.getBelongsToField(ProductFields.PARENT);
 
         if (Objects.nonNull(productFamily)) {
-            Entity companyProduct = getDefaultCompanyProductFamilyEntity(productFamily.getId());
-
-            if (Objects.isNull(companyProduct)) {
-                boolean notFind = true;
-
-                while (notFind) {
-                    productFamily = productFamily.getBelongsToField(ProductFields.PARENT);
-
-                    if (Objects.isNull(productFamily)) {
-                        return null;
-                    }
-
-                    companyProduct = getDefaultCompanyProductFamilyEntity(productFamily.getId());
-
-                    if (Objects.nonNull(companyProduct)) {
-                        return companyProduct;
-                    }
-                }
-            }
-
-            return companyProduct;
+            return getDefaultCompanyProductFamilyEntity(productFamily.getId());
         } else {
             return null;
         }
@@ -680,13 +660,6 @@ public class DeliveriesServiceImpl implements DeliveriesService {
 
     private Entity getDefaultCompanyProductFamilyEntity(final Long productId) {
         String query = "select company from #deliveries_companyProductsFamily company WHERE company.product.id = :id"
-                + " and company.isDefault = true";
-
-        return getCompanyProductDD().find(query).setParameter("id", productId).setMaxResults(1).uniqueResult();
-    }
-
-    private Entity getDefaultCompanyProductEntity(final Long productId) {
-        String query = "select company from #deliveries_companyProductsFamily company, #basic_product product where product.parent.id = company.product.id and product.id = :id"
                 + " and company.isDefault = true";
 
         return getCompanyProductDD().find(query).setParameter("id", productId).setMaxResults(1).uniqueResult();

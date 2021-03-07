@@ -84,6 +84,8 @@
 					width="80"/>
 			<option type="column" name="productNumber" fields="productNumber"
 					width="100"/>
+			<option type="column" name="producedBatchNumber" fields="producedBatchNumber"
+					width="100"/>
 			<option type="column" name="batchNumber" fields="batchNumber"
 					width="100"/>
 			<option type="column" name="plannedQuantity" fields="plannedQuantity"
@@ -110,9 +112,9 @@
 			<option type="order" column="number" direction="asc"/>
 
 			<option type="searchable"
-					value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,productNumber,plannedQuantity,usedQuantity,productUnit,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,batchNumber,typeOfRecord"/>
+					value="number,orderNumber,producedBatchNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,productNumber,plannedQuantity,usedQuantity,productUnit,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,batchNumber,typeOfRecord"/>
 			<option type="orderable"
-					value="number,orderNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,productNumber,plannedQuantity,usedQuantity,productUnit,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,batchNumber,typeOfRecord"/>
+					value="number,orderNumber,producedBatchNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,productNumber,plannedQuantity,usedQuantity,productUnit,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,batchNumber,typeOfRecord"/>
 
 			<option type="fullscreen" value="true"/>
 			<option type="multiselect" value="false"/>

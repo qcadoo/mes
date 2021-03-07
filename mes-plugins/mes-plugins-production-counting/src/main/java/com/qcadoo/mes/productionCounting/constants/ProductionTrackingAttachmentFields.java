@@ -21,48 +21,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic.tree;
+package com.qcadoo.mes.productionCounting.constants;
 
-import com.qcadoo.model.api.Entity;
+public final class ProductionTrackingAttachmentFields {
 
-import java.util.List;
+    private ProductionTrackingAttachmentFields() {
 
-public interface ProductNumberingService {
+    }
 
-    /**
-     * Gets product root
-     * 
-     * @param product
-     *            product
-     * 
-     * @return root
-     * 
-     */
-    Entity getRoot(final Entity entity);
+    public static final String NAME = "name";
 
-    /**
-     * Generate node number for product
-     * 
-     * @param product
-     *            product
-     * 
-     */
-    void generateNodeNumber(final Entity product);
+    public static final String PRODUCTION_TRACKING = "productionTracking";
 
-    /**
-     * Updated node number for product
-     * 
-     * @param product
-     *            product
-     * 
-     */
-    void updateNodeNumber(final Entity product);
+    public static final String ATTACHMENT = "attachment";
 
-    /**
-     * Get product roots
-     * 
-     * @return boolean
-     */
-    List<Entity> getProductRoots(final Entity product);
+    public static final String SIZE = "size";
+
+    public static final String EXT = "ext";
 
 }

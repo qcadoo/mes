@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PLANNING" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="orderTechnologicalProcessDetails" modelName="orderTechnologicalProcess">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <template name="standardFormTemplate" excludeItems="actions.saveNew,actions.delete,actions.copy"/>
+
+            <group name="process">
+                <bigButton name="divideOrderTechnologicalProcess" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
+					        this.addOnChangeListener({
+                                onClick: function() {
+                                    if(window.canClose()) {
+                                        #{form}.performEvent('divideOrderTechnologicalProcess', []);
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+            </group>
+        </ribbon>
+
+        <windowTab name="mainTab">
+            <component type="form" name="orderTechnologicalProcess" reference="form">
+                <component type="gridLayout" name="gridLayout" columns="3"
+                           rows="9" hasBorders="false">
+                    <layoutElement column="1" row="1">
+                        <component type="lookup" name="orderPack" field="orderPack"
+                                   reference="orderPack" defaultEnabled="never">
+                            <option type="order" column="number" direction="desc" />
+
+                            <option type="searchable" value="number" />
+                            <option type="orderable" value="number" />
+
+                            <option type="expression"
+                                    value="#number" />
+                            <option type="fieldCode" value="number" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="lookup" name="order" field="order"
+                                   reference="order" defaultEnabled="never">
+                            <option type="column" name="name" fields="name" link="true" />
+
+                            <option type="searchable" value="name,number" />
+                            <option type="orderable" value="name,number" />
+
+                            <option type="expression"
+                                    value="#number + ' - ' + #name" />
+                            <option type="fieldCode" value="number" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
+                        <component type="lookup" name="product" reference="product"
+                                   field="product" defaultEnabled="never">
+                            <option type="column" name="name" fields="name" link="true"
+                                    width="200"/>
+                            <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial"
+                                    link="true"/>
+
+                            <option type="searchable" value="name,globalTypeOfMaterial"/>
+                            <option type="orderable" value="name,globalTypeOfMaterial"/>
+
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="4">
+                        <component type="lookup" name="operation" field="operation"
+                                   reference="operation" defaultEnabled="never">
+                            <option type="column" name="name" fields="name" width="300" link="true"/>
+
+                            <option type="searchable" value="name"/>
+                            <option type="orderable" value="name"/>
+
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="5" height="2">
+                        <component type="textarea" name="technologicalProcessName" reference="technologicalProcessName"
+                                   defaultEnabled="never"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="7">
+                        <component type="input" name="quantity" field="quantity"
+                                   reference="quantity">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="8">
+                        <component type="lookup" name="worker" field="worker"
+                                   reference="worker">
+
+                            <option type="column" name="surname" fields="surname"/>
+                            <option type="searchable" value="name,surname"/>
+                            <option type="orderable" value="name,surname"/>
+                            <option type="expression"
+                                    value="'&lt;b&gt;' + #name + '&lt;/b&gt; ' + #surname"/>
+                            <option type="fieldCode" value="name"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="9">
+                        <component type="calendar" name="date" field="date"
+                                   reference="date">
+                            <option type="withTimePicker" value="true"/>
+                        </component>
+                    </layoutElement>
+                </component>
+
+                <option type="header" value="true"/>
+                <option type="expression" value="#number"/>
+
+                <listener event="divideOrderTechnologicalProcess" method="divideOrderTechnologicalProcess"
+                          class="com.qcadoo.mes.orders.listeners.OrderTechnologicalProcessDetailsListeners"/>
+            </component>
+        </windowTab>
+
+    </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.orders.hooks.OrderTechnologicalProcessDetailsHooks"
+                      method="onBeforeRender"/>
+    </hooks>
+
+</view>

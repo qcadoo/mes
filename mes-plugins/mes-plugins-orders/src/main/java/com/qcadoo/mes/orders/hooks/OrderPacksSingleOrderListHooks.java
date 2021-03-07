@@ -40,13 +40,14 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 @Service
 public class OrderPacksSingleOrderListHooks {
 
-    public static final String ACTIONS = "actions";
+    private static final String ACTIONS = "actions";
 
     public final void onBeforeRender(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(OrdersConstants.MODEL_ORDER);
         Entity order = form.getPersistedEntityWithIncludedFormValues();
         String orderState = order.getStringField(OrderFields.STATE);
-        if (OrderState.COMPLETED.getStringValue().equals(orderState) || OrderState.DECLINED.getStringValue().equals(orderState)) {
+        if (OrderState.COMPLETED.getStringValue().equals(orderState) || OrderState.DECLINED.getStringValue().equals(orderState)
+                || OrderState.ABANDONED.getStringValue().equals(orderState)) {
             GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
             grid.setEditable(false);
             grid.setEnabled(false);

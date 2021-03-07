@@ -149,4 +149,6 @@ public final class OrderFields {
 
     public static final String ORDER_PACKS = "orderPacks";
 
+    public static final String ORDER_TECHNOLOGICAL_PROCESSES = "orderTechnologicalProcesses";
+
 }
