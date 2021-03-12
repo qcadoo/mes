@@ -109,7 +109,7 @@ public class SalesPlanDetailsListeners {
 
                                         salesPlanOrdersGroupEntry.setField(
                                                 SalesPlanOrdersGroupEntryHelperFields.ORDERED_QUANTITY,
-                                                salesPlanProduct.getDecimalField(SalesPlanProductFields.ORDERED_QUANTITY));
+                                                orderedQuantity);
                                         salesPlanOrdersGroupEntry.setField(
                                                 SalesPlanOrdersGroupEntryHelperFields.PLANNED_QUANTITY,
                                                 salesPlanProduct.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY));
