@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.beust.jcommander.internal.Lists;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderTechnologicalProcessFields;
 import com.qcadoo.mes.orders.constants.OrderTechnologicalProcessPartFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -63,8 +64,14 @@ public class DivideOrderTechnologicalProcessHooks {
 
         if (view.isViewAfterRedirect()) {
             Entity orderTechnologicalProcess = orderTechnologicalProcessForm.getEntity();
+            Long orderTechnologicalProcessId = orderTechnologicalProcess.getId();
 
+            orderTechnologicalProcess = orderTechnologicalProcess.getDataDefinition().get(orderTechnologicalProcessId);
+
+            Entity product = orderTechnologicalProcess.getBelongsToField(OrderTechnologicalProcessFields.PRODUCT);
             BigDecimal quantity = orderTechnologicalProcess.getDecimalField(OrderTechnologicalProcessFields.QUANTITY);
+
+            String productUnit = product.getStringField(ProductFields.UNIT);
 
             List<Entity> orderTechnologicalProcessParts = Lists.newArrayList();
 
@@ -73,24 +80,25 @@ public class DivideOrderTechnologicalProcessHooks {
             BigDecimal quotient = quantity.divide(half, numberService.getMathContext()).setScale(0, RoundingMode.FLOOR);;
 
             if (BigDecimal.ZERO.compareTo(quantity.remainder(half, numberService.getMathContext())) == 0) {
-                orderTechnologicalProcessParts.add(createOrderTechnologicalProcessPart("1", quotient));
-                orderTechnologicalProcessParts.add(createOrderTechnologicalProcessPart("2", quotient));
+                orderTechnologicalProcessParts.add(createOrderTechnologicalProcessPart("1", quotient, productUnit));
+                orderTechnologicalProcessParts.add(createOrderTechnologicalProcessPart("2", quotient, productUnit));
             } else {
                 BigDecimal difference = quantity.subtract(quotient, numberService.getMathContext());
 
-                orderTechnologicalProcessParts.add(createOrderTechnologicalProcessPart("1", quotient));
-                orderTechnologicalProcessParts.add(createOrderTechnologicalProcessPart("2", difference));
+                orderTechnologicalProcessParts.add(createOrderTechnologicalProcessPart("1", quotient, productUnit));
+                orderTechnologicalProcessParts.add(createOrderTechnologicalProcessPart("2", difference, productUnit));
             }
 
             orderTechnologicalProcessPartsADL.setFieldValue(orderTechnologicalProcessParts);
         }
     }
 
-    private Entity createOrderTechnologicalProcessPart(final String number, final BigDecimal quantity) {
+    private Entity createOrderTechnologicalProcessPart(final String number, final BigDecimal quantity, final String unit) {
         Entity orderTechnologicalProcessPart = getOrderTechnologicalProcessPartDD().create();
 
         orderTechnologicalProcessPart.setField(OrderTechnologicalProcessPartFields.NUMBER, number);
         orderTechnologicalProcessPart.setField(OrderTechnologicalProcessPartFields.QUANTITY, quantity);
+        orderTechnologicalProcessPart.setField(OrderTechnologicalProcessPartFields.UNIT, unit);
 
         return orderTechnologicalProcessPart;
     }

@@ -23,35 +23,38 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
-import java.util.Map;
-import java.util.Objects;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Maps;
+import com.qcadoo.mes.orders.OrderTechnologicalProcessService;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
-public class OrderTechnologicalProcessDetailsListeners {
+public class OrderTechnologicalProcessesSingleOrderListListeners {
 
-    public void divideOrderTechnologicalProcess(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent orderTechnologicalProcessForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+    @Autowired
+    private OrderTechnologicalProcessService orderTechnologicalProcessService;
 
-        Long orderTechnologicalProcessId = orderTechnologicalProcessForm.getEntityId();
+    public void generateOrderTechnologicalProcesses(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        if (Objects.isNull(orderTechnologicalProcessId)) {
-            return;
+        Long orderId = orderForm.getEntityId();
+
+        Entity order = orderForm.getEntity().getDataDefinition().get(orderId);
+
+        boolean isCreated = orderTechnologicalProcessService.generateOrderTechnologicalProcesses(order);
+
+        if (isCreated) {
+            view.addMessage("orders.orderTechnologicalProcessesGeneration.success", ComponentState.MessageType.SUCCESS);
+        } else {
+            view.addMessage("orders.orderTechnologicalProcessesGeneration.error.orderHasTechnologicalProcesses",
+                    ComponentState.MessageType.INFO);
         }
-
-        Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("form.id", orderTechnologicalProcessId);
-        parameters.put("form.viewName", "orderTechnologicalProcessesList");
-
-        String url = "/page/orders/divideOrderTechnologicalProcess.html";
-        view.redirectTo(url, false, true, parameters);
     }
 
 }

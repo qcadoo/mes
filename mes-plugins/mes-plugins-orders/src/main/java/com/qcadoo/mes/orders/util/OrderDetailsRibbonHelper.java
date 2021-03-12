@@ -118,7 +118,7 @@ public class OrderDetailsRibbonHelper {
         ribbonItem.requestUpdate(true);
     }
 
-    private Entity getOrderEntity(final ViewDefinitionState view) {
+    public Entity getOrderEntity(final ViewDefinitionState view) {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         if (Objects.isNull(orderForm)) {
@@ -134,7 +134,7 @@ public class OrderDetailsRibbonHelper {
         return orderService.getOrder(orderId);
     }
 
-    private RibbonActionItem getRibbonItem(final ViewDefinitionState view, final String ribbonGroupName,
+    public RibbonActionItem getRibbonItem(final ViewDefinitionState view, final String ribbonGroupName,
             final String ribbonItemName) {
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         Ribbon ribbon = window.getRibbon();

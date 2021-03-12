@@ -27,7 +27,7 @@
 <view defaultAuthorizationRole="ROLE_PLANNING" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-      name="orderTechnologicalProcessDetails" modelName="orderTechnologicalProcess">
+      name="orderTechnologicalProcessSingleOrderDetails" modelName="orderTechnologicalProcess">
 
     <component type="window" name="window" reference="window">
 
@@ -157,14 +157,14 @@
                 <option type="expression" value="#number"/>
 
                 <listener event="divideOrderTechnologicalProcess" method="divideOrderTechnologicalProcess"
-                          class="com.qcadoo.mes.orders.listeners.OrderTechnologicalProcessDetailsListeners"/>
+                          class="com.qcadoo.mes.orders.listeners.OrderTechnologicalProcessSingleOrderDetailsListeners"/>
             </component>
         </windowTab>
 
     </component>
 
     <hooks>
-        <beforeRender class="com.qcadoo.mes.orders.hooks.OrderTechnologicalProcessDetailsHooks"
+        <beforeRender class="com.qcadoo.mes.orders.hooks.OrderTechnologicalProcessSingleOrderDetailsHooks"
                       method="onBeforeRender"/>
     </hooks>
 

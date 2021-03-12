@@ -35,21 +35,22 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
-public class OrderTechnologicalProcessesListListeners {
+public class OrderTechnologicalProcessSingleOrderDetailsListeners {
 
-    public void goBackToOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+    public void divideOrderTechnologicalProcess(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent orderTechnologicalProcessForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        Long orderId = orderForm.getEntityId();
+        Long orderTechnologicalProcessId = orderTechnologicalProcessForm.getEntityId();
 
-        if (Objects.isNull(orderId)) {
+        if (Objects.isNull(orderTechnologicalProcessId)) {
             return;
         }
 
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("form.id", orderId);
+        parameters.put("form.id", orderTechnologicalProcessId);
+        parameters.put("form.viewName", "orderTechnologicalProcessesSingleOrderList");
 
-        String url = "/page/orders/orderDetails.html";
+        String url = "/page/orders/divideOrderTechnologicalProcess.html";
         view.redirectTo(url, false, true, parameters);
     }
 

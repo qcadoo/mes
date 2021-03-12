@@ -27,14 +27,33 @@
 <view defaultAuthorizationRole="ROLE_PLANNING" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-      name="orderTechnologicalProcessesList" modelName="orderTechnologicalProcessDto" menuAccessible="true">
+      name="orderTechnologicalProcessesSingleOrderList" modelName="order">
 
     <component type="window" name="window" reference="window">
         <ribbon>
             <template name="standardGridTemplate" includeItems="actions.refresh,genericExport.csv,genericExport.pdf"/>
+
+            <group name="orderTechnologicalProcesses">
+                <bigButton name="generateOrderTechnologicalProcesses" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
+					        this.addOnChangeListener({
+                                onClick: function() {
+                                    if(window.canClose()) {
+                                        #{grid}.performEvent('generateOrderTechnologicalProcesses', []);
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
-        <component type="grid" name="orderTechnologicalProcesses" reference="grid">
+        <component type="form" name="order" reference="form"/>
+
+        <component type="grid" name="orderTechnologicalProcesses" reference="grid" source="#{form}.orderTechnologicalProcessesDto"
+                   model="orderTechnologicalProcessDto" useDto="true">
             <option type="column" name="number" fields="number" link="true"/>
             <option type="column" name="orderPackNumber" fields="orderPackNumber"/>
             <option type="column" name="orderNumber" fields="orderNumber"/>
@@ -50,7 +69,7 @@
             <option type="column" name="date" fields="date"/>
             <option type="column" name="wastesQuantity" fields="wastesQuantity"/>
 
-            <option type="correspondingView" value="orders/orderTechnologicalProcessDetails"/>
+            <option type="correspondingView" value="orders/orderTechnologicalProcessSingleOrderDetails"/>
             <option type="correspondingComponent" value="form"/>
 
             <option type="order" column="number" direction="desc"/>
@@ -62,10 +81,18 @@
 
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
+
+            <listener event="generateOrderTechnologicalProcesses" method="generateOrderTechnologicalProcesses"
+                      class="com.qcadoo.mes.orders.listeners.OrderTechnologicalProcessesSingleOrderListListeners"/>
         </component>
 
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
     </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.orders.hooks.OrderTechnologicalProcessesSingleOrderListHooks"
+                      method="onBeforeRender"/>
+    </hooks>
 
 </view>
