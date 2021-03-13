@@ -37,6 +37,7 @@ import com.qcadoo.mes.orders.constants.OrderTechnologicalProcessPartFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.DictionaryService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -52,6 +53,9 @@ public class DivideOrderTechnologicalProcessHooks {
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private DictionaryService dictionaryService;
 
     public final void onBeforeRender(final ViewDefinitionState view) {
         updateAwesomeDynamicList(view);
@@ -77,20 +81,42 @@ public class DivideOrderTechnologicalProcessHooks {
 
             BigDecimal half = new BigDecimal(2);
 
-            BigDecimal quotient = quantity.divide(half, numberService.getMathContext()).setScale(0, RoundingMode.FLOOR);;
+            BigDecimal quantity1;
+            BigDecimal quantity2;
 
-            if (BigDecimal.ZERO.compareTo(quantity.remainder(half, numberService.getMathContext())) == 0) {
-                orderTechnologicalProcessParts.add(createOrderTechnologicalProcessPart("1", quotient, productUnit));
-                orderTechnologicalProcessParts.add(createOrderTechnologicalProcessPart("2", quotient, productUnit));
+            if (dictionaryService.checkIfUnitIsInteger(productUnit)) {
+                if (isInteger(quantity)) {
+                    BigDecimal quotient = quantity.divide(half, numberService.getMathContext()).setScale(0, RoundingMode.FLOOR);
+
+                    if (BigDecimal.ZERO.compareTo(quantity.remainder(half, numberService.getMathContext())) == 0) {
+                        quantity1 = quotient;
+                        quantity2 = quotient;
+                    } else {
+                        BigDecimal difference = quantity.subtract(quotient, numberService.getMathContext());
+
+                        quantity1 = quotient;
+                        quantity2 = difference;
+                    }
+                } else {
+                    quantity1 = null;
+                    quantity2 = null;
+                }
             } else {
-                BigDecimal difference = quantity.subtract(quotient, numberService.getMathContext());
+                BigDecimal quotient = quantity.divide(half, numberService.getMathContext());
 
-                orderTechnologicalProcessParts.add(createOrderTechnologicalProcessPart("1", quotient, productUnit));
-                orderTechnologicalProcessParts.add(createOrderTechnologicalProcessPart("2", difference, productUnit));
+                quantity1 = quotient;
+                quantity2 = quotient;
             }
+
+            orderTechnologicalProcessParts.add(createOrderTechnologicalProcessPart("1", quantity1, productUnit));
+            orderTechnologicalProcessParts.add(createOrderTechnologicalProcessPart("2", quantity2, productUnit));
 
             orderTechnologicalProcessPartsADL.setFieldValue(orderTechnologicalProcessParts);
         }
+    }
+
+    private boolean isInteger(final BigDecimal quantity) {
+        return (quantity.signum() == 0) || (quantity.scale() <= 0) || (quantity.stripTrailingZeros().scale() <= 0);
     }
 
     private Entity createOrderTechnologicalProcessPart(final String number, final BigDecimal quantity, final String unit) {
