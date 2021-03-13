@@ -1,6 +1,8 @@
 package com.qcadoo.mes.materialRequirements.print;
 
 import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Objects;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -9,21 +11,21 @@ import com.qcadoo.model.api.Entity;
 
 public class MaterialRequirementEntry {
 
-    private Long id;
+    public Long id;
 
     private String number;
 
     private String name;
 
-    private BigDecimal plannedQuantity;
+    public BigDecimal plannedQuantity;
 
     private String unit;
 
-    private Long warehouseId;
+    public Long warehouseId;
 
     private String warehouseNumber;
 
-    private Long orderStartDate;
+    public Date orderStartDate;
 
     private Entity product;
 
@@ -85,12 +87,16 @@ public class MaterialRequirementEntry {
         this.warehouseNumber = warehouseNumber;
     }
 
-    public Long getOrderStartDate() {
+    public Date getOrderStartDate() {
         return orderStartDate;
     }
 
-    public void setOrderStartDate(final Long orderStartDate) {
-        this.orderStartDate = orderStartDate;
+    public void setOrderStartDate(final Date orderStartDate) {
+        if (Objects.nonNull(orderStartDate)) {
+            this.orderStartDate = new Date(orderStartDate.getTime());
+        } else {
+            this.orderStartDate = null;
+        }
     }
 
     public Entity getProduct() {

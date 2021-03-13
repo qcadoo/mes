@@ -107,7 +107,7 @@ public class MaterialRequirementDataService {
                     .getDateField(OrderFields.START_DATE))) {
                 materialRequirementEntry.setOrderStartDate(
                         new DateTime(productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER)
-                                .getDateField(OrderFields.START_DATE)).withTimeAtStartOfDay().toDate().getTime());
+                                .getDateField(OrderFields.START_DATE)).withTimeAtStartOfDay().toDate());
             } else {
                 materialRequirementEntry.setOrderStartDate(null);
             }
@@ -126,7 +126,7 @@ public class MaterialRequirementDataService {
         return materialRequirementEntry;
     }
 
-    public Map<Long, Map<Long, BigDecimal>> getQuantitiesInStock(final List<MaterialRequirementEntry> entries) {
+    public Map<Long, Map<Long, BigDecimal>> getQuantitiesInStock(final List<? extends MaterialRequirementEntry> entries) {
         Map<Long, Entity> warehouses = Maps.newHashMap();
         Map<Long, List<Entity>> warehouseProducts = Maps.newHashMap();
 

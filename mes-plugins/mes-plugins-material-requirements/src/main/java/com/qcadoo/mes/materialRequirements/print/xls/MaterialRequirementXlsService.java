@@ -177,7 +177,7 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
         }
 
         String actualWarehouse = "";
-        Long actualDate = 0L;
+        Date actualDate = null;
 
         int column = 0;
         for (WarehouseDateKey key : keys) {
@@ -206,13 +206,18 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
                 }
 
                 if (includeStartDateOrder) {
-                    if (!actualDate.equals(key.getDate()) || fillDateIfWarehouseChanged) {
-                        if (key.getDate() == 0L) {
+                    Date date = key.getDate();
+
+                    if (!actualDate.equals(date) || fillDateIfWarehouseChanged) {
+                        if (Objects.isNull(date)) {
+                            actualDate = null;
+
                             row.createCell(column).setCellValue("");
                         } else {
-                            row.createCell(column).setCellValue(DateUtils.toDateString(new Date(key.getDate())));
+                            actualDate = new Date(date.getTime());
+
+                            row.createCell(column).setCellValue(DateUtils.toDateString(actualDate));
                         }
-                        actualDate = key.getDate();
                     } else {
                         row.createCell(column).setCellValue("");
                     }

@@ -229,7 +229,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         }
 
         String actualWarehouse = "";
-        Long actualDate = 0L;
+        Date actualDate = null;
 
         int keyIndex = 0;
         for (WarehouseDateKey key : keys) {
@@ -268,16 +268,20 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
                 }
 
                 if (includeStartDateOrder) {
-                    if (!actualDate.equals(key.getDate()) || fillDateIfWarehouseChanged) {
-                        if (key.getDate() == 0L) {
+                    Date date = key.getDate();
+
+                    if (!actualDate.equals(date) || fillDateIfWarehouseChanged) {
+                        if (Objects.isNull(date)) {
+                            actualDate = null;
+
                             table.getDefaultCell().enableBorderSide(PdfCell.TOP);
                             table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
                         } else {
+                            actualDate = new Date(date.getTime());
+
                             table.getDefaultCell().enableBorderSide(PdfCell.TOP);
-                            table.addCell(new Phrase(DateUtils.toDateString(new Date(key.getDate())),
-                                    FontUtils.getDejavuRegular7Dark()));
+                            table.addCell(new Phrase(DateUtils.toDateString(actualDate), FontUtils.getDejavuRegular7Dark()));
                         }
-                        actualDate = key.getDate();
                     } else {
                         table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
                     }
