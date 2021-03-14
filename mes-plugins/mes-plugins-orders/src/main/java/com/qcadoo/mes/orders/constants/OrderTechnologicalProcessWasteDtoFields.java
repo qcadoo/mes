@@ -23,15 +23,21 @@
  */
 package com.qcadoo.mes.orders.constants;
 
-public final class OrderTechnologicalProcessDtoFields {
+public final class OrderTechnologicalProcessWasteDtoFields {
 
-    private OrderTechnologicalProcessDtoFields() {
+    private OrderTechnologicalProcessWasteDtoFields() {
 
     }
 
-    public static final String ORDER = "order";
-
     public static final String NUMBER = "number";
+
+    public static final String DATE = "date";
+
+    public static final String WORKER = "worker";
+
+    public static final String WASTES_QUANTITY = "wastesQuantity";
+
+    public static final String CAUSE_OF_WASTE = "causeOfWaste";
 
     public static final String ORDER_PACK_ID = "orderPackId";
 
@@ -45,28 +51,16 @@ public final class OrderTechnologicalProcessDtoFields {
 
     public static final String PRODUCT_NUMBER = "productNumber";
 
-    public static final String MODEL_NAME = "modelName";
-
-    public static final String SIZE_NUMBER = "sizeNumber";
-
-    public static final String OPERATION_ID = "operationId";
-
-    public static final String OPERATION_NUMBER = "operationNumber";
-
-    public static final String WORKSTATION_TYPE_NUMBER = "workstationTypeNumber";
-
-    public static final String WORKSTATION_NUMBER = "workstationNumber";
-
     public static final String TECHNOLOGICAL_PROCESS_ID = "technologicalProcessId";
 
     public static final String TECHNOLOGICAL_PROCESS_NAME = "technologicalProcessName";
 
-    public static final String QUANTITY = "quantity";
+    public static final String ORDER_TECHNOLOGICAL_PROCESS_ID = "orderTechnologicalProcessId";
 
-    public static final String DATE = "date";
+    public static final String ORDER_TECHNOLOGY_PROCESS_NUMBER = "orderTechnologyProcessNumber";
 
-    public static final String WORKER = "worker";
+    public static final String ORDER_TECHNOLOGICAL_PROCESS_DATE = "orderTechnologicalProcessDate";
 
-    public static final String WASTES_QUANTITY = "wastesQuantity";
+    public static final String ORDER_TECHNOLOGICAL_PROCESS_WORKER = "orderTechnologicalProcessWorker";
 
 }

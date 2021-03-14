@@ -23,13 +23,15 @@
  */
 package com.qcadoo.mes.orders.constants;
 
-public final class OrderTechnologicalProcessFields {
+public final class OrderTechnologicalProcessWasteFields {
 
-    private OrderTechnologicalProcessFields() {
+    private OrderTechnologicalProcessWasteFields() {
 
     }
 
     public static final String NUMBER = "number";
+
+    public static final String ORDER_TECHNOLOGICAL_PROCESS = "orderTechnologicalProcess";
 
     public static final String ORDER_PACK = "orderPack";
 
@@ -37,20 +39,16 @@ public final class OrderTechnologicalProcessFields {
 
     public static final String PRODUCT = "product";
 
-    public static final String OPERATION = "operation";
-
     public static final String TECHNOLOGICAL_PROCESS = "technologicalProcess";
 
-    public static final String QUANTITY = "quantity";
+    public static final String WASTE_QUANTITY = "wasteQuantity";
+
+    public static final String CAUSE_OF_WASTE = "causeOfWaste";
 
     public static final String DATE = "date";
 
     public static final String WORKER = "worker";
 
-    public static final String WASTES_QUANTITY = "wastesQuantity";
-
-    public static final String ORDER_TECHNOLOGICAL_PROCESS_PARTS = "orderTechnologicalProcessParts";
-
-    public static final String ORDER_TECHNOLOGICAL_PROCESS_WASTES = "orderTechnologicalProcessWastes";
+    public static final String DESCRIPTION = "description";
 
 }

@@ -2,7 +2,7 @@ package com.qcadoo.mes.orders.hooks;
 
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.orders.criteriaModifiers.ScheduleOrderCriteriaModifier;
+import com.qcadoo.mes.orders.criteriaModifiers.ScheduleOrderCriteriaModifiers;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
@@ -25,7 +25,8 @@ public class ScheduleDetailsHooks {
         LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(L_ORDERS_LOOKUP);
 
         FilterValueHolder valueHolder = orderLookup.getFilterValue();
-        valueHolder.put(ScheduleOrderCriteriaModifier.SCHEDULE_PARAMETER, scheduleId);
+        valueHolder.put(ScheduleOrderCriteriaModifiers.SCHEDULE_PARAMETER, scheduleId);
         orderLookup.setFilterValue(valueHolder);
     }
+
 }

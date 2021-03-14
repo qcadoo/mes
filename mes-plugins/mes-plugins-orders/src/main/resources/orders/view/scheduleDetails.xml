@@ -233,7 +233,7 @@
 
                 <option type="multiselect" value="true"/>
                 <criteriaModifier
-                        class="com.qcadoo.mes.orders.criteriaModifiers.ScheduleOrderCriteriaModifier"
+                        class="com.qcadoo.mes.orders.criteriaModifiers.ScheduleOrderCriteriaModifiers"
                         method="filterByState"/>
             </component>
 

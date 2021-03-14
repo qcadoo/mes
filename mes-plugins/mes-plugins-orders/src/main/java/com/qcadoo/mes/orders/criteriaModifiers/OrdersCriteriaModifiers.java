@@ -27,4 +27,5 @@ public class OrdersCriteriaModifiers {
                 Lists.newArrayList(OrderState.ACCEPTED.getStringValue(), OrderState.PENDING.getStringValue(),
                         OrderState.IN_PROGRESS.getStringValue(), OrderState.INTERRUPTED.getStringValue())));
     }
+
 }

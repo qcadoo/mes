@@ -38,6 +38,7 @@
         </decimal>
 
         <hasMany name="orderTechnologicalProcesses" model="orderTechnologicalProcess" joinField="orderPack" cascade="delete"/>
+        <hasMany name="orderTechnologicalProcessWastes" model="orderTechnologicalProcessWaste" joinField="orderPack" cascade="delete"/>
     </fields>
 
     <hooks>

@@ -24,35 +24,34 @@
     ***************************************************************************
 
 -->
-<model name="orderTechnologicalProcessDto" auditable="false" deletable="false" insertable="false" updatable="false"
+<model name="orderTechnologicalProcessWaste"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
     <fields>
-        <belongsTo name="order" model="order" persistent="false"/>
-
-        <string name="number"/>
-        <integer name="orderPackId"/>
-        <string name="orderPackNumber"/>
-        <integer name="orderId"/>
-        <string name="orderNumber"/>
-        <integer name="productId"/>
-        <string name="productNumber"/>
-        <string name="modelName"/>
-        <string name="sizeNumber"/>
-        <integer name="operationId"/>
-        <string name="operationNumber"/>
-        <string name="workstationTypeNumber"/>
-        <string name="workstationNumber"/>
-        <integer name="technologicalProcessId"/>
-        <string name="technologicalProcessName"/>
-        <decimal name="quantity"/>
-        <datetime name="date"/>
-        <string name="worker"/>
-        <decimal name="wastesQuantity"/>
+        <string name="number" unique="true"/>
+        <belongsTo name="orderTechnologicalProcess" model="orderTechnologicalProcess" required="true"/>
+        <belongsTo name="orderPack" model="orderPack"/>
+        <belongsTo name="order" model="order"/>
+        <belongsTo name="product" model="product" plugin="basic"/>
+        <belongsTo name="technologicalProcess" model="technologicalProcess" plugin="technologies"/>
+        <decimal name="wasteQuantity" required="true">
+            <validatesRange from="0" exclusively="true"/>
+            <validatesUnscaledValue max="7"/>
+            <validatesScale max="5"/>
+        </decimal>
+        <dictionary name="causeOfWaste" dictionary="causesOfWastes"/>
+        <datetime name="date" required="true"/>
+        <belongsTo name="worker" model="staff" plugin="basic"/>
+        <string name="description">
+            <validatesLength max="2048"/>
+        </string>
     </fields>
 
-    <hooks/>
+    <hooks>
+        <onSave class="com.qcadoo.mes.orders.hooks.OrderTechnologicalProcessWasteHooks"
+                method="onSave"/>
+    </hooks>
 
-    <masterModel plugin="orders" model="orderTechnologicalProcess" />
+    <identifier expression="#number"/>
 </model>

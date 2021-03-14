@@ -33,4 +33,5 @@ public class ProductionLineCriteriaModifiersO {
     public void filterProductionLines(final SearchCriteriaBuilder scb) {
 
     }
+
 }

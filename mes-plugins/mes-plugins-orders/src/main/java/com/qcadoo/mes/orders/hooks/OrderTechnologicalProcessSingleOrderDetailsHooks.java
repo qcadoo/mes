@@ -52,8 +52,8 @@ public class OrderTechnologicalProcessSingleOrderDetailsHooks {
             orderTechnologicalProcessService.updateRibbonState(view, orderTechnologicalProcess);
             orderTechnologicalProcessService.setFormEnabled(view, orderTechnologicalProcessForm, orderTechnologicalProcess);
 
-            orderTechnologicalProcessService.fillUnit(view, orderTechnologicalProcess);
             orderTechnologicalProcessService.fillTechnologicalProcessName(view, orderTechnologicalProcess);
+            orderTechnologicalProcessService.fillUnit(view, orderTechnologicalProcess);
         }
     }
 

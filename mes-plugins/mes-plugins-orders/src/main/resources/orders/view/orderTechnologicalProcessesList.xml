@@ -32,6 +32,20 @@
     <component type="window" name="window" reference="window">
         <ribbon>
             <template name="standardGridTemplate" includeItems="actions.refresh,genericExport.csv,genericExport.pdf"/>
+
+            <group name="orderTechnologicalProcessWaste">
+                <bigButton name="createOrderTechnologicalProcessWaste" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
+					        this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent('createOrderTechnologicalProcessWaste', []);
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
+            </group>
         </ribbon>
 
         <component type="grid" name="orderTechnologicalProcesses" reference="grid">
@@ -46,26 +60,37 @@
             <option type="column" name="workstationNumber" fields="workstationNumber"/>
             <option type="column" name="technologicalProcessName" fields="technologicalProcessName"/>
             <option type="column" name="quantity" fields="quantity"/>
-            <option type="column" name="worker" fields="worker"/>
             <option type="column" name="date" fields="date"/>
+            <option type="column" name="worker" fields="worker"/>
             <option type="column" name="wastesQuantity" fields="wastesQuantity"/>
 
-            <option type="correspondingView" value="orders/orderTechnologicalProcessDetails"/>
-            <option type="correspondingComponent" value="form"/>
+            <option type="footerRow" value="true"/>
+            <option type="columnsToSummary" value="quantity,wastesQuantity"/>
 
             <option type="order" column="number" direction="desc"/>
 
             <option type="searchable"
-                    value="number,orderPackNumber,orderNumber,productNumber,modelName,sizeNumber,operationNumber,workstationTypeNumber,workstationNumber,technologicalProcessName,quantity,worker,date,wastesQuantity"/>
+                    value="number,orderPackNumber,orderNumber,productNumber,modelName,sizeNumber,operationNumber,workstationTypeNumber,workstationNumber,technologicalProcessName,quantity,date,worker,wastesQuantity"/>
             <option type="orderable"
-                    value="number,orderPackNumber,orderNumber,productNumber,modelName,sizeNumber,operationNumber,workstationTypeNumber,workstationNumber,technologicalProcessName,quantity,worker,date,wastesQuantity"/>
+                    value="number,orderPackNumber,orderNumber,productNumber,modelName,sizeNumber,operationNumber,workstationTypeNumber,workstationNumber,technologicalProcessName,quantity,date,worker,wastesQuantity"/>
+
+            <option type="correspondingView" value="orders/orderTechnologicalProcessDetails"/>
+            <option type="correspondingComponent" value="form"/>
 
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
+
+            <listener event="createOrderTechnologicalProcessWaste" method="createOrderTechnologicalProcessWaste"
+                      class="com.qcadoo.mes.orders.listeners.OrderTechnologicalProcessesListListeners"/>
         </component>
 
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
     </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.orders.hooks.OrderTechnologicalProcessesListHooks"
+                      method="onBeforeRender"/>
+    </hooks>
 
 </view>
