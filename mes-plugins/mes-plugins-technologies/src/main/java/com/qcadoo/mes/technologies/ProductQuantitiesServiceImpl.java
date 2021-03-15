@@ -155,13 +155,19 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
     }
 
     @Override
-    public Map<OperationProductComponentHolder, BigDecimal> getNeededProductQuantitiesByOPC(Entity technology,
-            BigDecimal givenQuantity, MrpAlgorithm mrpAlgorithm) {
+    public Map<OperationProductComponentHolder, BigDecimal> getNeededProductQuantitiesByOPC(final Entity technology,
+            final BigDecimal givenQuantity, final MrpAlgorithm mrpAlgorithm) {
+        return getNeededProductQuantitiesByOPC(technology, null, givenQuantity, mrpAlgorithm);
+    }
+
+    @Override
+    public Map<OperationProductComponentHolder, BigDecimal> getNeededProductQuantitiesByOPC(final Entity technology,
+            final Entity orderedProduct, final BigDecimal givenQuantity, final MrpAlgorithm mrpAlgorithm) {
         Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
         Set<OperationProductComponentHolder> nonComponents = Sets.newHashSet();
 
         OperationProductComponentWithQuantityContainer productComponentWithQuantities = getProductComponentWithQuantitiesForTechnology(
-                technology, null, givenQuantity, operationRuns, nonComponents);
+                technology, orderedProduct, givenQuantity, operationRuns, nonComponents);
 
         OperationProductComponentWithQuantityContainer allWithSameEntityType = productComponentWithQuantities
                 .getAllWithSameEntityType(TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT);

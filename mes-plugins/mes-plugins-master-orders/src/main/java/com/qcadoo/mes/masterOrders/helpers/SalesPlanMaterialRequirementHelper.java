@@ -78,12 +78,15 @@ public class SalesPlanMaterialRequirementHelper {
         List<Entity> salesPlanProducts = salesPlan.getHasManyField(SalesPlanFields.PRODUCTS);
 
         for (Entity salesPlanProduct : salesPlanProducts) {
-            Entity technology = getTechnology(salesPlanProduct);
+            Entity salesPlanProductTechnology = salesPlanProduct.getBelongsToField(SalesPlanProductFields.TECHNOLOGY);
+            Entity salesPlanProductProduct = salesPlanProduct.getBelongsToField(SalesPlanProductFields.PRODUCT);
             BigDecimal plannedQuantity = salesPlanProduct.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY);
 
+            Entity technology = getTechnology(salesPlanProductTechnology, salesPlanProductProduct);
+
             if (Objects.nonNull(technology)) {
-                Map<OperationProductComponentHolder, BigDecimal> neededQuantities = productQuantitiesService
-                        .getNeededProductQuantitiesByOPC(technology, plannedQuantity, MrpAlgorithm.ONLY_COMPONENTS);
+                Map<OperationProductComponentHolder, BigDecimal> neededQuantities = getNeededProductQuantities(technology,
+                        salesPlanProductProduct, plannedQuantity);
 
                 for (Map.Entry<OperationProductComponentHolder, BigDecimal> neededProductQuantity : neededQuantities.entrySet()) {
                     Long productId = neededProductQuantity.getKey().getProductId();
@@ -107,27 +110,37 @@ public class SalesPlanMaterialRequirementHelper {
         }
     }
 
-    private Entity getTechnology(final Entity salesPlanProduct) {
-        Entity technology = salesPlanProduct.getBelongsToField(SalesPlanProductFields.TECHNOLOGY);
-
+    private Entity getTechnology(final Entity technology, final Entity product) {
         if (Objects.isNull(technology)) {
-            Entity product = salesPlanProduct.getBelongsToField(SalesPlanProductFields.PRODUCT);
+            String entityType = product.getStringField(ProductFields.ENTITY_TYPE);
 
-            if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()
-                    .equals(product.getStringField(ProductFields.ENTITY_TYPE))) {
+            if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(entityType)) {
                 Entity parent = product.getBelongsToField(ProductFields.PARENT);
 
                 if (Objects.nonNull(parent)) {
-                    technology = productStructureTreeService.findTechnologyForProduct(parent);
+                    return productStructureTreeService.findTechnologyForProduct(parent);
                 } else {
-                    technology = productStructureTreeService.findTechnologyForProduct(product);
+                    return productStructureTreeService.findTechnologyForProduct(product);
                 }
             } else {
-                technology = productStructureTreeService.findTechnologyForProduct(product);
+                return productStructureTreeService.findTechnologyForProduct(product);
             }
         }
 
         return technology;
+    }
+
+    private Map<OperationProductComponentHolder, BigDecimal> getNeededProductQuantities(final Entity technology,
+            final Entity product, final BigDecimal plannedQuantity) {
+        String entityType = product.getStringField(ProductFields.ENTITY_TYPE);
+
+        if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(entityType)) {
+            return productQuantitiesService.getNeededProductQuantitiesByOPC(technology, product, plannedQuantity,
+                    MrpAlgorithm.ONLY_COMPONENTS);
+        } else {
+            return productQuantitiesService.getNeededProductQuantitiesByOPC(technology, plannedQuantity,
+                    MrpAlgorithm.ONLY_COMPONENTS);
+        }
     }
 
     private List<Entity> getProductBySizeGroups(final Long operationProductComponentId) {
@@ -278,7 +291,8 @@ public class SalesPlanMaterialRequirementHelper {
         BigDecimal currentStock = BigDecimal.ZERO;
 
         for (Map.Entry<Long, Map<Long, BigDecimal>> resourceStock : resourceStocks.entrySet()) {
-            currentStock = currentStock.add(BigDecimalUtils.convertNullToZero(resourceStock.getValue().get(productId)), numberService.getMathContext());
+            currentStock = currentStock.add(BigDecimalUtils.convertNullToZero(resourceStock.getValue().get(productId)),
+                    numberService.getMathContext());
         }
 
         return currentStock;
