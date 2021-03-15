@@ -7,7 +7,7 @@ QCD.translate = function (key) {
 	return msg === undefined ? '[' + key + ']' : msg;
 };
 
-thatObject.generateOrdersGroup = function (eventPerformer, ribbonItemName, entityId) {
+thatObject.generateOrders = function (eventPerformer, ribbonItemName, entityId) {
 	QCD.components.elements.utils.LoadingIndicator.blockElement($("#window_windowComponents"));
 	const queryString = window.location.search;
 	const urlParams = new URLSearchParams(queryString);
@@ -79,7 +79,7 @@ thatObject.generateOrdersGroup = function (eventPerformer, ribbonItemName, entit
 	request.positions = positions;
 
 	$.ajax({
-		url: "../../rest/ordersGroups/generateOrdersGroupForSalePlan",
+		url: "../../rest/masterOrders/generateOrdersSalePlan",
 		type: "POST",
 		data: JSON.stringify(request),
 		contentType: "application/json",
@@ -87,15 +87,20 @@ thatObject.generateOrdersGroup = function (eventPerformer, ribbonItemName, entit
 		success: function (data) {
 
 			if (data.status == 'OK') {
-							mainController.showMessage({
-            					type: "info",
-            					content: data.message
-            				});
+                data.messages.forEach(function(entry) {
+                    mainController.showMessage({
+                        type: "info",
+                        content: entry
+                    });
+                });
+
 				mainController.goBack(true);
 			} else {
-				mainController.showMessage({
-					type: "error",
-					content: data.message
+			    data.errorMessages.forEach(function(entry) {
+				    mainController.showMessage({
+					    type: "error",
+					    content: entry
+				    });
 				});
 			}
 
@@ -169,7 +174,7 @@ var mutationObserver = new MutationObserver(function (mutations) {
 
 	});
 });
-const productsGroupNode = document.getElementById('window.mainTab.salesPlanOrdersGroupForm.gridLayout.salesPlanOrdersGroupEntryHelpers');
+const productsGroupNode = document.getElementById('window.mainTab.salesPlanOrdersForm.gridLayout.salesPlanOrdersEntryHelpers');
 
 mutationObserver.observe(productsGroupNode, {
 	attributes: true,
