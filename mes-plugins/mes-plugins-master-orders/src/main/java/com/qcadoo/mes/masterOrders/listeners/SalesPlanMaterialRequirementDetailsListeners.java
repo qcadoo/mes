@@ -153,17 +153,19 @@ public class SalesPlanMaterialRequirementDetailsListeners {
         Optional<Entity> mayBeSupplier = getSupplier(salesPlanMaterialRequirementProducts);
         List<Entity> orderedProducts = createOrderedProducts(salesPlanMaterialRequirementProducts);
 
-        delivery.setField(DeliveryFields.NUMBER,
-                numberGeneratorService.generateNumber(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY));
+        if (orderedProducts.size() > 0) {
+            delivery.setField(DeliveryFields.NUMBER, numberGeneratorService.generateNumber(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                    DeliveriesConstants.MODEL_DELIVERY));
 
-        if (mayBeSupplier.isPresent()) {
-            delivery.setField(DeliveryFields.SUPPLIER, mayBeSupplier.get());
+            if (mayBeSupplier.isPresent()) {
+                delivery.setField(DeliveryFields.SUPPLIER, mayBeSupplier.get());
+            }
+
+            delivery.setField(DeliveryFields.ORDERED_PRODUCTS, orderedProducts);
+            delivery.setField(DeliveryFields.EXTERNAL_SYNCHRONIZED, true);
+
+            delivery = delivery.getDataDefinition().save(delivery);
         }
-
-        delivery.setField(DeliveryFields.ORDERED_PRODUCTS, orderedProducts);
-        delivery.setField(DeliveryFields.EXTERNAL_SYNCHRONIZED, true);
-
-        delivery = delivery.getDataDefinition().save(delivery);
 
         return delivery;
     }
@@ -172,11 +174,15 @@ public class SalesPlanMaterialRequirementDetailsListeners {
         List<Entity> orderedProducts = Lists.newArrayList();
 
         salesPlanMaterialRequirementProducts.forEach(salesPlanMaterialRequirementProduct -> {
-            orderedProducts.add(createOrderedProduct(salesPlanMaterialRequirementProduct));
+            Entity orderedProduct = createOrderedProduct(salesPlanMaterialRequirementProduct);
 
-            salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.IS_DELIVERY_CREATED, true);
+            if (Objects.nonNull(orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT))) {
+                orderedProducts.add(orderedProduct);
 
-            salesPlanMaterialRequirementProduct.getDataDefinition().save(salesPlanMaterialRequirementProduct);
+                salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.IS_DELIVERY_CREATED, true);
+
+                salesPlanMaterialRequirementProduct.getDataDefinition().save(salesPlanMaterialRequirementProduct);
+            }
         });
 
         return orderedProducts;
@@ -184,28 +190,42 @@ public class SalesPlanMaterialRequirementDetailsListeners {
 
     private Entity createOrderedProduct(final Entity salesPlanMaterialRequirementProduct) {
         Entity product = salesPlanMaterialRequirementProduct.getBelongsToField(SalesPlanMaterialRequirementProductFields.PRODUCT);
+        BigDecimal quantity = BigDecimalUtils.convertNullToZero(
+                salesPlanMaterialRequirementProduct.getDecimalField(SalesPlanMaterialRequirementProductFields.QUANTITY));
+        BigDecimal currentStock = BigDecimalUtils.convertNullToZero(
+                salesPlanMaterialRequirementProduct.getDecimalField(SalesPlanMaterialRequirementProductFields.CURRENT_STOCK));
         BigDecimal neededQuantity = BigDecimalUtils.convertNullToZero(
                 salesPlanMaterialRequirementProduct.getDecimalField(SalesPlanMaterialRequirementProductFields.NEEDED_QUANTITY));
         BigDecimal minimumOrderQuantity = BigDecimalUtils.convertNullToZero(salesPlanMaterialRequirementProduct
                 .getDecimalField(SalesPlanMaterialRequirementProductFields.MINIMUM_ORDER_QUANTITY));
+
         BigDecimal orderedQuantity;
 
-        if (minimumOrderQuantity.compareTo(neededQuantity) > 0) {
-            orderedQuantity = minimumOrderQuantity;
+        if (BigDecimal.ZERO.compareTo(quantity) == 0) {
+            orderedQuantity = quantity;
         } else {
-            orderedQuantity = neededQuantity;
+            orderedQuantity = quantity.subtract(currentStock, numberService.getMathContext()).add(neededQuantity,
+                    numberService.getMathContext());
+
+            if (BigDecimal.ZERO.compareTo(orderedQuantity) < 0) {
+                if (orderedQuantity.compareTo(minimumOrderQuantity) < 0) {
+                    orderedQuantity = minimumOrderQuantity;
+                }
+            }
         }
-
-        BigDecimal conversion = getConversion(product);
-
-        BigDecimal additionalQuantity = orderedQuantity.multiply(conversion, numberService.getMathContext());
 
         Entity orderedProduct = deliveriesService.getOrderedProductDD().create();
 
-        orderedProduct.setField(OrderedProductFields.PRODUCT, product);
-        orderedProduct.setField(OrderedProductFields.ORDERED_QUANTITY, orderedQuantity);
-        orderedProduct.setField(OrderedProductFields.CONVERSION, conversion);
-        orderedProduct.setField(OrderedProductFields.ADDITIONAL_QUANTITY, additionalQuantity);
+        if (BigDecimal.ZERO.compareTo(orderedQuantity) <= 0) {
+            BigDecimal conversion = getConversion(product);
+
+            BigDecimal additionalQuantity = orderedQuantity.multiply(conversion, numberService.getMathContext());
+
+            orderedProduct.setField(OrderedProductFields.PRODUCT, product);
+            orderedProduct.setField(OrderedProductFields.ORDERED_QUANTITY, orderedQuantity);
+            orderedProduct.setField(OrderedProductFields.CONVERSION, conversion);
+            orderedProduct.setField(OrderedProductFields.ADDITIONAL_QUANTITY, additionalQuantity);
+        }
 
         return orderedProduct;
     }
