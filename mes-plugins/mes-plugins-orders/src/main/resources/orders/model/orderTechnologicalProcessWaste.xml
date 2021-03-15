@@ -51,6 +51,8 @@
     <hooks>
         <onSave class="com.qcadoo.mes.orders.hooks.OrderTechnologicalProcessWasteHooks"
                 method="onSave"/>
+        <validatesWith class="com.qcadoo.mes.orders.hooks.OrderTechnologicalProcessWasteHooks"
+                method="validatesWith"/>
     </hooks>
 
     <identifier expression="#number"/>
