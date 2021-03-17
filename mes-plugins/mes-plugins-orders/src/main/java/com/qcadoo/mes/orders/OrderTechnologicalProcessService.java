@@ -154,13 +154,11 @@ public class OrderTechnologicalProcessService {
                 .getItemByName(L_DIVIDE_ORDER_TECHNOLOGICAL_PROCESS);
 
         Entity order = orderTechnologicalProcess.getBelongsToField(OrderTechnologicalProcessFields.ORDER);
-        BigDecimal quantity = orderTechnologicalProcess.getDecimalField(OrderTechnologicalProcessFields.QUANTITY);
 
         boolean isSaved = Objects.nonNull(orderTechnologicalProcess.getId());
         boolean isOrderStateValid = !checkOrderState(order);
-        boolean isQuantityValid = (BigDecimal.ONE.compareTo(quantity) < 0);
 
-        divideOrderTechnologicalProcessActionItem.setEnabled(isSaved && isOrderStateValid && isQuantityValid);
+        divideOrderTechnologicalProcessActionItem.setEnabled(isSaved && isOrderStateValid);
         divideOrderTechnologicalProcessActionItem.requestUpdate(true);
     }
 

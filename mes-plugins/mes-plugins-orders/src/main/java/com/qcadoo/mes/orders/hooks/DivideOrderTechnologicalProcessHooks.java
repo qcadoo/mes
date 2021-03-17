@@ -123,7 +123,7 @@ public class DivideOrderTechnologicalProcessHooks {
         Entity orderTechnologicalProcessPart = getOrderTechnologicalProcessPartDD().create();
 
         orderTechnologicalProcessPart.setField(OrderTechnologicalProcessPartFields.NUMBER, number);
-        orderTechnologicalProcessPart.setField(OrderTechnologicalProcessPartFields.QUANTITY, quantity);
+        orderTechnologicalProcessPart.setField(OrderTechnologicalProcessPartFields.QUANTITY, numberService.formatWithMinimumFractionDigits(quantity, 0));
         orderTechnologicalProcessPart.setField(OrderTechnologicalProcessPartFields.UNIT, unit);
 
         return orderTechnologicalProcessPart;

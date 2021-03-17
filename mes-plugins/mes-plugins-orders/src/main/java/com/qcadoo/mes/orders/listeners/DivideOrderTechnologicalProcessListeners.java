@@ -166,7 +166,17 @@ public class DivideOrderTechnologicalProcessListeners {
 
                         isValid = false;
                     } else {
-                        quantitySum = quantitySum.add(quantityPart, numberService.getMathContext());
+                        int scale = quantityPart.scale();
+                        int max = NumberService.DEFAULT_MAX_FRACTION_DIGITS_IN_DECIMAL;
+
+                        if (scale > max) {
+                            quantityField.addMessage("qcadooView.validate.field.error.invalidScale.max",
+                                    ComponentState.MessageType.FAILURE, String.valueOf(max));
+
+                            return false;
+                        } else {
+                            quantitySum = quantitySum.add(quantityPart, numberService.getMathContext());
+                        }
                     }
                 }
             }
