@@ -48,13 +48,12 @@ public class DictionaryItemHooksO {
         if (colorService.checkIfDictionaryIsColorDictionary(dictionary)) {
             String description = dictionaryItem.getStringField(DictionaryItemFields.DESCRIPTION);
 
-            if (StringUtils.isNotEmpty(description)) {
-                if (description.contains("#") && !colorService.checkIfIsHexColor(description)) {
-                    dictionaryItem.addError(dictionaryItemDD.getField(DictionaryItemFields.DESCRIPTION),
-                            "qcadooModel.dictionaryItem.description.error.hexColorIsIncorrect");
+            if (StringUtils.isNotEmpty(description) && description.contains("#")
+                    && !colorService.checkIfIsHexColor(description)) {
+                dictionaryItem.addError(dictionaryItemDD.getField(DictionaryItemFields.DESCRIPTION),
+                        "qcadooModel.dictionaryItem.description.error.hexColorIsIncorrect");
 
-                    return false;
-                }
+                return false;
             }
         }
 
