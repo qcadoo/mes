@@ -61,7 +61,7 @@
 
                             <criteriaModifier
                                     class="com.qcadoo.mes.orders.criteriaModifiers.OrderTechnologicalProcessCriteriaModifiers"
-                                    method="filterByOrderState"/>
+                                    method="filterByDateWorkerAndOrderState"/>
 
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.view.api.listeners.RerenderListener"

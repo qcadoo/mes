@@ -24,16 +24,16 @@
 package com.qcadoo.mes.orders.hooks;
 
 import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.orders.OrderTechnologicalProcessService;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
@@ -46,11 +46,30 @@ public class OrderTechnologicalProcessesSingleOrderListHooks {
 
     private static final String L_GENERATE_ORDER_TECHNOLOGICAL_PROCESSES = "generateOrderTechnologicalProcesses";
 
+    private static final String L_DIVIDE_ORDER_TECHNOLOGICAL_PROCESS = "divideOrderTechnologicalProcess";
+
     @Autowired
     private OrderTechnologicalProcessService orderTechnologicalProcessService;
 
     public final void onBeforeRender(final ViewDefinitionState view) {
+        updateRibbonState(view);
+    }
+
+    private void updateRibbonState(final ViewDefinitionState view) {
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
+        RibbonGroup orderTechnologicalProcessesGroup = window.getRibbon().getGroupByName(L_ORDER_TECHNOLOGICAL_PROCESSES);
+        RibbonActionItem generateOrderTechnologicalProcessesActionItem = orderTechnologicalProcessesGroup
+                .getItemByName(L_GENERATE_ORDER_TECHNOLOGICAL_PROCESSES);
+        RibbonActionItem divideOrderTechnologicalProcessActionItem = orderTechnologicalProcessesGroup
+                .getItemByName(L_DIVIDE_ORDER_TECHNOLOGICAL_PROCESS);
+
         FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        GridComponent orderTechnologicalProcessesGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+
+        Set<Long> orderTechnologicalProcessesIds = orderTechnologicalProcessesGrid.getSelectedEntitiesIds();
+
+        boolean isOrderTechnologicalProcessSelected = orderTechnologicalProcessesIds.size() == 1;
+        boolean isOrderStateValid = false;
 
         Entity order = orderForm.getEntity();
         Long orderId = order.getId();
@@ -58,30 +77,13 @@ public class OrderTechnologicalProcessesSingleOrderListHooks {
         if (Objects.nonNull(orderId)) {
             order = order.getDataDefinition().get(orderId);
 
-            updateRibbonState(view, order);
-        }
-    }
-
-    private void updateRibbonState(final ViewDefinitionState view, final Entity order) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
-        RibbonGroup orderTechnologicalProcessesGroup = window.getRibbon().getGroupByName(L_ORDER_TECHNOLOGICAL_PROCESSES);
-        RibbonActionItem splitOrderTechnologicalProcessActionItem = orderTechnologicalProcessesGroup
-                .getItemByName(L_GENERATE_ORDER_TECHNOLOGICAL_PROCESSES);
-
-        boolean isOrderStateValid = !orderTechnologicalProcessService.checkOrderState(order);
-
-        splitOrderTechnologicalProcessActionItem.setEnabled(isOrderStateValid);
-        splitOrderTechnologicalProcessActionItem.requestUpdate(true);
-    }
-
-    private boolean checkOrderState(final Entity order) {
-        if (Objects.nonNull(order)) {
-            String state = order.getStringField(OrderFields.STATE);
-
-            return OrderStateStringValues.DECLINED.equals(state) || OrderStateStringValues.COMPLETED.equals(state)
-                    || OrderStateStringValues.ABANDONED.equals(state);
+            isOrderStateValid = !orderTechnologicalProcessService.checkOrderState(order);
         }
 
-        return false;
+        generateOrderTechnologicalProcessesActionItem.setEnabled(isOrderStateValid);
+        generateOrderTechnologicalProcessesActionItem.requestUpdate(true);
+        divideOrderTechnologicalProcessActionItem.setEnabled(isOrderTechnologicalProcessSelected && isOrderStateValid);
+        divideOrderTechnologicalProcessActionItem.requestUpdate(true);
     }
+
 }

@@ -35,14 +35,9 @@ import com.google.common.collect.Maps;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderTechnologicalProcessFields;
 import com.qcadoo.mes.orders.constants.OrderTechnologicalProcessWasteFields;
-import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchProjections;
-import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class OrderTechnologicalProcessWasteHooks {
@@ -104,40 +99,16 @@ public class OrderTechnologicalProcessWasteHooks {
         if (Objects.nonNull(orderTechnologicalProcess)) {
             BigDecimal quantity = orderTechnologicalProcess.getDecimalField(OrderTechnologicalProcessFields.QUANTITY);
 
-            BigDecimal wastesQuantity = getWastesQuantity(orderTechnologicalProcessWasteDD, orderTechnologicalProcess,
-                    orderTechnologicalProcessWaste.getId());
-
-            wastesQuantity = wastesQuantity.add(wasteQuantity, numberService.getMathContext());
-
-            if (wastesQuantity.compareTo(quantity) > 0) {
-                orderTechnologicalProcessWaste
-                        .addGlobalError("orders.orderTechnologicalProcessWaste.wasteQuantity.greaterThanQuantity");
+            if (wasteQuantity.compareTo(quantity) > 0) {
+                orderTechnologicalProcessWaste.addError(
+                        orderTechnologicalProcessWasteDD.getField(OrderTechnologicalProcessWasteFields.WASTE_QUANTITY),
+                        "orders.orderTechnologicalProcessWaste.wasteQuantity.greaterThanQuantity");
 
                 return false;
             }
         }
 
         return true;
-    }
-
-    private BigDecimal getWastesQuantity(final DataDefinition orderTechnologicalProcessWasteDD,
-            final Entity orderTechnologicalProcess, final Long orderTechnologicalProcessWasteId) {
-        SearchCriteriaBuilder searchCriteriaBuilder = orderTechnologicalProcessWasteDD.find().add(SearchRestrictions
-                .belongsTo(OrderTechnologicalProcessWasteFields.ORDER_TECHNOLOGICAL_PROCESS, orderTechnologicalProcess));
-
-        if (Objects.nonNull(orderTechnologicalProcessWasteId)) {
-            searchCriteriaBuilder.add(SearchRestrictions.idNe(orderTechnologicalProcessWasteId));
-        }
-
-        searchCriteriaBuilder.setProjection(SearchProjections.list().add(SearchProjections
-                .alias(SearchProjections.sum(OrderTechnologicalProcessWasteFields.WASTE_QUANTITY), L_WASTES_QUANTITY))
-                .add(SearchProjections.rowCount()));
-
-        searchCriteriaBuilder.addOrder(SearchOrders.asc(L_WASTES_QUANTITY));
-
-        Entity orderTechnologicalProcessWaste = searchCriteriaBuilder.setMaxResults(1).uniqueResult();
-
-        return BigDecimalUtils.convertNullToZero(orderTechnologicalProcessWaste.getDecimalField(L_WASTES_QUANTITY));
     }
 
 }

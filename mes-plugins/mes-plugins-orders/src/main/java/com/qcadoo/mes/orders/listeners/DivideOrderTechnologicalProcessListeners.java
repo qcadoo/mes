@@ -25,16 +25,13 @@ package com.qcadoo.mes.orders.listeners;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderTechnologicalProcessFields;
@@ -48,6 +45,7 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
@@ -69,6 +67,8 @@ public class DivideOrderTechnologicalProcessListeners {
         FormComponent orderTechnologicalProcessForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         AwesomeDynamicListComponent orderTechnologicalProcessPartsADL = (AwesomeDynamicListComponent) view
                 .getComponentByReference(OrderTechnologicalProcessFields.ORDER_TECHNOLOGICAL_PROCESS_PARTS);
+        CheckBoxComponent isValidCheckBox = (CheckBoxComponent) view
+                .getComponentByReference(OrderTechnologicalProcessFields.IS_VALID);
 
         Entity orderTechnologicalProcess = orderTechnologicalProcessForm.getEntity();
         Long orderTechnologicalProcessId = orderTechnologicalProcess.getId();
@@ -77,7 +77,9 @@ public class DivideOrderTechnologicalProcessListeners {
 
         List<FormComponent> orderTechnologicalProcessPartForms = orderTechnologicalProcessPartsADL.getFormComponents();
 
-        if (validateDivision(orderTechnologicalProcessForm, orderTechnologicalProcessPartForms, orderTechnologicalProcess)) {
+        boolean isValid = validateDivision(orderTechnologicalProcessForm, orderTechnologicalProcessPartForms, orderTechnologicalProcess);
+
+        if (isValid) {
             for (FormComponent orderTechnologicalProcessPartForm : orderTechnologicalProcessPartForms) {
                 FieldComponent numberField = orderTechnologicalProcessPartForm
                         .findFieldComponentByName(OrderTechnologicalProcessPartFields.NUMBER);
@@ -111,25 +113,12 @@ public class DivideOrderTechnologicalProcessListeners {
             }
 
             view.addMessage("orders.divideOrderTechnologicalProcess.divide.success", ComponentState.MessageType.SUCCESS);
-
-            goToOrderTechnologicalProcessesList(view, orderTechnologicalProcess);
         } else {
             view.addMessage("orders.divideOrderTechnologicalProcess.divide.failure", ComponentState.MessageType.FAILURE);
         }
-    }
 
-    private void createOrderTechnologicalProcess(final Entity orderPack, final Entity order, final Entity product,
-            final Entity operation, final Entity technologicalProcess, final BigDecimal quantity) {
-        Entity orderTechnologicalProcess = getOrderTechnologicalProcessDD().create();
-
-        orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.ORDER_PACK, orderPack);
-        orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.ORDER, order);
-        orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.PRODUCT, product);
-        orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.OPERATION, operation);
-        orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.TECHNOLOGICAL_PROCESS, technologicalProcess);
-        orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.QUANTITY, quantity);
-
-        orderTechnologicalProcess.getDataDefinition().save(orderTechnologicalProcess);
+        isValidCheckBox.setChecked(isValid);
+        isValidCheckBox.requestComponentUpdateState();
     }
 
     private boolean validateDivision(final FormComponent orderTechnologicalProcessForm,
@@ -192,28 +181,18 @@ public class DivideOrderTechnologicalProcessListeners {
         return isValid;
     }
 
-    private void goToOrderTechnologicalProcessesList(final ViewDefinitionState view, final Entity orderTechnologicalProcess) {
-        String viewName;
+    private void createOrderTechnologicalProcess(final Entity orderPack, final Entity order, final Entity product,
+            final Entity operation, final Entity technologicalProcess, final BigDecimal quantity) {
+        Entity orderTechnologicalProcess = getOrderTechnologicalProcessDD().create();
 
-        try {
-            viewName = view.getJsonContext().get(L_VIEW_NAME).toString();
-        } catch (JSONException e) {
-            viewName = L_ORDER_TECHNOLOGICAL_PROCESSES_LIST;
-        }
+        orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.ORDER_PACK, orderPack);
+        orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.ORDER, order);
+        orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.PRODUCT, product);
+        orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.OPERATION, operation);
+        orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.TECHNOLOGICAL_PROCESS, technologicalProcess);
+        orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.QUANTITY, quantity);
 
-        Map<String, Object> parameters = Maps.newHashMap();
-
-        if (!L_ORDER_TECHNOLOGICAL_PROCESSES_LIST.equals(viewName)) {
-            Entity order = orderTechnologicalProcess.getBelongsToField(OrderTechnologicalProcessFields.ORDER);
-
-            Long orderId = order.getId();
-
-            parameters.put("form.id", orderId);
-        }
-
-        String url = new StringBuilder("/page/orders/").append(viewName).append(".html").toString();
-
-        view.redirectTo(url, false, false, parameters);
+        orderTechnologicalProcess.getDataDefinition().save(orderTechnologicalProcess);
     }
 
     public void onAddRow(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -243,12 +222,13 @@ public class DivideOrderTechnologicalProcessListeners {
 
             if (StringUtils.isEmpty(number)) {
                 numberField.setFieldValue(String.valueOf(orderTechnologicalProcessPartForms.size()));
-                numberField.requestComponentUpdateState();
             }
+            numberField.requestComponentUpdateState();
+
             if (StringUtils.isEmpty(unit)) {
                 unitField.setFieldValue(productUnit);
-                unitField.requestComponentUpdateState();
             }
+            unitField.requestComponentUpdateState();
         }
     }
 

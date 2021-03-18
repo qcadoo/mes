@@ -25,11 +25,15 @@ package com.qcadoo.mes.orders.hooks;
 
 import java.util.Objects;
 
+import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.orders.OrderTechnologicalProcessWasteService;
 import com.qcadoo.mes.orders.constants.OrderTechnologicalProcessWasteFields;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -37,7 +41,12 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
-public class OrderTechnologicalProcessWasteDetailsHooks {
+public class OrderTechnologicalProcessWasteSingleDetailsHooks {
+
+    private static final String L_ORDER_TECHNOLOGICAL_PROCESS_ID = "window.mainTab.orderTechnologicalProcessWaste.orderTechnologicalProcessId";
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private OrderTechnologicalProcessWasteService orderTechnologicalProcessWasteService;
@@ -74,10 +83,32 @@ public class OrderTechnologicalProcessWasteDetailsHooks {
             LookupComponent orderTechnologicalProcessLookup = (LookupComponent) view
                     .getComponentByReference(OrderTechnologicalProcessWasteFields.ORDER_TECHNOLOGICAL_PROCESS);
 
-            orderTechnologicalProcess = orderTechnologicalProcessLookup.getEntity();
+            if (view.isViewAfterRedirect()) {
+                Long orderTechnologicalProcessId;
+
+                try {
+                    orderTechnologicalProcessId = Long
+                            .valueOf(view.getJsonContext().get(L_ORDER_TECHNOLOGICAL_PROCESS_ID).toString());
+                } catch (JSONException e) {
+                    orderTechnologicalProcessId = 0L;
+                }
+
+                orderTechnologicalProcess = getOrderTechnologicalProcessDD().get(orderTechnologicalProcessId);
+
+                if (Objects.nonNull(orderTechnologicalProcess)) {
+                    orderTechnologicalProcessLookup.setFieldValue(orderTechnologicalProcess.getId());
+                    orderTechnologicalProcessLookup.requestComponentUpdateState();
+                }
+            } else {
+                orderTechnologicalProcess = orderTechnologicalProcessLookup.getEntity();
+            }
         }
 
         return orderTechnologicalProcess;
+    }
+
+    private DataDefinition getOrderTechnologicalProcessDD() {
+        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER_TECHNOLOGICAL_PROCESS);
     }
 
 }

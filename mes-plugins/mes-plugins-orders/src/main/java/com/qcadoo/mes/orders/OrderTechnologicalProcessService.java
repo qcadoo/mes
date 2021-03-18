@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderPackFields;
 import com.qcadoo.mes.orders.constants.OrderTechnologicalProcessFields;
@@ -17,31 +16,15 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.technologies.constants.TechnologicalProcessComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologicalProcessFields;
 import com.qcadoo.mes.technologies.constants.TechnologicalProcessListFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FieldComponent;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.WindowComponent;
-import com.qcadoo.view.api.ribbon.RibbonActionItem;
-import com.qcadoo.view.api.ribbon.RibbonGroup;
-import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class OrderTechnologicalProcessService {
-
-    private static final String L_TECHNOLOGICAL_PROCESS = "technologicalProcess";
-
-    private static final String L_DIVIDE_ORDER_TECHNOLOGICAL_PROCESS = "divideOrderTechnologicalProcess";
-
-    private static final String L_TECHNOLOGICAL_PROCESS_NAME = "technologicalProcessName";
-
-    private static final String L_QUANTITY_UNIT = "quantityUnit";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -147,21 +130,6 @@ public class OrderTechnologicalProcessService {
         }
     }
 
-    public void updateRibbonState(final ViewDefinitionState view, final Entity orderTechnologicalProcess) {
-        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
-        RibbonGroup technologicalProcessGroup = window.getRibbon().getGroupByName(L_TECHNOLOGICAL_PROCESS);
-        RibbonActionItem divideOrderTechnologicalProcessActionItem = technologicalProcessGroup
-                .getItemByName(L_DIVIDE_ORDER_TECHNOLOGICAL_PROCESS);
-
-        Entity order = orderTechnologicalProcess.getBelongsToField(OrderTechnologicalProcessFields.ORDER);
-
-        boolean isSaved = Objects.nonNull(orderTechnologicalProcess.getId());
-        boolean isOrderStateValid = !checkOrderState(order);
-
-        divideOrderTechnologicalProcessActionItem.setEnabled(isSaved && isOrderStateValid);
-        divideOrderTechnologicalProcessActionItem.requestUpdate(true);
-    }
-
     public boolean checkOrderState(final Entity order) {
         if (Objects.nonNull(order)) {
             String state = order.getStringField(OrderFields.STATE);
@@ -173,43 +141,11 @@ public class OrderTechnologicalProcessService {
         return false;
     }
 
-    public void setFormEnabled(final ViewDefinitionState view, final FormComponent orderTechnologicalProcessForm,
-            final Entity orderTechnologicalProcess) {
-        Entity order = orderTechnologicalProcess.getBelongsToField(OrderTechnologicalProcessFields.ORDER);
-
-        boolean isSaved = Objects.nonNull(orderTechnologicalProcess.getId());
-        boolean isOrderStateValid = !checkOrderState(order);
-
-        orderTechnologicalProcessForm.setFormEnabled(isSaved && isOrderStateValid);
+    public Entity getOrderTechnologicalProcess(final Long orderTechnologicalProcessId) {
+        return getOrderTechnologicalProcessDD().get(orderTechnologicalProcessId);
     }
 
-    public void fillUnit(final ViewDefinitionState view, final Entity orderTechnologicalProcess) {
-        FieldComponent quantityUnit = (FieldComponent) view.getComponentByReference(L_QUANTITY_UNIT);
-
-        Entity product = orderTechnologicalProcess.getBelongsToField(OrderTechnologicalProcessFields.PRODUCT);
-
-        if (Objects.nonNull(product)) {
-            String unit = product.getStringField(ProductFields.UNIT);
-
-            quantityUnit.setFieldValue(unit);
-            quantityUnit.requestComponentUpdateState();
-        }
-    }
-
-    public void fillTechnologicalProcessName(final ViewDefinitionState view, final Entity orderTechnologicalProcess) {
-        FieldComponent technologicalProcessNameField = (FieldComponent) view
-                .getComponentByReference(L_TECHNOLOGICAL_PROCESS_NAME);
-
-        Entity technologicalProcess = orderTechnologicalProcess
-                .getBelongsToField(OrderTechnologicalProcessFields.TECHNOLOGICAL_PROCESS);
-
-        if (Objects.nonNull(technologicalProcess)) {
-            technologicalProcessNameField.setFieldValue(technologicalProcess.getStringField(TechnologicalProcessFields.NAME));
-            technologicalProcessNameField.requestComponentUpdateState();
-        }
-    }
-
-    private DataDefinition getOrderTechnologicalProcessDD() {
+    public DataDefinition getOrderTechnologicalProcessDD() {
         return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER_TECHNOLOGICAL_PROCESS);
     }
 

@@ -23,8 +23,16 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
+import java.util.Date;
+import java.util.Objects;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.orders.OrderTechnologicalProcessService;
+import com.qcadoo.mes.orders.constants.OrderTechnologicalProcessFields;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.WindowComponent;
@@ -35,25 +43,69 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 @Service
 public class OrderTechnologicalProcessesListHooks {
 
-    private static final String L_ORDER_TECHNOLOGICAL_PROCESS_WASTE = "orderTechnologicalProcessWaste";
+    private static final String L_ORDER_TECHNOLOGICAL_PROCESSES = "orderTechnologicalProcesses";
+
+    private static final String L_DIVIDE_ORDER_TECHNOLOGICAL_PROCESS = "divideOrderTechnologicalProcess";
+
+    private static final String L_ORDER_TECHNOLOGICAL_PROCESS_WASTES = "orderTechnologicalProcessWastes";
 
     private static final String L_CREATE_ORDER_TECHNOLOGICAL_PROCESS_WASTE = "createOrderTechnologicalProcessWaste";
+
+    @Autowired
+    private OrderTechnologicalProcessService orderTechnologicalProcessService;
 
     public final void onBeforeRender(final ViewDefinitionState view) {
         updateRibbonState(view);
     }
 
     private void updateRibbonState(final ViewDefinitionState view) {
-        GridComponent orderTechnologicalProcessesGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
-
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
-        RibbonGroup orderTechnologicalProcessWasteGroup = window.getRibbon().getGroupByName(L_ORDER_TECHNOLOGICAL_PROCESS_WASTE);
-        RibbonActionItem createOrderTechnologicalProcessWasteActionItem = orderTechnologicalProcessWasteGroup
+        RibbonGroup orderTechnologicalProcessesGroup = window.getRibbon().getGroupByName(L_ORDER_TECHNOLOGICAL_PROCESSES);
+        RibbonGroup orderTechnologicalProcessWastesGroup = window.getRibbon()
+                .getGroupByName(L_ORDER_TECHNOLOGICAL_PROCESS_WASTES);
+        RibbonActionItem divideOrderTechnologicalProcessActionItem = orderTechnologicalProcessesGroup
+                .getItemByName(L_DIVIDE_ORDER_TECHNOLOGICAL_PROCESS);
+        RibbonActionItem createOrderTechnologicalProcessWasteActionItem = orderTechnologicalProcessWastesGroup
                 .getItemByName(L_CREATE_ORDER_TECHNOLOGICAL_PROCESS_WASTE);
 
-        boolean isOrderTechnologicalProcessSelected = orderTechnologicalProcessesGrid.getSelectedEntities().size() == 1;
+        GridComponent orderTechnologicalProcessesGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
-        createOrderTechnologicalProcessWasteActionItem.setEnabled(isOrderTechnologicalProcessSelected);
+        Set<Long> orderTechnologicalProcessesIds = orderTechnologicalProcessesGrid.getSelectedEntitiesIds();
+
+        String message = null;
+
+        boolean isOrderTechnologicalProcessSelected = orderTechnologicalProcessesIds.size() == 1;
+        boolean isOrderStateValid = false;
+        boolean isOrderTechnologicalProcessFilled = false;
+
+        if (isOrderTechnologicalProcessSelected) {
+            Long orderTechnologicalProcessId = orderTechnologicalProcessesIds.stream().findFirst().get();
+
+            Entity orderTechnologicalProcess = orderTechnologicalProcessService
+                    .getOrderTechnologicalProcess(orderTechnologicalProcessId);
+
+            if (Objects.nonNull(orderTechnologicalProcess)) {
+                Entity order = orderTechnologicalProcess.getBelongsToField(OrderTechnologicalProcessFields.ORDER);
+                Date date = orderTechnologicalProcess.getDateField(OrderTechnologicalProcessFields.DATE);
+                Entity worker = orderTechnologicalProcess.getBelongsToField(OrderTechnologicalProcessFields.WORKER);
+
+                if (Objects.nonNull(order)) {
+                    isOrderStateValid = !orderTechnologicalProcessService.checkOrderState(order);
+                }
+
+                isOrderTechnologicalProcessFilled = Objects.nonNull(date) && Objects.nonNull(worker);
+
+                if (!isOrderTechnologicalProcessFilled) {
+                    message = "orders.ribbon.message.canNotCreateOrderTechnologicalProcessWaste";
+                }
+            }
+        }
+
+        divideOrderTechnologicalProcessActionItem.setEnabled(isOrderTechnologicalProcessSelected && isOrderStateValid);
+        divideOrderTechnologicalProcessActionItem.requestUpdate(true);
+        createOrderTechnologicalProcessWasteActionItem
+                .setEnabled(isOrderTechnologicalProcessSelected && isOrderStateValid && isOrderTechnologicalProcessFilled);
+        createOrderTechnologicalProcessWasteActionItem.setMessage(message);
         createOrderTechnologicalProcessWasteActionItem.requestUpdate(true);
     }
 

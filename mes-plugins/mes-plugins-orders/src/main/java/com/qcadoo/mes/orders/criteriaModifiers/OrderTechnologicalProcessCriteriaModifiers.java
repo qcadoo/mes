@@ -13,11 +13,20 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 @Service
 public class OrderTechnologicalProcessCriteriaModifiers {
 
-    public void filterByOrderState(final SearchCriteriaBuilder scb) {
-        scb.createAlias(OrderTechnologicalProcessFields.ORDER, OrderTechnologicalProcessFields.ORDER, JoinType.LEFT);
-        scb.add(SearchRestrictions
-                .not(SearchRestrictions.in(OrderTechnologicalProcessFields.ORDER + "." + OrderFields.STATE, Lists.newArrayList(
-                        OrderStateStringValues.DECLINED, OrderStateStringValues.COMPLETED, OrderStateStringValues.ABANDONED))));
+    public void filterByDateWorkerAndOrderState(final SearchCriteriaBuilder scb) {
+        scb.add(SearchRestrictions.isNotNull(OrderTechnologicalProcessFields.DATE))
+                .add(SearchRestrictions.isNotNull(OrderTechnologicalProcessFields.WORKER));
+
+        String orderAlias = OrderTechnologicalProcessFields.ORDER;
+
+        if (!scb.existsAliasForAssociation(OrderTechnologicalProcessFields.ORDER)) {
+            scb.createAlias(OrderTechnologicalProcessFields.ORDER, orderAlias, JoinType.LEFT);
+        } else {
+            orderAlias = scb.getAliasForAssociation(OrderTechnologicalProcessFields.ORDER);
+        }
+
+        scb.add(SearchRestrictions.not(SearchRestrictions.in(orderAlias + "." + OrderFields.STATE, Lists.newArrayList(
+                OrderStateStringValues.DECLINED, OrderStateStringValues.COMPLETED, OrderStateStringValues.ABANDONED))));
     }
 
 }

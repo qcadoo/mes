@@ -28,14 +28,22 @@ import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.OrderTechnologicalProcessService;
+import com.qcadoo.mes.orders.constants.OrderTechnologicalProcessFields;
+import com.qcadoo.mes.technologies.constants.TechnologicalProcessFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class OrderTechnologicalProcessDetailsHooks {
+
+    private static final String L_QUANTITY_UNIT = "quantityUnit";
+
+    private static final String L_TECHNOLOGICAL_PROCESS_NAME = "technologicalProcessName";
 
     @Autowired
     private OrderTechnologicalProcessService orderTechnologicalProcessService;
@@ -48,13 +56,52 @@ public class OrderTechnologicalProcessDetailsHooks {
 
         if (Objects.nonNull(orderTechnologicalProcessId)) {
             orderTechnologicalProcess = orderTechnologicalProcess.getDataDefinition().get(orderTechnologicalProcessId);
-
-            orderTechnologicalProcessService.updateRibbonState(view, orderTechnologicalProcess);
-            orderTechnologicalProcessService.setFormEnabled(view, orderTechnologicalProcessForm, orderTechnologicalProcess);
-
-            orderTechnologicalProcessService.fillTechnologicalProcessName(view, orderTechnologicalProcess);
-            orderTechnologicalProcessService.fillUnit(view, orderTechnologicalProcess);
         }
+
+        setFormEnabled(orderTechnologicalProcessForm, orderTechnologicalProcess);
+
+        fillTechnologicalProcessName(view, orderTechnologicalProcess);
+        fillUnit(view, orderTechnologicalProcess);
+    }
+
+    public void setFormEnabled(final FormComponent orderTechnologicalProcessForm, final Entity orderTechnologicalProcess) {
+        Entity order = orderTechnologicalProcess.getBelongsToField(OrderTechnologicalProcessFields.ORDER);
+
+        boolean isOrderStateValid = !orderTechnologicalProcessService.checkOrderState(order);
+
+        orderTechnologicalProcessForm.setFormEnabled(isOrderStateValid);
+    }
+
+    public void fillUnit(final ViewDefinitionState view, final Entity orderTechnologicalProcess) {
+        FieldComponent quantityUnit = (FieldComponent) view.getComponentByReference(L_QUANTITY_UNIT);
+
+        Entity product = orderTechnologicalProcess.getBelongsToField(OrderTechnologicalProcessFields.PRODUCT);
+
+        String unit = null;
+
+        if (Objects.nonNull(product)) {
+            unit = product.getStringField(ProductFields.UNIT);
+        }
+
+        quantityUnit.setFieldValue(unit);
+        quantityUnit.requestComponentUpdateState();
+    }
+
+    public void fillTechnologicalProcessName(final ViewDefinitionState view, final Entity orderTechnologicalProcess) {
+        FieldComponent technologicalProcessNameField = (FieldComponent) view
+                .getComponentByReference(L_TECHNOLOGICAL_PROCESS_NAME);
+
+        Entity technologicalProcess = orderTechnologicalProcess
+                .getBelongsToField(OrderTechnologicalProcessFields.TECHNOLOGICAL_PROCESS);
+
+        String technologicalProcessName = null;
+
+        if (Objects.nonNull(technologicalProcess)) {
+            technologicalProcessName = technologicalProcess.getStringField(TechnologicalProcessFields.NAME);
+        }
+
+        technologicalProcessNameField.setFieldValue(technologicalProcessName);
+        technologicalProcessNameField.requestComponentUpdateState();
     }
 
 }

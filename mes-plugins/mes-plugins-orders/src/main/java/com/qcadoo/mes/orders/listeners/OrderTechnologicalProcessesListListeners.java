@@ -37,6 +37,24 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 @Service
 public class OrderTechnologicalProcessesListListeners {
 
+    public void divideOrderTechnologicalProcess(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent orderTechnologicalProcessesGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+
+        Set<Long> orderTechnologicalProcessesIds = orderTechnologicalProcessesGrid.getSelectedEntitiesIds();
+
+        if (orderTechnologicalProcessesIds.isEmpty()) {
+            return;
+        }
+
+        Long orderTechnologicalProcessId = orderTechnologicalProcessesIds.stream().findFirst().get();
+
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("form.id", orderTechnologicalProcessId);
+
+        String url = "../page/orders/divideOrderTechnologicalProcess.html";
+        view.openModal(url, parameters);
+    }
+
     public void createOrderTechnologicalProcessWaste(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
         GridComponent orderTechnologicalProcessesGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
@@ -47,11 +65,13 @@ public class OrderTechnologicalProcessesListListeners {
             return;
         }
 
-        Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("form.orderTechnologicalProcessId", orderTechnologicalProcessesIds.stream().findFirst().get());
+        Long orderTechnologicalProcessId = orderTechnologicalProcessesIds.stream().findFirst().get();
 
-        String url = "/page/orders/orderTechnologicalProcessWasteDetails.html";
-        view.redirectTo(url, false, true, parameters);
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("form.orderTechnologicalProcessId", orderTechnologicalProcessId);
+
+        String url = "../page/orders/orderTechnologicalProcessWasteSingleDetails.html";
+        view.openModal(url, parameters);
     }
 
 }

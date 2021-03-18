@@ -33,22 +33,6 @@
 
         <ribbon>
             <template name="standardFormTemplate" excludeItems="actions.saveNew,actions.delete,actions.copy"/>
-
-            <group name="technologicalProcess">
-                <bigButton name="divideOrderTechnologicalProcess" icon="genealogyIcon24.png">
-                    <script>
-                        <![CDATA[
-					        this.addOnChangeListener({
-                                onClick: function() {
-                                    if(window.canClose()) {
-                                        #{form}.performEvent('divideOrderTechnologicalProcess', []);
-                                    }
-                                }
-                            });
-                        ]]>
-                    </script>
-                </bigButton>
-            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -153,9 +137,6 @@
 
                 <option type="header" value="true"/>
                 <option type="expression" value="#number"/>
-
-                <listener event="divideOrderTechnologicalProcess" method="divideOrderTechnologicalProcess"
-                          class="com.qcadoo.mes.orders.listeners.OrderTechnologicalProcessDetailsListeners"/>
             </component>
         </windowTab>
 
