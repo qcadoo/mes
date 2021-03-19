@@ -11,21 +11,21 @@ import com.qcadoo.model.api.Entity;
 
 public class MaterialRequirementEntry {
 
-    public Long id;
+    private Long id;
 
     private String number;
 
     private String name;
 
-    public BigDecimal plannedQuantity;
+    private BigDecimal plannedQuantity;
 
     private String unit;
 
-    public Long warehouseId;
+    private Long warehouseId;
 
     private String warehouseNumber;
 
-    public Date orderStartDate;
+    private Date orderStartDate;
 
     private Entity product;
 
@@ -128,14 +128,14 @@ public class MaterialRequirementEntry {
         MaterialRequirementEntry that = (MaterialRequirementEntry) o;
 
         return new EqualsBuilder().append(id, that.id).append(number, that.number).append(name, that.name)
-                .append(plannedQuantity, that.plannedQuantity).append(unit, that.unit).append(warehouseId, that.warehouseId)
-                .append(warehouseNumber, that.warehouseNumber).append(orderStartDate, that.orderStartDate).isEquals();
+                .append(warehouseId, that.warehouseId).append(warehouseNumber, that.warehouseNumber)
+                .append(orderStartDate, that.orderStartDate).isEquals();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(id).append(number).append(name).append(plannedQuantity).append(unit)
-                .append(warehouseId).append(warehouseNumber).append(orderStartDate).toHashCode();
+        return new HashCodeBuilder().append(id).append(number).append(name).append(warehouseId).append(warehouseNumber)
+                .append(orderStartDate).toHashCode();
     }
 
 }
