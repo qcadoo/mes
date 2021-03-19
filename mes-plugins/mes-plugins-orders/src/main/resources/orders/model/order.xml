@@ -176,6 +176,7 @@
 
         <hasMany name="orderTechnologicalProcesses" model="orderTechnologicalProcess" joinField="order" cascade="delete"/>
         <hasMany name="orderTechnologicalProcessesDto" model="orderTechnologicalProcessDto" joinField="order" persistent="false"/>
+        <hasMany name="orderTechnologicalProcessWastes" model="orderTechnologicalProcessWaste" joinField="order" cascade="delete"/>
     </fields>
 
     <hooks>

@@ -31,8 +31,7 @@
         <belongsTo name="product" model="product" required="true"/>
         <file name="attachment" required="true"/>
         <string name="name" required="true"/>
-        <decimal name="size" required="true">
-        </decimal>
+        <decimal name="size" required="true"/>
         <string name="ext" required="true"/>
     </fields>
     <hooks>

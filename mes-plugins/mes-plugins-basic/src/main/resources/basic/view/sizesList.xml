@@ -38,11 +38,14 @@
 
         <component type="grid" name="sizes" reference="grid">
             <option type="column" name="number" fields="number" link="true"/>
+            <option type="column" name="succession" fields="succession"/>
 
-            <option type="order" column="number" direction="asc"/>
+            <option type="defaultVisibleColumns" value="number"/>
 
-            <option type="searchable" value="number"/>
-            <option type="orderable" value="number"/>
+            <option type="order" column="succession" direction="asc"/>
+
+            <option type="searchable" value="number,succession"/>
+            <option type="orderable" value="number,succession"/>
 
             <option type="correspondingView" value="basic/sizeDetails"/>
             <option type="correspondingComponent" value="form"/>

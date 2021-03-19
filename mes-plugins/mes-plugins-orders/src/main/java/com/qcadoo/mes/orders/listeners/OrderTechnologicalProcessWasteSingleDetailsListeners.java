@@ -23,34 +23,30 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
-import java.util.Map;
-import java.util.Objects;
-
 import org.springframework.stereotype.Service;
 
-import com.google.common.collect.Maps;
+import com.qcadoo.mes.orders.constants.OrderTechnologicalProcessFields;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
-public class OrderTechnologicalProcessDetailsListeners {
+public class OrderTechnologicalProcessWasteSingleDetailsListeners {
 
-    public void divideOrderTechnologicalProcess(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent orderTechnologicalProcessForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+    public void saveWaste(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent orderTechnologicalProcessWasteForm = (FormComponent) view
+                .getComponentByReference(QcadooViewConstants.L_FORM);
+        CheckBoxComponent isValidCheckBox = (CheckBoxComponent) view
+                .getComponentByReference(OrderTechnologicalProcessFields.IS_VALID);
 
-        Long orderTechnologicalProcessId = orderTechnologicalProcessForm.getEntityId();
+        orderTechnologicalProcessWasteForm.performEvent(view, "save");
 
-        if (Objects.isNull(orderTechnologicalProcessId)) {
-            return;
-        }
+        boolean isValid = orderTechnologicalProcessWasteForm.isValid();
 
-        Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("form.id", orderTechnologicalProcessId);
-
-        String url = "/page/orders/divideOrderTechnologicalProcess.html";
-        view.redirectTo(url, false, true, parameters);
+        isValidCheckBox.setChecked(isValid);
+        isValidCheckBox.requestComponentUpdateState();
     }
 
 }

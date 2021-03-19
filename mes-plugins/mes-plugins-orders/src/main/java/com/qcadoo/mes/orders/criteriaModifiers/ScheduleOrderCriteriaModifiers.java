@@ -17,7 +17,7 @@ import com.qcadoo.model.api.search.SearchSubqueries;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Service
-public class ScheduleOrderCriteriaModifier {
+public class ScheduleOrderCriteriaModifiers {
 
     public static final String SCHEDULE_PARAMETER = "scheduleId";
 
@@ -43,4 +43,5 @@ public class ScheduleOrderCriteriaModifier {
             scb.add(SearchSubqueries.notExists(subCriteria));
         }
     }
+
 }

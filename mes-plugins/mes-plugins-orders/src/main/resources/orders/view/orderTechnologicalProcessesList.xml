@@ -27,56 +27,42 @@
 <view defaultAuthorizationRole="ROLE_PLANNING" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-      name="orderTechnologicalProcessesList" modelName="order">
+      name="orderTechnologicalProcessesList" modelName="orderTechnologicalProcessDto" menuAccessible="true">
 
     <component type="window" name="window" reference="window">
+
         <ribbon>
-            <group name="navigation">
-                <bigButton name="back" icon="backIcon24.png" state="enabled">
+            <template name="standardGridTemplate" includeItems="actions.refresh,genericExport.csv,genericExport.pdf"/>
+
+            <group name="orderTechnologicalProcesses">
+                <bigButton name="divideOrderTechnologicalProcess" icon="genealogyIcon24.png">
                     <script>
                         <![CDATA[
-                            this.addOnChangeListener({
+					        this.addOnChangeListener({
                                 onClick: function() {
-                                    #{grid}.performEvent('goBackToOrders', []);
+                                    #{grid}.performEvent('divideOrderTechnologicalProcess', []);
                                 }
                             });
                         ]]>
                     </script>
                 </bigButton>
             </group>
-            <group name="actions">
-                <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{form}.performRefresh;"/>
-            </group>
-            <group name="genericExport">
-                <smallButton name="csv" icon="exportToCsvIcon16.png" state="enabled">
+            <group name="orderTechnologicalProcessWastes">
+                <bigButton name="createOrderTechnologicalProcessWaste" icon="genealogyIcon24.png">
                     <script>
                         <![CDATA[
-                            this.addOnChangeListener({
+					        this.addOnChangeListener({
                                 onClick: function() {
-                                    #{grid}.performEvent('exportToCsv', [], 'exportToCsv');
+                                    #{grid}.performEvent('createOrderTechnologicalProcessWaste', []);
                                 }
                             });
                         ]]>
                     </script>
-                </smallButton>
-                <smallButton name="pdf" icon="pdfIcon16.png" state="enabled">
-                    <script>
-                        <![CDATA[
-                            this.addOnChangeListener({
-                                onClick: function() {
-                                    #{grid}.performEvent('exportToPdf', [], 'exportToPdf');
-                                }
-                            });
-                        ]]>
-                    </script>
-                </smallButton>
+                </bigButton>
             </group>
         </ribbon>
 
-        <component type="form" name="order" reference="form"/>
-
-        <component type="grid" name="orderTechnologicalProcesses" reference="grid" source="#{form}.orderTechnologicalProcessesDto"
-                   model="orderTechnologicalProcessDto" useDto="true">
+        <component type="grid" name="orderTechnologicalProcesses" reference="grid">
             <option type="column" name="number" fields="number" link="true"/>
             <option type="column" name="orderPackNumber" fields="orderPackNumber"/>
             <option type="column" name="orderNumber" fields="orderNumber"/>
@@ -88,29 +74,41 @@
             <option type="column" name="workstationNumber" fields="workstationNumber"/>
             <option type="column" name="technologicalProcessName" fields="technologicalProcessName"/>
             <option type="column" name="quantity" fields="quantity"/>
-            <option type="column" name="worker" fields="worker"/>
             <option type="column" name="date" fields="date"/>
+            <option type="column" name="worker" fields="worker"/>
             <option type="column" name="wastesQuantity" fields="wastesQuantity"/>
 
-            <option type="correspondingView" value="orders/orderTechnologicalProcessDetails"/>
-            <option type="correspondingComponent" value="form"/>
+            <option type="footerRow" value="true"/>
+            <option type="columnsToSummary" value="quantity,wastesQuantity"/>
 
             <option type="order" column="number" direction="desc"/>
 
             <option type="searchable"
-                    value="number,orderPackNumber,orderNumber,productNumber,modelName,sizeNumber,operationNumber,workstationTypeNumber,workstationNumber,technologicalProcessName,quantity,worker,date,wastesQuantity"/>
+                    value="number,orderPackNumber,orderNumber,productNumber,modelName,sizeNumber,operationNumber,workstationTypeNumber,workstationNumber,technologicalProcessName,quantity,date,worker,wastesQuantity"/>
             <option type="orderable"
-                    value="number,orderPackNumber,orderNumber,productNumber,modelName,sizeNumber,operationNumber,workstationTypeNumber,workstationNumber,technologicalProcessName,quantity,worker,date,wastesQuantity"/>
+                    value="number,orderPackNumber,orderNumber,productNumber,modelName,sizeNumber,operationNumber,workstationTypeNumber,workstationNumber,technologicalProcessName,quantity,date,worker,wastesQuantity"/>
+
+            <option type="correspondingView" value="orders/orderTechnologicalProcessDetails"/>
+            <option type="correspondingComponent" value="form"/>
 
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
 
-            <listener event="goBackToOrders" method="goBackToOrders"
-                      class="com.qcadoo.mes.orders.listeners.OrderTechnologicalProcessesListListeners"/>
+            <listener event="divideOrderTechnologicalProcess"
+                      class="com.qcadoo.mes.orders.listeners.OrderTechnologicalProcessesListListeners"
+                      method="divideOrderTechnologicalProcess"/>
+            <listener event="createOrderTechnologicalProcessWaste"
+                      class="com.qcadoo.mes.orders.listeners.OrderTechnologicalProcessesListListeners"
+                      method="createOrderTechnologicalProcessWaste"/>
         </component>
 
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
     </component>
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.orders.hooks.OrderTechnologicalProcessesListHooks"
+                      method="onBeforeRender"/>
+    </hooks>
 
 </view>

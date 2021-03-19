@@ -23,9 +23,26 @@
  */
 package com.qcadoo.mes.materialRequirements.print.pdf;
 
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.lowagie.text.*;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Paragraph;
+import com.lowagie.text.Phrase;
 import com.lowagie.text.pdf.PdfCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
@@ -41,7 +58,6 @@ import com.qcadoo.mes.materialRequirements.print.WarehouseDateKey;
 import com.qcadoo.mes.materialRequirements.util.EntityOrderNumberComparator;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
-import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
@@ -50,14 +66,6 @@ import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public final class MaterialRequirementPdfService extends PdfDocumentService {
@@ -90,18 +98,20 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
     @Override
     protected void buildPdfContent(final Document document, final Entity materialRequirement, final Locale locale)
             throws DocumentException {
-        String documenTitle = translationService.translate("materialRequirements.materialRequirement.report.title", locale);
+        String documentTitle = translationService.translate("materialRequirements.materialRequirement.report.title", locale);
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
 
-        pdfHelper.addDocumentHeader(document, "", documenTitle, documentAuthor,
+        pdfHelper.addDocumentHeader(document, "", documentTitle, documentAuthor,
                 materialRequirement.getDateField(MaterialRequirementFields.DATE));
 
         addPanel(document, materialRequirement, locale);
 
-        document.add(new Paragraph(translationService.translate("materialRequirements.materialRequirement.report.paragrah",
-                locale), FontUtils.getDejavuBold11Dark()));
+        document.add(
+                new Paragraph(translationService.translate("materialRequirements.materialRequirement.report.paragrah", locale),
+                        FontUtils.getDejavuBold11Dark()));
 
         Map<String, HeaderAlignment> orderHeadersWithAlignments = Maps.newLinkedHashMap();
+
         orderHeadersWithAlignments.put(translationService.translate("orders.order.number.label", locale), HeaderAlignment.LEFT);
         orderHeadersWithAlignments.put(translationService.translate("orders.order.name.label", locale), HeaderAlignment.LEFT);
         orderHeadersWithAlignments.put(translationService.translate("orders.order.product.label", locale), HeaderAlignment.LEFT);
@@ -114,8 +124,9 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
 
         addOrderSeries(document, materialRequirement, orderHeadersWithAlignments);
 
-        document.add(new Paragraph(translationService.translate("materialRequirements.materialRequirement.report.paragrah2",
-                locale), FontUtils.getDejavuBold11Dark()));
+        document.add(
+                new Paragraph(translationService.translate("materialRequirements.materialRequirement.report.paragrah2", locale),
+                        FontUtils.getDejavuBold11Dark()));
 
         if (materialRequirement.getBooleanField(MaterialRequirementFields.INCLUDE_WAREHOUSE)
                 || materialRequirement.getBooleanField(MaterialRequirementFields.INCLUDE_START_DATE_ORDER)) {
@@ -149,6 +160,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
         List<Integer> defaultOrderHeaderColumnWidth = Lists.newArrayList();
 
         Map<String, HeaderAlignment> headersWithAlignments = Maps.newLinkedHashMap();
+
         if (includeWarehouse) {
             defaultOrderHeaderColumnWidth.add(20);
             headersWithAlignments.put(
@@ -162,6 +174,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
                     translationService.translate("materialRequirements.materialRequirement.report.startDateOrder", locale),
                     HeaderAlignment.LEFT);
         }
+
         defaultOrderHeaderColumnWidth.add(30);
         headersWithAlignments.put(translationService.translate("basic.product.number.label", locale), HeaderAlignment.LEFT);
         defaultOrderHeaderColumnWidth.add(30);
@@ -194,40 +207,55 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
                 defaultOrderHeaderColumnWidthInt, headersWithAlignments);
 
         List<WarehouseDateKey> keys = Lists.newArrayList(entriesMap.keySet());
+
         if (includeWarehouse) {
             keys.sort(Comparator.comparing(WarehouseDateKey::getWarehouseNumber).thenComparing(WarehouseDateKey::getDate));
         } else {
             keys.sort(Comparator.comparing(WarehouseDateKey::getDate));
         }
 
+        Map<Long, Map<Long, BigDecimal>> quantitiesInStock = Maps.newHashMap();
+
+        if (showCurrentStockLevel) {
+            List<MaterialRequirementEntry> entries = Lists.newArrayList();
+
+            for (WarehouseDateKey key : keys) {
+                if (Objects.nonNull(key.getWarehouseId())) {
+                    entries.addAll(entriesMap.get(key));
+                }
+            }
+
+            quantitiesInStock = materialRequirementDataService.getQuantitiesInStock(entries);
+        }
+
         String actualWarehouse = "";
-        Long actualDate = 0L;
+        Date actualDate = null;
+
         int keyIndex = 0;
         for (WarehouseDateKey key : keys) {
             keyIndex += 1;
-            List<MaterialRequirementEntry> materials = entriesMap.get(key);
-            Map<Long, BigDecimal> quantitiesInStock = Maps.newHashMap();
-            if (showCurrentStockLevel && Objects.nonNull(key.getWarehouseId())) {
-                quantitiesInStock = materialFlowResourcesService.getAvailableQuantities(
-                        materials.stream().map(mr -> mr.getId().intValue()).collect(Collectors.toList()), key.getWarehouseId()
-                                .intValue());
-            }
 
+            List<MaterialRequirementEntry> materials = entriesMap.get(key);
             Map<String, MaterialRequirementEntry> neededProductQuantities = getNeededProductQuantities(materials);
             List<String> materialKeys = Lists.newArrayList(neededProductQuantities.keySet());
+
             materialKeys.sort(Comparator.naturalOrder());
 
             int index = 0;
             for (String materialKey : materialKeys) {
                 index += 1;
+
                 MaterialRequirementEntry material = neededProductQuantities.get(materialKey);
+
                 table.getDefaultCell().disableBorderSide(PdfCell.BOTTOM);
                 table.getDefaultCell().disableBorderSide(PdfCell.TOP);
+
                 if (index == materialKeys.size() && keyIndex == keys.size()) {
                     table.getDefaultCell().enableBorderSide(PdfCell.BOTTOM);
                 }
 
                 boolean fillDateIfWarehouseChanged = false;
+
                 if (includeWarehouse) {
                     if (!actualWarehouse.equals(key.getWarehouseNumber())) {
                         table.getDefaultCell().enableBorderSide(PdfCell.TOP);
@@ -238,22 +266,27 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
                         table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
                     }
                 }
+
                 if (includeStartDateOrder) {
-                    if (!actualDate.equals(key.getDate()) || fillDateIfWarehouseChanged) {
-                        if (key.getDate() == 0L) {
+                    Date date = key.getDate();
+
+                    if (!actualDate.equals(date) || fillDateIfWarehouseChanged) {
+                        if (Objects.isNull(date)) {
+                            actualDate = null;
+
                             table.getDefaultCell().enableBorderSide(PdfCell.TOP);
                             table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
                         } else {
-                            table.getDefaultCell().enableBorderSide(PdfCell.TOP);
-                            table.addCell(new Phrase(DateUtils.toDateString(new Date(key.getDate())), FontUtils
-                                    .getDejavuRegular7Dark()));
+                            actualDate = new Date(date.getTime());
 
+                            table.getDefaultCell().enableBorderSide(PdfCell.TOP);
+                            table.addCell(new Phrase(DateUtils.toDateString(actualDate), FontUtils.getDejavuRegular7Dark()));
                         }
-                        actualDate = key.getDate();
                     } else {
                         table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
                     }
                 }
+
                 table.getDefaultCell().enableBorderSide(PdfCell.BOTTOM);
                 table.getDefaultCell().enableBorderSide(PdfCell.TOP);
 
@@ -262,139 +295,154 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
                 table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
                 table.addCell(new Phrase(numberService.format(material.getPlannedQuantity()), FontUtils.getDejavuBold7Dark()));
                 table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+
                 String unit = material.getUnit();
-                if (unit == null) {
+                if (Objects.isNull(unit)) {
                     table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
                 } else {
                     table.addCell(new Phrase(unit, FontUtils.getDejavuRegular7Dark()));
                 }
+
                 if (showCurrentStockLevel) {
                     if (Objects.nonNull(key.getWarehouseId())) {
                         table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-                        table.addCell(new Phrase(numberService.format(BigDecimalUtils.convertNullToZero(quantitiesInStock
-                                .get(material.getId()))), FontUtils.getDejavuBold7Dark()));
+                        table.addCell(new Phrase(
+                                numberService.format(materialRequirementDataService.getQuantity(quantitiesInStock, material)),
+                                FontUtils.getDejavuBold7Dark()));
                         table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
                     } else {
                         table.addCell(new Phrase(numberService.format(BigDecimal.ZERO), FontUtils.getDejavuRegular7Dark()));
                     }
-
                 }
-
             }
         }
-        document.add(table);
 
+        document.add(table);
     }
 
-    private Map<String, MaterialRequirementEntry> getNeededProductQuantities(List<MaterialRequirementEntry> materials) {
+    private Map<String, MaterialRequirementEntry> getNeededProductQuantities(final List<MaterialRequirementEntry> materials) {
         Map<String, MaterialRequirementEntry> neededProductQuantities = Maps.newHashMap();
+
         for (MaterialRequirementEntry mre : materials) {
             String product = mre.getNumber();
 
             if (neededProductQuantities.containsKey(product)) {
                 BigDecimal pQ = mre.getPlannedQuantity().add(neededProductQuantities.get(product).getPlannedQuantity());
                 mre.setPlannedQuantity(pQ);
-                neededProductQuantities.put(product, mre);
-            } else {
-                neededProductQuantities.put(product, mre);
             }
+
+            neededProductQuantities.put(product, mre);
         }
+
         return neededProductQuantities;
     }
 
     private void addPanel(final Document document, final Entity materialRequirement, final Locale locale)
             throws DocumentException {
         PdfPTable panelTable = pdfHelper.createPanelTable(2);
+
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
                 translationService.translate("materialRequirements.materialRequirement.report.panel.number", locale),
                 materialRequirement.getStringField(MaterialRequirementFields.NUMBER));
-        pdfHelper.addTableCellAsOneColumnTable(panelTable, translationService.translate(
-                "materialRequirements.materialRequirement.report.panel.name", locale),
+        pdfHelper.addTableCellAsOneColumnTable(panelTable,
+                translationService.translate("materialRequirements.materialRequirement.report.panel.name", locale),
                 StringUtils.isEmpty(materialRequirement.getStringField(MaterialRequirementFields.NAME)) ? ""
                         : materialRequirement.getStringField(MaterialRequirementFields.NAME));
-        pdfHelper.addTableCellAsOneColumnTable(
-                panelTable,
+        pdfHelper.addTableCellAsOneColumnTable(panelTable,
                 translationService.translate("materialRequirements.materialRequirement.report.panel.mrpAlgorithm", locale),
-                translationService.translate(
-                        "materialRequirements.materialRequirement.mrpAlgorithm.value."
-                                + materialRequirement.getStringField(MaterialRequirementFields.MRP_ALGORITHM), locale));
+                translationService.translate("materialRequirements.materialRequirement.mrpAlgorithm.value."
+                        + materialRequirement.getStringField(MaterialRequirementFields.MRP_ALGORITHM), locale));
         pdfHelper.addTableCellAsOneColumnTable(panelTable, "", "");
+
         panelTable.setSpacingAfter(20);
         panelTable.setSpacingBefore(20);
+
         document.add(panelTable);
     }
 
     private void addDataSeries(final Document document, final Entity materialRequirement,
             final Map<String, HeaderAlignment> headersWithAlignments) throws DocumentException {
         List<Entity> orders = materialRequirement.getManyToManyField(MaterialRequirementFields.ORDERS);
-        MrpAlgorithm algorithm = MrpAlgorithm.parseString(materialRequirement
-                .getStringField(MaterialRequirementFields.MRP_ALGORITHM));
+
+        MrpAlgorithm algorithm = MrpAlgorithm
+                .parseString(materialRequirement.getStringField(MaterialRequirementFields.MRP_ALGORITHM));
 
         Map<Long, BigDecimal> neededProductQuantities = basicProductionCountingService.getNeededProductQuantities(orders,
                 algorithm);
 
         List<String> headers = Lists.newLinkedList(headersWithAlignments.keySet());
+
         PdfPTable table = pdfHelper.createTableWithHeader(headersWithAlignments.size(), headers, true,
                 defaultOrderHeaderColumnWidth, headersWithAlignments);
 
         List<Entity> products = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).find()
                 .add(SearchRestrictions.in("id", neededProductQuantities.keySet())).list().getEntities();
+
         products.sort(Comparator.comparing(p -> p.getStringField(ProductFields.NUMBER)));
 
         for (Entity product : products) {
             table.addCell(new Phrase(product.getStringField(ProductFields.NUMBER), FontUtils.getDejavuRegular7Dark()));
             table.addCell(new Phrase(product.getStringField(ProductFields.NAME), FontUtils.getDejavuRegular7Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-            table.addCell(new Phrase(numberService.format(neededProductQuantities.get(product.getId())), FontUtils
-                    .getDejavuBold7Dark()));
+            table.addCell(new Phrase(numberService.format(neededProductQuantities.get(product.getId())),
+                    FontUtils.getDejavuBold7Dark()));
             table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+
             String unit = product.getStringField(ProductFields.UNIT);
-            if (unit == null) {
+            if (Objects.isNull(unit)) {
                 table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
             } else {
                 table.addCell(new Phrase(unit, FontUtils.getDejavuRegular7Dark()));
             }
         }
+
         document.add(table);
     }
 
     private void addOrderSeries(final Document document, final Entity materialRequirement,
             final Map<String, HeaderAlignment> headersWithAlignments) throws DocumentException {
         List<Entity> orders = materialRequirement.getManyToManyField(MaterialRequirementFields.ORDERS);
+
         Collections.sort(orders, new EntityOrderNumberComparator());
 
         List<String> headers = Lists.newLinkedList(headersWithAlignments.keySet());
+
         PdfPTable table = pdfHelper.createTableWithHeader(headersWithAlignments.size(), headers, true,
                 defaultMatReqHeaderColumnWidth, headersWithAlignments);
 
         for (Entity order : orders) {
             table.addCell(new Phrase(order.getStringField(OrderFields.NUMBER), FontUtils.getDejavuRegular7Dark()));
             table.addCell(new Phrase(order.getStringField(OrderFields.NAME), FontUtils.getDejavuRegular7Dark()));
+
             Entity product = (Entity) order.getField(OrderFields.PRODUCT);
-            if (product == null) {
-                table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
+
+            if (Objects.isNull(product)) {
                 BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
-                plannedQuantity = (plannedQuantity == null) ? BigDecimal.ZERO : plannedQuantity;
+                plannedQuantity = Objects.isNull(plannedQuantity) ? BigDecimal.ZERO : plannedQuantity;
+
+                table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
                 table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
                 table.addCell(new Phrase(numberService.format(plannedQuantity), FontUtils.getDejavuRegular7Dark()));
                 table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
                 table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
             } else {
-                table.addCell(new Phrase(product.getStringField(ProductFields.NAME), FontUtils.getDejavuRegular7Dark()));
                 BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
-                plannedQuantity = (plannedQuantity == null) ? BigDecimal.ZERO : plannedQuantity;
+                plannedQuantity = Objects.isNull(plannedQuantity) ? BigDecimal.ZERO : plannedQuantity;
+
+                table.addCell(new Phrase(product.getStringField(ProductFields.NAME), FontUtils.getDejavuRegular7Dark()));
                 table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
                 table.addCell(new Phrase(numberService.format(plannedQuantity), FontUtils.getDejavuRegular7Dark()));
                 table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+
                 String unit = product.getStringField(ProductFields.UNIT);
-                if (unit == null) {
+                if (Objects.isNull(unit)) {
                     table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
                 } else {
                     table.addCell(new Phrase(unit, FontUtils.getDejavuRegular7Dark()));
                 }
             }
-
         }
+
         document.add(table);
     }
 

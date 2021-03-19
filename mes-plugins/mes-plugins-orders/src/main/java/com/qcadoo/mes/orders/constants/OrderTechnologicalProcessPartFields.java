@@ -35,4 +35,6 @@ public final class OrderTechnologicalProcessPartFields {
 
     public static final String QUANTITY = "quantity";
 
+    public static final String UNIT = "unit";
+
 }

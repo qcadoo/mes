@@ -83,4 +83,6 @@ public final class ProductFields {
 
     public static final String MACHINE_PART = "machinePart";
 
+    public static final String PRODUCT_ATTACHMENTS = "productAttachments";
+
 }

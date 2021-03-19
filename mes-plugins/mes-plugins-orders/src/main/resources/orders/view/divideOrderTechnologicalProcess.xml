@@ -33,6 +33,7 @@
 
         <ribbon>
             <template name="standardFormTemplate" includeGroups="navigation"/>
+
             <group name="actions">
                 <bigButton name="save" icon="saveIcon24.png" state="enabled" accesskey="s">
                     <script>
@@ -42,6 +43,15 @@
 							    	#{form}.performEvent('saveDivision', []);
 		                        }
 					        });
+					         #{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									var isValid = #{isValid}.getValue().content.value;
+
+									if (isValid && isValid == true) {
+										#{window}.performBackWithoutConfirm();
+									}
+								}
+							});
 				        ]]>
                     </script>
                 </bigButton>
@@ -50,20 +60,28 @@
 
         <windowTab name="mainTab">
             <component type="form" name="orderTechnologicalProcess" reference="form">
-                <component type="gridLayout" name="gridLayout" columns="3"
+                <component type="checkbox" name="isValid" reference="isValid"
+                           hasLabel="false" defaultEnabled="never" defaultVisible="false"/>
+                <component type="gridLayout" name="gridLayout" columns="2"
                            rows="1" hasBorders="false">
                     <layoutElement column="1" row="1">
                         <component type="awesomeDynamicList" name="orderTechnologicalProcessParts"
                                    source="#{form}.orderTechnologicalProcessParts" reference="orderTechnologicalProcessParts">
                             <components>
                                 <component type="gridLayout" name="partGridLayout"
-                                           columns="2" rows="1">
-                                    <layoutElement column="1" row="1">
+                                           columns="9" rows="1">
+                                    <layoutElement column="1" row="1" width="3">
                                         <component type="input" name="number" field="number"
                                             defaultEnabled="never"/>
                                     </layoutElement>
-                                    <layoutElement column="2" row="1">
+                                    <layoutElement column="4" row="1" width="5">
                                         <component type="input" name="quantity" field="quantity"/>
+                                    </layoutElement>
+                                    <layoutElement column="9" row="1">
+                                        <component type="input" name="unit" field="unit"
+                                                   defaultEnabled="never" hasLabel="false">
+                                            <option type="textRepresentationOnDisabled" value="true"/>
+                                        </component>
                                     </layoutElement>
                                 </component>
                             </components>
@@ -78,15 +96,11 @@
                                       class="com.qcadoo.mes.orders.listeners.DivideOrderTechnologicalProcessListeners"
                                       method="onDeleteRow" />
                         </component>
-                        <component type="input" name="quantity" field="quantity"
-                                   reference="quantity" defaultVisible="false">
-                            <option type="alignment" value="right"/>
-                        </component>
                     </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>
-                <option type="expression" value="#orderPack['number']"/>
+                <option type="expression" value="#number"/>
 
                 <listener event="saveDivision"
                           class="com.qcadoo.mes.orders.listeners.DivideOrderTechnologicalProcessListeners"

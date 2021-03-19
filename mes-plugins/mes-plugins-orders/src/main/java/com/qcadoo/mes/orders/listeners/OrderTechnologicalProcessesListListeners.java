@@ -24,33 +24,54 @@
 package com.qcadoo.mes.orders.listeners;
 
 import java.util.Map;
-import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class OrderTechnologicalProcessesListListeners {
 
-    public void goBackToOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+    public void divideOrderTechnologicalProcess(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent orderTechnologicalProcessesGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
-        Long orderId = orderForm.getEntityId();
+        Set<Long> orderTechnologicalProcessesIds = orderTechnologicalProcessesGrid.getSelectedEntitiesIds();
 
-        if (Objects.isNull(orderId)) {
+        if (orderTechnologicalProcessesIds.isEmpty()) {
             return;
         }
 
-        Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("form.id", orderId);
+        Long orderTechnologicalProcessId = orderTechnologicalProcessesIds.stream().findFirst().get();
 
-        String url = "/page/orders/orderDetails.html";
-        view.redirectTo(url, false, true, parameters);
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("form.id", orderTechnologicalProcessId);
+
+        String url = "../page/orders/divideOrderTechnologicalProcess.html";
+        view.openModal(url, parameters);
+    }
+
+    public void createOrderTechnologicalProcessWaste(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        GridComponent orderTechnologicalProcessesGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+
+        Set<Long> orderTechnologicalProcessesIds = orderTechnologicalProcessesGrid.getSelectedEntitiesIds();
+
+        if (orderTechnologicalProcessesIds.isEmpty()) {
+            return;
+        }
+
+        Long orderTechnologicalProcessId = orderTechnologicalProcessesIds.stream().findFirst().get();
+
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("form.orderTechnologicalProcessId", orderTechnologicalProcessId);
+
+        String url = "../page/orders/orderTechnologicalProcessWasteSingleDetails.html";
+        view.openModal(url, parameters);
     }
 
 }

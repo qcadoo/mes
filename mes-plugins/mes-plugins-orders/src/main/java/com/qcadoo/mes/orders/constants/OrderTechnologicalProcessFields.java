@@ -43,12 +43,16 @@ public final class OrderTechnologicalProcessFields {
 
     public static final String QUANTITY = "quantity";
 
-    public static final String WORKER = "worker";
-
     public static final String DATE = "date";
+
+    public static final String WORKER = "worker";
 
     public static final String WASTES_QUANTITY = "wastesQuantity";
 
     public static final String ORDER_TECHNOLOGICAL_PROCESS_PARTS = "orderTechnologicalProcessParts";
+
+    public static final String ORDER_TECHNOLOGICAL_PROCESS_WASTES = "orderTechnologicalProcessWastes";
+
+    public static final String IS_VALID = "isValid";
 
 }

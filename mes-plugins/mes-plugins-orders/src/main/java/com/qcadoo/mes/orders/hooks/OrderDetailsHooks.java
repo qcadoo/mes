@@ -175,7 +175,7 @@ public class OrderDetailsHooks {
         unitService.fillProductForAdditionalUnitBeforeRender(view);
         fillOrderDescriptionIfTechnologyHasDescription(view);
         enableOrDisableGenerateOperationalTasksButton(view);
-        enableOrDisableGenerateOrderTechnologicalProcesses(view);
+        enableOrDisableShowOrderTechnologicalProcesses(view);
 
         if (isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT))
                 && isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANNED_QUANTITY))) {
@@ -189,16 +189,35 @@ public class OrderDetailsHooks {
                 Optional.of("orders.ribbon.message.canNotGenerateOperationalTasks"));
     }
 
-    private void enableOrDisableGenerateOrderTechnologicalProcesses(final ViewDefinitionState view) {
-        orderDetailsRibbonHelper.setButtonEnabled(view, "orderTechnologicalProcesses", "generateOrderTechnologicalProcesses",
-                order -> {
-                    if (parameterService.getParameter()
-                            .getBooleanField(ParameterFieldsO.INCLUDE_PACKS_GENERATING_PROCESSES_FOR_ORDER)) {
-                        return !order.getHasManyField(OrderFields.ORDER_PACKS).isEmpty();
-                    } else {
-                        return true;
-                    }
-                }, Optional.of("orders.ribbon.message.canNotGenerateOrderTechnologicalProcesses"));
+    private void enableOrDisableShowOrderTechnologicalProcesses(final ViewDefinitionState view) {
+        RibbonActionItem ribbonItem = orderDetailsRibbonHelper.getRibbonItem(view, "orderTechnologicalProcesses",
+                "showOrderTechnologicalProcesses");
+
+        Entity order = orderDetailsRibbonHelper.getOrderEntity(view);
+
+        Optional<String> message = Optional.empty();
+
+        boolean isEnabled = true;
+
+        if (Objects.nonNull(order)) {
+            if (parameterService.getParameter()
+                    .getBooleanField(ParameterFieldsO.INCLUDE_PACKS_GENERATING_PROCESSES_FOR_ORDER)) {
+                isEnabled = !order.getHasManyField(OrderFields.ORDER_PACKS).isEmpty();
+
+                if (!isEnabled) {
+                    message = Optional.of("orders.ribbon.message.canNotGenerateOrderTechnologicalProcesses");
+                }
+            }
+        } else {
+            isEnabled = false;
+        }
+
+        if (!isEnabled && message.isPresent()) {
+            ribbonItem.setMessage(message.get());
+        }
+
+        ribbonItem.setEnabled(isEnabled);
+        ribbonItem.requestUpdate(true);
     }
 
     public final void fillProductionLine(final ViewDefinitionState view) {

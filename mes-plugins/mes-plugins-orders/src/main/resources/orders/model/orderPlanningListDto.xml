@@ -61,6 +61,8 @@
         <string name="percentageOfExecutionCellColor"/>
         <string name="company"/>
         <boolean name="hasPacks"/>
+        <string name="salesPlanNumber"/>
+
     </fields>
     <hooks>
     </hooks>

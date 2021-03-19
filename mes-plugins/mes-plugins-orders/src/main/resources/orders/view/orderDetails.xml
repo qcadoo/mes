@@ -317,13 +317,13 @@
                 </bigButton>
             </group>
             <group name="orderTechnologicalProcesses">
-                <bigButton name="generateOrderTechnologicalProcesses" icon="genealogyIcon24.png">
+                <bigButton name="showOrderTechnologicalProcesses" icon="genealogyIcon24.png">
                     <script>
                         <![CDATA[
 					        this.addOnChangeListener({
                                 onClick: function() {
                                     if(window.canClose()) {
-                                        #{form}.performEvent('generateOrderTechnologicalProcesses', []);
+                                        #{form}.performEvent('showOrderTechnologicalProcesses', []);
                                     }
                                 }
                             });
@@ -704,7 +704,7 @@
                           class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
                 <listener event="showOrderPacks" method="showOrderPacks"
                           class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
-                <listener event="generateOrderTechnologicalProcesses" method="generateOrderTechnologicalProcesses"
+                <listener event="showOrderTechnologicalProcesses" method="showOrderTechnologicalProcesses"
                           class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
                 <listener event="generateOperationalTasks" method="generateOperationalTasks"
                           class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>

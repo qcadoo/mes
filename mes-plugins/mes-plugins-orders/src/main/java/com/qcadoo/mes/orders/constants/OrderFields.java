@@ -151,4 +151,8 @@ public final class OrderFields {
 
     public static final String ORDER_TECHNOLOGICAL_PROCESSES = "orderTechnologicalProcesses";
 
+    public static final String ORDER_TECHNOLOGICAL_PROCESSES_DTO = "orderTechnologicalProcessesDto";
+
+    public static final String ORDER_TECHNOLOGICAL_PROCESS_WASTES = "orderTechnologicalProcessWastes";
+
 }

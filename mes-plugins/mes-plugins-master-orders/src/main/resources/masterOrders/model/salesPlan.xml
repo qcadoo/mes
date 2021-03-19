@@ -48,6 +48,10 @@
         <hasMany name="productsBySizeHelpers" model="productsBySizeHelper" joinField="salesPlan"/>
         <hasMany name="salesPlanMaterialRequirements" model="salesPlanMaterialRequirement"
                  joinField="salesPlan"/>
+
+        <hasMany name="orders" joinField="salesPlan" model="order"
+                 plugin="orders" cascade="nullify"/>
+
     </fields>
 
     <hooks>

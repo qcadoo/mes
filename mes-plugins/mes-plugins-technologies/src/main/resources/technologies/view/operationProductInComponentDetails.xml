@@ -37,7 +37,7 @@
         <windowTab name="mainTab">
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="6"
-                           rows="6">
+                           rows="8">
                     <layoutElement column="1" row="1" width="5">
                         <component type="lookup" name="technologyInputProductType" field="technologyInputProductType"
                                    reference="technologyInputProductType">
@@ -111,6 +111,9 @@
                             <listener event="onSelectedEntityChange" method="calculateQuantity"
                                       class="com.qcadoo.mes.technologies.listeners.OPICDetailsListeners"/>
                         </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="7" height="2" width="5">
+                        <component type="textarea" name="description" field="description"/>
                     </layoutElement>
                 </component>
 

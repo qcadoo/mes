@@ -15,6 +15,7 @@ public class GenerationOrderResult {
     private static final String PARAMETER_AUTOMATICALLY_GENERATE_ORDERS_FOR_COMPONENTS = "automaticallyGenerateOrdersForComponents";
 
     private TranslationService translationService;
+
     private ParameterService parameterService;
 
     public GenerationOrderResult(TranslationService translationService, ParameterService parameterService) {
@@ -79,8 +80,8 @@ public class GenerationOrderResult {
     public void showMessage(ViewDefinitionState view) {
 
         if (!realizationFromStock.isEmpty()) {
-            view.addMessage("masterOrders.masterOrder.generationOrder.realizationFromStockNumbers", ComponentState.MessageType.INFO,
-                    false, String.join(", ", realizationFromStock));
+            view.addMessage("masterOrders.masterOrder.generationOrder.realizationFromStockNumbers",
+                    ComponentState.MessageType.INFO, false, String.join(", ", realizationFromStock));
         }
 
         if (!ordersWithoutPps.isEmpty()) {
@@ -91,8 +92,8 @@ public class GenerationOrderResult {
         if (!ordersWithoutGeneratedSubOrders.isEmpty()) {
             ordersWithoutGeneratedSubOrders.forEach(error -> {
                 view.addMessage("masterOrders.masterOrder.generationOrder.ordersWithoutGeneratedSubOrders",
-                        ComponentState.MessageType.INFO, false, error.getNumber(), translationService.translate(error.getError(),
-                                LocaleContextHolder.getLocale()));
+                        ComponentState.MessageType.INFO, false, error.getNumber(),
+                        translationService.translate(error.getError(), LocaleContextHolder.getLocale()));
             });
 
         }
@@ -102,7 +103,8 @@ public class GenerationOrderResult {
                     ComponentState.MessageType.INFO, false, String.join(", ", ordersWithGeneratedSubOrders));
         }
 
-        if (!ordersWithNoGeneratedSubOrders.isEmpty() && parameterService.getParameter().getBooleanField(PARAMETER_AUTOMATICALLY_GENERATE_ORDERS_FOR_COMPONENTS)) {
+        if (!ordersWithNoGeneratedSubOrders.isEmpty()
+                && parameterService.getParameter().getBooleanField(PARAMETER_AUTOMATICALLY_GENERATE_ORDERS_FOR_COMPONENTS)) {
             view.addMessage("masterOrders.masterOrder.generationOrder.ordersWithNoGeneratedSubOrders",
                     ComponentState.MessageType.INFO, false, String.join(", ", ordersWithNoGeneratedSubOrders));
         }
@@ -138,7 +140,73 @@ public class GenerationOrderResult {
                     ComponentState.MessageType.INFO, false, String.join(", ", productsWithoutAcceptedTechnologies));
         }
 
+    }
 
+    public List<String> extractMessages() {
+        List<String> messages = Lists.newArrayList();
+
+        if (!realizationFromStock.isEmpty()) {
+            messages.add(translationService.translate("masterOrders.masterOrder.generationOrder.realizationFromStockNumbers",
+                    LocaleContextHolder.getLocale(), String.join(", ", realizationFromStock)));
+        }
+
+        if (!ordersWithoutPps.isEmpty()) {
+            messages.add(translationService.translate("masterOrders.masterOrder.generationOrder.ordersWithoutPps",
+                    LocaleContextHolder.getLocale(), String.join(", ", ordersWithoutPps)));
+        }
+
+        if (!ordersWithoutGeneratedSubOrders.isEmpty()) {
+            ordersWithoutGeneratedSubOrders.forEach(error -> {
+                messages.add(translationService.translate(
+                        "masterOrders.masterOrder.generationOrder.ordersWithoutGeneratedSubOrders",
+                        LocaleContextHolder.getLocale(), error.getNumber(),
+                        translationService.translate(error.getError(), LocaleContextHolder.getLocale())));
+            });
+
+        }
+
+        if (!ordersWithGeneratedSubOrders.isEmpty()) {
+            messages.add(translationService.translate("masterOrders.masterOrder.generationOrder.ordersWithGeneratedSubOrders",
+                    LocaleContextHolder.getLocale(), String.join(", ", ordersWithGeneratedSubOrders)));
+        }
+
+        if (!ordersWithNoGeneratedSubOrders.isEmpty()
+                && parameterService.getParameter().getBooleanField(PARAMETER_AUTOMATICALLY_GENERATE_ORDERS_FOR_COMPONENTS)) {
+            messages.add(translationService.translate("masterOrders.masterOrder.generationOrder.ordersWithNoGeneratedSubOrders",
+                    LocaleContextHolder.getLocale(), String.join(", ", ordersWithNoGeneratedSubOrders)));
+        }
+
+        if (!generatedOrderNumbers.isEmpty()) {
+            messages.add(translationService.translate("masterOrders.masterOrder.generationOrder.generatedOrderNumbers",
+                    LocaleContextHolder.getLocale(), String.join(", ", generatedOrderNumbers)));
+        }
+
+        if (!productOrderSimpleErrors.isEmpty()) {
+            messages.add(translationService.translate("masterOrders.masterOrder.generationOrder.productOrderSimpleError",
+                    LocaleContextHolder.getLocale(), String.join(", ", productOrderSimpleErrors)));
+        }
+
+        if (!productOrderErrors.isEmpty()) {
+            productOrderErrors.forEach(err -> {
+                StringBuilder msg = new StringBuilder();
+                msg.append(translationService.translate(
+                        "masterOrders.masterOrder.generationOrder.productNumbersForNotGeneratedOrders", LocaleContextHolder.getLocale(),
+                        err.getProduct(), err.getMasterOrder(), err.getQuantity().toPlainString()));
+                msg.append("</br>");
+                err.getErrorMessages().forEach(
+                        errorMessage -> {
+                            msg.append(translationService.translate(errorMessage.getMessage(), LocaleContextHolder.getLocale(),
+                                    errorMessage.getVars()));
+                        });
+                messages.add(msg.toString());
+            });
+        }
+
+        if (!productsWithoutAcceptedTechnologies.isEmpty()) {
+            messages.add(translationService.translate("masterOrders.masterOrder.generationOrder.productsWithoutAcceptedTechnologies",
+                    LocaleContextHolder.getLocale(), String.join(", ", productsWithoutAcceptedTechnologies)));
+        }
+        return messages;
     }
 
     public List<String> getRealizationFromStock() {

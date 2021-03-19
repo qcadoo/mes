@@ -155,7 +155,6 @@
                     <layoutElement column="1" row="1">
                         <component type="input" name="number" field="number"
                                    reference="number">
-                            <option type="alignment" value="right"/>
                         </component>
                         <component type="input" name="externalNumber" field="#{form}.externalNumber"
                                    reference="externalNumber" defaultEnabled="never" defaultVisible="false"/>

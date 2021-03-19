@@ -50,6 +50,9 @@
         <boolean name="differentProductsInDifferentSizes" default="false"/>
         <hasMany name="productBySizeGroups" model="productBySizeGroup"
                  joinField="operationProductInComponent" cascade="delete" copyable="true"/>
+        <string name="description">
+            <validatesLength max="2048"/>
+        </string>
     </fields>
 
     <hooks>

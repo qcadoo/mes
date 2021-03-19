@@ -63,9 +63,9 @@ public final class OrderTechnologicalProcessDtoFields {
 
     public static final String QUANTITY = "quantity";
 
-    public static final String WORKER = "worker";
-
     public static final String DATE = "date";
+
+    public static final String WORKER = "worker";
 
     public static final String WASTES_QUANTITY = "wastesQuantity";
 
