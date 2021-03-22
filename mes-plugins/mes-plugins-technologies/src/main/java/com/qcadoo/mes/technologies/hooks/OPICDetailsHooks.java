@@ -23,11 +23,6 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -43,6 +38,11 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OPICDetailsHooks {
@@ -63,7 +63,10 @@ public class OPICDetailsHooks {
         Entity technologyInputProductType = technologyInputProductTypeLookup.getEntity();
         String givenUnit = (String) givenUnitField.getFieldValue();
 
-        if (Objects.nonNull(technologyInputProductType) && Objects.nonNull(givenUnit)) {
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OperationProductInComponentFields.PRODUCT);
+
+
+        if (productLookup.isEmpty() && Objects.nonNull(technologyInputProductType) && Objects.nonNull(givenUnit)) {
             unitField.setFieldValue(givenUnit);
             unitField.requestComponentUpdateState();
         }
