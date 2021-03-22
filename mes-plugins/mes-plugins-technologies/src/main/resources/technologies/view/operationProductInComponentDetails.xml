@@ -75,7 +75,7 @@
                             <option type="fieldCode" value="number"/>
 
                             <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.basic.util.UnitService" method="fillProductUnit"/>
+                                      class="com.qcadoo.mes.technologies.listeners.OPICDetailsListeners" method="onProductChange"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="4" width="5">

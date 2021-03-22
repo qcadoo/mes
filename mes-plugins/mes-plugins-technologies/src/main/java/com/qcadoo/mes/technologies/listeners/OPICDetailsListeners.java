@@ -23,17 +23,11 @@
  */
 package com.qcadoo.mes.technologies.listeners;
 
-import java.math.BigDecimal;
-import java.util.Objects;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.base.Optional;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
+import com.qcadoo.mes.basic.util.UnitService;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.Entity;
@@ -45,11 +39,18 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 import net.objecthunter.exp4j.ValidationResult;
+
+import java.math.BigDecimal;
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OPICDetailsListeners {
@@ -59,6 +60,27 @@ public class OPICDetailsListeners {
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private UnitService unitService;
+
+    public void onProductChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FieldComponent unitField = (FieldComponent) view.getComponentByReference(OperationProductInComponentFields.UNIT);
+        FieldComponent givenUnitField = (FieldComponent) view
+                .getComponentByReference(OperationProductInComponentFields.GIVEN_UNIT);
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OperationProductInComponentFields.PRODUCT);
+        if (productLookup.isEmpty()) {
+            unitField.setFieldValue("");
+            givenUnitField.setFieldValue("");
+        } else {
+            Entity product = productLookup.getEntity();
+            if (Objects.nonNull(product)) {
+                unitField.setFieldValue(product.getStringField(ProductFields.UNIT));
+                givenUnitField.setFieldValue(product.getStringField(ProductFields.UNIT));
+                calculateQuantity(view, state, args);
+            }
+        }
+    }
 
     public void calculateQuantityFormula(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent operationProductInComponentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
@@ -92,8 +114,8 @@ public class OPICDetailsListeners {
                         operationProductInComponent.setField(OperationProductInComponentFields.QUANTITY, givenQuantity);
                     } else {
                         PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(givenUnit,
-                                searchCriteriaBuilder -> searchCriteriaBuilder
-                                        .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+                                searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
+                                        UnitConversionItemFieldsB.PRODUCT, product)));
 
                         if (unitConversions.isDefinedFor(baseUnit)) {
                             BigDecimal convertedQuantity = unitConversions.convertTo(givenQuantity, baseUnit);
@@ -101,8 +123,8 @@ public class OPICDetailsListeners {
                             operationProductInComponent.setField(OperationProductInComponentFields.QUANTITY, convertedQuantity);
                         } else {
                             operationProductInComponent.addError(
-                                    operationProductInComponent.getDataDefinition()
-                                            .getField(OperationProductInComponentFields.GIVEN_QUANTITY),
+                                    operationProductInComponent.getDataDefinition().getField(
+                                            OperationProductInComponentFields.GIVEN_QUANTITY),
                                     "technologies.operationProductInComponent.validate.error.missingUnitConversion");
 
                             operationProductInComponent.setField(OperationProductInComponentFields.QUANTITY, null);
@@ -112,14 +134,14 @@ public class OPICDetailsListeners {
                     operationProductInComponentForm.setEntity(operationProductInComponent);
                 } else {
                     operationProductInComponent.addError(
-                            operationProductInComponent.getDataDefinition()
-                                    .getField(OperationProductInComponentFields.QUANTITY_FORMULA),
+                            operationProductInComponent.getDataDefinition().getField(
+                                    OperationProductInComponentFields.QUANTITY_FORMULA),
                             "technologies.operationProductInComponent.validate.error.badFormula");
                 }
             } catch (Exception ex) {
                 operationProductInComponent.addError(
-                        operationProductInComponent.getDataDefinition()
-                                .getField(OperationProductInComponentFields.QUANTITY_FORMULA),
+                        operationProductInComponent.getDataDefinition().getField(
+                                OperationProductInComponentFields.QUANTITY_FORMULA),
                         "technologies.operationProductInComponent.validate.error.badFormula");
             } finally {
                 operationProductInComponentForm.setEntity(operationProductInComponent);
@@ -152,8 +174,8 @@ public class OPICDetailsListeners {
             return;
         }
 
-        Either<Exception, Optional<BigDecimal>> maybeQuantity = BigDecimalUtils
-                .tryParse((String) givenQuantityField.getFieldValue(), view.getLocale());
+        Either<Exception, Optional<BigDecimal>> maybeQuantity = BigDecimalUtils.tryParse(
+                (String) givenQuantityField.getFieldValue(), view.getLocale());
 
         if (maybeQuantity.isRight()) {
             if (maybeQuantity.getRight().isPresent()) {
@@ -166,8 +188,8 @@ public class OPICDetailsListeners {
                         operationProductInComponent.setField(OperationProductInComponentFields.QUANTITY, givenQuantity);
                     } else {
                         PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(givenUnit,
-                                searchCriteriaBuilder -> searchCriteriaBuilder
-                                        .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, product)));
+                                searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
+                                        UnitConversionItemFieldsB.PRODUCT, product)));
 
                         if (unitConversions.isDefinedFor(baseUnit)) {
                             BigDecimal convertedQuantity = unitConversions.convertTo(givenQuantity, baseUnit);
@@ -175,8 +197,8 @@ public class OPICDetailsListeners {
                             operationProductInComponent.setField(OperationProductInComponentFields.QUANTITY, convertedQuantity);
                         } else {
                             operationProductInComponent.addError(
-                                    operationProductInComponent.getDataDefinition()
-                                            .getField(OperationProductInComponentFields.GIVEN_QUANTITY),
+                                    operationProductInComponent.getDataDefinition().getField(
+                                            OperationProductInComponentFields.GIVEN_QUANTITY),
                                     "technologies.operationProductInComponent.validate.error.missingUnitConversion");
 
                             operationProductInComponent.setField(OperationProductInComponentFields.QUANTITY, null);
