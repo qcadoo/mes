@@ -23,9 +23,8 @@ public class OrdersCriteriaModifiers {
     }
 
     public void showWithAppropriateStateForOrderPack(final SearchCriteriaBuilder scb) {
-        scb.add(SearchRestrictions.in(OrderFields.STATE,
-                Lists.newArrayList(OrderState.ACCEPTED.getStringValue(), OrderState.PENDING.getStringValue(),
-                        OrderState.IN_PROGRESS.getStringValue(), OrderState.INTERRUPTED.getStringValue())));
+        scb.add(SearchRestrictions.in(OrderFields.STATE, Lists.newArrayList(OrderState.ACCEPTED.getStringValue(),
+                OrderState.IN_PROGRESS.getStringValue(), OrderState.INTERRUPTED.getStringValue())));
     }
 
 }

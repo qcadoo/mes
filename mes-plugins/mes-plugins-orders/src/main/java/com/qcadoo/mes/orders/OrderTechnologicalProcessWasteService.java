@@ -12,7 +12,6 @@ import com.qcadoo.mes.basic.constants.UserFields;
 import com.qcadoo.mes.orders.constants.OrderTechnologicalProcessFields;
 import com.qcadoo.mes.orders.constants.OrderTechnologicalProcessWasteFields;
 import com.qcadoo.mes.technologies.constants.TechnologicalProcessFields;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -28,9 +27,6 @@ public class OrderTechnologicalProcessWasteService {
     private static final String L_WASTE_QUANTITY_UNIT = "wasteQuantityUnit";
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
-
-    @Autowired
     private UserService userService;
 
     @Autowired
@@ -43,9 +39,7 @@ public class OrderTechnologicalProcessWasteService {
         if (Objects.nonNull(orderTechnologicalProcess)) {
             Entity order = orderTechnologicalProcess.getBelongsToField(OrderTechnologicalProcessFields.ORDER);
 
-            boolean isOrderStateValid = !orderTechnologicalProcessService.checkOrderState(order);
-
-            isEnabled = isOrderStateValid;
+            isEnabled = !orderTechnologicalProcessService.checkOrderState(order);
         }
 
         orderTechnologicalProcessWasteForm.setFormEnabled(isEnabled);
