@@ -34,7 +34,7 @@
 			<template name="standardFormTemplate" />
 			<group name="generate">
 				<bigButton name="generate" icon="generateIcon24.png"
-					action="#{form}.fireEvent(generateModelCard);" state="enabled" />
+					action="#{form}.fireEvent(generateModelCard);" state="disabled" />
 			</group>
 			<group name="export">
 				<bigButton name="pdf" icon="pdfIcon24.png"
@@ -42,54 +42,93 @@
 			</group>
 		</ribbon>
 
-		<component type="form" name="modelCard" reference="form">
-			<component type="gridLayout" name="gridLayout" columns="3"
-				rows="8">
-				<layoutElement column="1" row="1">
-					<component type="input" name="number" reference="number"
-						field="number" defaultEnabled="never"/>
-				</layoutElement>
-				<layoutElement column="1" row="2" height="2">
-					<component type="textarea" name="name" reference="name"
-						field="name" />
-				</layoutElement>
-				<layoutElement column="1" row="4">
-					<component type="select" name="materialCostsUsed" reference="materialCostsUsed"
-						field="materialCostsUsed">
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="5">
-					<component type="checkbox" name="useNominalCostPriceNotSpecified" reference="useNominalCostPriceNotSpecified"
-							   field="useNominalCostPriceNotSpecified">
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="6">
-					<component type="checkbox" name="generated" reference="generated"
-							   field="generated" defaultEnabled="never">
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="7">
-					<component type="input" name="worker" reference="worker"
-							   field="worker" defaultEnabled="never">
-					</component>
-				</layoutElement>
-				<layoutElement column="1" row="8">
-					<component type="input" name="date" reference="date"
-							   field="date" defaultEnabled="never">
-					</component>
-				</layoutElement>
+		<windowTab name="mainTab">
+			<component type="form" name="modelCard" reference="form">
+				<component type="gridLayout" name="gridLayout" columns="3"
+					rows="8">
+					<layoutElement column="1" row="1">
+						<component type="input" name="number" reference="number"
+							field="number" defaultEnabled="never"/>
+					</layoutElement>
+					<layoutElement column="1" row="2" height="2">
+						<component type="textarea" name="name" reference="name"
+							field="name" />
+					</layoutElement>
+					<layoutElement column="1" row="4">
+						<component type="select" name="materialCostsUsed" reference="materialCostsUsed"
+							field="materialCostsUsed">
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="5">
+						<component type="checkbox" name="useNominalCostPriceNotSpecified" reference="useNominalCostPriceNotSpecified"
+								   field="useNominalCostPriceNotSpecified">
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="6">
+						<component type="checkbox" name="generated" reference="generated"
+								   field="generated" defaultEnabled="never">
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="7">
+						<component type="input" name="worker" reference="worker"
+								   field="worker" defaultEnabled="never">
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="8">
+						<component type="input" name="date" reference="date"
+								   field="date" defaultEnabled="never">
+						</component>
+					</layoutElement>
+				</component>
+
+				<option type="header" value="true" />
+				<option type="expression" value="#number" />
+
+				<listener event="printModelCard"
+					class="com.qcadoo.mes.costCalculation.listeners.ModelCardDetailsListeners"
+					method="printModelCard" />
+				<listener event="generateModelCard"
+					class="com.qcadoo.mes.costCalculation.listeners.ModelCardDetailsListeners"
+					method="generateModelCard" />
 			</component>
+		</windowTab>
 
-			<option type="header" value="true" />
-			<option type="expression" value="#number" />
+		<windowTab name="productsTab">
+			<component type="grid" name="modelCardProducts" source="#{form}.modelCardProducts"
+					   reference="grid">
+				<option type="column" name="productNumber" fields="product"
+						expression="#product['number']"
+						width="100" link="true"/>
+				<option type="column" name="productName" fields="product"
+						expression="#product['name']"
+						width="100" link="true"/>
+				<option type="column" name="technology" fields="technology"
+						expression="#technology['number']"
+						width="80"/>
+				<option type="column" name="quantity" fields="quantity"
+						width="60"/>
+				<option type="column" name="productUnit" fields="product"
+						expression="#product['unit']"
+						width="40"/>
 
-			<listener event="printModelCard"
-				class="com.qcadoo.mes.costCalculation.listeners.ModelCardDetailsListeners"
-				method="printModelCard" />
-			<listener event="generateModelCard"
-				class="com.qcadoo.mes.costCalculation.listeners.ModelCardDetailsListeners"
-				method="generateModelCard" />
-		</component>
+				<option type="order" column="productNumber" direction="asc"/>
+
+				<option type="searchable"
+						value="productNumber,productName,technology,quantity,productUnit"/>
+				<option type="orderable"
+						value="productNumber,productName,technology,quantity,productUnit"/>
+
+				<option type="correspondingView" value="costCalculation/modelCardProductDetails"/>
+				<option type="correspondingComponent" value="form"/>
+				<option type="correspondingViewInModal" value="true"/>
+
+				<option type="fullscreen" value="true"/>
+				<option type="multiselect" value="true"/>
+				<option type="creatable" value="true"/>
+				<option type="deletable" value="true"/>
+				<option type="fixedHeight" value="true"/>
+			</component>
+		</windowTab>
 
 	</component>
 

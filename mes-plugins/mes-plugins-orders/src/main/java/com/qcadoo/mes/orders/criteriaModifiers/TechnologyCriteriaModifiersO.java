@@ -26,6 +26,7 @@ package com.qcadoo.mes.orders.criteriaModifiers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
@@ -48,10 +49,24 @@ public class TechnologyCriteriaModifiersO {
         Long productId = filterValue.getLong(PRODUCT_PARAMETER);
         scb.add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, BasicConstants.PLUGIN_IDENTIFIER,
                 BasicConstants.MODEL_PRODUCT, productId));
-        scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE));
+        addTechnologyTypeCriteria(scb);
     }
 
     public void showAcceptedPatternTechnologyForProduct(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
+        addProductCriteria(scb, filterValue);
+        addTechnologyTypeCriteria(scb);
+        scb.add(SearchRestrictions.eq(TechnologyFields.STATE, TechnologyStateStringValues.ACCEPTED));
+    }
+
+    public void showAcceptedAndCheckedPatternTechnologyForProduct(final SearchCriteriaBuilder scb,
+            final FilterValueHolder filterValue) {
+        addProductCriteria(scb, filterValue);
+        addTechnologyTypeCriteria(scb);
+        scb.add(SearchRestrictions.in(TechnologyFields.STATE,
+                Lists.newArrayList(TechnologyStateStringValues.ACCEPTED, TechnologyStateStringValues.CHECKED)));
+    }
+
+    private void addProductCriteria(SearchCriteriaBuilder scb, FilterValueHolder filterValue) {
         if (filterValue.has(PRODUCT_PARAMETER)) {
             Long productId = filterValue.getLong(PRODUCT_PARAMETER);
             Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT)
@@ -67,9 +82,10 @@ public class TechnologyCriteriaModifiersO {
             scb.add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, BasicConstants.PLUGIN_IDENTIFIER,
                     BasicConstants.MODEL_PRODUCT, 0L));
         }
+    }
 
+    private void addTechnologyTypeCriteria(SearchCriteriaBuilder scb) {
         scb.add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE));
-        scb.add(SearchRestrictions.eq(TechnologyFields.STATE, TechnologyStateStringValues.ACCEPTED));
     }
 
 }

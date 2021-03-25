@@ -70,6 +70,7 @@
         <model:model model="standardLaborCost" resource="model/standardLaborCost.xml"/>
         <model:model model="calculationResult" resource="model/calculationResult.xml"/>
         <model:model model="modelCard" resource="model/modelCard.xml"/>
+        <model:model model="modelCardProduct" resource="model/modelCardProduct.xml"/>
 
         <menu:menu-category name="calculations" defaultAuthorizationRole="ROLE_CALCULATIONS"/>
 
@@ -217,12 +218,25 @@
                               joinField="product"/>
         </model:model-field>
 
+        <model:model-field model="technology" plugin="technologies">
+            <model:hasMany name="modelCardProducts"
+                           plugin="costCalculation" model="modelCardProduct"
+                           joinField="technology"/>
+        </model:model-field>
+
+        <model:model-field model="product" plugin="basic">
+            <model:hasMany name="modelCardProducts"
+                           plugin="costCalculation" model="modelCardProduct"
+                           joinField="product"/>
+        </model:model-field>
+
         <view:view resource="view/costCalculationList.xml"/>
         <view:view resource="view/costCalculationDetails.xml"/>
         <view:view resource="view/standardLaborCostsList.xml"/>
         <view:view resource="view/standardLaborCostDetails.xml"/>
         <view:view resource="view/modelCardsList.xml"/>
         <view:view resource="view/modelCardDetails.xml"/>
+        <view:view resource="view/modelCardProductDetails.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/technologiesList.xml"/>
 
         <view:view-tab resource="view/tabExtensions/technologiesParameters.xml" />

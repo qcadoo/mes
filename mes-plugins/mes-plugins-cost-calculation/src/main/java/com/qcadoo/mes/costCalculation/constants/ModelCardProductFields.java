@@ -23,26 +23,16 @@
  */
 package com.qcadoo.mes.costCalculation.constants;
 
-public final class ModelCardFields {
+public final class ModelCardProductFields {
 
-    private ModelCardFields() {
+    private ModelCardProductFields() {
 
     }
 
-    public static final String NUMBER = "number";
+    public static final String PRODUCT = "product";
 
-    public static final String NAME = "name";
+    public static final String MODEL_CARD = "modelCard";
 
-    public static final String MATERIAL_COSTS_USED = "materialCostsUsed";
-
-    public static final String USE_NOMINAL_COST_PRICE_NOT_SPECIFIED = "useNominalCostPriceNotSpecified";
-
-    public static final String GENERATED = "generated";
-
-    public static final String WORKER = "worker";
-
-    public static final String DATE = "date";
-
-    public static final String MODEL_CARD_PRODUCTS = "modelCardProducts";
+    public static final String TECHNOLOGY = "technology";
 
 }
