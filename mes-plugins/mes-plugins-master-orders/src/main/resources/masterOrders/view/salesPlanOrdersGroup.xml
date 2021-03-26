@@ -78,11 +78,11 @@
                                     expression="#product['number']"/>
 
                             <option type="column" name="size" fields="product"
-                                    expression="#product['size'].get('number')"/>
+                                    expression="#product['size']?.get('number')"/>
 
 
                             <option type="column" name="succession" fields="product"
-                                    expression="#product['size'].get('succession')" hidden="true"/>
+                                    expression="#product['size']?.get('succession')" hidden="true"/>
 
 
                             <option type="column" name="plannedQuantity" fields="plannedQuantity"/>
