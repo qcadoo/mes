@@ -270,7 +270,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
                 if (includeStartDateOrder) {
                     Date date = key.getDate();
 
-                    if (!actualDate.equals(date) || fillDateIfWarehouseChanged) {
+                    if ((Objects.nonNull(actualDate) && !actualDate.equals(date)) || fillDateIfWarehouseChanged) {
                         if (Objects.isNull(date)) {
                             actualDate = null;
 

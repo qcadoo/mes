@@ -208,7 +208,7 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
                 if (includeStartDateOrder) {
                     Date date = key.getDate();
 
-                    if (!actualDate.equals(date) || fillDateIfWarehouseChanged) {
+                    if ((Objects.nonNull(actualDate) && !actualDate.equals(date)) || fillDateIfWarehouseChanged) {
                         if (Objects.isNull(date)) {
                             actualDate = null;
 
