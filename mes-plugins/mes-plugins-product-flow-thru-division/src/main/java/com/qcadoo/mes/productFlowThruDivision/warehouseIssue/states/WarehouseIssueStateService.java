@@ -1,5 +1,17 @@
 package com.qcadoo.mes.productFlowThruDivision.warehouseIssue.states;
 
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.MultiHashMap;
+import org.apache.commons.collections.MultiMap;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.materialFlow.constants.LocationFields;
@@ -18,13 +30,6 @@ import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import org.apache.commons.collections.MultiHashMap;
-import org.apache.commons.collections.MultiMap;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class WarehouseIssueStateService {
@@ -112,13 +117,15 @@ public class WarehouseIssueStateService {
 
             CreationDocumentResponse response = warehouseIssueService.createWarehouseDocument(locationFrom, locationTo, order,
                     coll);
+
             if (!response.isValid()) {
                 stateChangeContext.addValidationError("productFlowThruDivision.issue.state.accept.error.documentsNotCreated");
+
                 if (Objects.nonNull(response.getErrors())) {
                     response.getErrors().forEach(er -> stateChangeContext.addValidationError(er.getMessage(), er.getVars()));
                 }
-                stateChangeContext.setStatus(StateChangeStatus.FAILURE);
 
+                stateChangeContext.setStatus(StateChangeStatus.FAILURE);
             } else {
                 warehouseIssueService.updateIssuePosition(coll, response.getDocument());
                 warehouseIssueService.updateProductsToIssues(Sets.newHashSet(warehouseIssue), _issues);

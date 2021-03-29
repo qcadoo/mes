@@ -26,6 +26,7 @@
 <model name="productsToIssue" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
         <belongsTo name="warehouseIssue" model="warehouseIssue"
                    required="true"/>
@@ -86,10 +87,10 @@
 
         <hasMany name="corrections" model="productToIssueCorrection" joinField="productsToIssue" cascade="delete"/>
     </fields>
+
     <hooks>
         <validatesWith class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.validators.ProductToIssueValidators" method="validate"/>
         <onSave class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks.ProductToIssueHooks" method="onSave"/>
         <onDelete class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks.ProductToIssueHooks" method="onDelete"/>
     </hooks>
-
 </model>

@@ -26,6 +26,7 @@
 <model name="issue" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
         <belongsTo name="warehouseIssue" model="warehouseIssue"
                    required="true"/>
@@ -87,9 +88,8 @@
         <string name="productsToIssueId" persistent="false" />
 
         <datetime name="dateOfIssued" copyable="false"/>
-
-
     </fields>
+
     <hooks>
         <validatesWith class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.validators.IssueValidators"
                        method="validate"/>
@@ -97,7 +97,5 @@
                   method="onDelete"/>
         <onSave class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.validators.IssueValidators"
                 method="onSave"/>
-
     </hooks>
-
 </model>
