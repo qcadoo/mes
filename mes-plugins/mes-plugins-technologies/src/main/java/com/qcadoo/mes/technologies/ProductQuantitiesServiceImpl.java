@@ -39,6 +39,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.SizeFields;
 import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
@@ -180,6 +181,17 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
             return getOperationProductComponentWithQuantities(allWithSameEntityType, nonComponents, false, false);
         } else {
             return getOperationProductComponentWithQuantities(allWithSameEntityType, nonComponents, true, true);
+        }
+    }
+
+    public Map<OperationProductComponentHolder, BigDecimal> getNeededProductQuantities(final Entity technology,
+            final Entity product, final BigDecimal plannedQuantity) {
+        String entityType = product.getStringField(ProductFields.ENTITY_TYPE);
+
+        if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(entityType)) {
+            return getNeededProductQuantitiesByOPC(technology, product, plannedQuantity, MrpAlgorithm.ONLY_COMPONENTS);
+        } else {
+            return getNeededProductQuantitiesByOPC(technology, plannedQuantity, MrpAlgorithm.ONLY_COMPONENTS);
         }
     }
 

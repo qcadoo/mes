@@ -46,7 +46,7 @@
 		<boolean name="useNominalCostPriceNotSpecified" default="false"/>
 
 		<hasMany name="modelCardProducts" model="modelCardProduct"
-				 joinField="modelCard" cascade="delete"/>
+				 joinField="modelCard" cascade="delete" copyable="true"/>
 	</fields>
 	<hooks>
 		<onSave class="com.qcadoo.mes.costCalculation.hooks.ModelCardHooks"

@@ -27,7 +27,6 @@ import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementProduct
 import com.qcadoo.mes.masterOrders.constants.SalesPlanProductFields;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
-import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
 import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
@@ -89,8 +88,8 @@ public class SalesPlanMaterialRequirementHelper {
             Entity technology = getTechnology(salesPlanProductTechnology, salesPlanProductProduct);
 
             if (Objects.nonNull(technology)) {
-                Map<OperationProductComponentHolder, BigDecimal> neededQuantities = getNeededProductQuantities(technology,
-                        salesPlanProductProduct, plannedQuantity);
+                Map<OperationProductComponentHolder, BigDecimal> neededQuantities = productQuantitiesService
+                        .getNeededProductQuantities(technology, salesPlanProductProduct, plannedQuantity);
 
                 for (Map.Entry<OperationProductComponentHolder, BigDecimal> neededProductQuantity : neededQuantities.entrySet()) {
                     Long productId = neededProductQuantity.getKey().getProductId();
@@ -134,24 +133,11 @@ public class SalesPlanMaterialRequirementHelper {
         return technology;
     }
 
-    private Map<OperationProductComponentHolder, BigDecimal> getNeededProductQuantities(final Entity technology,
-            final Entity product, final BigDecimal plannedQuantity) {
-        String entityType = product.getStringField(ProductFields.ENTITY_TYPE);
-
-        if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(entityType)) {
-            return productQuantitiesService.getNeededProductQuantitiesByOPC(technology, product, plannedQuantity,
-                    MrpAlgorithm.ONLY_COMPONENTS);
-        } else {
-            return productQuantitiesService.getNeededProductQuantitiesByOPC(technology, plannedQuantity,
-                    MrpAlgorithm.ONLY_COMPONENTS);
-        }
-    }
-
     private List<Entity> getProductBySizeGroups(final Long operationProductComponentId) {
         return getProductBySizeGroupDD().find()
                 .createAlias(ProductBySizeGroupFields.OPERATION_PRODUCT_IN_COMPONENT,
                         ProductBySizeGroupFields.OPERATION_PRODUCT_IN_COMPONENT, JoinType.LEFT)
-                .add(SearchRestrictions.eq(ProductBySizeGroupFields.OPERATION_PRODUCT_IN_COMPONENT + "." + "id",
+                .add(SearchRestrictions.eq(ProductBySizeGroupFields.OPERATION_PRODUCT_IN_COMPONENT + L_DOT + L_ID,
                         operationProductComponentId))
                 .list().getEntities();
     }

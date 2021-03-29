@@ -10,4 +10,8 @@ public final class ParameterFieldsCC {
 
     public static final String USE_NOMINAL_COST_PRICE_NOT_SPECIFIED_MC = "useNominalCostPriceNotSpecifiedMC";
 
+    public static final String PRODUCT_ATTRIBUTE = "productAttribute";
+
+    public static final String MATERIAL_ATTRIBUTE = "materialAttribute";
+
 }

@@ -35,4 +35,6 @@ public final class ModelCardProductFields {
 
     public static final String TECHNOLOGY = "technology";
 
+    public static final String QUANTITY = "quantity";
+
 }
