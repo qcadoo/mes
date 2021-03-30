@@ -1,4 +1,4 @@
-package com.qcadoo.mes.costCalculation.listeners;
+package com.qcadoo.mes.productFlowThruDivision.listeners;
 
 import java.io.IOException;
 import java.util.Date;
@@ -10,9 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.PageSize;
 import com.qcadoo.localization.api.utils.DateUtils;
-import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
-import com.qcadoo.mes.costCalculation.constants.ModelCardFields;
-import com.qcadoo.mes.costCalculation.print.ModelCardPdfService;
+import com.qcadoo.mes.productFlowThruDivision.constants.ModelCardFields;
+import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
+import com.qcadoo.mes.productFlowThruDivision.print.ModelCardPdfService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.file.FileService;
 import com.qcadoo.report.api.ReportService;
@@ -40,8 +40,8 @@ public class ModelCardDetailsListeners {
     private ModelCardPdfService modelCardPdfService;
 
     public void printModelCard(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        reportService.printGeneratedReport(view, state,
-                new String[] { args[0], CostCalculationConstants.PLUGIN_IDENTIFIER, CostCalculationConstants.MODEL_MODEL_CARD });
+        reportService.printGeneratedReport(view, state, new String[] { args[0],
+                ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER, ProductFlowThruDivisionConstants.MODEL_MODEL_CARD });
     }
 
     @Transactional
@@ -62,7 +62,7 @@ public class ModelCardDetailsListeners {
         form.setEntity(modelCard);
 
         Entity modelCardWithFileName = fileService.updateReportFileName(modelCard, ModelCardFields.DATE,
-                "costCalculation.modelCard.report.fileName");
+                "productFlowThruDivision.modelCard.report.fileName");
 
         try {
             modelCardPdfService.generateDocument(modelCardWithFileName, state.getLocale(), PageSize.A4.rotate());
@@ -70,6 +70,6 @@ public class ModelCardDetailsListeners {
             throw new IllegalStateException(e.getMessage(), e);
         }
 
-        view.addMessage("costCalculation.modelCard.generate.success", ComponentState.MessageType.SUCCESS);
+        view.addMessage("productFlowThruDivision.modelCard.generate.success", ComponentState.MessageType.SUCCESS);
     }
 }

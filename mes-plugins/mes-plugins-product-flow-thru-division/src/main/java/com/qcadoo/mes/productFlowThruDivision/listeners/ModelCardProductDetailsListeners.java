@@ -1,11 +1,11 @@
-package com.qcadoo.mes.costCalculation.listeners;
+package com.qcadoo.mes.productFlowThruDivision.listeners;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.costCalculation.constants.ModelCardProductFields;
 import com.qcadoo.mes.orders.TechnologyServiceO;
+import com.qcadoo.mes.productFlowThruDivision.constants.ModelCardProductFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;

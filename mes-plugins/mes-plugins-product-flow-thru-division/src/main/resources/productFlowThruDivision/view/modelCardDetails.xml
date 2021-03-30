@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_CALCULATIONS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_PRODUCTS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="modelCardDetails" modelName="modelCard">
 
@@ -85,10 +85,10 @@
 				<option type="expression" value="#number" />
 
 				<listener event="printModelCard"
-					class="com.qcadoo.mes.costCalculation.listeners.ModelCardDetailsListeners"
+					class="com.qcadoo.mes.productFlowThruDivision.listeners.ModelCardDetailsListeners"
 					method="printModelCard" />
 				<listener event="generateModelCard"
-					class="com.qcadoo.mes.costCalculation.listeners.ModelCardDetailsListeners"
+					class="com.qcadoo.mes.productFlowThruDivision.listeners.ModelCardDetailsListeners"
 					method="generateModelCard" />
 			</component>
 		</windowTab>
@@ -118,7 +118,7 @@
 				<option type="orderable"
 						value="productNumber,productName,technology,quantity,productUnit"/>
 
-				<option type="correspondingView" value="costCalculation/modelCardProductDetails"/>
+				<option type="correspondingView" value="productFlowThruDivision/modelCardProductDetails"/>
 				<option type="correspondingComponent" value="form"/>
 				<option type="correspondingViewInModal" value="true"/>
 
@@ -134,7 +134,7 @@
 
 	<hooks>
 		<beforeRender
-			class="com.qcadoo.mes.costCalculation.hooks.ModelCardDetailsHooks"
+			class="com.qcadoo.mes.productFlowThruDivision.hooks.ModelCardDetailsHooks"
 			method="onBeforeRender" />
 	</hooks>
 

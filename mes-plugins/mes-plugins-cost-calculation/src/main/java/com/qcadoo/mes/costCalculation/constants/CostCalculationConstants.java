@@ -39,7 +39,4 @@ public final class CostCalculationConstants {
 
     public static final String MODEL_STANDARD_LABOR_COST = "standardLaborCost";
 
-    public static final String MODEL_MODEL_CARD = "modelCard";
-
-    public static final String MODEL_MODEL_CARD_PRODUCT = "modelCardProduct";
 }

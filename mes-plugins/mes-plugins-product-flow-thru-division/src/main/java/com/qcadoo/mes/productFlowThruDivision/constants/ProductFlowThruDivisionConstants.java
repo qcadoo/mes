@@ -42,4 +42,8 @@ public final class ProductFlowThruDivisionConstants {
     public static final String MODEL_WAREHOUSE_ISSUE = "warehouseIssue";
 
     public static final String MODEL_WAREHOUSE_ISSUE_STATE_CHANGE = "warehouseIssueStateChange";
+
+    public static final String MODEL_MODEL_CARD = "modelCard";
+
+    public static final String MODEL_MODEL_CARD_PRODUCT = "modelCardProduct";
 }

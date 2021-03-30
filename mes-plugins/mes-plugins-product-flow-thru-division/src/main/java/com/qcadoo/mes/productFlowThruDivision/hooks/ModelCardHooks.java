@@ -1,4 +1,4 @@
-package com.qcadoo.mes.costCalculation.hooks;
+package com.qcadoo.mes.productFlowThruDivision.hooks;
 
 import java.util.Collections;
 import java.util.Objects;
@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.costCalculation.constants.ModelCardFields;
+import com.qcadoo.mes.productFlowThruDivision.constants.ModelCardFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 

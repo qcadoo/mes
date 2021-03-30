@@ -49,7 +49,7 @@
 				 joinField="modelCard" cascade="delete" copyable="true"/>
 	</fields>
 	<hooks>
-		<onSave class="com.qcadoo.mes.costCalculation.hooks.ModelCardHooks"
+		<onSave class="com.qcadoo.mes.productFlowThruDivision.hooks.ModelCardHooks"
 				method="onSave"/>
 	</hooks>
 	<identifier expression="#number + ' - ' + #name" />

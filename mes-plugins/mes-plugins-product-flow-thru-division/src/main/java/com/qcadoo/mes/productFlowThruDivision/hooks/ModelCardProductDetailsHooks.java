@@ -1,11 +1,11 @@
-package com.qcadoo.mes.costCalculation.hooks;
+package com.qcadoo.mes.productFlowThruDivision.hooks;
 
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.costCalculation.constants.ModelCardProductFields;
-import com.qcadoo.mes.costCalculation.criteriaModifier.ProductCriteriaModifiersCC;
 import com.qcadoo.mes.orders.criteriaModifiers.TechnologyCriteriaModifiersO;
+import com.qcadoo.mes.productFlowThruDivision.constants.ModelCardProductFields;
+import com.qcadoo.mes.productFlowThruDivision.criteriaModifiers.ProductCriteriaModifiersPFTD;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -40,11 +40,11 @@ public class ModelCardProductDetailsHooks {
 
         Entity modelCardProduct = ((FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM)).getEntity();
         Long modelCardId = modelCardProduct.getBelongsToField(ModelCardProductFields.MODEL_CARD).getId();
-        filterValueHolder.put(ProductCriteriaModifiersCC.L_MODEL_CARD_ID, modelCardId);
+        filterValueHolder.put(ProductCriteriaModifiersPFTD.L_MODEL_CARD_ID, modelCardId);
 
         Entity productFromDb = modelCardProduct.getBelongsToField(ModelCardProductFields.PRODUCT);
         if (productFromDb != null) {
-            filterValueHolder.put(ProductCriteriaModifiersCC.L_PRODUCT_ID, productFromDb.getId());
+            filterValueHolder.put(ProductCriteriaModifiersPFTD.L_PRODUCT_ID, productFromDb.getId());
         }
 
         productLookup.setFilterValue(filterValueHolder);

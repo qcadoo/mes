@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_CALCULATIONS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_PRODUCTS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
 	name="modelCardProductDetails" modelName="modelCardProduct">
 
@@ -49,11 +49,11 @@
 						<option type="fieldCode" value="number"/>
 
 						<criteriaModifier
-								class="com.qcadoo.mes.costCalculation.criteriaModifier.ProductCriteriaModifiersCC"
+								class="com.qcadoo.mes.productFlowThruDivision.criteriaModifiers.ProductCriteriaModifiersPFTD"
 								method="showNotAssignedProducts"/>
 
 						<listener event="onSelectedEntityChange"
-								  class="com.qcadoo.mes.costCalculation.listeners.ModelCardProductDetailsListeners"
+								  class="com.qcadoo.mes.productFlowThruDivision.listeners.ModelCardProductDetailsListeners"
 								  method="fillDefaultTechnology"/>
 					</component>
 				</layoutElement>
@@ -94,7 +94,7 @@
 
 	<hooks>
 		<beforeRender
-				class="com.qcadoo.mes.costCalculation.hooks.ModelCardProductDetailsHooks"
+				class="com.qcadoo.mes.productFlowThruDivision.hooks.ModelCardProductDetailsHooks"
 				method="onBeforeRender"/>
 	</hooks>
 

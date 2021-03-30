@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_CALCULATIONS" name="modelCardsList" modelName="modelCard"
+<view defaultAuthorizationRole="ROLE_PRODUCTS" name="modelCardsList" modelName="modelCard"
 	menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns="http://schema.qcadoo.org/view" xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 
@@ -41,7 +41,7 @@
 			<option type="column" name="date" fields="date" />
 			<option type="column" name="worker" fields="worker" width="100" />
 			<option type="order" column="date" direction="desc" />
-			<option type="correspondingView" value="costCalculation/modelCardDetails" />
+			<option type="correspondingView" value="productFlowThruDivision/modelCardDetails" />
 			<option type="correspondingComponent" value="form" />
 			<option type="searchable"
 				value="number,name,generated,worker,date" />

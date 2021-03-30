@@ -1,4 +1,4 @@
-package com.qcadoo.mes.costCalculation.print;
+package com.qcadoo.mes.productFlowThruDivision.print;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.beust.jcommander.internal.Maps;
+import com.google.common.collect.Lists;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
@@ -27,22 +29,29 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.AttributeFields;
 import com.qcadoo.mes.basic.constants.AttributeValueFields;
+import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.basic.constants.FormsFields;
 import com.qcadoo.mes.basic.constants.LabelFields;
 import com.qcadoo.mes.basic.constants.ModelFields;
 import com.qcadoo.mes.basic.constants.ProductAttachmentFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.SizeGroupFields;
-import com.qcadoo.mes.costCalculation.constants.ModelCardFields;
-import com.qcadoo.mes.costCalculation.constants.ModelCardProductFields;
-import com.qcadoo.mes.costCalculation.constants.ParameterFieldsCC;
+import com.qcadoo.mes.costCalculation.print.ProductsCostCalculationService;
+import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
+import com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields;
+import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
+import com.qcadoo.mes.productFlowThruDivision.constants.ModelCardFields;
+import com.qcadoo.mes.productFlowThruDivision.constants.ModelCardProductFields;
+import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductInComponentFieldsPFTD;
+import com.qcadoo.mes.productFlowThruDivision.constants.ParameterFieldsPFTD;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyInputProductTypeFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -65,7 +74,7 @@ public final class ModelCardPdfService extends PdfDocumentService {
 
     private static final int[] defaultModelCardProductColumnWidth = new int[] { 10, 20, 5, 10, 10 };
 
-    private static final int[] defaultModelCardMaterialsColumnWidth = new int[] { 9, 6, 15, 6, 6, 3, 3, 4, 4, 4, 3, 3 };
+    private static final int[] defaultModelCardMaterialsColumnWidth = new int[] { 9, 6, 15, 6, 6, 4, 3, 4, 4, 4, 4, 3 };
 
     @Autowired
     private TranslationService translationService;
@@ -93,12 +102,12 @@ public final class ModelCardPdfService extends PdfDocumentService {
 
     @Override
     public String getReportTitle(Locale locale) {
-        return translationService.translate("costCalculation.modelCard.report.title", locale);
+        return translationService.translate("productFlowThruDivision.modelCard.report.title", locale);
     }
 
     @Override
     protected void buildPdfContent(Document document, Entity entity, Locale locale) throws DocumentException {
-        String documentTitle = translationService.translate("costCalculation.modelCard.report.header", locale,
+        String documentTitle = translationService.translate("productFlowThruDivision.modelCard.report.header", locale,
                 entity.getStringField(ModelCardFields.NAME));
         String documentAuthor = translationService.translate("qcadooReport.commons.generatedBy.label", locale);
 
@@ -106,8 +115,8 @@ public final class ModelCardPdfService extends PdfDocumentService {
                 entity.getDateField(ModelCardFields.DATE));
 
         Entity parameter = parameterService.getParameter();
-        Entity productAttribute = parameter.getBelongsToField(ParameterFieldsCC.PRODUCT_ATTRIBUTE);
-        Entity materialAttribute = parameter.getBelongsToField(ParameterFieldsCC.MATERIAL_ATTRIBUTE);
+        Entity productAttribute = parameter.getBelongsToField(ParameterFieldsPFTD.PRODUCT_ATTRIBUTE);
+        Entity materialAttribute = parameter.getBelongsToField(ParameterFieldsPFTD.MATERIAL_ATTRIBUTE);
         for (Entity modelCardProduct : entity.getHasManyField(ModelCardFields.MODEL_CARD_PRODUCTS)) {
             addProductTable(document, modelCardProduct, productAttribute, locale);
             addMaterialsTable(document, entity, modelCardProduct, materialAttribute, locale);
@@ -118,31 +127,35 @@ public final class ModelCardPdfService extends PdfDocumentService {
     private void addMaterialsTable(Document document, Entity modelCard, Entity modelCardProduct, Entity materialAttribute,
             Locale locale) throws DocumentException {
         Map<String, HeaderAlignment> headersWithAlignments = com.google.common.collect.Maps.newLinkedHashMap();
-        headersWithAlignments.put(translationService.translate("costCalculation.modelCard.report.productType.label", locale),
+        headersWithAlignments.put(
+                translationService.translate("productFlowThruDivision.modelCard.report.productType.label", locale),
                 HeaderAlignment.LEFT);
-        headersWithAlignments.put(translationService.translate("costCalculation.modelCard.report.sizeGroup.label", locale),
+        headersWithAlignments.put(
+                translationService.translate("productFlowThruDivision.modelCard.report.sizeGroup.label", locale),
                 HeaderAlignment.LEFT);
-        headersWithAlignments.put(translationService.translate("costCalculation.modelCard.report.product.label", locale),
+        headersWithAlignments.put(translationService.translate("productFlowThruDivision.modelCard.report.product.label", locale),
                 HeaderAlignment.LEFT);
         headersWithAlignments.put(
                 materialAttribute != null ? materialAttribute.getStringField(AttributeFields.NUMBER) : StringUtils.EMPTY,
                 HeaderAlignment.LEFT);
-        headersWithAlignments.put(translationService.translate("costCalculation.modelCard.report.supplier.label", locale),
+        headersWithAlignments.put(translationService.translate("productFlowThruDivision.modelCard.report.supplier.label", locale),
                 HeaderAlignment.LEFT);
         headersWithAlignments.put(
-                translationService.translate("costCalculation.modelCard.report.minimumOrderQuantity.label", locale),
+                translationService.translate("productFlowThruDivision.modelCard.report.minimumOrderQuantity.label", locale),
                 HeaderAlignment.RIGHT);
-        headersWithAlignments.put(translationService.translate("costCalculation.modelCard.report.norm.label", locale),
+        headersWithAlignments.put(translationService.translate("productFlowThruDivision.modelCard.report.norm.label", locale),
                 HeaderAlignment.RIGHT);
-        headersWithAlignments.put(translationService.translate("costCalculation.modelCard.report.price.label", locale),
+        headersWithAlignments.put(translationService.translate("productFlowThruDivision.modelCard.report.price.label", locale),
                 HeaderAlignment.RIGHT);
-        headersWithAlignments.put(translationService.translate("costCalculation.modelCard.report.unitCost.label", locale),
+        headersWithAlignments.put(translationService.translate("productFlowThruDivision.modelCard.report.unitCost.label", locale),
                 HeaderAlignment.RIGHT);
-        headersWithAlignments.put(translationService.translate("costCalculation.modelCard.report.demandQuantity.label", locale),
+        headersWithAlignments.put(
+                translationService.translate("productFlowThruDivision.modelCard.report.demandQuantity.label", locale),
                 HeaderAlignment.RIGHT);
-        headersWithAlignments.put(translationService.translate("costCalculation.modelCard.report.warehouseStock.label", locale),
+        headersWithAlignments.put(
+                translationService.translate("productFlowThruDivision.modelCard.report.warehouseStock.label", locale),
                 HeaderAlignment.RIGHT);
-        headersWithAlignments.put(translationService.translate("costCalculation.modelCard.report.unit.label", locale),
+        headersWithAlignments.put(translationService.translate("productFlowThruDivision.modelCard.report.unit.label", locale),
                 HeaderAlignment.LEFT);
 
         List<String> headers = com.google.common.collect.Lists.newLinkedList(headersWithAlignments.keySet());
@@ -157,16 +170,18 @@ public final class ModelCardPdfService extends PdfDocumentService {
         Map<OperationProductComponentHolder, BigDecimal> neededQuantities = productQuantitiesService
                 .getNeededProductQuantities(technology, product, quantity);
 
+        Map<Long, Map<Long, BigDecimal>> quantitiesInStock = getQuantitiesInStock(neededQuantities.keySet());
+
         for (Map.Entry<OperationProductComponentHolder, BigDecimal> neededProductQuantity : neededQuantities.entrySet()) {
-            Long materialId = neededProductQuantity.getKey().getProductId();
-            Long operationProductComponentId = neededProductQuantity.getKey().getOperationProductComponentId();
             Entity material = neededProductQuantity.getKey().getProduct();
             Entity operationProductComponent = neededProductQuantity.getKey().getOperationProductComponent();
+            Entity warehouse = operationProductComponent
+                    .getBelongsToField(OperationProductInComponentFieldsPFTD.COMPONENTS_LOCATION);
             BigDecimal neededQuantity = neededProductQuantity.getValue();
 
-            if (Objects.isNull(materialId)) {
+            if (Objects.isNull(material)) {
                 table.getDefaultCell().disableBorderSide(PdfCell.BOTTOM);
-                List<Entity> productBySizeGroups = getProductBySizeGroups(operationProductComponentId);
+                List<Entity> productBySizeGroups = getProductBySizeGroups(operationProductComponent.getId());
                 Map<Long, BigDecimal> productBySizeGroupPrices = Maps.newHashMap();
                 BigDecimal productBySizeGroupPricesSum = BigDecimal.ZERO;
 
@@ -182,9 +197,9 @@ public final class ModelCardPdfService extends PdfDocumentService {
 
                 addTechnologyInputProductTypeToReport(table, operationProductComponent);
                 table.addCell(new Phrase(StringUtils.EMPTY));
-                table.addCell(
-                        new Phrase(translationService.translate("costCalculation.modelCard.report.productsBySize.label", locale),
-                                FontUtils.getDejavuItalic7Light()));
+                table.addCell(new Phrase(
+                        translationService.translate("productFlowThruDivision.modelCard.report.productsBySize.label", locale),
+                        FontUtils.getDejavuItalic7Light()));
                 table.addCell(new Phrase(StringUtils.EMPTY));
                 table.addCell(new Phrase(StringUtils.EMPTY));
                 table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
@@ -218,15 +233,35 @@ public final class ModelCardPdfService extends PdfDocumentService {
                             materialAttributeValue != null ? materialAttributeValue.getStringField(AttributeValueFields.VALUE)
                                     : StringUtils.EMPTY,
                             FontUtils.getDejavuRegular7Light()));
-                    table.addCell(new Phrase(StringUtils.EMPTY));
+                    Entity supplier = null;
+                    BigDecimal minimumOrderQuantity = null;
+                    Entity supplierData = getSupplierData(materialBySizeGroup);
+
+                    if (!Objects.isNull(supplierData)) {
+                        if (supplierData.getDataDefinition().getName().equals(DeliveriesConstants.MODEL_COMPANY_PRODUCT)) {
+                            supplier = supplierData.getBelongsToField(CompanyProductFields.COMPANY);
+                            minimumOrderQuantity = supplierData.getDecimalField(CompanyProductFields.MINIMUM_ORDER_QUANTITY);
+                        } else {
+                            supplier = supplierData.getBelongsToField(CompanyProductsFamilyFields.COMPANY);
+                            minimumOrderQuantity = supplierData
+                                    .getDecimalField(CompanyProductsFamilyFields.MINIMUM_ORDER_QUANTITY);
+                        }
+                    }
+                    table.addCell(new Phrase(supplier != null ? supplier.getStringField(CompanyFields.NUMBER) : StringUtils.EMPTY,
+                            FontUtils.getDejavuRegular7Light()));
                     table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-                    table.addCell(new Phrase(StringUtils.EMPTY));
+                    table.addCell(new Phrase(
+                            minimumOrderQuantity != null ? numberService.format(minimumOrderQuantity) : StringUtils.EMPTY,
+                            FontUtils.getDejavuRegular7Light()));
                     table.addCell(new Phrase(StringUtils.EMPTY));
                     table.addCell(new Phrase(numberService.format(productBySizeGroupPrices.get(materialBySizeGroup.getId())),
                             FontUtils.getDejavuRegular7Light()));
                     table.addCell(new Phrase(StringUtils.EMPTY));
                     table.addCell(new Phrase(StringUtils.EMPTY));
-                    table.addCell(new Phrase(StringUtils.EMPTY));
+                    table.addCell(new Phrase(
+                            numberService.format(BigDecimalUtils.convertNullToZero(
+                                    quantitiesInStock.get(warehouse.getId()).get(materialBySizeGroup.getId()))),
+                            FontUtils.getDejavuRegular7Light()));
                     table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
                     table.addCell(new Phrase(materialBySizeGroup.getStringField(ProductFields.UNIT),
                             FontUtils.getDejavuRegular7Light()));
@@ -244,9 +279,26 @@ public final class ModelCardPdfService extends PdfDocumentService {
                         materialAttributeValue != null ? materialAttributeValue.getStringField(AttributeValueFields.VALUE)
                                 : StringUtils.EMPTY,
                         FontUtils.getDejavuRegular7Dark()));
-                table.addCell(new Phrase(StringUtils.EMPTY));
+                Entity supplier = null;
+                BigDecimal minimumOrderQuantity = null;
+                Entity supplierData = getSupplierData(material);
+
+                if (!Objects.isNull(supplierData)) {
+                    if (supplierData.getDataDefinition().getName().equals(DeliveriesConstants.MODEL_COMPANY_PRODUCT)) {
+                        supplier = supplierData.getBelongsToField(CompanyProductFields.COMPANY);
+                        minimumOrderQuantity = supplierData.getDecimalField(CompanyProductFields.MINIMUM_ORDER_QUANTITY);
+                    } else {
+                        supplier = supplierData.getBelongsToField(CompanyProductsFamilyFields.COMPANY);
+                        minimumOrderQuantity = supplierData.getDecimalField(CompanyProductsFamilyFields.MINIMUM_ORDER_QUANTITY);
+                    }
+                }
+
+                table.addCell(new Phrase(supplier != null ? supplier.getStringField(CompanyFields.NUMBER) : StringUtils.EMPTY,
+                        FontUtils.getDejavuRegular7Dark()));
                 table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-                table.addCell(new Phrase(StringUtils.EMPTY));
+                table.addCell(
+                        new Phrase(minimumOrderQuantity != null ? numberService.format(minimumOrderQuantity) : StringUtils.EMPTY,
+                                FontUtils.getDejavuBold7Dark()));
                 BigDecimal norm = operationProductComponent.getDecimalField(OperationProductInComponentFields.QUANTITY);
                 table.addCell(new Phrase(numberService.format(norm), FontUtils.getDejavuBold7Dark()));
                 BigDecimal price = productsCostCalculationService.calculateProductCostPerUnit(material,
@@ -256,12 +308,93 @@ public final class ModelCardPdfService extends PdfDocumentService {
                 table.addCell(new Phrase(numberService.format(norm.multiply(price, numberService.getMathContext())),
                         FontUtils.getDejavuBold7Dark()));
                 table.addCell(new Phrase(numberService.format(neededQuantity), FontUtils.getDejavuBold7Dark()));
-                table.addCell(new Phrase(StringUtils.EMPTY));
+                table.addCell(new Phrase(
+                        numberService.format(BigDecimalUtils
+                                .convertNullToZero(quantitiesInStock.get(warehouse.getId()).get(material.getId()))),
+                        FontUtils.getDejavuBold7Dark()));
                 table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
                 table.addCell(new Phrase(material.getStringField(ProductFields.UNIT), FontUtils.getDejavuRegular7Dark()));
             }
         }
         document.add(table);
+    }
+
+    private Entity getSupplierData(Entity material) {
+        Entity companyProduct = getCompanyProductDD().find()
+                .createAlias(CompanyProductFields.PRODUCT, CompanyProductFields.PRODUCT, JoinType.LEFT)
+                .add(SearchRestrictions.eq(CompanyProductFields.PRODUCT + L_DOT + L_ID, material.getId()))
+                .add(SearchRestrictions.eq(CompanyProductFields.IS_DEFAULT, true)).uniqueResult();
+        if (!Objects.isNull(companyProduct)) {
+            return companyProduct;
+        } else {
+            Entity parent = material.getBelongsToField(ProductFields.PARENT);
+            if (!Objects.isNull(parent)) {
+                Entity companyProductFamily = getCompanyProductsFamilyDD().find()
+                        .createAlias(CompanyProductsFamilyFields.PRODUCT, CompanyProductsFamilyFields.PRODUCT, JoinType.LEFT)
+                        .add(SearchRestrictions.eq(CompanyProductsFamilyFields.PRODUCT + L_DOT + L_ID, parent.getId()))
+                        .add(SearchRestrictions.eq(CompanyProductsFamilyFields.IS_DEFAULT, true)).uniqueResult();
+                if (!Objects.isNull(companyProductFamily)) {
+                    return companyProductFamily;
+                }
+            }
+        }
+        return null;
+    }
+
+    private DataDefinition getCompanyProductDD() {
+        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COMPANY_PRODUCT);
+    }
+
+    private DataDefinition getCompanyProductsFamilyDD() {
+        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                DeliveriesConstants.MODEL_COMPANY_PRODUCTS_FAMILY);
+    }
+
+    private Map<Long, Map<Long, BigDecimal>> getQuantitiesInStock(
+            Set<OperationProductComponentHolder> operationProductComponentHolders) {
+        Map<Long, Entity> warehouses = com.google.common.collect.Maps.newHashMap();
+        Map<Long, List<Entity>> warehouseProducts = com.google.common.collect.Maps.newHashMap();
+
+        for (OperationProductComponentHolder operationProductComponentHolder : operationProductComponentHolders) {
+            Entity product = operationProductComponentHolder.getProduct();
+            Entity operationProductComponent = operationProductComponentHolder.getOperationProductComponent();
+            Entity warehouse = operationProductComponent
+                    .getBelongsToField(OperationProductInComponentFieldsPFTD.COMPONENTS_LOCATION);
+
+            if (!warehouses.containsKey(warehouse.getId())) {
+                warehouses.put(warehouse.getId(), warehouse);
+            }
+            if (Objects.isNull(product)) {
+                List<Entity> productBySizeGroups = getProductBySizeGroups(operationProductComponent.getId());
+                for (Entity productBySizeGroup : productBySizeGroups) {
+                    Entity materialBySizeGroup = productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT);
+                    if (warehouseProducts.containsKey(warehouse.getId())) {
+                        List<Entity> products = warehouseProducts.get(warehouse.getId());
+
+                        products.add(materialBySizeGroup);
+                    } else {
+                        warehouseProducts.put(warehouse.getId(), Lists.newArrayList(materialBySizeGroup));
+                    }
+                }
+            } else {
+                if (warehouseProducts.containsKey(warehouse.getId())) {
+                    List<Entity> products = warehouseProducts.get(warehouse.getId());
+
+                    products.add(product);
+                } else {
+                    warehouseProducts.put(warehouse.getId(), Lists.newArrayList(product));
+                }
+            }
+        }
+
+        Map<Long, Map<Long, BigDecimal>> quantitiesInStock = com.google.common.collect.Maps.newHashMap();
+
+        for (Map.Entry<Long, List<Entity>> entry : warehouseProducts.entrySet()) {
+            quantitiesInStock.put(entry.getKey(), materialFlowResourcesService
+                    .getQuantitiesForProductsAndLocation(entry.getValue(), warehouses.get(entry.getKey())));
+        }
+
+        return quantitiesInStock;
     }
 
     private Entity getProductAttributeValue(Entity productAttribute, Entity product) {
@@ -316,8 +449,9 @@ public final class ModelCardPdfService extends PdfDocumentService {
             throws DocumentException {
         PdfPTable panelTable = pdfHelper.createPanelTable(5);
         panelTable.setWidths(defaultModelCardProductColumnWidth);
-        panelTable.addCell(new Phrase(translationService.translate("costCalculation.modelCard.report.product.label", locale),
-                FontUtils.getDejavuBold7Dark()));
+        panelTable.addCell(
+                new Phrase(translationService.translate("productFlowThruDivision.modelCard.report.product.label", locale),
+                        FontUtils.getDejavuBold7Dark()));
         Entity product = modelCardProduct.getBelongsToField(ModelCardProductFields.PRODUCT);
         PdfPCell cell = new PdfPCell(new Phrase(product.getStringField(ProductFields.NUMBER), FontUtils.getDejavuRegular9Dark()));
         cell.setColspan(3);
@@ -337,21 +471,23 @@ public final class ModelCardPdfService extends PdfDocumentService {
         panelTable.addCell(cell);
 
         Entity productModel = product.getBelongsToField(ProductFields.MODEL);
-        panelTable.addCell(new Phrase(translationService.translate("costCalculation.modelCard.report.model.label", locale),
-                FontUtils.getDejavuBold7Dark()));
+        panelTable
+                .addCell(new Phrase(translationService.translate("productFlowThruDivision.modelCard.report.model.label", locale),
+                        FontUtils.getDejavuBold7Dark()));
         panelTable.addCell(new Phrase(productModel != null ? productModel.getStringField(ModelFields.NAME) : StringUtils.EMPTY,
                 FontUtils.getDejavuRegular9Dark()));
         Entity form = null;
         if (productModel != null) {
             form = productModel.getBelongsToField(ModelFields.FORMS);
         }
-        panelTable.addCell(new Phrase(translationService.translate("costCalculation.modelCard.report.form.label", locale),
+        panelTable.addCell(new Phrase(translationService.translate("productFlowThruDivision.modelCard.report.form.label", locale),
                 FontUtils.getDejavuBold7Dark()));
         panelTable.addCell(new Phrase(form != null ? form.getStringField(FormsFields.NUMBER) : StringUtils.EMPTY,
                 FontUtils.getDejavuRegular9Dark()));
 
-        panelTable.addCell(new Phrase(translationService.translate("costCalculation.modelCard.report.quantity.label", locale),
-                FontUtils.getDejavuBold7Dark()));
+        panelTable.addCell(
+                new Phrase(translationService.translate("productFlowThruDivision.modelCard.report.quantity.label", locale),
+                        FontUtils.getDejavuBold7Dark()));
         panelTable.addCell(new Phrase(
                 numberService.formatWithMinimumFractionDigits(modelCardProduct.getDecimalField(ModelCardProductFields.QUANTITY),
                         0) + " " + product.getStringField(ProductFields.UNIT),
@@ -360,14 +496,15 @@ public final class ModelCardPdfService extends PdfDocumentService {
         if (productModel != null) {
             label = productModel.getBelongsToField(ModelFields.LABEL);
         }
-        panelTable.addCell(new Phrase(translationService.translate("costCalculation.modelCard.report.label.label", locale),
-                FontUtils.getDejavuBold7Dark()));
+        panelTable
+                .addCell(new Phrase(translationService.translate("productFlowThruDivision.modelCard.report.label.label", locale),
+                        FontUtils.getDejavuBold7Dark()));
         panelTable.addCell(new Phrase(label != null ? label.getStringField(LabelFields.NAME) : StringUtils.EMPTY,
                 FontUtils.getDejavuRegular9Dark()));
 
-        panelTable.addCell(
-                new Phrase(translationService.translate("costCalculation.modelCard.report.materialUnitCost.label", locale),
-                        FontUtils.getDejavuBold7Dark()));
+        panelTable.addCell(new Phrase(
+                translationService.translate("productFlowThruDivision.modelCard.report.materialUnitCost.label", locale),
+                FontUtils.getDejavuBold7Dark()));
         panelTable.addCell(new Phrase(numberService.format(BigDecimal.ZERO), FontUtils.getDejavuRegular9Dark()));
         Entity productAttributeValue = getProductAttributeValue(productAttribute, product);
         panelTable.addCell(

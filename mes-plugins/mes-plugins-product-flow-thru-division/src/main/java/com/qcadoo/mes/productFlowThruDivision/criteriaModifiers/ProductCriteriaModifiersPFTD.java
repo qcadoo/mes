@@ -1,10 +1,10 @@
-package com.qcadoo.mes.costCalculation.criteriaModifier;
+package com.qcadoo.mes.productFlowThruDivision.criteriaModifiers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
-import com.qcadoo.mes.costCalculation.constants.ModelCardProductFields;
+import com.qcadoo.mes.productFlowThruDivision.constants.ModelCardProductFields;
+import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -14,7 +14,7 @@ import com.qcadoo.model.api.search.SearchSubqueries;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 
 @Service
-public class ProductCriteriaModifiersCC {
+public class ProductCriteriaModifiersPFTD {
 
     public static final String L_MODEL_CARD_ID = "modelCardId";
 
@@ -34,12 +34,13 @@ public class ProductCriteriaModifiersCC {
             long modelCardId = filterValue.getLong(L_MODEL_CARD_ID);
 
             SearchCriteriaBuilder subCriteria = dataDefinitionService
-                    .get(CostCalculationConstants.PLUGIN_IDENTIFIER, CostCalculationConstants.MODEL_MODEL_CARD_PRODUCT)
-                    .findWithAlias(CostCalculationConstants.MODEL_MODEL_CARD_PRODUCT)
+                    .get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
+                            ProductFlowThruDivisionConstants.MODEL_MODEL_CARD_PRODUCT)
+                    .findWithAlias(ProductFlowThruDivisionConstants.MODEL_MODEL_CARD_PRODUCT)
                     .createAlias(ModelCardProductFields.PRODUCT, ModelCardProductFields.PRODUCT, JoinType.INNER)
                     .add(SearchRestrictions.eqField(ModelCardProductFields.PRODUCT + L_DOT + L_ID, L_THIS_ID))
                     .add(SearchRestrictions.belongsTo(ModelCardProductFields.MODEL_CARD,
-                            CostCalculationConstants.PLUGIN_IDENTIFIER, ModelCardProductFields.MODEL_CARD, modelCardId))
+                            ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER, ModelCardProductFields.MODEL_CARD, modelCardId))
                     .setProjection(SearchProjections.id());
             if (filterValue.has(L_PRODUCT_ID)) {
                 searchCriteriaBuilder.add(SearchRestrictions.or(SearchSubqueries.notExists(subCriteria),

@@ -1,4 +1,4 @@
-package com.qcadoo.mes.costCalculation.hooks;
+package com.qcadoo.mes.productFlowThruDivision.hooks;
 
 import java.util.Objects;
 
@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.costCalculation.constants.ModelCardFields;
-import com.qcadoo.mes.costCalculation.constants.ParameterFieldsCC;
+import com.qcadoo.mes.productFlowThruDivision.constants.ModelCardFields;
+import com.qcadoo.mes.productFlowThruDivision.constants.ParameterFieldsPFTD;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
@@ -82,9 +82,9 @@ public class ModelCardDetailsHooks {
         if (form.getEntityId() == null) {
             Entity parameter = parameterService.getParameter();
             fillWithProperty(ModelCardFields.MATERIAL_COSTS_USED,
-                    parameter.getStringField(ParameterFieldsCC.MATERIAL_COSTS_USED_MC), view);
+                    parameter.getStringField(ParameterFieldsPFTD.MATERIAL_COSTS_USED_MC), view);
             fillCheckboxWithProperty(ModelCardFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED,
-                    parameter.getBooleanField(ParameterFieldsCC.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED_MC), view);
+                    parameter.getBooleanField(ParameterFieldsPFTD.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED_MC), view);
         }
     }
 
