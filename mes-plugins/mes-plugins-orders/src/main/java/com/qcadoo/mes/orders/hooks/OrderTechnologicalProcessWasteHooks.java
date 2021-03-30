@@ -32,6 +32,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.orders.OrderTechnologicalProcessService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderTechnologicalProcessFields;
 import com.qcadoo.mes.orders.constants.OrderTechnologicalProcessWasteFields;
@@ -49,6 +50,9 @@ public class OrderTechnologicalProcessWasteHooks {
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private OrderTechnologicalProcessService orderTechnologicalProcessService;
 
     public void onSave(final DataDefinition orderTechnologicalProcessWasteDD, final Entity orderTechnologicalProcessWaste) {
         if (checkIfShouldInsertNumber(orderTechnologicalProcessWaste)) {
@@ -93,8 +97,17 @@ public class OrderTechnologicalProcessWasteHooks {
             final Entity orderTechnologicalProcessWaste) {
         Entity orderTechnologicalProcess = orderTechnologicalProcessWaste
                 .getBelongsToField(OrderTechnologicalProcessWasteFields.ORDER_TECHNOLOGICAL_PROCESS);
+        Entity order = orderTechnologicalProcessWaste.getBelongsToField(OrderTechnologicalProcessWasteFields.ORDER);
         BigDecimal wasteQuantity = orderTechnologicalProcessWaste
                 .getDecimalField(OrderTechnologicalProcessWasteFields.WASTE_QUANTITY);
+
+        if (Objects.isNull(orderTechnologicalProcessWaste.getId()) && orderTechnologicalProcessService.checkOrderState(order)) {
+            orderTechnologicalProcessWaste.addError(
+                    orderTechnologicalProcessWasteDD.getField(OrderTechnologicalProcessWasteFields.ORDER),
+                    "orders.orderTechnologicalProcessWaste.order.incorrectState");
+
+            return false;
+        }
 
         if (Objects.nonNull(orderTechnologicalProcess)) {
             BigDecimal quantity = orderTechnologicalProcess.getDecimalField(OrderTechnologicalProcessFields.QUANTITY);

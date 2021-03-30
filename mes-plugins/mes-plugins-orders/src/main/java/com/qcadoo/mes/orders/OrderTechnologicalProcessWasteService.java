@@ -104,7 +104,7 @@ public class OrderTechnologicalProcessWasteService {
         LookupComponent workerLookup = (LookupComponent) view
                 .getComponentByReference(OrderTechnologicalProcessWasteFields.WORKER);
 
-        if (view.isViewAfterRedirect()) {
+        if (view.isViewAfterReload()) {
             Entity currentUser = userService.getCurrentUserEntity();
 
             Entity worker = currentUser.getBelongsToField(UserFields.STAFF);
