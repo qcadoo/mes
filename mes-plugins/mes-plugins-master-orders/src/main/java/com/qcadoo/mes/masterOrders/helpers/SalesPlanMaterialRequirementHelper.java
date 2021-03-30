@@ -293,7 +293,7 @@ public class SalesPlanMaterialRequirementHelper {
         if (!products.isEmpty()) {
             List<Entity> locations = materialFlowResourcesService.getWarehouseLocationsFromDB();
 
-            resourceStocks = materialFlowResourcesService.getQuantitiesForProductsAndLocation(products, locations);
+            resourceStocks = materialFlowResourcesService.getQuantitiesForProductsAndLocations(products, locations);
         }
 
         return resourceStocks;

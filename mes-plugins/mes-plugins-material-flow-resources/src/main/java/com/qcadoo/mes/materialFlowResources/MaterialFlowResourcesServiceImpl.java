@@ -149,7 +149,7 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     }
 
     @Override
-    public Map<Long, Map<Long, BigDecimal>> getQuantitiesForProductsAndLocation(final List<Entity> products,
+    public Map<Long, Map<Long, BigDecimal>> getQuantitiesForProductsAndLocations(final List<Entity> products,
             final List<Entity> locations) {
         Map<Long, Map<Long, BigDecimal>> quantities = Maps.newHashMap();
 
