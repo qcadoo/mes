@@ -39,6 +39,8 @@ public final class OrderTechnologicalProcessFields {
 
     public static final String OPERATION = "operation";
 
+    public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+
     public static final String TECHNOLOGICAL_PROCESS = "technologicalProcess";
 
     public static final String QUANTITY = "quantity";

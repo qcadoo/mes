@@ -34,6 +34,8 @@
         <belongsTo name="order" model="order" required="true"/>
         <belongsTo name="product" model="product" plugin="basic"/>
         <belongsTo name="operation" model="operation" plugin="technologies"/>
+        <belongsTo name="technologyOperationComponent" model="technologyOperationComponent"
+                   plugin="technologies" />
         <belongsTo name="technologicalProcess" model="technologicalProcess" plugin="technologies"/>
         <decimal name="quantity" required="true">
             <validatesRange from="0" exclusively="true"/>
