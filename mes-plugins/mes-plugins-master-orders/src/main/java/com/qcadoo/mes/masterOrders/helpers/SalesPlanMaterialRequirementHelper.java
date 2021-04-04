@@ -145,7 +145,8 @@ public class SalesPlanMaterialRequirementHelper {
     private Entity createSalesPlanMaterialRequirementProductFromProduct(final List<Entity> salesPlanMaterialRequirementProducts,
             final Entity product, final BigDecimal neededQuantity) {
         Optional<Entity> mayBeSalesPlanMaterialRequirementProduct = salesPlanMaterialRequirementProducts.stream()
-                .filter(salesPlanMaterialRequirementProduct -> filterByProduct(salesPlanMaterialRequirementProduct, product))
+                .filter(salesPlanMaterialRequirementProduct -> filterByProduct(salesPlanMaterialRequirementProduct, product,
+                        SalesPlanMaterialRequirementProductFields.QUANTITY))
                 .findFirst();
 
         Entity salesPlanMaterialRequirementProduct;
@@ -179,7 +180,8 @@ public class SalesPlanMaterialRequirementHelper {
         Entity sizeGroup = productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.SIZE_GROUP);
 
         Optional<Entity> mayBeSalesPlanMaterialRequirementProduct = salesPlanMaterialRequirementProducts.stream()
-                .filter(salesPlanMaterialRequirementProduct -> filterByProduct(salesPlanMaterialRequirementProduct, product)
+                .filter(salesPlanMaterialRequirementProduct -> filterByProduct(salesPlanMaterialRequirementProduct, product,
+                        SalesPlanMaterialRequirementProductFields.SIZE_GROUP)
                         && filterBySizeGroup(salesPlanMaterialRequirementProduct, sizeGroup))
                 .findFirst();
 
@@ -208,11 +210,13 @@ public class SalesPlanMaterialRequirementHelper {
         return salesPlanMaterialRequirementProduct;
     }
 
-    private boolean filterByProduct(final Entity salesPlanMaterialRequirementProduct, final Entity product) {
+    private boolean filterByProduct(final Entity salesPlanMaterialRequirementProduct, final Entity product,
+            final String fieldName) {
         Entity salesPlanMaterialRequirementProductProduct = salesPlanMaterialRequirementProduct
                 .getBelongsToField(SalesPlanMaterialRequirementProductFields.PRODUCT);
 
         return Objects.nonNull(salesPlanMaterialRequirementProductProduct)
+                && Objects.nonNull(salesPlanMaterialRequirementProduct.getField(fieldName))
                 && salesPlanMaterialRequirementProductProduct.getId().equals(product.getId());
     }
 
