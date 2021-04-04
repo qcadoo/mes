@@ -104,18 +104,22 @@ public class OrderTechnologicalProcessWasteService {
         LookupComponent workerLookup = (LookupComponent) view
                 .getComponentByReference(OrderTechnologicalProcessWasteFields.WORKER);
 
-        if (view.isViewAfterReload()) {
+        String date = (String) dateField.getFieldValue();
+        Entity worker = workerLookup.getEntity();
+
+        if (view.isViewAfterRedirect() && Objects.isNull(date) && Objects.isNull(worker)) {
             Entity currentUser = userService.getCurrentUserEntity();
 
-            Entity worker = currentUser.getBelongsToField(UserFields.STAFF);
+            date = DateUtils.toDateTimeString(new Date());
+            worker = currentUser.getBelongsToField(UserFields.STAFF);
 
-            dateField.setFieldValue(DateUtils.toDateTimeString(new Date()));
-            dateField.requestComponentUpdateState();
+            dateField.setFieldValue(date);
 
             if (Objects.nonNull(worker)) {
                 workerLookup.setFieldValue(worker.getId());
             }
 
+            dateField.requestComponentUpdateState();
             workerLookup.requestComponentUpdateState();
         }
     }

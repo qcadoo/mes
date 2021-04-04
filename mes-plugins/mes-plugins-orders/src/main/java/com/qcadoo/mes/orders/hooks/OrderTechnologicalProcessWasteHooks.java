@@ -24,14 +24,17 @@
 package com.qcadoo.mes.orders.hooks;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.constants.UserFields;
 import com.qcadoo.mes.orders.OrderTechnologicalProcessService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderTechnologicalProcessFields;
@@ -39,6 +42,7 @@ import com.qcadoo.mes.orders.constants.OrderTechnologicalProcessWasteFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.security.api.UserService;
 
 @Service
 public class OrderTechnologicalProcessWasteHooks {
@@ -50,6 +54,9 @@ public class OrderTechnologicalProcessWasteHooks {
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private OrderTechnologicalProcessService orderTechnologicalProcessService;
@@ -77,6 +84,22 @@ public class OrderTechnologicalProcessWasteHooks {
                 orderTechnologicalProcessWaste.setField(OrderTechnologicalProcessWasteFields.TECHNOLOGICAL_PROCESS,
                         technologicalProcess);
             }
+        }
+    }
+
+    public void onCopy(final DataDefinition orderTechnologicalProcessWasteDD, final Entity orderTechnologicalProcessWaste) {
+        Date date = orderTechnologicalProcessWaste.getDateField(OrderTechnologicalProcessWasteFields.DATE);
+        Entity worker = orderTechnologicalProcessWaste.getBelongsToField(OrderTechnologicalProcessWasteFields.WORKER);
+
+        if (Objects.isNull(date)) {
+            orderTechnologicalProcessWaste.setField(OrderTechnologicalProcessWasteFields.DATE, DateTime.now().toDate());
+        }
+
+        if (Objects.isNull(worker)) {
+            Entity currentUser = userService.getCurrentUserEntity();
+
+            orderTechnologicalProcessWaste.setField(OrderTechnologicalProcessWasteFields.WORKER,
+                    currentUser.getBelongsToField(UserFields.STAFF));
         }
     }
 
