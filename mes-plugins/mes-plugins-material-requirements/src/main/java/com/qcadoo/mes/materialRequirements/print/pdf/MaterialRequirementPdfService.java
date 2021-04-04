@@ -260,7 +260,9 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
                     if (!actualWarehouse.equals(key.getWarehouseNumber())) {
                         table.getDefaultCell().enableBorderSide(PdfCell.TOP);
                         table.addCell(new Phrase(key.getWarehouseNumber(), FontUtils.getDejavuRegular7Dark()));
+                        
                         actualWarehouse = key.getWarehouseNumber();
+
                         fillDateIfWarehouseChanged = true;
                     } else {
                         table.addCell(new Phrase("", FontUtils.getDejavuRegular7Dark()));
@@ -270,7 +272,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
                 if (includeStartDateOrder) {
                     Date date = key.getDate();
 
-                    if ((Objects.nonNull(actualDate) && !actualDate.equals(date)) || fillDateIfWarehouseChanged) {
+                    if (Objects.isNull(actualDate) || !actualDate.equals(date) || fillDateIfWarehouseChanged) {
                         if (Objects.isNull(date)) {
                             actualDate = null;
 
