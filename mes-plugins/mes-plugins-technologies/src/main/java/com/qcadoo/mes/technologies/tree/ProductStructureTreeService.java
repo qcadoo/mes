@@ -23,13 +23,31 @@
  */
 package com.qcadoo.mes.technologies.tree;
 
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
-import com.qcadoo.mes.technologies.constants.*;
+import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
+import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
+import com.qcadoo.mes.technologies.constants.ProductStructureTreeNodeFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -37,13 +55,6 @@ import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
 
 @Service
 public class ProductStructureTreeService {
@@ -111,12 +122,13 @@ public class ProductStructureTreeService {
                 .setMaxResults(1).uniqueResult();
     }
 
-    private BigDecimal findQuantityOfProductInOperation(final Entity product, final Entity operation) {
+    private BigDecimal findQuantityOfProductInOperation(final Entity technologyInputProductType, final Entity product,
+            final Entity operation) {
         EntityList operationProductOutComponents = operation
                 .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS);
 
         Entity operationProductOutComponent = operationProductOutComponents.find()
-                .add(SearchRestrictions.belongsTo(ProductStructureTreeNodeFields.PRODUCT, product)).setMaxResults(1)
+                .add(SearchRestrictions.belongsTo(OperationProductOutComponentFields.PRODUCT, product)).setMaxResults(1)
                 .uniqueResult();
 
         if (Objects.nonNull(operationProductOutComponent)) {
@@ -127,7 +139,9 @@ public class ProductStructureTreeService {
                 .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
 
         operationProductOutComponent = operationProductInComponents.find()
-                .add(SearchRestrictions.belongsTo(ProductStructureTreeNodeFields.PRODUCT, product)).setMaxResults(1)
+                .add(SearchRestrictions.belongsTo(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE,
+                        technologyInputProductType))
+                .add(SearchRestrictions.belongsTo(OperationProductInComponentFields.PRODUCT, product)).setMaxResults(1)
                 .uniqueResult();
 
         if (Objects.nonNull(operationProductOutComponent)) {
@@ -161,7 +175,7 @@ public class ProductStructureTreeService {
 
         Entity root = getProductStructureTreeNodeDD().create();
 
-        BigDecimal quantity = findQuantityOfProductInOperation(product, operation);
+        BigDecimal quantity = findQuantityOfProductInOperation(null, product, operation);
         Entity technologyGroup = technology.getBelongsToField(TechnologyFields.TECHNOLOGY_GROUP);
         BigDecimal standardPerformanceTechnology = technology.getDecimalField(TechnologyFields.STANDARD_PERFORMANCE_TECHNOLOGY);
 
@@ -182,6 +196,7 @@ public class ProductStructureTreeService {
         generateTreeForSubProducts(operation, technology, productStructureList, root, view, technology);
 
         technologyFromDB = technology.getDataDefinition().get(technology.getId());
+
         return technologyFromDB.getTreeField(TechnologyFields.PRODUCT_STRUCTURE_TREE);
     }
 
@@ -202,6 +217,7 @@ public class ProductStructureTreeService {
 
                 if (Objects.isNull(subOperation)) {
                     Entity operationForTechnology = findOperationForProductAndTechnology(product, subTechnology);
+
                     boolean changed = checkIfSubTechnologiesChanged(operationForTechnology, productStructureCreateDate);
 
                     if (changed) {
@@ -266,11 +282,13 @@ public class ProductStructureTreeService {
         for (Entity operationProductInComponent : operationProductInComponents) {
             Entity child = getProductStructureTreeNodeDD().create();
 
+            Entity technologyInputProductType = operationProductInComponent
+                    .getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE);
             Entity product = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
             String unit = operationProductInComponent.getStringField(OperationProductInComponentFields.GIVEN_UNIT);
 
             Entity subOperation = findOperationForProductWithinChildren(product, operation);
-            BigDecimal quantity = findQuantityOfProductInOperation(product, operation);
+            BigDecimal quantity = findQuantityOfProductInOperation(technologyInputProductType, product, operation);
             Entity subTechnology = findTechnologyForProduct(product);
 
             if (Objects.nonNull(subTechnology)) {
@@ -339,8 +357,6 @@ public class ProductStructureTreeService {
 
                     generateTreeForSubProducts(subOperation, technology, tree, child, view, mainTechnology);
                 } else {
-                    Entity technologyInputProductType = operationProductInComponent
-                            .getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE);
                     boolean differentProductsInDifferentSizes = operationProductInComponent
                             .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES);
 
@@ -446,7 +462,7 @@ public class ProductStructureTreeService {
     }
 
     private void addChildTOC(final List<Entity> tree, final Entity child, final Entity parent, final Entity product,
-            String type) {
+            final String type) {
         child.setField(TechnologyOperationComponentFields.PARENT, parent);
         child.setField(TechnologyOperationComponentFields.PRIORITY, 1);
         child.setField(TechnologyOperationComponentFields.TYPE_FROM_STRUCTURE_TREE, type);
