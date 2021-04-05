@@ -23,6 +23,20 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.localization.api.utils.DateUtils;
@@ -59,20 +73,6 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.utils.TimeConverterService;
-
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
 
 @Service
 public class OrderHooks {
@@ -150,16 +150,17 @@ public class OrderHooks {
         Entity product = order.getBelongsToField(OrderFields.PRODUCT);
         if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(product.getStringField(ProductFields.ENTITY_TYPE))) {
             Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
-            if(Objects.nonNull(technology)) {
+            if (Objects.nonNull(technology)) {
                 StringBuilder query = new StringBuilder();
                 query.append("select inComponent from #technologies_operationProductInComponent inComponent ");
                 query.append("JOIN inComponent.operationComponent operationComponent ");
                 query.append("JOIN operationComponent.technology technology ");
                 query.append("WHERE technology.id = :technologyId AND inComponent.differentProductsInDifferentSizes = true ");
 
-                List<Entity> entities = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
+                List<Entity> entities = dataDefinitionService
+                        .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
                         .find(query.toString()).setLong("technologyId", technology.getId()).list().getEntities();
-                if(entities.size() > 0) {
+                if (entities.size() > 0) {
                     order.addGlobalError("orders.validate.global.error.product.differentProductsInDifferentSizes");
                     return false;
                 }
@@ -265,10 +266,10 @@ public class OrderHooks {
     }
 
     public void setRemainingQuantity(final Entity order) {
-        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils.convertNullToZero(
-                order.getDecimalField(OrderFields.PLANNED_QUANTITY)).subtract(
-                BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
-                numberService.getMathContext());
+        BigDecimal remainingAmountOfProductToProduce = BigDecimalUtils
+                .convertNullToZero(order.getDecimalField(OrderFields.PLANNED_QUANTITY))
+                .subtract(BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED)),
+                        numberService.getMathContext());
         order.setField(OrderFields.REMAINING_AMOUNT_OF_PRODUCT_TO_PRODUCE, remainingAmountOfProductToProduce);
     }
 
@@ -355,8 +356,8 @@ public class OrderHooks {
                         "orders.validate.global.error.operationalTasks.productChange");
                 return false;
             }
-            if (!order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE).equals(
-                    orderFromDB.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE))) {
+            if (!order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE)
+                    .equals(orderFromDB.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE))) {
                 order.addError(orderDD.getField(OrderFields.TECHNOLOGY_PROTOTYPE),
                         "orders.validate.global.error.operationalTasks.technologyChange");
                 return false;
@@ -407,7 +408,8 @@ public class OrderHooks {
         BigDecimal commissionedPlannedQuantity = order.getDecimalField(OrderFields.COMMISSIONED_PLANNED_QUANTITY);
 
         if (commissionedPlannedQuantity == null) {
-            order.addError(orderDD.getField(OrderFields.COMMISSIONED_PLANNED_QUANTITY), "qcadooView.validate.field.error.missing");
+            order.addError(orderDD.getField(OrderFields.COMMISSIONED_PLANNED_QUANTITY),
+                    "qcadooView.validate.field.error.missing");
 
             return false;
         }
@@ -415,8 +417,8 @@ public class OrderHooks {
             Entity orderFromDB = orderService.getOrder(order.getId());
             BigDecimal commissionedCorrectedQuantity = order.getDecimalField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY);
             String state = order.getStringField(OrderFields.STATE);
-            if ((OrderState.ACCEPTED.getStringValue().equals(state) || OrderState.IN_PROGRESS.getStringValue().equals(state) || OrderState.INTERRUPTED
-                    .getStringValue().equals(state))
+            if ((OrderState.ACCEPTED.getStringValue().equals(state) || OrderState.IN_PROGRESS.getStringValue().equals(state)
+                    || OrderState.INTERRUPTED.getStringValue().equals(state))
                     && orderFromDB.getDecimalField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY) != null
                     && commissionedCorrectedQuantity == null) {
                 order.addError(orderDD.getField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY),
@@ -440,20 +442,23 @@ public class OrderHooks {
     private boolean checkProductQuantitiesForOrderPacks(DataDefinition orderDD, Entity order, BigDecimal sumQuantityOrderPacks) {
         if (order.getId() != null) {
             Entity orderFromDB = orderService.getOrder(order.getId());
-            if (orderFromDB.getDecimalField(OrderFields.PLANNED_QUANTITY).compareTo(
-                    order.getDecimalField(OrderFields.PLANNED_QUANTITY)) == 0) {
+            if (orderFromDB.getDecimalField(OrderFields.PLANNED_QUANTITY)
+                    .compareTo(order.getDecimalField(OrderFields.PLANNED_QUANTITY)) == 0) {
                 if (order.getDecimalField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY) != null) {
                     if (order.getDecimalField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY).compareTo(sumQuantityOrderPacks) < 0) {
                         order.addError(orderDD.getField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY),
                                 ORDER_PACKS_VALIDATE_GLOBAL_ERROR_QUANTITY_ERROR);
                         return false;
                     }
-                } else if (order.getDecimalField(OrderFields.COMMISSIONED_PLANNED_QUANTITY) != null
-                        && order.getDecimalField(OrderFields.COMMISSIONED_PLANNED_QUANTITY).compareTo(sumQuantityOrderPacks) < 0) {
+                } else if (order.getDecimalField(OrderFields.COMMISSIONED_PLANNED_QUANTITY) != null && order
+                        .getDecimalField(OrderFields.COMMISSIONED_PLANNED_QUANTITY).compareTo(sumQuantityOrderPacks) < 0) {
                     order.addError(orderDD.getField(OrderFields.COMMISSIONED_PLANNED_QUANTITY),
                             ORDER_PACKS_VALIDATE_GLOBAL_ERROR_QUANTITY_ERROR);
                     return false;
                 }
+            } else if (orderFromDB.getDecimalField(OrderFields.PLANNED_QUANTITY)
+                    .compareTo(order.getDecimalField(OrderFields.PLANNED_QUANTITY)) < 0) {
+                order.addGlobalMessage("orderPacks.validate.global.message.quantityMessage");
             }
         }
         return true;
@@ -512,8 +517,8 @@ public class OrderHooks {
 
             if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_FROM)
                     && differenceForDateFrom > 0L) {
-                final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
-                        .abs(differenceForDateFrom)));
+                final String differenceAsString = TimeConverterService
+                        .convertTimeToString(String.valueOf(Math.abs(differenceForDateFrom)));
 
                 checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_FROM,
                         OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START,
@@ -521,8 +526,8 @@ public class OrderHooks {
             }
             if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_FROM)
                     && differenceForDateFrom < 0L) {
-                final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
-                        .abs(differenceForDateFrom)));
+                final String differenceAsString = TimeConverterService
+                        .convertTimeToString(String.valueOf(Math.abs(differenceForDateFrom)));
 
                 checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_FROM,
                         OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_START,
@@ -531,11 +536,12 @@ public class OrderHooks {
         }
 
         // EFFECTIVE_DATE_TO
-        if (OrderState.COMPLETED.getStringValue().equals(orderState) || OrderState.ABANDONED.getStringValue().equals(orderState)) {
+        if (OrderState.COMPLETED.getStringValue().equals(orderState)
+                || OrderState.ABANDONED.getStringValue().equals(orderState)) {
             if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_DELAYED_EFFECTIVE_DATE_TO)
                     && differenceForDateTo > 0L) {
-                final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
-                        .abs(differenceForDateTo)));
+                final String differenceAsString = TimeConverterService
+                        .convertTimeToString(String.valueOf(Math.abs(differenceForDateTo)));
 
                 checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_TO,
                         OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END,
@@ -543,8 +549,8 @@ public class OrderHooks {
             }
             if (parameter.getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_EARLIER_EFFECTIVE_DATE_TO)
                     && differenceForDateTo < 0L) {
-                final String differenceAsString = TimeConverterService.convertTimeToString(String.valueOf(Math
-                        .abs(differenceForDateTo)));
+                final String differenceAsString = TimeConverterService
+                        .convertTimeToString(String.valueOf(Math.abs(differenceForDateTo)));
                 checkEffectiveDeviationNeeded(order, OrderFields.EFFECTIVE_DATE_TO,
                         OrderFields.REASON_TYPES_DEVIATIONS_OF_EFFECTIVE_END,
                         "orders.order.reasonNeededWhenEarlierEffectiveDateTo.isRequired", differenceAsString);
@@ -588,8 +594,8 @@ public class OrderHooks {
         if (OrderState.PENDING.getStringValue().equals(state) && !startDate.equals(startDateDB)) {
             order.setField(OrderFields.DATE_FROM, startDate);
         }
-        if ((OrderState.IN_PROGRESS.getStringValue().equals(state) || OrderState.COMPLETED.getStringValue().equals(state) || OrderState.ABANDONED
-                .getStringValue().equals(state)) && !startDate.equals(startDateDB)) {
+        if ((OrderState.IN_PROGRESS.getStringValue().equals(state) || OrderState.COMPLETED.getStringValue().equals(state)
+                || OrderState.ABANDONED.getStringValue().equals(state)) && !startDate.equals(startDateDB)) {
             order.setField(OrderFields.EFFECTIVE_DATE_FROM, startDate);
         }
         if (OrderState.ACCEPTED.getStringValue().equals(state) && !startDateDB.equals(startDate)) {
@@ -698,16 +704,16 @@ public class OrderHooks {
             if (commissionedCorrectedQuantity != null) {
                 order.setField(OrderFields.PLANNED_QUANTITY,
                         numberService.setScaleWithDefaultMathContext(commissionedCorrectedQuantity));
-                order.setField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT, numberService
-                        .setScaleWithDefaultMathContext(additionalUnitService.getQuantityAfterConversion(order,
+                order.setField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT,
+                        numberService.setScaleWithDefaultMathContext(additionalUnitService.getQuantityAfterConversion(order,
                                 additionalUnitService.getAdditionalUnit(product),
                                 numberService.setScaleWithDefaultMathContext(commissionedCorrectedQuantity),
                                 product.getStringField(ProductFields.UNIT))));
             } else if (commissionedPlannedQuantity != null) {
                 order.setField(OrderFields.PLANNED_QUANTITY,
                         numberService.setScaleWithDefaultMathContext(commissionedPlannedQuantity));
-                order.setField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT, numberService
-                        .setScaleWithDefaultMathContext(additionalUnitService.getQuantityAfterConversion(order,
+                order.setField(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT,
+                        numberService.setScaleWithDefaultMathContext(additionalUnitService.getQuantityAfterConversion(order,
                                 additionalUnitService.getAdditionalUnit(product),
                                 numberService.setScaleWithDefaultMathContext(commissionedPlannedQuantity),
                                 product.getStringField(ProductFields.UNIT))));
@@ -722,10 +728,12 @@ public class OrderHooks {
         String typeOfProductionRecording = order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING);
 
         if (StringUtils.isEmpty(typeOfProductionRecording)) {
-            if (BigDecimalUtils.convertNullToZero(doneQuantity).compareTo(BigDecimalUtils.convertNullToZero(doneQuantityFromDB)) != 0) {
-                order.setField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED, numberService.setScaleWithDefaultMathContext(doneQuantity));
-            } else if (BigDecimalUtils.convertNullToZero(amountOfProductProduced).compareTo(
-                    BigDecimalUtils.convertNullToZero(amountOfProductProducedFromDB)) != 0) {
+            if (BigDecimalUtils.convertNullToZero(doneQuantity)
+                    .compareTo(BigDecimalUtils.convertNullToZero(doneQuantityFromDB)) != 0) {
+                order.setField(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED,
+                        numberService.setScaleWithDefaultMathContext(doneQuantity));
+            } else if (BigDecimalUtils.convertNullToZero(amountOfProductProduced)
+                    .compareTo(BigDecimalUtils.convertNullToZero(amountOfProductProducedFromDB)) != 0) {
                 order.setField(OrderFields.DONE_QUANTITY, numberService.setScaleWithDefaultMathContext(amountOfProductProduced));
             }
         } else {
@@ -755,8 +763,8 @@ public class OrderHooks {
             BigDecimal commissionedCorrectedQuantityFromDB = orderFromDB
                     .getDecimalField(OrderFields.COMMISSIONED_CORRECTED_QUANTITY);
 
-            if ((BigDecimalUtils.convertNullToZero(commissionedCorrectedQuantity).compareTo(
-                    BigDecimalUtils.convertNullToZero(commissionedCorrectedQuantityFromDB)) != 0)
+            if ((BigDecimalUtils.convertNullToZero(commissionedCorrectedQuantity)
+                    .compareTo(BigDecimalUtils.convertNullToZero(commissionedCorrectedQuantityFromDB)) != 0)
                     && order.getHasManyField(OrderFields.TYPE_OF_CORRECTION_CAUSES).isEmpty()) {
                 order.addGlobalError("orders.order.correctingQuantity.missingTypeOfCorrectionCauses");
             }
@@ -764,8 +772,8 @@ public class OrderHooks {
     }
 
     public boolean neededWhenCorrectingTheRequestedVolume() {
-        return parameterService.getParameter().getBooleanField(
-                ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_THE_REQUESTED_VOLUME);
+        return parameterService.getParameter()
+                .getBooleanField(ParameterFieldsO.REASON_NEEDED_WHEN_CORRECTING_THE_REQUESTED_VOLUME);
     }
 
     public void setCommissionedPlannedQuantity(final DataDefinition orderDD, final Entity order) {

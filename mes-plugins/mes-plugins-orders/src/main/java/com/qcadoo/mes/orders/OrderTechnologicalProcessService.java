@@ -1,12 +1,5 @@
 package com.qcadoo.mes.orders;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -22,6 +15,13 @@ import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderTechnologicalProcessService {
@@ -69,7 +69,7 @@ public class OrderTechnologicalProcessService {
                     .getBelongsToField(TechnologiesConstants.MODEL_TECHNOLOGICAL_PROCESS_LIST);
 
             if (Objects.nonNull(technologicalProcessList)) {
-                createOrderTechnologicalProcesses(order, technologicalProcessList, orderPack);
+                createOrderTechnologicalProcesses(order, technologyOperationComponent, technologicalProcessList, orderPack);
             }
         }
     }
@@ -98,8 +98,7 @@ public class OrderTechnologicalProcessService {
                 && orderTechnologicalProcessOrderPack.getId().equals(orderedPack.getId());
     }
 
-    private void createOrderTechnologicalProcesses(final Entity order, final Entity technologicalProcessList,
-            final Entity orderPack) {
+    private void createOrderTechnologicalProcesses(Entity order, final Entity technologyOperationComponent, final Entity technologicalProcessList, final Entity orderPack) {
         Entity product = order.getBelongsToField(OrderFields.PRODUCT);
         Entity operation = technologicalProcessList.getBelongsToField(TechnologicalProcessListFields.OPERATION);
         List<Entity> technologicalProcessComponents = technologicalProcessList
@@ -123,6 +122,7 @@ public class OrderTechnologicalProcessService {
             orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.ORDER, order);
             orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.PRODUCT, product);
             orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.OPERATION, operation);
+            orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
             orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.TECHNOLOGICAL_PROCESS, technologicalProcess);
             orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.QUANTITY, quantity);
 

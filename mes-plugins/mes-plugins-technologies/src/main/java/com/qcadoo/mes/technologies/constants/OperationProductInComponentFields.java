@@ -55,4 +55,6 @@ public final class OperationProductInComponentFields {
 
     public static final String PRODUCT_BY_SIZE_GROUPS = "productBySizeGroups";
 
+    public static final String DESCRIPTION = "description";
+
 }

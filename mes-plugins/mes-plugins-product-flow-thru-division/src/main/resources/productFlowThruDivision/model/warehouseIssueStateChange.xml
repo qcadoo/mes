@@ -25,8 +25,8 @@
 -->
 <model name="warehouseIssueStateChange" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://schema.qcadoo.org/model"
-       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd"
-        >
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
         <!-- generic state change fields -->
         <datetime name="dateAndTime"/>
@@ -46,5 +46,6 @@
         <belongsTo name="shift" model="shift" plugin="basic"/>
         <string name="additionalInformation"/>
     </fields>
+
     <hooks/>
 </model>

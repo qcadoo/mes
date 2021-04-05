@@ -198,17 +198,21 @@ public final class MaterialRequirementXlsService extends XlsDocumentService {
                 if (includeWarehouse) {
                     if (!actualWarehouse.equals(key.getWarehouseNumber())) {
                         row.createCell(column).setCellValue(key.getWarehouseNumber());
+
                         actualWarehouse = key.getWarehouseNumber();
+
+                        fillDateIfWarehouseChanged = true;
                     } else {
                         row.createCell(column).setCellValue("");
                     }
+
                     column += 1;
                 }
 
                 if (includeStartDateOrder) {
                     Date date = key.getDate();
 
-                    if (!actualDate.equals(date) || fillDateIfWarehouseChanged) {
+                    if (Objects.isNull(actualDate) || !actualDate.equals(date) || fillDateIfWarehouseChanged) {
                         if (Objects.isNull(date)) {
                             actualDate = null;
 

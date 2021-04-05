@@ -23,7 +23,17 @@
  */
 package com.qcadoo.mes.productionCounting;
 
-import com.google.common.collect.Lists;
+import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
+
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
@@ -48,37 +58,12 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
-import java.math.BigDecimal;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import static com.qcadoo.model.api.search.SearchRestrictions.idEq;
-
 @Service
 public class ProductionCountingServiceImpl implements ProductionCountingService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ProductionCountingServiceImpl.class);
 
     private static final String L_ORDER = "order";
-
-    private static final String L_PRODUCT = "product";
-
-    private static final String L_NUMBER = "number";
-
-    private static final String L_NAME = "name";
-
-    private static final String L_PLANNED_QUANTITY_UNIT = "plannedQuantityUNIT";
-
-    private static final String L_USED_QUANTITY_UNIT = "usedQuantityUNIT";
-
-    private static final String L_PRODUCTION_TRACKINGS = "productionTrackings";
-
-    private static final List<String> L_TRACKING_OPERATION_PRODUCT_FIELD_NAMES = Lists.newArrayList(L_NUMBER, L_NAME,
-            L_PLANNED_QUANTITY_UNIT, L_USED_QUANTITY_UNIT);
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -172,8 +157,7 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
     }
 
     @Override
-    public boolean validateOrder(final DataDefinition productionTrackingBalanceDD,
-            final Entity productionTrackingBalance) {
+    public boolean validateOrder(final DataDefinition productionTrackingBalanceDD, final Entity productionTrackingBalance) {
         Entity order = productionTrackingBalance.getBelongsToField(L_ORDER);
 
         if ((order == null)
@@ -271,7 +255,7 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
                     .setMaxResults(1).uniqueResult();
             if (topIN != null) {
                 if (value == null) {
-                    value = new BigDecimal(0l);
+                    value = new BigDecimal(0L);
                 }
                 BigDecimal usedQuantity = topIN.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
                 if (usedQuantity != null) {
@@ -285,8 +269,8 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
             return value;
         }
 
-        if (value.compareTo(new BigDecimal(0l)) == -1) {
-            value = new BigDecimal(0l);
+        if (value.compareTo(new BigDecimal(0L)) < 0) {
+            value = new BigDecimal(0L);
         }
 
         return value;
@@ -309,7 +293,7 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
                     .setMaxResults(1).uniqueResult();
             if (topIN != null) {
                 if (value == null) {
-                    value = new BigDecimal(0l);
+                    value = new BigDecimal(0L);
                 }
                 BigDecimal usedQuantity = topIN.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY);
                 if (usedQuantity != null) {
@@ -323,8 +307,8 @@ public class ProductionCountingServiceImpl implements ProductionCountingService 
             return value;
         }
 
-        if (value.compareTo(new BigDecimal(0l)) == -1) {
-            value = new BigDecimal(0l);
+        if (value.compareTo(new BigDecimal(0L)) < 0) {
+            value = new BigDecimal(0L);
         }
 
         return value;

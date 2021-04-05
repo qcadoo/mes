@@ -54,5 +54,5 @@
                 class="com.qcadoo.mes.materialRequirements.hooks.MaterialRequirementHooks"
                 method="onCopy"/>
     </hooks>
-    <identifier expression="#name"/>
+    <identifier expression="#number"/>
 </model>

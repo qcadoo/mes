@@ -66,10 +66,6 @@ public class TechnologyDetailsListeners {
 
     private static final String L_PRODUCT_STRUCTURE = "productStructure";
 
-    private static final String L_OUT_PRODUCTS_REFERENCE = "outProducts";
-
-    private static final String L_IN_PRODUCTS_REFERENCE = "inProducts";
-
     private static final String L_TECHNOLOGY_TREE_REFERENCE = "technologyTree";
 
     @Autowired
@@ -217,7 +213,8 @@ public class TechnologyDetailsListeners {
         boolean isValid = true;
 
         isValid = isValid && technologyValidationService.checkIfTechnologyTreeIsSet(technologyForm, technology);
-        isValid = isValid && technologyValidationService.checkTopComponentsProducesProductForTechnology(technologyForm, technology);
+        isValid = isValid
+                && technologyValidationService.checkTopComponentsProducesProductForTechnology(technologyForm, technology);
         isValid = isValid && technologyValidationService.checkIfOperationsUsesSubOperationsProds(technologyForm, technology);
 
         return isValid;

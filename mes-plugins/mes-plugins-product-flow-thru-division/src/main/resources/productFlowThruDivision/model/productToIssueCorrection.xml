@@ -26,6 +26,7 @@
 <model name="productToIssueCorrection" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd" auditable="true">
+
     <fields>
         <belongsTo name="productToIssueCorrectionHelper" model="productToIssueCorrectionHelper"/>
         <belongsTo name="warehouseIssue" model="warehouseIssue"/>
@@ -66,10 +67,9 @@
                    plugin="materialFlow" required="true"/>
 
         <string name="description"/>
-
     </fields>
+
     <hooks>
         <validatesWith class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.validators.ProductToIssueCorrectionValidators" method="validate"/>
     </hooks>
-
 </model>

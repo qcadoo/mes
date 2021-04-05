@@ -24,31 +24,40 @@
 package com.qcadoo.mes.orders.hooks;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.constants.UserFields;
+import com.qcadoo.mes.orders.OrderTechnologicalProcessService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderTechnologicalProcessFields;
 import com.qcadoo.mes.orders.constants.OrderTechnologicalProcessWasteFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.security.api.UserService;
 
 @Service
 public class OrderTechnologicalProcessWasteHooks {
-
-    private static final String L_WASTES_QUANTITY = "wastesQuantity";
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private OrderTechnologicalProcessService orderTechnologicalProcessService;
 
     public void onSave(final DataDefinition orderTechnologicalProcessWasteDD, final Entity orderTechnologicalProcessWaste) {
         if (checkIfShouldInsertNumber(orderTechnologicalProcessWaste)) {
@@ -76,6 +85,22 @@ public class OrderTechnologicalProcessWasteHooks {
         }
     }
 
+    public void onCopy(final DataDefinition orderTechnologicalProcessWasteDD, final Entity orderTechnologicalProcessWaste) {
+        Date date = orderTechnologicalProcessWaste.getDateField(OrderTechnologicalProcessWasteFields.DATE);
+        Entity worker = orderTechnologicalProcessWaste.getBelongsToField(OrderTechnologicalProcessWasteFields.WORKER);
+
+        if (Objects.isNull(date)) {
+            orderTechnologicalProcessWaste.setField(OrderTechnologicalProcessWasteFields.DATE, DateTime.now().toDate());
+        }
+
+        if (Objects.isNull(worker)) {
+            Entity currentUser = userService.getCurrentUserEntity();
+
+            orderTechnologicalProcessWaste.setField(OrderTechnologicalProcessWasteFields.WORKER,
+                    currentUser.getBelongsToField(UserFields.STAFF));
+        }
+    }
+
     private boolean checkIfShouldInsertNumber(final Entity orderTechnologicalProcessWaste) {
         if (Objects.nonNull(orderTechnologicalProcessWaste.getId())) {
             return false;
@@ -93,8 +118,17 @@ public class OrderTechnologicalProcessWasteHooks {
             final Entity orderTechnologicalProcessWaste) {
         Entity orderTechnologicalProcess = orderTechnologicalProcessWaste
                 .getBelongsToField(OrderTechnologicalProcessWasteFields.ORDER_TECHNOLOGICAL_PROCESS);
+        Entity order = orderTechnologicalProcessWaste.getBelongsToField(OrderTechnologicalProcessWasteFields.ORDER);
         BigDecimal wasteQuantity = orderTechnologicalProcessWaste
                 .getDecimalField(OrderTechnologicalProcessWasteFields.WASTE_QUANTITY);
+
+        if (Objects.isNull(orderTechnologicalProcessWaste.getId()) && orderTechnologicalProcessService.checkOrderState(order)) {
+            orderTechnologicalProcessWaste.addError(
+                    orderTechnologicalProcessWasteDD.getField(OrderTechnologicalProcessWasteFields.ORDER),
+                    "orders.orderTechnologicalProcessWaste.order.incorrectState");
+
+            return false;
+        }
 
         if (Objects.nonNull(orderTechnologicalProcess)) {
             BigDecimal quantity = orderTechnologicalProcess.getDecimalField(OrderTechnologicalProcessFields.QUANTITY);

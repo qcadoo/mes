@@ -1,7 +1,10 @@
 package com.qcadoo.mes.basic.listeners;
 
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ParameterFields;
+import com.qcadoo.mes.basic.constants.ProductAttributeValueFields;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.SizeFields;
@@ -13,18 +16,22 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+
+import java.util.Map;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 @Service
 public class ProductFamilySizesListeners {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     public final void addSizes(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
@@ -61,7 +68,23 @@ public class ProductFamilySizesListeners {
                 product.setField(ProductFields.NUMBER,
                         productFamily.getStringField(ProductFields.NUMBER) + "-" + size.getStringField(SizeFields.NUMBER));
                 product = product.getDataDefinition().save(product);
-                if (!product.isValid()) {
+                if (product.isValid()) {
+                    if (parameterService.getParameter().getBooleanField(ParameterFields.COPY_ATTRIBUTES_TO_SIZE_PRODUCTS)) {
+                        for (Entity productFamilyAttributeValue : productFamily
+                                .getHasManyField(ProductFields.PRODUCT_ATTRIBUTE_VALUES)) {
+                            Entity productAttributeValue = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
+                                    BasicConstants.PRODUCT_ATTRIBUTE_VALUE).create();
+                            productAttributeValue.setField(ProductAttributeValueFields.PRODUCT, product.getId());
+                            productAttributeValue.setField(ProductAttributeValueFields.VALUE,
+                                    productFamilyAttributeValue.getStringField(ProductAttributeValueFields.VALUE));
+                            productAttributeValue.setField(ProductAttributeValueFields.ATTRIBUTE,
+                                    productFamilyAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE));
+                            productAttributeValue.setField(ProductAttributeValueFields.ATTRIBUTE_VALUE,
+                                    productFamilyAttributeValue.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE_VALUE));
+                            productAttributeValue.getDataDefinition().save(productAttributeValue);
+                        }
+                    }
+                } else {
                     errors = errors + 1;
                     view.addMessage("basic.addProductFamilySizes.generateProducts.failure", ComponentState.MessageType.FAILURE,
                             product.getStringField(ProductFields.NUMBER));
@@ -69,8 +92,8 @@ public class ProductFamilySizesListeners {
             }
             int entitiesWithoutErrors = grid.getSelectedEntitiesIds().size() - errors;
             if (entitiesWithoutErrors > 0) {
-                view.addMessage("basic.addProductFamilySizes.generateProducts.success", ComponentState.MessageType.SUCCESS,
-                        "" + (entitiesWithoutErrors));
+                view.addMessage("basic.addProductFamilySizes.generateProducts.success", ComponentState.MessageType.SUCCESS, ""
+                        + (entitiesWithoutErrors));
             }
         }
     }

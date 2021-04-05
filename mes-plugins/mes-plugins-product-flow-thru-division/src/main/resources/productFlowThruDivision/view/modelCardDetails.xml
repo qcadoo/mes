@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PRODUCTS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+	name="modelCardDetails" modelName="modelCard">
+
+	<component type="window" name="window" reference="window">
+
+		<ribbon>
+			<template name="standardFormTemplate" />
+			<group name="generate">
+				<bigButton name="generate" icon="generateIcon24.png"
+					action="#{form}.fireEvent(generateModelCard);" state="disabled" />
+			</group>
+			<group name="export">
+				<bigButton name="pdf" icon="pdfIcon24.png"
+					action="#{form}.fireEvent(printModelCard,pdf);" state="disabled" />
+			</group>
+		</ribbon>
+
+		<windowTab name="mainTab">
+			<component type="form" name="modelCard" reference="form">
+				<component type="gridLayout" name="gridLayout" columns="3"
+					rows="8">
+					<layoutElement column="1" row="1">
+						<component type="input" name="number" reference="number"
+							field="number" defaultEnabled="never"/>
+					</layoutElement>
+					<layoutElement column="1" row="2" height="2">
+						<component type="textarea" name="name" reference="name"
+							field="name" />
+					</layoutElement>
+					<layoutElement column="1" row="4">
+						<component type="select" name="materialCostsUsed" reference="materialCostsUsed"
+							field="materialCostsUsed">
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="5">
+						<component type="checkbox" name="useNominalCostPriceNotSpecified" reference="useNominalCostPriceNotSpecified"
+								   field="useNominalCostPriceNotSpecified">
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="6">
+						<component type="checkbox" name="generated" reference="generated"
+								   field="generated" defaultEnabled="never">
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="7">
+						<component type="input" name="worker" reference="worker"
+								   field="worker" defaultEnabled="never">
+						</component>
+					</layoutElement>
+					<layoutElement column="1" row="8">
+						<component type="input" name="date" reference="date"
+								   field="date" defaultEnabled="never">
+						</component>
+					</layoutElement>
+				</component>
+
+				<option type="header" value="true" />
+				<option type="expression" value="#number" />
+
+				<listener event="printModelCard"
+					class="com.qcadoo.mes.productFlowThruDivision.listeners.ModelCardDetailsListeners"
+					method="printModelCard" />
+				<listener event="generateModelCard"
+					class="com.qcadoo.mes.productFlowThruDivision.listeners.ModelCardDetailsListeners"
+					method="generateModelCard" />
+			</component>
+		</windowTab>
+
+		<windowTab name="productsTab">
+			<component type="grid" name="modelCardProducts" source="#{form}.modelCardProducts"
+					   reference="grid">
+				<option type="column" name="productNumber" fields="product"
+						expression="#product['number']"
+						width="100" link="true"/>
+				<option type="column" name="productName" fields="product"
+						expression="#product['name']"
+						width="100" link="true"/>
+				<option type="column" name="technology" fields="technology"
+						expression="#technology['number']"
+						width="80"/>
+				<option type="column" name="quantity" fields="quantity"
+						width="60"/>
+				<option type="column" name="productUnit" fields="product"
+						expression="#product['unit']"
+						width="40"/>
+
+				<option type="order" column="productNumber" direction="asc"/>
+
+				<option type="searchable"
+						value="productNumber,productName,technology,quantity,productUnit"/>
+				<option type="orderable"
+						value="productNumber,productName,technology,quantity,productUnit"/>
+
+				<option type="correspondingView" value="productFlowThruDivision/modelCardProductDetails"/>
+				<option type="correspondingComponent" value="form"/>
+				<option type="correspondingViewInModal" value="true"/>
+
+				<option type="fullscreen" value="true"/>
+				<option type="multiselect" value="true"/>
+				<option type="creatable" value="true"/>
+				<option type="deletable" value="true"/>
+				<option type="fixedHeight" value="true"/>
+			</component>
+		</windowTab>
+
+	</component>
+
+	<hooks>
+		<beforeRender
+			class="com.qcadoo.mes.productFlowThruDivision.hooks.ModelCardDetailsHooks"
+			method="onBeforeRender" />
+	</hooks>
+
+</view>

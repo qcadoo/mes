@@ -47,7 +47,8 @@ public class OrderPacksSingleOrderListHooks {
         Entity order = form.getPersistedEntityWithIncludedFormValues();
         String orderState = order.getStringField(OrderFields.STATE);
         if (OrderState.COMPLETED.getStringValue().equals(orderState) || OrderState.DECLINED.getStringValue().equals(orderState)
-                || OrderState.ABANDONED.getStringValue().equals(orderState)) {
+                || OrderState.ABANDONED.getStringValue().equals(orderState)
+                || OrderState.PENDING.getStringValue().equals(orderState)) {
             GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
             grid.setEditable(false);
             grid.setEnabled(false);

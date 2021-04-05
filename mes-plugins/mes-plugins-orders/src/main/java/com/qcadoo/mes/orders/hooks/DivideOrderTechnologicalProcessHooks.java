@@ -84,6 +84,8 @@ public class DivideOrderTechnologicalProcessHooks {
             BigDecimal quantity1;
             BigDecimal quantity2;
 
+            BigDecimal quantitySum = BigDecimal.ZERO;
+
             if (dictionaryService.checkIfUnitIsInteger(productUnit)) {
                 if (isInteger(quantity)) {
                     BigDecimal quotient = quantity.divide(half, numberService.getMathContext()).setScale(0, RoundingMode.FLOOR);
@@ -97,15 +99,24 @@ public class DivideOrderTechnologicalProcessHooks {
                         quantity1 = quotient;
                         quantity2 = difference;
                     }
+
+                    quantitySum = quantity1.add(quantity2, numberService.getMathContext());
                 } else {
                     quantity1 = null;
                     quantity2 = null;
                 }
             } else {
-                BigDecimal quotient = quantity.divide(half, numberService.getMathContext());
+                BigDecimal quotient = quantity.divide(half, numberService.getMathContext()).setScale(5, RoundingMode.FLOOR);
 
                 quantity1 = quotient;
                 quantity2 = quotient;
+
+                quantitySum = quantity1.add(quantity2, numberService.getMathContext());
+            }
+
+            if (quantity.compareTo(quantitySum) != 0) {
+                quantity1 = null;
+                quantity2 = null;
             }
 
             orderTechnologicalProcessParts.add(createOrderTechnologicalProcessPart("1", quantity1, productUnit));

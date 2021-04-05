@@ -23,6 +23,13 @@
  */
 package com.qcadoo.mes.assignmentToShift.hooks;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftConstants;
 import com.qcadoo.mes.assignmentToShift.constants.AssignmentToShiftReportFields;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -32,16 +39,9 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Service
 public final class AssignmentToShiftReportDetailsHooks {
-
-
 
     private static final List<String> L_REPORT_FIELDS = Arrays.asList(AssignmentToShiftReportFields.NUMBER,
             AssignmentToShiftReportFields.NAME, AssignmentToShiftReportFields.SHIFT, AssignmentToShiftReportFields.FACTORY,
@@ -55,26 +55,23 @@ public final class AssignmentToShiftReportDetailsHooks {
 
     public void generateAssignmentToShiftReportNumber(final ViewDefinitionState view) {
         numberGeneratorService.generateAndInsertNumber(view, AssignmentToShiftConstants.PLUGIN_IDENTIFIER,
-                AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT_REPORT, QcadooViewConstants.L_FORM, AssignmentToShiftReportFields.NUMBER);
+                AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT_REPORT, QcadooViewConstants.L_FORM,
+                AssignmentToShiftReportFields.NUMBER);
     }
 
     public void disableFields(final ViewDefinitionState view) {
         FormComponent assignmentToShiftReportForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Long assignmentToShiftReportId = assignmentToShiftReportForm.getEntityId();
 
-        if (assignmentToShiftReportId == null) {
+        if (Objects.isNull(assignmentToShiftReportId)) {
             setFieldsState(view, L_REPORT_FIELDS, true);
         } else {
             Entity assignmentToShiftReport = getAssignmentToShiftReportFromDB(assignmentToShiftReportId);
 
-            if (assignmentToShiftReport != null) {
+            if (Objects.nonNull(assignmentToShiftReport)) {
                 boolean generated = assignmentToShiftReport.getBooleanField(AssignmentToShiftReportFields.GENERATED);
 
-                if (generated) {
-                    setFieldsState(view, L_REPORT_FIELDS, false);
-                } else {
-                    setFieldsState(view, L_REPORT_FIELDS, true);
-                }
+                setFieldsState(view, L_REPORT_FIELDS, !generated);
             }
         }
     }
@@ -89,8 +86,9 @@ public final class AssignmentToShiftReportDetailsHooks {
     }
 
     private Entity getAssignmentToShiftReportFromDB(final Long assignmentToShiftReportId) {
-        return dataDefinitionService.get(AssignmentToShiftConstants.PLUGIN_IDENTIFIER,
-                AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT_REPORT).get(assignmentToShiftReportId);
+        return dataDefinitionService
+                .get(AssignmentToShiftConstants.PLUGIN_IDENTIFIER, AssignmentToShiftConstants.MODEL_ASSIGNMENT_TO_SHIFT_REPORT)
+                .get(assignmentToShiftReportId);
     }
 
 }

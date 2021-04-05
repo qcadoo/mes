@@ -362,6 +362,10 @@
             <model:hasMany name="orderTechnologicalProcesses" plugin="orders" model="orderTechnologicalProcess" joinField="operation"/>
         </model:model-field>
 
+        <model:model-field plugin="technologies" model="technologyOperationComponent">
+            <model:hasMany name="orderTechnologicalProcesses" plugin="orders" model="orderTechnologicalProcess" joinField="technologyOperationComponent"/>
+        </model:model-field>
+
         <model:model-field plugin="technologies" model="technologicalProcess">
             <model:hasMany name="orderTechnologicalProcesses" plugin="orders" model="orderTechnologicalProcess" joinField="technologicalProcess"/>
         </model:model-field>

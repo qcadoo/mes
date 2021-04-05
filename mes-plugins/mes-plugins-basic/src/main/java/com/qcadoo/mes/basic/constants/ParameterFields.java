@@ -47,4 +47,6 @@ public final class ParameterFields {
 
     public static final String DASHBOARD_BUTTONS = "dashboardButtons";
 
+    public static final String COPY_ATTRIBUTES_TO_SIZE_PRODUCTS = "copyAttributesToSizeProducts";
+
 }

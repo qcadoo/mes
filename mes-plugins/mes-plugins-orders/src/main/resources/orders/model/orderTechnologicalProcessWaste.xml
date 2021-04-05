@@ -41,8 +41,8 @@
             <validatesScale max="5"/>
         </decimal>
         <dictionary name="causeOfWaste" dictionary="causesOfWastes"/>
-        <datetime name="date" required="true"/>
-        <belongsTo name="worker" model="staff" plugin="basic"/>
+        <datetime name="date" required="true" copyable="false"/>
+        <belongsTo name="worker" model="staff" plugin="basic" copyable="false"/>
         <string name="description">
             <validatesLength max="2048"/>
         </string>
@@ -51,6 +51,8 @@
     <hooks>
         <onSave class="com.qcadoo.mes.orders.hooks.OrderTechnologicalProcessWasteHooks"
                 method="onSave"/>
+        <onCopy class="com.qcadoo.mes.orders.hooks.OrderTechnologicalProcessWasteHooks"
+                method="onCopy"/>
         <validatesWith class="com.qcadoo.mes.orders.hooks.OrderTechnologicalProcessWasteHooks"
                 method="validatesWith"/>
     </hooks>

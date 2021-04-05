@@ -76,6 +76,9 @@
     <modules>
         <localization:translation path="locales"/>
 
+        <model:model model="modelCard" resource="model/modelCard.xml"/>
+        <model:model model="modelCardProduct" resource="model/modelCardProduct.xml"/>
+
         <model:model-field plugin="basic" model="division">
             <model:enum name="productionFlow" values="01warehouse,02withinTheProcess"
                         default="02withinTheProcess"/>
@@ -281,6 +284,46 @@
             <model:boolean name="issuedQuantityUpToNeed" default="false"/>
         </model:model-field>
 
+        <model:model-field model="parameter" plugin="basic">
+            <model:enum name="materialCostsUsedMC"
+                        values="01nominal,02average,03lastPurchase,04averageOfferCost,05lastOfferCost"
+                        required="true" default="01nominal"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="useNominalCostPriceNotSpecifiedMC" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:belongsTo name="productAttribute" plugin="basic" model="attribute"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="attribute">
+            <model:hasMany name="productAttributes" plugin="basic" model="parameter"
+                           joinField="productAttribute"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:belongsTo name="materialAttribute" plugin="basic" model="attribute"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="attribute">
+            <model:hasMany name="materialAttributes" plugin="basic" model="parameter"
+                           joinField="materialAttribute"/>
+        </model:model-field>
+
+        <model:model-field model="technology" plugin="technologies">
+            <model:hasMany name="modelCardProducts"
+                           plugin="productFlowThruDivision" model="modelCardProduct"
+                           joinField="technology"/>
+        </model:model-field>
+
+        <model:model-field model="product" plugin="basic">
+            <model:hasMany name="modelCardProducts"
+                           plugin="productFlowThruDivision" model="modelCardProduct"
+                           joinField="product"/>
+        </model:model-field>
+
         <!-- productionCountingQuantity in -->
 
         <model:model-field plugin="basicProductionCounting"
@@ -441,6 +484,7 @@
         <view:view-tab resource="view/tabExtensions/supplyParameters.xml"/>
         <view:view-tab resource="view/tabExtensions/productionCountingQuantityAdvancedDetails.xml"/>
         <view:view-tab resource="view/tabExtensions/technologiesParameters.xml"/>
+        <view:view-tab resource="view/tabExtensions/generalParameters.xml" />
 
         <view:view-hook plugin="basic" view="divisionDetails"
                         type="beforeRender"
@@ -659,6 +703,9 @@
 
         <view:view resource="view/productsToIssueHelperDetails.xml"/>
         <view:view resource="view/productToIssueCorrectionHelperDetails.xml"/>
+        <view:view resource="view/modelCardsList.xml"/>
+        <view:view resource="view/modelCardDetails.xml"/>
+        <view:view resource="view/modelCardProductDetails.xml"/>
 
         <menu:menu-item name="warehouseIssue" category="requirements"
                         view="warehouseIssueList" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
@@ -667,6 +714,8 @@
                         view="productsToIssueList" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
         <menu:menu-item name="issueList" category="requirements"
                         view="issueList" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
+        <menu:menu-item name="modelCardsList" category="products" defaultAuthorizationRole="ROLE_PRODUCTS"
+                        view="modelCardsList"/>
 
         <view:view-listener plugin="orders" view="orderDetails"
                             component="form" event="showWarehouseIssuesForOrder"

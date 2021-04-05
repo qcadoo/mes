@@ -34,11 +34,8 @@ import org.springframework.stereotype.Component;
 import com.qcadoo.mes.basic.imports.dtos.CellBinderRegistry;
 import com.qcadoo.mes.basic.imports.helpers.CellParser;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.imports.parsers.MasterOrderPositionStatusCellParser;
 import com.qcadoo.mes.masterOrders.imports.parsers.MasterOrderStateCellParser;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.imports.parsers.OrderCategoryCellParser;
 
 @Component
 public class MasterOrderCellBinderRegistry {
@@ -78,10 +75,12 @@ public class MasterOrderCellBinderRegistry {
         cellBinderRegistry.setCellBinder(optional(MasterOrderFields.FINISH_DATE, dateTimeCellParser));
         cellBinderRegistry.setCellBinder(optional(MasterOrderFields.DEADLINE, dateTimeCellParser));
         cellBinderRegistry.setCellBinder(optional(MasterOrderFields.DATE_OF_RECEIPT, dateTimeCellParser));
-        cellBinderRegistry.setCellBinder(optional(MasterOrderFields.MASTER_ORDER_STATE, masterOrderStateCellParser.masterOrderState()));
+        cellBinderRegistry
+                .setCellBinder(optional(MasterOrderFields.MASTER_ORDER_STATE, masterOrderStateCellParser.masterOrderState()));
         cellBinderRegistry.setCellBinder(optional(MasterOrderFields.TECHNOLOGY, technologyCellParser));
         cellBinderRegistry.setCellBinder(optional(MasterOrderFields.COMMENTS));
-        cellBinderRegistry.setCellBinder(optional(MasterOrderFields.MASTER_ORDER_POSITION_STATUS, masterOrderPositionStatusCellParser.masterOrderPositionStatus()));
+        cellBinderRegistry.setCellBinder(optional(MasterOrderFields.MASTER_ORDER_POSITION_STATUS,
+                masterOrderPositionStatusCellParser.masterOrderPositionStatus()));
     }
 
     public CellBinderRegistry getCellBinderRegistry() {

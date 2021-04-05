@@ -40,6 +40,7 @@ import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+import com.qcadoo.mes.materialFlowResources.constants.ResourceStockDtoFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -104,6 +105,13 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
     @Override
     public Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location,
             final boolean withoutBlockedForQualityControl) {
+        return getQuantitiesForProductsAndLocation(products, location, withoutBlockedForQualityControl,
+                ResourceStockDtoFields.AVAILABLE_QUANTITY);
+    }
+
+    @Override
+    public Map<Long, BigDecimal> getQuantitiesForProductsAndLocation(final List<Entity> products, final Entity location,
+            final boolean withoutBlockedForQualityControl, final String fieldName) {
         Map<Long, BigDecimal> quantities = Maps.newHashMap();
 
         if (products.size() > 0) {
@@ -113,7 +121,8 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             StringBuilder query = new StringBuilder();
 
             query.append("SELECT ");
-            query.append("resourceStockDto.product_id AS product_id, resourceStockDto.availableQuantity AS availableQuantity ");
+            query.append(
+                    "resourceStockDto.product_id AS product_id, resourceStockDto.quantity AS quantity, resourceStockDto.availableQuantity AS availableQuantity ");
             query.append("FROM #materialFlowResources_resourceStockDto resourceStockDto ");
             query.append("WHERE resourceStockDto.product_id IN (:productIds) ");
             query.append("AND resourceStockDto.location_id = :locationId ");
@@ -130,15 +139,17 @@ public class MaterialFlowResourcesServiceImpl implements MaterialFlowResourcesSe
             List<Entity> resourceStocks = searchQueryBuilder.list().getEntities();
 
             resourceStocks.forEach(resourceStock -> quantities.put(
-                    Long.valueOf(resourceStock.getIntegerField("product_id").intValue()),
-                    resourceStock.getDecimalField("availableQuantity")));
+                    Long.valueOf(resourceStock.getIntegerField(ResourceStockDtoFields.PRODUCT_ID).intValue()),
+                    ResourceStockDtoFields.AVAILABLE_QUANTITY.equals(fieldName)
+                            ? resourceStock.getDecimalField(ResourceStockDtoFields.AVAILABLE_QUANTITY)
+                            : resourceStock.getDecimalField(ResourceStockDtoFields.QUANTITY)));
         }
 
         return quantities;
     }
 
     @Override
-    public Map<Long, Map<Long, BigDecimal>> getQuantitiesForProductsAndLocation(final List<Entity> products,
+    public Map<Long, Map<Long, BigDecimal>> getQuantitiesForProductsAndLocations(final List<Entity> products,
             final List<Entity> locations) {
         Map<Long, Map<Long, BigDecimal>> quantities = Maps.newHashMap();
 

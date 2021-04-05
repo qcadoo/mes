@@ -28,7 +28,6 @@ import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.technologies.constants.OperationFields;
@@ -49,8 +48,7 @@ public class OperationOrderInfoOperation {
         this.translationService = translationService;
     }
 
-    public void print(final Entity operationComponent, final PdfPTable operationTable, final Locale locale)
-            throws DocumentException {
+    public void print(final Entity operationComponent, final PdfPTable operationTable, final Locale locale) {
         String operationLevel = operationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER);
         pdfHelper.addTableCellAsOneColumnTable(operationTable,
                 translationService.translate("workPlans.workPlan.report.operation.level", locale), operationLevel);

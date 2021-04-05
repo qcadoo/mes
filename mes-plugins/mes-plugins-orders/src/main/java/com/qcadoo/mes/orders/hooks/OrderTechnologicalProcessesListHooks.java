@@ -93,9 +93,13 @@ public class OrderTechnologicalProcessesListHooks {
                     isOrderStateValid = !orderTechnologicalProcessService.checkOrderState(order);
                 }
 
-                isOrderTechnologicalProcessFilled = Objects.nonNull(date) && Objects.nonNull(worker);
+                if (isOrderStateValid) {
+                    isOrderTechnologicalProcessFilled = Objects.nonNull(date) && Objects.nonNull(worker);
 
-                if (!isOrderTechnologicalProcessFilled) {
+                    if (!isOrderTechnologicalProcessFilled) {
+                        message = "orders.ribbon.message.orderTechnologicalProcessNotFilled";
+                    }
+                } else {
                     message = "orders.ribbon.message.canNotCreateOrderTechnologicalProcessWaste";
                 }
             }

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.imports.services.XlsxImportService;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.imports.masterOrder.MasterOrderCellBinderRegistry;
 import com.qcadoo.mes.masterOrders.imports.masterOrder.MasterOrderXlsxImportService;
@@ -27,14 +26,15 @@ public class MasterOrdersImportListeners {
     private MasterOrderCellBinderRegistry masterOrderCellBinderRegistry;
 
     public void downloadImportSchema(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        masterOrderXlsxImportService.downloadImportSchema(view, MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER,
-                XlsxImportService.L_XLSX);
+        masterOrderXlsxImportService.downloadImportSchema(view, MasterOrdersConstants.PLUGIN_IDENTIFIER,
+                MasterOrdersConstants.MODEL_MASTER_ORDER, XlsxImportService.L_XLSX);
     }
 
     public void processImportFile(final ViewDefinitionState view, final ComponentState state, final String[] args)
             throws IOException {
         masterOrderXlsxImportService.processImportFile(view, masterOrderCellBinderRegistry.getCellBinderRegistry(), true,
-                MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER, MasterOrdersImportListeners::createRestrictionForMasterOrder);
+                MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER,
+                MasterOrdersImportListeners::createRestrictionForMasterOrder);
     }
 
     public static SearchCriterion createRestrictionForMasterOrder(final Entity masterOrder) {

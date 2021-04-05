@@ -23,6 +23,11 @@
  */
 package com.qcadoo.mes.materialFlow.hooks;
 
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialFlow.constants.ParameterFieldsMF;
 import com.qcadoo.mes.materialFlow.constants.WhatToShowOnDashboard;
@@ -32,17 +37,8 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 @Component
 public class DashboardParametersHooks {
-
-    private static final String L_BASIC_DASHBOARD_BUTTON_IDENTIFIER = "basic.dashboardButton.identifier";
-
-    private static final String L_DOT = ".";
 
     @Autowired
     private TranslationService translationService;
@@ -57,7 +53,6 @@ public class DashboardParametersHooks {
                 .getComponentByReference(ParameterFieldsMF.WHAT_TO_SHOW_ON_DASHBOARD);
         LookupComponent dashboardOperationLookup = (LookupComponent) view
                 .getComponentByReference(ParameterFieldsMF.DASHBOARD_OPERATION);
-
 
         Long parameterId = parameterForm.getEntityId();
         String whatToShowOnDashboard = (String) whatToShowOnDashboardField.getFieldValue();

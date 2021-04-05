@@ -29,7 +29,6 @@ import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.lowagie.text.DocumentException;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.StaffFields;
@@ -54,8 +53,7 @@ public class OperationOrderInfoOperationalTask {
         this.pdfHelper = pdfHelper;
     }
 
-    public void print(final Entity order, final Entity operationComponent, final PdfPTable operationTable, final Locale locale)
-            throws DocumentException {
+    public void print(final Entity order, final Entity operationComponent, final PdfPTable operationTable, final Locale locale) {
         Entity operationalTask = extractOperationalTask(order, operationComponent);
 
         if (Objects.nonNull(operationalTask)) {

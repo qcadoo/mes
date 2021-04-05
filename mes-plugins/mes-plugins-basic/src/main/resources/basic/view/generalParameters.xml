@@ -24,7 +24,8 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_PARAMETERS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
+<view defaultAuthorizationRole="ROLE_PARAMETERS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="generalParameters" modelName="parameter" menuAccessible="true">
 
@@ -137,12 +138,21 @@
                         <option type="labelWidth" value="80"/>
                     </component>
                 </layoutElement>
-				<layoutElement column="2" row="5">
-					<component type="checkbox" name="exportToCsvOnlyVisibleColumns"
-							   reference="exportToCsvOnlyVisibleColumns" field="#{form}.exportToCsvOnlyVisibleColumns">
-						<option type="labelWidth" value="80"/>
-					</component>
-				</layoutElement>
+                <layoutElement column="2" row="5">
+                    <component type="checkbox" name="exportToCsvOnlyVisibleColumns"
+                               reference="exportToCsvOnlyVisibleColumns" field="#{form}.exportToCsvOnlyVisibleColumns">
+                        <option type="labelWidth" value="80"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+        <windowTab name="productsTab" reference="productsTab">
+            <component type="gridLayout" name="productsGridLayout"
+                       columns="3" rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="checkbox" name="copyAttributesToSizeProducts" hasDescription="true"
+                               reference="copyAttributesToSizeProducts" field="#{form}.copyAttributesToSizeProducts"/>
+                </layoutElement>
             </component>
         </windowTab>
 

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<windowTabExtension xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/modules/windowTabExtension" 
+	xsi:schemaLocation="http://schema.qcadoo.org/modules/windowTabExtension http://schema.qcadoo.org/modules/windowTabExtension.xsd" 
+	plugin="basic"
+	view="generalParameters">
+
+    <windowTab name="modelCardTab" reference="modelCardTab">
+        <component type="gridLayout" name="modelCardGridLayout"
+                   reference="modelCardGridLayout" columns="3" rows="4" hasBorders="false">
+            <layoutElement column="1" row="1" height="2">
+                <component type="borderLayout" name="parametersBorderLayout"
+                           reference="parametersBorderLayout">
+                    <component type="gridLayout" name="parametersGridLayout"
+                               reference="parametersGridLayout" columns="1" rows="2">
+                        <layoutElement column="1" row="1">
+                            <component type="select" name="materialCostsUsedMC"
+                                       field="#{form}.materialCostsUsedMC"
+                                       reference="materialCostsUsedMC">
+                                <option type="labelWidth" value="40"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="1" row="2">
+                            <component type="checkbox" name="useNominalCostPriceNotSpecifiedMC"
+                                       field="#{form}.useNominalCostPriceNotSpecifiedMC"
+                                       reference="useNominalCostPriceNotSpecifiedMC" hasDescription="true">
+                                <option type="labelWidth" value="40"/>
+                            </component>
+                        </layoutElement>
+                    </component>
+
+                    <option type="label" value="materialCostsParameters"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="1" row="3" height="2">
+                <component type="borderLayout" name="attributesParametersBorderLayout">
+                    <component type="gridLayout" name="attributesParametersGidLayout"
+                               columns="1" rows="2" hasBorders="false">
+                        <layoutElement column="1" row="1">
+                            <component type="lookup" name="productAttribute" field="#{form}.productAttribute"
+                                       reference="productAttribute">
+                                <option type="column" name="name" fields="name" link="true"
+                                        width="200"/>
+
+                                <option type="searchable" value="name,number"/>
+                                <option type="orderable" value="name,number"/>
+
+                                <option type="expression"
+                                        value="'&lt;b&gt;' + #number"/>
+                                <option type="fieldCode" value="number"/>
+                                <option type="labelWidth" value="40"/>
+                                <criteriaModifier
+                                        class="com.qcadoo.mes.basic.criteriaModifiers.AttributeCriteriaModifiers"
+                                        method="showForProduct"/>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="1" row="2">
+                            <component type="lookup" name="materialAttribute" field="#{form}.materialAttribute"
+                                       reference="materialAttribute">
+                                <option type="column" name="name" fields="name" link="true"
+                                        width="200"/>
+
+                                <option type="searchable" value="name,number"/>
+                                <option type="orderable" value="name,number"/>
+
+                                <option type="expression"
+                                        value="'&lt;b&gt;' + #number"/>
+                                <option type="fieldCode" value="number"/>
+                                <option type="labelWidth" value="40"/>
+                                <criteriaModifier
+                                        class="com.qcadoo.mes.basic.criteriaModifiers.AttributeCriteriaModifiers"
+                                        method="showForProduct"/>
+                            </component>
+                        </layoutElement>
+
+                    </component>
+
+                    <option type="label" value="attributesParameters"/>
+                </component>
+            </layoutElement>
+        </component>
+    </windowTab>
+</windowTabExtension>

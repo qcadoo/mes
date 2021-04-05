@@ -1,5 +1,11 @@
 package com.qcadoo.mes.orders.hooks;
 
+import java.math.BigDecimal;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Optional;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -18,11 +24,6 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
 
 @Service
 public class OrderPackDetailsHooks {
@@ -49,7 +50,8 @@ public class OrderPackDetailsHooks {
             FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
             if (OrderState.COMPLETED.getStringValue().equals(orderState)
                     || OrderState.DECLINED.getStringValue().equals(orderState)
-                    || OrderState.ABANDONED.getStringValue().equals(orderState)) {
+                    || OrderState.ABANDONED.getStringValue().equals(orderState)
+                    || OrderState.PENDING.getStringValue().equals(orderState)) {
                 form.setFormEnabled(false);
                 WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
                 Ribbon ribbon = window.getRibbon();

@@ -39,14 +39,14 @@
         <belongsTo name="company" plugin="basic" model="company"/>
 
         <decimal name="size">
-            <validatesRange from="0" exclusively="false" />
+            <validatesRange from="0"/>
             <validatesUnscaledValue max="7"/>
             <validatesScale max="5"/>
         </decimal>
 
         <dictionary name="unit" dictionary="units" />
 
-        <hasMany name="models" joinField="forms" model="model" cascade="nullify"/>
+        <hasMany name="models" joinField="forms" model="model"/>
     </fields>
 
     <hooks>

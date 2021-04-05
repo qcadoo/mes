@@ -57,4 +57,12 @@ public final class ParameterFieldsPFTD {
 
     public static final String DIVISION = "division";
 
+    public static final String MATERIAL_COSTS_USED_MC = "materialCostsUsedMC";
+
+    public static final String USE_NOMINAL_COST_PRICE_NOT_SPECIFIED_MC = "useNominalCostPriceNotSpecifiedMC";
+
+    public static final String PRODUCT_ATTRIBUTE = "productAttribute";
+
+    public static final String MATERIAL_ATTRIBUTE = "materialAttribute";
+
 }

@@ -142,18 +142,19 @@ public class SalesPlanMaterialRequirementDetailsListeners {
 
                 String url = "../page/deliveries/deliveryDetails.html";
                 view.redirectTo(url, false, true, parameters);
+            } else {
+                view.addMessage("masterOrders.salesPlanMaterialRequirement.createDelivery.info", ComponentState.MessageType.INFO);
             }
         }
     }
 
-    private Entity createDelivery(final Entity salesPlanMaterialRequirement,
-            final List<Entity> salesPlanMaterialRequirementProducts) {
+    private Entity createDelivery(final Entity salesPlanMaterialRequirement, final List<Entity> salesPlanMaterialRequirementProducts) {
         Entity delivery = deliveriesService.getDeliveryDD().create();
 
         Optional<Entity> mayBeSupplier = getSupplier(salesPlanMaterialRequirementProducts);
         List<Entity> orderedProducts = createOrderedProducts(salesPlanMaterialRequirementProducts);
 
-        if (orderedProducts.size() > 0) {
+        if (!orderedProducts.isEmpty()) {
             delivery.setField(DeliveryFields.NUMBER, numberGeneratorService.generateNumber(DeliveriesConstants.PLUGIN_IDENTIFIER,
                     DeliveriesConstants.MODEL_DELIVERY));
 
@@ -173,22 +174,13 @@ public class SalesPlanMaterialRequirementDetailsListeners {
     private List<Entity> createOrderedProducts(final List<Entity> salesPlanMaterialRequirementProducts) {
         List<Entity> orderedProducts = Lists.newArrayList();
 
-        salesPlanMaterialRequirementProducts.forEach(salesPlanMaterialRequirementProduct -> {
-            Entity orderedProduct = createOrderedProduct(salesPlanMaterialRequirementProduct);
-
-            if (Objects.nonNull(orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT))) {
-                orderedProducts.add(orderedProduct);
-
-                salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.IS_DELIVERY_CREATED, true);
-
-                salesPlanMaterialRequirementProduct.getDataDefinition().save(salesPlanMaterialRequirementProduct);
-            }
-        });
+        salesPlanMaterialRequirementProducts.forEach(salesPlanMaterialRequirementProduct -> createOrderedProduct(orderedProducts,
+                salesPlanMaterialRequirementProduct));
 
         return orderedProducts;
     }
 
-    private Entity createOrderedProduct(final Entity salesPlanMaterialRequirementProduct) {
+    private Entity createOrderedProduct(final List<Entity> orderedProducts, final Entity salesPlanMaterialRequirementProduct) {
         Entity product = salesPlanMaterialRequirementProduct.getBelongsToField(SalesPlanMaterialRequirementProductFields.PRODUCT);
         BigDecimal quantity = BigDecimalUtils.convertNullToZero(
                 salesPlanMaterialRequirementProduct.getDecimalField(SalesPlanMaterialRequirementProductFields.QUANTITY));
@@ -199,6 +191,48 @@ public class SalesPlanMaterialRequirementDetailsListeners {
         BigDecimal minimumOrderQuantity = BigDecimalUtils.convertNullToZero(salesPlanMaterialRequirementProduct
                 .getDecimalField(SalesPlanMaterialRequirementProductFields.MINIMUM_ORDER_QUANTITY));
 
+        BigDecimal conversion = getConversion(product);
+        BigDecimal orderedQuantity = getOrderedQuantity(quantity, currentStock, neededQuantity, minimumOrderQuantity);
+        BigDecimal additionalQuantity;
+
+        Optional<Entity> mayBeOrderedProduct = orderedProducts.stream()
+                .filter(orderedProduct -> filterByProduct(orderedProduct, salesPlanMaterialRequirementProduct)).findFirst();
+
+        Entity orderedProduct;
+
+        if (mayBeOrderedProduct.isPresent()) {
+            orderedProduct = mayBeOrderedProduct.get();
+
+            orderedQuantity = orderedQuantity.add(orderedProduct.getDecimalField(OrderedProductFields.ORDERED_QUANTITY),
+                    numberService.getMathContext());
+            additionalQuantity = orderedQuantity.multiply(conversion, numberService.getMathContext());
+
+            orderedProduct.setField(OrderedProductFields.ORDERED_QUANTITY, orderedQuantity);
+            orderedProduct.setField(OrderedProductFields.ADDITIONAL_QUANTITY, additionalQuantity);
+        } else {
+            additionalQuantity = orderedQuantity.multiply(conversion, numberService.getMathContext());
+
+            orderedProduct = deliveriesService.getOrderedProductDD().create();
+
+            orderedProduct.setField(OrderedProductFields.PRODUCT, product);
+            orderedProduct.setField(OrderedProductFields.CONVERSION, conversion);
+            orderedProduct.setField(OrderedProductFields.ORDERED_QUANTITY, orderedQuantity);
+            orderedProduct.setField(OrderedProductFields.ADDITIONAL_QUANTITY, additionalQuantity);
+
+            if (BigDecimal.ZERO.compareTo(orderedQuantity) <= 0) {
+                orderedProducts.add(orderedProduct);
+
+                salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.IS_DELIVERY_CREATED, true);
+
+                salesPlanMaterialRequirementProduct.getDataDefinition().save(salesPlanMaterialRequirementProduct);
+            }
+        }
+
+        return orderedProduct;
+    }
+
+    private BigDecimal getOrderedQuantity(final BigDecimal quantity, final BigDecimal currentStock,
+            final BigDecimal neededQuantity, final BigDecimal minimumOrderQuantity) {
         BigDecimal orderedQuantity;
 
         if (BigDecimal.ZERO.compareTo(quantity) == 0) {
@@ -214,25 +248,24 @@ public class SalesPlanMaterialRequirementDetailsListeners {
             }
         }
 
-        Entity orderedProduct = deliveriesService.getOrderedProductDD().create();
+        return orderedQuantity;
+    }
 
-        if (BigDecimal.ZERO.compareTo(orderedQuantity) <= 0) {
-            BigDecimal conversion = getConversion(product);
+    private boolean filterByProduct(final Entity orderedProduct, final Entity salesPlanMaterialRequirementProduct) {
+        Entity orderedProductProduct = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
+        Entity salesPlanMaterialRequirementProductProduct = salesPlanMaterialRequirementProduct
+                .getBelongsToField(SalesPlanMaterialRequirementProductFields.PRODUCT);
 
-            BigDecimal additionalQuantity = orderedQuantity.multiply(conversion, numberService.getMathContext());
-
-            orderedProduct.setField(OrderedProductFields.PRODUCT, product);
-            orderedProduct.setField(OrderedProductFields.ORDERED_QUANTITY, orderedQuantity);
-            orderedProduct.setField(OrderedProductFields.CONVERSION, conversion);
-            orderedProduct.setField(OrderedProductFields.ADDITIONAL_QUANTITY, additionalQuantity);
-        }
-
-        return orderedProduct;
+        return Objects.nonNull(orderedProductProduct) && Objects.nonNull(salesPlanMaterialRequirementProductProduct)
+                && orderedProductProduct.getId().equals(salesPlanMaterialRequirementProductProduct.getId());
     }
 
     private Optional<Entity> getSupplier(final List<Entity> salesPlanMaterialRequirementProducts) {
-        return salesPlanMaterialRequirementProducts.stream().filter(salesPlanMaterialRequirementProduct -> Objects.nonNull(
-                salesPlanMaterialRequirementProduct.getBelongsToField(SalesPlanMaterialRequirementProductFields.SUPPLIER)))
+        return salesPlanMaterialRequirementProducts.stream()
+                .filter(salesPlanMaterialRequirementProduct -> Objects.nonNull(salesPlanMaterialRequirementProduct
+                        .getBelongsToField(SalesPlanMaterialRequirementProductFields.SUPPLIER)))
+                .map(salesPlanMaterialRequirementProduct -> salesPlanMaterialRequirementProduct
+                        .getBelongsToField(SalesPlanMaterialRequirementProductFields.SUPPLIER))
                 .findFirst();
     }
 

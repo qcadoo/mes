@@ -88,5 +88,4 @@
         <onCopy class="com.qcadoo.mes.productFlowThruDivision.warehouseIssue.hooks.WarehouseIssueHooks"
                 method="onCopy"/>
     </hooks>
-
 </model>
