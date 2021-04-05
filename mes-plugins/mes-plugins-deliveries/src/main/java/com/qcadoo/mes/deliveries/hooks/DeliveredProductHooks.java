@@ -52,15 +52,12 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class DeliveredProductHooks {
 
     private static final String L_OFFER = "offer";
-
-    private static final String L_OPERATION = "operation";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -192,8 +189,6 @@ public class DeliveredProductHooks {
             }
         }
     }
-
-
 
     private void updateDeliveredAndAdditionalQuantityInOrderedProduct(final Entity deliveredProduct, BigDecimal deliveredQuantity,
             BigDecimal additionalQuantity, Entity orderedProduct) {

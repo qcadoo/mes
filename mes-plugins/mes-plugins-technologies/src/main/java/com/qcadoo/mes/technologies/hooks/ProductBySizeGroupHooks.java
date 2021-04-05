@@ -69,7 +69,7 @@ public class ProductBySizeGroupHooks {
 
         List<Entity> productBySizeGroups = searchCriteriaBuilder.list().getEntities();
 
-        if (productBySizeGroups.size() > 0) {
+        if (!productBySizeGroups.isEmpty()) {
             productBySizeGroup.addGlobalError("technologies.productBySizeGroup.error.notUnique");
 
             return false;

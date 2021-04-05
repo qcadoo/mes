@@ -547,7 +547,7 @@ public class WarehouseIssueService {
                 BigDecimal issueQuantity = issue.getDecimalField(IssueFields.ISSUE_QUANTITY);
 
                 if (Objects.isNull(locationsQuantity) || Objects.isNull(issueQuantity)
-                        || locationsQuantity.compareTo(issueQuantity) == -1) {
+                        || locationsQuantity.compareTo(issueQuantity) < 0) {
                     if (buffer.length() != 0) {
                         buffer.append(", ");
                     }

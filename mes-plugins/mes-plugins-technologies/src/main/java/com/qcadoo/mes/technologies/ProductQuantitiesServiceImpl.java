@@ -556,7 +556,7 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
                     .equals(TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
                     && operationProductComponent.getBooleanField(
                             OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES)
-                    && sizeGroups.size() > 0) {
+                    && !sizeGroups.isEmpty()) {
                 for (Entity sizeGroup : sizeGroups) {
                     List<Entity> productBySizeGroups = operationProductComponent
                             .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS).stream().filter(pG -> pG

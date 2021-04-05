@@ -28,7 +28,6 @@ import java.util.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementFields;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
@@ -62,7 +61,8 @@ public class SalesPlanMaterialRequirementDetailsHooks {
 
     private void setRibbonEnabled(final ViewDefinitionState view) {
         FormComponent salesPlanMaterialRequirementForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        GridComponent salesPlanMaterialRequirementProductsGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+        GridComponent salesPlanMaterialRequirementProductsGrid = (GridComponent) view
+                .getComponentByReference(QcadooViewConstants.L_GRID);
         CheckBoxComponent generatedCheckBox = (CheckBoxComponent) view
                 .getComponentByReference(SalesPlanMaterialRequirementFields.GENERATED);
 
@@ -79,7 +79,8 @@ public class SalesPlanMaterialRequirementDetailsHooks {
 
         boolean isEnabled = Objects.nonNull(salesPlanMaterialRequirementId);
         boolean isGenerated = generatedCheckBox.isChecked();
-        boolean isSalesPlanMaterialRequirementProductsSelected = !salesPlanMaterialRequirementProductsGrid.getSelectedEntities().isEmpty();
+        boolean isSalesPlanMaterialRequirementProductsSelected = !salesPlanMaterialRequirementProductsGrid.getSelectedEntities()
+                .isEmpty();
 
         generateRibbonActionItem.setEnabled(isEnabled && !isGenerated);
         generateRibbonActionItem.requestUpdate(true);

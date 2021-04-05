@@ -23,6 +23,14 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
+import java.math.BigDecimal;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Optional;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -42,20 +50,8 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
-import java.math.BigDecimal;
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 @Service
 public class DivideOrderTechnologicalProcessListeners {
-
-    private static final String L_VIEW_NAME = "window.mainTab.orderTechnologicalProcess.viewName";
-
-    private static final String L_ORDER_TECHNOLOGICAL_PROCESSES_LIST = "orderTechnologicalProcessesList";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -77,7 +73,8 @@ public class DivideOrderTechnologicalProcessListeners {
 
         List<FormComponent> orderTechnologicalProcessPartForms = orderTechnologicalProcessPartsADL.getFormComponents();
 
-        boolean isValid = validateDivision(orderTechnologicalProcessForm, orderTechnologicalProcessPartForms, orderTechnologicalProcess);
+        boolean isValid = validateDivision(orderTechnologicalProcessForm, orderTechnologicalProcessPartForms,
+                orderTechnologicalProcess);
 
         if (isValid) {
             for (FormComponent orderTechnologicalProcessPartForm : orderTechnologicalProcessPartForms) {
@@ -102,13 +99,14 @@ public class DivideOrderTechnologicalProcessListeners {
                     Entity order = orderTechnologicalProcess.getBelongsToField(OrderTechnologicalProcessFields.ORDER);
                     Entity product = orderTechnologicalProcess.getBelongsToField(OrderTechnologicalProcessFields.PRODUCT);
                     Entity operation = orderTechnologicalProcess.getBelongsToField(OrderTechnologicalProcessFields.OPERATION);
-                    Entity technologyOperationComponent = orderTechnologicalProcess.getBelongsToField(OrderTechnologicalProcessFields.TECHNOLOGY_OPERATION_COMPONENT);
+                    Entity technologyOperationComponent = orderTechnologicalProcess
+                            .getBelongsToField(OrderTechnologicalProcessFields.TECHNOLOGY_OPERATION_COMPONENT);
                     Entity technologicalProcess = orderTechnologicalProcess
                             .getBelongsToField(OrderTechnologicalProcessFields.TECHNOLOGICAL_PROCESS);
 
                     if (mayBeQuantity.isPresent()) {
-                        createOrderTechnologicalProcess(orderPack, order, product, technologyOperationComponent, operation, technologicalProcess,
-                                mayBeQuantity.get());
+                        createOrderTechnologicalProcess(orderPack, order, product, technologyOperationComponent, operation,
+                                technologicalProcess, mayBeQuantity.get());
                     }
                 }
             }
@@ -183,14 +181,16 @@ public class DivideOrderTechnologicalProcessListeners {
     }
 
     private void createOrderTechnologicalProcess(final Entity orderPack, final Entity order, final Entity product,
-            final Entity technologyOperationComponent, final Entity operation, final Entity technologicalProcess, final BigDecimal quantity) {
+            final Entity technologyOperationComponent, final Entity operation, final Entity technologicalProcess,
+            final BigDecimal quantity) {
         Entity orderTechnologicalProcess = getOrderTechnologicalProcessDD().create();
 
         orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.ORDER_PACK, orderPack);
         orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.ORDER, order);
         orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.PRODUCT, product);
         orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.OPERATION, operation);
-        orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
+        orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.TECHNOLOGY_OPERATION_COMPONENT,
+                technologyOperationComponent);
         orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.TECHNOLOGICAL_PROCESS, technologicalProcess);
         orderTechnologicalProcess.setField(OrderTechnologicalProcessFields.QUANTITY, quantity);
 

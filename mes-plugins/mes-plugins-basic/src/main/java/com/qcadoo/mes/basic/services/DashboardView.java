@@ -26,7 +26,6 @@ package com.qcadoo.mes.basic.services;
 import java.util.Locale;
 import java.util.Map;
 
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 public interface DashboardView {

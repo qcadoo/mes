@@ -154,7 +154,7 @@ public class SalesPlanMaterialRequirementDetailsListeners {
         Optional<Entity> mayBeSupplier = getSupplier(salesPlanMaterialRequirementProducts);
         List<Entity> orderedProducts = createOrderedProducts(salesPlanMaterialRequirementProducts);
 
-        if (orderedProducts.size() > 0) {
+        if (!orderedProducts.isEmpty()) {
             delivery.setField(DeliveryFields.NUMBER, numberGeneratorService.generateNumber(DeliveriesConstants.PLUGIN_IDENTIFIER,
                     DeliveriesConstants.MODEL_DELIVERY));
 

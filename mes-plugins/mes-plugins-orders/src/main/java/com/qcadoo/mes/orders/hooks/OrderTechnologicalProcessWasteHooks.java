@@ -47,8 +47,6 @@ import com.qcadoo.security.api.UserService;
 @Service
 public class OrderTechnologicalProcessWasteHooks {
 
-    private static final String L_WASTES_QUANTITY = "wastesQuantity";
-
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 

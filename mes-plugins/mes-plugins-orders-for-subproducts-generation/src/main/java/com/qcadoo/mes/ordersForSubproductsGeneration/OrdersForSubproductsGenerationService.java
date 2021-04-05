@@ -23,6 +23,21 @@
  */
 package com.qcadoo.mes.ordersForSubproductsGeneration;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -30,7 +45,11 @@ import com.qcadoo.mes.materialRequirementCoverageForOrder.MaterialRequirementCov
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageProductFields;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageProductState;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.MaterialRequirementCoverageForOrderConstans;
-import com.qcadoo.mes.orderSupplies.constants.*;
+import com.qcadoo.mes.orderSupplies.constants.CoverageProductLoggingFields;
+import com.qcadoo.mes.orderSupplies.constants.CoverageRegisterFields;
+import com.qcadoo.mes.orderSupplies.constants.MaterialRequirementCoverageFields;
+import com.qcadoo.mes.orderSupplies.constants.OrderSuppliesConstants;
+import com.qcadoo.mes.orderSupplies.constants.ProductType;
 import com.qcadoo.mes.orderSupplies.coverage.MaterialRequirementCoverageService;
 import com.qcadoo.mes.orderSupplies.register.RegisterService;
 import com.qcadoo.mes.orders.OrderService;
@@ -43,25 +62,24 @@ import com.qcadoo.mes.productFlowThruDivision.constants.OrderFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionLines.constants.ProductionLineFields;
-import com.qcadoo.mes.technologies.constants.*;
+import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.ProductStructureTreeNodeFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.*;
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchDisjunction;
+import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchProjections;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class OrdersForSubproductsGenerationService {
@@ -327,14 +345,14 @@ public class OrdersForSubproductsGenerationService {
     }
 
     public List<Entity> getComponentProducts(final Entity coverage, final Entity order) {
-        String _query = "select product from #orderSupplies_coverageProduct product, "
+        String query = "select product from #orderSupplies_coverageProduct product, "
                 + "#orderSupplies_materialRequirementCoverage coverage "
                 + "where product.materialRequirementCoverage.id = coverage.id "
                 + "and coverage.id=:coverageId and product.productType is not null "
                 + "and product.productType='02intermediate' and product.state='03lack'";
 
         List<Entity> components = dataDefinitionService
-                .get(OrderSuppliesConstants.PLUGIN_IDENTIFIER, OrderSuppliesConstants.MODEL_COVERAGE_PRODUCT).find(_query)
+                .get(OrderSuppliesConstants.PLUGIN_IDENTIFIER, OrderSuppliesConstants.MODEL_COVERAGE_PRODUCT).find(query)
                 .setParameter("coverageId", coverage.getId()).list().getEntities();
 
         return getComponentProductsForOrder(components, order);

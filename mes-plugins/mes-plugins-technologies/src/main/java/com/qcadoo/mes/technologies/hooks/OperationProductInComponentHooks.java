@@ -123,7 +123,7 @@ public class OperationProductInComponentHooks {
 
         List<Entity> operationProductInComponents = searchCriteriaBuilder.list().getEntities();
 
-        if (operationProductInComponents.size() > 0) {
+        if (!operationProductInComponents.isEmpty()) {
             operationProductInComponent.addGlobalError("technologies.operationProductInComponent.error.notUnique");
 
             return false;

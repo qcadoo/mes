@@ -260,7 +260,7 @@ public final class MaterialRequirementPdfService extends PdfDocumentService {
                     if (!actualWarehouse.equals(key.getWarehouseNumber())) {
                         table.getDefaultCell().enableBorderSide(PdfCell.TOP);
                         table.addCell(new Phrase(key.getWarehouseNumber(), FontUtils.getDejavuRegular7Dark()));
-                        
+
                         actualWarehouse = key.getWarehouseNumber();
 
                         fillDateIfWarehouseChanged = true;

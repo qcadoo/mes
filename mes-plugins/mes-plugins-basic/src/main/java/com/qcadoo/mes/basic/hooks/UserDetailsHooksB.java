@@ -8,13 +8,8 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.UserFields;
 import com.qcadoo.security.api.SecurityService;
-import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
 import com.qcadoo.view.api.components.LookupComponent;
-import com.qcadoo.view.api.components.WindowComponent;
-import com.qcadoo.view.api.ribbon.RibbonActionItem;
-import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class UserDetailsHooksB {

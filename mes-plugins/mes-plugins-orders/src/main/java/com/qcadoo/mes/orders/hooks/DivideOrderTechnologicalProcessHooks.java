@@ -84,7 +84,7 @@ public class DivideOrderTechnologicalProcessHooks {
             BigDecimal quantity1;
             BigDecimal quantity2;
 
-            BigDecimal quantitySum = BigDecimal.ZERO;;
+            BigDecimal quantitySum = BigDecimal.ZERO;
 
             if (dictionaryService.checkIfUnitIsInteger(productUnit)) {
                 if (isInteger(quantity)) {
