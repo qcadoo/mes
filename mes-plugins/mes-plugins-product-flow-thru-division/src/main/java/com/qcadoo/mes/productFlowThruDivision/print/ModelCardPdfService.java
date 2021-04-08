@@ -279,42 +279,9 @@ public final class ModelCardPdfService extends PdfDocumentService {
 
         for (ModelCardMaterialEntry modelCardMaterialEntry : entries) {
             if (quantityNormDescriptionsMap.containsKey(modelCardMaterialEntry)) {
-                QuantityNormDescriptions quantityNormDescriptions = quantityNormDescriptionsMap.get(modelCardMaterialEntry);
-                if (quantityNormDescriptions.getNeededQuantity() != null) {
-                    quantityNormDescriptions.setNeededQuantity(
-                            quantityNormDescriptions.getNeededQuantity().add(modelCardMaterialEntry.getNeededQuantity()));
-                }
-                if (quantityNormDescriptions.getNorm() != null) {
-                    quantityNormDescriptions.setNorm(quantityNormDescriptions.getNorm().add(modelCardMaterialEntry.getNorm()));
-                }
-                if (quantityNormDescriptions.getMaterialUnitCost() != null) {
-                    quantityNormDescriptions.setMaterialUnitCost(
-                            quantityNormDescriptions.getMaterialUnitCost().add(modelCardMaterialEntry.getMaterialUnitCost()));
-                }
-                if (quantityNormDescriptions.getCurrentStock() != null
-                        && !quantityNormDescriptions.getWarehouseIds().contains(modelCardMaterialEntry.getWarehouseId())) {
-                    quantityNormDescriptions.setCurrentStock(
-                            quantityNormDescriptions.getCurrentStock().add(modelCardMaterialEntry.getCurrentStock()));
-                }
-                quantityNormDescriptions.getWarehouseIds().add(modelCardMaterialEntry.getWarehouseId());
-                if (modelCardMaterialEntry.getDescription() != null) {
-                    quantityNormDescriptions.getDescriptions().add(modelCardMaterialEntry.getDescription());
-                }
+                updateGroup(quantityNormDescriptionsMap, modelCardMaterialEntry);
             } else {
-                QuantityNormDescriptions quantityNormDescriptions = new QuantityNormDescriptions();
-                quantityNormDescriptions.setNeededQuantity(modelCardMaterialEntry.getNeededQuantity());
-                quantityNormDescriptions.setNorm(modelCardMaterialEntry.getNorm());
-                quantityNormDescriptions.setMaterialUnitCost(modelCardMaterialEntry.getMaterialUnitCost());
-                quantityNormDescriptions.setCurrentStock(modelCardMaterialEntry.getCurrentStock());
-                Set<Long> warehouseIds = Sets.newHashSet();
-                warehouseIds.add(modelCardMaterialEntry.getWarehouseId());
-                quantityNormDescriptions.setWarehouseIds(warehouseIds);
-                Set<String> descriptions = Sets.newHashSet();
-                if (modelCardMaterialEntry.getDescription() != null) {
-                    descriptions.add(modelCardMaterialEntry.getDescription());
-                }
-                quantityNormDescriptions.setDescriptions(descriptions);
-                quantityNormDescriptionsMap.put(modelCardMaterialEntry, quantityNormDescriptions);
+                createNewGroup(quantityNormDescriptionsMap, modelCardMaterialEntry);
             }
         }
 
@@ -327,6 +294,47 @@ public final class ModelCardPdfService extends PdfDocumentService {
         });
 
         return com.google.common.collect.Lists.newArrayList(quantityNormDescriptionsMap.keySet());
+    }
+
+    private void updateGroup(Map<ModelCardMaterialEntry, QuantityNormDescriptions> quantityNormDescriptionsMap, ModelCardMaterialEntry modelCardMaterialEntry) {
+        QuantityNormDescriptions quantityNormDescriptions = quantityNormDescriptionsMap.get(modelCardMaterialEntry);
+        if (quantityNormDescriptions.getNeededQuantity() != null) {
+            quantityNormDescriptions.setNeededQuantity(
+                    quantityNormDescriptions.getNeededQuantity().add(modelCardMaterialEntry.getNeededQuantity()));
+        }
+        if (quantityNormDescriptions.getNorm() != null) {
+            quantityNormDescriptions.setNorm(quantityNormDescriptions.getNorm().add(modelCardMaterialEntry.getNorm()));
+        }
+        if (quantityNormDescriptions.getMaterialUnitCost() != null) {
+            quantityNormDescriptions.setMaterialUnitCost(
+                    quantityNormDescriptions.getMaterialUnitCost().add(modelCardMaterialEntry.getMaterialUnitCost()));
+        }
+        if (quantityNormDescriptions.getCurrentStock() != null
+                && !quantityNormDescriptions.getWarehouseIds().contains(modelCardMaterialEntry.getWarehouseId())) {
+            quantityNormDescriptions.setCurrentStock(
+                    quantityNormDescriptions.getCurrentStock().add(modelCardMaterialEntry.getCurrentStock()));
+        }
+        quantityNormDescriptions.getWarehouseIds().add(modelCardMaterialEntry.getWarehouseId());
+        if (modelCardMaterialEntry.getDescription() != null) {
+            quantityNormDescriptions.getDescriptions().add(modelCardMaterialEntry.getDescription());
+        }
+    }
+
+    private void createNewGroup(Map<ModelCardMaterialEntry, QuantityNormDescriptions> quantityNormDescriptionsMap, ModelCardMaterialEntry modelCardMaterialEntry) {
+        QuantityNormDescriptions quantityNormDescriptions = new QuantityNormDescriptions();
+        quantityNormDescriptions.setNeededQuantity(modelCardMaterialEntry.getNeededQuantity());
+        quantityNormDescriptions.setNorm(modelCardMaterialEntry.getNorm());
+        quantityNormDescriptions.setMaterialUnitCost(modelCardMaterialEntry.getMaterialUnitCost());
+        quantityNormDescriptions.setCurrentStock(modelCardMaterialEntry.getCurrentStock());
+        Set<Long> warehouseIds = Sets.newHashSet();
+        warehouseIds.add(modelCardMaterialEntry.getWarehouseId());
+        quantityNormDescriptions.setWarehouseIds(warehouseIds);
+        Set<String> descriptions = Sets.newHashSet();
+        if (modelCardMaterialEntry.getDescription() != null) {
+            descriptions.add(modelCardMaterialEntry.getDescription());
+        }
+        quantityNormDescriptions.setDescriptions(descriptions);
+        quantityNormDescriptionsMap.put(modelCardMaterialEntry, quantityNormDescriptions);
     }
 
     private Map<Long, Map<Long, BigDecimal>> getQuantitiesInStock(

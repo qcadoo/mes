@@ -23,16 +23,15 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
-import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class ParametersHooksPC {
@@ -40,7 +39,17 @@ public class ParametersHooksPC {
     @Autowired
     private ProductionCountingService productionCountingService;
 
-    public void checkIfTypeIsCumulatedAndRegisterPieceworkIsFalse(final ViewDefinitionState view) {
+    public void onBeforeRender(final ViewDefinitionState view) {
+        checkIfTypeIsCumulatedAndRegisterPieceworkIsFalse(view);
+        checkIfRegisterProductionTimeIsSet(view);
+        CheckBoxComponent createDocumentsForProductionRegistration = (CheckBoxComponent) view
+                .getComponentByReference(ParameterFieldsPC.CREATE_DOCUMENTS_FOR_PRODUCTION_REGISTRATION);
+        FieldComponent priceBasedOn = (FieldComponent) view.getComponentByReference(ParameterFieldsPC.PRICE_BASED_ON);
+        priceBasedOn.setEnabled(createDocumentsForProductionRegistration.isChecked());
+        priceBasedOn.requestComponentUpdateState();
+    }
+
+    private void checkIfTypeIsCumulatedAndRegisterPieceworkIsFalse(final ViewDefinitionState view) {
         FieldComponent typeOfProductionRecordingField = (FieldComponent) view
                 .getComponentByReference(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
         FieldComponent registerPieceworkField = (FieldComponent) view.getComponentByReference(OrderFieldsPC.REGISTER_PIECEWORK);
@@ -57,7 +66,7 @@ public class ParametersHooksPC {
         registerPieceworkField.requestComponentUpdateState();
     }
 
-    public void checkIfRegisterProductionTimeIsSet(final ViewDefinitionState viewDefinitionState) {
+    private void checkIfRegisterProductionTimeIsSet(final ViewDefinitionState viewDefinitionState) {
         CheckBoxComponent registerProductionTime = (CheckBoxComponent) viewDefinitionState
                 .getComponentByReference(ParameterFieldsPC.REGISTER_PRODUCTION_TIME);
         CheckBoxComponent validateProductionRecordTimes = (CheckBoxComponent) viewDefinitionState
@@ -67,12 +76,8 @@ public class ParametersHooksPC {
         } else {
             validateProductionRecordTimes.setEnabled(false);
             validateProductionRecordTimes.setChecked(false);
-            validateProductionRecordTimes.requestComponentUpdateState();
         }
-    }
-
-    public void checkIfRegisterProductionTimeIsSet(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        checkIfRegisterProductionTimeIsSet(view);
+        validateProductionRecordTimes.requestComponentUpdateState();
     }
 
 }

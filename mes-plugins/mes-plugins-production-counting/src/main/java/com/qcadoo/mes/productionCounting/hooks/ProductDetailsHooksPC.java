@@ -36,10 +36,6 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 @Service
 public class ProductDetailsHooksPC {
 
-
-
-
-
     private static final String L_SHOW_PRODUCTION_TRACKINGS = "showProductionTrackings";
 
     private static final String L_SHOW_PRODUCTION_TRACKINGS_FOR_PRODUCT = "showProductionTrackingsForProduct";

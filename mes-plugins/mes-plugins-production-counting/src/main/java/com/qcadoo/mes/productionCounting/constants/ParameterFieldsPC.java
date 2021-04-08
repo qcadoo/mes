@@ -90,4 +90,6 @@ public final class ParameterFieldsPC {
     public static final String GENERATE_BATCH_FOR_ORDERED_PRODUCT = "generateBatchForOrderedProduct";
 
     public static final String NUMBER_PATTERN = "numberPattern";
+
+    public static final String CREATE_DOCUMENTS_FOR_PRODUCTION_REGISTRATION = "createDocumentsForProductionRegistration";
 }
