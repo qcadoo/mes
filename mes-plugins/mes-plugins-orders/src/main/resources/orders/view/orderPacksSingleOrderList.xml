@@ -18,6 +18,17 @@
                         ]]>
                     </script>
                 </bigButton>
+                <bigButton name="printLabels" icon="generateIcon24.png">
+                    <script>
+                        <![CDATA[
+					        this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent('printLabels', []);
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
             </group>
         </ribbon>
 
@@ -50,6 +61,10 @@
 
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
+
+            <listener event="printLabels"
+                      class="com.qcadoo.mes.orders.listeners.OrderPacksSingleOrderListListeners"
+                      method="printLabels"/>
         </component>
 
         <option type="fixedHeight" value="true"/>
