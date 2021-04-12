@@ -246,6 +246,17 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="5">
+                        <component type="lookup" name="staff" reference="staff" field="staff">
+                            <option type="column" name="name" fields="name"/>
+
+                            <option type="searchable" value="name,surname"/>
+                            <option type="orderable" value="name,surname"/>
+
+                            <option type="expression" value="#name + ' ' + #surname"/>
+                            <option type="fieldCode" value="surname"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="6">
                         <component type="select" name="state" field="state"
                                    reference="state" defaultEnabled="false">
                         </component>

@@ -62,6 +62,7 @@
         <integer name="documentId"/>
         <integer name="orderId"/>
         <string name="resourceNumber"/>
+        <string name="staff"/>
     </fields>
 
     <masterModel plugin="materialFlowResources" model="position"/>

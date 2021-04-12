@@ -155,7 +155,11 @@
 
         <model:model-field plugin="basic" model="company">
             <model:hasMany name="documents" model="document"
-                           plugin="materialFlowResources" joinField="company" cascade="nullify"/>
+                           plugin="materialFlowResources" joinField="company"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="staff">
+            <model:hasMany name="documents" plugin="materialFlowResources" model="document" joinField="staff"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="attribute">
@@ -243,18 +247,17 @@
 
         <model:model-field plugin="materialFlow" model="location">
             <model:hasMany name="stocktakings" model="stocktaking"
-                           plugin="materialFlowResources" joinField="location" cascade="nullify"/>
+                           plugin="materialFlowResources" joinField="location"/>
         </model:model-field>
 
         <model:model-field plugin="materialFlow" model="location">
             <model:hasMany name="resourceStocks" model="resourceStock"
-                           plugin="materialFlowResources" joinField="location" cascade="nullify"/>
+                           plugin="materialFlowResources" joinField="location"/>
         </model:model-field>
 
         <model:model-field plugin="materialFlow" model="location">
             <model:hasMany name="linkedDocuments" plugin="materialFlowResources" model="document"
-                           joinField="linkedDocumentLocation"
-                           cascade="nullify"/>
+                           joinField="linkedDocumentLocation"/>
         </model:model-field>
 
         <model:model-field plugin="materialFlow" model="location">

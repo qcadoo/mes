@@ -45,6 +45,7 @@
         <string name="documentAddress"/>
         <integer name="user_id"/>
         <string name="userName"/>
+        <string name="staff"/>
         <string name="description"/>
         <boolean name="inBuffer" />
         <boolean name="wms" />
