@@ -33,4 +33,6 @@ public final class ParameterFieldsCMP {
 
     public static final String ACCEPTANCE_EVENTS = "acceptanceEvents";
 
+    public static final String REQUIRE_TYPE_OF_FAULT = "requireTypeOfFault";
+
 }

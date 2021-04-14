@@ -43,7 +43,9 @@
         <string name="subassemblyNumber"/>
         <string name="faultTypeName"/>
         <string name="createUser"/>
+        <string name="reportingemployeename"/>
         <datetime name="createDate"/>
+        <boolean name="highestPriority" default="false"/>
 
         <enum name="state"
               values="01new,02inProgress,03edited,04closed,05revoked,06planned,07accepted" default="01new"/>

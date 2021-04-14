@@ -7,19 +7,27 @@ import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.AdditionalCodeDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.AttribiuteValueDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.CountryDto;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.FactoryDto;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.FaultTypeDto;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.PalletNumberDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.SubassemblyDto;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.WorkstationTypeDto;
+import com.qcadoo.mes.basic.controllers.dataProvider.requests.FaultTypeRequest;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.CountriesGridResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.CountriesResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.FactoriesResponse;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.FaultTypeResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.ProductsGridResponse;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.SubassembliesResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.WorkstationTypesResponse;
 import com.qcadoo.model.api.DictionaryService;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -150,10 +158,10 @@ public class DataProvider {
         return products;
     }
 
-
     public DataResponse getProductsTypeahead(String query) {
         StringBuilder queryBuilder = new StringBuilder();
-        queryBuilder.append("SELECT product.id AS id, product.number AS code, product.number AS number, product.unit AS unit, product.name AS name ");
+        queryBuilder
+                .append("SELECT product.id AS id, product.number AS code, product.number AS number, product.unit AS unit, product.name AS name ");
         queryBuilder
                 .append("FROM basic_product product WHERE product.active = true AND product.number ilike :query ORDER BY product.number ASC LIMIT 10 ");
 
@@ -179,12 +187,13 @@ public class DataProvider {
         appendProductsConditions(search, query);
         appendProductsConditions(search, queryCount);
 
-        if(StringUtils.isNotEmpty(sort)) {
+        if (StringUtils.isNotEmpty(sort)) {
             query.append(" ORDER BY " + sort + " " + order);
         }
         query.append(String.format(" LIMIT %d OFFSET %d", limit, offset));
 
-        Integer countRecords = jdbcTemplate.queryForObject(queryCount.toString(), new MapSqlParameterSource(Collections.EMPTY_MAP), Long.class).intValue();
+        Integer countRecords = jdbcTemplate.queryForObject(queryCount.toString(),
+                new MapSqlParameterSource(Collections.EMPTY_MAP), Long.class).intValue();
 
         List<ProductDTO> products = jdbcTemplate.query(query.toString(), new MapSqlParameterSource(Collections.EMPTY_MAP),
                 new BeanPropertyRowMapper(ProductDTO.class));
@@ -193,7 +202,7 @@ public class DataProvider {
     }
 
     private void appendProductsConditions(String search, StringBuilder query) {
-        if(StringUtils.isNotEmpty(search)) {
+        if (StringUtils.isNotEmpty(search)) {
             query.append(" AND (");
             query.append("UPPER(product.number) LIKE '%").append(search.toUpperCase()).append("%' OR ");
             query.append("UPPER(product.name) LIKE '%").append(search.toUpperCase()).append("%' OR ");
@@ -318,8 +327,8 @@ public class DataProvider {
         StringBuilder query = new StringBuilder();
         query.append("Select w.id as id, w.number as number, w.name as name From basic_workstationtype w WHERE ");
         query.append(" w.active = true ORDER BY w.number ");
-        List<WorkstationTypeDto> workstationTypes = jdbcTemplate.query(query.toString(), Maps.newHashMap(), new BeanPropertyRowMapper(
-                WorkstationTypeDto.class));
+        List<WorkstationTypeDto> workstationTypes = jdbcTemplate.query(query.toString(), Maps.newHashMap(),
+                new BeanPropertyRowMapper(WorkstationTypeDto.class));
         return new WorkstationTypesResponse(workstationTypes);
     }
 
@@ -360,12 +369,11 @@ public class DataProvider {
 
         Integer countRecords = jdbcTemplate.queryForObject(queryCount.toString(), parameters, Long.class).intValue();
 
-        List<CountryDto> countries = jdbcTemplate.query(query.toString(), parameters, new BeanPropertyRowMapper(
-                CountryDto.class));
+        List<CountryDto> countries = jdbcTemplate
+                .query(query.toString(), parameters, new BeanPropertyRowMapper(CountryDto.class));
 
         return new CountriesGridResponse(countRecords, countries);
     }
-
 
     private void appendCountriesConditions(String search, StringBuilder query, Map<String, Object> parameters) {
         if (StringUtils.isNotEmpty(search)) {
@@ -374,5 +382,64 @@ public class DataProvider {
             query.append("UPPER(c.country) LIKE '%").append(search.toUpperCase()).append("%' ");
             query.append(") ");
         }
+    }
+
+    public FactoriesResponse getFactories() {
+        StringBuilder query = new StringBuilder();
+        query.append("Select w.id as id, w.number as number, w.name as name From basic_factory w WHERE ");
+        query.append(" w.active = true ORDER BY w.number ");
+        List<FactoryDto> factories = jdbcTemplate.query(query.toString(), Maps.newHashMap(), new BeanPropertyRowMapper(
+                FactoryDto.class));
+        return new FactoriesResponse(factories);
+    }
+
+    public SubassembliesResponse getSubassemblies(Long workstationId) {
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("workstationId", workstationId);
+        StringBuilder query = new StringBuilder();
+        query.append("Select w.id as id, w.number as number, w.name as name From basic_subassembly w WHERE ");
+        query.append(" w.active = true AND workstation_id = :workstationId ORDER BY w.number ");
+        List<SubassemblyDto> subassemblies = jdbcTemplate.query(query.toString(), parameters, new BeanPropertyRowMapper(
+                SubassemblyDto.class));
+        return new SubassembliesResponse(subassemblies);
+    }
+
+    public FaultTypeResponse getFaultTypes(FaultTypeRequest faultTypeRequest) {
+
+        if(Objects.nonNull(faultTypeRequest.getSubassemblyId())) {
+            Map<String, Object> parameters = Maps.newHashMap();
+
+            parameters.put("subassemblyId", faultTypeRequest.getSubassemblyId());
+
+            StringBuilder query = new StringBuilder();
+            query.append("select s.id as id, s.name as name, s.name as number from jointable_faulttype_subassembly jfs ");
+            query.append("left join basic_faulttype s ON s.id = jfs.faulttype_id ");
+            query.append("where jfs.subassembly_id = :subassemblyId ");
+
+            List<FaultTypeDto> types = jdbcTemplate.query(query.toString(), parameters, new BeanPropertyRowMapper(
+                    FaultTypeDto.class));
+
+            return new FaultTypeResponse(types);
+        } else if(Objects.nonNull(faultTypeRequest.getWorkstationId())) {
+
+            Map<String, Object> parameters = Maps.newHashMap();
+
+            parameters.put("workstationId", faultTypeRequest.getWorkstationId());
+
+            StringBuilder query = new StringBuilder();
+            query.append("select s.id as id, s.name as name, s.name as number ");
+            query.append("from jointable_faulttype_workstation jfw ");
+            query.append("left join basic_faulttype s ON s.id = jfw.faulttype_id ");
+            query.append("where jfw.workstation_id = :workstationId ");
+
+            List<FaultTypeDto> types = jdbcTemplate.query(query.toString(), parameters, new BeanPropertyRowMapper(
+                    FaultTypeDto.class));
+
+            return new FaultTypeResponse(types);
+        } else {
+            return new FaultTypeResponse(Lists.newArrayList());
+        }
+
+
     }
 }

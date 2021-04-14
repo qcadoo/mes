@@ -23,17 +23,21 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.validators;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.FaultTypesService;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventService;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
 import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
+import com.qcadoo.mes.cmmsMachineParts.constants.ParameterFieldsCMP;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class MaintenanceEventValidators {
@@ -43,6 +47,9 @@ public class MaintenanceEventValidators {
 
     @Autowired
     private MaintenanceEventService maintenanceEventService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     public boolean validate(final DataDefinition eventDD, final Entity event) {
         return validateRequiredFields(eventDD, event) && validateIfExistOpenIssue(eventDD, event);
@@ -83,6 +90,15 @@ public class MaintenanceEventValidators {
 
     public boolean validateFaultType(final DataDefinition eventDD, final Entity event) {
         Entity faultType = event.getBelongsToField(MaintenanceEventFields.FAULT_TYPE);
+
+        if(parameterService.getParameter().getBooleanField(ParameterFieldsCMP.REQUIRE_TYPE_OF_FAULT)) {
+            if(Objects.isNull(faultType)) {
+                event.addError(eventDD.getField(MaintenanceEventFields.FAULT_TYPE),
+                        "qcadooView.validate.field.error.missing");
+                return false;
+            }
+        }
+
         boolean typeCorrect = true;
         if (faultType != null) {
             Entity subassembly = event.getBelongsToField(MaintenanceEventFields.SUBASSEMBLY);

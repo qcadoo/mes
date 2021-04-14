@@ -178,8 +178,13 @@
         <!-- model extensions -->
 
         <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="requireTypeOfFault"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
             <model:decimal name="possibleWorkTimeDeviation"/>
         </model:model-field>
+
         <model:model-field plugin="basic" model="parameter">
             <model:boolean name="acceptanceEvents"/>
         </model:model-field>

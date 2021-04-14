@@ -26,18 +26,17 @@ package com.qcadoo.mes.cmmsMachineParts.states;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.StaffFields;
-import com.qcadoo.mes.cmmsMachineParts.constants.*;
+import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
+import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventFields;
+import com.qcadoo.mes.cmmsMachineParts.constants.MaintenanceEventType;
+import com.qcadoo.mes.cmmsMachineParts.constants.ParameterFieldsCMP;
+import com.qcadoo.mes.cmmsMachineParts.constants.StaffWorkTimeFields;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.Seconds;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -48,26 +47,30 @@ import java.util.function.Function;
 import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.joda.time.Seconds;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 @Service
 public class MaintenanceEventStateValidationService {
 
-    @Autowired
-    private ParameterService parameterService;
+    @Autowired private ParameterService parameterService;
 
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
+    @Autowired private DataDefinitionService dataDefinitionService;
 
-    @Autowired
-    private NumberService numberService;
+    @Autowired private NumberService numberService;
 
     public void validationOnInProgress(final StateChangeContext stateChangeContext) {
         Entity event = stateChangeContext.getOwner();
         checkIfPersonReceivingIsSet(event, stateChangeContext);
-
+        checkIfFaultTypeSet(event, stateChangeContext);
     }
 
     public void validationOnEdited(final StateChangeContext stateChangeContext) {
-
+        Entity event = stateChangeContext.getOwner();
+        checkIfFaultTypeSet(event, stateChangeContext);
     }
 
     public void validationOnClosed(final StateChangeContext stateChangeContext) {
@@ -76,6 +79,7 @@ public class MaintenanceEventStateValidationService {
         checkIfWorkerTimeIsFilled(event, stateChangeContext);
         checkWorkerTimesDeviation(event, stateChangeContext);
         checkSourceCost(event, stateChangeContext);
+        checkIfFaultTypeSet(event, stateChangeContext);
     }
 
     private void checkSourceCost(final Entity event, StateChangeContext stateChangeContext) {
@@ -89,7 +93,13 @@ public class MaintenanceEventStateValidationService {
     }
 
     public void validationOnPlanned(final StateChangeContext stateChangeContext) {
+        Entity event = stateChangeContext.getOwner();
+        checkIfFaultTypeSet(event, stateChangeContext);
+    }
 
+    public void validationOnAcceptedd(final StateChangeContext stateChangeContext) {
+        Entity event = stateChangeContext.getOwner();
+        checkIfFaultTypeSet(event, stateChangeContext);
     }
 
     private void checkIfPersonReceivingIsSet(Entity event, StateChangeContext stateChangeContext) {
@@ -127,13 +137,13 @@ public class MaintenanceEventStateValidationService {
         for (Map.Entry<Entity, Integer> entry : groupedWorkTimes.entrySet()) {
             Integer diff = entry.getValue() - progressTime.get();
             if (diff > possibleDeviation) {
-                workersWithIncorrectTime.add(entry.getKey().getStringField(StaffFields.NAME) + " "
-                        + entry.getKey().getStringField(StaffFields.SURNAME));
+                workersWithIncorrectTime.add(entry.getKey().getStringField(StaffFields.NAME) + " " + entry.getKey().getStringField(StaffFields.SURNAME));
             }
         }
         if (!workersWithIncorrectTime.isEmpty()) {
-            stateChangeContext.addMessage("cmmsMachineParts.maintenanceEvent.state.tooLongWorkersTime", StateMessageType.INFO,
-                    false, workersWithIncorrectTime.stream().collect(Collectors.joining(", ")));
+            stateChangeContext
+                    .addMessage("cmmsMachineParts.maintenanceEvent.state.tooLongWorkersTime", StateMessageType.INFO, false,
+                            workersWithIncorrectTime.stream().collect(Collectors.joining(", ")));
         }
 
     }
@@ -148,13 +158,12 @@ public class MaintenanceEventStateValidationService {
         List<Entity> staffWorkTimes = event.getHasManyField(MaintenanceEventFields.STAFF_WORK_TIMES);
         Function<Entity, Entity> toWorker = entity -> entity.getBelongsToField(StaffWorkTimeFields.WORKER);
         ToIntFunction<Entity> toInt = entity -> entity.getIntegerField(StaffWorkTimeFields.LABOR_TIME);
-        
+
         return staffWorkTimes.stream().collect(Collectors.groupingBy(toWorker, Collectors.summingInt(toInt)));
     }
 
     private Optional<BigDecimal> getPossibleDeviationFromParameters() {
-        return Optional.ofNullable(parameterService.getParameter().getDecimalField(
-                ParameterFieldsCMP.POSSIBLE_WORK_TIME_DEVIATION));
+        return Optional.ofNullable(parameterService.getParameter().getDecimalField(ParameterFieldsCMP.POSSIBLE_WORK_TIME_DEVIATION));
     }
 
     private Optional<Integer> getProgressTime(Entity event) {
@@ -162,8 +171,8 @@ public class MaintenanceEventStateValidationService {
         hqlForStart.append("select max(dateAndTime) as date from #cmmsMachineParts_maintenanceEventStateChange sc ");
         hqlForStart.append("where sc.maintenanceEvent = :eventId and sc.status = '03successful' ");
         hqlForStart.append("and sc.targetState = '02inProgress'");
-        SearchQueryBuilder query = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
-                CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT_STATE_CHANGE).find(hqlForStart.toString());
+        SearchQueryBuilder query = dataDefinitionService
+                .get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT_STATE_CHANGE).find(hqlForStart.toString());
         query.setLong("eventId", event.getId());
         Date start = query.setMaxResults(1).uniqueResult().getDateField("date");
 
@@ -171,8 +180,8 @@ public class MaintenanceEventStateValidationService {
         hqlForEnd.append("select max(dateAndTime) as date from #cmmsMachineParts_maintenanceEventStateChange sc ");
         hqlForEnd.append("where sc.maintenanceEvent = :eventId and sc.status = '03successful' ");
         hqlForEnd.append("and sc.targetState = '03edited'");
-        query = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER,
-                CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT_STATE_CHANGE).find(hqlForEnd.toString());
+        query = dataDefinitionService.get(CmmsMachinePartsConstants.PLUGIN_IDENTIFIER, CmmsMachinePartsConstants.MODEL_MAINTENANCE_EVENT_STATE_CHANGE)
+                .find(hqlForEnd.toString());
         query.setLong("eventId", event.getId());
 
         Date end = query.setMaxResults(1).uniqueResult().getDateField("date");
@@ -182,5 +191,13 @@ public class MaintenanceEventStateValidationService {
             return Optional.of(Integer.valueOf(seconds.getSeconds()));
         }
         return Optional.empty();
+    }
+
+
+    private void checkIfFaultTypeSet(Entity event, StateChangeContext stateChangeContext) {
+        if (event.getBelongsToField(MaintenanceEventFields.FAULT_TYPE) == null) {
+            stateChangeContext.addFieldValidationError(MaintenanceEventFields.FAULT_TYPE,
+                    "cmmsMachineParts.maintenanceEvent.state.fieldRequired");
+        }
     }
 }

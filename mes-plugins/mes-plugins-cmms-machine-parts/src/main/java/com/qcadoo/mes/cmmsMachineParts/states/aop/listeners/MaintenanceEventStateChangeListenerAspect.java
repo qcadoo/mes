@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.cmmsMachineParts.states.aop.listeners;
 
-import static com.qcadoo.mes.states.aop.RunForStateTransitionAspect.WILDCARD_STATE;
-
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-
 import com.qcadoo.mes.cmmsMachineParts.MaintenanceEventChangeService;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.states.EventDocumentsService;
@@ -45,6 +37,13 @@ import com.qcadoo.mes.states.annotation.RunInPhase;
 import com.qcadoo.mes.states.aop.AbstractStateListenerAspect;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.plugin.api.RunIfEnabled;
+
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+import static com.qcadoo.mes.states.aop.RunForStateTransitionAspect.WILDCARD_STATE;
 
 @Aspect
 @Configurable
@@ -73,6 +72,27 @@ public class MaintenanceEventStateChangeListenerAspect extends AbstractStateList
     @Before(PHASE_EXECUTION_POINTCUT)
     public void setupOnInProgress(final StateChangeContext stateChangeContext, final int phase) {
         setupService.setupOnInProgress(stateChangeContext);
+    }
+
+    @RunInPhase(MaintenanceEventStateChangePhase.PRE_VALIDATION)
+    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = MaintenanceEventStateStringValues.EDITED)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void validationOnInEdited(final StateChangeContext stateChangeContext, final int phase) {
+        validationService.validationOnEdited(stateChangeContext);
+    }
+
+    @RunInPhase(MaintenanceEventStateChangePhase.PRE_VALIDATION)
+    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = MaintenanceEventStateStringValues.PLANNED)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void validationOnPlanned(final StateChangeContext stateChangeContext, final int phase) {
+        validationService.validationOnPlanned(stateChangeContext);
+    }
+
+    @RunInPhase(MaintenanceEventStateChangePhase.PRE_VALIDATION)
+    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = MaintenanceEventStateStringValues.ACCEPTED)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void validationOnAcceptedd(final StateChangeContext stateChangeContext, final int phase) {
+        validationService.validationOnAcceptedd(stateChangeContext);
     }
 
     @RunInPhase(MaintenanceEventStateChangePhase.PRE_VALIDATION)

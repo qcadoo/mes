@@ -19,6 +19,7 @@ public class MaintenanceEventDTO {
     private String faultTypeName;
     private String description;
     private String personReceiving;
+    private String reportingEmployee;
     private String sourceCost;
     private Date createDate;
     private String createUser;
@@ -370,5 +371,13 @@ public class MaintenanceEventDTO {
 
     public void setQuantityFromPosition(BigDecimal quantityFromPosition) {
         this.quantityFromPosition = quantityFromPosition;
+    }
+
+    public String getReportingEmployee() {
+        return reportingEmployee;
+    }
+
+    public void setReportingEmployee(String reportingEmployee) {
+        this.reportingEmployee = reportingEmployee;
     }
 }
