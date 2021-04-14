@@ -1,5 +1,6 @@
 package com.qcadoo.mes.orders.print;
 
+import com.google.common.base.Strings;
 import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
@@ -37,7 +38,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -54,7 +55,6 @@ public class PacksLabelsPdf extends ReportPdfView {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
-
 
     @Autowired
     private ParameterService parameterService;
@@ -142,45 +142,68 @@ public class PacksLabelsPdf extends ReportPdfView {
 
         Image barcodeImage = code128.createImageWithBarcode(cb, null, null);
         innerTable.addCell(barcodeImage);
+        int[] columnWidths = new int[] { 30, 70 };
 
         pdfHelper.addTableCellAsTwoColumnsTable(innerTable,
-                translationService.translate("orders.packsLabels.report.product", locale), extractProduct(pack));
+                translationService.translate("orders.packsLabels.report.product", locale), extractProduct(pack), columnWidths);
 
-        pdfHelper.addTableCellAsTwoColumnsTable(innerTable,
-                translationService.translate("orders.packsLabels.report.size", locale), extractSize(pack));
+        appendSize(innerTable, pack, locale);
 
         appendAttribute(innerTable, pack);
 
         pdfHelper.addTableCellAsTwoColumnsTable(innerTable,
-                translationService.translate("orders.packsLabels.report.quantity", locale), extractQuantity(pack));
+                translationService.translate("orders.packsLabels.report.quantity", locale), extractQuantity(pack), columnWidths);
 
         pdfHelper.addTableCellAsTwoColumnsTable(innerTable,
-                translationService.translate("orders.packsLabels.report.order", locale), extractOrder(pack));
+                translationService.translate("orders.packsLabels.report.order", locale), extractOrder(pack), columnWidths);
+
+        pdfHelper
+                .addTableCellAsTwoColumnsTable(innerTable,
+                        translationService.translate("orders.packsLabels.report.startDate", locale), extractStartDate(pack),
+                        columnWidths);
 
         pdfHelper.addTableCellAsTwoColumnsTable(innerTable,
-                translationService.translate("orders.packsLabels.report.startDate", locale), extractStartDate(pack));
-
-        pdfHelper.addTableCellAsTwoColumnsTable(innerTable,
-                translationService.translate("orders.packsLabels.report.finishDate", locale), extractFinishDate(pack));
+                translationService.translate("orders.packsLabels.report.finishDate", locale), extractFinishDate(pack),
+                columnWidths);
 
         orderAndQrTable.addCell(innerTable);
 
         mainTable.addCell(orderAndQrTable);
     }
 
+    private void appendSize(PdfPTable innerTable, Entity pack, Locale locale) {
+        int[] columnWidths = new int[] { 30, 70 };
+        Entity product = pack.getBelongsToField(OrderPackFields.ORDER).getBelongsToField(OrderFields.PRODUCT);
+        Entity size = product.getBelongsToField(ProductFields.SIZE);
+        if (Objects.nonNull(size)) {
+            pdfHelper.addTableCellAsTwoColumnsTable(innerTable,
+                    translationService.translate("orders.packsLabels.report.size", locale),
+                    size.getStringField(SizeFields.NUMBER), columnWidths);
+        } else {
+            pdfHelper.addTableCellAsTwoColumnsTable(innerTable, "", "", columnWidths);
+        }
+
+    }
+
     private void appendAttribute(PdfPTable innerTable, Entity pack) {
+        int[] columnWidths = new int[] { 30, 70 };
+
         Entity parameter = parameterService.getParameter();
         Entity attribute = parameter.getBelongsToField("attributeOnTheLabel");
-        if(Objects.isNull(attribute)) {
-            pdfHelper.addTableCellAsTwoColumnsTable(innerTable, "", "");
+        if (Objects.isNull(attribute)) {
+            pdfHelper.addTableCellAsTwoColumnsTable(innerTable, "", "", columnWidths);
         } else {
             Entity product = pack.getBelongsToField(OrderPackFields.ORDER).getBelongsToField(OrderFields.PRODUCT);
             List<Entity> attrs = product.getHasManyField(ProductFields.PRODUCT_ATTRIBUTE_VALUES);
-            Optional<Entity> value = attrs.stream().filter(v -> v.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).getId().equals(attribute.getId())).findFirst();
-            if(value.isPresent()) {
-                pdfHelper.addTableCellAsTwoColumnsTable(innerTable, attribute.getStringField(AttributeFields.NAME), value.get().getStringField(ProductAttributeValueFields.VALUE));
+            String value = attrs.stream()
+                    .filter(v -> v.getBelongsToField(ProductAttributeValueFields.ATTRIBUTE).getId().equals(attribute.getId()))
+                    .map(a -> a.getStringField(ProductAttributeValueFields.VALUE)).collect(Collectors.joining(", "));
+            if (!Strings.isNullOrEmpty(value)) {
+                pdfHelper.addTableCellAsTwoColumnsTable(innerTable, attribute.getStringField(AttributeFields.NAME), value,
+                        columnWidths);
             } else {
-                pdfHelper.addTableCellAsTwoColumnsTable(innerTable, attribute.getStringField(AttributeFields.NAME), "");
+                pdfHelper.addTableCellAsTwoColumnsTable(innerTable, attribute.getStringField(AttributeFields.NAME), "",
+                        columnWidths);
             }
         }
 
@@ -191,7 +214,10 @@ public class PacksLabelsPdf extends ReportPdfView {
     }
 
     private String extractQuantity(Entity pack) {
-        return BigDecimalUtils.toString(pack.getDecimalField(OrderPackFields.QUANTITY), 2);
+        Entity productEntity = pack.getBelongsToField(OrderPackFields.ORDER).getBelongsToField(OrderFields.PRODUCT);
+
+        return BigDecimalUtils.toString(pack.getDecimalField(OrderPackFields.QUANTITY), 2) + " "
+                + productEntity.getStringField(ProductFields.UNIT);
     }
 
     private String extractStartDate(Entity pack) {
@@ -200,15 +226,6 @@ public class PacksLabelsPdf extends ReportPdfView {
 
     private String extractFinishDate(Entity pack) {
         return DateUtils.toDateTimeString(pack.getBelongsToField(OrderPackFields.ORDER).getDateField(OrderFields.FINISH_DATE));
-    }
-
-    private String extractSize(Entity pack) {
-        Entity product = pack.getBelongsToField(OrderPackFields.ORDER).getBelongsToField(OrderFields.PRODUCT);
-        Entity size = product.getBelongsToField(ProductFields.SIZE);
-        if (Objects.nonNull(size)) {
-            return size.getStringField(SizeFields.NUMBER);
-        }
-        return "";
     }
 
     private String extractProduct(Entity pack) {
