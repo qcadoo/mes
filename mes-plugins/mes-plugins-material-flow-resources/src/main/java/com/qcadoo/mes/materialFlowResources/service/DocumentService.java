@@ -1,13 +1,11 @@
 package com.qcadoo.mes.materialFlowResources.service;
 
-import com.google.common.collect.Maps;
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
-import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
-import com.qcadoo.model.api.Entity;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,14 +18,42 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+import com.qcadoo.mes.materialFlowResources.constants.OrdersGroupIssuedMaterialFields;
+import com.qcadoo.mes.materialFlowResources.constants.OrdersGroupIssuedMaterialPositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.plugin.api.PluginManager;
 
 @Service
 public class DocumentService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DocumentService.class);
+
+    public static final String ORDERS_GROUPS = "ordersGroups";
+
+    public static final String MODEL_ORDERS_GROUP_ISSUED_MATERIAL = "ordersGroupIssuedMaterial";
+
+    public static final String MODEL_ORDERS_GROUP_ISSUED_MATERIAL_POSITION = "ordersGroupIssuedMaterialPosition";
+
+    public static final String DOCUMENTS = "documents";
+
+    public static final String ORDERS_GROUP_ISSUED_MATERIALS = "ordersGroupIssuedMaterials";
+
+    @Autowired
+    private PluginManager pluginManager;
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -47,10 +73,15 @@ public class DocumentService {
     @Autowired
     private DocumentStateChangeService documentStateChangeService;
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private NumberService numberService;
+
     @Async
     public void createResourcesForDocument(Entity document) {
-        if (document != null
-                && !DocumentState.ACCEPTED.getStringValue().equals(document.getStringField(DocumentFields.STATE))
+        if (document != null && !DocumentState.ACCEPTED.getStringValue().equals(document.getStringField(DocumentFields.STATE))
                 && !getAcceptationInProgress(document.getId())) {
 
             setAcceptationInProgress(document, true);
@@ -152,7 +183,8 @@ public class DocumentService {
                             .equals(ire.getEntity().getError(ResourceFields.BATCH).getMessage())) {
                         String productNumber = ire.getEntity().getBelongsToField(ResourceFields.PRODUCT)
                                 .getStringField(ProductFields.NUMBER);
-                        LOG.error(translationService.translate("materialFlow.document.validate.global.error.positionsBlockedForQualityControl",
+                        LOG.error(translationService.translate(
+                                "materialFlow.document.validate.global.error.positionsBlockedForQualityControl",
                                 LocaleContextHolder.getLocale(), productNumber));
                     } else {
                         String resourceNumber = ire.getEntity().getStringField(ResourceFields.NUMBER);
@@ -166,7 +198,8 @@ public class DocumentService {
             } else {
                 document.setNotValid();
 
-                LOG.warn(translationService.translate("materialFlow.document.validate.global.error.positionsBlockedForQualityControl",
+                LOG.warn(translationService.translate(
+                        "materialFlow.document.validate.global.error.positionsBlockedForQualityControl",
                         LocaleContextHolder.getLocale(), blockedResources));
             }
         } else {
@@ -197,10 +230,72 @@ public class DocumentService {
                 }
             }
 
+            updateOrdersGroupIssuedMaterials(null, document);
+
             String successMessage = String.format("DOCUMENT ACCEPT SUCCESS: id = %d number = %s", document.getId(),
                     document.getStringField(DocumentFields.NUMBER));
 
             LOG.info(successMessage);
+        }
+    }
+
+    public void updateOrdersGroupIssuedMaterials(Entity ordersGroup, Entity documentToAccept) {
+        if (pluginManager.isPluginEnabled(ORDERS_GROUPS)) {
+            if (documentToAccept != null
+                    && documentToAccept.getBelongsToField(OrdersGroupIssuedMaterialFields.ORDERS_GROUP) == null) {
+                return;
+            } else if (documentToAccept != null
+                    && documentToAccept.getBelongsToField(OrdersGroupIssuedMaterialFields.ORDERS_GROUP) != null) {
+                ordersGroup = documentToAccept.getBelongsToField(OrdersGroupIssuedMaterialFields.ORDERS_GROUP);
+            }
+            DataDefinition ordersGroupIssuedMaterialDD = dataDefinitionService.get(ORDERS_GROUPS,
+                    MODEL_ORDERS_GROUP_ISSUED_MATERIAL);
+            DataDefinition ordersGroupIssuedMaterialPositionDD = dataDefinitionService.get(ORDERS_GROUPS,
+                    MODEL_ORDERS_GROUP_ISSUED_MATERIAL_POSITION);
+            List<Entity> oldOrdersGroupIssuedMaterials = ordersGroupIssuedMaterialDD.find()
+                    .add(SearchRestrictions.belongsTo(OrdersGroupIssuedMaterialFields.ORDERS_GROUP, ordersGroup)).list()
+                    .getEntities();
+            if (!oldOrdersGroupIssuedMaterials.isEmpty()) {
+                ordersGroupIssuedMaterialDD
+                        .delete(oldOrdersGroupIssuedMaterials.stream().map(Entity::getId).toArray(Long[]::new));
+            }
+            Map<Long, BigDecimal> productQuantities = com.beust.jcommander.internal.Maps.newHashMap();
+            Map<Long, BigDecimal> productValues = com.beust.jcommander.internal.Maps.newHashMap();
+            Map<Long, List<Entity>> productPositions = com.beust.jcommander.internal.Maps.newHashMap();
+            for (Entity document : ordersGroup.getHasManyField(DOCUMENTS)) {
+                for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
+                    Long productId = position.getBelongsToField(PositionFields.PRODUCT).getId();
+                    BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
+                    BigDecimal price = BigDecimalUtils.convertNullToZero(position.getDecimalField(PositionFields.PRICE));
+                    BigDecimal value = numberService
+                            .setScaleWithDefaultMathContext(quantity.multiply(price, numberService.getMathContext()));
+                    productQuantities.compute(productId,
+                            (k, v) -> (v == null) ? quantity : v.add(quantity, numberService.getMathContext()));
+                    productValues.compute(productId, (k, v) -> (v == null) ? value : v.add(value));
+                    Entity ordersGroupIssuedMaterialPosition = ordersGroupIssuedMaterialPositionDD.create();
+                    ordersGroupIssuedMaterialPosition.setField(OrdersGroupIssuedMaterialPositionFields.DOCUMENT_NUMBER,
+                            document.getStringField(DocumentFields.NUMBER));
+                    ordersGroupIssuedMaterialPosition.setField(OrdersGroupIssuedMaterialPositionFields.QUANTITY, quantity);
+                    ordersGroupIssuedMaterialPosition.setField(OrdersGroupIssuedMaterialPositionFields.PRICE, price);
+                    ordersGroupIssuedMaterialPosition.setField(OrdersGroupIssuedMaterialPositionFields.VALUE, value);
+                    productPositions.computeIfAbsent(productId, k -> new ArrayList<>()).add(ordersGroupIssuedMaterialPosition);
+                }
+            }
+            List<Entity> ordersGroupIssuedMaterials = Lists.newArrayList();
+            for (Map.Entry<Long, BigDecimal> entry : productQuantities.entrySet()) {
+                Entity ordersGroupIssuedMaterial = ordersGroupIssuedMaterialDD.create();
+                ordersGroupIssuedMaterial.setField(OrdersGroupIssuedMaterialFields.PRODUCT, entry.getKey());
+                ordersGroupIssuedMaterial.setField(OrdersGroupIssuedMaterialFields.QUANTITY, entry.getValue());
+                BigDecimal value = productValues.get(entry.getKey());
+                ordersGroupIssuedMaterial.setField(OrdersGroupIssuedMaterialFields.VALUE, value);
+                ordersGroupIssuedMaterial.setField(OrdersGroupIssuedMaterialFields.AVERAGE_PRICE, numberService
+                        .setScaleWithDefaultMathContext(value.divide(entry.getValue(), numberService.getMathContext())));
+                ordersGroupIssuedMaterial.setField(OrdersGroupIssuedMaterialFields.ORDERS_GROUP_ISSUED_MATERIAL_POSITIONS,
+                        productPositions.get(entry.getKey()));
+                ordersGroupIssuedMaterials.add(ordersGroupIssuedMaterial);
+            }
+            ordersGroup.setField(ORDERS_GROUP_ISSUED_MATERIALS, ordersGroupIssuedMaterials);
+            ordersGroup.getDataDefinition().save(ordersGroup);
         }
     }
 }
