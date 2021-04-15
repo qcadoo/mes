@@ -3,6 +3,9 @@ package com.qcadoo.mes.basic.controllers.dataProvider;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.SubassemblyFields;
+import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.AdditionalCodeDTO;
 import com.qcadoo.mes.basic.controllers.dataProvider.dto.AttribiuteValueDTO;
@@ -22,7 +25,9 @@ import com.qcadoo.mes.basic.controllers.dataProvider.responses.FaultTypeResponse
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.ProductsGridResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.SubassembliesResponse;
 import com.qcadoo.mes.basic.controllers.dataProvider.responses.WorkstationTypesResponse;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.DictionaryService;
+import com.qcadoo.model.api.Entity;
 
 import java.util.Collections;
 import java.util.List;
@@ -46,6 +51,9 @@ public class DataProvider {
 
     @Autowired
     private DictionaryService dictionaryService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public static final int MAX_RESULTS = 20;
 
@@ -406,31 +414,42 @@ public class DataProvider {
 
     public FaultTypeResponse getFaultTypes(FaultTypeRequest faultTypeRequest) {
 
-        if(Objects.nonNull(faultTypeRequest.getSubassemblyId())) {
+        if (Objects.nonNull(faultTypeRequest.getSubassemblyId())) {
+            Entity w = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SUBASSEMBLY).get(
+                    faultTypeRequest.getSubassemblyId());
             Map<String, Object> parameters = Maps.newHashMap();
 
-            parameters.put("subassemblyId", faultTypeRequest.getSubassemblyId());
+            parameters.put("workstationId",  w.getBelongsToField(SubassemblyFields.WORKSTATION).getId());
+            parameters.put("workstationTypeId", w.getBelongsToField(SubassemblyFields.WORKSTATION_TYPE).getId());
 
             StringBuilder query = new StringBuilder();
-            query.append("select s.id as id, s.name as name, s.name as number from jointable_faulttype_subassembly jfs ");
-            query.append("left join basic_faulttype s ON s.id = jfs.faulttype_id ");
-            query.append("where jfs.subassembly_id = :subassemblyId ");
 
+            query.append("SELECT distinct ft.id as id, ft.name as name, ft.name as number ");
+            query.append("FROM basic_faulttype ft ");
+            query.append("LEFT JOIN jointable_faulttype_workstation fw ON fw.faulttype_id = ft.id ");
+            query.append("LEFT JOIN jointable_faulttype_workstationtype fwt ON fwt.faulttype_id = ft.id ");
+            query.append("WHERE ft.isdefault OR fw.workstation_id = :workstationId OR fwt.workstationtype_id = :workstationTypeId ");
+            query.append("ORDER BY ft.name ");
             List<FaultTypeDto> types = jdbcTemplate.query(query.toString(), parameters, new BeanPropertyRowMapper(
                     FaultTypeDto.class));
 
             return new FaultTypeResponse(types);
-        } else if(Objects.nonNull(faultTypeRequest.getWorkstationId())) {
-
+        } else if (Objects.nonNull(faultTypeRequest.getWorkstationId())) {
+            Entity w = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION).get(
+                    faultTypeRequest.getWorkstationId());
             Map<String, Object> parameters = Maps.newHashMap();
 
             parameters.put("workstationId", faultTypeRequest.getWorkstationId());
+            parameters.put("workstationTypeId", w.getBelongsToField(WorkstationFields.WORKSTATION_TYPE).getId());
 
             StringBuilder query = new StringBuilder();
-            query.append("select s.id as id, s.name as name, s.name as number ");
-            query.append("from jointable_faulttype_workstation jfw ");
-            query.append("left join basic_faulttype s ON s.id = jfw.faulttype_id ");
-            query.append("where jfw.workstation_id = :workstationId ");
+
+            query.append("SELECT distinct ft.id as id, ft.name as name, ft.name as number ");
+            query.append("FROM basic_faulttype ft ");
+            query.append("LEFT JOIN jointable_faulttype_workstation fw ON fw.faulttype_id = ft.id ");
+            query.append("LEFT JOIN jointable_faulttype_workstationtype fwt ON fwt.faulttype_id = ft.id ");
+            query.append("WHERE ft.isdefault OR fw.workstation_id = :workstationId OR fwt.workstationtype_id = :workstationTypeId ");
+            query.append("ORDER BY ft.name ");
 
             List<FaultTypeDto> types = jdbcTemplate.query(query.toString(), parameters, new BeanPropertyRowMapper(
                     FaultTypeDto.class));
@@ -439,7 +458,6 @@ public class DataProvider {
         } else {
             return new FaultTypeResponse(Lists.newArrayList());
         }
-
 
     }
 }
