@@ -20,9 +20,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.beust.jcommander.internal.Maps;
-import com.beust.jcommander.internal.Sets;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Element;
@@ -182,8 +182,7 @@ public final class ModelCardPdfService extends PdfDocumentService {
                                         numberService.getMathContext()),
                         2);
                 modelCardMaterialEntry.setPrice(price);
-                BigDecimal materialUnitCost = modelCardMaterialEntry.getNorm().multiply(price,
-                        numberService.getMathContext());
+                BigDecimal materialUnitCost = modelCardMaterialEntry.getNorm().multiply(price, numberService.getMathContext());
                 modelCardMaterialEntry.setMaterialUnitCost(materialUnitCost);
             }
             if (Objects.isNull(modelCardMaterialEntry.getSizeGroupId())) {
@@ -296,7 +295,8 @@ public final class ModelCardPdfService extends PdfDocumentService {
         return com.google.common.collect.Lists.newArrayList(quantityNormDescriptionsMap.keySet());
     }
 
-    private void updateGroup(Map<ModelCardMaterialEntry, QuantityNormDescriptions> quantityNormDescriptionsMap, ModelCardMaterialEntry modelCardMaterialEntry) {
+    private void updateGroup(Map<ModelCardMaterialEntry, QuantityNormDescriptions> quantityNormDescriptionsMap,
+            ModelCardMaterialEntry modelCardMaterialEntry) {
         QuantityNormDescriptions quantityNormDescriptions = quantityNormDescriptionsMap.get(modelCardMaterialEntry);
         if (quantityNormDescriptions.getNeededQuantity() != null) {
             quantityNormDescriptions.setNeededQuantity(
@@ -311,8 +311,8 @@ public final class ModelCardPdfService extends PdfDocumentService {
         }
         if (quantityNormDescriptions.getCurrentStock() != null
                 && !quantityNormDescriptions.getWarehouseIds().contains(modelCardMaterialEntry.getWarehouseId())) {
-            quantityNormDescriptions.setCurrentStock(
-                    quantityNormDescriptions.getCurrentStock().add(modelCardMaterialEntry.getCurrentStock()));
+            quantityNormDescriptions
+                    .setCurrentStock(quantityNormDescriptions.getCurrentStock().add(modelCardMaterialEntry.getCurrentStock()));
         }
         quantityNormDescriptions.getWarehouseIds().add(modelCardMaterialEntry.getWarehouseId());
         if (modelCardMaterialEntry.getDescription() != null) {
@@ -320,7 +320,8 @@ public final class ModelCardPdfService extends PdfDocumentService {
         }
     }
 
-    private void createNewGroup(Map<ModelCardMaterialEntry, QuantityNormDescriptions> quantityNormDescriptionsMap, ModelCardMaterialEntry modelCardMaterialEntry) {
+    private void createNewGroup(Map<ModelCardMaterialEntry, QuantityNormDescriptions> quantityNormDescriptionsMap,
+            ModelCardMaterialEntry modelCardMaterialEntry) {
         QuantityNormDescriptions quantityNormDescriptions = new QuantityNormDescriptions();
         quantityNormDescriptions.setNeededQuantity(modelCardMaterialEntry.getNeededQuantity());
         quantityNormDescriptions.setNorm(modelCardMaterialEntry.getNorm());

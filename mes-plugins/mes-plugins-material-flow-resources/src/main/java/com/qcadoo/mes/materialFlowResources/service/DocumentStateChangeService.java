@@ -1,6 +1,24 @@
 package com.qcadoo.mes.materialFlowResources.service;
 
-import com.beust.jcommander.internal.Lists;
+import static com.qcadoo.mes.materialFlowResources.constants.DocumentStateChangeConstants.DATE_AND_TIME;
+import static com.qcadoo.mes.materialFlowResources.constants.DocumentStateChangeConstants.DOCUMENT;
+import static com.qcadoo.mes.materialFlowResources.constants.DocumentStateChangeConstants.SOURCE_STATE;
+import static com.qcadoo.mes.materialFlowResources.constants.DocumentStateChangeConstants.STATUS;
+import static com.qcadoo.mes.materialFlowResources.constants.DocumentStateChangeConstants.TARGET_STATE;
+import static com.qcadoo.mes.materialFlowResources.constants.DocumentStateChangeConstants.WORKER;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
@@ -10,18 +28,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.SecurityService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.support.TransactionSynchronization;
-import org.springframework.transaction.support.TransactionSynchronizationAdapter;
-import org.springframework.transaction.support.TransactionSynchronizationManager;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import static com.qcadoo.mes.materialFlowResources.constants.DocumentStateChangeConstants.*;
 
 @Service
 public class DocumentStateChangeService {

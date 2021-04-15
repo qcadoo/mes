@@ -37,8 +37,8 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.beust.jcommander.internal.Sets;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;

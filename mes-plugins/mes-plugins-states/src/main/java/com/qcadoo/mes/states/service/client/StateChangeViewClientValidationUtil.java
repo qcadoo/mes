@@ -23,6 +23,25 @@
  */
 package com.qcadoo.mes.states.service.client;
 
+import static com.qcadoo.mes.states.messages.constants.MessageFields.CORRESPOND_FIELD_NAME;
+import static com.qcadoo.mes.states.messages.constants.StateMessageType.VALIDATION_ERROR;
+import static com.qcadoo.mes.states.messages.util.MessagesUtil.convertViewMessageType;
+import static com.qcadoo.mes.states.messages.util.MessagesUtil.getArgs;
+import static com.qcadoo.mes.states.messages.util.MessagesUtil.getKey;
+import static org.apache.commons.lang3.StringUtils.join;
+import static org.springframework.context.i18n.LocaleContextHolder.getLocale;
+
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.Predicate;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.states.StateChangeContext;
@@ -34,22 +53,6 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.components.FormComponent;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.Predicate;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-
-import static com.qcadoo.mes.states.messages.constants.MessageFields.CORRESPOND_FIELD_NAME;
-import static com.qcadoo.mes.states.messages.constants.StateMessageType.VALIDATION_ERROR;
-import static com.qcadoo.mes.states.messages.util.MessagesUtil.*;
-import static org.apache.commons.lang3.StringUtils.join;
-import static org.springframework.context.i18n.LocaleContextHolder.getLocale;
 
 @Service
 public class StateChangeViewClientValidationUtil {
@@ -68,39 +71,56 @@ public class StateChangeViewClientValidationUtil {
     public void addValidationErrorMessages(final ComponentState component, final Entity entity,
             final MessagesHolder messagesHolder) {
         if (component instanceof FormComponent) {
-            addValidationErrorsToForm((FormComponent) component, messagesHolder.getAllMessages());
+            addValidationErrorsToForm((FormComponent) component, entity, messagesHolder.getAllMessages());
         } else {
             addValidationErrors(component, entity, messagesHolder.getAllMessages());
         }
     }
 
-    private void addValidationErrorsToForm(final FormComponent form, final List<Entity> messagesList) {
-        final Entity entity = form.getEntity();
+    private void addValidationErrorsToForm(final FormComponent form, final Entity entity, final List<Entity> messagesList) {
+        final Entity formEntity = form.getEntity();
         final List<Entity> messages = Lists.newArrayList(messagesList);
+        final List<String> errorMessages = Lists.newArrayList();
         CollectionUtils.filter(messages, VALIDATION_MESSAGES_PREDICATE);
         for (Entity message : messages) {
-            assignMessageToEntity(entity, message);
+            assignMessageToEntity(formEntity, entity, message, errorMessages);
         }
-        if (!entity.isValid()) {
+        if (!errorMessages.isEmpty()) {
+            String msg = translationService.translate("states.messages.change.failure.validationErrors", getLocale(),
+                    join(errorMessages, ' '));
+            form.addTranslatedMessage(msg, convertViewMessageType(VALIDATION_ERROR));
+        }
+        if (!formEntity.isValid()) {
             form.addMessage("qcadooView.message.saveFailedMessage", MessageType.FAILURE);
         }
-        form.setEntity(entity);
+        form.setEntity(formEntity);
     }
 
-    private void assignMessageToEntity(final Entity entity, final Entity message) {
+    private void assignMessageToEntity(final Entity formEntity, final Entity entity, final Entity message,
+            List<String> errorMessages) {
+        DataDefinition formDataDefinition = formEntity.getDataDefinition();
         DataDefinition dataDefinition = entity.getDataDefinition();
         String correspondFieldName = MessagesUtil.getCorrespondFieldName(message);
-        if (StringUtils.isNotBlank(correspondFieldName) && dataDefinition.getFields().containsKey(correspondFieldName)) {
-            LOG.info(String.format("Change state error. Entity name : %S id : %d. Field : %S %S", entity.getDataDefinition()
-                    .getName(), entity.getId(), correspondFieldName, translationService.translate(getKey(message),
-                    LocaleContextHolder.getLocale(), getArgs(message))));
-            entity.addError(entity.getDataDefinition().getField(correspondFieldName), getKey(message), getArgs(message));
-        } else {
-            LOG.info(String.format("Change state error. Entity name : %S id : %d. %S", entity.getDataDefinition().getName(),
-                    entity.getId(),
+        if (StringUtils.isNotBlank(correspondFieldName) && formDataDefinition.getFields().containsKey(correspondFieldName)) {
+            LOG.info(String.format("Change state error. Entity name : %S id : %d. Field : %S %S", formDataDefinition.getName(),
+                    formEntity.getId(), correspondFieldName,
                     translationService.translate(getKey(message), LocaleContextHolder.getLocale(), getArgs(message))));
 
-            entity.addGlobalError(getKey(message), isAutoClosed(message), getArgs(message));
+            formEntity.addError(formDataDefinition.getField(correspondFieldName), getKey(message), getArgs(message));
+        } else if (StringUtils.isNotBlank(correspondFieldName) && dataDefinition.getFields().containsKey(correspondFieldName)) {
+            LOG.info(String.format("Change state error. Entity name : %S id : %d. Field : %S %S", dataDefinition.getName(),
+                    entity.getId(), correspondFieldName,
+                    translationService.translate(getKey(message), LocaleContextHolder.getLocale(), getArgs(message))));
+
+            String msg = composeTranslatedFieldValidationMessage(entity, message);
+            errorMessages.add(msg);
+        } else {
+            LOG.info(String.format("Change state error. Entity name : %S id : %d. %S", formDataDefinition.getName(),
+                    formEntity.getId(),
+                    translationService.translate(getKey(message), LocaleContextHolder.getLocale(), getArgs(message))));
+
+            String msg = composeTranslatedGlobalValidationMessage(message);
+            errorMessages.add(msg);
         }
     }
 
@@ -123,39 +143,24 @@ public class StateChangeViewClientValidationUtil {
         }
 
         if (!errorMessages.isEmpty()) {
-            final StringBuilder sb = new StringBuilder();
-            sb.append(translationService.translate("states.messages.change.failure.validationErrors", getLocale(),
-                    join(errorMessages, ' ')));
-            component.addTranslatedMessage(sb.toString(), convertViewMessageType(VALIDATION_ERROR));
+            String msg = translationService.translate("states.messages.change.failure.validationErrors", getLocale(),
+                    join(errorMessages, ' '));
+            component.addTranslatedMessage(msg, convertViewMessageType(VALIDATION_ERROR));
         }
     }
 
     private String composeTranslatedGlobalValidationMessage(final Entity globalMessage) {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("<li>");
-        sb.append(translationService.translate(getKey(globalMessage), getLocale(), getArgs(globalMessage)));
-        sb.append("</li>");
-        return sb.toString();
+        return "<li>" + translationService.translate(getKey(globalMessage), getLocale(), getArgs(globalMessage)) + "</li>";
     }
 
     private String composeTranslatedFieldValidationMessage(final Entity entity, final Entity fieldMessage) {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("<li>");
-        sb.append(getTranslatedFieldName(entity, fieldMessage.getStringField(CORRESPOND_FIELD_NAME)));
-        sb.append(": ");
-        sb.append(translationService.translate(getKey(fieldMessage), getLocale(), getArgs(fieldMessage)));
-        sb.append("</li>");
-        return sb.toString();
+        return "<li>" + getTranslatedFieldName(entity, fieldMessage.getStringField(CORRESPOND_FIELD_NAME)) + ": "
+                + translationService.translate(getKey(fieldMessage), getLocale(), getArgs(fieldMessage)) + "</li>";
     }
 
     private String getTranslatedFieldName(final Entity entity, final String fieldName) {
-        final StringBuilder sb = new StringBuilder();
-        sb.append(entity.getDataDefinition().getPluginIdentifier());
-        sb.append('.');
-        sb.append(entity.getDataDefinition().getName());
-        sb.append('.');
-        sb.append(fieldName);
-        sb.append(".label");
-        return translationService.translate(sb.toString(), getLocale());
+        String messageKey = entity.getDataDefinition().getPluginIdentifier() + '.' + entity.getDataDefinition().getName() + '.'
+                + fieldName + ".label";
+        return translationService.translate(messageKey, getLocale());
     }
 }

@@ -259,43 +259,58 @@ public class DocumentService {
                 ordersGroupIssuedMaterialDD
                         .delete(oldOrdersGroupIssuedMaterials.stream().map(Entity::getId).toArray(Long[]::new));
             }
-            Map<Long, BigDecimal> productQuantities = com.beust.jcommander.internal.Maps.newHashMap();
-            Map<Long, BigDecimal> productValues = com.beust.jcommander.internal.Maps.newHashMap();
-            Map<Long, List<Entity>> productPositions = com.beust.jcommander.internal.Maps.newHashMap();
-            for (Entity document : ordersGroup.getHasManyField(DOCUMENTS)) {
-                for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
-                    Long productId = position.getBelongsToField(PositionFields.PRODUCT).getId();
-                    BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
-                    BigDecimal price = BigDecimalUtils.convertNullToZero(position.getDecimalField(PositionFields.PRICE));
-                    BigDecimal value = numberService
-                            .setScaleWithDefaultMathContext(quantity.multiply(price, numberService.getMathContext()));
-                    productQuantities.compute(productId,
-                            (k, v) -> (v == null) ? quantity : v.add(quantity, numberService.getMathContext()));
-                    productValues.compute(productId, (k, v) -> (v == null) ? value : v.add(value));
-                    Entity ordersGroupIssuedMaterialPosition = ordersGroupIssuedMaterialPositionDD.create();
-                    ordersGroupIssuedMaterialPosition.setField(OrdersGroupIssuedMaterialPositionFields.DOCUMENT_NUMBER,
-                            document.getStringField(DocumentFields.NUMBER));
-                    ordersGroupIssuedMaterialPosition.setField(OrdersGroupIssuedMaterialPositionFields.QUANTITY, quantity);
-                    ordersGroupIssuedMaterialPosition.setField(OrdersGroupIssuedMaterialPositionFields.PRICE, price);
-                    ordersGroupIssuedMaterialPosition.setField(OrdersGroupIssuedMaterialPositionFields.VALUE, value);
-                    productPositions.computeIfAbsent(productId, k -> new ArrayList<>()).add(ordersGroupIssuedMaterialPosition);
-                }
-            }
-            List<Entity> ordersGroupIssuedMaterials = Lists.newArrayList();
-            for (Map.Entry<Long, BigDecimal> entry : productQuantities.entrySet()) {
-                Entity ordersGroupIssuedMaterial = ordersGroupIssuedMaterialDD.create();
-                ordersGroupIssuedMaterial.setField(OrdersGroupIssuedMaterialFields.PRODUCT, entry.getKey());
-                ordersGroupIssuedMaterial.setField(OrdersGroupIssuedMaterialFields.QUANTITY, entry.getValue());
-                BigDecimal value = productValues.get(entry.getKey());
-                ordersGroupIssuedMaterial.setField(OrdersGroupIssuedMaterialFields.VALUE, value);
-                ordersGroupIssuedMaterial.setField(OrdersGroupIssuedMaterialFields.AVERAGE_PRICE, numberService
-                        .setScaleWithDefaultMathContext(value.divide(entry.getValue(), numberService.getMathContext())));
-                ordersGroupIssuedMaterial.setField(OrdersGroupIssuedMaterialFields.ORDERS_GROUP_ISSUED_MATERIAL_POSITIONS,
-                        productPositions.get(entry.getKey()));
-                ordersGroupIssuedMaterials.add(ordersGroupIssuedMaterial);
-            }
+            Map<Long, BigDecimal> productQuantities = Maps.newHashMap();
+            Map<Long, BigDecimal> productValues = Maps.newHashMap();
+            Map<Long, List<Entity>> productPositions = Maps.newHashMap();
+            createOrdersGroupIssueMaterialPositions(ordersGroup, ordersGroupIssuedMaterialPositionDD, productQuantities,
+                    productValues, productPositions);
+            List<Entity> ordersGroupIssuedMaterials = createOrdersGroupIssueMaterials(ordersGroupIssuedMaterialDD,
+                    productQuantities, productValues, productPositions);
             ordersGroup.setField(ORDERS_GROUP_ISSUED_MATERIALS, ordersGroupIssuedMaterials);
             ordersGroup.getDataDefinition().save(ordersGroup);
         }
+    }
+
+    private void createOrdersGroupIssueMaterialPositions(Entity ordersGroup, DataDefinition ordersGroupIssuedMaterialPositionDD,
+            Map<Long, BigDecimal> productQuantities, Map<Long, BigDecimal> productValues,
+            Map<Long, List<Entity>> productPositions) {
+        for (Entity document : ordersGroup.getHasManyField(DOCUMENTS)) {
+            for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
+                Long productId = position.getBelongsToField(PositionFields.PRODUCT).getId();
+                BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
+                BigDecimal price = BigDecimalUtils.convertNullToZero(position.getDecimalField(PositionFields.PRICE));
+                BigDecimal value = numberService
+                        .setScaleWithDefaultMathContext(quantity.multiply(price, numberService.getMathContext()));
+                productQuantities.compute(productId,
+                        (k, v) -> (v == null) ? quantity : v.add(quantity, numberService.getMathContext()));
+                productValues.compute(productId, (k, v) -> (v == null) ? value : v.add(value));
+                Entity ordersGroupIssuedMaterialPosition = ordersGroupIssuedMaterialPositionDD.create();
+                ordersGroupIssuedMaterialPosition.setField(OrdersGroupIssuedMaterialPositionFields.DOCUMENT_NUMBER,
+                        document.getStringField(DocumentFields.NUMBER));
+                ordersGroupIssuedMaterialPosition.setField(OrdersGroupIssuedMaterialPositionFields.QUANTITY, quantity);
+                ordersGroupIssuedMaterialPosition.setField(OrdersGroupIssuedMaterialPositionFields.PRICE, price);
+                ordersGroupIssuedMaterialPosition.setField(OrdersGroupIssuedMaterialPositionFields.VALUE, value);
+                productPositions.computeIfAbsent(productId, k -> new ArrayList<>()).add(ordersGroupIssuedMaterialPosition);
+            }
+        }
+    }
+
+    private List<Entity> createOrdersGroupIssueMaterials(DataDefinition ordersGroupIssuedMaterialDD,
+            Map<Long, BigDecimal> productQuantities, Map<Long, BigDecimal> productValues,
+            Map<Long, List<Entity>> productPositions) {
+        List<Entity> ordersGroupIssuedMaterials = Lists.newArrayList();
+        for (Map.Entry<Long, BigDecimal> entry : productQuantities.entrySet()) {
+            Entity ordersGroupIssuedMaterial = ordersGroupIssuedMaterialDD.create();
+            ordersGroupIssuedMaterial.setField(OrdersGroupIssuedMaterialFields.PRODUCT, entry.getKey());
+            ordersGroupIssuedMaterial.setField(OrdersGroupIssuedMaterialFields.QUANTITY, entry.getValue());
+            BigDecimal value = productValues.get(entry.getKey());
+            ordersGroupIssuedMaterial.setField(OrdersGroupIssuedMaterialFields.VALUE, value);
+            ordersGroupIssuedMaterial.setField(OrdersGroupIssuedMaterialFields.AVERAGE_PRICE,
+                    numberService.setScaleWithDefaultMathContext(value.divide(entry.getValue(), numberService.getMathContext())));
+            ordersGroupIssuedMaterial.setField(OrdersGroupIssuedMaterialFields.ORDERS_GROUP_ISSUED_MATERIAL_POSITIONS,
+                    productPositions.get(entry.getKey()));
+            ordersGroupIssuedMaterials.add(ordersGroupIssuedMaterial);
+        }
+        return ordersGroupIssuedMaterials;
     }
 }
