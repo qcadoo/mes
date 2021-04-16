@@ -42,16 +42,27 @@ public class DocumentStateChangeService {
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     public void buildFailureStateChange(Long documentId) {
-        Map<String, Object> params = Maps.newHashMap();
-        params.put(SOURCE_STATE, DocumentState.DRAFT.getStringValue());
-        params.put(TARGET_STATE, DocumentState.ACCEPTED.getStringValue());
-        params.put(STATUS, StateChangeStatus.FAILURE.getStringValue());
-        params.put(DOCUMENT, documentId);
-        params.put(DATE_AND_TIME, new Date());
-        params.put(WORKER, securityService.getCurrentUserName());
-        String query = "INSERT INTO materialflowresources_documentstatechange (document_id, worker, dateandtime, sourcestate, targetstate, status) "
-                + "VALUES (:document, :worker, :dateAndTime, :sourceState, :targetState, :status)";
-        jdbcTemplate.queryForObject(query, params, Long.class);
+        if (checkIfDocumentExist(documentId)) {
+            Map<String, Object> params = Maps.newHashMap();
+            params.put(SOURCE_STATE, DocumentState.DRAFT.getStringValue());
+            params.put(TARGET_STATE, DocumentState.ACCEPTED.getStringValue());
+            params.put(STATUS, StateChangeStatus.FAILURE.getStringValue());
+            params.put(DOCUMENT, documentId);
+            params.put(DATE_AND_TIME, new Date());
+            params.put(WORKER, securityService.getCurrentUserName());
+            String query = "INSERT INTO materialflowresources_documentstatechange (document_id, worker, dateandtime, sourcestate, targetstate, status) "
+                    + "VALUES (:document, :worker, :dateAndTime, :sourceState, :targetState, :status)";
+            jdbcTemplate.queryForObject(query, params, Long.class);
+        }
+    }
+
+    public boolean checkIfDocumentExist(Long documentId) {
+        String sql = "SELECT count(*) > 0 FROM materialflowresources_document WHERE id = :id;";
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        parameters.put("id", documentId);
+
+        return jdbcTemplate.queryForObject(sql, parameters, Boolean.class);
     }
 
     public void buildFailureStateChangeAfterRollback(Long documentId) {

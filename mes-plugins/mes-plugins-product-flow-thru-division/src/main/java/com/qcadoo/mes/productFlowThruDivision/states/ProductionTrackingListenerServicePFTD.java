@@ -175,10 +175,8 @@ public final class ProductionTrackingListenerServicePFTD {
                 for (ErrorMessage error : outboundDocument.getGlobalErrors()) {
                     if (error.getMessage().equalsIgnoreCase(L_ERROR_NOT_ENOUGH_RESOURCES)) {
                         productionTracking.addGlobalError(error.getMessage(), false, error.getVars());
-                    } else {
-                        if (!errorsDisplayed) {
-                            productionTracking.addGlobalError(error.getMessage(), error.getVars());
-                        }
+                    } else if (!errorsDisplayed) {
+                        productionTracking.addGlobalError(error.getMessage(), error.getVars());
                     }
                 }
 
@@ -599,7 +597,7 @@ public final class ProductionTrackingListenerServicePFTD {
         internalInboundBuilder.setField(DocumentFieldsPFTD.ORDER, order);
 
         if (OrderState.COMPLETED.equals(OrderState.of(order)) || !isFinalProduct || isBasedOnNominalCost
-                || (Objects.nonNull(productionTracking) && orderClosingHelper.orderShouldBeClosed(productionTracking))) {
+                || orderClosingHelper.orderShouldBeClosed(productionTracking)) {
             internalInboundBuilder.setAccepted();
         }
 
