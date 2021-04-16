@@ -78,11 +78,12 @@ public class TechnologyValidationAspect extends AbstractStateListenerAspect {
             return;
         }
 
+        Entity technology = stateChangeContext.getOwner();
         String targetState = stateChangeContext.getStateChangeEntity().getStringField(TechnologyStateChangeFields.TARGET_STATE);
         Entity parameter = parameterService.getParameter();
 
         if (parameter.getBooleanField(ParameterFieldsT.MOVE_PRODUCTS_TO_SUBSEQUENT_OPERATIONS)) {
-            technologyDetailsListeners.fillProducts(stateChangeContext.getOwner());
+            technologyDetailsListeners.fillProducts(technology);
         }
 
         if (TechnologyStateStringValues.ACCEPTED.equals(targetState) || (TechnologyStateStringValues.CHECKED.equals(targetState)
@@ -91,12 +92,8 @@ public class TechnologyValidationAspect extends AbstractStateListenerAspect {
         }
 
         technologyValidationService.checkConsumingManyProductsFromOneSubOp(stateChangeContext);
-
-        Entity technology = stateChangeContext.getOwner();
-
         technologyTreeValidators.checkConsumingTheSameProductFromManySubOperations(technology.getDataDefinition(), technology,
                 true);
-
         technologyValidationService.checkIfTechnologyHasAtLeastOneComponent(stateChangeContext);
         technologyValidationService.checkTopComponentsProducesProductForTechnology(stateChangeContext);
         technologyValidationService.checkIfOperationsUsesSubOperationsProds(stateChangeContext);

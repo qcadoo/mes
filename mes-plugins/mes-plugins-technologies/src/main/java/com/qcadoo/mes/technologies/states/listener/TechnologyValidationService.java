@@ -95,8 +95,32 @@ public class TechnologyValidationService {
         final EntityTree operationComponents = savedTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
 
         for (Entity operationComponent : operationComponents) {
-            if (operationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS)
-                    .isEmpty()) {
+            boolean isValid = true;
+
+            List<Entity> operationProductInComponents = operationComponent
+                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
+
+            if (operationProductInComponents.isEmpty()) {
+                isValid = false;
+            } else {
+                for (Entity operationProductInComponent : operationProductInComponents) {
+                    boolean differentProductsInDifferentSizes = operationProductInComponent
+                            .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES);
+
+                    if (differentProductsInDifferentSizes) {
+                        List<Entity> productBySizeGroups = operationProductInComponent
+                                .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS);
+
+                        isValid = !productBySizeGroups.isEmpty();
+                    } else {
+                        Entity product = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
+
+                        isValid = Objects.nonNull(product);
+                    }
+                }
+            }
+
+            if (!isValid) {
                 stateChangeContext.addValidationError("technologies.technology.validate.global.error.noInputComponents",
                         operationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION)
                                 .getStringField(OperationFields.NUMBER),
@@ -561,7 +585,7 @@ public class TechnologyValidationService {
             final EntityTree operationComponents = savedTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
 
             for (Entity operationComponent : operationComponents) {
-                final EntityList operationProductInComponents = operationComponent
+                final List<Entity> operationProductInComponents = operationComponent
                         .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
 
                 for (Entity operationProductInComponent : operationProductInComponents) {
