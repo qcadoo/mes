@@ -46,6 +46,8 @@
                        method="validatesWith"/>
         <onSave class="com.qcadoo.mes.orders.hooks.OrderPackHooks"
                 method="onSave"/>
+        <onDelete class="com.qcadoo.mes.orders.hooks.OrderPackHooks"
+                method="onDelete"/>
     </hooks>
 
     <identifier expression="#number"/>

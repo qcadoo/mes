@@ -21,42 +21,26 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.orders.constants;
+package com.qcadoo.mes.technologies.constants;
 
-public final class OrderTechnologicalProcessFields {
+public final class TechnologyOperationComponentWithListDtoFields {
 
-    private OrderTechnologicalProcessFields() {
+    private TechnologyOperationComponentWithListDtoFields() {
 
     }
 
     public static final String NUMBER = "number";
 
-    public static final String ORDER_PACK = "orderPack";
+    public static final String NAME = "name";
 
-    public static final String ORDER = "order";
+    public static final String PRODUCT_NUMBER = "productNumber";
 
-    public static final String PRODUCT = "product";
+    public static final String PRODUCT_NAME = "productName";
 
-    public static final String OPERATION = "operation";
+    public static final String PRODUCT_ENTITY_TYPE = "productEntityType";
 
-    public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+    public static final String TECHNOLOGICAL_PROCESS_LIST_ASSIGNMENT_DATE = "technologicalProcessListAssignmentDate";
 
-    public static final String TECHNOLOGICAL_PROCESS = "technologicalProcess";
-
-    public static final String QUANTITY = "quantity";
-
-    public static final String CREATE_DATE = "createDate";
-
-    public static final String DATE = "date";
-
-    public static final String WORKER = "worker";
-
-    public static final String WASTES_QUANTITY = "wastesQuantity";
-
-    public static final String ORDER_TECHNOLOGICAL_PROCESS_PARTS = "orderTechnologicalProcessParts";
-
-    public static final String ORDER_TECHNOLOGICAL_PROCESS_WASTES = "orderTechnologicalProcessWastes";
-
-    public static final String IS_VALID = "isValid";
+    public static final String TECHNOLOGICAL_PROCESS_LIST_ID = "technologicalprocesslist_id";
 
 }

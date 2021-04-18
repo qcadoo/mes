@@ -349,6 +349,10 @@
             <model:boolean name="operTaskFlagPercentExecutionWithColor" default="false"/>
         </model:model-field>
 
+        <model:model-field plugin="basic"  model="parameter">
+            <model:boolean name="allowChangeOrDeleteOrderTechnologicalProcess" default="false"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="shift">
             <model:hasMany name="operationalTaskStateChanges"
                            plugin="orders" model="operationalTaskStateChange"

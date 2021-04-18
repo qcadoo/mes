@@ -24,27 +24,21 @@
     ***************************************************************************
 
 -->
-<model name="technologicalProcessList"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
-	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+<model name="technologyOperationComponentWithListDto" activable="false" auditable="false" deletable="false" insertable="false" updatable="false"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
+       xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
-	<fields>
-		<string name="number" unique="true">
-			<validatesLength max="255" />
-		</string>
-		<string name="name">
-			<validatesLength max="2048" />
-		</string>
-		<belongsTo name="operation" model="operation" required="true"/>
-		<hasMany name="technologicalProcessComponents" joinField="technologicalProcessList" model="technologicalProcessComponent"
-				 cascade="delete"/>
-		<hasMany name="operationComponents"
-				 joinField="technologicalProcessList" model="technologyOperationComponent"/>
-	</fields>
+    <fields>
+        <string name="number"/>
+        <string name="name"/>
+        <string name="productNumber"/>
+        <string name="productName"/>
+        <string name="productEntityType"/>
+        <datetime name="technologicalProcessListAssignmentDate"/>
+        <integer name="technologicalprocesslist_id"/>
+    </fields>
 
-	<hooks>
-		<onSave class="com.qcadoo.mes.technologies.hooks.TechnologicalProcessListHooks"
-				method="onSave"/>
-		<onDelete class="com.qcadoo.mes.technologies.hooks.TechnologicalProcessListHooks" method="onDelete"/>
-	</hooks>
+    <hooks/>
+
+    <masterModel plugin="technologies" model="technologyOperationComponent"/>
 </model>

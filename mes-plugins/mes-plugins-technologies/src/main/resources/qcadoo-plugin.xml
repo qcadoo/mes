@@ -101,6 +101,7 @@
         <model:model model="qualityCard" resource="model/qualityCard.xml"/>
         <model:model model="qualityCardStateChange" resource="model/qualityCardStateChange.xml"/>
         <model:model model="technologyOperationComponentDto" resource="model/technologyOperationComponentDto.xml"/>
+        <model:model model="technologyOperationComponentWithListDto" resource="model/technologyOperationComponentWithListDto.xml"/>
         <model:model model="technologicalProcess" resource="model/technologicalProcess.xml"/>
         <model:model model="technologicalProcessComponent" resource="model/technologicalProcessComponent.xml"/>
         <model:model model="technologicalProcessList" resource="model/technologicalProcessList.xml"/>

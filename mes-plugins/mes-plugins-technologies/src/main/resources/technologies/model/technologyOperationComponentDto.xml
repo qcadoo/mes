@@ -27,20 +27,18 @@
 <model name="technologyOperationComponentDto" activable="false" auditable="false" deletable="false" insertable="false" updatable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
+
     <fields>
         <belongsTo name="technology" model="technology"
                    persistent="false"/>
-
         <integer name="technologyId"/>
-
         <string name="nodeNumber"/>
-
         <string name="operationName"/>
-
         <string name="operationNumber"/>
-
         <boolean name="qualityControl"/>
     </fields>
+
     <hooks/>
+
     <masterModel plugin="technologies" model="technologyOperationComponent"/>
 </model>

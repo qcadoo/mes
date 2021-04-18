@@ -405,8 +405,9 @@
                 </layoutElement>
             </component>
         </windowTab>
+
         <windowTab name="packsTab" reference="packsTab">
-            <component type="gridLayout" name="packsTabGridLayout" columns="3" rows="5">
+            <component type="gridLayout" name="packsTabGridLayout" columns="3" rows="4">
                 <layoutElement column="1" row="1">
                     <component type="checkbox" name="generatePacksForOrders"
                                field="#{form}.generatePacksForOrders"
@@ -431,13 +432,6 @@
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="4">
-                    <component type="checkbox" name="includePacksGeneratingProcessesForOrder"
-                               field="#{form}.includePacksGeneratingProcessesForOrder"
-                               reference="includePacksGeneratingProcessesForOrder" hasDescription="true">
-                    </component>
-                </layoutElement>
-                <layoutElement column="1" row="5">
-
                     <component type="lookup" name="attributeOnTheLabel" reference="attributeOnTheLabel"
                                field="#{form}.attributeOnTheLabel" hasDescription="true">
                         <option type="column" name="name" fields="name" link="true"
@@ -450,10 +444,27 @@
                                 value="'&lt;b&gt;' + #number"/>
                         <option type="fieldCode" value="number"/>
 
-
                         <criteriaModifier
                                 class="com.qcadoo.mes.basic.criteriaModifiers.AttributeCriteriaModifiers"
                                 method="showForProduct"/>
+                    </component>
+                </layoutElement>
+            </component>
+        </windowTab>
+
+        <windowTab name="orderTechnologicalProcessesTab" reference="orderTechnologicalProcessesTab">
+            <component type="gridLayout" name="packsTabGridLayout" columns="3" rows="2">
+                <layoutElement column="1" row="1">
+                    <component type="checkbox" name="includePacksGeneratingProcessesForOrder"
+                               field="#{form}.includePacksGeneratingProcessesForOrder"
+                               reference="includePacksGeneratingProcessesForOrder" hasDescription="true">
+                        <option type="labelWidth" value="70"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="2">
+                    <component type="checkbox" name="allowChangeOrDeleteOrderTechnologicalProcess" reference="allowChangeOrDeleteOrderTechnologicalProcess"
+                               field="#{form}.allowChangeOrDeleteOrderTechnologicalProcess" hasDescription="true">
+                        <option type="labelWidth" value="70"/>
                     </component>
                 </layoutElement>
             </component>

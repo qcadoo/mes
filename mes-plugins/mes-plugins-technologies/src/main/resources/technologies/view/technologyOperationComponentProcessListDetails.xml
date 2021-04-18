@@ -47,6 +47,7 @@
                             <option type="orderable" value="name"/>
                             <option type="expression" value="#number"/>
                             <option type="fieldCode" value="number"/>
+
                             <criteriaModifier
                                     class="com.qcadoo.mes.technologies.criteriaModifiers.TOCProcessListDetailsCriteriaModifiers"
                                     method="showTechnologicalProcessListsForOperation"/>

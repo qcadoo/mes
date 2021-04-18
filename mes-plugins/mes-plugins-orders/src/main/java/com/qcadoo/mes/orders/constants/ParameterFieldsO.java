@@ -87,4 +87,6 @@ public final class ParameterFieldsO {
 
     public static final String INCLUDE_PACKS_GENERATING_PROCESSES_FOR_ORDER = "includePacksGeneratingProcessesForOrder";
 
+    public static final String ALLOW_CHANGE_OR_DELETE_ORDER_TECHNOLOGICAL_PROCESS = "allowChangeOrDeleteOrderTechnologicalProcess";
+
 }
