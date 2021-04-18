@@ -52,7 +52,7 @@
         <belongsTo name="subassembly" model="subassembly" plugin="basic"/>
         <belongsTo name="sourceCost" model="sourceCost"/>
 
-        <belongsTo name="faultType" plugin="basic" model="faultType" required="true"/>
+        <belongsTo name="faultType" plugin="basic" model="faultType"/>
 
         <hasMany name="staffWorkTimes" model="staffWorkTime"
                  joinField="maintenanceEvent" copyable="false" cascade="delete"/>
@@ -73,6 +73,10 @@
         <boolean name="acceptanceEvents" default="false" persistent="false"/>
 
         <boolean name="soundNotifications" default="false"/>
+
+        <boolean name="highestPriority" default="false"/>
+
+        <belongsTo name="reportingEmployee" model="staff" plugin="basic"/>
 
         <hasMany name="plannedEvents" plugin="cmmsMachineParts" model="plannedEvent" joinField="maintenanceEvent"
                  cascade="nullify"/>

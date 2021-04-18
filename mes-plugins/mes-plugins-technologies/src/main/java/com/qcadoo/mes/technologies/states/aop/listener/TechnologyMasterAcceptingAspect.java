@@ -23,10 +23,15 @@
  */
 package com.qcadoo.mes.technologies.states.aop.listener;
 
+import org.aspectj.lang.annotation.After;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.annotation.RunForStateTransition;
-import com.qcadoo.mes.states.annotation.RunForStateTransitions;
 import com.qcadoo.mes.states.aop.AbstractStateListenerAspect;
 import com.qcadoo.mes.technologies.constants.ParameterFieldsT;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
@@ -35,11 +40,6 @@ import com.qcadoo.mes.technologies.states.aop.TechnologyStateChangeAspect;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.RunIfEnabled;
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 
 @Aspect
 @Configurable
@@ -49,7 +49,7 @@ public class TechnologyMasterAcceptingAspect extends AbstractStateListenerAspect
     @Autowired
     private ParameterService parameterService;
 
-    @RunForStateTransitions({ @RunForStateTransition(targetState = TechnologyStateStringValues.ACCEPTED) })
+    @RunForStateTransition(targetState = TechnologyStateStringValues.ACCEPTED)
     @After(CHANGE_STATE_EXECUTION_POINTCUT)
     public void postHookOnAccepting(final StateChangeContext stateChangeContext) {
         Entity parameter = parameterService.getParameter();

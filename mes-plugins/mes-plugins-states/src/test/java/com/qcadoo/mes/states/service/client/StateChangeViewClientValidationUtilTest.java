@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.states.service.client;
 
+import static com.qcadoo.mes.states.messages.constants.StateMessageType.VALIDATION_ERROR;
+import static com.qcadoo.mes.states.messages.util.MessagesUtil.convertViewMessageType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -99,7 +101,7 @@ public class StateChangeViewClientValidationUtilTest {
     }
 
     @Test
-    public final void shouldAddValidationErrorToWholeEntityIfFieldDoesNotExist() {
+    public final void shouldAddValidationErrorToFormIfFieldDoesNotExist() {
         // given
         DataDefinition dataDefinition = mockDataDefinition(Lists.<FieldDefinition> newArrayList());
         given(entity.getDataDefinition()).willReturn(dataDefinition);
@@ -113,11 +115,11 @@ public class StateChangeViewClientValidationUtilTest {
 
         // then
         verify(entity, Mockito.never()).addError(Mockito.any(FieldDefinition.class), Mockito.eq(TRANSLATION_KEY));
-        verify(entity).addGlobalError(TRANSLATION_KEY, false);
+        verify(formComponent).addTranslatedMessage(Mockito.any(String.class), Mockito.eq(convertViewMessageType(VALIDATION_ERROR)));
     }
 
     @Test
-    public final void shouldAddValidationErrorToWholeEntityIfFieldIsEmpty() {
+    public final void shouldAddValidationErrorToFormIfFieldIsEmpty() {
         // given
         DataDefinition dataDefinition = mockDataDefinition(Lists.<FieldDefinition> newArrayList());
         given(entity.getDataDefinition()).willReturn(dataDefinition);
@@ -131,11 +133,11 @@ public class StateChangeViewClientValidationUtilTest {
 
         // then
         verify(entity, Mockito.never()).addError(Mockito.any(FieldDefinition.class), Mockito.eq(TRANSLATION_KEY));
-        verify(entity).addGlobalError(TRANSLATION_KEY, false);
+        verify(formComponent).addTranslatedMessage(Mockito.any(String.class), Mockito.eq(convertViewMessageType(VALIDATION_ERROR)));
     }
 
     @Test
-    public final void shouldAddValidationErrorToWholeEntityIfFieldIsNull() {
+    public final void shouldAddValidationErrorToFormIfFieldIsNull() {
         // given
         DataDefinition dataDefinition = mockDataDefinition(Lists.<FieldDefinition> newArrayList());
         given(entity.getDataDefinition()).willReturn(dataDefinition);
@@ -149,7 +151,7 @@ public class StateChangeViewClientValidationUtilTest {
 
         // then
         verify(entity, Mockito.never()).addError(Mockito.any(FieldDefinition.class), Mockito.eq(TRANSLATION_KEY));
-        verify(entity).addGlobalError(TRANSLATION_KEY, false);
+        verify(formComponent).addTranslatedMessage(Mockito.any(String.class), Mockito.eq(convertViewMessageType(VALIDATION_ERROR)));
     }
 
     private DataDefinition mockDataDefinition(final Iterable<FieldDefinition> fieldDefinitions) {

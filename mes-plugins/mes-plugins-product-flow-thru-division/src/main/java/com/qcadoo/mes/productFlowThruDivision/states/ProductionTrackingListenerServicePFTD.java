@@ -23,6 +23,19 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.states;
 
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
@@ -68,19 +81,6 @@ import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.model.api.validators.ErrorMessage;
 
-import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
 @Service
 public final class ProductionTrackingListenerServicePFTD {
 
@@ -120,7 +120,10 @@ public final class ProductionTrackingListenerServicePFTD {
     public Entity onAccept(final Entity productionTracking, final String sourceState) {
         boolean isCorrection = productionTracking.getBooleanField(ProductionTrackingFields.IS_CORRECTION);
 
-        if (!isCorrection && !ProductionTrackingStateStringValues.CORRECTED.equals(sourceState)) {
+        Entity parameter = parameterService.getParameter();
+
+        if (parameter.getBooleanField(ParameterFieldsPC.CREATE_DOCUMENTS_FOR_PRODUCTION_REGISTRATION) && !isCorrection
+                && !ProductionTrackingStateStringValues.CORRECTED.equals(sourceState)) {
             createWarehouseDocuments(productionTracking);
         }
 
@@ -172,10 +175,8 @@ public final class ProductionTrackingListenerServicePFTD {
                 for (ErrorMessage error : outboundDocument.getGlobalErrors()) {
                     if (error.getMessage().equalsIgnoreCase(L_ERROR_NOT_ENOUGH_RESOURCES)) {
                         productionTracking.addGlobalError(error.getMessage(), false, error.getVars());
-                    } else {
-                        if (!errorsDisplayed) {
-                            productionTracking.addGlobalError(error.getMessage(), error.getVars());
-                        }
+                    } else if (!errorsDisplayed) {
+                        productionTracking.addGlobalError(error.getMessage(), error.getVars());
                     }
                 }
 
@@ -596,7 +597,7 @@ public final class ProductionTrackingListenerServicePFTD {
         internalInboundBuilder.setField(DocumentFieldsPFTD.ORDER, order);
 
         if (OrderState.COMPLETED.equals(OrderState.of(order)) || !isFinalProduct || isBasedOnNominalCost
-                || (Objects.nonNull(productionTracking) && orderClosingHelper.orderShouldBeClosed(productionTracking))) {
+                || orderClosingHelper.orderShouldBeClosed(productionTracking)) {
             internalInboundBuilder.setAccepted();
         }
 

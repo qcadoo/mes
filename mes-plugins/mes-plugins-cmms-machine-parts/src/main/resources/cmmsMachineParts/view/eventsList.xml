@@ -433,6 +433,8 @@
                 <option type="column" name="description" fields="description" link="true"/>
                 <option type="column" name="createDate" fields="createDate" link="false"/>
                 <option type="column" name="createUser" fields="createUser" link="false"/>
+                <option type="column" name="reportingemployeename" fields="reportingemployeename"
+                        link="false"/>
                 <option type="column" name="personReceiving" fields="personReceivingName"
                         link="false"/>
 
@@ -440,9 +442,9 @@
 
 
                 <option type="searchable"
-                        value="number,type,factory,division,productionLine,workstation,subassembly,description,createDate,createUser,personReceiving,faultType,state"/>
+                        value="number,type,factory,division,productionLine,workstation,subassembly,description,createDate,createUser,personReceiving,reportingemployeename,faultType,state"/>
                 <option type="orderable"
-                        value="number,type,factory,division,productionLine,workstation,subassembly,description,createDate,createUser,personReceiving,faultType,state"/>
+                        value="number,type,factory,division,productionLine,workstation,subassembly,description,createDate,createUser,personReceiving,reportingemployeename,faultType,state"/>
                 <option type="multiselect" value="true"/>
                 <option type="fullscreen" value="true"/>
 
@@ -491,6 +493,10 @@
 
                 <criteriaModifier class="com.qcadoo.mes.cmmsMachineParts.criteriaModifiers.EventCriteriaModifiersCMP"
                                   method="showEventsFromContext"/>
+
+                <rowStyleResolver
+                        class="com.qcadoo.mes.cmmsMachineParts.hooks.EventHooks"
+                        method="fillRowStyles"/>
             </component>
         </windowTab>
 

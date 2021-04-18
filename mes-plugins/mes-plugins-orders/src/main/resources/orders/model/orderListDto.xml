@@ -54,8 +54,10 @@
         <string name="productionLineNumber"/>
         <string name="typeOfProductionRecording"/>
         <integer name="masterOrderId"/>
-
     </fields>
+
+    <hooks/>
+
     <identifier expression="#number + ' - ' + #name"/>
     <masterModel plugin="orders" model="order"/>
 </model>

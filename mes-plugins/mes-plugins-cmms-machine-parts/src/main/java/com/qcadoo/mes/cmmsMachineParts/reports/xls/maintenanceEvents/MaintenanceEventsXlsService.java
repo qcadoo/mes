@@ -8,16 +8,26 @@ import com.qcadoo.mes.cmmsMachineParts.reports.xls.maintenanceEvents.dto.StateCh
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.maintenanceEvents.dto.WorkTimeDTO;
 import com.qcadoo.mes.cmmsMachineParts.states.constants.MaintenanceEventStateStringValues;
 import com.qcadoo.model.api.NumberService;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Pattern;
+
 import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DataFormat;
-import org.apache.poi.xssf.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
+import org.apache.poi.xssf.usermodel.XSSFFont;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.*;
-import java.util.regex.Pattern;
 
 @Service
 public class MaintenanceEventsXlsService {
@@ -107,6 +117,9 @@ public class MaintenanceEventsXlsService {
 
         XSSFCell personReceiving = eventLine.createCell(MaintenanceEventsElementsReportEnum.PERSON_RECEIVING.getPosition());
         personReceiving.setCellValue(event.getPersonReceiving());
+
+        XSSFCell reportingEmployee = eventLine.createCell(MaintenanceEventsElementsReportEnum.REPORTING_EMPLOYEE.getPosition());
+        reportingEmployee.setCellValue(event.getReportingEmployee());
 
         XSSFCell sourceCost = eventLine.createCell(MaintenanceEventsElementsReportEnum.SOURCE_COST.getPosition());
         sourceCost.setCellValue(event.getSourceCost());

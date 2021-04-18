@@ -211,12 +211,6 @@
                             <option type="label" value="overheads"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="2" row="6">
-                        <component type="select" name="priceBasedOn" reference="priceBasedOn"
-                                   field="#{form}.priceBasedOn" hasDescription="true">
-                            <option type="labelWidth" value="34"/>
-                        </component>
-                    </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>

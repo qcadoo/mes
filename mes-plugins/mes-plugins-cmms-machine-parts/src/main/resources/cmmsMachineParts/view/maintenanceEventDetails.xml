@@ -272,7 +272,7 @@
                         });
                     ]]>
                 </script>
-                <component type="gridLayout" name="gridLayout" columns="2" rows="8">
+                <component type="gridLayout" name="gridLayout" columns="2" rows="10">
                     <layoutElement column="1" row="1">
                         <component type="hidden" name="factoryStructure" field="factoryStructure"
                                    reference="factoryStructure"/>
@@ -411,7 +411,24 @@
                             <option type="fieldCode" value="surname"/>
                         </component>
                     </layoutElement>
+
+
                     <layoutElement column="2" row="6">
+                        <component type="lookup" name="reportingEmployee" field="reportingEmployee"
+                                   reference="reportingEmployee">
+                            <option type="column" name="name" fields="name" link="true"/>
+                            <option type="column" name="surname" fields="surname" link="true"/>
+
+                            <option type="searchable" value="name,surname"/>
+                            <option type="orderable" value="name,surname"/>
+
+                            <option type="expression" value="#name + ' ' + #surname"/>
+                            <option type="fieldCode" value="number"/>
+
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement column="2" row="7">
                         <component type="lookup" name="sourceCost" field="sourceCost"
                                    reference="sourceCost">
                             <option type="column" name="name" fields="name"/>
@@ -428,9 +445,13 @@
                         </component>
 
                     </layoutElement>
-                    <layoutElement column="2" row="7">
+                    <layoutElement column="2" row="8">
                         <component type="checkbox" name="soundNotifications"
                                    field="soundNotifications" reference="soundNotifications"/>
+                    </layoutElement>
+                    <layoutElement column="2" row="9">
+                        <component type="checkbox" name="highestPriority"
+                                   field="highestPriority" reference="highestPriority"/>
                     </layoutElement>
                 </component>
 

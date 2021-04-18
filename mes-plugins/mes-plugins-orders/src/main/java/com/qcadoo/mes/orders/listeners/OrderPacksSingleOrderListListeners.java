@@ -1,8 +1,5 @@
 package com.qcadoo.mes.orders.listeners;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.orders.OrderPackService;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -12,6 +9,14 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
+
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderPacksSingleOrderListListeners {
@@ -21,6 +26,20 @@ public class OrderPacksSingleOrderListListeners {
 
     @Autowired
     private OrderPackService orderPackService;
+
+    public void printLabels(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+            GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+
+            Set<Long> packsIds = grid.getSelectedEntitiesIds();
+
+            if (packsIds.isEmpty()) {
+                view.addMessage("orders.packs.notSelected", ComponentState.MessageType.INFO);
+            } else {
+                view.redirectTo("/orders/packsLabels.pdf?"
+                        + packsIds.stream().map(id -> "ids=" + id.toString()).collect(Collectors.joining("&")), true, false);
+            }
+
+    }
 
     public void generateOrderPacks(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(OrdersConstants.MODEL_ORDER);

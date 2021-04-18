@@ -216,7 +216,7 @@
             <model:decimal name="averageMachineHourlyCostPB">
                 <model:validatesUnscaledValue max="7"/>
                 <model:validatesScale max="5"/>
-                <model:validatesRange from="0" exclusively="false"/>
+                <model:validatesRange from="0"/>
             </model:decimal>
         </model:model-field>
 
@@ -224,7 +224,7 @@
             <model:decimal name="averageLaborHourlyCostPB">
                 <model:validatesUnscaledValue max="7"/>
                 <model:validatesScale max="5"/>
-                <model:validatesRange from="0" exclusively="false"/>
+                <model:validatesRange from="0"/>
             </model:decimal>
         </model:model-field>
 
@@ -232,7 +232,7 @@
             <model:decimal name="productionCostMarginPB" default="0">
                 <model:validatesUnscaledValue max="7"/>
                 <model:validatesScale max="5"/>
-                <model:validatesRange from="0" exclusively="false"/>
+                <model:validatesRange from="0"/>
             </model:decimal>
         </model:model-field>
 
@@ -240,7 +240,7 @@
             <model:decimal name="materialCostMarginPB" default="0">
                 <model:validatesUnscaledValue max="7"/>
                 <model:validatesScale max="5"/>
-                <model:validatesRange from="0" exclusively="false"/>
+                <model:validatesRange from="0"/>
             </model:decimal>
         </model:model-field>
 
@@ -248,7 +248,7 @@
             <model:decimal name="additionalOverheadPB" default="0">
                 <model:validatesUnscaledValue max="7"/>
                 <model:validatesScale max="5"/>
-                <model:validatesRange from="0" exclusively="false"/>
+                <model:validatesRange from="0"/>
             </model:decimal>
         </model:model-field>
 
@@ -256,7 +256,7 @@
             <model:decimal name="registrationPriceOverheadPB" default="0">
                 <model:validatesUnscaledValue max="7"/>
                 <model:validatesScale max="5"/>
-                <model:validatesRange from="0" exclusively="false"/>
+                <model:validatesRange from="0"/>
             </model:decimal>
         </model:model-field>
 
@@ -264,16 +264,18 @@
             <model:decimal name="profitPB" default="0">
                 <model:validatesUnscaledValue max="7"/>
                 <model:validatesScale max="5"/>
-                <model:validatesRange from="0" exclusively="false"/>
+                <model:validatesRange from="0"/>
             </model:decimal>
         </model:model-field>
 
+        <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="createDocumentsForProductionRegistration" default="true"/>
+        </model:model-field>
 
         <model:model-field model="parameter" plugin="basic">
             <model:enum name="priceBasedOn" values="01nominalProductCost,02realProductionCost"
                         required="true" default="01nominalProductCost"/>
         </model:model-field>
-
 
         <model:model-field model="staff" plugin="basic">
             <model:hasMany name="productionTrackings" model="productionTracking"

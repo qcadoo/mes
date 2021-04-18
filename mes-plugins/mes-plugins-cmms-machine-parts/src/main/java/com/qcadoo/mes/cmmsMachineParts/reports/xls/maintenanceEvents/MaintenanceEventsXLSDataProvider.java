@@ -1,7 +1,11 @@
 package com.qcadoo.mes.cmmsMachineParts.reports.xls.maintenanceEvents;
 
 import com.google.common.base.Function;
-import com.google.common.collect.*;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.qcadoo.mes.cmmsMachineParts.constants.CmmsMachinePartsConstants;
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.maintenanceEvents.dto.MachinePartDTO;
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.maintenanceEvents.dto.MaintenanceEventDTO;
@@ -9,16 +13,17 @@ import com.qcadoo.mes.cmmsMachineParts.reports.xls.maintenanceEvents.dto.StateCh
 import com.qcadoo.mes.cmmsMachineParts.reports.xls.maintenanceEvents.dto.WorkTimeDTO;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
 
 @Service public class MaintenanceEventsXLSDataProvider {
 
@@ -33,6 +38,7 @@ import java.util.stream.Collectors;
                     + "subassembly.number as subassemblyNumber,\n" + "faulttype.name as faultTypeName,\n"
                     + "maintenanceevent.description as description,\n"
                     + "(personreceiving.surname || ' ' || personreceiving.name ) as personReceiving,\n"
+                    + "(reportingemployee.surname || ' ' || reportingemployee.name ) as reportingEmployee,\n"
                     + "sourcecost.number as sourceCost,\n" + "staffworktime.id as staffworkTimeId,\n"
                     + "(staffworktimestaff.surname || ' ' || staffworktimestaff.name ) as staffWorkTimeWorker,\n"
                     + "staffworktime.laborTime as staffWorkTimeLaborTime,\n" + "docpos.id as machinePartId,\n"
@@ -61,6 +67,7 @@ import java.util.stream.Collectors;
                     + "LEFT JOIN basic_workstation workstation ON maintenanceevent.workstation_id = workstation.id\n"
                     + "LEFT JOIN basic_subassembly subassembly ON maintenanceevent.subassembly_id = subassembly.id\n"
                     + "LEFT JOIN basic_staff personreceiving ON maintenanceevent.personreceiving_id = personreceiving.id\n"
+                    + "LEFT JOIN basic_staff reportingemployee ON maintenanceevent.reportingemployee_id = reportingemployee.id\n"
                     + "LEFT JOIN basic_faulttype faulttype ON maintenanceevent.faulttype_id = faulttype.id\n"
                     + "LEFT JOIN cmmsmachineparts_sourcecost sourcecost ON maintenanceevent.sourcecost_id = sourcecost.id\n";
 

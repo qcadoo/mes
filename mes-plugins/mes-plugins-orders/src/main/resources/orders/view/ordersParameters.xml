@@ -406,7 +406,7 @@
             </component>
         </windowTab>
         <windowTab name="packsTab" reference="packsTab">
-            <component type="gridLayout" name="packsTabGridLayout" columns="3" rows="4">
+            <component type="gridLayout" name="packsTabGridLayout" columns="3" rows="5">
                 <layoutElement column="1" row="1">
                     <component type="checkbox" name="generatePacksForOrders"
                                field="#{form}.generatePacksForOrders"
@@ -434,6 +434,26 @@
                     <component type="checkbox" name="includePacksGeneratingProcessesForOrder"
                                field="#{form}.includePacksGeneratingProcessesForOrder"
                                reference="includePacksGeneratingProcessesForOrder" hasDescription="true">
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="5">
+
+                    <component type="lookup" name="attributeOnTheLabel" reference="attributeOnTheLabel"
+                               field="#{form}.attributeOnTheLabel" hasDescription="true">
+                        <option type="column" name="name" fields="name" link="true"
+                                width="200"/>
+
+                        <option type="searchable" value="name,number"/>
+                        <option type="orderable" value="name,number"/>
+
+                        <option type="expression"
+                                value="'&lt;b&gt;' + #number"/>
+                        <option type="fieldCode" value="number"/>
+
+
+                        <criteriaModifier
+                                class="com.qcadoo.mes.basic.criteriaModifiers.AttributeCriteriaModifiers"
+                                method="showForProduct"/>
                     </component>
                 </layoutElement>
             </component>
