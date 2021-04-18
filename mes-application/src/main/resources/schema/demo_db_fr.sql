@@ -33360,7 +33360,7 @@ SELECT pg_catalog.setval('basic_additionalcode_id_seq', 1, false);
 --
 
 COPY basic_address (id, company_id, addresstype, number, name, phone, email, website, street, house, flat, zipcode, city, state, country_id, contactperson, canbedeleted, active, externalnumber) FROM stdin;
-1	1	main	1-01	\N	+48 881 501 347	welcome@qcadoo.com	http://www.qcadoo.com/	Walerego Sławka	3A	\N	30-633	Kraków	małopolskie	167	\N	f	t	\N
+1	1	Principal	1-01	\N	+48 881 501 347	welcome@qcadoo.com	http://www.qcadoo.com/	Walerego Sławka	3A	\N	30-633	Kraków	małopolskie	167	\N	f	t	\N
 \.
 
 
@@ -33460,254 +33460,254 @@ SELECT pg_catalog.setval('basic_company_id_seq', 2, false);
 
 COPY basic_country (id, country, code, entityversion) FROM stdin;
 1	Afghanistan	AF	0
-2	Albania	AL	0
-3	Algeria	DZ	0
-4	Andorra	AD	0
+2	Albanie	AL	0
+3	Algérie	DZ	0
+4	Andorre	AD	0
 5	Angola	AO	0
 6	Anguilla	AI	0
-7	Antarctica	AQ	0
-8	Antigua and Barbuda	AG	0
-9	Saudi Arabia	SA	0
-10	Argentina	AR	0
-11	Armenia	AM	0
+7	Antarctique	AQ	0
+8	Antigua-et-Barbuda	AG	0
+9	Arabie Saoudite	SA	0
+10	Argentine	AR	0
+11	Arménie	AM	0
 12	Aruba	AW	0
-13	Australia	AU	0
-14	Austria	AT	0
-15	Azerbaijan	AZ	0
+13	Australie	AU	0
+14	Autriche	AT	0
+15	Azerbaïdjan	AZ	0
 16	Bahamas	BS	0
-17	Bahrain	BH	0
+17	Bahreïn	BH	0
 18	Bangladesh	BD	0
-19	Barbados	BB	0
-20	Belgium	BE	0
+19	Barbade	BB	0
+20	Belgique	BE	0
 21	Belize	BZ	0
-22	Benin	BJ	0
-23	Bermuda	BM	0
-24	Bhutan	BT	0
-25	Belarus	BY	0
-26	Bolivia, Plurinational State of	BO	0
-27	Bonaire, Sint Eustatius and Saba	BQ	0
-28	Bosnia and Herzegovina	BA	0
+22	Bénin	BJ	0
+23	Bermudes	BM	0
+24	Bhoutan	BT	0
+25	Biélorussie	BY	0
+26	Bolivie, État plurinational de	BO	0
+27	Bonaire, Sint Eustatius et Saba	BQ	0
+28	Bosnie-Herzégovine	BA	0
 29	Botswana	BW	0
-30	Brazil	BR	0
+30	Brésil	BR	0
 31	Brunei Darussalam	BN	0
-32	British Indian Ocean Territory	IO	0
-33	Virgin Islands, British	VG	0
-34	Bulgaria	BG	0
+32	Territoire britannique de l’océan Indien	IO	0
+33	Îles Vierges, Britanniques	VG	0
+34	Bulgarie	BG	0
 35	Burkina Faso	BF	0
 36	Burundi	BI	0
-37	Chile	CL	0
-38	China	CN	0
-39	Croatia	HR	0
-40	Curaçao	CW	0
-41	Cyprus	CY	0
-42	Chad	TD	0
-43	Montenegro	ME	0
-44	Czech Republic	CZ	0
-45	United States Minor Outlying Islands	UM	0
-46	Denmark	DK	0
-47	Congo, the Democratic Republic of the	CD	0
-48	Dominica	DM	0
-49	Dominican Republic	DO	0
+37	Chili	CL	0
+38	Chine	CN	0
+39	Croatie (Hrvatska)	HR	0
+40	Curaçao ( Curaçao )	CW	0
+41	Chypre	CY	0
+42	Tchad	TD	0
+43	Monténégro	ME	0
+44	République tchèque	CZ	0
+45	Îles mineures des États-Unis	UM	0
+46	Danemark	DK	0
+47	Congo, République démocratique du Congo	CD	0
+48	Dominique	DM	0
+49	République dominicaine	DO	0
 50	Djibouti	DJ	0
-51	Egypt	EG	0
-52	Ecuador	EC	0
-53	Eritrea	ER	0
-54	Estonia	EE	0
-55	Ethiopia	ET	0
-56	Falkland Islands (Malvinas)	FK	0
-57	Fiji	FJ	0
+51	Égypte	EG	0
+52	Équateur	EC	0
+53	Érythrée	ER	0
+54	Estonie	EE	0
+55	Ethiopie	ET	0
+56	Îles Falkland (Malvinas)	FK	0
+57	Fidji	FJ	0
 58	Philippines	PH	0
-59	Finland	FI	0
+59	Finlande	FI	0
 60	France	FR	0
-61	French Southern Territories	TF	0
+61	Français du Sud	TF	0
 62	Gabon	GA	0
-63	Gambia	GM	0
-64	South Georgia and the South Sandwich Islands	GS	0
+63	Gambie	GM	0
+64	Géorgie du Sud et îles Sandwich du Sud	GS	0
 65	Ghana	GH	0
 66	Gibraltar	GI	0
-67	Greece	EL	0
-68	Grenada	GD	0
-69	Greenland	GL	0
-70	Georgia	GE	0
+67	Grèce	EL	0
+68	Grenade	GD	0
+69	Groenland	GL	0
+70	Géorgie	GE	0
 71	Guam	GU	0
-72	Guernsey	GG	0
-73	French Guiana	GF	0
+72	Guernesey	GG	0
+73	Guyane	GF	0
 74	Guyana	GY	0
 75	Guadeloupe	GP	0
 76	Guatemala	GT	0
-77	Guinea-Bissau	GW	0
-78	Equatorial Guinea	GQ	0
-79	Guinea	GN	0
-80	Haiti	HT	0
-81	Spain	ES	0
-82	Netherlands	NL	0
+77	Guinée-Bissau	GW	0
+78	Guinée équatoriale	GQ	0
+79	Guinée	GN	0
+80	Haïti	HT	0
+81	Espagne	ES	0
+82	Pays-Bas	NL	0
 83	Honduras	HN	0
 84	Hong Kong	HK	0
-85	India	IN	0
-86	Indonesia	ID	0
-87	Iraq	IQ	0
-88	Iran, Islamic Republic of	IR	0
-89	Ireland	IE	0
-90	Iceland	IS	0
-91	Israel	IL	0
-92	Jamaica	JM	0
-93	Japan	JP	0
-94	Yemen	YE	0
+85	Inde	IN	0
+86	Indonésie	ID	0
+87	Irak	IQ	0
+88	Iran, République islamique de	IR	0
+89	Irlande	IE	0
+90	Islande	IS	0
+91	Israël	IL	0
+92	Jamaïque	JM	0
+93	Japon	JP	0
+94	Yémen	YE	0
 95	Jersey	JE	0
-96	Jordan	JO	0
-97	Cayman Islands	KY	0
-98	Cambodia	KH	0
-99	Cameroon	CM	0
+96	Jordanie	JO	0
+97	Îles Caïmans	KY	0
+98	Cambodge	KH	0
+99	Cameroun	CM	0
 100	Canada	CA	0
 101	Qatar	QA	0
 102	Kazakhstan	KZ	0
 103	Kenya	KE	0
-104	Kyrgyzstan	KG	0
+104	Kirghizistan	KG	0
 105	Kiribati	KI	0
-106	Colombia	CO	0
-107	Comoros	KM	0
+106	Colombie	CO	0
+107	Comores	KM	0
 108	Congo	CG	0
-109	Korea, Republic of	KR	0
-110	Korea, Democratic People's Republic of	KP	0
+109	Corée, République de	KR	0
+110	Corée, République populaire démocratique de	KP	0
 111	Costa Rica	CR	0
 112	Cuba	CU	0
-113	Kuwait	KW	0
-114	Lao People's Democratic Republic	LA	0
+113	Koweït	KW	0
+114	République démocratique populaire lao	LA	0
 115	Lesotho	LS	0
-116	Lebanon	LB	0
-117	Liberia	LR	0
-118	Libyan Arab Jamahiriya	LY	0
+116	Liban	LB	0
+117	Libéria	LR	0
+118	Jamahiriya arabe libyenne	LY	0
 119	Liechtenstein	LI	0
-120	Lithuania	LT	0
+120	Lituanie	LT	0
 121	Luxembourg	LU	0
-122	Latvia	LV	0
-123	Macedonia, the former Yugoslav Republic of	MK	0
+122	Lettonie	LV	0
+123	Macédoine, l’ex-République yougoslave de	MK	0
 124	Madagascar	MG	0
 125	Mayotte	YT	0
-126	Macao	MO	0
+126	Macao (Macao)	MO	0
 127	Malawi	MW	0
 128	Maldives	MV	0
-129	Malaysia	MY	0
+129	Malaisie	MY	0
 130	Mali	ML	0
-131	Malta	MT	0
-132	Northern Mariana Islands	MP	0
-133	Morocco	MA	0
+131	Malte	MT	0
+132	Îles Mariannes du Nord	MP	0
+133	Maroc	MA	0
 134	Martinique	MQ	0
-135	Mauritania	MR	0
-136	Mauritius	MU	0
-137	Mexico	MX	0
-138	Micronesia, Federated States of	FM	0
+135	Mauritanie	MR	0
+136	Maurice	MU	0
+137	Mexique	MX	0
+138	Micronésie, États fédérés de	FM	0
 139	Myanmar	MM	0
-140	Moldova, Republic of	MD	0
+140	Moldavie, République de	MD	0
 141	Monaco	MC	0
-142	Mongolia	MN	0
+142	Mongolie	MN	0
 143	Montserrat	MS	0
 144	Mozambique	MZ	0
-145	Namibia	NA	0
+145	Namibie	NA	0
 146	Nauru	NR	0
-147	Nepal	NP	0
-148	Germany	DE	0
+147	Népal	NP	0
+148	Allemagne	DE	0
 149	Niger	NE	0
 150	Nigeria	NG	0
 151	Nicaragua	NI	0
 152	Niue	NU	0
-153	Norfolk Island	NF	0
-154	Norway	NO	0
-155	New Caledonia	NC	0
-156	New Zealand	NZ	0
+153	Île Norfolk	NF	0
+154	Norvège	NO	0
+155	Nouvelle-calédonie	NC	0
+156	Nouvelle-Zélande	NZ	0
 157	Oman	OM	0
 158	Pakistan	PK	0
 159	Palau	PW	0
-160	Palestinian Territory, Occupied	PS	0
+160	Territoire palestinien occupé	PS	0
 161	Panama	PA	0
-162	Papua New Guinea	PG	0
+162	Papouasie-nouvelle-guinée	PG	0
 163	Paraguay	PY	0
-164	Peru	PE	0
+164	Pérou	PE	0
 165	Pitcairn	PN	0
-166	French Polynesia	PF	0
-167	Poland	PL	0
-168	Puerto Rico	PR	0
+166	Français Polynésie	PF	0
+167	Pologne	PL	0
+168	Porto Rico	PR	0
 169	Portugal	PT	0
-170	South Africa	ZA	0
-171	Central African Republic	CF	0
-172	Cape Verde	CV	0
+170	Afrique du Sud	ZA	0
+171	République centrafricaine	CF	0
+172	Cap-Vert	CV	0
 173	Réunion	RE	0
-174	Russian Federation	RU	0
-175	Romania	RO	0
+174	Fédération	RU	0
+175	Roumanie	RO	0
 176	Rwanda	RW	0
-177	Western Sahara	EH	0
-178	Saint Kitts and Nevis	KN	0
-179	Saint Lucia	LC	0
-180	Saint Vincent and the Grenadines	VC	0
+177	Sahara occidental	EH	0
+178	Saint Kitts-et-Nevis	KN	0
+179	Sainte-Lucie	LC	0
+180	Saint Vincent et les Grenadines	VC	0
 181	Saint Barthélemy	BL	0
-182	Saint Martin (French part)	MF	0
-183	Saint Pierre and Miquelon	PM	0
-184	El Salvador	SV	0
-185	American Samoa	AS	0
+182	Saint Martin (Français partie)	MF	0
+183	Saint Pierre et Miquelon	PM	0
+184	Salvador	SV	0
+185	Samoa américaines	AS	0
 186	Samoa	WS	0
-187	San Marino	SM	0
-188	Senegal	SN	0
-189	Serbia	RS	0
+187	Saint-Marin	SM	0
+188	Sénégal	SN	0
+189	Serbie	RS	0
 190	Seychelles	SC	0
 191	Sierra Leone	SL	0
-192	Singapore	SG	0
-193	Sint Maarten (Dutch part)	SX	0
-194	Slovakia	SK	0
-195	Slovenia	SI	0
-196	Somalia	SO	0
+192	Singapour	SG	0
+193	Sint Maarten (partie néerlandaise)	SX	0
+194	Slovaquie	SK	0
+195	Slovénie	SI	0
+196	Somalie	SO	0
 197	Sri Lanka	LK	0
-198	United States	US	0
+198	États-Unis	US	0
 199	Swaziland	SZ	0
-200	Sudan	SD	0
-201	South Sudan	SS	0
+200	Soudan	SD	0
+201	Soudan du Sud	SS	0
 202	Suriname	SR	0
-203	Svalbard and Jan Mayen	SJ	0
-204	Syrian Arab Republic	SY	0
-205	Switzerland	CH	0
-206	Sweden	SE	0
-207	Tajikistan	TJ	0
-208	Thailand	TH	0
-209	Taiwan, Province of China	TW	0
-210	Tanzania, United Republic of	TZ	0
+203	Svalbard et Jan Mayen	SJ	0
+204	République arabe syrienne	SY	0
+205	Suisse	CH	0
+206	Suède	SE	0
+207	Tadjikistan	TJ	0
+208	Thaïlande	TH	0
+209	Taiwan, Province de Chine	TW	0
+210	Tanzanie, République unie de	TZ	0
 211	Timor-Leste	TL	0
 212	Togo	TG	0
 213	Tokelau	TK	0
 214	Tonga	TO	0
-215	Trinidad and Tobago	TT	0
-216	Tunisia	TN	0
-217	Turkey	TR	0
-218	Turkmenistan	TM	0
-219	Turks and Caicos Islands	TC	0
+215	Trinité-et-Tobago	TT	0
+216	Tunisie	TN	0
+217	Turquie	TR	0
+218	Turkménistan	TM	0
+219	Îles Turques et Caïques	TC	0
 220	Tuvalu	TV	0
-221	Uganda	UG	0
+221	Ouganda	UG	0
 222	Ukraine	UA	0
 223	Uruguay	UY	0
-224	Uzbekistan	UZ	0
+224	Ouzbékistan	UZ	0
 225	Vanuatu	VU	0
-226	Wallis and Futuna	WF	0
-227	Holy See (Vatican City State)	VA	0
-228	Venezuela, Bolivarian Republic of	VE	0
-229	Hungary	HU	0
-230	United Kingdom	UK	0
-231	Viet Nam	VN	0
-232	Italy	IT	0
-233	Côte d'Ivoire	CI	0
-234	Bouvet Island	BV	0
-235	Christmas Island	CX	0
-236	Isle of Man	IM	0
-237	Saint Helena, Ascension and Tristan da Cunha	SH	0
-238	Aland Islands	AX	0
-239	Cook Islands	CK	0
-240	Virgin Islands, U.S.	VI	0
-241	Heard Island and McDonald Islands	HM	0
-242	Cocos (Keeling) Islands	CC	0
-243	Marshall Islands	MH	0
-244	Faroe Islands	FO	0
-245	Solomon Islands	SB	0
-246	Sao Tome and Principe	ST	0
-247	Zambia	ZM	0
+226	Wallis et Futuna	WF	0
+227	Saint-Siège (État de la Cité du Vatican)	VA	0
+228	Venezuela, République bolivarienne de	VE	0
+229	Hongrie	HU	0
+230	Royaume-Uni	UK	0
+231	Vietnam	VN	0
+232	Italie	IT	0
+233	Côte d’Ivoire	CI	0
+234	Île Bouvet	BV	0
+235	Île Christmas	CX	0
+236	Île de Man	IM	0
+237	Sainte-Hélène, Ascension et Tristan da Cunha	SH	0
+238	Îles Aland	AX	0
+239	Îles Cook	CK	0
+240	Îles Vierges, États-Unis d’État	VI	0
+241	Heard Island et McDonald Islands	HM	0
+242	Îles Cocos (Keeling)	CC	0
+243	Îles Marshall	MH	0
+244	Féroé (îles)	FO	0
+245	Salomon	SB	0
+246	Sao Tome et Principe	ST	0
+247	Zambie	ZM	0
 248	Zimbabwe	ZW	0
-249	United Arab Emirates	AE	0
+249	Émirats arabes unis	AE	0
 \.
 
 
@@ -33738,188 +33738,188 @@ SELECT pg_catalog.setval('basic_crew_id_seq', 1, false);
 --
 
 COPY basic_currency (id, currency, alphabeticcode, isocode, minorunit, exchangerate, entityversion) FROM stdin;
-17	Belarussian Ruble	BYR	974	0	1.00000	0
-20	Bermudian Dollar	BMD	60	2	1.00000	0
-22	Ngultrum	BTN	64	2	1.00000	0
-24	Mvdol	BOV	984	2	1.00000	0
-36	Cayman Islands Dollar	KYD	136	2	1.00000	0
-38	Unidades de fomento	CLF	990	0	1.00000	0
-41	Unidad de Valor Real	COU	970	2	1.00000	0
-47	Cuban Peso	CUP	192	2	1.00000	0
-48	Peso Convertible	CUC	931	2	1.00000	0
-58	Falkland Islands Pound	FKP	238	2	1.00000	0
-84	North Korean Won	KPW	408	2	1.00000	0
-89	Latvian Lats	LVL	428	2	1.00000	0
-96	Lithuanian Litas	LTL	440	2	1.00000	0
-27	Norwegian Krone	NOK	578	2	0.48960	0
-50	Czech Koruna	CZK	203	2	0.16130	0
-21	Indian Rupee	INR	356	2	0.06050	0
-51	Danish Krone	DKK	208	2	0.58610	0
-28	Brazilian Real	BRL	986	2	1.30240	0
-30	Bulgarian Lev	BGN	975	2	2.19980	0
-37	Chilean Peso	CLP	152	0	0.00630	0
-39	Yuan Renminbi	CNY	156	2	0.59020	0
-44	New Zealand Dollar	NZD	554	2	2.91130	0
-46	Croatian Kuna	HRK	191	2	0.57720	0
-66	Pound Sterling	GBP	826	2	5.13590	0
-72	Forint	HUF	348	2	0.01410	0
-75	SDR (Special Drawing Right)	XDR	960	0	5.55200	0
-71	Hong Kong Dollar	HKD	344	2	0.52220	0
-80	Yen	JPY	392	0	0.03610	0
-73	Iceland Krona	ISK	352	0	0.03600	0
-74	Rupiah	IDR	360	2	0.00030	0
-95	Swiss Franc	CHF	756	2	4.08710	0
-78	New Israeli Sheqel	ILS	376	2	1.08160	0
-92	Rand	ZAR	710	2	0.30660	0
-1	Afghani	AFN	971	2	0.06070	0
-3	Lek	ALL	8	2	0.03170	0
-4	Algerian Dinar	DZD	12	2	0.03680	0
-6	Kwanza	AOA	973	2	0.02440	0
-7	East Caribbean Dollar	XCD	951	2	1.49490	0
-8	Argentine Peso	ARS	32	2	0.25810	0
 9	Armenian Dram	AMD	51	2	0.00830	0
+1	Afghani	AFN	971	2	0.06070	0
+2	Euro	EUR	978	2	4.35830	0
+3	Lek	ALL	8	2	0.03170	0
+4	Dinar algérien	DZD	12	2	0.03680	0
+5	Dollar américain	USD	840	2	4.11130	0
+6	Kwanza	AOA	973	2	0.02440	0
+7	Dollar des Caraïbes orientales	XCD	951	2	1.49490	0
+8	Peso argentin	ARS	32	2	0.25810	0
 10	Aruban Florin	AWG	533	2	2.26040	0
-12	Azerbaijanian Manat	AZN	944	2	2.21680	0
-13	Bahamian Dollar	BSD	44	2	4.05210	0
-14	Bahraini Dinar	BHD	48	3	10.65420	0
+11	Dollar australien	AUD	36	2	3.14310	0
+12	Manat azerbaïdjanais	AZN	944	2	2.21680	0
+13	Dollar bahamien	BSD	44	2	4.05210	0
+14	Dinar bahreïni	BHD	48	3	10.65420	0
 15	Taka	BDT	50	2	0.05060	0
-16	Barbados Dollar	BBD	52	2	2.02080	0
+16	Dollar de la Barbade	BBD	52	2	2.02080	0
+17	Rouble biélorusse	BYR	974	0	1.00000	0
 18	Belize Dollar	BZD	84	2	2.01280	0
 19	CFA Franc BCEAO	XOF	952	0	0.00660	0
+20	Dollar bermudien	BMD	60	2	1.00000	0
+21	Roupie indienne	INR	356	2	0.06050	0
+22	Ngultrum	BTN	64	2	1.00000	0
 23	Boliviano	BOB	68	2	0.58380	0
-25	Convertible Mark	BAM	977	2	2.20510	0
+24	Mvdol (Mvdol)	BOV	984	2	1.00000	0
+25	Marque convertible	BAM	977	2	2.20510	0
 26	Pula	BWP	72	2	0.38390	0
+27	Couronne norvégienne	NOK	578	2	0.48960	0
+28	Real brésilien	BRL	986	2	1.30240	0
 29	Brunei Dollar	BND	96	2	2.85420	0
-31	Burundi Franc	BIF	108	0	0.00240	0
+30	Lev bulgare	BGN	975	2	2.19980	0
+31	Franc burundais	BIF	108	0	0.00240	0
 32	Riel	KHR	116	2	0.00100	0
-35	Cape Verde Escudo	CVE	132	2	0.03890	0
-40	Colombian Peso	COP	170	2	0.00140	0
-42	Comoro Franc	KMF	174	0	0.00880	0
-43	Congolese Franc	CDF	976	2	0.00320	0
-45	Costa Rican Colon	CRC	188	2	0.00730	0
-49	Netherlands Antillean Guilder	ANG	532	2	2.27290	0
-52	Djibouti Franc	DJF	262	0	0.02260	0
-53	Dominican Peso	DOP	214	2	0.08650	0
-54	Egyptian Pound	EGP	818	2	0.22030	0
+33	CFA Franc BEAC	XAF	950	0	0.00660	0
+34	Dollar canadien	CAD	124	2	3.14020	0
+35	Cap-Vert Escudo	CVE	132	2	0.03890	0
+36	Dollar îles Caïmans	KYD	136	2	1.00000	0
+37	Peso chilien	CLP	152	0	0.00630	0
+38	Unidades de fomento	CLF	990	0	1.00000	0
+39	Yuan Renminbi	CNY	156	2	0.59020	0
+40	Peso colombien	COP	170	2	0.00140	0
+41	Unidad de Valor Real	COU	970	2	1.00000	0
+42	Franc comore	KMF	174	0	0.00880	0
+43	Franc congolais	CDF	976	2	0.00320	0
+44	Dollar néo-zélandais	NZD	554	2	2.91130	0
+45	Colon costaricain	CRC	188	2	0.00730	0
+46	Kuna croate	HRK	191	2	0.57720	0
+47	Peso cubain	CUP	192	2	1.00000	0
+48	Peso Convertible	CUC	931	2	1.00000	0
+49	Guilder antillais des Pays-Bas	ANG	532	2	2.27290	0
+50	Koruna tchèque	CZK	203	2	0.16130	0
+51	Couronne danoise	DKK	208	2	0.58610	0
+52	Franc djiboutien	DJF	262	0	0.02260	0
+53	Peso dominicain	DOP	214	2	0.08650	0
+54	Livre égyptienne	EGP	818	2	0.22030	0
 55	El Salvador Colon	SVC	222	2	0.46360	0
 56	Nakfa	ERN	232	2	0.26040	0
-57	Ethiopian Birr	ETB	230	2	0.17880	0
-59	Fiji Dollar	FJD	242	2	1.97310	0
+57	Birr éthiopien	ETB	230	2	0.17880	0
+58	Livre des îles Falkland	FKP	238	2	1.00000	0
+59	Dollar fidjien	FJD	242	2	1.97310	0
 60	CFP Franc	XPF	953	0	0.03610	0
 61	Dalasi	GMD	270	2	0.09130	0
 62	Lari	GEL	981	2	1.52370	0
 63	Cedi	GHS	936	2	0.92050	0
-64	Gibraltar Pound	GIP	292	2	5.06430	0
+64	Livre de Gibraltar	GIP	292	2	5.06430	0
 65	Quetzal	GTQ	320	2	0.54380	0
-68	Guyana Dollar	GYD	328	2	0.01950	0
+66	Livre sterling	GBP	826	2	5.13590	0
+67	Franc guinéen	GNF	324	0	0.00040	0
+68	Dollar guyanais	GYD	328	2	0.01950	0
 69	Gourde	HTG	332	2	0.06050	0
 70	Lempira	HNL	340	2	0.17220	0
-76	Iranian Rial	IRR	364	2	0.00010	0
-77	Iraqi Dinar	IQD	368	3	0.00340	0
-79	Jamaican Dollar	JMD	388	2	0.03150	0
-81	Jordanian Dinar	JOD	400	3	5.70210	0
+71	Hong Kong Dollar	HKD	344	2	0.52220	0
+72	Forint	HUF	348	2	0.01410	0
+73	Couronne d’Islande	ISK	352	0	0.03600	0
+74	Rupiah	IDR	360	2	0.00030	0
+75	DTS (Droit de tirage spécial)	XDR	960	0	5.55200	0
+76	Rial iranien	IRR	364	2	0.00010	0
+77	Dinar irakien	IQD	368	3	0.00340	0
+78	Nouveau Sheqel israélien	ILS	376	2	1.08160	0
+79	Dollar jamaïcain	JMD	388	2	0.03150	0
+80	Yen	JPY	392	0	0.03610	0
+81	Dinar jordanien	JOD	400	3	5.70210	0
 82	Tenge	KZT	398	2	0.01250	0
 83	Kenyan Shilling	KES	404	2	0.03900	0
-86	Kuwaiti Dinar	KWD	414	3	13.24570	0
+84	Won nord-coréen	KPW	408	2	1.00000	0
+85	Won	KRW	410	0	0.00360	0
+86	Dinar koweïtien	KWD	414	3	13.24570	0
 87	Som	KGS	417	2	0.05830	0
 88	Kip	LAK	418	2	0.00050	0
-90	Lebanese Pound	LBP	422	2	0.00270	0
+89	Lats lettons	LVL	428	2	1.00000	0
+90	Livre libanaise	LBP	422	2	0.00270	0
 91	Loti	LSL	426	2	0.30080	0
-93	Liberian Dollar	LRD	430	2	0.04300	0
-94	Libyan Dinar	LYD	434	3	2.84240	0
+92	Rand	ZAR	710	2	0.30660	0
+93	Dollar libérien	LRD	430	2	0.04300	0
+94	Dinar libyen	LYD	434	3	2.84240	0
+95	Franc suisse	CHF	756	2	4.08710	0
+96	Lituanien Litas	LTL	440	2	1.00000	0
 97	Pataca	MOP	446	2	0.50630	0
 98	Denar	MKD	807	2	0.07000	0
-99	Malagasy Ariary	MGA	969	2	0.00130	0
+99	Ariary malgache	MGA	969	2	0.00130	0
 100	Kwacha	MWK	454	2	0.00560	0
-5	US Dollar	USD	840	2	4.11130	0
-105	ADB Unit of Account	XUA	965	0	1.00000	0
-107	Mexican Unidad de Inversion (UDI)	MXV	979	2	1.00000	0
-124	Zloty	PLN	985	2	1.00000	0
-129	Saint Helena Pound	SHP	654	2	1.00000	0
-137	Sucre	XSU	994	0	1.00000	0
-140	South Sudanese Pound	SSP	728	2	1.00000	0
-146	WIR Euro	CHE	947	2	1.00000	0
-147	WIR Franc	CHW	948	2	1.00000	0
-157	New Manat	TMT	934	2	1.00000	0
-161	US Dollar (Next day)	USN	997	2	1.00000	0
-162	US Dollar (Same day)	USS	998	2	1.00000	0
-164	Uruguay Peso en Unidades Indexadas (URUIURUI)	UYI	940	0	1.00000	0
-170	Zambian Kwacha	ZMK	894	2	1.00000	0
-171	Zimbabwe Dollar	ZWL	932	2	1.00000	0
-172	Bond Markets Unit European Composite Unit (EURCO)	XBA	955	0	1.00000	0
-173	Bond Markets Unit European Monetary Unit (E.M.U.-6)	XBB	956	0	1.00000	0
-174	Bond Markets Unit European Unit of Account 9 (E.U.A.-9)	XBC	957	0	1.00000	0
-175	Bond Markets Unit European Unit of Account 17 (E.U.A.-17)	XBD	958	0	1.00000	0
-176	UIC-Franc	XFU	0	0	1.00000	0
-177	Codes specifically reserved for testing purposes	XTS	963	0	1.00000	0
-178	Gold	XAU	959	0	1.00000	0
-179	Palladium	XPD	964	0	1.00000	0
-180	Platinum	XPT	962	0	1.00000	0
-181	Silver	XAG	961	0	1.00000	0
-182	The codes assigned for transactions where no currency is involved	XXX	999	0	1.00000	0
-85	Won	KRW	410	0	0.00360	0
-101	Malaysian Ringgit	MYR	458	2	0.91070	0
-106	Mexican Peso	MXN	484	2	0.20020	0
-123	Philippine Peso	PHP	608	2	0.08130	0
-126	Leu	RON	946	2	0.95530	0
-127	Russian Ruble	RUB	643	2	0.07030	0
-136	Singapore Dollar	SGD	702	2	2.85820	0
-152	Baht	THB	764	2	0.11590	0
-156	Turkish Lira	TRY	949	2	1.11020	0
-159	Hryvnia	UAH	980	2	0.14910	0
-33	CFA Franc BEAC	XAF	950	0	0.00660	0
-67	Guinea Franc	GNF	324	0	0.00040	0
+101	Ringgit malaisien	MYR	458	2	0.91070	0
 102	Rufiyaa	MVR	462	2	0.26270	0
-103	Ouguiya	MRO	478	2	0.01130	0
-104	Mauritius Rupee	MUR	480	2	0.11400	0
-108	Moldovan Leu	MDL	498	2	0.20280	0
+103	Ouguija	MRO	478	2	0.01130	0
+104	Roupie mauricienne	MUR	480	2	0.11400	0
+105	Unité de compte de la BAD	XUA	965	0	1.00000	0
+106	Peso mexicain	MXN	484	2	0.20020	0
+107	Unidad d’Inversion mexicaine (UDI)	MXV	979	2	1.00000	0
+108	Leu moldave	MDL	498	2	0.20280	0
 109	Tugrik	MNT	496	2	0.00160	0
-110	Moroccan Dirham	MAD	504	2	0.40340	0
+110	Dirham marocain	MAD	504	2	0.40340	0
 111	Metical	MZN	943	2	0.05770	0
 112	Kyat	MMK	104	2	0.00300	0
-113	Namibia Dollar	NAD	516	2	0.30070	0
-114	Nepalese Rupee	NPR	524	2	0.03760	0
-115	Cordoba Oro	NIO	558	2	0.13720	0
+113	Dollar namibien	NAD	516	2	0.30070	0
+114	Roupie népalaise	NPR	524	2	0.03760	0
+115	Oro Cordoue	NIO	558	2	0.13720	0
 116	Naira	NGN	566	2	0.01290	0
-117	Rial Omani	OMR	512	3	10.43250	0
-118	Pakistan Rupee	PKR	586	2	0.03860	0
+117	Rial Oman	OMR	512	3	10.43250	0
+118	Roupie du Pakistan	PKR	586	2	0.03860	0
 119	Balboa	PAB	590	2	4.05210	0
 120	Kina	PGK	598	2	1.28700	0
 121	Guarani	PYG	600	0	0.00070	0
 122	Nuevo Sol	PEN	604	2	1.22780	0
-125	Qatari Rial	QAR	634	2	1.11300	0
-128	Rwanda Franc	RWF	646	0	0.00480	0
+123	Peso philippin	PHP	608	2	0.08130	0
+124	Zloty	PLN	985	2	1.00000	0
+125	Riyal qatarien	QAR	634	2	1.11300	0
+126	Leu	RON	946	2	0.95530	0
+127	Rouble russe	RUB	643	2	0.07030	0
+128	Franc rwandais	RWF	646	0	0.00480	0
+129	Sainte-Hélène Pound	SHP	654	2	1.00000	0
 130	Tala	WST	882	2	1.62140	0
 131	Dobra	STD	678	2	0.00020	0
-132	Saudi Riyal	SAR	682	2	1.07950	0
-133	Serbian Dinar	RSD	941	2	0.03480	0
-134	Seychelles Rupee	SCR	690	2	0.29970	0
+132	Riyal saoudien	SAR	682	2	1.07950	0
+133	Dinar serbe	RSD	941	2	0.03480	0
+134	Roupie des Seychelles	SCR	690	2	0.29970	0
 135	Leone	SLL	694	2	0.00050	0
-138	Solomon Islands Dollar	SBD	90	2	0.51840	0
-139	Somali Shilling	SOS	706	2	0.00700	0
-141	Sri Lanka Rupee	LKR	144	2	0.02680	0
-142	Sudanese Pound	SDG	938	2	0.63010	0
+136	Dollar de Singapour	SGD	702	2	2.85820	0
+137	Sucre	XSU	994	0	1.00000	0
+138	Dollar des Îles Salomon	SBD	90	2	0.51840	0
+139	Shilling somalien	SOS	706	2	0.00700	0
+140	Livre sud-soudanaise	SSP	728	2	1.00000	0
+141	Roupie du Sri Lanka	LKR	144	2	0.02680	0
+142	Livre soudanaise	SDG	938	2	0.63010	0
 143	Surinam Dollar	SRD	968	2	0.53750	0
 144	Lilangeni	SZL	748	2	0.30080	0
-148	Syrian Pound	SYP	760	2	0.00790	0
-149	New Taiwan Dollar	TWD	901	2	0.13020	0
+145	Couronne suédoise	SEK	752	2	0.46020	0
+146	WIR Euro	CHE	947	2	1.00000	0
+147	WIR Franc	CHW	948	2	1.00000	0
+148	Livre syrienne	SYP	760	2	0.00790	0
+149	Nouveau dollar taïwanais	TWD	901	2	0.13020	0
 150	Somoni	TJS	972	2	0.51040	0
-151	Tanzanian Shilling	TZS	834	2	0.00180	0
+151	Shilling tanzanien	TZS	834	2	0.00180	0
+152	Baht	THB	764	2	0.11590	0
 153	Pa’anga	TOP	776	2	1.86700	0
-154	Trinidad and Tobago Dollar	TTD	780	2	0.60120	0
-155	Tunisian Dinar	TND	788	3	1.77290	0
-158	Uganda Shilling	UGX	800	2	0.00110	0
-160	UAE Dirham	AED	784	2	1.10140	0
+154	Dollar de Trinité-et-Tobago	TTD	780	2	0.60120	0
+155	Dinar tunisien	TND	788	3	1.77290	0
+156	Turque	TRY	949	2	1.11020	0
+157	Nouveau Manat	TMT	934	2	1.00000	0
+158	Shilling ougandais	UGX	800	2	0.00110	0
+159	Hryvnia	UAH	980	2	0.14910	0
+160	Émirats Arabes Unis Dirham	AED	784	2	1.10140	0
+161	Dollar américain (le lendemain)	USN	997	2	1.00000	0
+162	Dollar américain (le même jour)	USS	998	2	1.00000	0
 163	Peso Uruguayo	UYU	858	2	0.14250	0
-165	Uzbekistan Sum	UZS	860	2	0.00120	0
+164	Uruguay Peso en Unidades Indexadas (URUIURUI)	UYI	940	0	1.00000	0
+165	Sum de l’Ouzbék	UZS	860	2	0.00120	0
 166	Vatu	VUV	548	0	0.03710	0
 167	Bolivar Fuerte	VEF	937	2	0.40510	0
 168	Dong	VND	704	0	0.00020	0
-169	Yemeni Rial	YER	886	2	0.01620	0
-2	Euro	EUR	978	2	4.35830	0
-11	Australian Dollar	AUD	36	2	3.14310	0
-34	Canadian Dollar	CAD	124	2	3.14020	0
-145	Swedish Krona	SEK	752	2	0.46020	0
+169	Rial yéménite	YER	886	2	0.01620	0
+170	Kwacha zambien	ZMK	894	2	1.00000	0
+171	Zimbabwe Dollar	ZWL	932	2	1.00000	0
+172	Unité composite européenne des marchés obligataires (EURCO)	XBA	955	0	1.00000	0
+173	Unité monétaire européenne de l’Unité des marchés obligataires (E.M.U.-6)	XBB	956	0	1.00000	0
+174	Unité des marchés obligataires Unité européenne du compte 9 (E.U.A.-9)	XBC	957	0	1.00000	0
+175	Unité des marchés obligataires Unité européenne du compte 17 (E.U.A.-17)	XBD	958	0	1.00000	0
+176	UIC-Franc	XFU	0	0	1.00000	0
+177	Codes spécifiquement réservés aux tests	XTS	963	0	1.00000	0
+178	Gold	XAU	959	0	1.00000	0
+179	Palladium	XPD	964	0	1.00000	0
+180	Platinum	XPT	962	0	1.00000	0
+181	Argent	XAG	961	0	1.00000	0
+182	Les codes attribués pour les transactions où aucune devise n’est impliquée	XXX	999	0	1.00000	0
 \.
 
 
@@ -33991,7 +33991,7 @@ SELECT pg_catalog.setval('basic_factory_id_seq', 1, false);
 --
 
 COPY basic_faulttype (id, name, appliesto, entityversion, isdefault, active) FROM stdin;
-1	Other	\N	0	t	t
+1	Autres	\N	0	t	t
 \.
 
 
@@ -34127,7 +34127,7 @@ SELECT pg_catalog.setval('basic_palletnumberhelper_id_seq', 1, false);
 --
 
 COPY basic_parameter (id, country_id, currency_id, unit, additionaltextinfooter, company_id, registerproductiontime, reasonneededwhendelayedeffectivedatefrom, earliereffectivedatetotime, reasonneededwhencorrectingtherequestedvolume, reasonneededwhencorrectingdateto, reasonneededwhenchangingstatetodeclined, imageurlinworkplan, hidedescriptioninworkplans, defaultproductionline_id, reasonneededwhenearliereffectivedateto, earliereffectivedatefromtime, defaultaddress, allowquantitychangeinacceptedorder, reasonneededwhendelayedeffectivedateto, justone, registerquantityinproduct, reasonneededwhenchangingstatetointerrupted, registerquantityoutproduct, dontprintordersinworkplans, location_id, typeofproductionrecording, dontprintinputproductsinworkplans, delayedeffectivedatefromtime, registerpiecework, hideemptycolumnsfororders, reasonneededwhenchangingstatetoabandoned, autocloseorder, allowtoclose, dontprintoutputproductsinworkplans, inputproductsrequiredfortype, otheraddress, reasonneededwhenearliereffectivedatefrom, defaultdescription, delayedeffectivedatetotime, hidetechnologyandorderinworkplans, reasonneededwhencorrectingdatefrom, ssccnumberprefix, lowerlimit, negativetrend, upperlimit, positivetrend, dueweight, printoperationatfirstpageinworkplans, averagelaborhourlycostpb, materialcostsusedpb, additionaloverheadpb, materialcostmarginpb, includetpzpb, productioncostmarginpb, averagemachinehourlycostpb, includeadditionaltimepb, batchnumberuniqueness, defaultcoveragefromdays, includedraftdeliveries, coveragetype, hideemptycolumnsforoffers, hideemptycolumnsforrequests, validateproductionrecordtimes, workstationsquantityfromproductionline, allowtechnologytreechangeinpendingorder, lockproductionprogress, hidebarcodeoperationcomponentinworkplans, ignoremissingcomponents, additionaloutputrows, additionalinputrows, allowmultipleregisteringtimeforworker, pricebasedon, takeactualprogressinworkplans, confectionplanrequirereasontypethreshold, confectionplancorrectionreasontype, autogeneratesuborders, automaticsavecoverage, externaldeliveriesextension, warehouse_id, documentstate, positivepurchaseprice, sameordernumber, automaticdeliveriesminstate, possibleworktimedeviation, ordersincludeperiod, includerequirements, entityversion, labelsbtpath, profitpb, registrationpriceoverheadpb, sourceofoperationcostspb, acceptanceevents, useblackbox, generatewarehouseissuestoorders, daysbeforeorderstart, issuelocation_id, consumptionofrawmaterialsbasedonstandards, documentpositionparameters_id, includecomponents, warehouseissuesreservestates, drawndocuments, generatewarehouseissuestodeliveries, issuedquantityuptoneed, documentsstatus, warehouseissueproductssource, productstoissue, trackingcorrectionrecalculatepps, deliveredbiggerthanordered, ordersganttparameters_id, additionalimage, esilcointegrationdir, autorecalculateorder, ppsisautomatic, ppsproducedamountrecalculateplan, ppsalgorithm, baselinkerparameters_id, technologiesgeneratorcopyproductsize, cartonlabelsbtpath, esilcodispositionshiftlocation_id, maxproductsquantity, allowerrorsinmasterorderpositions, companyname_id, hideassignedstaff, fillorderdescriptionbasedontechnologydescription, allowanomalycreationonacceptancerecord, esilcoaccountwithreservationlocation_id, includelevelandsuffix, orderedproductsunit, allowincompleteunits, acceptrecordsfromterminal, allowchangestousedquantityonterminal, includeadditionaltimeps, includetpzps, ordersgenerationnotcompletedates, canchangeprodlineforacceptedorders, generateeachonseparatepage, includewagegroups, ordersgeneratedbycoverage, automaticallygenerateordersforcomponents, seteffectivedatefromoninprogress, seteffectivedatetooncompleted, copydescription, exporttopdfonlyvisiblecolumns, additionalcartonlabelsquantity, maxcartonlabelsquantity, exporttocsvonlyvisiblecolumns, flagpercentageofexecutionwithcolor, opertaskflagpercentexecutionwithcolor, automaticclosingoforderwithingroups, copynotesfrommasterorderposition, manuallysendwarehousedocuments, realizationfromstock, alwaysorderitemswithpersonalization, selectorder, availabilityofrawmaterials, selectoperationaltask, stoppages, repair, employeeprogress, includeunacceptableproduction, calculateamounttimeemployeesonacceptancerecord, notshowtasksdownloadedbyanotheremployee, createcollectiveorders, completemasterorderafterorderingpositions, hideorderedproductworkplan, selectiontasksbyorderdateinterminal, showprogress, showdelays, requiresupplieridentification, numberpattern_id, generatebatchfororderedproduct, generatebatchoforderedproduct, acceptbatchtrackingwhenclosingorder, completewarehousesflowwhilechecking, qualitycontrol, finalqualitycontrolwithoutresources, terminalproductattribute_id, oeefor, oeeworktimefrom, range, division_id, showqronordersgrouppdf, advisestartdateoftheorder, orderstartdatebasedon, showchartondashboard, whattoshowondashboard, dashboardoperation_id, dashboardcomponentslocation_id, dashboardproductsinputlocation_id, momentofvalidation, moveproductstosubsequentoperations, demandcausesofwastes, wmsapk, wmsversion, applicationconfigured, materialcostsused, usenominalcostpricenotspecified, sourceofoperationcosts, standardlaborcost_id, averagemachinehourlycost, averagelaborhourlycost, includetpz, includeadditionaltime, materialcostmargin, productioncostmargin, additionaloverhead, registrationpriceoverhead, profit, applicationconfigurationfinished, coveragebasedonproductioncounting, generatepacksfororders, includepacksgeneratingprocessesfororder, optimalpacksize, restfeedinglastpack, deliveryusenominalcostwhenpricenotspecified, deliverypricefillbasedon, allowcheckedtechnologywithoutinproducts, requireassortment, changeorderdatesbasedonchangegroupdates, acceptedtechnologymarkedasdefault, terminalscanning, processsource, showproductdescriptiononordersgrouppdf, attributeonordersgrouppdf_id, copyattributestosizeproducts, materialcostsusedmc, usenominalcostpricenotspecifiedmc, productattribute_id, materialattribute_id, attributeonthelabel_id, createdocumentsforproductionregistration, allowcreationdocumentsforordergroups, requiretypeoffault, workingstationinputtype) FROM stdin;
-1	\N	5	pc	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	\N	f	01globally	14	f	\N	f	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	f	\N	\N	\N	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	f	01accepted	01order	01allInputProducts	f	t	\N	\N	\N	f	f	f	\N	\N	\N	\N	\N	150	\N	\N	f	t	f	\N	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	t	f	\N	\N	f	01nominal	f	01technologyOperation	\N	\N	\N	f	f	0.00000	0.00000	0.00000	0.00000	0.00000	f	f	f	f	\N	\N	f	01lastPurchasePrice	f	f	f	f	01operationNumber	01orderPackages	f	\N	f	01nominal	f	\N	\N	\N	t	f	f	01scanTheNumber
+1	\N	2	Pc	\N	1	t	f	0	f	f	f	\N	f	1	f	0	\N	t	f	f	t	f	t	f	\N	02cumulated	f	0	f	f	f	f	f	f	01startOrder	\N	f	\N	0	f	f	0005900125	\N	\N	\N	\N	\N	f	\N	06costForOrder	\N	\N	f	\N	\N	f	01globally	14	f	\N	f	f	f	f	f	f	f	t	\N	\N	f	01nominalProductCost	f	\N	\N	f	f	\N	\N	\N	f	f	f	\N	\N	f	0	\N	\N	\N	02parameters	f	\N	f	\N	\N	t	1	f	f	01transfer	f	f	01accepted	01order	01allInputProducts	f	t	\N	\N	\N	f	f	f	\N	\N	\N	\N	\N	150	\N	\N	f	t	f	\N	t	\N	f	f	t	f	f	f	t	f	f	f	f	f	f	t	f	50	3000	f	t	t	f	f	f	f	f	t	f	t	t	t	f	t	f	f	f	f	f	f	f	f	f	\N	\N	f	f	t	t	f	\N	01productionLine	01staffWorkTimes	01oneDivision	\N	f	t	03endDateLastOrderOnTheLine	t	01orders	\N	\N	\N	01orderAcceptance	t	f	\N	\N	f	01nominal	f	01technologyOperation	\N	\N	\N	f	f	0.00000	0.00000	0.00000	0.00000	0.00000	f	f	f	f	\N	\N	f	01lastPurchasePrice	f	f	f	f	01operationNumber	01orderPackages	f	\N	f	01nominal	f	\N	\N	\N	t	f	f	01scanTheNumber
 \.
 
 
@@ -34598,7 +34598,7 @@ SELECT pg_catalog.setval('cdnrcgoodfood_highestmasterordernum_id_seq', 1, false)
 --
 
 COPY cmmsmachineparts_action (id, name, appliesto, entityversion, isdefault) FROM stdin;
-1	Other	\N	0	t
+1	Autres	\N	0	t
 \.
 
 
@@ -39513,7 +39513,7 @@ SELECT pg_catalog.setval('productionlines_factorystructureelement_id_seq', 1, fa
 --
 
 COPY productionlines_productionline (id, number, name, division_id, place, description, supportsalltechnologies, documentation, supportsothertechnologiesworkstationtypes, quantityforotherworkstationtypes, active, eurocodsymbol, availabilityindicator, production, entityversion, placeinscada) FROM stdin;
-1	Line	Main line	\N	\N	\N	t	\N	t	1	t	\N	\N	t	0	\N
+1	Ligne	Ligne principale	\N	\N	\N	t	\N	t	1	t	\N	\N	t	0	\N
 \.
 
 
@@ -39728,47 +39728,47 @@ SELECT pg_catalog.setval('qcadoomodel_dictionary_id_seq', 22, true);
 --
 
 COPY qcadoomodel_dictionaryitem (id, name, externalnumber, description, technicalcode, dictionary_id, active, entityversion, isinteger) FROM stdin;
-1	EPAL	\N	\N	01epal	5	t	0	f
-2	CHEAP EUR	\N	\N	02cheapEur	5	t	0	f
-3	main	\N	\N	01main	4	t	0	f
-4	white	\N	#ffffff	01white	2	t	0	f
-5	grey	\N	#bfbfbf	02grey	2	t	0	f
-6	yellow	\N	#ffff99	03yellow	2	t	0	f
-7	orange	\N	#ff944d	04orange	2	t	0	f
-8	red	\N	#ff6666	05red	2	t	0	f
-9	green	\N	#85e085	06green	2	t	0	f
-10	blue	\N	#66a3ff	07blue	2	t	0	f
-11	Work on line	\N	\N	01workOnLine	17	t	0	f
-12	Sick leave	\N	\N	\N	17	t	0	f
-13	Other tasks	\N	\N	02otherCase	17	t	0	f
-14	mm	\N	Millimeter	\N	1	t	0	f
-15	cm	\N	Centimeter	\N	1	t	0	f
-16	dm	\N	Decimeter	\N	1	t	0	f
-17	m	\N	Meter	\N	1	t	0	f
-18	cm2	\N	Cubic centimeter	\N	1	t	0	f
-19	m2	\N	Square meter	\N	1	t	0	f
-20	dam	\N	Cubic decimeter	\N	1	t	0	f
-21	m3	\N	Cubic meter	\N	1	t	0	f
-22	g	\N	Gram	\N	1	t	0	f
-23	kg	\N	Kilogram	\N	1	t	0	f
-24	l	\N	Liter	\N	1	t	0	f
-25	hl	\N	Hectoliter	\N	1	t	0	f
-26	pc	\N	Piece	\N	1	t	0	f
-27	pair	\N	Pair	\N	1	t	0	f
-28	set	\N	Set	\N	1	t	0	f
-29	Employee absence	\N	\N	\N	7	t	0	f
-30	Delays in materials delivery	\N	\N	\N	7	t	0	f
-31	Faulty materials	\N	\N	\N	7	t	0	f
-32	Production resources overload	\N	\N	\N	7	t	0	f
-33	Machine malfunction	\N	\N	\N	7	t	0	f
-34	Other	\N	\N	\N	7	t	0	f
-35	drukarka uniwersalna	\N	\N	01universalPrinter	\N	t	0	f
-36	drukarka do wszystkiego	\N	\N	02allPrinter	\N	t	0	f
-37	drukarka do etykiet kartonowych	\N	\N	03cartonLabelsPrinter	\N	t	0	f
-38	drukarka do etykiet paletowych	\N	\N	04palletLabelsPrinter	\N	t	0	f
-39	drukarka do stickerów	\N	\N	05stickerPrinter	\N	t	0	f
-40	nowa	\N	\N	01new	15	t	0	f
-41	zlecona	\N	\N	02ordered	15	t	0	f
+1	Epal\n	\N	\N	01epal	5	t	0	f
+2	EUR BON MARCHÉ	\N	\N	02cheapEur	5	t	0	f
+3	Principal	\N	\N	01main	4	t	0	f
+4	Blanc	\N	#ffffff	01white	2	t	0	f
+5	Gris	\N	#bfbfbf	02grey	2	t	0	f
+6	Jaune	\N	#ffff99	03yellow	2	t	0	f
+7	Orange	\N	#ff944d	04orange	2	t	0	f
+8	Rouge	\N	#ff6666	05red	2	t	0	f
+9	Vert	\N	#85e085	06green	2	t	0	f
+10	Bleu	\N	#66a3ff	07blue	2	t	0	f
+11	Travailler en ligne	\N	\N	01workOnLine	17	t	0	f
+12	Congé de maladie	\N	\N	\N	17	t	0	f
+13	Autres tâches	\N	\N	02otherCase	17	t	0	f
+14	mm	\N	Millimètre	\N	1	t	0	f
+15	Cm	\N	Centimètre	\N	1	t	0	f
+16	Dm	\N	Décimètre	\N	1	t	0	f
+17	M	\N	Compteur	\N	1	t	0	f
+18	cm2	\N	Centimètre carré	\N	1	t	0	f
+19	m2 (en)	\N	Mètre carré	\N	1	t	0	f
+20	dam	\N	Décamètre	\N	1	t	0	f
+21	m3	\N	Mètre cube	\N	1	t	0	f
+22	G	\N	Gramme	\N	1	t	0	f
+23	Kg	\N	Kilogramme	\N	1	t	0	f
+24	L	\N	Litre	\N	1	t	0	f
+25	Hl	\N	Hectoliter	\N	1	t	0	f
+26	Pc	\N	Piéce	\N	1	t	0	f
+27	Paire	\N	Paire	\N	1	t	0	f
+28	Ensemble	\N	Ensemble	\N	1	t	0	f
+29	Absence des employés	\N	\N	\N	7	t	0	f
+30	Retards dans la livraison des matériaux	\N	\N	\N	7	t	0	f
+31	Matériaux défectueux	\N	\N	\N	7	t	0	f
+32	Surcharge des ressources de production	\N	\N	\N	7	t	0	f
+33	Dysfonctionnement de la machine	\N	\N	\N	7	t	0	f
+34	Autres	\N	\N	\N	7	t	0	f
+35	imprimante universelle	\N	\N	01universalPrinter	\N	t	0	f
+36	une imprimante pour tout	\N	\N	02allPrinter	\N	t	0	f
+37	imprimante d'étiquettes en carton	\N	\N	03cartonLabelsPrinter	\N	t	0	f
+38	imprimante d'étiquettes de palette	\N	\N	04palletLabelsPrinter	\N	t	0	f
+39	imprimante d'autocollants	\N	\N	05stickerPrinter	\N	t	0	f
+40	Nouveau	\N	\N	01new	15	t	0	f
+41	Commandé	\N	\N	02ordered	15	t	0	f
 \.
 
 
@@ -39800,15 +39800,15 @@ SELECT pg_catalog.setval('qcadoomodel_globalunitconversionsaggregate_id_seq', 2,
 --
 
 COPY qcadoomodel_unitconversionitem (id, quantityfrom, quantityto, unitfrom, unitto, globalunitconversionsaggregate_id, product_id, entityversion) FROM stdin;
-1	1.00000	100.00000	m	cm	1	\N	0
-2	1.00000	10.00000	dm	cm	1	\N	0
-3	1.00000	10.00000	cm	mm	1	\N	0
-4	1.00000	10000.00000	m2	cm2	1	\N	0
 5	1.00000	1000.00000	m3	dam	1	\N	0
-6	1.00000	1000.00000	kg	g	1	\N	0
-7	1.00000	1.00000	l	dam	1	\N	0
-8	1.00000	100.00000	hl	l	1	\N	0
-9	1.00000	2.00000	pair	pc	1	\N	0
+1	1.00000	100.00000	M	Cm	1	\N	0
+2	1.00000	10.00000	Dm	Cm	1	\N	0
+3	1.00000	10.00000	Cm	mm	1	\N	0
+4	1.00000	10000.00000	m2 (en)	cm2	1	\N	0
+6	1.00000	1000.00000	Kg	G	1	\N	0
+7	1.00000	1.00000	L	dam	1	\N	0
+8	1.00000	100.00000	Hl	L	1	\N	0
+9	1.00000	2.00000	Paire	Pc	1	\N	0
 \.
 
 
@@ -40924,7 +40924,7 @@ SELECT pg_catalog.setval('stoppage_stoppagedto_id_seq', 1, false);
 --
 
 COPY stoppage_stoppagereason (id, name, description) FROM stdin;
-1	Other	\N
+1	Autres	\N
 \.
 
 
