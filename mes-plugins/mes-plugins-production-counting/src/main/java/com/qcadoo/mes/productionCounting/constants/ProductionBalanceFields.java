@@ -35,6 +35,8 @@ public final class ProductionBalanceFields {
 
     public static final String REGISTRATION_PRICE_OVERHEAD = "registrationPriceOverhead";
 
+    public static final String TECHNICAL_PRODUCTION_COST_OVERHEAD = "technicalProductionCostOverhead";
+
     public static final String MATERIAL_COSTS_USED = "materialCostsUsed";
 
     public static final String PRODUCTION_COST_MARGIN = "productionCostMargin";

@@ -251,10 +251,11 @@
                                reference="overheadsBorderLayout">
                         <option type="label" value="overheads"/>
                         <component type="gridLayout" name="overheadsGridLayout"
-                                   reference="overheadsGridLayout" columns="4" rows="5" hasBorders="false">
+                                   reference="overheadsGridLayout" columns="4" rows="6" hasBorders="false">
                             <layoutElement column="1" row="1" width="3">
                                 <component type="input" name="materialCostMargin"
-                                           field="#{form}.materialCostMargin" reference="materialCostMargin">
+                                           field="#{form}.materialCostMargin" reference="materialCostMargin"
+                                           hasDescription="true">
                                     <option type="labelWidth" value="60"/>
                                     <option type="alignment" value="right"/>
                                 </component>
@@ -268,7 +269,8 @@
                             </layoutElement>
                             <layoutElement column="1" row="2" width="3">
                                 <component type="input" name="productionCostMargin"
-                                           field="#{form}.productionCostMargin" reference="productionCostMargin">
+                                           field="#{form}.productionCostMargin" reference="productionCostMargin"
+                                           hasDescription="true">
                                     <option type="labelWidth" value="60"/>
                                     <option type="alignment" value="right"/>
                                 </component>
@@ -282,7 +284,8 @@
                             </layoutElement>
                             <layoutElement column="1" row="3" width="3">
                                 <component type="input" name="additionalOverhead"
-                                           field="#{form}.additionalOverhead" reference="additionalOverhead">
+                                           field="#{form}.additionalOverhead" reference="additionalOverhead"
+                                           hasDescription="true">
                                     <option type="labelWidth" value="60"/>
                                     <option type="alignment" value="right"/>
                                 </component>
@@ -297,7 +300,8 @@
                             <layoutElement column="1" row="4" width="3">
                                 <component type="input" name="registrationPriceOverhead"
                                            field="#{form}.registrationPriceOverhead"
-                                           reference="registrationPriceOverhead">
+                                           reference="registrationPriceOverhead"
+                                           hasDescription="true">
                                     <option type="labelWidth" value="60"/>
                                     <option type="alignment" value="right"/>
                                 </component>
@@ -310,13 +314,30 @@
                                 </component>
                             </layoutElement>
                             <layoutElement column="1" row="5" width="3">
-                                <component type="input" name="profit"
-                                           field="#{form}.profit" reference="profit">
+                                <component type="input" name="technicalProductionCostOverhead"
+                                           field="#{form}.technicalProductionCostOverhead"
+                                           reference="technicalProductionCostOverhead"
+                                           hasDescription="true">
                                     <option type="labelWidth" value="60"/>
                                     <option type="alignment" value="right"/>
                                 </component>
                             </layoutElement>
                             <layoutElement column="4" row="5">
+                                <component type="input" name="technicalProductionCostOverheadProc"
+                                           defaultEnabled="false" hasLabel="false"
+                                           reference="technicalProductionCostOverheadProc">
+                                    <option type="textRepresentationOnDisabled" value="true"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="6" width="3">
+                                <component type="input" name="profit"
+                                           field="#{form}.profit" reference="profit"
+                                           hasDescription="true">
+                                    <option type="labelWidth" value="60"/>
+                                    <option type="alignment" value="right"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="4" row="6">
                                 <component type="input" name="profitProc"
                                            defaultEnabled="false" hasLabel="false" reference="profitProc">
                                     <option type="textRepresentationOnDisabled" value="true"/>
@@ -342,13 +363,14 @@
                         <option type="column" name="totalCost" fields="totalCost" />
                         <option type="column" name="registrationPrice" fields="registrationPrice" />
                         <option type="column" name="technicalProductionCost" fields="technicalProductionCost" />
+                        <option type="column" name="totalManufacturingCost" fields="totalManufacturingCost" />
                         <option type="column" name="sellingPrice" fields="sellingPrice" />
                         <option type="column" name="noMaterialPrice" fields="noMaterialPrice" />
 
                         <option type="searchable" value="productNumber,technologyNumber,materialCosts,labourCost,
-                            productionCosts,totalCost,registrationPrice,technicalProductionCost,sellingPrice,noMaterialPrice"/>
+                            productionCosts,totalCost,registrationPrice,technicalProductionCost,totalManufacturingCost,sellingPrice,noMaterialPrice"/>
                         <option type="orderable" value="productNumber,technologyNumber,materialCosts,labourCost,
-                            productionCosts,totalCost,registrationPrice,technicalProductionCost,sellingPrice,noMaterialPrice"/>
+                            productionCosts,totalCost,registrationPrice,technicalProductionCost,totalManufacturingCost,sellingPrice,noMaterialPrice"/>
 
                         <option type="order" column="productNumber" direction="desc"/>
 

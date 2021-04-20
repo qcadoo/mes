@@ -161,6 +161,14 @@
         </model:model-field>
 
         <model:model-field model="parameter" plugin="basic">
+            <model:decimal name="technicalProductionCostOverhead" default="0">
+                <model:validatesUnscaledValue max="7"/>
+                <model:validatesScale max="5"/>
+                <model:validatesRange from="0"/>
+            </model:decimal>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
             <model:decimal name="profit" default="0">
                 <model:validatesUnscaledValue max="7"/>
                 <model:validatesScale max="5"/>

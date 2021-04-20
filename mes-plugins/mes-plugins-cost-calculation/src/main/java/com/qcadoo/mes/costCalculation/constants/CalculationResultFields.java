@@ -53,6 +53,10 @@ public final class CalculationResultFields {
 
     public static final String TECHNICAL_PRODUCTION_COST = "technicalProductionCost";
 
+    public static final String TECHNICAL_PRODUCTION_COST_OVERHEAD_VALUE = "technicalProductionCostOverheadValue";
+
+    public static final String TOTAL_MANUFACTURING_COST = "totalManufacturingCost";
+
     public static final String PROFIT_VALUE = "profitValue";
 
     public static final String SELLING_PRICE = "sellingPrice";

@@ -79,7 +79,8 @@ public class CostCalculationXlsService extends XlsDocumentService {
             "productNumber", "quantity", "unit", "materialCosts", "labourCost", "productionCosts", "materialCostMargin",
             "materialCostMarginValue", "labourCostMargin", "labourCostMarginValue", "additionalOverhead", "totalCost",
             "registrationPrice", "registrationPriceOverhead", "registrationPriceOverheadValue", "technicalProductionCost",
-            "profit", "profitValue", "sellingPrice", "containsComponents");
+            "technicalProductionCostOverhead", "technicalProductionCostOverheadValue", "totalManufacturingCost", "profit",
+            "profitValue", "sellingPrice", "containsComponents");
 
     @Override
     protected void addHeader(HSSFSheet sheet, Locale locale, Entity entity) {
@@ -227,10 +228,16 @@ public class CostCalculationXlsService extends XlsDocumentService {
                     calculationResult.getDecimalField(CalculationResultFields.REGISTRATION_PRICE_OVERHEAD_VALUE));
             createNumericCell(stylesContainer, row, 17,
                     calculationResult.getDecimalField(CalculationResultFields.TECHNICAL_PRODUCTION_COST));
-            createNumericCell(stylesContainer, row, 18, costCalculation.getDecimalField(CostCalculationFields.PROFIT));
-            createNumericCell(stylesContainer, row, 19, calculationResult.getDecimalField(CalculationResultFields.PROFIT_VALUE));
-            createNumericCell(stylesContainer, row, 20, calculationResult.getDecimalField(CalculationResultFields.SELLING_PRICE));
-            createRegularCell(stylesContainer, row, 21,
+            createNumericCell(stylesContainer, row, 18,
+                    costCalculation.getDecimalField(CostCalculationFields.TECHNICAL_PRODUCTION_COST_OVERHEAD));
+            createNumericCell(stylesContainer, row, 19,
+                    calculationResult.getDecimalField(CalculationResultFields.TECHNICAL_PRODUCTION_COST_OVERHEAD_VALUE));
+            createNumericCell(stylesContainer, row, 20,
+                    calculationResult.getDecimalField(CalculationResultFields.TOTAL_MANUFACTURING_COST));
+            createNumericCell(stylesContainer, row, 21, costCalculation.getDecimalField(CostCalculationFields.PROFIT));
+            createNumericCell(stylesContainer, row, 22, calculationResult.getDecimalField(CalculationResultFields.PROFIT_VALUE));
+            createNumericCell(stylesContainer, row, 23, calculationResult.getDecimalField(CalculationResultFields.SELLING_PRICE));
+            createRegularCell(stylesContainer, row, 24,
                     containsComponents ? translationService.translate("qcadooView.true", locale)
                             : translationService.translate("qcadooView.false", locale));
             rowIndex++;

@@ -81,6 +81,8 @@ public class TechnologiesListListenersCC {
                     parameter.getDecimalField(CostCalculationFields.ADDITIONAL_OVERHEAD));
             costCalculation.setField(CostCalculationFields.REGISTRATION_PRICE_OVERHEAD,
                     parameter.getDecimalField(CostCalculationFields.REGISTRATION_PRICE_OVERHEAD));
+            costCalculation.setField(CostCalculationFields.TECHNICAL_PRODUCTION_COST_OVERHEAD,
+                    parameter.getDecimalField(CostCalculationFields.TECHNICAL_PRODUCTION_COST_OVERHEAD));
             costCalculation.setField(CostCalculationFields.PROFIT, parameter.getDecimalField(CostCalculationFields.PROFIT));
             costCalculation.setField(CostCalculationFields.NUMBER, numberGeneratorService
                     .generateNumber(CostCalculationConstants.PLUGIN_IDENTIFIER, CostCalculationConstants.MODEL_COST_CALCULATION));

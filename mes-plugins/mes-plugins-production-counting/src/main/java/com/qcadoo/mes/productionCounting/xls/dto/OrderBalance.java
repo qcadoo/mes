@@ -46,6 +46,12 @@ public class OrderBalance {
 
     private BigDecimal realProductionCosts;
 
+    private BigDecimal technicalProductionCostOverhead;
+
+    private BigDecimal technicalProductionCostOverheadValue;
+
+    private BigDecimal totalManufacturingCost;
+
     private BigDecimal profit;
 
     private BigDecimal profitValue;
@@ -242,5 +248,29 @@ public class OrderBalance {
 
     public void setProductId(Long productId) {
         this.productId = productId;
+    }
+
+    public BigDecimal getTechnicalProductionCostOverhead() {
+        return technicalProductionCostOverhead;
+    }
+
+    public void setTechnicalProductionCostOverhead(BigDecimal technicalProductionCostOverhead) {
+        this.technicalProductionCostOverhead = technicalProductionCostOverhead;
+    }
+
+    public BigDecimal getTechnicalProductionCostOverheadValue() {
+        return technicalProductionCostOverheadValue;
+    }
+
+    public void setTechnicalProductionCostOverheadValue(BigDecimal technicalProductionCostOverheadValue) {
+        this.technicalProductionCostOverheadValue = technicalProductionCostOverheadValue;
+    }
+
+    public BigDecimal getTotalManufacturingCost() {
+        return totalManufacturingCost;
+    }
+
+    public void setTotalManufacturingCost(BigDecimal totalManufacturingCost) {
+        this.totalManufacturingCost = totalManufacturingCost;
     }
 }

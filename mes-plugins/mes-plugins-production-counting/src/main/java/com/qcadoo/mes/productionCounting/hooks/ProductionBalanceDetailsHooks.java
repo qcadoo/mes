@@ -23,6 +23,13 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.util.CurrencyService;
@@ -39,12 +46,6 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 @Service
 public class ProductionBalanceDetailsHooks {
@@ -58,7 +59,8 @@ public class ProductionBalanceDetailsHooks {
     private static final List<String> L_COST_FIELDS = Arrays.asList(ProductionBalanceFields.MATERIAL_COSTS_USED,
             ProductionBalanceFields.PRODUCTION_COST_MARGIN, ProductionBalanceFields.MATERIAL_COST_MARGIN,
             ProductionBalanceFields.ADDITIONAL_OVERHEAD, ProductionBalanceFields.SOURCE_OF_OPERATION_COSTS,
-            ProductionBalanceFields.REGISTRATION_PRICE_OVERHEAD, ProductionBalanceFields.PROFIT);
+            ProductionBalanceFields.REGISTRATION_PRICE_OVERHEAD, ProductionBalanceFields.TECHNICAL_PRODUCTION_COST_OVERHEAD,
+            ProductionBalanceFields.PROFIT);
 
     private static final List<String> L_COST_GRIDS = Collections.singletonList(ProductionBalanceFields.ORDERS);
 
@@ -117,7 +119,7 @@ public class ProductionBalanceDetailsHooks {
         }
 
         List<String> procFields = Lists.newArrayList("productionCostMarginProc", "materialCostMarginProc",
-                "registrationPriceOverheadProc", "profitProc");
+                "registrationPriceOverheadProc", "technicalProductionCostOverheadProc", "profitProc");
         for (String field : procFields) {
             FieldComponent materialCostMarginProc = (FieldComponent) view.getComponentByReference(field);
             materialCostMarginProc.setFieldValue("%");
@@ -180,6 +182,12 @@ public class ProductionBalanceDetailsHooks {
             registrationPriceOverhead.setFieldValue(numberService.format(BigDecimalUtils
                     .convertNullToZero(parameter.getDecimalField(ParameterFieldsPC.REGISTRATION_PRICE_OVERHEAD_PB))));
             registrationPriceOverhead.requestComponentUpdateState();
+
+            FieldComponent technicalProductionCostOverhead = (FieldComponent) view
+                    .getComponentByReference(ProductionBalanceFields.TECHNICAL_PRODUCTION_COST_OVERHEAD);
+            technicalProductionCostOverhead.setFieldValue(numberService.format(BigDecimalUtils
+                    .convertNullToZero(parameter.getDecimalField(ParameterFieldsPC.TECHNICAL_PRODUCTION_COST_OVERHEAD_PB))));
+            technicalProductionCostOverhead.requestComponentUpdateState();
 
             FieldComponent profit = (FieldComponent) view.getComponentByReference(ProductionBalanceFields.PROFIT);
             profit.setFieldValue(numberService

@@ -51,6 +51,8 @@ public final class ParameterFieldsPC {
 
     public static final String REGISTRATION_PRICE_OVERHEAD_PB = "registrationPriceOverheadPB";
 
+    public static final String TECHNICAL_PRODUCTION_COST_OVERHEAD_PB = "technicalProductionCostOverheadPB";
+
     public static final String PROFIT_PB = "profitPB";
 
     public static final String TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
