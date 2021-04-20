@@ -149,11 +149,12 @@
                     expression="#division?.get('number')"/>
             <option type="column" name="wnkNumber" fields="wnkNumber"/>
             <option type="column" name="staff" fields="staff" expression="#staff['name'] + ' ' + #staff['surname']"/>
-
+            <option type="column" name="dateOfAdmission" fields="dateOfAdmission" width="50"/>
+            <option type="column" name="dateOfWithdrawal" fields="dateOfWithdrawal" width="50"/>
             <option type="order" column="number" direction="desc"/>
 
-            <option type="searchable" value="name,number,workstationType,division,wnkNumber"/>
-            <option type="orderable" value="name,number,workstationType,division,wnkNumber"/>
+            <option type="searchable" value="name,number,workstationType,division,wnkNumber,dateOfAdmission,dateOfWithdrawal"/>
+            <option type="orderable" value="name,number,workstationType,division,wnkNumber,dateOfAdmission,dateOfWithdrawal"/>
 
             <option type="correspondingView" value="basic/workstationDetails"/>
             <option type="correspondingComponent" value="form"/>

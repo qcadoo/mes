@@ -49,6 +49,10 @@ public final class WorkstationFields {
 
     public static final String PRODUCTION_DATE = "productionDate";
 
+    public static final String DATE_OF_ADMISSION = "dateOfAdmission";
+
+    public static final String DATE_OF_WITHDRAWAL = "dateOfWithdrawal";
+
     public static final String WNK_NUMBER = "wnkNumber";
 
     public static final String SUBASSEMBLIES = "subassemblies";

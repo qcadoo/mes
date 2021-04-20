@@ -47,6 +47,9 @@
         <string name="wnkNumber"/>
         <belongsTo name="staff" model="staff"/>
 
+        <date name="dateOfAdmission" />
+        <date name="dateOfWithdrawal" />
+
         <manyToMany name="companies" model="company" joinField="workstations"/>
         <hasMany name="attachments" model="workstationAttachment" joinField="workstation" cascade="delete"/>
         <hasMany name="subassemblies" model="subassembly" joinField="workstation"/>

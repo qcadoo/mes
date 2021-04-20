@@ -139,7 +139,7 @@
             <component type="form" name="workstation" reference="form"
                        defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="7">
+                           rows="8">
                     <layoutElement column="1" row="1">
                         <component type="input" name="number" field="number">
                             <option type="alignment" value="right"/>
@@ -166,7 +166,14 @@
                                     method="showWorkstationTypesWithoutSubassembly"/>
                         </component>
                     </layoutElement>
-
+                    <layoutElement column="1" row="7">
+                        <component type="calendar" name="dateOfAdmission" field="dateOfAdmission"
+                                   reference="dateOfAdmission"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="8">
+                        <component type="calendar" name="dateOfWithdrawal" field="dateOfWithdrawal"
+                                   reference="dateOfWithdrawal"/>
+                    </layoutElement>
                     <layoutElement column="2" row="1">
                         <component type="input" name="serialNumber" field="serialNumber" reference="serialNumber"/>
                     </layoutElement>
