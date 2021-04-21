@@ -428,7 +428,7 @@ public class DataProvider {
             query.append("FROM basic_faulttype ft ");
             query.append("LEFT JOIN jointable_faulttype_subassembly fs ON fs.faulttype_id = ft.id ");
             query.append("LEFT JOIN jointable_faulttype_workstationtype fwt ON fwt.faulttype_id = ft.id ");
-            query.append("WHERE ft.isdefault OR fs.subassembly_id = :subassemblyId OR fwt.workstationtype_id = :workstationTypeId ");
+            query.append("WHERE ft.active AND ( ft.isdefault OR fs.subassembly_id = :subassemblyId OR fwt.workstationtype_id = :workstationTypeId) ");
             query.append("ORDER BY ft.name ");
             List<FaultTypeDto> types = jdbcTemplate.query(query.toString(), parameters, new BeanPropertyRowMapper(
                     FaultTypeDto.class));
@@ -448,7 +448,7 @@ public class DataProvider {
             query.append("FROM basic_faulttype ft ");
             query.append("LEFT JOIN jointable_faulttype_workstation fw ON fw.faulttype_id = ft.id ");
             query.append("LEFT JOIN jointable_faulttype_workstationtype fwt ON fwt.faulttype_id = ft.id ");
-            query.append("WHERE ft.isdefault OR fw.workstation_id = :workstationId OR fwt.workstationtype_id = :workstationTypeId ");
+            query.append("WHERE ft.active AND ( ft.isdefault OR fw.workstation_id = :workstationId OR fwt.workstationtype_id = :workstationTypeId) ");
             query.append("ORDER BY ft.name ");
 
             List<FaultTypeDto> types = jdbcTemplate.query(query.toString(), parameters, new BeanPropertyRowMapper(
