@@ -24,6 +24,7 @@
 package com.qcadoo.mes.technologies.hooks;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -237,23 +238,34 @@ public class TechnologyOperationComponentHooks {
         if (Objects.nonNull(technologyOperationComponentId)) {
             copyWorkstations(technologyOperationComponentDD, technologyOperationComponent);
 
-            setTechnologicalProcessListAssignDate(technologyOperationComponentDD, technologyOperationComponent, technologyOperationComponentId);
+            setTechnologicalProcessListAssignDate(technologyOperationComponentDD, technologyOperationComponent,
+                    technologyOperationComponentId);
         }
     }
 
-    private void setTechnologicalProcessListAssignDate(DataDefinition technologyOperationComponentDD, Entity technologyOperationComponent, Long technologyOperationComponentId) {
+    private void setTechnologicalProcessListAssignDate(final DataDefinition technologyOperationComponentDD,
+            final Entity technologyOperationComponent, final Long technologyOperationComponentId) {
         Entity technologyOperationComponentFromDB = technologyOperationComponentDD.get(technologyOperationComponentId);
 
-        Entity technologicalProcessList = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGICAL_PROCESS_LIST);
-        Entity technologicalProcessListFromDB = technologyOperationComponentFromDB.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGICAL_PROCESS_LIST);
+        Date technologicalProcessListAssignmentDate = technologyOperationComponent
+                .getDateField(TechnologyOperationComponentFields.TECHNOLOGICAL_PROCESS_LIST_ASSIGNMENT_DATE);
+        Entity technologicalProcessList = technologyOperationComponent
+                .getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGICAL_PROCESS_LIST);
+        Entity technologicalProcessListFromDB = technologyOperationComponentFromDB
+                .getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGICAL_PROCESS_LIST);
 
         boolean areSame = (Objects.isNull(technologicalProcessList) ? Objects.isNull(technologicalProcessListFromDB)
-                : (Objects.nonNull(technologicalProcessListFromDB) && technologicalProcessList.getId().equals(technologicalProcessListFromDB.getId())));
+                : (Objects.nonNull(technologicalProcessListFromDB)
+                        && technologicalProcessList.getId().equals(technologicalProcessListFromDB.getId())));
 
-        if (Objects.nonNull(technologicalProcessList) && !areSame) {
-            technologyOperationComponent.setField(TechnologyOperationComponentFields.TECHNOLOGICAL_PROCESS_LIST_ASSIGNMENT_DATE, DateTime.now().toDate());
+        if (Objects.nonNull(technologicalProcessList)) {
+            if (Objects.isNull(technologicalProcessListAssignmentDate) || !areSame) {
+                technologyOperationComponent.setField(TechnologyOperationComponentFields.TECHNOLOGICAL_PROCESS_LIST_ASSIGNMENT_DATE,
+                        DateTime.now().toDate());
+            }
         } else {
-            technologyOperationComponent.setField(TechnologyOperationComponentFields.TECHNOLOGICAL_PROCESS_LIST_ASSIGNMENT_DATE, null);
+            technologyOperationComponent.setField(TechnologyOperationComponentFields.TECHNOLOGICAL_PROCESS_LIST_ASSIGNMENT_DATE,
+                    null);
         }
     }
 

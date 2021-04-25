@@ -77,6 +77,7 @@
             <option type="column" name="date" fields="date"/>
             <option type="column" name="worker" fields="worker"/>
             <option type="column" name="wastesQuantity" fields="wastesQuantity"/>
+            <option type="column" name="createDate" fields="createDate"/>
 
             <option type="footerRow" value="true"/>
             <option type="columnsToSummary" value="quantity,wastesQuantity"/>
@@ -84,9 +85,9 @@
             <option type="order" column="number" direction="desc"/>
 
             <option type="searchable"
-                    value="number,orderPackNumber,orderNumber,productNumber,modelName,sizeNumber,operationNumber,workstationTypeNumber,workstationNumber,technologicalProcessName,quantity,date,worker,wastesQuantity"/>
+                    value="number,orderPackNumber,orderNumber,productNumber,modelName,sizeNumber,operationNumber,workstationTypeNumber,workstationNumber,technologicalProcessName,quantity,date,worker,wastesQuantity,createDate"/>
             <option type="orderable"
-                    value="number,orderPackNumber,orderNumber,productNumber,modelName,sizeNumber,operationNumber,workstationTypeNumber,workstationNumber,technologicalProcessName,quantity,date,worker,wastesQuantity"/>
+                    value="number,orderPackNumber,orderNumber,productNumber,modelName,sizeNumber,operationNumber,workstationTypeNumber,workstationNumber,technologicalProcessName,quantity,date,worker,wastesQuantity,createDate"/>
 
             <option type="correspondingView" value="orders/orderTechnologicalProcessDetails"/>
             <option type="correspondingComponent" value="form"/>

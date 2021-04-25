@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentWithListDtoFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
@@ -90,9 +90,9 @@ public class TechnologicalProcessListDetailsCriteriaModifiers {
 
     public void filterTechnologies(final SearchCriteriaBuilder scb, final FilterValueHolder filterValue) {
         if (filterValue.has(L_TECHNOLOGICAL_PROCESS_LIST_ID)) {
-            int technologicalProcessListId = filterValue.getInteger(L_TECHNOLOGICAL_PROCESS_LIST_ID);
+            Long technologicalProcessListId = filterValue.getLong(L_TECHNOLOGICAL_PROCESS_LIST_ID);
 
-            scb.add(SearchRestrictions.eq(TechnologyOperationComponentWithListDtoFields.TECHNOLOGICAL_PROCESS_LIST_ID,
+            scb.add(SearchRestrictions.eq(TechnologyOperationComponentFields.TECHNOLOGICAL_PROCESS_LIST + L_DOT + L_ID,
                     technologicalProcessListId));
         } else {
             scb.add(SearchRestrictions.idEq(-1));

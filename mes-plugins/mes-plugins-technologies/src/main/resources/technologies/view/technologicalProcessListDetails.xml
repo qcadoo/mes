@@ -120,12 +120,12 @@
                        columns="3" rows="10">
                 <layoutElement column="1" row="1" width="3" height="10">
                     <component type="grid" name="technologies" reference="technologies"
-                               plugin="technologies" model="technologyOperationComponentWithListDto">
-                        <option type="column" name="number" fields="number" width="50"/>
-                        <option type="column" name="name" fields="name" width="100"/>
-                        <option type="column" name="productNumber" fields="productNumber" width="50"/>
-                        <option type="column" name="productName" fields="productName" width="100"/>
-                        <option type="column" name="productEntityType" fields="productEntityType" expression="'@basic.product.entityType.value.' + #productEntityType" width="100"/>
+                               plugin="technologies" model="technologyOperationComponent">
+                        <option type="column" name="number" fields="technology" expression="#technology.get('number')" width="50"/>
+                        <option type="column" name="name" fields="technology" expression="#technology.get('name')" width="100"/>
+                        <option type="column" name="productNumber" fields="technology" expression="#technology.get('product')?.get('number')" width="50"/>
+                        <option type="column" name="productName" fields="technology" expression="#technology.get('product')?.get('name')" width="100"/>
+                        <option type="column" name="productEntityType" fields="technology" expression="'@basic.product.entityType.value.' + #technology.get('product')?.get('entityType')" width="100"/>
                         <option type="column" name="technologicalProcessListAssignmentDate" fields="technologicalProcessListAssignmentDate"/>
 
                         <option type="order" column="number" direction="desc"/>
