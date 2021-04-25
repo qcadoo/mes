@@ -205,7 +205,7 @@ public class SalesPlanMaterialRequirementDetailsListeners {
                     .createAlias(CompanyProductFields.COMPANY, CompanyProductFields.COMPANY, JoinType.LEFT)
                     .add(SearchRestrictions.in(CompanyProductFields.PRODUCT + L_DOT + L_ID, productIds))
                     .add(SearchRestrictions.eq(CompanyProductFields.COMPANY + L_DOT + L_ID, company.getId()))
-                    .add(SearchRestrictions.eq(CompanyProductFields.IS_DEFAULT, true)).list().getEntities();
+                    .list().getEntities();
         }
 
         return companyProducts;
@@ -217,10 +217,10 @@ public class SalesPlanMaterialRequirementDetailsListeners {
         if (!productIds.isEmpty() && Objects.nonNull(company)) {
             companyProductFamilies = salesPlanMaterialRequirementHelper.getCompanyProductsFamilyDD().find()
                     .createAlias(CompanyProductsFamilyFields.PRODUCT, CompanyProductsFamilyFields.PRODUCT, JoinType.LEFT)
-                    .createAlias(CompanyProductsFamilyFields.COMPANY, CompanyProductsFamilyFields.PRODUCT, JoinType.LEFT)
+                    .createAlias(CompanyProductsFamilyFields.COMPANY, CompanyProductsFamilyFields.COMPANY, JoinType.LEFT)
                     .add(SearchRestrictions.in(CompanyProductsFamilyFields.PRODUCT + L_DOT + L_ID, productIds))
                     .add(SearchRestrictions.eq(CompanyProductsFamilyFields.COMPANY + L_DOT + L_ID, company.getId()))
-                    .add(SearchRestrictions.eq(CompanyProductsFamilyFields.IS_DEFAULT, true)).list().getEntities();
+                    .list().getEntities();
         }
 
         return companyProductFamilies;
