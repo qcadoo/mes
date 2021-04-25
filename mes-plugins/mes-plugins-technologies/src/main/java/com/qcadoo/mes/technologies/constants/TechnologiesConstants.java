@@ -78,8 +78,6 @@ public final class TechnologiesConstants {
 
     public static final String MODEL_PRODUCT_BY_SIZE_GROUP = "productBySizeGroup";
 
-    public static final String MODEL_TECHNOLOGY_OPERATION_COMPONENT_WITH_LIST_DTO = "technologyOperationComponentWithListDto";
-
     // VIEW
 
     public static final String VIEW_OPERATION_DETAILS = "operationDetails";
