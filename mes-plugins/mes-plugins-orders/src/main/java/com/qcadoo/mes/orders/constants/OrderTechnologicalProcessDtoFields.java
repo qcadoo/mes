@@ -63,6 +63,8 @@ public final class OrderTechnologicalProcessDtoFields {
 
     public static final String QUANTITY = "quantity";
 
+    public static final String PRODUCT_UNIT = "productUnit";
+
     public static final String CREATE_DATE = "createDate";
 
     public static final String DATE = "date";

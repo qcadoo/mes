@@ -292,8 +292,6 @@
                            joinField="attributeOnTheLabel"/>
         </model:model-field>
 
-
-
         <model:model-hook plugin="qcadooModel" model="dictionaryItem">
             <model:validatesWith
                     class="com.qcadoo.mes.orders.hooks.DictionaryItemHooksO"
@@ -422,6 +420,9 @@
         <menu:menu-item name="orderTechnologicalProcessWastesList" category="ordersTracking"
                         view="orderTechnologicalProcessWastesList" defaultAuthorizationRole="ROLE_PLANNING"/>
 
+        <menu:menu-item name="orderTechnologicalProcessAnalysis" category="ordersTracking"
+                        view="orderTechnologicalProcessAnalysis" defaultAuthorizationRole="ROLE_PLANNING"/>
+
         <menu:menu-item-url name="planningParameters" category="parameters" url="/planningParameters.html"
                             defaultAuthorizationRole="ROLE_PARAMETERS"/>
 
@@ -460,6 +461,7 @@
         <view:view resource="view/orderTechnologicalProcessWasteDetails.xml"/>
         <view:view resource="view/orderTechnologicalProcessWasteSingleDetails.xml"/>
         <view:view resource="view/orderTechnologicalProcessWastesList.xml"/>
+        <view:view resource="view/orderTechnologicalProcessesAnalysis.xml"/>
 
         <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
 

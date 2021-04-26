@@ -33,6 +33,7 @@
         <datetime name="date"/>
         <string name="worker"/>
         <decimal name="wasteQuantity"/>
+        <string name="productUnit"/>
         <string name="causeOfWaste"/>
         <integer name="orderPackId"/>
         <string name="orderPackNumber"/>

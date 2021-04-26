@@ -74,6 +74,7 @@
             <option type="column" name="workstationNumber" fields="workstationNumber"/>
             <option type="column" name="technologicalProcessName" fields="technologicalProcessName"/>
             <option type="column" name="quantity" fields="quantity"/>
+            <option type="column" name="productUnit" fields="productUnit"/>
             <option type="column" name="date" fields="date"/>
             <option type="column" name="worker" fields="worker"/>
             <option type="column" name="wastesQuantity" fields="wastesQuantity"/>
@@ -85,9 +86,9 @@
             <option type="order" column="number" direction="desc"/>
 
             <option type="searchable"
-                    value="number,orderPackNumber,orderNumber,productNumber,modelName,sizeNumber,operationNumber,workstationTypeNumber,workstationNumber,technologicalProcessName,quantity,date,worker,wastesQuantity,createDate"/>
+                    value="number,orderPackNumber,orderNumber,productNumber,modelName,sizeNumber,operationNumber,workstationTypeNumber,workstationNumber,technologicalProcessName,quantity,productUnit,date,worker,wastesQuantity,createDate"/>
             <option type="orderable"
-                    value="number,orderPackNumber,orderNumber,productNumber,modelName,sizeNumber,operationNumber,workstationTypeNumber,workstationNumber,technologicalProcessName,quantity,date,worker,wastesQuantity,createDate"/>
+                    value="number,orderPackNumber,orderNumber,productNumber,modelName,sizeNumber,operationNumber,workstationTypeNumber,workstationNumber,technologicalProcessName,quantity,productUnit,date,worker,wastesQuantity,createDate"/>
 
             <option type="correspondingView" value="orders/orderTechnologicalProcessDetails"/>
             <option type="correspondingComponent" value="form"/>
