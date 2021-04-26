@@ -420,8 +420,8 @@
         <menu:menu-item name="orderTechnologicalProcessWastesList" category="ordersTracking"
                         view="orderTechnologicalProcessWastesList" defaultAuthorizationRole="ROLE_PLANNING"/>
 
-        <menu:menu-item name="orderTechnologicalProcessAnalysis" category="ordersTracking"
-                        view="orderTechnologicalProcessAnalysis" defaultAuthorizationRole="ROLE_PLANNING"/>
+        <menu:menu-item name="orderTechnologicalProcessesAnalysis" category="ordersTracking"
+                        view="orderTechnologicalProcessesAnalysis" defaultAuthorizationRole="ROLE_ANALYSIS_VIEWER"/>
 
         <menu:menu-item-url name="planningParameters" category="parameters" url="/planningParameters.html"
                             defaultAuthorizationRole="ROLE_PARAMETERS"/>
