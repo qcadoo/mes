@@ -230,7 +230,7 @@ public class DocumentService {
                 }
             }
 
-            updateOrdersGroupIssuedMaterials(null, document);
+            updateOrdersGroupIssuedMaterials(null, document, false);
 
             String successMessage = String.format("DOCUMENT ACCEPT SUCCESS: id = %d number = %s", document.getId(),
                     document.getStringField(DocumentFields.NUMBER));
@@ -239,14 +239,18 @@ public class DocumentService {
         }
     }
 
-    public void updateOrdersGroupIssuedMaterials(Entity ordersGroup, Entity documentToAccept) {
+    public void updateOrdersGroupIssuedMaterials(Entity ordersGroup, Entity documentToAccept, boolean withoutDocument) {
         if (pluginManager.isPluginEnabled(ORDERS_GROUPS)) {
+            Long withoutDocumentId = null;
             if (documentToAccept != null
                     && documentToAccept.getBelongsToField(OrdersGroupIssuedMaterialFields.ORDERS_GROUP) == null) {
                 return;
             } else if (documentToAccept != null
                     && documentToAccept.getBelongsToField(OrdersGroupIssuedMaterialFields.ORDERS_GROUP) != null) {
                 ordersGroup = documentToAccept.getBelongsToField(OrdersGroupIssuedMaterialFields.ORDERS_GROUP);
+                if (withoutDocument) {
+                    withoutDocumentId = documentToAccept.getId();
+                }
             }
             DataDefinition ordersGroupIssuedMaterialDD = dataDefinitionService.get(ORDERS_GROUPS,
                     MODEL_ORDERS_GROUP_ISSUED_MATERIAL);
@@ -263,7 +267,7 @@ public class DocumentService {
             Map<Long, BigDecimal> productValues = Maps.newHashMap();
             Map<Long, List<Entity>> productPositions = Maps.newHashMap();
             createOrdersGroupIssueMaterialPositions(ordersGroup, ordersGroupIssuedMaterialPositionDD, productQuantities,
-                    productValues, productPositions);
+                    productValues, productPositions, withoutDocumentId);
             List<Entity> ordersGroupIssuedMaterials = createOrdersGroupIssueMaterials(ordersGroupIssuedMaterialDD,
                     productQuantities, productValues, productPositions);
             ordersGroup.setField(ORDERS_GROUP_ISSUED_MATERIALS, ordersGroupIssuedMaterials);
@@ -273,8 +277,11 @@ public class DocumentService {
 
     private void createOrdersGroupIssueMaterialPositions(Entity ordersGroup, DataDefinition ordersGroupIssuedMaterialPositionDD,
             Map<Long, BigDecimal> productQuantities, Map<Long, BigDecimal> productValues,
-            Map<Long, List<Entity>> productPositions) {
+            Map<Long, List<Entity>> productPositions, Long withoutDocumentId) {
         for (Entity document : ordersGroup.getHasManyField(DOCUMENTS)) {
+            if (document.getId().equals(withoutDocumentId)) {
+                continue;
+            }
             for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
                 Long productId = position.getBelongsToField(PositionFields.PRODUCT).getId();
                 BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);

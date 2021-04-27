@@ -64,6 +64,7 @@
         <onCreate class="com.qcadoo.mes.materialFlowResources.hooks.DocumentModelHooks" method="onCreate"/>
         <onCopy class="com.qcadoo.mes.materialFlowResources.hooks.DocumentModelHooks" method="onCopy"/>
         <onSave class="com.qcadoo.mes.materialFlowResources.hooks.DocumentModelHooks" method="onSave"/>
+        <onDelete class="com.qcadoo.mes.materialFlowResources.hooks.DocumentModelHooks" method="onDelete"/>
         <validatesWith class="com.qcadoo.mes.materialFlowResources.validators.DocumentValidators" method="validate"/>
     </hooks>
 </model>
