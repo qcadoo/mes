@@ -38,7 +38,9 @@
         <string name="description">
             <validatesLength max="2048"/>
         </string>
-        <string name="defaultTechnology" persistent="false"/>
+        <string name="defaultTechnology" persistent="false">
+            <validatesLength max="2048"/>
+        </string>
         <string name="commentReasonTypeCorrectionDateFrom"/>
         <string name="commentReasonTypeCorrectionDateTo"/>
         <string name="commentReasonDeviationEffectiveStart"/>
