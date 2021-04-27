@@ -305,8 +305,8 @@ public class DocumentService {
             ordersGroupIssuedMaterial.setField(OrdersGroupIssuedMaterialFields.QUANTITY, entry.getValue());
             BigDecimal value = productValues.get(entry.getKey());
             ordersGroupIssuedMaterial.setField(OrdersGroupIssuedMaterialFields.VALUE, value);
-            ordersGroupIssuedMaterial.setField(OrdersGroupIssuedMaterialFields.AVERAGE_PRICE,
-                    numberService.setScaleWithDefaultMathContext(value.divide(entry.getValue(), numberService.getMathContext())));
+            ordersGroupIssuedMaterial.setField(OrdersGroupIssuedMaterialFields.AVERAGE_PRICE, numberService
+                    .setScaleWithDefaultMathContext(value.divide(entry.getValue(), numberService.getMathContext()), 2));
             ordersGroupIssuedMaterial.setField(OrdersGroupIssuedMaterialFields.ORDERS_GROUP_ISSUED_MATERIAL_POSITIONS,
                     productPositions.get(entry.getKey()));
             ordersGroupIssuedMaterials.add(ordersGroupIssuedMaterial);
