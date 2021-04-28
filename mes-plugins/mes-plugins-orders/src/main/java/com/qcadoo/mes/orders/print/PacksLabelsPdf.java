@@ -5,6 +5,7 @@ import com.lowagie.text.Chunk;
 import com.lowagie.text.Document;
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.Image;
+import com.lowagie.text.Phrase;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.Barcode128;
 import com.lowagie.text.pdf.PdfContentByte;
@@ -132,16 +133,39 @@ public class PacksLabelsPdf extends ReportPdfView {
         PdfPTable innerTable = pdfHelper.createPanelTable(1);
         innerTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
         innerTable.setTableEvent(null);
+
+        PdfPTable brTable = pdfHelper.createPanelTable(8);
+        brTable.getDefaultCell().setBorder(Rectangle.NO_BORDER);
+        brTable.setTableEvent(null);
+
         Barcode128 code128 = new Barcode128();
         code128.setCode(pack.getStringField(OrderPackFields.NUMBER));
-        code128.setBarHeight(10f);
-        code128.setX(1f);
-        code128.setSize(4f);
+        code128.setBarHeight(36f);
+        //barcode width
+        code128.setX(1.8f);
+
+        //font size
+        code128.setSize(10f);
         code128.setN(0.25f);
-        code128.setBaseline(3f);
+        code128.setBaseline(11f);
 
         Image barcodeImage = code128.createImageWithBarcode(cb, null, null);
-        innerTable.addCell(barcodeImage);
+
+        PdfPCell barcodeCell = new PdfPCell(barcodeImage);
+        barcodeCell.setColspan(4);
+        barcodeCell.setBorder(Rectangle.NO_BORDER);
+        barcodeCell.setFixedHeight(50f);
+
+        PdfPCell emptyCell = new PdfPCell(new Phrase(""));
+        emptyCell.setColspan(2);
+        emptyCell.setBorder(Rectangle.NO_BORDER);
+        emptyCell.setFixedHeight(50f);
+
+        brTable.addCell(emptyCell);
+        brTable.addCell(barcodeCell);
+        brTable.addCell(emptyCell);
+
+        innerTable.addCell(brTable);
         int[] columnWidths = new int[] { 30, 70 };
 
         pdfHelper.addTableCellAsTwoColumnsTable(innerTable,
