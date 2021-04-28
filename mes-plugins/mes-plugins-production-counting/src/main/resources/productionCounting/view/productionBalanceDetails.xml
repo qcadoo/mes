@@ -273,21 +273,6 @@
                         <component type="gridLayout" name="overheadsGridLayout"
                                    reference="overheadsGridLayout" columns="4" rows="6" hasBorders="false">
                             <layoutElement column="1" row="1" width="3">
-                                <component type="input" name="productionCostMargin"
-                                           field="#{form}.productionCostMargin" reference="productionCostMargin"
-                                           hasDescription="true">
-                                    <option type="labelWidth" value="60"/>
-                                    <option type="alignment" value="right"/>
-                                </component>
-                            </layoutElement>
-                            <layoutElement column="4" row="1">
-                                <component type="input" name="productionCostMarginProc"
-                                           reference="productionCostMarginProc" defaultEnabled="false"
-                                           hasLabel="false">
-                                    <option type="textRepresentationOnDisabled" value="true"/>
-                                </component>
-                            </layoutElement>
-                            <layoutElement column="1" row="2" width="3">
                                 <component type="input" name="materialCostMargin"
                                            field="#{form}.materialCostMargin" reference="materialCostMargin"
                                            hasDescription="true">
@@ -295,9 +280,24 @@
                                     <option type="alignment" value="right"/>
                                 </component>
                             </layoutElement>
-                            <layoutElement column="4" row="2">
+                            <layoutElement column="4" row="1">
                                 <component type="input" name="materialCostMarginProc"
                                            reference="materialCostMarginProc" defaultEnabled="false"
+                                           hasLabel="false">
+                                    <option type="textRepresentationOnDisabled" value="true"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="1" row="2" width="3">
+                                <component type="input" name="productionCostMargin"
+                                           field="#{form}.productionCostMargin" reference="productionCostMargin"
+                                           hasDescription="true">
+                                    <option type="labelWidth" value="60"/>
+                                    <option type="alignment" value="right"/>
+                                </component>
+                            </layoutElement>
+                            <layoutElement column="4" row="2">
+                                <component type="input" name="productionCostMarginProc"
+                                           reference="productionCostMarginProc" defaultEnabled="false"
                                            hasLabel="false">
                                     <option type="textRepresentationOnDisabled" value="true"/>
                                 </component>
