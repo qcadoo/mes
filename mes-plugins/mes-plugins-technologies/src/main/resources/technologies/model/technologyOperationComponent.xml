@@ -80,7 +80,7 @@
                    model="product"  persistent="false"/>
         <belongsTo name="technologicalProcessList" model="technologicalProcessList"/>
 
-        <datetime name="technologicalProcessListAssignmentDate"/>
+        <datetime name="technologicalProcessListAssignmentDate" copyable="false"/>
     </fields>
 
     <hooks>
