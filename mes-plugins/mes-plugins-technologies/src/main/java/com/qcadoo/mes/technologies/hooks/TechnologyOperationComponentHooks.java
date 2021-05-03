@@ -23,21 +23,35 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
-import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.mes.technologies.constants.*;
-import com.qcadoo.model.api.*;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.technologies.constants.AssignedToOperation;
+import com.qcadoo.mes.technologies.constants.OperationFields;
+import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
+import com.qcadoo.mes.technologies.constants.ProductStructureTreeNodeFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.EntityTreeNode;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Service
 public class TechnologyOperationComponentHooks {
@@ -59,7 +73,7 @@ public class TechnologyOperationComponentHooks {
     public void copyWorkstationsSettingsFromOperation(final Entity technologyOperationComponent) {
         Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
 
-        if (operation != null) {
+        if (Objects.nonNull(operation)) {
             technologyOperationComponent.setField(TechnologyOperationComponentFields.QUANTITY_OF_WORKSTATIONS,
                     operation.getIntegerField(OperationFields.QUANTITY_OF_WORKSTATIONS));
             technologyOperationComponent.setField(TechnologyOperationComponentFields.ASSIGNED_TO_OPERATION,
@@ -84,44 +98,49 @@ public class TechnologyOperationComponentHooks {
         Entity technology = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
         EntityTree tree = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
 
-        if (tree == null || tree.isEmpty()) {
+        if (Objects.isNull(tree) || tree.isEmpty()) {
             return;
         }
 
         EntityTreeNode rootNode = tree.getRoot();
 
-        if ((rootNode == null)
-                || (technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.PARENT) != null)) {
+        if (Objects.isNull(rootNode)
+                || Objects.nonNull(technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.PARENT))) {
             return;
         }
 
         technologyOperationComponent.setField(TechnologyOperationComponentFields.PARENT, rootNode);
     }
 
-    private void setOperationOutProduct(Entity technologyOperationComponent) {
-        if (Objects.nonNull(technologyOperationComponent
-                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS))
-                && technologyOperationComponent.getHasManyField(
-                        TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS).isEmpty()) {
+    private void setOperationOutProduct(final Entity technologyOperationComponent) {
+        if (Objects.nonNull(
+                technologyOperationComponent.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS))
+                && technologyOperationComponent
+                        .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS).isEmpty()) {
             Entity technology = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY);
             EntityTree tree = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
-            DataDefinition opocDD = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT);
-            Entity opoc = opocDD.create();
-            opoc.setField(OperationProductOutComponentFields.QUANTITY, 1);
-            if (tree == null || tree.isEmpty()) {
-                opoc.setField(OperationProductOutComponentFields.PRODUCT, technology.getBelongsToField(TechnologyFields.PRODUCT));
+
+            Entity operationProductOutComponent = getOperationProductOutComponentDD().create();
+
+            operationProductOutComponent.setField(OperationProductOutComponentFields.QUANTITY, 1);
+
+            if (Objects.isNull(tree) || tree.isEmpty()) {
+                operationProductOutComponent.setField(OperationProductOutComponentFields.PRODUCT,
+                        technology.getBelongsToField(TechnologyFields.PRODUCT));
+
                 technologyOperationComponent.setField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS,
-                        Collections.singletonList(opoc));
+                        Collections.singletonList(operationProductOutComponent));
             } else {
                 Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
+
                 if (Objects.nonNull(operation)) {
                     Entity product = operation.getBelongsToField(OperationFields.PRODUCT);
+
                     if (Objects.nonNull(product)) {
-                        opoc.setField(OperationProductOutComponentFields.PRODUCT, product);
-                        technologyOperationComponent.setField(
-                                TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS,
-                                Collections.singletonList(opoc));
+                        operationProductOutComponent.setField(OperationProductOutComponentFields.PRODUCT, product);
+
+                        technologyOperationComponent.setField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS,
+                                Collections.singletonList(operationProductOutComponent));
                     }
                 }
             }
@@ -130,7 +149,7 @@ public class TechnologyOperationComponentHooks {
 
     private void copyReferencedTechnology(final DataDefinition technologyOperationComponentDD,
             final Entity technologyOperationComponent) {
-        if (technologyOperationComponent.getField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY) == null) {
+        if (Objects.isNull(technologyOperationComponent.getField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY))) {
             return;
         }
 
@@ -153,7 +172,7 @@ public class TechnologyOperationComponentHooks {
 
         EntityTreeNode root = referencedTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot();
 
-        if (root == null) {
+        if (Objects.isNull(root)) {
             technologyOperationComponent.addError(
                     technologyOperationComponentDD.getField(TechnologyOperationComponentFields.REFERENCE_TECHNOLOGY),
                     "technologies.technologyReferenceTechnologyComponent.error.operationComponentsEmpty");
@@ -195,12 +214,14 @@ public class TechnologyOperationComponentHooks {
                 copy.setField(entry.getKey(), copies);
             }
         }
+
         copy.setField("productionCountingQuantities", null);
         copy.setField("productionCountingOperationRuns", null);
         copy.setField("coverageRegisters", null);
         copy.setField("operationalTasks", null);
         copy.setField("operCompTimeCalculations", null);
         copy.setField("barcodeOperationComponents", null);
+
         return copy;
     }
 
@@ -212,15 +233,48 @@ public class TechnologyOperationComponentHooks {
     public void onSave(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
         clearField(technologyOperationComponent);
 
-        if (technologyOperationComponent.getId() != null) {
+        Long technologyOperationComponentId = technologyOperationComponent.getId();
+
+        if (Objects.nonNull(technologyOperationComponentId)) {
             copyWorkstations(technologyOperationComponentDD, technologyOperationComponent);
+
+            setTechnologicalProcessListAssignDate(technologyOperationComponentDD, technologyOperationComponent,
+                    technologyOperationComponentId);
         }
     }
 
-    private void copyWorkstations(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
+    private void setTechnologicalProcessListAssignDate(final DataDefinition technologyOperationComponentDD,
+            final Entity technologyOperationComponent, final Long technologyOperationComponentId) {
+        Entity technologyOperationComponentFromDB = technologyOperationComponentDD.get(technologyOperationComponentId);
+
+        Date technologicalProcessListAssignmentDate = technologyOperationComponent
+                .getDateField(TechnologyOperationComponentFields.TECHNOLOGICAL_PROCESS_LIST_ASSIGNMENT_DATE);
+        Entity technologicalProcessList = technologyOperationComponent
+                .getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGICAL_PROCESS_LIST);
+        Entity technologicalProcessListFromDB = technologyOperationComponentFromDB
+                .getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGICAL_PROCESS_LIST);
+
+        boolean areSame = (Objects.isNull(technologicalProcessList) ? Objects.isNull(technologicalProcessListFromDB)
+                : (Objects.nonNull(technologicalProcessListFromDB)
+                        && technologicalProcessList.getId().equals(technologicalProcessListFromDB.getId())));
+
+        if (Objects.nonNull(technologicalProcessList)) {
+            if (Objects.isNull(technologicalProcessListAssignmentDate) || !areSame) {
+                technologyOperationComponent.setField(TechnologyOperationComponentFields.TECHNOLOGICAL_PROCESS_LIST_ASSIGNMENT_DATE,
+                        DateTime.now().toDate());
+            }
+        } else {
+            technologyOperationComponent.setField(TechnologyOperationComponentFields.TECHNOLOGICAL_PROCESS_LIST_ASSIGNMENT_DATE,
+                    null);
+        }
+    }
+
+    private void copyWorkstations(final DataDefinition technologyOperationComponentDD,
+            final Entity technologyOperationComponent) {
         Entity oldToc = technologyOperationComponentDD.get(technologyOperationComponent.getId());
         Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
-        if (operation != null
+
+        if (Objects.nonNull(operation)
                 && !operation.getId().equals(oldToc.getBelongsToField(TechnologyOperationComponentFields.OPERATION).getId())) {
 
             technologyOperationComponent.setField(TechnologyOperationComponentFields.WORKSTATIONS,
@@ -231,25 +285,36 @@ public class TechnologyOperationComponentHooks {
     private void clearField(final Entity technologyOperationComponent) {
         String assignedToOperation = technologyOperationComponent
                 .getStringField(TechnologyOperationComponentFields.ASSIGNED_TO_OPERATION);
+
         if (AssignedToOperation.WORKSTATIONS_TYPE.getStringValue().equals(assignedToOperation)) {
             technologyOperationComponent.setField(TechnologyOperationComponentFields.WORKSTATIONS, null);
         }
     }
 
-    public boolean onDelete(final DataDefinition dataDefinition, final Entity entity) {
+    public boolean onDelete(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
         List<Entity> usageInProductStructureTree = dataDefinitionService
                 .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_PRODUCT_STRUCTURE_TREE_NODE).find()
-                .add(SearchRestrictions.belongsTo(ProductStructureTreeNodeFields.OPERATION, entity)).list().getEntities();
+                .add(SearchRestrictions.belongsTo(ProductStructureTreeNodeFields.OPERATION, technologyOperationComponent)).list()
+                .getEntities();
+
         if (!usageInProductStructureTree.isEmpty()) {
-            entity.addGlobalError(
+            technologyOperationComponent.addGlobalError(
                     "technologies.technologyDetails.window.treeTab.technologyTree.error.cannotDeleteOperationUsedInProductStructureTree",
                     false,
                     usageInProductStructureTree.stream()
                             .map(e -> e.getBelongsToField(ProductStructureTreeNodeFields.MAIN_TECHNOLOGY)
                                     .getStringField(TechnologyFields.NUMBER))
                             .distinct().collect(Collectors.joining(", ")));
+
             return false;
         }
+
         return true;
     }
+
+    private DataDefinition getOperationProductOutComponentDD() {
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT);
+    }
+
 }

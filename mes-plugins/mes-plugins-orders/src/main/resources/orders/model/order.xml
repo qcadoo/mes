@@ -38,7 +38,9 @@
         <string name="description">
             <validatesLength max="2048"/>
         </string>
-        <string name="defaultTechnology" persistent="false"/>
+        <string name="defaultTechnology" persistent="false">
+            <validatesLength max="2048"/>
+        </string>
         <string name="commentReasonTypeCorrectionDateFrom"/>
         <string name="commentReasonTypeCorrectionDateTo"/>
         <string name="commentReasonDeviationEffectiveStart"/>
@@ -182,15 +184,14 @@
     <hooks>
         <validatesWith class="com.qcadoo.mes.orders.hooks.OrderHooks"
                        method="validatesWith"/>
-
         <onCreate class="com.qcadoo.mes.orders.hooks.OrderHooks"
                   method="onCreate"/>
-
         <onSave class="com.qcadoo.mes.orders.hooks.OrderHooks"
                 method="onSave"/>
-
         <onCopy class="com.qcadoo.mes.orders.hooks.OrderHooks"
                 method="onCopy"/>
+        <onDelete class="com.qcadoo.mes.orders.hooks.OrderHooks"
+                method="onDelete"/>
     </hooks>
 
     <identifier expression="#number + ' - ' + #name"/>

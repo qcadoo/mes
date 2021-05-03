@@ -66,20 +66,14 @@ public class OPICDetailsListeners {
 
     public void onProductChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FieldComponent unitField = (FieldComponent) view.getComponentByReference(OperationProductInComponentFields.UNIT);
-        FieldComponent givenUnitField = (FieldComponent) view
-                .getComponentByReference(OperationProductInComponentFields.GIVEN_UNIT);
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OperationProductInComponentFields.PRODUCT);
-        if (productLookup.isEmpty()) {
-            unitField.setFieldValue("");
-            givenUnitField.setFieldValue("");
-        } else {
-            Entity product = productLookup.getEntity();
-            if (Objects.nonNull(product)) {
-                unitField.setFieldValue(product.getStringField(ProductFields.UNIT));
-                givenUnitField.setFieldValue(product.getStringField(ProductFields.UNIT));
-                calculateQuantity(view, state, args);
-            }
+
+        Entity product = productLookup.getEntity();
+        if (Objects.nonNull(product)) {
+            unitField.setFieldValue(product.getStringField(ProductFields.UNIT));
+            calculateQuantity(view, state, args);
         }
+
     }
 
     public void calculateQuantityFormula(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -150,6 +144,8 @@ public class OPICDetailsListeners {
     }
 
     public void calculateQuantity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        fillUnitForTechnologyType(view);
+
         FormComponent operationProductInComponentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Entity operationProductInComponent = operationProductInComponentForm.getPersistedEntityWithIncludedFormValues();
@@ -157,6 +153,26 @@ public class OPICDetailsListeners {
         calculateQuantity(view, operationProductInComponent);
 
         operationProductInComponentForm.setEntity(operationProductInComponent);
+    }
+
+    private void fillUnitForTechnologyType(ViewDefinitionState view) {
+        LookupComponent technologyInputProductTypeLookup = (LookupComponent) view
+                .getComponentByReference(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE);
+        FieldComponent unitField = (FieldComponent) view.getComponentByReference(OperationProductInComponentFields.UNIT);
+        FieldComponent givenUnitField = (FieldComponent) view
+                .getComponentByReference(OperationProductInComponentFields.GIVEN_UNIT);
+
+        Entity technologyInputProductType = technologyInputProductTypeLookup.getEntity();
+        String givenUnit = (String) givenUnitField.getFieldValue();
+
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OperationProductInComponentFields.PRODUCT);
+
+        if (productLookup.isEmpty() && Objects.nonNull(technologyInputProductType) && StringUtils.isNoneEmpty(givenUnit)) {
+            unitField.setFieldValue(givenUnit);
+            unitField.requestComponentUpdateState();
+        }
+        unitService.fillProductUnitBeforeRenderIfEmpty(view, OperationProductInComponentFields.UNIT);
+        unitService.fillProductUnitBeforeRenderIfEmpty(view, OperationProductInComponentFields.GIVEN_UNIT);
     }
 
     private void calculateQuantity(final ViewDefinitionState view, final Entity operationProductInComponent) {

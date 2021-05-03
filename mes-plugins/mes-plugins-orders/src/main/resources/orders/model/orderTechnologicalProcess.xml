@@ -42,6 +42,7 @@
             <validatesUnscaledValue max="7"/>
             <validatesScale max="5"/>
         </decimal>
+        <datetime name="createDate"/>
         <datetime name="date"/>
         <belongsTo name="worker" model="staff" plugin="basic"/>
 
@@ -54,6 +55,8 @@
     <hooks>
         <onSave class="com.qcadoo.mes.orders.hooks.OrderTechnologicalProcessHooks"
                 method="onSave"/>
+        <onDelete class="com.qcadoo.mes.orders.hooks.OrderTechnologicalProcessHooks"
+                method="onDelete"/>
     </hooks>
 
     <identifier expression="#number"/>

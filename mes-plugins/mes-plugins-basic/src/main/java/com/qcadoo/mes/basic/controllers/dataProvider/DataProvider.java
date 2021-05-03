@@ -419,16 +419,16 @@ public class DataProvider {
                     faultTypeRequest.getSubassemblyId());
             Map<String, Object> parameters = Maps.newHashMap();
 
-            parameters.put("workstationId",  w.getBelongsToField(SubassemblyFields.WORKSTATION).getId());
+            parameters.put("subassemblyId",  w.getId());
             parameters.put("workstationTypeId", w.getBelongsToField(SubassemblyFields.WORKSTATION_TYPE).getId());
 
             StringBuilder query = new StringBuilder();
 
             query.append("SELECT distinct ft.id as id, ft.name as name, ft.name as number ");
             query.append("FROM basic_faulttype ft ");
-            query.append("LEFT JOIN jointable_faulttype_workstation fw ON fw.faulttype_id = ft.id ");
+            query.append("LEFT JOIN jointable_faulttype_subassembly fs ON fs.faulttype_id = ft.id ");
             query.append("LEFT JOIN jointable_faulttype_workstationtype fwt ON fwt.faulttype_id = ft.id ");
-            query.append("WHERE ft.isdefault OR fw.workstation_id = :workstationId OR fwt.workstationtype_id = :workstationTypeId ");
+            query.append("WHERE ft.active AND ( ft.isdefault OR fs.subassembly_id = :subassemblyId OR fwt.workstationtype_id = :workstationTypeId) ");
             query.append("ORDER BY ft.name ");
             List<FaultTypeDto> types = jdbcTemplate.query(query.toString(), parameters, new BeanPropertyRowMapper(
                     FaultTypeDto.class));
@@ -448,7 +448,7 @@ public class DataProvider {
             query.append("FROM basic_faulttype ft ");
             query.append("LEFT JOIN jointable_faulttype_workstation fw ON fw.faulttype_id = ft.id ");
             query.append("LEFT JOIN jointable_faulttype_workstationtype fwt ON fwt.faulttype_id = ft.id ");
-            query.append("WHERE ft.isdefault OR fw.workstation_id = :workstationId OR fwt.workstationtype_id = :workstationTypeId ");
+            query.append("WHERE ft.active AND ( ft.isdefault OR fw.workstation_id = :workstationId OR fwt.workstationtype_id = :workstationTypeId) ");
             query.append("ORDER BY ft.name ");
 
             List<FaultTypeDto> types = jdbcTemplate.query(query.toString(), parameters, new BeanPropertyRowMapper(

@@ -23,22 +23,22 @@
  */
 package com.qcadoo.mes.materialFlowResources.hooks;
 
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.service.DocumentService;
 import com.qcadoo.mes.materialFlowResources.service.DocumentStateChangeService;
-import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
-import com.qcadoo.mes.materialFlowResources.validators.DocumentValidators;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
-import java.util.Date;
-import java.util.List;
 
 @Service
 public class DocumentModelHooks {
@@ -49,13 +49,10 @@ public class DocumentModelHooks {
     private TranslationService translationService;
 
     @Autowired
-    private DocumentValidators documentValidators;
-
-    @Autowired
-    private ReservationsService reservationsService;
-
-    @Autowired
     private DocumentStateChangeService documentStateChangeService;
+
+    @Autowired
+    private DocumentService documentService;
 
     public void onCreate(final DataDefinition documentDD, final Entity document) {
         setInitialDocumentNumber(document);
@@ -155,6 +152,12 @@ public class DocumentModelHooks {
          */
         return translationService.translate(TYPE_TRANSLATION_PREFIX + document.getStringField(DocumentFields.TYPE),
                 LocaleContextHolder.getLocale());
+    }
+
+    public boolean onDelete(final DataDefinition documentDD, final Entity document) {
+        documentService.updateOrdersGroupIssuedMaterials(null, document, true);
+
+        return true;
     }
 
 }

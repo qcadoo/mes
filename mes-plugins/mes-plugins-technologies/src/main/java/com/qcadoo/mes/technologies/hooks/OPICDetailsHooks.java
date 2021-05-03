@@ -33,13 +33,10 @@ import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
-import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-
-import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,21 +53,6 @@ public class OPICDetailsHooks {
     }
 
     private void fillUnitBeforeRender(final ViewDefinitionState view) {
-        LookupComponent technologyInputProductTypeLookup = (LookupComponent) view.getComponentByReference(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE);
-        FieldComponent unitField = (FieldComponent) view.getComponentByReference(OperationProductInComponentFields.UNIT);
-        FieldComponent givenUnitField = (FieldComponent) view.getComponentByReference(OperationProductInComponentFields.GIVEN_UNIT);
-
-        Entity technologyInputProductType = technologyInputProductTypeLookup.getEntity();
-        String givenUnit = (String) givenUnitField.getFieldValue();
-
-        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OperationProductInComponentFields.PRODUCT);
-
-
-        if (productLookup.isEmpty() && Objects.nonNull(technologyInputProductType) && Objects.nonNull(givenUnit)) {
-            unitField.setFieldValue(givenUnit);
-            unitField.requestComponentUpdateState();
-        }
-
         unitService.fillProductUnitBeforeRenderIfEmpty(view, OperationProductInComponentFields.UNIT);
         unitService.fillProductUnitBeforeRenderIfEmpty(view, OperationProductInComponentFields.GIVEN_UNIT);
     }

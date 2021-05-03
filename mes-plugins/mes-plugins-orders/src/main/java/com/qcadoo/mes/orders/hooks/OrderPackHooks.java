@@ -2,6 +2,7 @@ package com.qcadoo.mes.orders.hooks;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
@@ -29,40 +30,61 @@ public class OrderPackHooks {
     @Autowired
     private NumberService numberService;
 
-    public void onSave(final DataDefinition dataDefinition, final Entity entity) {
-        setNumber(entity);
+    public boolean validatesWith(final DataDefinition orderPackDD, final Entity orderPack) {
+        Entity order = orderPack.getBelongsToField(OrderPackFields.ORDER);
+        String orderState = order.getStringField(OrderFields.STATE);
+
+        if (OrderState.COMPLETED.getStringValue().equals(orderState) || OrderState.DECLINED.getStringValue().equals(orderState)
+                || OrderState.ABANDONED.getStringValue().equals(orderState)
+                || OrderState.PENDING.getStringValue().equals(orderState)) {
+            orderPack.addError(orderPackDD.getField(OrderPackFields.ORDER), "orderPacks.validate.global.error.orderStateError");
+
+            return false;
+        }
+
+        BigDecimal sumQuantityOrderPacks = orderPackService.getSumQuantityOrderPacksForOrderWithoutPack(order, orderPack.getId())
+                .add(orderPack.getDecimalField(OrderPackFields.QUANTITY), numberService.getMathContext());
+
+        if (order.getDecimalField(OrderFields.PLANNED_QUANTITY).compareTo(sumQuantityOrderPacks) < 0) {
+            orderPack.addError(orderPackDD.getField(OrderPackFields.QUANTITY), "orderPacks.validate.global.error.quantityError");
+
+            return false;
+        }
+
+        return true;
+    }
+
+    public void onSave(final DataDefinition orderPackDD, final Entity orderPack) {
+        setNumber(orderPack);
     }
 
     private void setNumber(final Entity entity) {
         if (checkIfShouldInsertNumber(entity)) {
-            String number = jdbcTemplate.queryForObject("select generate_order_pack_number()", Collections.emptyMap(),
+            String number = jdbcTemplate.queryForObject("SELECT generate_order_pack_number()", Collections.emptyMap(),
                     String.class);
+
             entity.setField(OrderPackFields.NUMBER, number);
         }
     }
 
-    private boolean checkIfShouldInsertNumber(final Entity entity) {
-        if (!Objects.isNull(entity.getId())) {
+    private boolean checkIfShouldInsertNumber(final Entity orderPack) {
+        if (!Objects.isNull(orderPack.getId())) {
             return false;
         }
-        return !StringUtils.isNotBlank(entity.getStringField(OrderPackFields.NUMBER));
+
+        return !StringUtils.isNotBlank(orderPack.getStringField(OrderPackFields.NUMBER));
     }
 
-    public boolean validatesWith(final DataDefinition dataDefinition, final Entity entity) {
-        Entity order = entity.getBelongsToField(OrderPackFields.ORDER);
-        String orderState = order.getStringField(OrderFields.STATE);
-        if (OrderState.COMPLETED.getStringValue().equals(orderState) || OrderState.DECLINED.getStringValue().equals(orderState)
-                || OrderState.ABANDONED.getStringValue().equals(orderState)
-                || OrderState.PENDING.getStringValue().equals(orderState)) {
-            entity.addError(dataDefinition.getField(OrderPackFields.ORDER), "orderPacks.validate.global.error.orderStateError");
+    public boolean onDelete(final DataDefinition orderPackDD, final Entity orderPack) {
+        List<Entity> orderTechnologicalProcesses = orderPack.getHasManyField(OrderPackFields.ORDER_TECHNOLOGICAL_PROCESSES);
+
+        if (!orderTechnologicalProcesses.isEmpty()) {
+            orderPack.addGlobalError("orderPacks.validate.global.error.orderTechnologicalProcessesExists");
+
             return false;
         }
-        BigDecimal sumQuantityOrderPacks = orderPackService.getSumQuantityOrderPacksForOrderWithoutPack(order, entity.getId())
-                .add(entity.getDecimalField(OrderPackFields.QUANTITY), numberService.getMathContext());
-        if (order.getDecimalField(OrderFields.PLANNED_QUANTITY).compareTo(sumQuantityOrderPacks) < 0) {
-            entity.addError(dataDefinition.getField(OrderPackFields.QUANTITY), "orderPacks.validate.global.error.quantityError");
-            return false;
-        }
+
         return true;
     }
+
 }

@@ -59,6 +59,8 @@ public final class CostCalculationFields {
 
     public static final String REGISTRATION_PRICE_OVERHEAD = "registrationPriceOverhead";
 
+    public static final String TECHNICAL_PRODUCTION_COST_OVERHEAD = "technicalProductionCostOverhead";
+
     public static final String PROFIT = "profit";
 
     public static final String DESCRIPTION = "description";

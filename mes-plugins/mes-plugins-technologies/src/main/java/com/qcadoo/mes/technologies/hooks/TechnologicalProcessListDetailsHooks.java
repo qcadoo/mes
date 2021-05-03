@@ -1,5 +1,7 @@
 package com.qcadoo.mes.technologies.hooks;
 
+import java.util.Objects;
+
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.technologies.criteriaModifiers.TechnologicalProcessListDetailsCriteriaModifiers;
@@ -16,20 +18,25 @@ public class TechnologicalProcessListDetailsHooks {
 
     private static final String L_TECHNOLOGIES = "technologies";
 
+    private static final String L_TECHNOLOGICAL_PROCESSES = "technologicalProcesses";
+
+    private static final String L_ADD_PROCESSES = "addProcesses";
+
     public void onBeforeRender(final ViewDefinitionState view) {
+        GridComponent technologies = (GridComponent) view.getComponentByReference(L_TECHNOLOGIES);
+
+        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
+        RibbonActionItem addProcesses = window.getRibbon().getGroupByName(L_TECHNOLOGICAL_PROCESSES)
+                .getItemByName(L_ADD_PROCESSES);
+
         Long technologicalProcessListId = ((FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM))
                 .getEntityId();
-        WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
 
-        if (technologicalProcessListId != null) {
-            RibbonActionItem addProcesses = window.getRibbon().getGroupByName("technologicalProcesses")
-                    .getItemByName("addProcesses");
-
+        if (Objects.nonNull(technologicalProcessListId)) {
             addProcesses.setEnabled(true);
             addProcesses.requestUpdate(true);
         }
 
-        GridComponent technologies = (GridComponent) view.getComponentByReference(L_TECHNOLOGIES);
         FilterValueHolder gridFilterValueHolder = technologies.getFilterValue();
 
         gridFilterValueHolder.put(TechnologicalProcessListDetailsCriteriaModifiers.L_TECHNOLOGICAL_PROCESS_LIST_ID,
@@ -37,4 +44,5 @@ public class TechnologicalProcessListDetailsHooks {
 
         technologies.setFilterValue(gridFilterValueHolder);
     }
+
 }

@@ -40,6 +40,7 @@
             <option type="column" name="date" fields="date"/>
             <option type="column" name="worker" fields="worker"/>
             <option type="column" name="wasteQuantity" fields="wasteQuantity"/>
+            <option type="column" name="productUnit" fields="productUnit"/>
             <option type="column" name="causeOfWaste" fields="causeOfWaste"/>
             <option type="column" name="orderPackNumber" fields="orderPackNumber"/>
             <option type="column" name="technologicalProcessName" fields="technologicalProcessName"/>
@@ -51,9 +52,9 @@
             <option type="order" column="number" direction="desc"/>
 
             <option type="searchable"
-                    value="number,date,worker,wasteQuantity,causeOfWaste,orderPackNumber,technologicalProcessName,orderNumber,productNumber,orderTechnologicalProcessDate,orderTechnologicalProcessWorker"/>
+                    value="number,date,worker,wasteQuantity,productUnit,causeOfWaste,orderPackNumber,technologicalProcessName,orderNumber,productNumber,orderTechnologicalProcessDate,orderTechnologicalProcessWorker"/>
             <option type="orderable"
-                    value="number,date,worker,wasteQuantity,causeOfWaste,orderPackNumber,technologicalProcessName,orderNumber,productNumber,orderTechnologicalProcessDate,orderTechnologicalProcessWorker"/>
+                    value="number,date,worker,wasteQuantity,productUnit,causeOfWaste,orderPackNumber,technologicalProcessName,orderNumber,productNumber,orderTechnologicalProcessDate,orderTechnologicalProcessWorker"/>
 
             <option type="correspondingView" value="orders/orderTechnologicalProcessWasteDetails"/>
             <option type="correspondingComponent" value="form"/>

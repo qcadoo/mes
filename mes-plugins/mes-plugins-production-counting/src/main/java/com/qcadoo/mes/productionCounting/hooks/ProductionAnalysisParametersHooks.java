@@ -23,17 +23,18 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Service
 public class ProductionAnalysisParametersHooks {
@@ -56,6 +57,7 @@ public class ProductionAnalysisParametersHooks {
         fillComponentWithPercent("productionCostMarginPBProc", viewDefinitionState);
         fillComponentWithPercent("materialCostMarginPBProc", viewDefinitionState);
         fillComponentWithPercent("registrationPriceOverheadPBProc", viewDefinitionState);
+        fillComponentWithPercent("technicalProductionCostOverheadPBProc", viewDefinitionState);
         fillComponentWithPercent("profitPBProc", viewDefinitionState);
 
     }

@@ -76,7 +76,7 @@ public class ProductDetailsHooksTest {
     private FormComponent productForm;
 
     @Mock
-    private FieldComponent parentField, entityTypeField, unitField;
+    private FieldComponent parentField, entityTypeField, unitField, categoryField;
 
     @Mock
     private LookupComponent assortmentLookup, modelLookup;
@@ -105,6 +105,7 @@ public class ProductDetailsHooksTest {
         given(view.getComponentByReference(QcadooViewConstants.L_FORM)).willReturn(productForm);
         given(view.getComponentByReference(ProductFields.PARENT)).willReturn(parentField);
         given(view.getComponentByReference(ProductFields.ENTITY_TYPE)).willReturn(entityTypeField);
+        given(view.getComponentByReference(ProductFields.CATEGORY)).willReturn(categoryField);
         given(view.getComponentByReference(ProductFields.ASSORTMENT)).willReturn(assortmentLookup);
         given(view.getComponentByReference(ProductFields.MODEL)).willReturn(modelLookup);
 
@@ -122,6 +123,7 @@ public class ProductDetailsHooksTest {
         verify(productForm).setFormEnabled(false);
         verify(entityTypeField).setEnabled(true);
         verify(parentField).setEnabled(true);
+        verify(categoryField).setEnabled(true);
         verify(assortmentLookup).setEnabled(true);
         verify(modelLookup).setEnabled(true);
     }

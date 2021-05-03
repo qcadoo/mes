@@ -47,6 +47,8 @@
         <integer name="technologicalProcessId"/>
         <string name="technologicalProcessName"/>
         <decimal name="quantity"/>
+        <string name="productUnit"/>
+        <datetime name="createDate"/>
         <datetime name="date"/>
         <string name="worker"/>
         <decimal name="wastesQuantity"/>

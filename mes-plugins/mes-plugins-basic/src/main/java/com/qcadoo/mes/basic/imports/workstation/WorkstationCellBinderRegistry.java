@@ -23,17 +23,16 @@
  */
 package com.qcadoo.mes.basic.imports.workstation;
 
-import static com.qcadoo.mes.basic.imports.dtos.CellBinder.optional;
-import static com.qcadoo.mes.basic.imports.dtos.CellBinder.required;
+import com.qcadoo.mes.basic.constants.WorkstationFields;
+import com.qcadoo.mes.basic.imports.dtos.CellBinderRegistry;
+import com.qcadoo.mes.basic.imports.helpers.CellParser;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.qcadoo.mes.basic.constants.WorkstationFields;
-import com.qcadoo.mes.basic.imports.dtos.CellBinderRegistry;
-import com.qcadoo.mes.basic.imports.helpers.CellParser;
+import static com.qcadoo.mes.basic.imports.dtos.CellBinder.optional;
+import static com.qcadoo.mes.basic.imports.dtos.CellBinder.required;
 
 @Component
 public class WorkstationCellBinderRegistry {
@@ -65,6 +64,8 @@ public class WorkstationCellBinderRegistry {
         cellBinderRegistry.setCellBinder(optional(WorkstationFields.SERIES));
         cellBinderRegistry.setCellBinder(optional(WorkstationFields.PRODUCER));
         cellBinderRegistry.setCellBinder(optional(WorkstationFields.PRODUCTION_DATE, dateCellParser));
+        cellBinderRegistry.setCellBinder(optional(WorkstationFields.DATE_OF_ADMISSION, dateCellParser));
+        cellBinderRegistry.setCellBinder(optional(WorkstationFields.DATE_OF_WITHDRAWAL, dateCellParser));
         cellBinderRegistry.setCellBinder(optional(WorkstationFields.WNK_NUMBER));
         cellBinderRegistry.setCellBinder(optional(WorkstationFields.DIVISION, divisionCellParser));
         cellBinderRegistry.setCellBinder(optional(L_PRODUCTION_LINE, productionLineCellParser));

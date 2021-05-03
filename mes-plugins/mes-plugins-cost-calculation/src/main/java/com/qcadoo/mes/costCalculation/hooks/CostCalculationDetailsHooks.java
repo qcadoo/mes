@@ -23,6 +23,14 @@
  */
 package com.qcadoo.mes.costCalculation.hooks;
 
+import java.math.BigDecimal;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
@@ -33,17 +41,15 @@ import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.components.CheckBoxComponent;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 @Service
 public class CostCalculationDetailsHooks {
@@ -53,6 +59,8 @@ public class CostCalculationDetailsHooks {
     private static final String L_MATERIAL_COST_MARGIN_PROC = "materialCostMarginProc";
 
     private static final String L_REGISTRATION_PRICE_OVERHEAD_PROC = "registrationPriceOverheadProc";
+
+    private static final String TECHNICAL_PRODUCTION_COST_OVERHEAD_PROC = "technicalProductionCostOverheadProc";
 
     private static final String L_PROFIT_PROC = "profitProc";
 
@@ -92,7 +100,8 @@ public class CostCalculationDetailsHooks {
                 CostCalculationFields.MATERIAL_COST_MARGIN, CostCalculationFields.ADDITIONAL_OVERHEAD,
                 CostCalculationFields.INCLUDE_TPZ, CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED,
                 CostCalculationFields.INCLUDE_ADDITIONAL_TIME, CostCalculationFields.SOURCE_OF_OPERATION_COSTS,
-                CostCalculationFields.REGISTRATION_PRICE_OVERHEAD, CostCalculationFields.PROFIT);
+                CostCalculationFields.REGISTRATION_PRICE_OVERHEAD, CostCalculationFields.TECHNICAL_PRODUCTION_COST_OVERHEAD,
+                CostCalculationFields.PROFIT);
 
         Map<String, FieldComponent> componentsMap = Maps.newHashMap();
 
@@ -163,6 +172,7 @@ public class CostCalculationDetailsHooks {
         fillComponentWithPercent(L_PRODUCTION_COST_MARGIN_PROC, viewDefinitionState);
         fillComponentWithPercent(L_MATERIAL_COST_MARGIN_PROC, viewDefinitionState);
         fillComponentWithPercent(L_REGISTRATION_PRICE_OVERHEAD_PROC, viewDefinitionState);
+        fillComponentWithPercent(TECHNICAL_PRODUCTION_COST_OVERHEAD_PROC, viewDefinitionState);
         fillComponentWithPercent(L_PROFIT_PROC, viewDefinitionState);
     }
 
@@ -206,6 +216,8 @@ public class CostCalculationDetailsHooks {
                     parameter.getDecimalField(CostCalculationFields.ADDITIONAL_OVERHEAD), view, true);
             fillWithPropertyOrZero(CostCalculationFields.REGISTRATION_PRICE_OVERHEAD,
                     parameter.getDecimalField(CostCalculationFields.REGISTRATION_PRICE_OVERHEAD), view, true);
+            fillWithPropertyOrZero(CostCalculationFields.TECHNICAL_PRODUCTION_COST_OVERHEAD,
+                    parameter.getDecimalField(CostCalculationFields.TECHNICAL_PRODUCTION_COST_OVERHEAD), view, true);
             fillWithPropertyOrZero(CostCalculationFields.PROFIT, parameter.getDecimalField(CostCalculationFields.PROFIT), view,
                     true);
             isSetFieldsFromParameter.setFieldValue(true);

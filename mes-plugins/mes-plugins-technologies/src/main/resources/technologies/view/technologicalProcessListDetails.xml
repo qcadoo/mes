@@ -120,22 +120,24 @@
                        columns="3" rows="10">
                 <layoutElement column="1" row="1" width="3" height="10">
                     <component type="grid" name="technologies" reference="technologies"
-                               plugin="technologies" model="technology">
-                        <option type="column" name="number" fields="number" width="50"/>
-                        <option type="column" name="name" fields="name" width="100"/>
-                        <option type="column" name="productNumber" fields="product" expression="#product['number']" width="50"/>
-                        <option type="column" name="productName" fields="product" expression="#product['name']" width="100"/>
-                        <option type="column" name="productEntityType" fields="product" expression="'@basic.product.entityType.value.' + #product['entityType']" width="100"/>
+                               plugin="technologies" model="technologyOperationComponent">
+                        <option type="column" name="number" fields="technology" expression="#technology.get('number')" width="50"/>
+                        <option type="column" name="name" fields="technology" expression="#technology.get('name')" width="100"/>
+                        <option type="column" name="productNumber" fields="technology" expression="#technology.get('product')?.get('number')" width="50"/>
+                        <option type="column" name="productName" fields="technology" expression="#technology.get('product')?.get('name')" width="100"/>
+                        <option type="column" name="productEntityType" fields="technology" expression="'@basic.product.entityType.value.' + #technology.get('product')?.get('entityType')" width="100"/>
+                        <option type="column" name="technologicalProcessListAssignmentDate" fields="technologicalProcessListAssignmentDate"/>
 
                         <option type="order" column="number" direction="desc"/>
 
-                        <option type="searchable" value="number,name,productNumber,productName"/>
-                        <option type="orderable" value="number,name,productNumber,productName"/>
+                        <option type="searchable" value="number,name,productNumber,productName,technologicalProcessListAssignmentDate"/>
+                        <option type="orderable" value="number,name,productNumber,productName,technologicalProcessListAssignmentDate"/>
 
                         <option type="fullscreen" value="true"/>
+
                         <criteriaModifier
                                 class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologicalProcessListDetailsCriteriaModifiers"
-                                method="showAssignedTechnologies"/>
+                                method="filterTechnologies"/>
                     </component>
                 </layoutElement>
             </component>

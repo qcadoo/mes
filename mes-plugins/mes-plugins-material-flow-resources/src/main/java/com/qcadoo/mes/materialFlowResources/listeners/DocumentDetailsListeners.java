@@ -349,7 +349,7 @@ public class DocumentDetailsListeners {
                 receiptDocumentForReleaseHelper.tryBuildConnectedDocument(document, view);
             }
 
-            documentService.updateOrdersGroupIssuedMaterials(null, document);
+            documentService.updateOrdersGroupIssuedMaterials(null, document, false);
 
             String successMessage = String.format("DOCUMENT ACCEPT SUCCESS: id = %d number = %s", document.getId(),
                     document.getStringField(DocumentFields.NUMBER));

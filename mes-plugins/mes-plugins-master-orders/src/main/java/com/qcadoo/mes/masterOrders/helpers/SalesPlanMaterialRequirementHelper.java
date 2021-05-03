@@ -230,10 +230,8 @@ public class SalesPlanMaterialRequirementHelper {
 
     private void updateSalesPlanMaterialRequirementProducts(final List<Entity> salesPlanMaterialRequirementProducts) {
         List<Entity> products = getSalesPlanMaterialRequirementProducts(salesPlanMaterialRequirementProducts);
-        Set<Long> parentIds = products.stream()
-                .filter(product -> Objects.nonNull(product.getBelongsToField(ProductFields.PARENT)))
-                .map(product -> product.getBelongsToField(ProductFields.PARENT).getId()).collect(Collectors.toSet());
-        Set<Long> productIds = products.stream().map(Entity::getId).collect(Collectors.toSet());
+        Set<Long> parentIds = getParentIds(products);
+        Set<Long> productIds = getProductIds(products);
 
         Map<Long, Map<Long, BigDecimal>> resourceStocks = getResourceStocks(products);
         List<Entity> companyProducts = getCompanyProducts(productIds);
@@ -284,11 +282,20 @@ public class SalesPlanMaterialRequirementHelper {
         }
     }
 
-    private List<Entity> getSalesPlanMaterialRequirementProducts(final List<Entity> salesPlanMaterialRequirementProducts) {
+    public List<Entity> getSalesPlanMaterialRequirementProducts(final List<Entity> salesPlanMaterialRequirementProducts) {
         return salesPlanMaterialRequirementProducts.stream()
                 .map(salesPlanMaterialRequirementProduct -> salesPlanMaterialRequirementProduct
                         .getBelongsToField(SalesPlanMaterialRequirementProductFields.PRODUCT))
                 .collect(Collectors.toList());
+    }
+
+    public Set<Long> getParentIds(List<Entity> products) {
+        return products.stream().filter(product -> Objects.nonNull(product.getBelongsToField(ProductFields.PARENT)))
+                .map(product -> product.getBelongsToField(ProductFields.PARENT).getId()).collect(Collectors.toSet());
+    }
+
+    public Set<Long> getProductIds(List<Entity> products) {
+        return products.stream().map(Entity::getId).collect(Collectors.toSet());
     }
 
     private Map<Long, Map<Long, BigDecimal>> getResourceStocks(final List<Entity> products) {
@@ -327,7 +334,7 @@ public class SalesPlanMaterialRequirementHelper {
         return companyProducts;
     }
 
-    private Optional<Entity> getCompanyProduct(final List<Entity> companyProducts, final Long productId) {
+    public Optional<Entity> getCompanyProduct(final List<Entity> companyProducts, final Long productId) {
         return companyProducts.stream().filter(
                 companyProduct -> companyProduct.getBelongsToField(CompanyProductFields.PRODUCT).getId().equals(productId))
                 .findAny();
@@ -346,7 +353,7 @@ public class SalesPlanMaterialRequirementHelper {
         return companyProductFamilies;
     }
 
-    private Optional<Entity> getCompanyProductsFamily(final List<Entity> companyProductsFamilies, final Long productId) {
+    public Optional<Entity> getCompanyProductsFamily(final List<Entity> companyProductsFamilies, final Long productId) {
         return companyProductsFamilies.stream().filter(companyProductsFamily -> companyProductsFamily
                 .getBelongsToField(CompanyProductsFamilyFields.PRODUCT).getId().equals(productId)).findAny();
     }
@@ -398,11 +405,11 @@ public class SalesPlanMaterialRequirementHelper {
                 TechnologiesConstants.MODEL_PRODUCT_BY_SIZE_GROUP);
     }
 
-    private DataDefinition getCompanyProductDD() {
+    public DataDefinition getCompanyProductDD() {
         return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COMPANY_PRODUCT);
     }
 
-    private DataDefinition getCompanyProductsFamilyDD() {
+    public DataDefinition getCompanyProductsFamilyDD() {
         return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
                 DeliveriesConstants.MODEL_COMPANY_PRODUCTS_FAMILY);
     }

@@ -32,7 +32,7 @@
     <component type="window" name="window" reference="window">
 
         <ribbon>
-            <template name="standardFormTemplate" excludeItems="actions.saveNew,actions.delete,actions.copy"/>
+            <template name="standardFormTemplate" excludeItems="actions.saveNew,actions.copy"/>
         </ribbon>
 
         <windowTab name="mainTab">

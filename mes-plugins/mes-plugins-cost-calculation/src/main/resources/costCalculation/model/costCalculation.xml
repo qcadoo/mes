@@ -91,6 +91,11 @@
 			<validatesScale max="5" />
 			<validatesRange from="0"/>
 		</decimal>
+		<decimal name="technicalProductionCostOverhead" >
+			<validatesUnscaledValue max="14" />
+			<validatesScale max="5" />
+			<validatesRange from="0"/>
+		</decimal>
 		<decimal name="profit">
 			<validatesUnscaledValue max="14" />
 			<validatesScale max="5" />

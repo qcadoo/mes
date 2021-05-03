@@ -70,6 +70,14 @@
             <validatesUnscaledValue max="14" />
             <validatesScale max="5" />
         </decimal>
+        <decimal name="technicalProductionCostOverheadValue">
+            <validatesUnscaledValue max="14" />
+            <validatesScale max="5" />
+        </decimal>
+        <decimal name="totalManufacturingCost">
+            <validatesUnscaledValue max="14" />
+            <validatesScale max="5" />
+        </decimal>
         <decimal name="profitValue">
             <validatesUnscaledValue max="14" />
             <validatesScale max="5" />

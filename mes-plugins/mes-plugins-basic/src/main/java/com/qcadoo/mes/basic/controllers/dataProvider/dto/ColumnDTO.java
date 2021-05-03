@@ -10,25 +10,26 @@ public class ColumnDTO {
 
     private String dataType;
 
-    public ColumnDTO(String id, String name) {
+    public ColumnDTO(final String id, final String name) {
         this.id = id;
         this.name = name;
     }
 
-    public ColumnDTO(String id, String name, String dataType) {
+    public ColumnDTO(final String id, final String name, final String dataType) {
         this.id = id;
         this.name = name;
         this.dataType = dataType;
     }
 
     public ColumnDTO() {
+
     }
 
     public String getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(final String id) {
         this.id = id;
     }
 
@@ -36,7 +37,7 @@ public class ColumnDTO {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(final String name) {
         this.name = name;
     }
 
@@ -44,7 +45,7 @@ public class ColumnDTO {
         return dataType;
     }
 
-    public void setDataType(String dataType) {
+    public void setDataType(final String dataType) {
         this.dataType = dataType;
     }
 
@@ -52,7 +53,8 @@ public class ColumnDTO {
         return unit;
     }
 
-    public void setUnit(String unit) {
+    public void setUnit(final String unit) {
         this.unit = unit;
     }
+
 }

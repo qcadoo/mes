@@ -1,17 +1,25 @@
 package com.qcadoo.mes.productionCounting.xls;
 
-import com.qcadoo.mes.costCalculation.constants.MaterialCostsUsed;
-import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
-import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
-import com.qcadoo.mes.productionCounting.xls.dto.*;
-import com.qcadoo.model.api.Entity;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.qcadoo.mes.costCalculation.constants.MaterialCostsUsed;
+import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
+import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
+import com.qcadoo.mes.productionCounting.xls.dto.LaborTime;
+import com.qcadoo.mes.productionCounting.xls.dto.LaborTimeDetails;
+import com.qcadoo.mes.productionCounting.xls.dto.MaterialCost;
+import com.qcadoo.mes.productionCounting.xls.dto.OrderBalance;
+import com.qcadoo.mes.productionCounting.xls.dto.PieceworkDetails;
+import com.qcadoo.mes.productionCounting.xls.dto.ProducedQuantity;
+import com.qcadoo.mes.productionCounting.xls.dto.ProductionCost;
+import com.qcadoo.mes.productionCounting.xls.dto.Stoppage;
+import com.qcadoo.model.api.Entity;
 
 @Repository
 class ProductionBalanceRepository {
@@ -715,9 +723,13 @@ class ProductionBalanceRepository {
         query.append("AS registrationPriceOverheadValue, ");
         appendRealProductionCosts(entity, query);
         query.append("AS realProductionCosts, ");
+        appendTechnicalProductionCostOverheadValue(entity, query);
+        query.append("AS technicalProductionCostOverheadValue, ");
+        appendTotalManufacturingCost(entity, query);
+        query.append("AS totalManufacturingCost, ");
         appendProfitValue(entity, query);
         query.append("AS profitValue, ");
-        appendRealProductionCosts(entity, query);
+        appendTotalManufacturingCost(entity, query);
         query.append("+ ");
         appendProfitValue(entity, query);
         query.append("AS sellPrice ");
@@ -784,6 +796,8 @@ class ProductionBalanceRepository {
         query.append("AS directAdditionalCost, ");
         appendRegistrationPriceOverhead(entity, query);
         query.append("AS registrationPriceOverhead, ");
+        appendTechnicalProductionCostOverhead(entity, query);
+        query.append("AS technicalProductionCostOverhead, ");
         appendProfit(entity, query);
         query.append("AS profit, ");
     }
@@ -808,14 +822,32 @@ class ProductionBalanceRepository {
         query.append("COALESCE(" + entity.getDecimalField(ProductionBalanceFields.REGISTRATION_PRICE_OVERHEAD) + ", 0) ");
     }
 
+    private void appendTechnicalProductionCostOverhead(Entity entity, StringBuilder query) {
+        query.append("COALESCE(" + entity.getDecimalField(ProductionBalanceFields.TECHNICAL_PRODUCTION_COST_OVERHEAD) + ", 0) ");
+    }
+
     private void appendProfit(Entity entity, StringBuilder query) {
         query.append("COALESCE(" + entity.getDecimalField(ProductionBalanceFields.PROFIT) + ", 0) ");
     }
 
     private void appendProfitValue(Entity entity, StringBuilder query) {
-        appendRealProductionCosts(entity, query);
+        appendTotalManufacturingCost(entity, query);
         query.append(" / 100 * ");
         appendProfit(entity, query);
+    }
+
+    private void appendTotalManufacturingCost(Entity entity, StringBuilder query) {
+        query.append("( ");
+        appendRealProductionCosts(entity, query);
+        query.append("+ ");
+        appendTechnicalProductionCostOverheadValue(entity, query);
+        query.append(") ");
+    }
+
+    private void appendTechnicalProductionCostOverheadValue(Entity entity, StringBuilder query) {
+        appendRealProductionCosts(entity, query);
+        query.append(" / 100 * ");
+        appendTechnicalProductionCostOverhead(entity, query);
     }
 
     private void appendRealProductionCosts(Entity entity, StringBuilder query) {
@@ -879,6 +911,8 @@ class ProductionBalanceRepository {
         query.append("AS productionCostMargin, ");
         appendRegistrationPriceOverhead(entity, query);
         query.append("AS registrationPriceOverhead, ");
+        appendTechnicalProductionCostOverhead(entity, query);
+        query.append("AS technicalProductionCostOverhead, ");
         appendProfit(entity, query);
         query.append("AS profit, ");
         query.append("MIN(obr.additional_overhead) AS additionalOverhead, ");
@@ -895,9 +929,13 @@ class ProductionBalanceRepository {
         query.append("AS registrationPriceOverheadValue, ");
         appendComponentsBalanceRealProductionCosts(entity, query);
         query.append("AS realProductionCosts, ");
+        appendComponentsBalanceTechnicalProductionCostOverheadValue(entity, query);
+        query.append("AS technicalProductionCostOverheadValue, ");
+        appendComponentsBalanceTotalManufacturingCost(entity, query);
+        query.append("AS totalManufacturingCost, ");
         appendComponentsBalanceProfitValue(entity, query);
         query.append("AS profitValue, ");
-        appendComponentsBalanceRealProductionCosts(entity, query);
+        appendComponentsBalanceTotalManufacturingCost(entity, query);
         query.append("+ ");
         appendComponentsBalanceProfitValue(entity, query);
         query.append("AS sellPrice ");
@@ -917,9 +955,23 @@ class ProductionBalanceRepository {
     }
 
     private void appendComponentsBalanceProfitValue(Entity entity, StringBuilder query) {
-        appendComponentsBalanceRealProductionCosts(entity, query);
+        appendComponentsBalanceTotalManufacturingCost(entity, query);
         query.append(" / 100 * ");
         appendProfit(entity, query);
+    }
+
+    private void appendComponentsBalanceTotalManufacturingCost(Entity entity, StringBuilder query) {
+        query.append("( ");
+        appendComponentsBalanceRealProductionCosts(entity, query);
+        query.append("+ ");
+        appendComponentsBalanceTechnicalProductionCostOverheadValue(entity, query);
+        query.append(") ");
+    }
+
+    private void appendComponentsBalanceTechnicalProductionCostOverheadValue(Entity entity, StringBuilder query) {
+        appendComponentsBalanceRealProductionCosts(entity, query);
+        query.append(" / 100 * ");
+        appendTechnicalProductionCostOverhead(entity, query);
     }
 
     private void appendComponentsBalanceRealProductionCosts(Entity entity, StringBuilder query) {
@@ -1002,6 +1054,8 @@ class ProductionBalanceRepository {
         query.append("AS productionCostMargin, ");
         appendRegistrationPriceOverhead(entity, query);
         query.append("AS registrationPriceOverhead, ");
+        appendTechnicalProductionCostOverhead(entity, query);
+        query.append("AS technicalProductionCostOverhead, ");
         appendProfit(entity, query);
         query.append("AS profit, ");
         query.append("MIN(gcb.produced_quantity) AS producedQuantity, ");
@@ -1019,9 +1073,13 @@ class ProductionBalanceRepository {
         query.append("AS registrationPriceOverheadValue, ");
         appendProductsBalanceRealProductionCosts(entity, query);
         query.append("AS realProductionCosts, ");
+        appendProductsBalanceTechnicalProductionCostOverheadValue(entity, query);
+        query.append("AS technicalProductionCostOverheadValue, ");
+        appendProductsBalanceTotalManufacturingCost(entity, query);
+        query.append("AS totalManufacturingCost, ");
         appendProductsBalanceProfitValue(entity, query);
         query.append("AS profitValue, ");
-        appendProductsBalanceRealProductionCosts(entity, query);
+        appendProductsBalanceTotalManufacturingCost(entity, query);
         query.append("+ ");
         appendProductsBalanceProfitValue(entity, query);
         query.append("AS sellPrice ");
@@ -1038,9 +1096,23 @@ class ProductionBalanceRepository {
     }
 
     private void appendProductsBalanceProfitValue(Entity entity, StringBuilder query) {
-        appendProductsBalanceRealProductionCosts(entity, query);
+        appendProductsBalanceTotalManufacturingCost(entity, query);
         query.append(" / 100 * ");
         appendProfit(entity, query);
+    }
+
+    private void appendProductsBalanceTotalManufacturingCost(Entity entity, StringBuilder query) {
+        query.append("( ");
+        appendProductsBalanceRealProductionCosts(entity, query);
+        query.append("+ ");
+        appendProductsBalanceTechnicalProductionCostOverheadValue(entity, query);
+        query.append(") ");
+    }
+
+    private void appendProductsBalanceTechnicalProductionCostOverheadValue(Entity entity, StringBuilder query) {
+        appendProductsBalanceRealProductionCosts(entity, query);
+        query.append(" / 100 * ");
+        appendTechnicalProductionCostOverhead(entity, query);
     }
 
     private void appendProductsBalanceRealProductionCosts(Entity entity, StringBuilder query) {

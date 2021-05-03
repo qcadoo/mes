@@ -33459,8 +33459,6 @@ SELECT pg_catalog.setval('basic_company_id_seq', 2, false);
 --
 
 COPY basic_country (id, country, code, entityversion) FROM stdin;
-1	阿富汗	AF	0
-2	阿尔巴尼亚	AL	0
 3	阿尔及利亚	DZ	0
 4	安道尔	AD	0
 5	安哥拉	AO	0
@@ -33479,13 +33477,11 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 18	孟加拉国	BD	0
 19	巴巴多斯	BB	0
 20	比利时	BE	0
-21	伯利兹	BZ	0
 22	贝宁	BJ	0
 23	百慕大	BM	0
 24	不丹	BT	0
 25	白俄罗斯	BY	0
 26	多民族玻利维亚国	BO	0
-27	博内尔岛，圣尤斯特歇斯岛和萨巴岛	BQ	0
 28	波斯尼亚和黑塞哥维那	BA	0
 29	博茨瓦纳	BW	0
 30	巴西	BR	0
@@ -33514,7 +33510,6 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 53	厄立特里亚	ER	0
 54	爱沙尼亚	EE	0
 55	埃塞俄比亚	ET	0
-56	福克兰群岛（马尔维纳斯	FK	0
 57	斐济	FJ	0
 58	菲律宾	PH	0
 59	芬兰	FI	0
@@ -33540,7 +33535,6 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 79	几内亚	GN	0
 80	海地	HT	0
 81	西班牙	ES	0
-82	荷兰	NL	0
 83	洪都拉斯	HN	0
 84	香港	HK	0
 85	印度	IN	0
@@ -33555,7 +33549,6 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 94	也门	YE	0
 95	新泽西	JE	0
 96	约旦	JO	0
-97	开曼群岛	KY	0
 98	柬埔寨	KH	0
 99	喀麦隆	CM	0
 100	加拿大	CA	0
@@ -33568,7 +33561,6 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 107	科摩罗	KM	0
 108	刚果	CG	0
 109	大韩民国	KR	0
-110	朝鲜民主主义人民共和国	KP	0
 111	哥斯达黎加	CR	0
 112	古巴	CU	0
 113	科威特	KW	0
@@ -33587,7 +33579,10 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 126	澳门	MO	0
 127	马拉维	MW	0
 128	马尔代夫	MV	0
-129	马来西亚	MY	0
+1	阿富汗	AF	0
+2	阿尔巴尼亚	AL	0
+21	伯利兹	BZ	0
+27	博内尔岛，圣尤斯特歇斯岛和萨巴岛	BQ	0
 130	马里	ML	0
 131	马耳他	MT	0
 132	北马里亚纳群岛	MP	0
@@ -33596,7 +33591,6 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 135	毛里塔尼亚	MR	0
 136	毛里求斯	MU	0
 137	墨西哥	MX	0
-138	密克罗尼西亚联邦	FM	0
 139	缅甸	MM	0
 140	摩尔多瓦共和国	MD	0
 141	摩纳哥	MC	0
@@ -33616,7 +33610,6 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 155	新喀里多尼亚	NC	0
 156	新西兰	NZ	0
 157	阿曼	OM	0
-158	巴基斯坦	PK	0
 159	帕劳	PW	0
 160	被占领巴勒斯坦领土	PS	0
 161	巴拿马	PA	0
@@ -33629,7 +33622,6 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 168	波多黎各	PR	0
 169	葡萄牙	PT	0
 170	南非	ZA	0
-171	中非共和国	CF	0
 172	佛得角	CV	0
 173	工会	RE	0
 174	俄罗斯联邦	RU	0
@@ -33640,7 +33632,7 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 179	圣卢西亚	LC	0
 180	圣文森特和格林纳丁斯	VC	0
 181	圣巴特列米	BL	0
-182	圣马丁（法国部分	MF	0
+182	圣马丁（法国部分)	MF	0
 183	圣皮埃尔和密克隆	PM	0
 184	萨尔瓦多	SV	0
 185	美属萨摩亚	AS	0
@@ -33648,10 +33640,9 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 187	圣马力诺	SM	0
 188	塞内加尔	SN	0
 189	塞尔维亚	RS	0
-190	塞舌尔	SC	0
 191	塞拉利昂	SL	0
 192	新加坡	SG	0
-193	圣马丁岛（荷兰部分	SX	0
+193	圣马丁岛（荷兰部分)	SX	0
 194	斯洛伐克	SK	0
 195	斯洛文尼亚	SI	0
 196	索马里	SO	0
@@ -33661,7 +33652,6 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 200	苏丹	SD	0
 201	南苏丹	SS	0
 202	苏里南	SR	0
-203	斯瓦尔巴和扬·梅恩	SJ	0
 204	阿拉伯叙利亚共和国	SY	0
 205	瑞士	CH	0
 206	瑞典	SE	0
@@ -33682,10 +33672,9 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 221	乌干达	UG	0
 222	乌克兰	UA	0
 223	乌拉圭	UY	0
-224	乌兹别克斯坦	UZ	0
 225	瓦努阿图	VU	0
 226	瓦利斯和富图纳	WF	0
-227	教廷（梵蒂冈城邦	VA	0
+227	教廷（梵蒂冈城邦)	VA	0
 228	委内瑞拉玻利瓦尔共和国	VE	0
 229	匈牙利	HU	0
 230	大不列颠及北爱尔兰联合王国	UK	0
@@ -33695,7 +33684,6 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 234	布维岛	BV	0
 235	圣诞岛	CX	0
 236	马恩岛	IM	0
-237	圣赫勒拿，阿森松和特里斯坦-达库尼亚	SH	0
 238	奥兰群岛	AX	0
 239	库克群岛	CK	0
 240	美属维尔京群岛	VI	0
@@ -33708,6 +33696,18 @@ COPY basic_country (id, country, code, entityversion) FROM stdin;
 247	赞比亚	ZM	0
 248	津巴布韦	ZW	0
 249	阿拉伯联合酋长国	AE	0
+56	福克兰群岛（马尔维纳斯)	FK	0
+82	荷兰	NL	0
+97	开曼群岛	KY	0
+110	朝鲜民主主义人民共和国	KP	0
+129	马来西亚	MY	0
+138	密克罗尼西亚联邦	FM	0
+158	巴基斯坦	PK	0
+171	中非共和国	CF	0
+190	塞舌尔	SC	0
+203	斯瓦尔巴和扬·梅恩	SJ	0
+224	乌兹别克斯坦	UZ	0
+237	圣赫勒拿，阿森松和特里斯坦-达库尼亚	SH	0
 \.
 
 
@@ -33739,23 +33739,6 @@ SELECT pg_catalog.setval('basic_crew_id_seq', 1, false);
 
 COPY basic_currency (id, currency, alphabeticcode, isocode, minorunit, exchangerate, entityversion) FROM stdin;
 9	Armenian Dram	AMD	51	2	0.00830	0
-22	恩格鲁姆	BTN	64	2	1.00000	0
-23	玻利维亚诺	BOB	68	2	0.58380	0
-24	MVDOL基金	BOV	984	2	1.00000	0
-25	可兑换马克	BAM	977	2	2.20510	0
-26	普拉	BWP	72	2	0.38390	0
-27	挪威克朗	NOK	578	2	0.48960	0
-28	西雷亚尔	BRL	986	2	1.30240	0
-29	文莱元	BND	96	2	2.85420	0
-30	保加利亚列夫	BGN	975	2	2.19980	0
-31	布隆迪法郎	BIF	108	0	0.00240	0
-32	瑞尔	KHR	116	2	0.00100	0
-33	法国法郎	XAF	950	0	0.00660	0
-34	加拿大元	CAD	124	2	3.14020	0
-35	佛得角埃斯库多	CVE	132	2	0.03890	0
-36	开曼群岛元	KYD	136	2	1.00000	0
-37	智利的智利比索	CLP	152	0	0.00630	0
-1	阿富汗尼	AFN	971	2	0.06070	0
 2	欧元	EUR	978	2	4.35830	0
 3	列克	ALL	8	2	0.03170	0
 4	阿尔及利亚第纳尔	DZD	12	2	0.03680	0
@@ -33763,7 +33746,6 @@ COPY basic_currency (id, currency, alphabeticcode, isocode, minorunit, exchanger
 6	宽扎	AOA	973	2	0.02440	0
 7	東加勒比元	XCD	951	2	1.49490	0
 8	阿根廷比索	ARS	32	2	0.25810	0
-10	阿鲁班植物志	AWG	533	2	2.26040	0
 11	澳元	AUD	36	2	3.14310	0
 12	阿塞拜疆马纳特	AZN	944	2	2.21680	0
 13	巴哈馬元	BSD	44	2	4.05210	0
@@ -33775,6 +33757,21 @@ COPY basic_currency (id, currency, alphabeticcode, isocode, minorunit, exchanger
 19	多哥非洲共同体法郎	XOF	952	0	0.00660	0
 20	百慕大元	BMD	60	2	1.00000	0
 21	印度卢比	INR	356	2	0.06050	0
+22	恩格鲁姆	BTN	64	2	1.00000	0
+23	玻利维亚诺	BOB	68	2	0.58380	0
+24	MVDOL基金	BOV	984	2	1.00000	0
+25	可兑换马克	BAM	977	2	2.20510	0
+26	普拉	BWP	72	2	0.38390	0
+27	挪威克朗	NOK	578	2	0.48960	0
+28	西雷亚尔	BRL	986	2	1.30240	0
+29	文莱元	BND	96	2	2.85420	0
+30	保加利亚列夫	BGN	975	2	2.19980	0
+32	瑞尔	KHR	116	2	0.00100	0
+33	法国法郎	XAF	950	0	0.00660	0
+34	加拿大元	CAD	124	2	3.14020	0
+35	佛得角埃斯库多	CVE	132	2	0.03890	0
+36	开曼群岛元	KYD	136	2	1.00000	0
+37	智利的智利比索	CLP	152	0	0.00630	0
 38	UF值	CLF	990	0	1.00000	0
 39	人民币	CNY	156	2	0.59020	0
 40	哥伦比亚比索	COP	170	2	0.00140	0
@@ -33789,7 +33786,6 @@ COPY basic_currency (id, currency, alphabeticcode, isocode, minorunit, exchanger
 49	荷兰安提列安盾	ANG	532	2	2.27290	0
 50	捷克克朗	CZK	203	2	0.16130	0
 51	丹麦克朗	DKK	208	2	0.58610	0
-52	吉布提法郎	DJF	262	0	0.02260	0
 53	多明尼加比索	DOP	214	2	0.08650	0
 54	埃及镑	EGP	818	2	0.22030	0
 55	萨尔瓦多科隆	SVC	222	2	0.46360	0
@@ -33810,7 +33806,6 @@ COPY basic_currency (id, currency, alphabeticcode, isocode, minorunit, exchanger
 70	伦皮拉	HNL	340	2	0.17220	0
 71	香港元	HKD	344	2	0.52220	0
 72	福林	HUF	348	2	0.01410	0
-73	冰岛克郎	ISK	352	0	0.03600	0
 74	卢比亚	IDR	360	2	0.00030	0
 75	特别提款权	XDR	960	0	5.55200	0
 76	伊朗里亚尔	IRR	364	2	0.00010	0
@@ -33831,12 +33826,17 @@ COPY basic_currency (id, currency, alphabeticcode, isocode, minorunit, exchanger
 91	洛蒂	LSL	426	2	0.30080	0
 92	兰德	ZAR	710	2	0.30660	0
 93	利比里亚元	LRD	430	2	0.04300	0
-94	利比亚第纳尔	LYD	434	3	2.84240	0
 95	瑞士法郎	CHF	756	2	4.08710	0
 96	立陶宛立特	LTL	440	2	1.00000	0
 97	澳门币	MOP	446	2	0.50630	0
 98	代纳尔	MKD	807	2	0.07000	0
 99	马达加斯加阿里亚里	MGA	969	2	0.00130	0
+1	阿富汗尼	AFN	971	2	0.06070	0
+10	阿鲁班植物志	AWG	533	2	2.26040	0
+31	布隆迪法郎	BIF	108	0	0.00240	0
+52	吉布提法郎	DJF	262	0	0.02260	0
+73	冰岛克郎	ISK	352	0	0.03600	0
+94	利比亚第纳尔	LYD	434	3	2.84240	0
 100	马拉维克瓦查	MWK	454	2	0.00560	0
 101	马来西亚吉特	MYR	458	2	0.91070	0
 102	鲁菲亚	MVR	462	2	0.26270	0
@@ -33898,10 +33898,10 @@ COPY basic_currency (id, currency, alphabeticcode, isocode, minorunit, exchanger
 158	乌干达先令	UGX	800	2	0.00110	0
 159	赫里夫尼亚	UAH	980	2	0.14910	0
 160	阿联酋迪拉姆	AED	784	2	1.10140	0
-161	美元（第二天	USN	997	2	1.00000	0
-162	美元（同天	USS	998	2	1.00000	0
+161	美元（第二天)	USN	997	2	1.00000	0
+162	美元（同天)	USS	998	2	1.00000	0
 163	乌拉圭比索	UYU	858	2	0.14250	0
-164	乌拉圭比索（乌拉圭	UYI	940	0	1.00000	0
+164	乌拉圭比索（乌拉圭)	UYI	940	0	1.00000	0
 165	乌兹别克斯坦和	UZS	860	2	0.00120	0
 166	瓦图	VUV	548	0	0.03710	0
 167	玻利瓦尔	VEF	937	2	0.40510	0

@@ -23,35 +23,53 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.criteriaModifiers.ModelCriteriaModifiers;
-import com.qcadoo.mes.basic.util.UnitService;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
-import com.qcadoo.view.api.components.lookup.FilterValueHolder;
-import com.qcadoo.view.api.ribbon.RibbonActionItem;
-import com.qcadoo.view.api.ribbon.RibbonGroup;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
-import com.qcadoo.view.constants.QcadooViewConstants;
+import static com.qcadoo.mes.basic.constants.ProductFields.CONVERSION_ITEMS;
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+
+import java.util.Objects;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
-
-import static com.qcadoo.mes.basic.constants.ProductFields.CONVERSION_ITEMS;
-import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.criteriaModifiers.ModelCriteriaModifiers;
+import com.qcadoo.mes.basic.util.UnitService;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
+import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
+import com.qcadoo.view.api.utils.NumberGeneratorService;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class ProductDetailsHooks {
 
+    private static final String L_CONVERSIONS = "conversions";
+
+    private static final String L_GET_DEFAULT_CONVERSIONS = "getDefaultConversions";
+
+    private static final String L_PRODUCT_FAMILY = "productFamily";
+
+    private static final String L_PRODUCT_FAMILY_SIZES = "productFamilySizes";
+
     private static final String UNIT_FROM = "unitFrom";
+
+    private static final String L_PRODUCT_ID_FOR_MULTI_UPLOAD = "productIdForMultiUpload";
+
+    private static final String L_PRODUCT_MULTI_UPLOAD_LOCALE = "productMultiUploadLocale";
 
     private static final String[] innerComponents = { ProductFields.SIZE, ProductFields.EXPIRY_DATE_VALIDITY,
             ProductFields.PRODUCT_FORM, ProductFields.SHOW_IN_PRODUCT_DATA };
@@ -95,25 +113,27 @@ public class ProductDetailsHooks {
     }
 
     public void disableUnitFromWhenFormIsSaved(final ViewDefinitionState view) {
-        final FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        final AwesomeDynamicListComponent conversionItemsAdl = (AwesomeDynamicListComponent) view
+        FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        AwesomeDynamicListComponent conversionItemsAdl = (AwesomeDynamicListComponent) view
                 .getComponentByReference(CONVERSION_ITEMS);
 
         conversionItemsAdl.setEnabled(Objects.nonNull(productForm.getEntityId()));
+
         for (FormComponent formComponent : conversionItemsAdl.getFormComponents()) {
             formComponent.findFieldComponentByName(UNIT_FROM).setEnabled(Objects.isNull(formComponent.getEntityId()));
         }
+
         FieldComponent additionalUnit = (FieldComponent) view.getComponentByReference(ProductFields.ADDITIONAL_UNIT);
         additionalUnit.setEnabled(Objects.nonNull(productForm.getEntityId()));
     }
 
-    public void disableProductFormForExternalItems(final ViewDefinitionState state) {
-        FormComponent productForm = (FormComponent) state.getComponentByReference(QcadooViewConstants.L_FORM);
-        FieldComponent entityTypeField = (FieldComponent) state.getComponentByReference(ProductFields.ENTITY_TYPE);
-        FieldComponent parentField = (FieldComponent) state.getComponentByReference(ProductFields.PARENT);
-
-        LookupComponent assortmentLookup = (LookupComponent) state.getComponentByReference(ProductFields.ASSORTMENT);
-        LookupComponent modelLookup = (LookupComponent) state.getComponentByReference(ProductFields.MODEL);
+    public void disableProductFormForExternalItems(final ViewDefinitionState view) {
+        FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        FieldComponent entityTypeField = (FieldComponent) view.getComponentByReference(ProductFields.ENTITY_TYPE);
+        FieldComponent parentField = (FieldComponent) view.getComponentByReference(ProductFields.PARENT);
+        FieldComponent categoryField = (FieldComponent) view.getComponentByReference(ProductFields.CATEGORY);
+        LookupComponent assortmentLookup = (LookupComponent) view.getComponentByReference(ProductFields.ASSORTMENT);
+        LookupComponent modelLookup = (LookupComponent) view.getComponentByReference(ProductFields.MODEL);
 
         Long productId = productForm.getEntityId();
 
@@ -123,7 +143,7 @@ public class ProductDetailsHooks {
             return;
         }
 
-        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
+        Entity product = getProductDD().get(productId);
 
         if (Objects.isNull(product)) {
             return;
@@ -136,6 +156,7 @@ public class ProductDetailsHooks {
         } else {
             productForm.setFormEnabled(false);
             entityTypeField.setEnabled(true);
+            categoryField.setEnabled(true);
             parentField.setEnabled(true);
             assortmentLookup.setEnabled(true);
             modelLookup.setEnabled(true);
@@ -152,7 +173,7 @@ public class ProductDetailsHooks {
             return;
         }
 
-        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
+        Entity product = getProductDD().get(productId);
 
         if (Objects.isNull(product)) {
             return;
@@ -170,13 +191,11 @@ public class ProductDetailsHooks {
     public void updateRibbonState(final ViewDefinitionState view) {
         FormComponent operationGroupForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        Entity operationGroup = operationGroupForm.getEntity();
-
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
+        RibbonGroup operationGroups = window.getRibbon().getGroupByName(L_CONVERSIONS);
+        RibbonActionItem getDefaultConversions = operationGroups.getItemByName(L_GET_DEFAULT_CONVERSIONS);
 
-        RibbonGroup operationGroups = window.getRibbon().getGroupByName("conversions");
-
-        RibbonActionItem getDefaultConversions = operationGroups.getItemByName("getDefaultConversions");
+        Entity operationGroup = operationGroupForm.getEntity();
 
         updateButtonState(getDefaultConversions, Objects.nonNull(operationGroup.getId()));
     }
@@ -184,13 +203,11 @@ public class ProductDetailsHooks {
     public void updateProductFamilySizesRibbonState(final ViewDefinitionState view) {
         FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        Entity product = productForm.getEntity();
-
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
+        RibbonGroup productFamily = window.getRibbon().getGroupByName(L_PRODUCT_FAMILY);
+        RibbonActionItem productFamilySizes = productFamily.getItemByName(L_PRODUCT_FAMILY_SIZES);
 
-        RibbonGroup productFamily = window.getRibbon().getGroupByName("productFamily");
-
-        RibbonActionItem productFamilySizes = productFamily.getItemByName("productFamilySizes");
+        Entity product = productForm.getEntity();
 
         updateButtonState(productFamilySizes,
                 ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(product.getField(ProductFields.ENTITY_TYPE)));
@@ -198,12 +215,14 @@ public class ProductDetailsHooks {
 
     public void disableEntityTypeWhenProductFamilyHasChildren(final ViewDefinitionState view) {
         FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-
-        Entity product = productForm.getPersistedEntityWithIncludedFormValues();
         FieldComponent entityTypeField = (FieldComponent) view.getComponentByReference(ProductFields.ENTITY_TYPE);
         FieldComponent parentField = (FieldComponent) view.getComponentByReference(ProductFields.PARENT);
+
+        Entity product = productForm.getPersistedEntityWithIncludedFormValues();
+
         entityTypeField.setEnabled(product.getHasManyField(ProductFields.CHILDREN).isEmpty());
-        if(ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(product.getField(ProductFields.ENTITY_TYPE))){
+
+        if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(product.getField(ProductFields.ENTITY_TYPE))) {
             parentField.setFieldValue(null);
             parentField.setEnabled(false);
         } else {
@@ -224,7 +243,7 @@ public class ProductDetailsHooks {
             return;
         }
 
-        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
+        Entity product = getProductDD().get(productId);
 
         if (Objects.isNull(product)) {
             return;
@@ -234,7 +253,7 @@ public class ProductDetailsHooks {
 
         if (!StringUtils.isEmpty(externalNumber)) {
             for (String componentName : innerComponents) {
-                ComponentState characteristicsTab = (ComponentState) view.getComponentByReference(componentName);
+                ComponentState characteristicsTab = view.getComponentByReference(componentName);
                 characteristicsTab.setEnabled(true);
             }
         }
@@ -242,8 +261,8 @@ public class ProductDetailsHooks {
 
     public void setProductIdForMultiUploadField(final ViewDefinitionState view) {
         FormComponent product = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        FieldComponent productIdForMultiUpload = (FieldComponent) view.getComponentByReference("productIdForMultiUpload");
-        FieldComponent productMultiUploadLocale = (FieldComponent) view.getComponentByReference("productMultiUploadLocale");
+        FieldComponent productIdForMultiUpload = (FieldComponent) view.getComponentByReference(L_PRODUCT_ID_FOR_MULTI_UPLOAD);
+        FieldComponent productMultiUploadLocale = (FieldComponent) view.getComponentByReference(L_PRODUCT_MULTI_UPLOAD_LOCALE);
 
         if (Objects.nonNull(product.getEntityId())) {
             productIdForMultiUpload.setFieldValue(product.getEntityId());
@@ -273,6 +292,10 @@ public class ProductDetailsHooks {
         }
 
         modelLookup.setFilterValue(filterValueHolder);
+    }
+
+    private DataDefinition getProductDD() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
     }
 
 }

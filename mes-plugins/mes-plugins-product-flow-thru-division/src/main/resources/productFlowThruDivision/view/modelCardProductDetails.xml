@@ -35,9 +35,9 @@
 		</ribbon>
 
 		<component type="form" name="modelCardProduct" reference="form">
-			<component type="gridLayout" name="gridLayout" columns="5"
+			<component type="gridLayout" name="gridLayout" columns="1"
 				rows="3" hasBorders="false">
-				<layoutElement column="1" row="1" width="4">
+				<layoutElement column="1" row="1">
 					<component type="lookup" name="product" field="product"
 							   reference="product">
 						<option type="column" name="name" fields="name" link="true"/>
@@ -57,7 +57,7 @@
 								  method="fillDefaultTechnology"/>
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="2" width="4">
+				<layoutElement column="1" row="2">
 					<component type="lookup" name="technology" field="technology"
 							   reference="technology">
 						<option type="column" name="name" fields="name" link="true"/>
@@ -73,16 +73,22 @@
 								method="showAcceptedAndCheckedPatternTechnologyForProduct"/>
 					</component>
 				</layoutElement>
-				<layoutElement column="1" row="3" width="4">
-					<component type="input" name="quantity" field="quantity"
-							   reference="quantity">
-						<option type="alignment" value="right"/>
-					</component>
-				</layoutElement>
-				<layoutElement column="5" row="3">
-					<component type="input" name="quantityUnit"
-							   reference="quantityUnit" defaultEnabled="false" hasLabel="false">
-						<option type="textRepresentationOnDisabled" value="true"/>
+				<layoutElement column="1" row="3">
+					<component type="gridLayout" name="quantityGrid"
+							   columns="7" rows="1" hasBorders="false">
+						<layoutElement column="1" width="6" row="1">
+							<component type="input" name="quantity" field="quantity"
+									   reference="quantity">
+								<option type="alignment" value="right"/>
+								<option type="labelWidth" value="35"/>
+							</component>
+						</layoutElement>
+						<layoutElement column="7" row="1">
+							<component type="input" name="quantityUnit" reference="quantityUnit"
+									   defaultEnabled="never" hasLabel="false">
+								<option type="textRepresentationOnDisabled" value="true"/>
+							</component>
+						</layoutElement>
 					</component>
 				</layoutElement>
 			</component>

@@ -23,24 +23,31 @@
  */
 package com.qcadoo.mes.costCalculation.print;
 
-import com.qcadoo.mes.costCalculation.constants.*;
-import com.qcadoo.mes.costCalculation.print.dto.CostCalculationMaterialBySize;
-import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
-import com.qcadoo.model.api.*;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.util.List;
-import java.util.stream.Collectors;
+import com.qcadoo.mes.costCalculation.constants.CalculationResultFields;
+import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
+import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
+import com.qcadoo.mes.costCalculation.print.dto.CostCalculationMaterialBySize;
+import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 
 @Service
 public class CostCalculationService {
@@ -118,7 +125,15 @@ public class CostCalculationService {
         final BigDecimal technicalProductionCost = BigDecimalUtils.convertNullToZero(registrationPrice)
                 .add(registrationPriceOverheadValue, numberService.getMathContext());
 
-        final BigDecimal profitValue = technicalProductionCost
+        final BigDecimal technicalProductionCostOverheadValue = technicalProductionCost.multiply(
+                BigDecimalUtils.convertNullToZero(
+                        costCalculation.getDecimalField(CostCalculationFields.TECHNICAL_PRODUCTION_COST_OVERHEAD)),
+                numberService.getMathContext()).divide(ONE_HUNDRED, numberService.getMathContext());
+
+        final BigDecimal totalManufacturingCost = BigDecimalUtils.convertNullToZero(technicalProductionCost)
+                .add(technicalProductionCostOverheadValue, numberService.getMathContext());
+
+        final BigDecimal profitValue = totalManufacturingCost
                 .multiply(BigDecimalUtils.convertNullToZero(costCalculation.getDecimalField(CostCalculationFields.PROFIT)),
                         numberService.getMathContext())
                 .divide(ONE_HUNDRED, numberService.getMathContext());
@@ -127,10 +142,14 @@ public class CostCalculationService {
                 numberService.setScaleWithDefaultMathContext(registrationPriceOverheadValue));
         calculationResult.setField(CalculationResultFields.TECHNICAL_PRODUCTION_COST,
                 numberService.setScaleWithDefaultMathContext(technicalProductionCost, 2));
+        calculationResult.setField(CalculationResultFields.TECHNICAL_PRODUCTION_COST_OVERHEAD_VALUE,
+                numberService.setScaleWithDefaultMathContext(technicalProductionCostOverheadValue));
+        calculationResult.setField(CalculationResultFields.TOTAL_MANUFACTURING_COST,
+                numberService.setScaleWithDefaultMathContext(totalManufacturingCost, 2));
         calculationResult.setField(CalculationResultFields.PROFIT_VALUE,
                 numberService.setScaleWithDefaultMathContext(profitValue));
 
-        final BigDecimal sellingPrice = BigDecimalUtils.convertNullToZero(technicalProductionCost)
+        final BigDecimal sellingPrice = BigDecimalUtils.convertNullToZero(totalManufacturingCost)
                 .add(BigDecimalUtils.convertNullToZero(profitValue), numberService.getMathContext());
 
         calculationResult.setField(CalculationResultFields.SELLING_PRICE,

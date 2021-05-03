@@ -17,6 +17,8 @@ import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
+import com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
@@ -29,6 +31,7 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
@@ -47,6 +50,10 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 public class SalesPlanMaterialRequirementDetailsListeners {
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
+
+    private static final String L_DOT = ".";
+
+    private static final String L_ID = "id";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -148,20 +155,29 @@ public class SalesPlanMaterialRequirementDetailsListeners {
         }
     }
 
-    private Entity createDelivery(final Entity salesPlanMaterialRequirement, final List<Entity> salesPlanMaterialRequirementProducts) {
+    private Entity createDelivery(final Entity salesPlanMaterialRequirement,
+            final List<Entity> salesPlanMaterialRequirementProducts) {
         Entity delivery = deliveriesService.getDeliveryDD().create();
 
-        Optional<Entity> mayBeSupplier = getSupplier(salesPlanMaterialRequirementProducts);
-        List<Entity> orderedProducts = createOrderedProducts(salesPlanMaterialRequirementProducts);
+        Entity supplier = getSupplier(salesPlanMaterialRequirementProducts).orElse(null);
+
+        List<Entity> products = salesPlanMaterialRequirementHelper
+                .getSalesPlanMaterialRequirementProducts(salesPlanMaterialRequirementProducts);
+        Set<Long> parentIds = salesPlanMaterialRequirementHelper.getParentIds(products);
+        Set<Long> productIds = salesPlanMaterialRequirementHelper.getProductIds(products);
+
+        List<Entity> companyProducts = getCompanyProducts(productIds, supplier);
+        List<Entity> companyProductsFamilies = getCompanyProductsFamilies(parentIds, supplier);
+
+        List<Entity> orderedProducts = createOrderedProducts(salesPlanMaterialRequirementProducts, companyProducts,
+                companyProductsFamilies);
 
         if (!orderedProducts.isEmpty()) {
-            delivery.setField(DeliveryFields.NUMBER, numberGeneratorService.generateNumber(DeliveriesConstants.PLUGIN_IDENTIFIER,
-                    DeliveriesConstants.MODEL_DELIVERY));
+            String number = numberGeneratorService.generateNumber(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                    DeliveriesConstants.MODEL_DELIVERY);
 
-            if (mayBeSupplier.isPresent()) {
-                delivery.setField(DeliveryFields.SUPPLIER, mayBeSupplier.get());
-            }
-
+            delivery.setField(DeliveryFields.NUMBER, number);
+            delivery.setField(DeliveryFields.SUPPLIER, supplier);
             delivery.setField(DeliveryFields.ORDERED_PRODUCTS, orderedProducts);
             delivery.setField(DeliveryFields.EXTERNAL_SYNCHRONIZED, true);
 
@@ -171,16 +187,57 @@ public class SalesPlanMaterialRequirementDetailsListeners {
         return delivery;
     }
 
-    private List<Entity> createOrderedProducts(final List<Entity> salesPlanMaterialRequirementProducts) {
+    private Optional<Entity> getSupplier(final List<Entity> salesPlanMaterialRequirementProducts) {
+        return salesPlanMaterialRequirementProducts.stream()
+                .filter(salesPlanMaterialRequirementProduct -> Objects.nonNull(salesPlanMaterialRequirementProduct
+                        .getBelongsToField(SalesPlanMaterialRequirementProductFields.SUPPLIER)))
+                .map(salesPlanMaterialRequirementProduct -> salesPlanMaterialRequirementProduct
+                        .getBelongsToField(SalesPlanMaterialRequirementProductFields.SUPPLIER))
+                .findFirst();
+    }
+
+    private List<Entity> getCompanyProducts(final Set<Long> productIds, final Entity company) {
+        List<Entity> companyProducts = Lists.newArrayList();
+
+        if (!productIds.isEmpty() && Objects.nonNull(company)) {
+            companyProducts = salesPlanMaterialRequirementHelper.getCompanyProductDD().find()
+                    .createAlias(CompanyProductFields.PRODUCT, CompanyProductFields.PRODUCT, JoinType.LEFT)
+                    .createAlias(CompanyProductFields.COMPANY, CompanyProductFields.COMPANY, JoinType.LEFT)
+                    .add(SearchRestrictions.in(CompanyProductFields.PRODUCT + L_DOT + L_ID, productIds))
+                    .add(SearchRestrictions.eq(CompanyProductFields.COMPANY + L_DOT + L_ID, company.getId()))
+                    .list().getEntities();
+        }
+
+        return companyProducts;
+    }
+
+    private List<Entity> getCompanyProductsFamilies(final Set<Long> productIds, final Entity company) {
+        List<Entity> companyProductFamilies = Lists.newArrayList();
+
+        if (!productIds.isEmpty() && Objects.nonNull(company)) {
+            companyProductFamilies = salesPlanMaterialRequirementHelper.getCompanyProductsFamilyDD().find()
+                    .createAlias(CompanyProductsFamilyFields.PRODUCT, CompanyProductsFamilyFields.PRODUCT, JoinType.LEFT)
+                    .createAlias(CompanyProductsFamilyFields.COMPANY, CompanyProductsFamilyFields.COMPANY, JoinType.LEFT)
+                    .add(SearchRestrictions.in(CompanyProductsFamilyFields.PRODUCT + L_DOT + L_ID, productIds))
+                    .add(SearchRestrictions.eq(CompanyProductsFamilyFields.COMPANY + L_DOT + L_ID, company.getId()))
+                    .list().getEntities();
+        }
+
+        return companyProductFamilies;
+    }
+
+    private List<Entity> createOrderedProducts(final List<Entity> salesPlanMaterialRequirementProducts,
+            final List<Entity> companyProducts, final List<Entity> companyProductsFamilies) {
         List<Entity> orderedProducts = Lists.newArrayList();
 
         salesPlanMaterialRequirementProducts.forEach(salesPlanMaterialRequirementProduct -> createOrderedProduct(orderedProducts,
-                salesPlanMaterialRequirementProduct));
+                salesPlanMaterialRequirementProduct, companyProducts, companyProductsFamilies));
 
         return orderedProducts;
     }
 
-    private Entity createOrderedProduct(final List<Entity> orderedProducts, final Entity salesPlanMaterialRequirementProduct) {
+    private Entity createOrderedProduct(final List<Entity> orderedProducts, final Entity salesPlanMaterialRequirementProduct,
+            final List<Entity> companyProducts, final List<Entity> companyProductsFamilies) {
         Entity product = salesPlanMaterialRequirementProduct.getBelongsToField(SalesPlanMaterialRequirementProductFields.PRODUCT);
         BigDecimal quantity = BigDecimalUtils.convertNullToZero(
                 salesPlanMaterialRequirementProduct.getDecimalField(SalesPlanMaterialRequirementProductFields.QUANTITY));
@@ -188,8 +245,8 @@ public class SalesPlanMaterialRequirementDetailsListeners {
                 salesPlanMaterialRequirementProduct.getDecimalField(SalesPlanMaterialRequirementProductFields.CURRENT_STOCK));
         BigDecimal neededQuantity = BigDecimalUtils.convertNullToZero(
                 salesPlanMaterialRequirementProduct.getDecimalField(SalesPlanMaterialRequirementProductFields.NEEDED_QUANTITY));
-        BigDecimal minimumOrderQuantity = BigDecimalUtils.convertNullToZero(salesPlanMaterialRequirementProduct
-                .getDecimalField(SalesPlanMaterialRequirementProductFields.MINIMUM_ORDER_QUANTITY));
+        BigDecimal minimumOrderQuantity = BigDecimalUtils
+                .convertNullToZero(getMinimumOrderQuantity(product, companyProducts, companyProductsFamilies));
 
         BigDecimal conversion = getConversion(product);
         BigDecimal orderedQuantity = getOrderedQuantity(quantity, currentStock, neededQuantity, minimumOrderQuantity);
@@ -231,6 +288,36 @@ public class SalesPlanMaterialRequirementDetailsListeners {
         return orderedProduct;
     }
 
+    private BigDecimal getMinimumOrderQuantity(final Entity product, final List<Entity> companyProducts,
+            final List<Entity> companyProductsFamilies) {
+        Optional<Entity> mayBeCompanyProduct = salesPlanMaterialRequirementHelper.getCompanyProduct(companyProducts,
+                product.getId());
+
+        BigDecimal minimumOrderQuantity = null;
+
+        if (mayBeCompanyProduct.isPresent()) {
+            Entity companyProduct = mayBeCompanyProduct.get();
+
+            minimumOrderQuantity = companyProduct.getDecimalField(CompanyProductFields.MINIMUM_ORDER_QUANTITY);
+        } else {
+            Entity parent = product.getBelongsToField(ProductFields.PARENT);
+
+            if (Objects.nonNull(parent)) {
+                Optional<Entity> mayBeCompanyProductsFamily = salesPlanMaterialRequirementHelper
+                        .getCompanyProductsFamily(companyProductsFamilies, parent.getId());
+
+                if (mayBeCompanyProductsFamily.isPresent()) {
+                    Entity companyProductsFamily = mayBeCompanyProductsFamily.get();
+
+                    minimumOrderQuantity = companyProductsFamily
+                            .getDecimalField(CompanyProductsFamilyFields.MINIMUM_ORDER_QUANTITY);
+                }
+            }
+        }
+
+        return minimumOrderQuantity;
+    }
+
     private BigDecimal getOrderedQuantity(final BigDecimal quantity, final BigDecimal currentStock,
             final BigDecimal neededQuantity, final BigDecimal minimumOrderQuantity) {
         BigDecimal orderedQuantity;
@@ -258,15 +345,6 @@ public class SalesPlanMaterialRequirementDetailsListeners {
 
         return Objects.nonNull(orderedProductProduct) && Objects.nonNull(salesPlanMaterialRequirementProductProduct)
                 && orderedProductProduct.getId().equals(salesPlanMaterialRequirementProductProduct.getId());
-    }
-
-    private Optional<Entity> getSupplier(final List<Entity> salesPlanMaterialRequirementProducts) {
-        return salesPlanMaterialRequirementProducts.stream()
-                .filter(salesPlanMaterialRequirementProduct -> Objects.nonNull(salesPlanMaterialRequirementProduct
-                        .getBelongsToField(SalesPlanMaterialRequirementProductFields.SUPPLIER)))
-                .map(salesPlanMaterialRequirementProduct -> salesPlanMaterialRequirementProduct
-                        .getBelongsToField(SalesPlanMaterialRequirementProductFields.SUPPLIER))
-                .findFirst();
     }
 
     private BigDecimal getConversion(final Entity product) {

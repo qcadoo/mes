@@ -765,7 +765,7 @@
 
         <windowTab name="historyTab">
             <component type="gridLayout" name="loggingsGridLayout"
-                       columns="2" rows="1">
+                       columns="1" rows="1">
                 <layoutElement column="1" row="1">
                     <component type="grid" name="stateChanges" reference="stateChanges"
                                source="#{form}.stateChanges">

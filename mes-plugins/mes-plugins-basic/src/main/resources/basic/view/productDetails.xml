@@ -180,7 +180,7 @@
                     </layoutElement>
                     <layoutElement column="2" row="2">
                         <component type="select" name="category" field="category"
-                                   hasDescription="true"/>
+                                   reference="category" hasDescription="true"/>
                     </layoutElement>
                     <layoutElement column="2" row="3" height="2">
                         <component type="textarea" name="description" field="description"/>
