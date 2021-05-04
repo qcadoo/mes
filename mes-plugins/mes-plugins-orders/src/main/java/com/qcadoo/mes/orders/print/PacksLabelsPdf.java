@@ -140,7 +140,7 @@ public class PacksLabelsPdf extends ReportPdfView {
 
         Barcode128 code128 = new Barcode128();
         code128.setCode(pack.getStringField(OrderPackFields.NUMBER));
-        code128.setBarHeight(36f);
+        code128.setBarHeight(32f);
         //barcode width
         code128.setX(1.8f);
 
@@ -154,12 +154,12 @@ public class PacksLabelsPdf extends ReportPdfView {
         PdfPCell barcodeCell = new PdfPCell(barcodeImage);
         barcodeCell.setColspan(4);
         barcodeCell.setBorder(Rectangle.NO_BORDER);
-        barcodeCell.setFixedHeight(50f);
+        barcodeCell.setFixedHeight(46f);
 
         PdfPCell emptyCell = new PdfPCell(new Phrase(""));
         emptyCell.setColspan(2);
         emptyCell.setBorder(Rectangle.NO_BORDER);
-        emptyCell.setFixedHeight(50f);
+        emptyCell.setFixedHeight(46f);
 
         brTable.addCell(emptyCell);
         brTable.addCell(barcodeCell);
