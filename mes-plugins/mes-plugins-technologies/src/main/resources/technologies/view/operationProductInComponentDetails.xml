@@ -37,7 +37,7 @@
         <windowTab name="mainTab">
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="6"
-                           rows="8">
+                           rows="9">
                     <layoutElement column="1" row="1" width="5">
                         <component type="lookup" name="technologyInputProductType" field="technologyInputProductType"
                                    reference="technologyInputProductType">
@@ -60,6 +60,15 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="3" width="5">
+                        <component type="checkbox" name="variousQuantitiesInProductsBySize" reference="variousQuantitiesInProductsBySize"
+                                   field="#{form}.variousQuantitiesInProductsBySize" hasDescription="true">
+
+                            <listener event="onChange"
+                                      class="com.qcadoo.view.api.listeners.RerenderListener"
+                                      method="onChangeRerender"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="4" width="5">
                         <component type="lookup" name="product" field="product"
                                    reference="product">
                             <option type="column" name="name" fields="name" link="true"
@@ -78,17 +87,17 @@
                                       class="com.qcadoo.mes.technologies.listeners.OPICDetailsListeners" method="onProductChange"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="4" width="5">
+                    <layoutElement column="1" row="5" width="5">
                         <component type="input" name="quantity" field="quantity" defaultEnabled="false"
                                    reference="quantity">
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="6" row="4">
+                    <layoutElement column="6" row="5">
                         <component type="input" name="unit" reference="unit"
                                    defaultEnabled="false" hasLabel="false"/>
                     </layoutElement>
-                    <layoutElement column="1" row="5" width="5">
+                    <layoutElement column="1" row="6" width="5">
                         <component type="input" name="quantityFormula" field="quantityFormula" reference="quantityFormula"
                                    hasDescription="true">
                             <option type="alignment" value="right"/>
@@ -97,7 +106,7 @@
                                       class="com.qcadoo.mes.technologies.listeners.OPICDetailsListeners"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="6" width="5">
+                    <layoutElement column="1" row="7" width="5">
                         <component type="input" name="givenQuantity" field="givenQuantity" reference="givenQuantity">
                             <option type="alignment" value="right"/>
 
@@ -105,14 +114,14 @@
                                       class="com.qcadoo.mes.technologies.listeners.OPICDetailsListeners"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="6" row="6">
+                    <layoutElement column="6" row="7">
                         <component type="select" name="givenUnit" reference="givenUnit"
                                    hasLabel="false" field="givenUnit">
                             <listener event="onSelectedEntityChange" method="calculateQuantity"
                                       class="com.qcadoo.mes.technologies.listeners.OPICDetailsListeners"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="7" height="2" width="5">
+                    <layoutElement column="1" row="8" height="2" width="5">
                         <component type="textarea" name="description" field="description"/>
                     </layoutElement>
                 </component>
@@ -125,17 +134,21 @@
         <windowTab name="productsBySizeGroups">
             <component type="grid" name="productBySizeGroups" source="#{form}.productBySizeGroups"
                        reference="productBySizeGroups">
-                <option type="column" name="sizeGroupNumber" fields="sizeGroup" expression="#sizeGroup.get('number')"
+                <option type="column" name="sizeGroupNumber" fields="sizeGroup" expression="#sizeGroup.get('number')" width="150"
                         link="true"/>
-                <option type="column" name="productNumber" fields="product" expression="#product.get('number')"
+                <option type="column" name="productNumber" fields="product" expression="#product.get('number')" width="150"
                         link="true"/>
-                <option type="column" name="productName" fields="product" expression="#product.get('name')"
+                <option type="column" name="productName" fields="product" expression="#product.get('name')" width="150"
                         link="true"/>
+                <option type="column" name="quantity" fields="quantity"
+                        width="100"/>
+                <option type="column" name="productUnit" fields="product" expression="#product.get('unit')"
+                        link="false" width="70"/>
 
                 <option type="order" column="sizeGroupNumber" direction="asc"/>
 
-                <option type="searchable" value="sizeGroupNumber,productNumber,productName"/>
-                <option type="orderable" value="sizeGroupNumber,productNumber,productName"/>
+                <option type="searchable" value="sizeGroupNumber,productNumber,productName,quantity,productUnit"/>
+                <option type="orderable" value="sizeGroupNumber,productNumber,productName,quantity,productUnit"/>
 
                 <option type="correspondingView" value="technologies/productBySizeGroupDetails"/>
                 <option type="correspondingComponent" value="form"/>

@@ -33,6 +33,7 @@ import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
+import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
@@ -50,6 +51,41 @@ public class OPICDetailsHooks {
     public void onBeforeRender(final ViewDefinitionState view) {
         fillUnitBeforeRender(view);
         setProductBySizeGroupsGridEnabledAndClear(view);
+        setStateForVariousQuantitiesInProductsBySize(view);
+    }
+
+    private void setStateForVariousQuantitiesInProductsBySize(ViewDefinitionState view) {
+        CheckBoxComponent differentProductsInDifferentSizesCheckBox = (CheckBoxComponent) view
+                .getComponentByReference(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES);
+
+        CheckBoxComponent variousQuantitiesInProductsBySizeCheckBox = (CheckBoxComponent) view
+                .getComponentByReference(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE);
+
+        if(differentProductsInDifferentSizesCheckBox.isChecked()) {
+            variousQuantitiesInProductsBySizeCheckBox.setEnabled(Boolean.TRUE);
+            FieldComponent quantityField = (FieldComponent) view.getComponentByReference(OperationProductInComponentFields.QUANTITY);
+            FieldComponent unitField = (FieldComponent) view.getComponentByReference(OperationProductInComponentFields.UNIT);
+            FieldComponent quantityFormulaField = (FieldComponent) view.getComponentByReference(OperationProductInComponentFields.QUANTITY_FORMULA);
+            FieldComponent givenQuantityField = (FieldComponent) view.getComponentByReference(OperationProductInComponentFields.GIVEN_QUANTITY);
+            FieldComponent givenUnitField = (FieldComponent) view.getComponentByReference(OperationProductInComponentFields.GIVEN_UNIT);
+            if(variousQuantitiesInProductsBySizeCheckBox.isChecked()) {
+                quantityField.setFieldValue(null);
+                unitField.setFieldValue(null);
+                quantityFormulaField.setFieldValue(null);
+                givenQuantityField.setFieldValue(null);
+                givenUnitField.setFieldValue(null);
+                quantityFormulaField.setEnabled(false);
+                givenQuantityField.setEnabled(false);
+                givenUnitField.setEnabled(false);
+            } else {
+                quantityFormulaField.setEnabled(true);
+                givenQuantityField.setEnabled(true);
+                givenUnitField.setEnabled(true);
+            }
+        } else {
+            variousQuantitiesInProductsBySizeCheckBox.setEnabled(Boolean.FALSE);
+
+        }
     }
 
     private void fillUnitBeforeRender(final ViewDefinitionState view) {

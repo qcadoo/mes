@@ -53,6 +53,8 @@ public final class OperationProductInComponentFields {
 
     public static final String DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES = "differentProductsInDifferentSizes";
 
+    public static final String VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE = "variousQuantitiesInProductsBySize";
+
     public static final String PRODUCT_BY_SIZE_GROUPS = "productBySizeGroups";
 
     public static final String DESCRIPTION = "description";

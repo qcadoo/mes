@@ -35,9 +35,9 @@
         </ribbon>
 
         <component type="form" name="form" reference="form">
-            <component type="gridLayout" name="gridLayout" columns="2"
-                       rows="2">
-                <layoutElement column="1" row="1">
+            <component type="gridLayout" name="gridLayout" columns="5"
+                       rows="4">
+                <layoutElement column="1" row="1" width="5">
                     <component type="lookup" name="sizeGroup" field="sizeGroup"
                                reference="sizeGroup">
                         <option type="searchable" value="number"/>
@@ -47,7 +47,10 @@
                         <option type="fieldCode" value="number"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="1" row="2">
+
+
+
+                <layoutElement column="1" row="2" width="5">
                     <component type="lookup" name="product" field="product"
                                reference="product">
                         <option type="column" name="name" fields="name" link="true"
@@ -62,8 +65,41 @@
                                 value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                         <option type="fieldCode" value="number"/>
 
+                        <listener event="onSelectedEntityChange"
+                                  class="com.qcadoo.mes.technologies.listeners.ProductBySizeGroupDetailsListeners"
+                                  method="onProductChange"/>
                         <criteriaModifier class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
                                           method="showParticularProductOnly"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="3" width="4">
+                    <component type="input" name="quantity" field="quantity" defaultEnabled="false"
+                               reference="quantity">
+                        <option type="alignment" value="right"/>
+                    </component>
+                </layoutElement>
+
+                <layoutElement column="5" row="3">
+                    <component type="input" name="unit" reference="unit"
+                               defaultEnabled="false" hasLabel="false"/>
+                </layoutElement>
+
+
+                <layoutElement column="1" row="4" width="4">
+                    <component type="input" name="givenQuantity" field="givenQuantity" reference="givenQuantity">
+                        <option type="alignment" value="right"/>
+
+                       <listener event="onInputChange" method="onGivenQuantityChange"
+                                  class="com.qcadoo.mes.technologies.listeners.ProductBySizeGroupDetailsListeners"/>
+                    </component>
+                </layoutElement>
+
+                <layoutElement column="5" row="4">
+                    <component type="select" name="givenUnit" reference="givenUnit"
+                               hasLabel="false" field="givenUnit">
+
+                      <listener event="onSelectedEntityChange" method="onGivenUnitChange"
+                                  class="com.qcadoo.mes.technologies.listeners.ProductBySizeGroupDetailsListeners"/>
                     </component>
                 </layoutElement>
             </component>
@@ -72,4 +108,10 @@
             <option type="expression" value="#product.get('number')"/>
         </component>
     </component>
+
+
+    <hooks>
+        <beforeRender class="com.qcadoo.mes.technologies.hooks.ProductBySizeGroupDetailsHooks"
+                      method="onBeforeRender"/>
+    </hooks>
 </view>
