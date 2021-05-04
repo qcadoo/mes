@@ -28,22 +28,29 @@ import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
 import com.qcadoo.mes.masterOrders.criteriaModifier.OrderCriteriaModifier;
 import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.TechnologyServiceO;
+import com.qcadoo.mes.orders.criteriaModifiers.TechnologyCriteriaModifiersO;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.ExpressionService;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
+
+import java.util.Collections;
+import java.util.Objects;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
-
-import java.util.Collections;
-
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER;
 import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.NUMBER;
 
@@ -199,27 +206,26 @@ public class MasterOrderDetailsHooks {
 
     public void fillDefaultTechnology(final ViewDefinitionState view) {
         LookupComponent productField = (LookupComponent) view.getComponentByReference("product");
-        FieldComponent defaultTechnology = (FieldComponent) view.getComponentByReference("defaultTechnology");
-        FieldComponent technology = (FieldComponent) view.getComponentByReference("technology");
+        FieldComponent defaultTechnologyField = (FieldComponent) view.getComponentByReference("defaultTechnology");
+        LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference("technology");
 
         Entity product = productField.getEntity();
 
-        if (product == null || technologyServiceO.getDefaultTechnology(product) == null) {
-            defaultTechnology.setFieldValue(null);
-            defaultTechnology.requestComponentUpdateState();
-            return;
-        }
+        if (Objects.nonNull(product)) {
+            FilterValueHolder holder = technologyLookup.getFilterValue();
 
-        Entity defaultTechnologyEntity = technologyServiceO.getDefaultTechnology(product);
-        String defaultTechnologyValue = expressionService.getValue(defaultTechnologyEntity, "#number + ' - ' + #name",
-                view.getLocale());
+            holder.put(TechnologyCriteriaModifiersO.PRODUCT_PARAMETER, product.getId());
 
-        defaultTechnology.setFieldValue(defaultTechnologyValue);
-        defaultTechnology.requestComponentUpdateState();
+            technologyLookup.setFilterValue(holder);
 
-        if (technology.getFieldValue() == null) {
-            technology.setFieldValue(defaultTechnologyEntity.getId());
-            technology.requestComponentUpdateState();
+            Entity defaultTechnology = technologyServiceO.getDefaultTechnology(product);
+
+            if (Objects.nonNull(defaultTechnology)) {
+                String defaultTechnologyValue = expressionService.getValue(defaultTechnology, "#number + ' - ' + #name",
+                        view.getLocale());
+
+                defaultTechnologyField.setFieldValue(defaultTechnologyValue);
+            }
         }
 
     }

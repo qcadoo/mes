@@ -68,7 +68,7 @@
                     </layoutElement>
                     <layoutElement column="1" row="3">
                         <component type="lookup" name="technology" reference="technology"
-                                   field="technology" source="#{product}.technologies"
+                                   field="technology"
                                    hasDescription="true">
                             <option type="column" name="name" fields="name" link="true"
                                     width="300"/>
@@ -80,8 +80,8 @@
                                     value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                             <option type="fieldCode" value="number"/>
                             <criteriaModifier
-                                    class="com.qcadoo.mes.technologies.criteriaModifiers.TechnologyCriteriaModifiers"
-                                    method="showAcceptedPatternTechnology"/>
+                                    class="com.qcadoo.mes.orders.criteriaModifiers.TechnologyCriteriaModifiersO"
+                                    method="showAcceptedPatternTechnologyForProduct"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="4" height="2">
