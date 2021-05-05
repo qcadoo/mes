@@ -23,6 +23,9 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.states.aop.listeners;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.newstates.BasicStateService;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
 import com.qcadoo.mes.productFlowThruDivision.states.ProductionTrackingListenerServicePFTD;
@@ -30,11 +33,8 @@ import com.qcadoo.mes.productionCounting.newstates.ProductionTrackingStateServic
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateChangeDescriber;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
-import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.RunIfEnabled;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 @RunIfEnabled(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER)
@@ -42,9 +42,6 @@ public class ProductionTrackingStateServicePFTD extends BasicStateService implem
 
     @Autowired
     private ProductionTrackingListenerServicePFTD productionTrackingListenerService;
-
-    @Autowired
-    private TechnologyService technologyService;
 
     @Autowired
     private ProductionTrackingStateChangeDescriber productionTrackingStateChangeDescriber;
