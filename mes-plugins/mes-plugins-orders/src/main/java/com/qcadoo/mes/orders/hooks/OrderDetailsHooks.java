@@ -23,17 +23,6 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
@@ -83,6 +72,17 @@ import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 @Service
 public class OrderDetailsHooks {
 
@@ -114,6 +114,8 @@ public class OrderDetailsHooks {
     private static final String L_BACK = "back";
 
     private static final String L_REASON_TYPE_OF_CHANGING_ORDER_STATE = "reasonTypeOfChangingOrderState";
+
+    public static final String L_PARENT = "parent";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -180,6 +182,18 @@ public class OrderDetailsHooks {
         if (isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANED_QUANTITY_FOR_ADDITIONAL_UNIT))
                 && isValidDecimalField(view, Lists.newArrayList(OrderFields.PLANNED_QUANTITY))) {
             setQuantities(view);
+        }
+        disableNumberForComponentOrder(view);
+    }
+
+    private void disableNumberForComponentOrder(final ViewDefinitionState view) {
+        FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        if(Objects.nonNull(orderForm.getEntityId())) {
+            Entity order = orderForm.getEntity().getDataDefinition().get(orderForm.getEntityId());
+            if(Objects.nonNull(order.getBelongsToField(L_PARENT))) {
+                FieldComponent numberComponent = (FieldComponent) view.getComponentByReference(OrderFields.NUMBER);
+                numberComponent.setEnabled(false);
+            }
         }
     }
 
