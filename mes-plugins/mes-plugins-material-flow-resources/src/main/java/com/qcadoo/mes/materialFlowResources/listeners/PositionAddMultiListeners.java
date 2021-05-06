@@ -1,5 +1,13 @@
 package com.qcadoo.mes.materialFlowResources.listeners;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
@@ -8,6 +16,7 @@ import com.qcadoo.mes.materialFlowResources.constants.LocationFieldsMFR;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+import com.qcadoo.mes.materialFlowResources.constants.ResourceStockDtoFields;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -21,15 +30,6 @@ import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class PositionAddMultiListeners {
@@ -81,19 +81,19 @@ public class PositionAddMultiListeners {
                 if (!newPosition.isValid()) {
                     errorNumbers.add(resource.getStringField(ResourceFields.NUMBER));
                 }
-            }  catch (EntityRuntimeException ere) {
+            } catch (EntityRuntimeException ere) {
                 Entity pos = ere.getEntity();
-                view.addMessage("documentPositions.error.position.quantity.notEnoughResources", ComponentState.MessageType.FAILURE,
+                view.addMessage("documentPositions.error.position.quantity.notEnoughResources",
+                        ComponentState.MessageType.FAILURE,
                         pos.getBelongsToField(PositionFields.PRODUCT).getStringField(ProductFields.NUMBER),
                         pos.getBelongsToField(PositionFields.RESOURCE).getStringField(ResourceFields.NUMBER));
             }
-
 
         }
 
         if (!errorNumbers.isEmpty()) {
             view.addMessage("materialFlowResources.positionAddMulti.errorForResource", ComponentState.MessageType.INFO,
-                    errorNumbers.stream().collect(Collectors.joining(", ")));
+                    String.join(", ", errorNumbers));
         }
     }
 
@@ -134,42 +134,37 @@ public class PositionAddMultiListeners {
         String type = document.getStringField(DocumentFields.TYPE);
         if (DocumentType.isOutbound(type) && !document.getBooleanField(DocumentFields.IN_BUFFER)) {
             Entity location = document.getBelongsToField(DocumentFields.LOCATION_FROM);
-            Boolean enabled = location.getBooleanField(LocationFieldsMFR.DRAFT_MAKES_RESERVATION);
+            boolean enabled = location.getBooleanField(LocationFieldsMFR.DRAFT_MAKES_RESERVATION);
             if (enabled) {
                 BigDecimal availableQuantity = getAvailableQuantityForProductAndLocation(
                         position.getBelongsToField(PositionFields.PRODUCT), location);
                 BigDecimal quantity = position.getDecimalField(PositionFields.QUANTITY);
                 if (availableQuantity == null || quantity.compareTo(availableQuantity) > 0) {
                     return false;
-                } else {
-                    if (Objects.nonNull(position.getBelongsToField(PositionFields.RESOURCE))) {
-                        BigDecimal resourceAvailableQuantity = getAvailableQuantityForResource(
-                                position.getBelongsToField(PositionFields.RESOURCE),
-                                position.getBelongsToField(PositionFields.PRODUCT), location);
-                        if (resourceAvailableQuantity == null || quantity.compareTo(resourceAvailableQuantity) > 0) {
-                            return false;
-                        }
-                    }
+                } else if (Objects.nonNull(position.getBelongsToField(PositionFields.RESOURCE))) {
+                    BigDecimal resourceAvailableQuantity = getAvailableQuantityForResource(
+                            position.getBelongsToField(PositionFields.RESOURCE));
+                    return resourceAvailableQuantity != null && quantity.compareTo(resourceAvailableQuantity) <= 0;
                 }
             }
         }
         return true;
     }
 
-    private BigDecimal getAvailableQuantityForResource(Entity resource, Entity product, Entity location) {
+    private BigDecimal getAvailableQuantityForResource(Entity resource) {
         return resource.getDecimalField(ResourceFields.AVAILABLE_QUANTITY);
     }
 
     private BigDecimal getAvailableQuantityForProductAndLocation(Entity product, Entity location) {
-
         Entity resourceStockDto = dataDefinitionService
                 .get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_RESOURCE_STOCK_DTO)
-                .find().add(SearchRestrictions.eq("product_id", product.getId().intValue()))
-                .add(SearchRestrictions.eq("location_id", location.getId().intValue())).setMaxResults(1).uniqueResult();
+                .find().add(SearchRestrictions.eq(ResourceStockDtoFields.PRODUCT_ID, product.getId().intValue()))
+                .add(SearchRestrictions.eq(ResourceStockDtoFields.LOCATION_ID, location.getId().intValue())).setMaxResults(1)
+                .uniqueResult();
         if (Objects.isNull(resourceStockDto)) {
             return BigDecimal.ZERO;
         }
-        return BigDecimalUtils.convertNullToZero(resourceStockDto.getDecimalField("availableQuantity"));
+        return BigDecimalUtils.convertNullToZero(resourceStockDto.getDecimalField(ResourceStockDtoFields.AVAILABLE_QUANTITY));
     }
 
     private DataDefinition getResourceDD() {
