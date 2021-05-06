@@ -225,6 +225,7 @@ public class MasterOrderDetailsHooks {
                         view.getLocale());
 
                 defaultTechnologyField.setFieldValue(defaultTechnologyValue);
+                technologyLookup.setFieldValue(defaultTechnology.getId());
             }
         }
 
