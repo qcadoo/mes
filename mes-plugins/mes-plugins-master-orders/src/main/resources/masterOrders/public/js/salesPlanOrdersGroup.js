@@ -25,7 +25,7 @@ thatObject.generateOrdersGroup = function (eventPerformer, ribbonItemName, entit
 	$.each(ids, function (i, id) {
 		var position = {};
 		position.id = id;
-		position.value = $("#orderQuantity_" + id).val().replace(',', '.');
+		position.value = $("#orderQuantity_" + id).val().trim().replace(',', '.');
 		$("#orderQuantity_" + id).removeClass('is-invalid');
 
 		if (position.value) {
@@ -179,3 +179,7 @@ mutationObserver.observe(productsGroupNode, {
 	attributeOldValue: false,
 	characterDataOldValue: false
 });
+
+function orderQuantityChange(pgrid) {
+
+}
