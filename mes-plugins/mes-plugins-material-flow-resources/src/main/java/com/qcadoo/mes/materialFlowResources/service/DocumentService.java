@@ -24,6 +24,7 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.OrdersGroupIssuedMaterialFields;
 import com.qcadoo.mes.materialFlowResources.constants.OrdersGroupIssuedMaterialPositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
@@ -274,7 +275,7 @@ public class DocumentService {
             Map<Long, BigDecimal> productQuantities, Map<Long, BigDecimal> productValues,
             Map<Long, List<Entity>> productPositions, Long withoutDocumentId) {
         for (Entity document : ordersGroup.getHasManyField(DOCUMENTS)) {
-            if (document.getId().equals(withoutDocumentId)) {
+            if (document.getId().equals(withoutDocumentId) || DocumentType.INTERNAL_INBOUND.equals(DocumentType.of(document))) {
                 continue;
             }
             for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
