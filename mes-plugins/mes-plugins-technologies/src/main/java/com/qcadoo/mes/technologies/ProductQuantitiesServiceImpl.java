@@ -563,26 +563,31 @@ public class ProductQuantitiesServiceImpl implements ProductQuantitiesService {
             if (operationProductComponent.getDataDefinition().getName()
                     .equals(TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
                     && operationProductComponent
-                            .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES)
-                    && !sizeGroups.isEmpty()) {
-                for (Entity sizeGroup : sizeGroups) {
-                    List<Entity> productBySizeGroups = operationProductComponent
-                            .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS)
-                            .stream()
-                            .filter(pG -> pG.getBelongsToField(ProductBySizeGroupFields.SIZE_GROUP).getId()
-                                    .equals(sizeGroup.getId())).collect(Collectors.toList());
+                            .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES)) {
+                if (!sizeGroups.isEmpty()) {
+                    for (Entity sizeGroup : sizeGroups) {
+                        List<Entity> productBySizeGroups = operationProductComponent
+                                .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS)
+                                .stream()
+                                .filter(pG -> pG.getBelongsToField(ProductBySizeGroupFields.SIZE_GROUP).getId()
+                                        .equals(sizeGroup.getId())).collect(Collectors.toList());
 
-                    for (Entity productBySizeGroup : productBySizeGroups) {
-                        BigDecimal addedQuantity = operationProductComponentWithQuantityContainer.get(operationProductComponent,
-                                productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT));
-                        BigDecimal quantity = addedQuantity.multiply(multiplier, numberService.getMathContext());
+                        for (Entity productBySizeGroup : productBySizeGroups) {
+                            BigDecimal addedQuantity = operationProductComponentWithQuantityContainer.get(
+                                    operationProductComponent,
+                                    productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT));
+                            BigDecimal quantity = addedQuantity.multiply(multiplier, numberService.getMathContext());
 
-                        operationProductComponentWithQuantityContainer.put(operationProductComponent,
-                                productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT),
-                                quantity.setScale(5, RoundingMode.CEILING));
+                            operationProductComponentWithQuantityContainer.put(operationProductComponent,
+                                    productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT),
+                                    quantity.setScale(5, RoundingMode.CEILING));
+                        }
                     }
+                } else {
+                    operationProductComponentWithQuantityContainer.put(operationProductComponent, null);
                 }
             } else {
+
                 BigDecimal addedQuantity = operationProductComponentWithQuantityContainer.get(operationProductComponent);
                 BigDecimal quantity = addedQuantity.multiply(multiplier, numberService.getMathContext());
 
