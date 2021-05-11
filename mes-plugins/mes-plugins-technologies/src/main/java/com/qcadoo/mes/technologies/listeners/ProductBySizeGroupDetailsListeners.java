@@ -17,6 +17,7 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
 import java.math.BigDecimal;
@@ -38,43 +39,51 @@ public class ProductBySizeGroupDetailsListeners {
     private UnitService unitService;
 
     public void onProductChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OperationProductInComponentFields.PRODUCT);
+        Entity product = productLookup.getEntity();
+        if (Objects.nonNull(product)) {
+            FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
-        Entity productBySizeGroup = form.getPersistedEntityWithIncludedFormValues();
+            Entity productBySizeGroup = form.getPersistedEntityWithIncludedFormValues();
 
-        Entity opic = productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.OPERATION_PRODUCT_IN_COMPONENT);
-        if (!opic.getBooleanField(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE)) {
+            Entity opic = productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.OPERATION_PRODUCT_IN_COMPONENT);
 
-            String opicUnit = opic.getStringField(OperationProductInComponentFields.GIVEN_UNIT);
-            String productBySizeGroupUnit = productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT)
-                    .getStringField(ProductFields.UNIT);
-            FieldComponent givenQuantityField = (FieldComponent) view
-                    .getComponentByReference(ProductBySizeGroupFields.GIVEN_QUANTITY);
-            FieldComponent givenUnitField = (FieldComponent) view.getComponentByReference(ProductBySizeGroupFields.GIVEN_UNIT);
+                String opicUnit = opic.getStringField(OperationProductInComponentFields.GIVEN_UNIT);
+                String productBySizeGroupUnit = productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT).getStringField(ProductFields.UNIT);
+                FieldComponent givenQuantityField = (FieldComponent) view.getComponentByReference(ProductBySizeGroupFields.GIVEN_QUANTITY);
+                FieldComponent givenUnitField = (FieldComponent) view.getComponentByReference(ProductBySizeGroupFields.GIVEN_UNIT);
 
-            if (opicUnit.equals(productBySizeGroupUnit)) {
+                if (opicUnit.equals(productBySizeGroupUnit)) {
 
-                givenUnitField.setFieldValue(productBySizeGroupUnit);
-                givenQuantityField.setFieldValue(BigDecimalUtils.toString(
-                        opic.getDecimalField(OperationProductInComponentFields.GIVEN_QUANTITY), 5));
-            } else {
-                PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(productBySizeGroupUnit,
-                        searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions.belongsTo(
-                                UnitConversionItemFieldsB.PRODUCT,
-                                productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT))));
-
-                if (unitConversions.isDefinedFor(opicUnit)) {
-                    givenUnitField.setFieldValue(opicUnit);
-                    givenQuantityField.setFieldValue(opic.getDecimalField(OperationProductInComponentFields.GIVEN_QUANTITY));
+                    givenUnitField.setFieldValue(productBySizeGroupUnit);
+                    givenQuantityField.setFieldValue(
+                            BigDecimalUtils.toString(opic.getDecimalField(OperationProductInComponentFields.GIVEN_QUANTITY), 5));
+                    calculateQuantity(view, state, args);
                 } else {
-                    productBySizeGroup.addGlobalError("technologies.productBySizeGroup.error.wrongUnitOrConversion");
-                    return;
+                    PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(productBySizeGroupUnit,
+                            searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions
+                                    .belongsTo(UnitConversionItemFieldsB.PRODUCT, productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT))));
+
+                    if (unitConversions.isDefinedFor(opicUnit)) {
+                        givenUnitField.setFieldValue(opicUnit);
+                        givenQuantityField.setFieldValue(opic.getDecimalField(OperationProductInComponentFields.GIVEN_QUANTITY));
+                        FieldComponent unitField = (FieldComponent) view.getComponentByReference(ProductBySizeGroupFields.UNIT);
+                        unitField.setFieldValue(product.getStringField(ProductFields.UNIT));
+                        calculateQuantity(view, state, args);
+
+                    } else {
+                        productBySizeGroup.addError(
+                                productBySizeGroup.getDataDefinition().getField(ProductBySizeGroupFields.GIVEN_QUANTITY),
+                                "technologies.operationProductInComponent.validate.error.missingUnitConversion");
+
+                        productBySizeGroup.setField(ProductBySizeGroupFields.QUANTITY, null);
+                        form.setEntity(productBySizeGroup);
+                    }
+
                 }
 
-            }
 
         }
-        calculateQuantity(view, state, args);
     }
 
     public void onGivenQuantityChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
