@@ -1,18 +1,5 @@
 package com.qcadoo.mes.masterOrders.helpers;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
@@ -38,6 +25,19 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchRestrictions;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
 
 @Service
 public class SalesPlanMaterialRequirementHelper {
@@ -102,7 +102,7 @@ public class SalesPlanMaterialRequirementHelper {
 
                         for (Entity productBySizeGroup : productBySizeGroups) {
                             createSalesPlanMaterialRequirementProductFromProductBySizeGroup(salesPlanMaterialRequirementProducts,
-                                    productBySizeGroup, neededQuantity);
+                                    productBySizeGroup, plannedQuantity);
                         }
                     } else {
                         createSalesPlanMaterialRequirementProductFromProduct(salesPlanMaterialRequirementProducts, product,
@@ -175,7 +175,7 @@ public class SalesPlanMaterialRequirementHelper {
 
     private Entity createSalesPlanMaterialRequirementProductFromProductBySizeGroup(
             final List<Entity> salesPlanMaterialRequirementProducts, final Entity productBySizeGroup,
-            final BigDecimal neededQuantity) {
+            final BigDecimal planedQuantity) {
         Entity product = productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT);
         Entity sizeGroup = productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.SIZE_GROUP);
 
@@ -193,10 +193,15 @@ public class SalesPlanMaterialRequirementHelper {
             BigDecimal sumForSizes = salesPlanMaterialRequirementProduct
                     .getDecimalField(SalesPlanMaterialRequirementProductFields.SUM_FOR_SIZES);
 
+            BigDecimal neededQuantity = numberService.setScaleWithDefaultMathContext(planedQuantity.multiply(
+                    productBySizeGroup.getDecimalField(ProductBySizeGroupFields.QUANTITY), numberService.getMathContext()));
+
             sumForSizes = sumForSizes.add(neededQuantity, numberService.getMathContext());
 
             salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.SUM_FOR_SIZES, sumForSizes);
         } else {
+            BigDecimal neededQuantity = numberService.setScaleWithDefaultMathContext(planedQuantity.multiply(
+                    productBySizeGroup.getDecimalField(ProductBySizeGroupFields.QUANTITY), numberService.getMathContext()));
             salesPlanMaterialRequirementProduct = getSalesPlanMaterialRequirementProductDD().create();
 
             salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.PRODUCT, product);
