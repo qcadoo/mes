@@ -23,18 +23,6 @@
  */
 package com.qcadoo.mes.costCalculation.print;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.costCalculation.constants.CalculationResultFields;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
@@ -48,6 +36,18 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
 
 @Service
 public class CostCalculationService {
@@ -184,7 +184,8 @@ public class CostCalculationService {
                 + "tipt.name AS technologyInputProductType, pbsgp.number AS materialNumber, "
                 + "sg.number AS sizeGroupNumber, pbsgp.nominalCost AS nominalCost, pbsgp.averageCost AS averageCost, "
                 + "pbsgp.lastPurchaseCost AS lastPurchaseCost, pbsgp.averageOfferCost AS averageOfferCost, "
-                + "pbsgp.lastOfferCost AS lastOfferCost, pbsgp.costForNumber AS costForNumber "
+                + "pbsgp.lastOfferCost AS lastOfferCost, pbsgp.costForNumber AS costForNumber, "
+                + "pbsg.quantity as quantity, pbsgp.unit as unit "
                 + "FROM technologies_technology t JOIN basic_product p ON t.product_id = p.id "
                 + "JOIN technologies_technologyoperationcomponent toc ON toc.technology_id = t.id "
                 + "JOIN technologies_operationproductincomponent opic ON opic.operationcomponent_id = toc.id "
