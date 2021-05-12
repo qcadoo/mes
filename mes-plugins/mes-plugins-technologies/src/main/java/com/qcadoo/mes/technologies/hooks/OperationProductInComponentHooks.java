@@ -203,12 +203,25 @@ public class OperationProductInComponentHooks {
                     || !operationProductInComponentDb.getStringField(OperationProductInComponentFields.GIVEN_UNIT).equals(
                             operationProductInComponent.getStringField(OperationProductInComponentFields.GIVEN_UNIT))) {
 
-                if (!operationProductInComponent.getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS)
-                        .isEmpty()) {
-                    operationProductInComponent
-                            .addGlobalError("technologies.operationProductInComponent.error.unitChangedRemoveProductsBySizeGroup");
+                String opicUnit = operationProductInComponent.getStringField(OperationProductInComponentFields.GIVEN_UNIT);
 
-                    return false;
+                for (Entity pbsg : operationProductInComponent
+                        .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS)) {
+                    String productBySizeGroupUnit = pbsg.getBelongsToField(ProductBySizeGroupFields.PRODUCT).getStringField(ProductFields.UNIT);
+
+                    if (!opicUnit.equals(productBySizeGroupUnit)) {
+                        PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(productBySizeGroupUnit,
+                                searchCriteriaBuilder -> searchCriteriaBuilder.add(SearchRestrictions
+                                        .belongsTo(UnitConversionItemFieldsB.PRODUCT, pbsg.getBelongsToField(ProductBySizeGroupFields.PRODUCT))));
+
+                        if (!unitConversions.isDefinedFor(opicUnit)) {
+                            operationProductInComponent
+                                    .addGlobalError("technologies.operationProductInComponent.error.unitChangedRemoveProductsBySizeGroup");
+
+                            return false;
+                        }
+                    }
+
                 }
             }
 
