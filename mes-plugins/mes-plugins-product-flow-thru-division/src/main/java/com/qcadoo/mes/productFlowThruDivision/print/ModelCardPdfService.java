@@ -265,7 +265,7 @@ public final class ModelCardPdfService extends PdfDocumentService {
             BigDecimal norm = operationProductComponent.getDecimalField(OperationProductInComponentFields.QUANTITY);
 
             if (operationProductComponent
-                    .getBooleanField(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE)) {
+                    .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES)) {
                 Entity pbs = operationProductComponent
                         .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS)
                         .stream()
