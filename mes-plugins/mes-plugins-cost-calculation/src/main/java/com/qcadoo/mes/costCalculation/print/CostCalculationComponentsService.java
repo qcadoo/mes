@@ -73,13 +73,21 @@ public class CostCalculationComponentsService {
                     .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES)) {
                 List<Entity> productsBySize = operationProductComponent
                         .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS);
-                BigDecimal sum = productsBySize.stream().map(pbs -> pbs.getDecimalField(ProductBySizeGroupFields.QUANTITY))
-                        .reduce(BigDecimal.ZERO, BigDecimal::add);
-                BigDecimal quantityBySize = sum.divide(new BigDecimal(productsBySize.size(), numberService.getMathContext()),
-                        numberService.getMathContext());
+                BigDecimal sumOfCosts = BigDecimal.ZERO;
+                for (Entity pbs : productsBySize) {
 
-                costForGivenQuantity = costPerUnit.multiply(BigDecimalUtils.convertNullToZero(quantityBySize),
-                        numberService.getMathContext());
+                    Entity p = pbs.getBelongsToField(ProductBySizeGroupFields.PRODUCT);
+
+                    BigDecimal costPerUnitPBS = productsCostCalculationService.calculateProductCostPerUnit(p,
+                            costCalculation.getStringField(CostCalculationFields.MATERIAL_COSTS_USED),
+                            costCalculation.getBooleanField(CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED));
+
+                    BigDecimal costPBS = numberService.setScaleWithDefaultMathContext(costPerUnitPBS.multiply(pbs
+                            .getDecimalField(ProductBySizeGroupFields.QUANTITY)));
+                    sumOfCosts = sumOfCosts.add(costPBS, numberService.getMathContext());
+
+                }
+                costForGivenQuantity = sumOfCosts.divide(new BigDecimal(productsBySize.size()), numberService.getMathContext());
             }
             ComponentsCalculationHolder cc = allOperationComponents.stream()
                     .filter(bc -> bc.getToc().getId().equals(neededProductQuantity.getKey().getTechnologyOperationComponentId()))
