@@ -81,9 +81,10 @@ public class CostCalculationComponentsService {
                     BigDecimal costPerUnitPBS = productsCostCalculationService.calculateProductCostPerUnit(p,
                             costCalculation.getStringField(CostCalculationFields.MATERIAL_COSTS_USED),
                             costCalculation.getBooleanField(CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED));
+                    BigDecimal q = costCalculation.getDecimalField(CostCalculationFields.QUANTITY).multiply(
+                            pbs.getDecimalField(ProductBySizeGroupFields.QUANTITY), numberService.getMathContext());
 
-                    BigDecimal costPBS = numberService.setScaleWithDefaultMathContext(costPerUnitPBS.multiply(pbs
-                            .getDecimalField(ProductBySizeGroupFields.QUANTITY)));
+                    BigDecimal costPBS = numberService.setScaleWithDefaultMathContext(costPerUnitPBS.multiply(q));
                     sumOfCosts = sumOfCosts.add(costPBS, numberService.getMathContext());
 
                 }
