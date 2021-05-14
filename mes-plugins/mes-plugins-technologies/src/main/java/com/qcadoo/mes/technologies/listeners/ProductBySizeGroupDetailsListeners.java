@@ -47,6 +47,8 @@ public class ProductBySizeGroupDetailsListeners {
             Entity productBySizeGroup = form.getPersistedEntityWithIncludedFormValues();
             Entity opic = productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.OPERATION_PRODUCT_IN_COMPONENT);
             FieldComponent givenUnitField = (FieldComponent) view.getComponentByReference(ProductBySizeGroupFields.GIVEN_UNIT);
+            FieldComponent unitField = (FieldComponent) view.getComponentByReference(ProductBySizeGroupFields.UNIT);
+            unitField.setFieldValue(product.getStringField(ProductFields.UNIT));
 
             if (!opic.getBooleanField(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE)) {
 
@@ -68,8 +70,6 @@ public class ProductBySizeGroupDetailsListeners {
                     if (unitConversions.isDefinedFor(opicUnit)) {
                         givenUnitField.setFieldValue(opicUnit);
                         givenQuantityField.setFieldValue(opic.getDecimalField(OperationProductInComponentFields.GIVEN_QUANTITY));
-                        FieldComponent unitField = (FieldComponent) view.getComponentByReference(ProductBySizeGroupFields.UNIT);
-                        unitField.setFieldValue(product.getStringField(ProductFields.UNIT));
                         calculateQuantity(view, state, args);
 
                     } else {
@@ -83,8 +83,6 @@ public class ProductBySizeGroupDetailsListeners {
 
                 }
             } else {
-                FieldComponent unitField = (FieldComponent) view.getComponentByReference(ProductBySizeGroupFields.UNIT);
-                unitField.setFieldValue(product.getStringField(ProductFields.UNIT));
                 calculateQuantity(view, state, args);
             }
 
