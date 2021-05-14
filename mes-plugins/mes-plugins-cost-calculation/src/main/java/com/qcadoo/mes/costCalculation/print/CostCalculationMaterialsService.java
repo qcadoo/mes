@@ -102,6 +102,14 @@ public class CostCalculationMaterialsService {
                     .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES)) {
                 List<Entity> productsBySize = operationProductComponent
                         .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS);
+
+                if (!operationProductComponent
+                        .getBooleanField(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE)) {
+                    productQuantity = costCalculation.getDecimalField(CostCalculationFields.QUANTITY).multiply(
+                            productsBySize.stream().findFirst().get().getDecimalField(ProductBySizeGroupFields.QUANTITY),
+                            numberService.getMathContext());
+                }
+
                 BigDecimal sumOfCosts = BigDecimal.ZERO;
                 for (Entity pbs : productsBySize) {
 
@@ -145,6 +153,12 @@ public class CostCalculationMaterialsService {
                         .getStringField(OperationProductInComponentFields.GIVEN_UNIT));
                 costCalculationMaterial.setProductNumber("");
                 costCalculationMaterial.setProductName("");
+            }
+
+            if (operationProductComponent
+                    .getBooleanField(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE)) {
+                costCalculationMaterial.setProductQuantity(null);
+                costCalculationMaterial.setCostPerUnit(null);
             }
             materialCosts.add(costCalculationMaterial);
         }

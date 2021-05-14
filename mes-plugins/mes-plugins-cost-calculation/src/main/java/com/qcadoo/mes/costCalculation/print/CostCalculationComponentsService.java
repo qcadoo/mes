@@ -74,6 +74,7 @@ public class CostCalculationComponentsService {
                 List<Entity> productsBySize = operationProductComponent
                         .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS);
                 BigDecimal sumOfCosts = BigDecimal.ZERO;
+
                 for (Entity pbs : productsBySize) {
 
                     Entity p = pbs.getBelongsToField(ProductBySizeGroupFields.PRODUCT);

@@ -293,7 +293,7 @@ public class CostCalculationXlsService extends XlsDocumentService {
                             : translationService.translate("qcadooView.false", locale));
             createRegularCell(stylesContainer, row, 4, materialCost.getProductNumber());
             createRegularCell(stylesContainer, row, 5, materialCost.getProductName());
-            createNumericCell(stylesContainer, row, 6, materialCost.getProductQuantity());
+            createNumericWithNullCell(stylesContainer, row, 6, materialCost.getProductQuantity());
             createRegularCell(stylesContainer, row, 7, materialCost.getUnit());
             createNumericCell(stylesContainer, row, 8, materialCost.getCostPerUnit());
             createNumericCell(stylesContainer, row, 9, materialCost.getCostForGivenQuantity());
@@ -494,6 +494,20 @@ public class CostCalculationXlsService extends XlsDocumentService {
         return cell;
     }
 
+    private HSSFCell createNumericWithNullCell(StylesContainer stylesContainer, HSSFRow row, int column, BigDecimal value) {
+        HSSFCell cell = row.createCell(column, HSSFCell.CELL_TYPE_NUMERIC);
+        if (value == null) {
+            cell.setCellValue("");
+            cell.setCellStyle(StylesContainer.aligned(stylesContainer.regularStyle, HorizontalAlignment.LEFT));
+            return cell;
+
+        } else {
+            cell.setCellValue(numberService.setScaleWithDefaultMathContext(value, 2).doubleValue());
+            cell.setCellStyle(StylesContainer.aligned(stylesContainer.numberStyle, HorizontalAlignment.RIGHT));
+            return cell;
+        }
+
+    }
     private HSSFCell createNumericCell(StylesContainer stylesContainer, HSSFRow row, int column, BigDecimal value) {
         HSSFCell cell = row.createCell(column, HSSFCell.CELL_TYPE_NUMERIC);
         if (value == null) {
