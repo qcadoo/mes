@@ -18,6 +18,8 @@ public class CostCalculationMaterialBySize {
 
     private String sizeGroupNumber;
 
+    private String unit;
+
     private BigDecimal nominalCost;
 
     private BigDecimal averageCost;
@@ -29,6 +31,8 @@ public class CostCalculationMaterialBySize {
     private BigDecimal lastOfferCost;
 
     private BigDecimal costForNumber;
+
+    private BigDecimal quantity;
 
     public Entity getProductEntity(DataDefinition productDataDefinition) {
         Entity product = productDataDefinition.create();
@@ -127,5 +131,21 @@ public class CostCalculationMaterialBySize {
 
     public void setCostForNumber(BigDecimal costForNumber) {
         this.costForNumber = costForNumber;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
+    }
+
+    public BigDecimal getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(BigDecimal quantity) {
+        this.quantity = quantity;
     }
 }

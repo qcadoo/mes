@@ -34,7 +34,7 @@
                    required="true"/>
         <priority name="priority" scope="operationComponent"/>
         <belongsTo name="product" plugin="basic" model="product"/>
-        <decimal name="quantity" required="true">
+        <decimal name="quantity">
             <validatesRange from="0" exclusively="true"/>
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
@@ -48,6 +48,7 @@
         <string name="quantityFormula" />
         <belongsTo name="technologyInputProductType" model="technologyInputProductType"/>
         <boolean name="differentProductsInDifferentSizes" default="false"/>
+        <boolean name="variousQuantitiesInProductsBySize" default="false"/>
         <hasMany name="productBySizeGroups" model="productBySizeGroup"
                  joinField="operationProductInComponent" cascade="delete" copyable="true"/>
         <string name="description">

@@ -145,7 +145,7 @@
                 </smallButton>
             </group>
             <group name="actions">
-                <bigButton name="addProductsBySize" icon="generateIcon24.png">
+                <bigButton name="addProductsBySize" icon="newIcon24.png">
                     <script>
                         <![CDATA[
 							this.addOnChangeListener({

@@ -155,7 +155,7 @@ public class DocumentModelHooks {
     }
 
     public boolean onDelete(final DataDefinition documentDD, final Entity document) {
-        documentService.updateOrdersGroupIssuedMaterials(null, document, true);
+        documentService.updateOrdersGroupIssuedMaterials(document, true);
 
         return true;
     }

@@ -76,7 +76,7 @@
                  plugin="orders" cascade="nullify"/>
 
         <hasMany name="masterOrderProducts" joinField="masterOrder"
-                 model="masterOrderProduct" cascade="delete"/>
+                 model="masterOrderProduct" cascade="delete" copyable="true"/>
 
         <hasMany name="masterOrderProductsDto" joinField="masterOrder" model="masterOrderPositionDto"
                  cascade="nullify" copyable="false" persistent="false" />

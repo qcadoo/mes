@@ -57,4 +57,6 @@ public final class ProductionLineFields {
 
     public static final String FACTORY_STRUCTURE = "factoryStructure";
 
+    public static final String ACTIVE = "active";
+
 }

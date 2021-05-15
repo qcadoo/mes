@@ -23,7 +23,12 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.states.aop.listeners;
 
-import com.qcadoo.mes.basic.ParameterService;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
 import com.qcadoo.mes.productFlowThruDivision.states.TechnologyStateValidationServicePFTD;
 import com.qcadoo.mes.states.StateChangeContext;
@@ -36,12 +41,6 @@ import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangePhase;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.plugin.api.RunIfEnabled;
 
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-
 @Aspect
 @Configurable
 @RunIfEnabled(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER)
@@ -49,9 +48,6 @@ public class TechnologyStateValidationAspectPFTD extends AbstractStateListenerAs
 
     @Autowired
     private TechnologyStateValidationServicePFTD technologyStateValidationServicePFTD;
-
-    @Autowired
-    private ParameterService parameterService;
 
     @Pointcut(TechnologyStateChangeAspect.SELECTOR_POINTCUT)
     protected void targetServicePointcut() {

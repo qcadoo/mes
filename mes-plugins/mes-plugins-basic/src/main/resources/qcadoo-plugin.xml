@@ -196,6 +196,7 @@
         <security:role identifier="ROLE_PRODUCTION_PER_SHIFT"/>
         <security:role identifier="ROLE_ACTIONS"/>
         <security:role identifier="ROLE_PRODUCTION_REGISTRATION_TERMINAL"/>
+        <security:role identifier="ROLE_PROCESS_CONFIRMATION_TERMINAL"/>
         <security:role identifier="ROLE_REPAIR_ORDERS"/>
 
         <security:role identifier="ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES"/>

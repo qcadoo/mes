@@ -38,6 +38,10 @@
         <decimal name="minimumOrderQuantity">
             <validatesRange from="0" exclusively="true"/>
         </decimal>
+
+        <integer name="bufferForDeliveryTimes">
+            <validatesRange from="0" exclusively="false"/>
+        </integer>
     </fields>
     <hooks>
         <validatesWith

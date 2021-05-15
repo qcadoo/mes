@@ -30,18 +30,29 @@ import com.qcadoo.mes.costCalculation.print.dto.CostCalculationMaterial;
 import com.qcadoo.mes.costCalculation.print.dto.MaterialCostKey;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesWithComponentsService;
-import com.qcadoo.mes.technologies.constants.*;
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
+import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyInputProductTypeFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.plugin.api.PluginManager;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class CostCalculationMaterialsService {
@@ -78,13 +89,44 @@ public class CostCalculationMaterialsService {
         String finalProductNumber = technology.getBelongsToField(TechnologyFields.PRODUCT).getStringField(ProductFields.NUMBER);
         for (Map.Entry<OperationProductComponentHolder, BigDecimal> neededProductQuantity : materialQuantitiesByOPC.entrySet()) {
             Entity product = neededProductQuantity.getKey().getProduct();
-            Entity operationProductComponent = operationProductComponentDD
-                    .get(neededProductQuantity.getKey().getOperationProductComponentId());
-            BigDecimal costPerUnit = productsCostCalculationService.calculateOperationProductCostPerUnit(costCalculation, product,
-                    operationProductComponent);
+            Entity operationProductComponent = operationProductComponentDD.get(neededProductQuantity.getKey()
+                    .getOperationProductComponentId());
+            BigDecimal costPerUnit = productsCostCalculationService.calculateOperationProductCostPerUnit(costCalculation,
+                    product, operationProductComponent);
 
             BigDecimal productQuantity = neededProductQuantity.getValue();
-            BigDecimal costForGivenQuantity = costPerUnit.multiply(productQuantity, numberService.getMathContext());
+            BigDecimal costForGivenQuantity = costPerUnit.multiply(BigDecimalUtils.convertNullToZero(productQuantity),
+                    numberService.getMathContext());
+
+            if (operationProductComponent
+                    .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES)) {
+                List<Entity> productsBySize = operationProductComponent
+                        .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS);
+
+                if (!operationProductComponent
+                        .getBooleanField(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE)) {
+                    productQuantity = costCalculation.getDecimalField(CostCalculationFields.QUANTITY).multiply(
+                            productsBySize.stream().findFirst().get().getDecimalField(ProductBySizeGroupFields.QUANTITY),
+                            numberService.getMathContext());
+                }
+
+                BigDecimal sumOfCosts = BigDecimal.ZERO;
+                for (Entity pbs : productsBySize) {
+
+                    Entity p = pbs.getBelongsToField(ProductBySizeGroupFields.PRODUCT);
+
+                    BigDecimal costPerUnitPBS = productsCostCalculationService.calculateProductCostPerUnit(p,
+                            costCalculation.getStringField(CostCalculationFields.MATERIAL_COSTS_USED),
+                            costCalculation.getBooleanField(CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED));
+                    BigDecimal q = costCalculation.getDecimalField(CostCalculationFields.QUANTITY).multiply(
+                            pbs.getDecimalField(ProductBySizeGroupFields.QUANTITY), numberService.getMathContext());
+
+                    BigDecimal costPBS = numberService.setScaleWithDefaultMathContext(costPerUnitPBS.multiply(q));
+                    sumOfCosts = sumOfCosts.add(costPBS, numberService.getMathContext());
+
+                }
+                costForGivenQuantity = sumOfCosts.divide(new BigDecimal(productsBySize.size()), numberService.getMathContext());
+            }
 
             String technologyInputProductTypeName = "";
 
@@ -107,10 +149,16 @@ public class CostCalculationMaterialsService {
                 costCalculationMaterial.setProductNumber(product.getStringField(ProductFields.NUMBER));
                 costCalculationMaterial.setProductName(product.getStringField(ProductFields.NAME));
             } else {
-                costCalculationMaterial
-                        .setUnit(operationProductComponent.getStringField(OperationProductInComponentFields.GIVEN_UNIT));
+                costCalculationMaterial.setUnit(operationProductComponent
+                        .getStringField(OperationProductInComponentFields.GIVEN_UNIT));
                 costCalculationMaterial.setProductNumber("");
                 costCalculationMaterial.setProductName("");
+            }
+
+            if (operationProductComponent
+                    .getBooleanField(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE)) {
+                costCalculationMaterial.setProductQuantity(null);
+                costCalculationMaterial.setCostPerUnit(null);
             }
             materialCosts.add(costCalculationMaterial);
         }
@@ -129,10 +177,10 @@ public class CostCalculationMaterialsService {
                         costCalculationMaterial.getTechnologyInputProductType());
                 if (groupedMaterialCosts.containsKey(materialCostKey)) {
                     CostCalculationMaterial groupedMaterialCost = groupedMaterialCosts.get(materialCostKey);
-                    groupedMaterialCost.setProductQuantity(groupedMaterialCost.getProductQuantity()
-                            .add(costCalculationMaterial.getProductQuantity(), numberService.getMathContext()));
-                    groupedMaterialCost.setCostForGivenQuantity(groupedMaterialCost.getCostForGivenQuantity()
-                            .add(costCalculationMaterial.getCostForGivenQuantity(), numberService.getMathContext()));
+                    groupedMaterialCost.setProductQuantity(groupedMaterialCost.getProductQuantity().add(
+                            costCalculationMaterial.getProductQuantity(), numberService.getMathContext()));
+                    groupedMaterialCost.setCostForGivenQuantity(groupedMaterialCost.getCostForGivenQuantity().add(
+                            costCalculationMaterial.getCostForGivenQuantity(), numberService.getMathContext()));
                     groupedMaterialCosts.put(materialCostKey, groupedMaterialCost);
                 } else {
                     groupedMaterialCosts.put(materialCostKey, costCalculationMaterial);

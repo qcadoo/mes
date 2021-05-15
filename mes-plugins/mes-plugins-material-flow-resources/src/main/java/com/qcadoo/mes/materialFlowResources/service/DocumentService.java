@@ -24,6 +24,7 @@ import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
 import com.qcadoo.mes.materialFlowResources.constants.OrdersGroupIssuedMaterialFields;
 import com.qcadoo.mes.materialFlowResources.constants.OrdersGroupIssuedMaterialPositionFields;
 import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
@@ -230,7 +231,7 @@ public class DocumentService {
                 }
             }
 
-            updateOrdersGroupIssuedMaterials(null, document, false);
+            updateOrdersGroupIssuedMaterials(document, false);
 
             String successMessage = String.format("DOCUMENT ACCEPT SUCCESS: id = %d number = %s", document.getId(),
                     document.getStringField(DocumentFields.NUMBER));
@@ -239,18 +240,13 @@ public class DocumentService {
         }
     }
 
-    public void updateOrdersGroupIssuedMaterials(Entity ordersGroup, Entity documentToAccept, boolean withoutDocument) {
-        if (pluginManager.isPluginEnabled(ORDERS_GROUPS)) {
+    public void updateOrdersGroupIssuedMaterials(Entity document, boolean withoutDocument) {
+        if (pluginManager.isPluginEnabled(ORDERS_GROUPS)
+                && document.getBelongsToField(OrdersGroupIssuedMaterialFields.ORDERS_GROUP) != null) {
+            Entity ordersGroup = document.getBelongsToField(OrdersGroupIssuedMaterialFields.ORDERS_GROUP);
             Long withoutDocumentId = null;
-            if (documentToAccept != null
-                    && documentToAccept.getBelongsToField(OrdersGroupIssuedMaterialFields.ORDERS_GROUP) == null) {
-                return;
-            } else if (documentToAccept != null
-                    && documentToAccept.getBelongsToField(OrdersGroupIssuedMaterialFields.ORDERS_GROUP) != null) {
-                ordersGroup = documentToAccept.getBelongsToField(OrdersGroupIssuedMaterialFields.ORDERS_GROUP);
-                if (withoutDocument) {
-                    withoutDocumentId = documentToAccept.getId();
-                }
+            if (withoutDocument) {
+                withoutDocumentId = document.getId();
             }
             DataDefinition ordersGroupIssuedMaterialDD = dataDefinitionService.get(ORDERS_GROUPS,
                     MODEL_ORDERS_GROUP_ISSUED_MATERIAL);
@@ -279,7 +275,7 @@ public class DocumentService {
             Map<Long, BigDecimal> productQuantities, Map<Long, BigDecimal> productValues,
             Map<Long, List<Entity>> productPositions, Long withoutDocumentId) {
         for (Entity document : ordersGroup.getHasManyField(DOCUMENTS)) {
-            if (document.getId().equals(withoutDocumentId)) {
+            if (document.getId().equals(withoutDocumentId) || DocumentType.INTERNAL_INBOUND.equals(DocumentType.of(document))) {
                 continue;
             }
             for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {

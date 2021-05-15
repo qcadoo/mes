@@ -172,7 +172,7 @@ public class DocumentsListListeners {
                     receiptDocumentForReleaseHelper.tryBuildConnectedDocument(document, view);
                 }
 
-                documentService.updateOrdersGroupIssuedMaterials(null, document, false);
+                documentService.updateOrdersGroupIssuedMaterials(document, false);
             }
         }
     }
