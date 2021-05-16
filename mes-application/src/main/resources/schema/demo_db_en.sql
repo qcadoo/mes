@@ -39821,13 +39821,13 @@ COPY qcadoomodel_dictionaryitem (id, name, externalnumber, description, technica
 32	Production resources overload	\N	\N	\N	7	t	0	f
 33	Machine malfunction	\N	\N	\N	7	t	0	f
 34	Other	\N	\N	\N	7	t	0	f
-35	drukarka uniwersalna	\N	\N	01universalPrinter	\N	t	0	f
-36	drukarka do wszystkiego	\N	\N	02allPrinter	\N	t	0	f
-37	drukarka do etykiet kartonowych	\N	\N	03cartonLabelsPrinter	\N	t	0	f
-38	drukarka do etykiet paletowych	\N	\N	04palletLabelsPrinter	\N	t	0	f
-39	drukarka do stickerów	\N	\N	05stickerPrinter	\N	t	0	f
-40	nowa	\N	\N	01new	15	t	0	f
-41	zlecona	\N	\N	02ordered	15	t	0	f
+35	universal printer	\N	\N	01universalPrinter	\N	t	0	f
+36	printer for everything	\N	\N	02allPrinter	\N	t	0	f
+37	carton label printer	\N	\N	03cartonLabelsPrinter	\N	t	0	f
+38	pallet label printer	\N	\N	04palletLabelsPrinter	\N	t	0	f
+39	sticker printer	\N	\N	05stickerPrinter	\N	t	0	f
+40	new	\N	\N	01new	15	t	0	f
+41	ordered	\N	\N	02ordered	15	t	0	f
 \.
 
 
@@ -59884,4 +59884,3 @@ GRANT ALL ON SCHEMA public TO PUBLIC;
 --
 -- PostgreSQL database dump complete
 --
-
