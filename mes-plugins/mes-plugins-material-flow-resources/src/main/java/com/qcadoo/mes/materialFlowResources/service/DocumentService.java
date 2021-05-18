@@ -1,11 +1,14 @@
 package com.qcadoo.mes.materialFlowResources.service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.materialFlowResources.constants.*;
+import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
+import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.plugin.api.PluginManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,25 +21,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.constants.OrdersGroupIssuedMaterialFields;
-import com.qcadoo.mes.materialFlowResources.constants.OrdersGroupIssuedMaterialPositionFields;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
-import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.plugin.api.PluginManager;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class DocumentService {
@@ -231,7 +220,7 @@ public class DocumentService {
                 }
             }
 
-            updateOrdersGroupIssuedMaterials(document, false);
+            updateOrdersGroupIssuedMaterials(document.getBelongsToField(OrdersGroupIssuedMaterialFields.ORDERS_GROUP), null);
 
             String successMessage = String.format("DOCUMENT ACCEPT SUCCESS: id = %d number = %s", document.getId(),
                     document.getStringField(DocumentFields.NUMBER));
@@ -240,14 +229,8 @@ public class DocumentService {
         }
     }
 
-    public void updateOrdersGroupIssuedMaterials(Entity document, boolean withoutDocument) {
-        if (pluginManager.isPluginEnabled(ORDERS_GROUPS)
-                && document.getBelongsToField(OrdersGroupIssuedMaterialFields.ORDERS_GROUP) != null) {
-            Entity ordersGroup = document.getBelongsToField(OrdersGroupIssuedMaterialFields.ORDERS_GROUP);
-            Long withoutDocumentId = null;
-            if (withoutDocument) {
-                withoutDocumentId = document.getId();
-            }
+    public void updateOrdersGroupIssuedMaterials(Entity ordersGroup, Long skipDocumentId) {
+        if (pluginManager.isPluginEnabled(ORDERS_GROUPS) && ordersGroup != null) {
             DataDefinition ordersGroupIssuedMaterialDD = dataDefinitionService.get(ORDERS_GROUPS,
                     MODEL_ORDERS_GROUP_ISSUED_MATERIAL);
             DataDefinition ordersGroupIssuedMaterialPositionDD = dataDefinitionService.get(ORDERS_GROUPS,
@@ -263,7 +246,7 @@ public class DocumentService {
             Map<Long, BigDecimal> productValues = Maps.newHashMap();
             Map<Long, List<Entity>> productPositions = Maps.newHashMap();
             createOrdersGroupIssueMaterialPositions(ordersGroup, ordersGroupIssuedMaterialPositionDD, productQuantities,
-                    productValues, productPositions, withoutDocumentId);
+                    productValues, productPositions, skipDocumentId);
             List<Entity> ordersGroupIssuedMaterials = createOrdersGroupIssueMaterials(ordersGroupIssuedMaterialDD,
                     productQuantities, productValues, productPositions);
             ordersGroup.setField(ORDERS_GROUP_ISSUED_MATERIALS, ordersGroupIssuedMaterials);
@@ -273,9 +256,9 @@ public class DocumentService {
 
     private void createOrdersGroupIssueMaterialPositions(Entity ordersGroup, DataDefinition ordersGroupIssuedMaterialPositionDD,
             Map<Long, BigDecimal> productQuantities, Map<Long, BigDecimal> productValues,
-            Map<Long, List<Entity>> productPositions, Long withoutDocumentId) {
+            Map<Long, List<Entity>> productPositions, Long skipDocumentId) {
         for (Entity document : ordersGroup.getHasManyField(DOCUMENTS)) {
-            if (document.getId().equals(withoutDocumentId) || DocumentType.INTERNAL_INBOUND.equals(DocumentType.of(document))) {
+            if (document.getId().equals(skipDocumentId) || DocumentType.INTERNAL_INBOUND.equals(DocumentType.of(document))) {
                 continue;
             }
             for (Entity position : document.getHasManyField(DocumentFields.POSITIONS)) {
