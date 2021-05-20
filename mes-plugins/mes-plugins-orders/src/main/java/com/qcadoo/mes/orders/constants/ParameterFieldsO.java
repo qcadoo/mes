@@ -89,4 +89,6 @@ public final class ParameterFieldsO {
 
     public static final String ALLOW_CHANGE_OR_DELETE_ORDER_TECHNOLOGICAL_PROCESS = "allowChangeOrDeleteOrderTechnologicalProcess";
 
+    public static final String SCHEDULE_SORT_ORDER = "scheduleSortOrder";
+
 }
