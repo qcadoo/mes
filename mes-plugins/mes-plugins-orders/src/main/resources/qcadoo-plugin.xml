@@ -62,6 +62,8 @@
 
     <modules>
         <localization:translation path="locales"/>
+        <localization:translation-group name="orderTechnologicalProcessesAnalysis"
+                                        prefix="orderTechnologicalProcessesAnalysis.validate.global.error.orderTechnologicalProcessesAnalysis"/>
 
         <model:dictionary name="causesOfWastes"/>
 

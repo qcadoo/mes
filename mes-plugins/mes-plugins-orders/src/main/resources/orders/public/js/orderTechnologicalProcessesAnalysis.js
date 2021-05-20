@@ -101,7 +101,7 @@ QCD.orderTechnologicalProcessesAnalysis = (function() {
         let valueSum = CalculateTotalByAggregator(new Slick.Data.Aggregators.Sum("value"), dataView);
 
         updateTotalRowValue(grid, "workTime", formatTime(workTimeInSecondsSum));
-        updateTotalRowValue(grid, "value", valueSum);
+        updateTotalRowValue(grid, "value", formatValue(valueSum));
     }
 
     function formatTime(seconds) {
@@ -114,6 +114,14 @@ QCD.orderTechnologicalProcessesAnalysis = (function() {
             m > 9 ? m : (h ? '0' + m : m || '0'),
             s > 9 ? s : '0' + s
         ].filter(Boolean).join(':');
+    }
+
+    function formatValue(value) {
+        if (value == null) {
+            value = 0;
+        }
+
+        return value.toFixed(2);
     }
 
     function updateTotalRowValue(grid, columnId, total) {
@@ -233,7 +241,6 @@ QCD.orderTechnologicalProcessesAnalysis = (function() {
                         grid.autosizeColumns();
 
                         dataView.beginUpdate();
-                        console.log(records);
                         dataView.setItems(records);
                         dataView.setFilter(filter);
                         dataView.endUpdate();
