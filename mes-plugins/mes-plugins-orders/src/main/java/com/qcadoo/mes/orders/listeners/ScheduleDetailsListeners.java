@@ -137,24 +137,7 @@ public class ScheduleDetailsListeners {
             Map<Long, Date> operationWorkstationsStartDates) {
         Entity schedule = position.getBelongsToField(SchedulePositionFields.SCHEDULE);
         for (Entity workstation : workstations) {
-            Date finishDate;
-            if (schedule.getBooleanField(ScheduleFields.SCHEDULE_FOR_BUFFER)
-                    && workstation.getBooleanField(WorkstationFields.BUFFER)) {
-                finishDate = scheduleStartTime;
-            } else {
-                finishDate = workstationsFinishDates.get(workstation.getId());
-                if (finishDate == null) {
-                    Date operationalTasksMaxFinishDate = getOperationalTasksMaxFinishDateForWorkstation(scheduleStartTime,
-                            workstation);
-                    if (operationalTasksMaxFinishDate != null) {
-                        finishDate = operationalTasksMaxFinishDate;
-                        workstationsFinishDates.put(workstation.getId(), finishDate);
-                    }
-                }
-                if (finishDate == null) {
-                    finishDate = scheduleStartTime;
-                }
-            }
+            Date finishDate = getFinishDate(workstationsFinishDates, scheduleStartTime, schedule, workstation);
             List<Entity> children = getChildren(position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT),
                     position.getBelongsToField(SchedulePositionFields.ORDER), schedule);
             if (pluginManager.isPluginEnabled(ORDERS_FOR_SUBPRODUCTS_GENERATION)) {
@@ -181,6 +164,29 @@ public class ScheduleDetailsListeners {
             operationWorkstationsStartDates.put(workstation.getId(), newStartDate);
             operationWorkstationsFinishDates.put(workstation.getId(), newFinishDate);
         }
+    }
+
+    private Date getFinishDate(Map<Long, Date> workstationsFinishDates, Date scheduleStartTime, Entity schedule,
+            Entity workstation) {
+        Date finishDate;
+        if (schedule.getBooleanField(ScheduleFields.SCHEDULE_FOR_BUFFER)
+                && workstation.getBooleanField(WorkstationFields.BUFFER)) {
+            finishDate = scheduleStartTime;
+        } else {
+            finishDate = workstationsFinishDates.get(workstation.getId());
+            if (finishDate == null) {
+                Date operationalTasksMaxFinishDate = getOperationalTasksMaxFinishDateForWorkstation(scheduleStartTime,
+                        workstation);
+                if (operationalTasksMaxFinishDate != null) {
+                    finishDate = operationalTasksMaxFinishDate;
+                    workstationsFinishDates.put(workstation.getId(), finishDate);
+                }
+            }
+            if (finishDate == null) {
+                finishDate = scheduleStartTime;
+            }
+        }
+        return finishDate;
     }
 
     private List<Entity> getChildren(Entity technologyOperationComponent, Entity order, Entity schedule) {
