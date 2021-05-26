@@ -59,7 +59,7 @@ public final class ModelCardPdfService extends PdfDocumentService {
 
     private static final int[] defaultModelCardProductColumnWidth = new int[] { 10, 20, 5, 10, 10 };
 
-    private static final int[] defaultModelCardMaterialsColumnWidth = new int[] { 9, 6, 15, 6, 6, 4, 4, 4, 4, 5, 4, 3 };
+    private static final int[] defaultModelCardMaterialsColumnWidth = new int[] { 9, 6, 15, 6, 6, 4, 4, 4, 4, 5, 7, 3 };
 
     @Autowired
     private TranslationService translationService;
