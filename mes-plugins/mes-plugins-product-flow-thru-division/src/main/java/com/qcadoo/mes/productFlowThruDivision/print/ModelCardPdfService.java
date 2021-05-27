@@ -439,10 +439,8 @@ public final class ModelCardPdfService extends PdfDocumentService {
         table.addCell(new Phrase(StringUtils.EMPTY));
         table.addCell(new Phrase(modelCardMaterialEntry.getNumber() + ", " + modelCardMaterialEntry.getName(),
                 FontUtils.getDejavuRegular7Dark()));
-        Entity materialAttributeValue = getProductAttributeValue(materialAttribute, modelCardMaterialEntry.getId());
-        table.addCell(
-                new Phrase(materialAttributeValue != null ? materialAttributeValue.getStringField(AttributeValueFields.VALUE)
-                        : StringUtils.EMPTY, FontUtils.getDejavuRegular7Dark()));
+        table.addCell(new Phrase(getProductAttributeValue(materialAttribute, modelCardMaterialEntry.getId()),
+                FontUtils.getDejavuRegular7Dark()));
         Entity supplier = null;
         BigDecimal minimumOrderQuantity = null;
         Entity supplierData = getSupplierData(modelCardMaterialEntry.getId(), modelCardMaterialEntry.getParentId());
@@ -480,10 +478,8 @@ public final class ModelCardPdfService extends PdfDocumentService {
         table.addCell(new Phrase(modelCardMaterialEntry.getSizeGroupNumber(), FontUtils.getDejavuRegular7Light()));
         table.addCell(new Phrase(modelCardMaterialEntry.getNumber() + ", " + modelCardMaterialEntry.getName(),
                 FontUtils.getDejavuRegular7Light()));
-        Entity materialAttributeValue = getProductAttributeValue(materialAttribute, modelCardMaterialEntry.getId());
-        table.addCell(
-                new Phrase(materialAttributeValue != null ? materialAttributeValue.getStringField(AttributeValueFields.VALUE)
-                        : StringUtils.EMPTY, FontUtils.getDejavuRegular7Light()));
+        table.addCell(new Phrase(getProductAttributeValue(materialAttribute, modelCardMaterialEntry.getId()),
+                FontUtils.getDejavuRegular7Light()));
         Entity supplier = null;
         BigDecimal minimumOrderQuantity = null;
         Entity supplierData = getSupplierData(modelCardMaterialEntry.getId(), modelCardMaterialEntry.getParentId());
@@ -526,9 +522,7 @@ public final class ModelCardPdfService extends PdfDocumentService {
                 HeaderAlignment.LEFT);
         headersWithAlignments.put(translationService.translate("productFlowThruDivision.modelCard.report.product.label", locale),
                 HeaderAlignment.LEFT);
-        headersWithAlignments.put(
-                materialAttribute != null ? materialAttribute.getStringField(AttributeFields.NUMBER) : StringUtils.EMPTY,
-                HeaderAlignment.LEFT);
+        headersWithAlignments.put(getAttributeText(materialAttribute), HeaderAlignment.LEFT);
         headersWithAlignments.put(translationService.translate("productFlowThruDivision.modelCard.report.supplier.label", locale),
                 HeaderAlignment.LEFT);
         headersWithAlignments.put(
@@ -549,6 +543,18 @@ public final class ModelCardPdfService extends PdfDocumentService {
         headersWithAlignments.put(translationService.translate("productFlowThruDivision.modelCard.report.unit.label", locale),
                 HeaderAlignment.LEFT);
         return headersWithAlignments;
+    }
+
+    private String getAttributeText(Entity attribute) {
+        String attributeText = StringUtils.EMPTY;
+        if (attribute != null) {
+            attributeText = attribute.getStringField(AttributeFields.NUMBER);
+            String unit = attribute.getStringField(AttributeFields.UNIT);
+            if (!StringUtils.isEmpty(unit)) {
+                attributeText = attributeText + " (" + unit + ")";
+            }
+        }
+        return attributeText;
     }
 
     private void addTechnologyInputProductTypeToReport(PdfPTable table, ModelCardMaterialEntry modelCardMaterialEntry) {
@@ -600,17 +606,18 @@ public final class ModelCardPdfService extends PdfDocumentService {
                 DeliveriesConstants.MODEL_COMPANY_PRODUCTS_FAMILY);
     }
 
-    private Entity getProductAttributeValue(Entity productAttribute, Long productId) {
-        Entity productAttributeValue = null;
+    private String getProductAttributeValue(Entity productAttribute, Long productId) {
+        Set<String> attributeValues = new HashSet<>();
         if (productAttribute != null) {
-            return getProductAttributeValueDD().find()
+            attributeValues = getProductAttributeValueDD().find()
                     .createAlias(ProductAttributeValueFields.PRODUCT, ProductAttributeValueFields.PRODUCT, JoinType.INNER)
                     .add(SearchRestrictions.eq(ProductAttributeValueFields.PRODUCT + L_DOT + L_ID, productId))
                     .createAlias(ProductAttributeValueFields.ATTRIBUTE, ProductAttributeValueFields.ATTRIBUTE, JoinType.INNER)
                     .add(SearchRestrictions.eq(ProductAttributeValueFields.ATTRIBUTE + L_DOT + L_ID, productAttribute.getId()))
-                    .uniqueResult();
+                    .list().getEntities().stream().map(e -> e.getStringField(AttributeValueFields.VALUE))
+                    .collect(Collectors.toSet());
         }
-        return productAttributeValue;
+        return String.join(", ", attributeValues);
     }
 
     private DataDefinition getProductAttributeValueDD() {
@@ -692,13 +699,9 @@ public final class ModelCardPdfService extends PdfDocumentService {
                 translationService.translate("productFlowThruDivision.modelCard.report.materialUnitCost.label", locale),
                 FontUtils.getDejavuBold7Dark()));
         panelTable.addCell(new Phrase(numberService.format(materialUnitCostsSum), FontUtils.getDejavuRegular9Dark()));
-        Entity productAttributeValue = getProductAttributeValue(productAttribute, product.getId());
+        panelTable.addCell(new Phrase(getAttributeText(productAttribute), FontUtils.getDejavuBold7Dark()));
         panelTable.addCell(
-                new Phrase(productAttribute != null ? productAttribute.getStringField(AttributeFields.NUMBER) : StringUtils.EMPTY,
-                        FontUtils.getDejavuBold7Dark()));
-        panelTable.addCell(
-                new Phrase(productAttributeValue != null ? productAttributeValue.getStringField(AttributeValueFields.VALUE)
-                        : StringUtils.EMPTY, FontUtils.getDejavuRegular9Dark()));
+                new Phrase(getProductAttributeValue(productAttribute, product.getId()), FontUtils.getDejavuRegular9Dark()));
 
         cell = new PdfPCell(new Phrase(StringUtils.EMPTY));
         cell.setBorder(Rectangle.NO_BORDER);
