@@ -128,8 +128,8 @@ public class OrderTechnologicalProcessesAnalysisDataProvider {
 
         appendBaseQuery(query);
 
-        query.append("WHERE (ordertechnologicalprocessdto.date IS NOT NULL AND ordertechnologicalprocessdto.date BETWEEN '").append(dateFrom).append("' AND '").append(dateTo + L_TIME_PART).append("') ");
-        query.append("OR (ordertechnologicalprocessdto.date IS NULL AND ordertechnologicalprocessdto.orderstartdate BETWEEN '").append(dateFrom).append("' AND '").append(dateTo + L_TIME_PART).append("') ");
+        query.append("WHERE ((ordertechnologicalprocessdto.date IS NOT NULL AND ordertechnologicalprocessdto.date BETWEEN '").append(dateFrom).append("' AND '").append(dateTo + L_TIME_PART).append("') ");
+        query.append("OR (ordertechnologicalprocessdto.date IS NULL AND ordertechnologicalprocessdto.orderstartdate BETWEEN '").append(dateFrom).append("' AND '").append(dateTo + L_TIME_PART).append("')) ");
 
         appendFilters(filters, query);
 
@@ -202,11 +202,11 @@ public class OrderTechnologicalProcessesAnalysisDataProvider {
                         break;
 
                     case L_QUANTITY:
-                        query.append("AND UPPER(ordertechnologicalprocessdto.quantity) = ").append(value).append(" ");
+                        query.append("AND ordertechnologicalprocessdto.quantity = ").append(value).append(" ");
                         break;
 
                     case L_WASTES_QUANTITY:
-                        query.append("AND UPPER(ordertechnologicalprocessdto.wastesQuantity) = ").append(value).append(" ");
+                        query.append("AND ordertechnologicalprocessdto.wastesQuantity = ").append(value).append(" ");
                         break;
 
                     case L_PRODUCT_UNIT:
@@ -241,11 +241,11 @@ public class OrderTechnologicalProcessesAnalysisDataProvider {
                         break;
 
                     case L_CURRENT_RATE:
-                        query.append("ROUND(COALESCE(get_currentrate(ordertechnologicalprocessdto.technologicalprocessrateid, ordertechnologicalprocessdto.date::date, ordertechnologicalprocessdto.orderstartdate::date), 0), 2) = ").append(value).append(" ");
+                        query.append("AND ROUND(COALESCE(get_currentrate(ordertechnologicalprocessdto.technologicalprocessrateid, ordertechnologicalprocessdto.date::date, ordertechnologicalprocessdto.orderstartdate::date), 0), 2) = ").append(value).append(" ");
                         break;
 
                     case L_VALUE:
-                        query.append("ROUND(COALESCE(technologicalprocesscomponent.tj, 0) * ordertechnologicalprocessdto.quantity / 3600 * COALESCE(get_currentrate(ordertechnologicalprocessdto.technologicalprocessrateid, ordertechnologicalprocessdto.date::date, ordertechnologicalprocessdto.orderstartdate::date), 0), 2) = ").append(value).append(" ");
+                        query.append("AND ROUND(COALESCE(technologicalprocesscomponent.tj, 0) * ordertechnologicalprocessdto.quantity / 3600 * COALESCE(get_currentrate(ordertechnologicalprocessdto.technologicalprocessrateid, ordertechnologicalprocessdto.date::date, ordertechnologicalprocessdto.orderstartdate::date), 0), 2) = ").append(value).append(" ");
                         break;
                 }
             }

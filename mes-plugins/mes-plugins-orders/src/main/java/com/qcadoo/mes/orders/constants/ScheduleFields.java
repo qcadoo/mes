@@ -24,4 +24,10 @@ public final class ScheduleFields {
     public static final String ORDERS = "orders";
 
     public static final String STATE = "state";
+
+    public static final String IS_SET_FIELDS_FROM_PARAMETER = "isSetFieldsFromParameter";
+
+    public static final String SCHEDULE_FOR_BUFFER = "scheduleForBuffer";
+
+    public static final String ADDITIONAL_TIME_EXTENDS_OPERATION = "additionalTimeExtendsOperation";
 }

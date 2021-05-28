@@ -1,12 +1,5 @@
 package com.qcadoo.mes.productFlowThruDivision.listeners;
 
-import java.io.IOException;
-import java.util.Date;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.lowagie.text.DocumentException;
 import com.lowagie.text.PageSize;
 import com.qcadoo.localization.api.utils.DateUtils;
@@ -22,7 +15,14 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.io.IOException;
+import java.util.Date;
 
 @Service
 public class ModelCardDetailsListeners {
@@ -46,6 +46,12 @@ public class ModelCardDetailsListeners {
 
     @Transactional
     public void generateModelCard(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent productsGrid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+
+        if (productsGrid.getEntities().isEmpty()) {
+            view.addMessage("productFlowThruDivision.modelCard.generate.failure.noProducts", ComponentState.MessageType.INFO);
+            return;
+        }
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         CheckBoxComponent generated = (CheckBoxComponent) view.getComponentByReference(ModelCardFields.GENERATED);
         FieldComponent workerField = (FieldComponent) view.getComponentByReference(ModelCardFields.WORKER);

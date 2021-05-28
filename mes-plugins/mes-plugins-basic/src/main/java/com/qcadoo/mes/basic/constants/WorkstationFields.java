@@ -63,4 +63,6 @@ public final class WorkstationFields {
 
     public static final String STAFF = "staff";
 
+    public static final String BUFFER = "buffer";
+
 }

@@ -85,10 +85,11 @@
                           method="addProcesses"
                           event="addProcesses"/>
 
-                <option type="header" value="false"/>
+
             </component>
         </windowTab>
 
+        <option type="header" value="false"/>
     </component>
 
     <hooks>

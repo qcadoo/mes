@@ -25,7 +25,7 @@ thatObject.generateOrdersGroup = function (eventPerformer, ribbonItemName, entit
 	$.each(ids, function (i, id) {
 		var position = {};
 		position.id = id;
-		position.value = $("#orderQuantity_" + id).val().trim().replace(',', '.');
+		position.value = $("#orderQuantity_" + id).val().trim().replace(',', '.').replace(/\s/g, '');
 		$("#orderQuantity_" + id).removeClass('is-invalid');
 
 		if (position.value) {
@@ -169,6 +169,7 @@ var mutationObserver = new MutationObserver(function (mutations) {
 
 	});
 });
+
 const productsGroupNode = document.getElementById('window.mainTab.salesPlanOrdersGroupForm.gridLayout.salesPlanOrdersGroupEntryHelpers');
 
 mutationObserver.observe(productsGroupNode, {
@@ -181,5 +182,4 @@ mutationObserver.observe(productsGroupNode, {
 });
 
 function orderQuantityChange(pgrid) {
-
 }

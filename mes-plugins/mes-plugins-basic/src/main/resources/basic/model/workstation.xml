@@ -56,6 +56,7 @@
         <hasMany name="subassembliesHelpers" model="subassemblyToWorkstationHelper" joinField="workstation"/>
         <hasMany name="staffs" model="staff" joinField="workstation"/>
         <manyToMany name="faultTypes" model="faultType" joinField="workstations"/>
+        <boolean name="buffer" default="false"/>
     </fields>
 
     <hooks>

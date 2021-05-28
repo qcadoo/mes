@@ -23,43 +23,13 @@
  */
 package com.qcadoo.mes.materialFlowResources.listeners;
 
-import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.ESILCO;
-import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.REALIZED;
-
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.exception.LockAcquisitionException;
-import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
-import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
+import com.qcadoo.mes.materialFlowResources.constants.*;
 import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
 import com.qcadoo.mes.materialFlowResources.print.DispositionOrderPdfService;
-import com.qcadoo.mes.materialFlowResources.service.DocumentErrorsLogger;
-import com.qcadoo.mes.materialFlowResources.service.DocumentService;
-import com.qcadoo.mes.materialFlowResources.service.DocumentStateChangeService;
-import com.qcadoo.mes.materialFlowResources.service.ReceiptDocumentForReleaseHelper;
-import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
-import com.qcadoo.mes.materialFlowResources.service.ResourceStockService;
+import com.qcadoo.mes.materialFlowResources.service.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -75,6 +45,20 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.exception.LockAcquisitionException;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.util.*;
+
+import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.ESILCO;
+import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.REALIZED;
 
 @Service
 public class DocumentDetailsListeners {
@@ -349,7 +333,8 @@ public class DocumentDetailsListeners {
                 receiptDocumentForReleaseHelper.tryBuildConnectedDocument(document, view);
             }
 
-            documentService.updateOrdersGroupIssuedMaterials(document, false);
+            documentService.updateOrdersGroupIssuedMaterials(
+                    document.getBelongsToField(OrdersGroupIssuedMaterialFields.ORDERS_GROUP), null);
 
             String successMessage = String.format("DOCUMENT ACCEPT SUCCESS: id = %d number = %s", document.getId(),
                     document.getStringField(DocumentFields.NUMBER));

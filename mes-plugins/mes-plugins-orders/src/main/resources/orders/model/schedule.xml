@@ -48,6 +48,8 @@
               values="01workstationLastOperatorLatestFinished,02workstationLastOperatorEarliestFinished,03workstationDefaultOperator"
               default="01workstationLastOperatorLatestFinished"
               required="true"/>
+        <boolean name="scheduleForBuffer" default="false"/>
+        <boolean name="additionalTimeExtendsOperation" default="true"/>
         <datetime name="approveTime" />
 
         <manyToMany name="orders" joinField="schedules" model="order"/>
@@ -56,6 +58,8 @@
                  cascade="delete"/>
 
         <hasMany name="positionsDto" joinField="schedule" model="schedulePositionDto"
+                 persistent="false"/>
+        <boolean name="isSetFieldsFromParameter"
                  persistent="false"/>
     </fields>
 

@@ -21,24 +21,12 @@
  */
 package com.qcadoo.mes.materialFlowResources.listeners;
 
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.service.DocumentErrorsLogger;
-import com.qcadoo.mes.materialFlowResources.service.DocumentService;
-import com.qcadoo.mes.materialFlowResources.service.DocumentStateChangeService;
-import com.qcadoo.mes.materialFlowResources.service.ReceiptDocumentForReleaseHelper;
-import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
+import com.qcadoo.mes.materialFlowResources.constants.OrdersGroupIssuedMaterialFields;
+import com.qcadoo.mes.materialFlowResources.service.*;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -47,6 +35,14 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import java.util.List;
 
 @Service
 public class DocumentsListListeners {
@@ -172,7 +168,8 @@ public class DocumentsListListeners {
                     receiptDocumentForReleaseHelper.tryBuildConnectedDocument(document, view);
                 }
 
-                documentService.updateOrdersGroupIssuedMaterials(document, false);
+                documentService.updateOrdersGroupIssuedMaterials(
+                        document.getBelongsToField(OrdersGroupIssuedMaterialFields.ORDERS_GROUP), null);
             }
         }
     }

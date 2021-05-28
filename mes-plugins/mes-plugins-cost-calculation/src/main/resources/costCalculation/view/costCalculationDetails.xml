@@ -58,7 +58,6 @@
                     <layoutElement column="1" row="1">
                         <component type="checkbox" name="generated" field="generated"
                                    reference="generated" defaultEnabled="false"/>
-
                     </layoutElement>
                     <layoutElement column="1" row="2">
                         <component type="input" name="date" field="date"
