@@ -9,6 +9,22 @@ public enum SalesPlanState implements StateEnum {
 
         @Override
         public boolean canChangeTo(final StateEnum targetState) {
+            return REJECTED.equals(targetState) || COMPLETED.equals(targetState);
+        }
+    },
+
+    REJECTED(SalesPlanStateStringValues.REJECTED) {
+
+        @Override
+        public boolean canChangeTo(final StateEnum targetState) {
+            return false;
+        }
+    },
+
+    COMPLETED(SalesPlanStateStringValues.COMPLETED) {
+
+        @Override
+        public boolean canChangeTo(final StateEnum targetState) {
             return false;
         }
     };

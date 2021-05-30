@@ -87,6 +87,9 @@
 
                             <option type="expression" value="#number"/>
                             <option type="fieldCode" value="number"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.masterOrders.criteriaModifier.SalesPlanCriteriaModifier"
+                                    method="showOnlyDrafts"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="3">
