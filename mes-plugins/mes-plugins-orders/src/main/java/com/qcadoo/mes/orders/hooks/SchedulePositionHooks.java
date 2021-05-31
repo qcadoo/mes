@@ -1,5 +1,10 @@
 package com.qcadoo.mes.orders.hooks;
 
+import java.util.Date;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.orders.constants.ScheduleFields;
 import com.qcadoo.mes.orders.constants.SchedulePositionFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
@@ -7,10 +12,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import org.springframework.stereotype.Service;
-
-import java.util.Date;
-import java.util.List;
 
 @Service
 public class SchedulePositionHooks {
@@ -42,7 +43,7 @@ public class SchedulePositionHooks {
         for (Entity child : children) {
             Date childEndTime = child.getDateField(SchedulePositionFields.END_TIME);
             if (childEndTime != null) {
-                if (schedule.getBooleanField(ScheduleFields.ADDITIONAL_TIME_EXTENDS_OPERATION)) {
+                if (!schedule.getBooleanField(ScheduleFields.ADDITIONAL_TIME_EXTENDS_OPERATION)) {
                     childEndTime = Date.from(
                             childEndTime.toInstant().plusSeconds(child.getIntegerField(SchedulePositionFields.ADDITIONAL_TIME)));
                 }

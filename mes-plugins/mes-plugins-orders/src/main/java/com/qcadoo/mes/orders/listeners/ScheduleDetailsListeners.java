@@ -1,5 +1,25 @@
 package com.qcadoo.mes.orders.listeners;
 
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.list;
+import static com.qcadoo.model.api.search.SearchProjections.rowCount;
+import static java.util.Map.Entry.comparingByValue;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ShiftsService;
@@ -8,7 +28,12 @@ import com.qcadoo.mes.basic.constants.StaffSkillsFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
 import com.qcadoo.mes.newstates.StateExecutorService;
-import com.qcadoo.mes.orders.constants.*;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.orders.constants.ScheduleFields;
+import com.qcadoo.mes.orders.constants.SchedulePositionFields;
+import com.qcadoo.mes.orders.constants.ScheduleSortOrder;
+import com.qcadoo.mes.orders.constants.ScheduleWorkerAssignCriterion;
+import com.qcadoo.mes.orders.constants.ScheduleWorkstationAssignCriterion;
 import com.qcadoo.mes.orders.states.ScheduleServiceMarker;
 import com.qcadoo.mes.productionLines.constants.WorkstationFieldsPL;
 import com.qcadoo.mes.technologies.constants.AssignedToOperation;
@@ -17,23 +42,16 @@ import com.qcadoo.mes.technologies.constants.OperationSkillFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.*;
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchProjections;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.SearchSubqueries;
 import com.qcadoo.plugin.api.PluginManager;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
-import static com.qcadoo.model.api.search.SearchProjections.*;
-import static java.util.Map.Entry.comparingByValue;
 
 @Service
 public class ScheduleDetailsListeners {
@@ -145,7 +163,7 @@ public class ScheduleDetailsListeners {
             }
             for (Entity child : children) {
                 Date childEndTime = child.getDateField(SchedulePositionFields.END_TIME);
-                if (schedule.getBooleanField(ScheduleFields.ADDITIONAL_TIME_EXTENDS_OPERATION)) {
+                if (!schedule.getBooleanField(ScheduleFields.ADDITIONAL_TIME_EXTENDS_OPERATION)) {
                     childEndTime = Date.from(
                             childEndTime.toInstant().plusSeconds(child.getIntegerField(SchedulePositionFields.ADDITIONAL_TIME)));
                 }
@@ -161,6 +179,10 @@ public class ScheduleDetailsListeners {
             Integer machineWorkTime = position.getIntegerField(SchedulePositionFields.MACHINE_WORK_TIME);
             Date newFinishDate = shiftsService.findDateToForProductionLine(newStartDate, machineWorkTime,
                     workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE));
+            if (schedule.getBooleanField(ScheduleFields.ADDITIONAL_TIME_EXTENDS_OPERATION)) {
+                newFinishDate = Date.from(
+                        newFinishDate.toInstant().plusSeconds(position.getIntegerField(SchedulePositionFields.ADDITIONAL_TIME)));
+            }
             operationWorkstationsStartDates.put(workstation.getId(), newStartDate);
             operationWorkstationsFinishDates.put(workstation.getId(), newFinishDate);
         }
