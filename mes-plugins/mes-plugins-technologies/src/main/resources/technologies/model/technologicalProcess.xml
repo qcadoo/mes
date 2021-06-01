@@ -34,7 +34,13 @@
 		</string>
 		<belongsTo name="workstationType" plugin="basic" model="workstationType"/>
 		<belongsTo name="workstation" plugin="basic" model="workstation"/>
+		<integer name="tpz" default="0">
+			<validatesRange from="0"/>
+		</integer>
 		<integer name="tj" default="0">
+			<validatesRange from="0"/>
+		</integer>
+		<integer name="additionalTime" default="0">
 			<validatesRange from="0"/>
 		</integer>
 		<boolean name="extendedTimeForSizeGroup" default="false"/>

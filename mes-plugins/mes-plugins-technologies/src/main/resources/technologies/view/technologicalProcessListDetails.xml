@@ -77,8 +77,12 @@
                             </script>
                             <option type="column" name="technologicalProcess" fields="technologicalProcess"
                                     expression="#technologicalProcess['name']" width="100" link="true"/>
+                            <option type="column" name="tpz" fields="tpz" width="40"
+                                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#tpz)"/>
                             <option type="column" name="tj" fields="tj" width="40"
                                     expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#tj)"/>
+                            <option type="column" name="additionalTime" fields="additionalTime" width="40"
+                                    expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#additionalTime)"/>
                             <option type="column" name="extendedTimeForSizeGroup" fields="extendedTimeForSizeGroup"/>
                             <option type="column" name="increasePercent" fields="increasePercent" />
                             <option type="column" name="sizeGroup" fields="sizeGroup" expression="#sizeGroup['number']"/>
@@ -93,7 +97,7 @@
 
                             <option type="footerRow" value="true"/>
                             <option type="columnsToSummaryTime"
-                                    value="tj"/>
+                                    value="tpz,tj,additionalTime"/>
 
                             <option type="deletable" value="true"/>
                             <option type="fullscreen" value="true"/>

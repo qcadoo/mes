@@ -1,5 +1,10 @@
 package com.qcadoo.mes.technologies.listeners;
 
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.technologies.constants.TechnologicalProcessFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -9,10 +14,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Set;
 
 @Service
 public class AddProcessesListeners {
@@ -40,8 +41,12 @@ public class AddProcessesListeners {
                     .create();
             technologicalProcessComponent.setField(TechnologiesConstants.MODEL_TECHNOLOGICAL_PROCESS, technologicalProcess);
             technologicalProcessComponent.setField(TechnologiesConstants.MODEL_TECHNOLOGICAL_PROCESS_LIST, form.getEntityId());
+            technologicalProcessComponent.setField(TechnologicalProcessFields.TPZ,
+                    technologicalProcess.getField(TechnologicalProcessFields.TPZ));
             technologicalProcessComponent.setField(TechnologicalProcessFields.TJ,
                     technologicalProcess.getField(TechnologicalProcessFields.TJ));
+            technologicalProcessComponent.setField(TechnologicalProcessFields.ADDITIONAL_TIME,
+                    technologicalProcess.getField(TechnologicalProcessFields.ADDITIONAL_TIME));
             technologicalProcessComponent.setField(TechnologicalProcessFields.EXTENDED_TIME_FOR_SIZE_GROUP,
                     technologicalProcess.getField(TechnologicalProcessFields.EXTENDED_TIME_FOR_SIZE_GROUP));
             technologicalProcessComponent.setField(TechnologicalProcessFields.INCREASE_PERCENT,
