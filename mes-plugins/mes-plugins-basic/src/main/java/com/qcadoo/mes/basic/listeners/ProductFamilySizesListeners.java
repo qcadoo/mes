@@ -27,6 +27,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProductFamilySizesListeners {
 
+    public static final String L_NOMINAL_COST = "nominalCost";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -67,6 +69,9 @@ public class ProductFamilySizesListeners {
                 product.setField(ProductFields.NAME, productFamily.getStringField(ProductFields.NAME));
                 product.setField(ProductFields.NUMBER,
                         productFamily.getStringField(ProductFields.NUMBER) + "-" + size.getStringField(SizeFields.NUMBER));
+                if (parameterService.getParameter().getBooleanField(ParameterFields.COPY_NOMINAL_COST_FAMILY_OF_PRODUCTS_SIZES)) {
+                    product.setField(L_NOMINAL_COST, productFamily.getDecimalField(L_NOMINAL_COST));
+                }
                 product = product.getDataDefinition().save(product);
                 if (product.isValid()) {
                     if (parameterService.getParameter().getBooleanField(ParameterFields.COPY_ATTRIBUTES_TO_SIZE_PRODUCTS)) {

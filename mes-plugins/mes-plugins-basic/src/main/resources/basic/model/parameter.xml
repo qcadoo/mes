@@ -41,6 +41,7 @@
 		<boolean name="exportToPdfOnlyVisibleColumns" default="false" />
 		<boolean name="exportToCsvOnlyVisibleColumns" default="false" />
 		<boolean name="copyAttributesToSizeProducts" default="false" />
+		<boolean name="copyNominalCostFamilyOfProductsSizes" default="false" />
 
 		<hasMany name="dashboardButtons" model="dashboardButton"
 				 joinField="parameter" cascade="delete" copyable="true" />
