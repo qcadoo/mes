@@ -37,6 +37,9 @@
             <validatesScale max="5"/>
         </decimal>
 
+        <enum name="state" values="01pending,02duringProduction,03finishedProduction" default="01pending" required="true"/>
+        <hasMany name="stateChanges" model="orderPackStateChange" joinField="orderPack" cascade="delete"/>
+
         <hasMany name="orderTechnologicalProcesses" model="orderTechnologicalProcess" joinField="orderPack" cascade="delete"/>
         <hasMany name="orderTechnologicalProcessWastes" model="orderTechnologicalProcessWaste" joinField="orderPack" cascade="delete"/>
     </fields>
@@ -44,6 +47,11 @@
     <hooks>
         <validatesWith class="com.qcadoo.mes.orders.hooks.OrderPackHooks"
                        method="validatesWith"/>
+
+        <onCreate class="com.qcadoo.mes.orders.hooks.OrderPackHooks" method="onCreate"/>
+
+        <onCopy class="com.qcadoo.mes.orders.hooks.OrderPackHooks" method="onCopy"/>
+
         <onSave class="com.qcadoo.mes.orders.hooks.OrderPackHooks"
                 method="onSave"/>
         <onDelete class="com.qcadoo.mes.orders.hooks.OrderPackHooks"

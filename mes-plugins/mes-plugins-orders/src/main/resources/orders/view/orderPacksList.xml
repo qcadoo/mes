@@ -19,9 +19,36 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="status">
+                <smallButton name="duringProduction" icon="acceptIcon16.png" state="enabled"
+                             action="#{grid}.changeState(duringProduction);"/>
+                <smallButton name="finishedProduction" icon="deleteIcon16.png" state="enabled"
+                             action="#{grid}.changeState(finishedProduction);"/>
+            </group>
         </ribbon>
 
         <component type="grid" name="orderPacks" reference="grid">
+            <script>
+                QCD = QCD || {};
+                QCD.translations = QCD.translations || {};
+
+                QCD.translations['orders.orderPack.status.differentStates'] =
+                '#{translate(orders.orderPack.status.differentStates)}';
+                QCD.translations['orders.orderPack.status.confirm.duringProduction'] =
+                '#{translate(orders.orderPack.status.confirm.duringProduction)}';
+                QCD.translations['orders.orderPack.status.duringProduction'] =
+                '#{translate(orders.orderPack.status.duringProduction)}';
+                QCD.translations['orders.orderPack.status.confirm.finishedProduction'] =
+                '#{translate(orders.orderPack.status.confirm.finishedProduction)}';
+                QCD.translations['orders.orderPack.status.finishedProduction'] =
+                '#{translate(orders.orderPack.status.finishedProduction)}';
+
+
+            </script>
+            <script type="text/javascript" src="/orders/public/js/orderPack.js"></script>
+            <script type="text/javascript" src="/orders/public/js/orderPack_grid.js"></script>
+
+
             <option type="column" name="number" fields="number" link="true" width="40"/>
             <option type="column" name="orderNumber" fields="orderNumber" link="true" width="50"/>
             <option type="column" name="orderState" fields="orderState" width="40"/>
@@ -30,6 +57,7 @@
             <option type="column" name="orderQuantity" fields="orderQuantity" width="60"/>
             <option type="column" name="quantity" fields="quantity" width="60"/>
             <option type="column" name="unit" fields="unit" width="50"/>
+            <option type="column" name="state" fields="state" width="60"/>
 
             <option type="correspondingView" value="orders/orderPackDetails"/>
             <option type="correspondingComponent" value="form"/>
@@ -37,9 +65,9 @@
             <option type="order" column="number" direction="desc"/>
 
             <option type="searchable"
-                    value="number,orderNumber,orderState,orderProduct,size,orderQuantity,quantity,unit"/>
+                    value="number,orderNumber,orderState,orderProduct,size,orderQuantity,quantity,unit,state"/>
             <option type="orderable"
-                    value="number,orderNumber,orderState,orderProduct,size,orderQuantity,quantity,unit"/>
+                    value="number,orderNumber,orderState,orderProduct,size,orderQuantity,quantity,unit,state"/>
 
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
@@ -47,6 +75,9 @@
             <listener event="printLabels"
                       class="com.qcadoo.mes.orders.listeners.OrderPacksSingleOrderListListeners"
                       method="printLabels"/>
+            <listener event="changeState" class="com.qcadoo.mes.orders.listeners.OrderPacksSingleOrderListListeners"
+                      method="changeState"/>
+
         </component>
 
         <option type="fixedHeight" value="true"/>
