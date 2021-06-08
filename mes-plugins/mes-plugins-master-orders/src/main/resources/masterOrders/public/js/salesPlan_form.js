@@ -2,7 +2,6 @@ var thatObject = this;
 
 this.addOnChangeListener({
     onSetValue: function (value) {
-        thatObject.resetRibbon();
 
         if (!value || !value.content) {
             return;
@@ -10,6 +9,8 @@ this.addOnChangeListener({
         if (!value.content.entityId) {
             return;
         } else {
+            thatObject.resetRibbon();
+
             thatObject.updateRibbonByState(#{state}.getValue().content.value);
 
             thatObject.addProductsBySize = #{window}.getRibbonItem("products.addProductsBySize");

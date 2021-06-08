@@ -175,7 +175,6 @@
                     </layoutElement>
                 </component>
                 <option type="header" value="true"/>
-                <option type="expression" value="#number"/>
                 <option type="expression"
                         value="#number + ' - ' + '@orders.orderPackStateChange.targetState.value.' + #state"/>
 

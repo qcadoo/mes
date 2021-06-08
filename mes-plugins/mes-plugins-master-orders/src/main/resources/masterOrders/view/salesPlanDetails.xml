@@ -118,7 +118,8 @@
                 </component>
 
                 <option type="header" value="true"/>
-                <option type="expression" value="#number"/>
+                <option type="expression"
+                        value="#number + ' - ' + '@masterOrders.salesPlan.state.value.' + #state"/>
 
                 <listener event="addProductsBySize" method="addProductsBySize"
                           class="com.qcadoo.mes.masterOrders.listeners.SalesPlanDetailsListeners"/>
@@ -185,6 +186,7 @@
                 <option type="multiselect" value="true"/>
                 <option type="deletable" value="true"/>
                 <option type="creatable" value="true"/>
+                <option type="selectableWhenDisabled" value="true"/>
             </component>
         </windowTab>
 
