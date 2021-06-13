@@ -111,11 +111,11 @@ public class TechnologyValidationService {
                         List<Entity> productBySizeGroups = operationProductInComponent
                                 .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS);
 
-                        isValid = !productBySizeGroups.isEmpty();
+                        isValid = isValid && !productBySizeGroups.isEmpty();
                     } else {
                         Entity product = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
 
-                        isValid = Objects.nonNull(product);
+                        isValid = isValid && Objects.nonNull(product);
                     }
                 }
             }

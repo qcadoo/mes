@@ -129,6 +129,10 @@
         </model:model-field>
 
         <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="completeNominalCostInArticleAndProducts" default="false"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
             <model:decimal name="materialCostMargin" default="0">
                 <model:validatesUnscaledValue max="7"/>
                 <model:validatesScale max="5"/>

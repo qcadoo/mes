@@ -33,10 +33,55 @@
 
         <ribbon>
             <template name="standardFormTemplate"/>
+            <group name="processes">
+                <bigButton name="showPackageProcesses" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+							if(window.canClose()) {
+								#{form}.performEvent('showPackageProcesses', []);
+							}
+						}
+					});
+				]]>
+                    </script>
+                </bigButton>
+            </group>
+            <group name="status">
+                <smallButton name="duringProduction" icon="acceptIcon16.png" state="enabled"
+                             action="#{form}.changeState(duringProduction);"/>
+                <smallButton name="finishedProduction" icon="deleteIcon16.png" state="enabled"
+                             action="#{form}.changeState(finishedProduction);"/>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
             <component type="form" name="orderPack" reference="form">
+                <script>
+                    QCD = QCD || {};
+                    QCD.translations = QCD.translations || {};
+
+                    QCD.translations['orders.orderPack.status.differentStates'] =
+                    '#{translate(orders.orderPack.status.differentStates)}';
+                    QCD.translations['orders.orderPack.status.confirm.duringProduction'] =
+                    '#{translate(orders.orderPack.status.confirm.duringProduction)}';
+                    QCD.translations['orders.orderPack.status.duringProduction'] =
+                    '#{translate(orders.orderPack.status.duringProduction)}';
+                    QCD.translations['orders.orderPack.status.confirm.finishedProduction'] =
+                    '#{translate(orders.orderPack.status.confirm.finishedProduction)}';
+                    QCD.translations['orders.orderPack.status.finishedProduction'] =
+                    '#{translate(orders.orderPack.status.finishedProduction)}';
+
+
+                </script>
+                <script type="text/javascript" src="/orders/public/js/orderPack.js"></script>
+                <script type="text/javascript" src="/orders/public/js/orderPack_form.js"></script>
+                <listener event="changeState" class="com.qcadoo.mes.orders.listeners.OrderPacksSingleOrderListListeners"
+                          method="changeState"/>
+                <listener event="showPackageProcesses" class="com.qcadoo.mes.orders.listeners.OrderPacksSingleOrderListListeners"
+                          method="showPackageProcesses"/>
+
                 <component type="gridLayout" name="gridLayout" columns="3"
                            rows="5" hasBorders="false">
                     <layoutElement column="1" row="1">
@@ -44,6 +89,8 @@
                                    field="number" defaultEnabled="never">
                             <option type="alignment" value="right"/>
                         </component>
+                        <component type="select" name="state" field="state"
+                                   reference="state" defaultVisible="false"/>
                     </layoutElement>
                     <layoutElement column="1" row="2">
                         <component type="lookup" name="order" field="order"
@@ -128,7 +175,32 @@
                     </layoutElement>
                 </component>
                 <option type="header" value="true"/>
-                <option type="expression" value="#number"/>
+                <option type="expression"
+                        value="#number + ' - ' + '@orders.orderPackStateChange.targetState.value.' + #state"/>
+
+            </component>
+        </windowTab>
+        <windowTab name="historyTab">
+            <component type="gridLayout" name="loggingsGridLayout"
+                       columns="1" rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="grid" name="stateChanges" reference="stateChanges"
+                               source="#{form}.stateChanges">
+                        <option type="column" name="dateAndTime" fields="dateAndTime"/>
+                        <option type="column" name="currentState" fields="targetState"/>
+                        <option type="column" name="worker" fields="worker"/>
+
+
+                        <option type="order" column="dateAndTime" direction="asc"/>
+
+                        <option type="searchable" value="dateAndTime,targetState,worker"/>
+                        <option type="orderable" value="dateAndTime,targetState,worker"/>
+
+                        <criteriaModifier
+                                class="com.qcadoo.mes.states.criteriaModifier.CommonCriteriaModifiers"
+                                method="filterHistory"/>
+                    </component>
+                </layoutElement>
             </component>
         </windowTab>
 

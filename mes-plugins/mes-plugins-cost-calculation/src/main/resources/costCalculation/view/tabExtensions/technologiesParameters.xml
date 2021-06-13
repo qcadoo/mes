@@ -31,7 +31,7 @@
 
     <windowTab name="costCalculationTab" reference="costCalculationTab">
         <component type="gridLayout" name="costCalculationGridLayout"
-                   reference="costCalculationGridLayout" columns="3" rows="8" hasBorders="false">
+                   reference="costCalculationGridLayout" columns="3" rows="9" hasBorders="false">
             <layoutElement column="1" row="1" height="2">
                 <component type="borderLayout" name="parametersBorderLayout"
                            reference="parametersBorderLayout">
@@ -131,7 +131,7 @@
                     <option type="label" value="operationCostsParameters"/>
                 </component>
             </layoutElement>
-            <layoutElement column="2" row="1" height="8">
+            <layoutElement column="2" row="1" height="6">
                 <component type="borderLayout" name="overheadsBorderLayout"
                            reference="overheadsBorderLayout">
                     <component type="gridLayout" name="overheadsGridLayout"
@@ -230,6 +230,13 @@
                     </component>
 
                     <option type="label" value="overheads"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="2" row="7">
+                <component type="checkbox" name="completeNominalCostInArticleAndProducts"
+                           field="#{form}.completeNominalCostInArticleAndProducts"
+                           reference="completeNominalCostInArticleAndProducts" hasDescription="true">
+                    <option type="labelWidth" value="40"/>
                 </component>
             </layoutElement>
         </component>

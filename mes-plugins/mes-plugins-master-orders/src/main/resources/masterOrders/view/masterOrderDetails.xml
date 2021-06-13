@@ -287,6 +287,9 @@
                             <option type="expression"
                                     value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
                             <option type="fieldCode" value="number"/>
+                            <criteriaModifier
+                                    class="com.qcadoo.mes.masterOrders.criteriaModifier.SalesPlanCriteriaModifier"
+                                    method="showOnlyDrafts"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="1">

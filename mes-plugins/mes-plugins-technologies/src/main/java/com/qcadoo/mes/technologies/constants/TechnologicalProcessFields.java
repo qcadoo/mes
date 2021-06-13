@@ -12,7 +12,11 @@ public final class TechnologicalProcessFields {
 
     public static final String WORKSTATION = "workstation";
 
+    public static final String TPZ = "tpz";
+
     public static final String TJ = "tj";
+
+    public static final String ADDITIONAL_TIME = "additionalTime";
 
     public static final String EXTENDED_TIME_FOR_SIZE_GROUP = "extendedTimeForSizeGroup";
 

@@ -125,7 +125,7 @@
                 </smallButton>
             </group>
             <group name="orderParameters">
-                <bigButton name="orderParameters" icon="settingsIcon24.png"
+                <smallButton name="orderParameters" icon="settingsIcon16.png"
                            state="disabled">
                     <script>
                         <![CDATA[
@@ -150,8 +150,37 @@
 							});
 						]]>
                     </script>
-                </bigButton>
+                </smallButton>
+                <smallButton name="print" icon="pdfIcon16.png">
+                    <script>
+                        <![CDATA[
+							#{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									if (! value || ! value.content) {
+										return;
+									}
+									if (! value.content.entityId) {
+										this.disable();
+									} else {
+										this.enable();
+									}
+								}
+							});
+
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{form}.performEvent({
+                                        name : 'printOrderReport',
+                                        args : ['pdf']
+                                    });
+                                }
+                            });
+						]]>
+                    </script>
+                </smallButton>
             </group>
+
+
             <group name="status">
                 <smallButton name="acceptOrder" icon="startIcon16.png"
                              state="disabled">
@@ -216,35 +245,7 @@
                     </script>
                 </smallButton>
             </group>
-            <group name="export">
-                <bigButton name="print" icon="pdfIcon24.png">
-                    <script>
-                        <![CDATA[
-							#{form}.addOnChangeListener({
-								onSetValue: function(value) {
-									if (! value || ! value.content) {
-										return;
-									}
-									if (! value.content.entityId) {
-										this.disable();
-									} else {
-										this.enable();
-									}
-								}
-							});
 
-                            this.addOnChangeListener({
-                                onClick: function() {
-                                    #{form}.performEvent({
-                                        name : 'printOrderReport',
-                                        args : ['pdf']
-                                    });
-                                }
-                            });
-						]]>
-                    </script>
-                </bigButton>
-            </group>
             <group name="orderCopyOfTechnology">
                 <bigButton name="orderCopyOfTechnology" icon="settingsIcon24.png"
                            state="disabled">
@@ -274,7 +275,7 @@
                 </bigButton>
             </group>
             <group name="operationalTasks">
-                <bigButton name="generateOperationalTasks" icon="generateIcon24.png">
+                <smallButton name="generateOperationalTasks" icon="generateIcon16.png">
                     <script>
                         <![CDATA[
 					        this.addOnChangeListener({
@@ -286,8 +287,8 @@
 					        });
 				        ]]>
                     </script>
-                </bigButton>
-                <bigButton name="showOperationalTasks" icon="genealogyIcon24.png">
+                </smallButton>
+                <smallButton name="showOperationalTasks" icon="genealogyIcon16.png">
                     <script>
                         <![CDATA[
                             this.addOnChangeListener({
@@ -299,7 +300,7 @@
                             });
                         ]]>
                     </script>
-                </bigButton>
+                </smallButton>
             </group>
             <group name="orderPacks">
                 <bigButton name="showOrderPacks" icon="genealogyIcon24.png">

@@ -96,6 +96,7 @@
         <model:model model="operationalTaskStateChange" resource="model/operationalTaskStateChange.xml"/>
         <model:model model="setCategory" resource="model/setCategory.xml"/>
         <model:model model="orderPack" resource="model/orderPack.xml"/>
+        <model:model model="orderPackStateChange" resource="model/orderPackStateChange.xml"/>
         <model:model model="orderPackDto" resource="model/orderPackDto.xml"/>
 
         <model:model model="orderTechnologicalProcess" resource="model/orderTechnologicalProcess.xml"/>

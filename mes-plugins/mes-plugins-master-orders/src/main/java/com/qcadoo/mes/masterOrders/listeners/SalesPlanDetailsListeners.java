@@ -12,6 +12,8 @@ import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementFields;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanOrdersGroupEntryHelperFields;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanOrdersGroupHelperFields;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanProductFields;
+import com.qcadoo.mes.masterOrders.states.SalesPlanServiceMarker;
+import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -36,7 +38,15 @@ public class SalesPlanDetailsListeners {
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
 
     @Autowired
+    private StateExecutorService stateExecutorService;
+
+    @Autowired
     private DataDefinitionService dataDefinitionService;
+
+
+    public void changeState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        stateExecutorService.changeState(SalesPlanServiceMarker.class, view, args);
+    }
 
     public void createOrderGroup(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent salesPlanForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);

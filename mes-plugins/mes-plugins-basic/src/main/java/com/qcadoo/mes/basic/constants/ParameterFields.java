@@ -49,4 +49,6 @@ public final class ParameterFields {
 
     public static final String COPY_ATTRIBUTES_TO_SIZE_PRODUCTS = "copyAttributesToSizeProducts";
 
+    public static final String COPY_NOMINAL_COST_FAMILY_OF_PRODUCTS_SIZES = "copyNominalCostFamilyOfProductsSizes";
+
 }

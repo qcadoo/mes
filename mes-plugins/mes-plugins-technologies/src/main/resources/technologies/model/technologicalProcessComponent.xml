@@ -29,7 +29,13 @@
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
 	<fields>
+		<integer name="tpz" default="0">
+			<validatesRange from="0"/>
+		</integer>
 		<integer name="tj" default="0">
+			<validatesRange from="0"/>
+		</integer>
+		<integer name="additionalTime" default="0">
 			<validatesRange from="0"/>
 		</integer>
 		<boolean name="extendedTimeForSizeGroup" default="false"/>

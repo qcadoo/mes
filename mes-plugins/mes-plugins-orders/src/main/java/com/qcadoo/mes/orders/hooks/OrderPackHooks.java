@@ -1,5 +1,16 @@
 package com.qcadoo.mes.orders.hooks;
 
+import com.qcadoo.mes.newstates.StateExecutorService;
+import com.qcadoo.mes.orders.OrderPackService;
+import com.qcadoo.mes.orders.constants.OrderFields;
+import com.qcadoo.mes.orders.constants.OrderPackFields;
+import com.qcadoo.mes.orders.states.OrderPackServiceMarker;
+import com.qcadoo.mes.orders.states.constants.OrderPackStateStringValues;
+import com.qcadoo.mes.orders.states.constants.OrderState;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
+
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
@@ -9,14 +20,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
-
-import com.qcadoo.mes.orders.OrderPackService;
-import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.orders.constants.OrderPackFields;
-import com.qcadoo.mes.orders.states.constants.OrderState;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
 
 @Service
 public class OrderPackHooks {
@@ -29,6 +32,22 @@ public class OrderPackHooks {
 
     @Autowired
     private NumberService numberService;
+
+
+    @Autowired
+    private StateExecutorService stateExecutorService;
+
+    public void onCreate(final DataDefinition orderPackDD, final Entity orderPack) {
+        setInitialState(orderPack);
+    }
+
+    public void onCopy(final DataDefinition orderPackDD, final Entity orderPack) {
+        setInitialState(orderPack);
+    }
+
+    private void setInitialState(final Entity orderPack) {
+        stateExecutorService.buildInitial(OrderPackServiceMarker.class, orderPack, OrderPackStateStringValues.PENDING);
+    }
 
     public boolean validatesWith(final DataDefinition orderPackDD, final Entity orderPack) {
         Entity order = orderPack.getBelongsToField(OrderPackFields.ORDER);

@@ -30,7 +30,7 @@
 	plugin="orders" view="orderDetails">
 
      <group name="basicProductionCounting">
-          <bigButton name="productionProgress" icon="iconProducts24.png" state="disabled">
+          <smallButton name="productionProgress" icon="iconProducts16.png" state="disabled">
           	<script>
 				<![CDATA[
 					this.addOnChangeListener({
@@ -73,8 +73,8 @@
 					});					
 				]]>
 			</script>	
-          </bigButton>
-		 <bigButton name="productionCounting" icon="iconProducts24.png" state="disabled">
+          </smallButton>
+		 <smallButton name="productionCounting" icon="iconProducts16.png" state="disabled">
 			 <script>
 				 <![CDATA[
 					this.addOnChangeListener({
@@ -117,6 +117,6 @@
 					});
 				]]>
 			 </script>
-		 </bigButton>
+		 </smallButton>
 	 </group>
 </ribbonExtension>

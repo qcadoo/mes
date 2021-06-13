@@ -33,6 +33,12 @@
 
         <ribbon>
             <template name="standardFormTemplate"/>
+            <group name="status">
+                <smallButton name="complete" icon="acceptIcon16.png" state="enabled"
+                             action="#{form}.changeState(complete);"/>
+                <smallButton name="reject" icon="deleteIcon16.png" state="enabled"
+                             action="#{form}.changeState(reject);"/>
+            </group>
             <group name="products">
                 <bigButton name="addProductsBySize" icon="newIcon24.png"
                              state="enabled" action="#{form}.fireEvent(addProductsBySize);">
@@ -61,6 +67,26 @@
 
         <windowTab name="mainTab">
             <component type="form" name="salesPlan" reference="form">
+                <script>
+                    QCD = QCD || {};
+                    QCD.translations = QCD.translations || {};
+
+                    QCD.translations['masterOrders.salesPlan.status.differentStates'] =
+                    '#{translate(masterOrders.salesPlan.status.differentStates)}';
+                    QCD.translations['masterOrders.salesPlan.status.confirm.complete'] =
+                    '#{translate(masterOrders.salesPlan.status.confirm.complete)}';
+                    QCD.translations['masterOrders.salesPlan.status.complete'] =
+                    '#{translate(masterOrders.salesPlan.status.complete)}';
+                    QCD.translations['masterOrders.salesPlan.status.confirm.reject'] =
+                    '#{translate(masterOrders.salesPlan.status.confirm.reject)}';
+                    QCD.translations['masterOrders.salesPlan.status.reject'] =
+                    '#{translate(masterOrders.salesPlan.status.reject)}';
+
+
+                </script>
+                <script type="text/javascript" src="/masterOrders/public/js/salesPlan.js"></script>
+                <script type="text/javascript" src="/masterOrders/public/js/salesPlan_form.js"></script>
+
                 <component type="gridLayout" name="gridLayout" columns="3"
                            rows="6">
                     <layoutElement column="1" row="1">
@@ -68,6 +94,8 @@
                                    field="number" defaultEnabled="never">
                             <option type="alignment" value="right"/>
                         </component>
+                        <component type="select" name="state" field="state"
+                                   reference="state" defaultVisible="false"/>
                     </layoutElement>
                     <layoutElement column="1" row="2">
                         <component type="input" name="name" field="name"
@@ -90,7 +118,8 @@
                 </component>
 
                 <option type="header" value="true"/>
-                <option type="expression" value="#number"/>
+                <option type="expression"
+                        value="#number + ' - ' + '@masterOrders.salesPlan.state.value.' + #state"/>
 
                 <listener event="addProductsBySize" method="addProductsBySize"
                           class="com.qcadoo.mes.masterOrders.listeners.SalesPlanDetailsListeners"/>
@@ -104,6 +133,9 @@
                           class="com.qcadoo.mes.masterOrders.listeners.SalesPlanDetailsListeners"/>
                 <listener event="createOrders" method="createOrders"
                           class="com.qcadoo.mes.masterOrders.listeners.SalesPlanDetailsListeners"/>
+                <listener event="changeState" class="com.qcadoo.mes.masterOrders.listeners.SalesPlanDetailsListeners"
+                          method="changeState"/>
+
             </component>
         </windowTab>
 
@@ -154,6 +186,7 @@
                 <option type="multiselect" value="true"/>
                 <option type="deletable" value="true"/>
                 <option type="creatable" value="true"/>
+                <option type="selectableWhenDisabled" value="true"/>
             </component>
         </windowTab>
 

@@ -65,6 +65,8 @@ public final class OrdersConstants {
 
     public static final String MODEL_ORDER_PACK = "orderPack";
 
+    public static final String MODEL_ORDER_PACK_STATE_CHANGE = "orderPackStateChange";
+
     public static final String MODEL_ORDER_TECHNOLOGICAL_PROCESS = "orderTechnologicalProcess";
 
     public static final String MODEL_ORDER_TECHNOLOGICAL_PROCESS_DTO = "orderTechnologicalProcessDto";

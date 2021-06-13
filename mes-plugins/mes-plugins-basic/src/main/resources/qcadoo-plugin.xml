@@ -215,6 +215,7 @@
         <security:role identifier="ROLE_TERMINAL_PALLET_PRINT_MULTIPLE"/>
         <security:role identifier="ROLE_PALLET_DETAILS_FIX_STATE"/>
         <security:role identifier="ROLE_PRINTED_LABEL_DETAILS_REPRINT"/>
+        <security:role identifier="ROLE_PRINTED_PALLET_LABELS"/>
 
         <security:role identifier="ROLE_SUBCONTRACTOR"/>
         <security:role identifier="ROLE_LOGS"/>

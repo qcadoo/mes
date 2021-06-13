@@ -37,7 +37,7 @@
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="form" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="9">
+                           rows="11">
                     <layoutElement column="1" row="1" height="2">
                         <component type="textarea" name="name" field="name" reference="name"/>
                     </layoutElement>
@@ -72,11 +72,21 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="5">
+                        <component type="time" name="tpz" field="tpz"
+                                   reference="tpz">
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="6">
                         <component type="time" name="tj" field="tj"
                                    reference="tj">
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="6">
+                    <layoutElement column="1" row="7">
+                        <component type="time" name="additionalTime" field="additionalTime"
+                                   reference="additionalTime">
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="8">
                         <component type="checkbox" name="extendedTimeForSizeGroup" field="extendedTimeForSizeGroup"
                                    reference="extendedTimeForSizeGroup" hasDescription="true">
                             <listener event="onChange"
@@ -84,13 +94,13 @@
                                       method="onChangeRerender"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="7">
+                    <layoutElement column="1" row="9">
                         <component type="input" name="increasePercent" field="increasePercent"
                                    reference="increasePercent" defaultEnabled="false">
                             <option type="alignment" value="right"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="8">
+                    <layoutElement column="1" row="10">
                         <component type="lookup" name="sizeGroup" field="sizeGroup"
                                    reference="sizeGroup" defaultEnabled="false">
                             <option type="searchable" value="number"/>
@@ -100,7 +110,7 @@
                             <option type="fieldCode" value="number"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="9">
+                    <layoutElement column="1" row="11">
                         <component type="lookup" name="technologicalProcessRate" field="technologicalProcessRate"
                                    reference="technologicalProcessRate">
                             <option type="column" name="name" fields="name"/>

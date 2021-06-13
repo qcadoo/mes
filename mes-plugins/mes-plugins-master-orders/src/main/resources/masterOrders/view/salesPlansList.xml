@@ -32,9 +32,36 @@
     <component type="window" name="window" reference="window">
         <ribbon>
             <template name="standardGridTemplate"/>
+            <group name="status">
+                <smallButton name="complete" icon="acceptIcon16.png" state="enabled"
+                             action="#{grid}.changeState(complete);"/>
+                <smallButton name="reject" icon="deleteIcon16.png" state="enabled"
+                             action="#{grid}.changeState(reject);"/>
+            </group>
         </ribbon>
 
         <component type="grid" name="salesPlans" reference="grid">
+            <script>
+                QCD = QCD || {};
+                QCD.translations = QCD.translations || {};
+
+                QCD.translations['masterOrders.salesPlan.status.differentStates'] =
+                '#{translate(masterOrders.salesPlan.status.differentStates)}';
+                QCD.translations['masterOrders.salesPlan.status.confirm.complete'] =
+                '#{translate(masterOrders.salesPlan.status.confirm.complete)}';
+                QCD.translations['masterOrders.salesPlan.status.complete'] =
+                '#{translate(masterOrders.salesPlan.status.complete)}';
+                QCD.translations['masterOrders.salesPlan.status.confirm.reject'] =
+                '#{translate(masterOrders.salesPlan.status.confirm.reject)}';
+                QCD.translations['masterOrders.salesPlan.status.reject'] =
+                '#{translate(masterOrders.salesPlan.status.reject)}';
+
+
+            </script>
+            <script type="text/javascript" src="/masterOrders/public/js/salesPlan.js"></script>
+            <script type="text/javascript" src="/masterOrders/public/js/salesPlan_grid.js"></script>
+            <listener event="changeState" class="com.qcadoo.mes.masterOrders.listeners.SalesPlanListListeners" method="changeState"/>
+
             <option type="column" name="number" fields="number" link="true" width="40"/>
             <option type="column" name="name" fields="name" link="true" width="100"/>
             <option type="column" name="description" fields="description" width="100"/>

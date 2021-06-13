@@ -30,11 +30,9 @@
                  plugin="orders" view="orderDetails">
 
     <group name="materialFlow">
-        <bigButton name="componentAvailability" icon="iconProducts24.png"
+        <smallButton name="componentAvailability" icon="iconProducts16.png"
                    action="#{form}.fireEvent(showMaterialAvailabilityForOrder);"/>
-    </group>
-    <group name="warehouseIssues">
-        <bigButton name="warehouseIssues" icon="genealogyIcon24.png"
+        <smallButton name="warehouseIssues" icon="genealogyIcon16.png"
                    action="#{form}.fireEvent(showWarehouseIssuesForOrder);"/>
     </group>
 </ribbonExtension>

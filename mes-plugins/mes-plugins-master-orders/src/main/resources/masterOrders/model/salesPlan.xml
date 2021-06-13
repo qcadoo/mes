@@ -38,7 +38,7 @@
         </string>
         <date name="dateFrom"/>
         <date name="dateTo"/>
-        <enum name="state" values="01draft" default="01draft" required="true"/>
+        <enum name="state" values="01draft,02rejected,03completed" default="01draft" required="true"/>
         <hasMany name="products" joinField="salesPlan" model="salesPlanProduct"
                  cascade="delete" copyable="true"/>
         <hasMany name="productsDto" joinField="salesPlan" model="salesPlanProductDto"

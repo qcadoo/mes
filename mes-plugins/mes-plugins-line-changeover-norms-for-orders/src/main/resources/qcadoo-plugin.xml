@@ -99,7 +99,7 @@
 		                class="com.qcadoo.mes.lineChangeoverNormsForOrders.hooks.OrderDetailsHooksLCNFO"
 		                method="onBeforeRender" />
 
-		<view:view-listener plugin="orders" view="orderDetails"
+		<view:view-listener plugin="orders" view="orderAdditionalDetails"
 			component="form" event="showChangeover"
 			class="com.qcadoo.mes.lineChangeoverNormsForOrders.listeners.OrderDetailsListenersLCNFO"
 			method="showChangeover" />
