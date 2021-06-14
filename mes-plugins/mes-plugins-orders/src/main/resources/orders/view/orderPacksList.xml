@@ -19,6 +19,20 @@
                     </script>
                 </bigButton>
             </group>
+            <group name="processes">
+                <bigButton name="showPackageProcesses" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
+					this.addOnChangeListener({
+						onClick: function() {
+								#{grid}.performEvent('showPackageProcesses', []);
+
+						}
+					});
+				]]>
+                    </script>
+                </bigButton>
+            </group>
             <group name="status">
                 <smallButton name="duringProduction" icon="acceptIcon16.png" state="enabled"
                              action="#{grid}.changeState(duringProduction);"/>
@@ -77,6 +91,8 @@
                       method="printLabels"/>
             <listener event="changeState" class="com.qcadoo.mes.orders.listeners.OrderPacksSingleOrderListListeners"
                       method="changeState"/>
+            <listener event="showPackageProcesses" class="com.qcadoo.mes.orders.listeners.OrderPacksSingleOrderListListeners"
+                      method="showPackageProcessesFromList"/>
 
         </component>
 

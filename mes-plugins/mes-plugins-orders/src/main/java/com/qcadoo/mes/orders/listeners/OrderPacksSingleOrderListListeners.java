@@ -9,6 +9,7 @@ import com.qcadoo.mes.orders.constants.OrderPackFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ParameterFieldsO;
 import com.qcadoo.mes.orders.states.OrderPackServiceMarker;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -37,10 +38,11 @@ public class OrderPacksSingleOrderListListeners {
     @Autowired
     private OrderPackService orderPackService;
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private StateExecutorService stateExecutorService;
-
 
     public void showPackageProcesses(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
@@ -66,6 +68,27 @@ public class OrderPacksSingleOrderListListeners {
         view.redirectTo(url, false, true, parameters);
     }
 
+    public void showPackageProcessesFromList(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+
+        Set<Long> packsIds = grid.getSelectedEntitiesIds();
+
+        Entity pack = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER_PACK).get(
+                packsIds.stream().findFirst().get());
+
+        Map<String, String> filters = Maps.newHashMap();
+        filters.put("orderPackNumber", applyInOperator(pack.getStringField(OrderPackFields.NUMBER)));
+
+        Map<String, Object> gridOptions = Maps.newHashMap();
+        gridOptions.put(L_FILTERS, filters);
+
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put(L_GRID_OPTIONS, gridOptions);
+
+        String url = "/page/orders/orderTechnologicalProcessesList.html";
+        view.redirectTo(url, false, true, parameters);
+    }
+
     private String applyInOperator(final String value) {
         return "[" + value + "]";
     }
@@ -75,16 +98,17 @@ public class OrderPacksSingleOrderListListeners {
     }
 
     public void printLabels(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-            GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
-            Set<Long> packsIds = grid.getSelectedEntitiesIds();
+        Set<Long> packsIds = grid.getSelectedEntitiesIds();
 
-            if (packsIds.isEmpty()) {
-                view.addMessage("orders.packs.notSelected", ComponentState.MessageType.INFO);
-            } else {
-                view.redirectTo("/orders/packsLabels.pdf?"
-                        + packsIds.stream().map(id -> "ids=" + id.toString()).collect(Collectors.joining("&")), true, false);
-            }
+        if (packsIds.isEmpty()) {
+            view.addMessage("orders.packs.notSelected", ComponentState.MessageType.INFO);
+        } else {
+            view.redirectTo(
+                    "/orders/packsLabels.pdf?"
+                            + packsIds.stream().map(id -> "ids=" + id.toString()).collect(Collectors.joining("&")), true, false);
+        }
 
     }
 
