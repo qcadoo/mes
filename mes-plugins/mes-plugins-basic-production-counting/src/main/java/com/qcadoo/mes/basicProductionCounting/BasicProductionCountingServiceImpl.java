@@ -238,13 +238,14 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
             Entity technologyOperationComponent = operationProductComponentHolder.getTechnologyOperationComponent();
             Entity product = operationProductComponentHolder.getProduct();
             Entity operationProductComponent = operationProductComponentHolder.getOperationProductComponent();
+            Entity technologyInputProductType = operationProductComponentHolder.getTechnologyInputProductType();
 
             String role = getRole(operationProductComponentHolder);
 
             boolean isNonComponent = nonComponents.contains(operationProductComponentHolder);
 
             Entity productionCountingQuantity = prepareProductionCountingQuantity(order, technologyOperationComponent,
-                    operationProductComponent, product, role, isNonComponent, plannedQuantity);
+                    technologyInputProductType, operationProductComponent, product, role, isNonComponent, plannedQuantity);
             productionCountingQuantities.add(productionCountingQuantity);
         }
 
@@ -281,12 +282,14 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
     }
 
     private Entity prepareProductionCountingQuantity(final Entity order, final Entity technologyOperationComponent,
-            final Entity operationProductComponent, Entity product, final String role, final boolean isNonComponent,
-            final BigDecimal plannedQuantity) {
+            final Entity technologyInputProductType, final Entity operationProductComponent, Entity product, final String role,
+            final boolean isNonComponent, final BigDecimal plannedQuantity) {
         Entity productionCountingQuantity = getProductionCountingQuantityDD().create();
 
         productionCountingQuantity.setField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT,
                 technologyOperationComponent);
+        productionCountingQuantity.setField(ProductionCountingQuantityFields.TECHNOLOGY_INPUT_PRODUCT_TYPE,
+                technologyInputProductType);
         productionCountingQuantity.setField(ProductionCountingQuantityFields.PRODUCT, product);
         productionCountingQuantity.setField(ProductionCountingQuantityFields.ROLE, role);
         productionCountingQuantity.setField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL,

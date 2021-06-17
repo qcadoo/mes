@@ -36,6 +36,9 @@
         <belongsTo name="replacementTo" model="product" plugin="basic"/>
         <belongsTo name="basicProductionCounting" model="basicProductionCounting"
                            plugin="basicProductionCounting" />
+
+        <belongsTo name="technologyInputProductType" model="technologyInputProductType" plugin="technologies" />
+
         <enum name="role" values="01used,02produced" default="01used"
                       required="true" />
         <enum name="typeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"

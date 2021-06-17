@@ -33,6 +33,8 @@ public final class ProductionCountingQuantityFields {
 
     public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
 
+    public static final String TECHNOLOGY_INPUT_PRODUCT_TYPE = "technologyInputProductType";
+
     public static final String PRODUCT = "product";
 
     public static final String BASIC_PRODUCTION_COUNTING = "basicProductionCounting";
