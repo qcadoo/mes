@@ -510,9 +510,9 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
         return selectedOrders.stream().map(Entity::getId).collect(Collectors.toList());
     }
 
-    private List<Long> getIdsFromRegisterProduct(final List<Entity> registerProducts) {
-        return registerProducts.stream().map(registerProduct -> (Long) registerProduct.getField("productId"))
-                .collect(Collectors.toList());
+    private List<Long> getIdsFromRegisterProduct(List<Entity> registerProducts) {
+
+        return registerProducts.stream().map(p -> ((Number) p.getField("productId")).longValue()).collect(Collectors.toList());
     }
 
     private void fillFromProductionCounting(final Map<Long, Entity> productAndCoverageProducts, Entity assignedOrder, final Date coverageToDate,
