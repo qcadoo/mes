@@ -37,6 +37,10 @@ class ModelCardMaterialEntry {
 
     private Long parentId;
 
+    private Integer priority;
+
+    private String nodeNumber;
+
     public Long getId() {
         return id;
     }
@@ -179,5 +183,21 @@ class ModelCardMaterialEntry {
 
     public void setCurrentStock(BigDecimal currentStock) {
         this.currentStock = currentStock;
+    }
+
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Integer priority) {
+        this.priority = priority;
+    }
+
+    public String getNodeNumber() {
+        return nodeNumber;
+    }
+
+    public void setNodeNumber(String nodeNumber) {
+        this.nodeNumber = nodeNumber;
     }
 }

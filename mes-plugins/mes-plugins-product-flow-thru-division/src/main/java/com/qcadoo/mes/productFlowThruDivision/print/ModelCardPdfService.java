@@ -60,6 +60,7 @@ import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyInputProductTypeFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
@@ -148,8 +149,8 @@ public final class ModelCardPdfService extends PdfDocumentService {
             List<ModelCardMaterialEntry> groupedEntries = groupMaterials(entries);
             BigDecimal materialUnitCostsSum = getMaterialUnitCostsSum(groupedEntries);
             List<ModelCardMaterialEntry> sortedEntries = groupedEntries.stream()
-                    .sorted(Comparator
-                            .comparing(ModelCardMaterialEntry::getTechnologyInputProductTypeId, nullsFirst(naturalOrder()))
+                    .sorted(Comparator.comparing(ModelCardMaterialEntry::getNodeNumber, new NodeNumberComparator().reversed())
+                            .thenComparing(ModelCardMaterialEntry::getPriority)
                             .thenComparing(ModelCardMaterialEntry::getSizeGroupId, nullsFirst(naturalOrder())))
                     .collect(Collectors.toList());
             addProductTable(document, modelCardProduct, productAttribute, materialUnitCostsSum, locale);
@@ -200,10 +201,15 @@ public final class ModelCardPdfService extends PdfDocumentService {
         ModelCardMaterialEntry modelCardMaterialEntry = new ModelCardMaterialEntry();
         Entity material = neededProductQuantity.getKey().getProduct();
         Entity operationProductComponent = neededProductQuantity.getKey().getOperationProductComponent();
+        Entity technologyOperationComponent = neededProductQuantity.getKey().getTechnologyOperationComponent();
         Entity warehouse = operationProductComponent.getBelongsToField(OperationProductInComponentFieldsPFTD.COMPONENTS_LOCATION);
 
         Entity technologyInputProductType = operationProductComponent
                 .getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE);
+
+        modelCardMaterialEntry
+                .setNodeNumber(technologyOperationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
+        modelCardMaterialEntry.setPriority(operationProductComponent.getIntegerField(OperationProductInComponentFields.PRIORITY));
 
         if (Objects.nonNull(technologyInputProductType)) {
             modelCardMaterialEntry.setTechnologyInputProductTypeId(technologyInputProductType.getId());
@@ -231,6 +237,10 @@ public final class ModelCardPdfService extends PdfDocumentService {
                 modelCardMaterialBySizeEntry.setWarehouseId(warehouse.getId());
                 modelCardMaterialBySizeEntry.setCurrentStock(BigDecimalUtils
                         .convertNullToZero(quantitiesInStock.get(warehouse.getId()).get(materialBySizeGroup.getId())));
+                modelCardMaterialBySizeEntry.setNodeNumber(
+                        technologyOperationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
+                modelCardMaterialBySizeEntry
+                        .setPriority(operationProductComponent.getIntegerField(OperationProductInComponentFields.PRIORITY));
                 if (Objects.nonNull(technologyInputProductType)) {
                     modelCardMaterialBySizeEntry.setTechnologyInputProductTypeId(technologyInputProductType.getId());
                 }
@@ -272,7 +282,8 @@ public final class ModelCardPdfService extends PdfDocumentService {
             }
 
             modelCardMaterialEntry.setNorm(norm);
-            modelCardMaterialEntry.setNeededQuantity(numberService.setScaleWithDefaultMathContext(neededProductQuantity.getValue(), 2));
+            modelCardMaterialEntry
+                    .setNeededQuantity(numberService.setScaleWithDefaultMathContext(neededProductQuantity.getValue(), 2));
             modelCardMaterialEntry.setId(material.getId());
             modelCardMaterialEntry.setNumber(material.getStringField(ProductFields.NUMBER));
             modelCardMaterialEntry.setName(material.getStringField(ProductFields.NAME));
@@ -314,6 +325,8 @@ public final class ModelCardPdfService extends PdfDocumentService {
             k.setNorm(v.getNorm());
             k.setMaterialUnitCost(v.getMaterialUnitCost());
             k.setCurrentStock(v.getCurrentStock());
+            k.setNodeNumber(v.getNodeNumber());
+            k.setPriority(v.getPriority());
             k.setDescription(String.join(",", v.getDescriptions()));
         });
 
@@ -340,6 +353,11 @@ public final class ModelCardPdfService extends PdfDocumentService {
                     .setCurrentStock(quantityNormDescriptions.getCurrentStock().add(modelCardMaterialEntry.getCurrentStock()));
         }
         quantityNormDescriptions.getWarehouseIds().add(modelCardMaterialEntry.getWarehouseId());
+        NodeNumberComparator nodeNumberComparator = new NodeNumberComparator();
+        if (nodeNumberComparator.compare(modelCardMaterialEntry.getNodeNumber(), quantityNormDescriptions.getNodeNumber()) > 0) {
+            quantityNormDescriptions.setNodeNumber(modelCardMaterialEntry.getNodeNumber());
+            quantityNormDescriptions.setPriority(modelCardMaterialEntry.getPriority());
+        }
         if (modelCardMaterialEntry.getDescription() != null) {
             quantityNormDescriptions.getDescriptions().add(modelCardMaterialEntry.getDescription());
         }
@@ -355,6 +373,8 @@ public final class ModelCardPdfService extends PdfDocumentService {
         Set<Long> warehouseIds = Sets.newHashSet();
         warehouseIds.add(modelCardMaterialEntry.getWarehouseId());
         quantityNormDescriptions.setWarehouseIds(warehouseIds);
+        quantityNormDescriptions.setNodeNumber(modelCardMaterialEntry.getNodeNumber());
+        quantityNormDescriptions.setPriority(modelCardMaterialEntry.getPriority());
         Set<String> descriptions = Sets.newHashSet();
         if (modelCardMaterialEntry.getDescription() != null) {
             descriptions.add(modelCardMaterialEntry.getDescription());
