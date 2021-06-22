@@ -138,22 +138,34 @@ public class MRCServiceOverideAspect {
             if (coverageBasedOnProductionCounting) {
                 sql = "SELECT distinct registry.productId AS productId FROM #orderSupplies_productionCountingQuantityInput AS registry "
                         + "WHERE registry.orderId IN :ids AND eventType IN ('04orderInput','03operationInput')";
+                List<Entity> regs = dataDefinitionService.get(OrderSuppliesConstants.PLUGIN_IDENTIFIER, "coverageRegister").find(sql)
+                        .setParameter("ids", order.getId().intValue()).list().getEntities();
+                List<Long> pids = getIdsFromRegisterProduct(regs);
+                for (Map.Entry<Long, Entity> productAndCoverageProduct : productAndCoverageProducts.entrySet()) {
+                    Entity addedCoverageProduct = productAndCoverageProduct.getValue();
+                    if (pids.contains(productAndCoverageProduct.getKey())) {
+                        addedCoverageProduct.setField(CoverageProductFields.FROM_SELECTED_ORDER, true);
+                    } else {
+                        addedCoverageProduct.setField(CoverageProductFields.FROM_SELECTED_ORDER, false);
+                    }
+                }
             } else {
                 sql = "SELECT distinct registry.product.id AS productId FROM #orderSupplies_coverageRegister AS registry "
                         + "WHERE registry.order.id IN :ids AND eventType IN ('04orderInput','03operationInput')";
-            }
-
-            List<Entity> regs = dataDefinitionService.get(OrderSuppliesConstants.PLUGIN_IDENTIFIER, "coverageRegister").find(sql)
-                    .setParameter("ids", order.getId().intValue()).list().getEntities();
-            List<Long> pids = getIdsFromRegisterProduct(regs);
-            for (Map.Entry<Long, Entity> productAndCoverageProduct : productAndCoverageProducts.entrySet()) {
-                Entity addedCoverageProduct = productAndCoverageProduct.getValue();
-                if (pids.contains(productAndCoverageProduct.getKey())) {
-                    addedCoverageProduct.setField(CoverageProductFields.FROM_SELECTED_ORDER, true);
-                } else {
-                    addedCoverageProduct.setField(CoverageProductFields.FROM_SELECTED_ORDER, false);
+                List<Entity> regs = dataDefinitionService.get(OrderSuppliesConstants.PLUGIN_IDENTIFIER, "coverageRegister").find(sql)
+                        .setParameter("ids", order.getId()).list().getEntities();
+                List<Long> pids = getIdsFromRegisterProduct(regs);
+                for (Map.Entry<Long, Entity> productAndCoverageProduct : productAndCoverageProducts.entrySet()) {
+                    Entity addedCoverageProduct = productAndCoverageProduct.getValue();
+                    if (pids.contains(productAndCoverageProduct.getKey())) {
+                        addedCoverageProduct.setField(CoverageProductFields.FROM_SELECTED_ORDER, true);
+                    } else {
+                        addedCoverageProduct.setField(CoverageProductFields.FROM_SELECTED_ORDER, false);
+                    }
                 }
             }
+
+
         }
     }
 
