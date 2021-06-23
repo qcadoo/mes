@@ -17,6 +17,10 @@ class QuantityNormDescriptions {
 
     private Set<Long> warehouseIds;
 
+    private Integer priority;
+
+    private String nodeNumber;
+
     public Set<Long> getWarehouseIds() {
         return warehouseIds;
     }
@@ -63,5 +67,21 @@ class QuantityNormDescriptions {
 
     public void setMaterialUnitCost(BigDecimal materialUnitCost) {
         this.materialUnitCost = materialUnitCost;
+    }
+
+    public Integer getPriority() {
+        return priority;
+    }
+
+    public void setPriority(Integer priority) {
+        this.priority = priority;
+    }
+
+    public String getNodeNumber() {
+        return nodeNumber;
+    }
+
+    public void setNodeNumber(String nodeNumber) {
+        this.nodeNumber = nodeNumber;
     }
 }
