@@ -157,8 +157,13 @@ public class CostCalculationMaterialsService {
 
             if (operationProductComponent
                     .getBooleanField(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE)) {
+                BigDecimal sumOfQuantity = operationProductComponent
+                        .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS).stream()
+                        .map(q -> q.getDecimalField(ProductBySizeGroupFields.QUANTITY)).reduce(BigDecimal.ZERO, BigDecimal::add);
+                costForGivenQuantity = costForGivenQuantity.divide(sumOfQuantity, numberService.getMathContext());
+
                 costCalculationMaterial.setProductQuantity(null);
-                costCalculationMaterial.setCostPerUnit(null);
+                costCalculationMaterial.setCostPerUnit(costForGivenQuantity);
             }
             materialCosts.add(costCalculationMaterial);
         }
