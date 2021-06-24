@@ -84,6 +84,7 @@
                     <layoutElement column="1" row="7">
                         <component type="time" name="additionalTime" field="additionalTime"
                                    reference="additionalTime">
+                            <option type="noHours" value="4"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="8">
