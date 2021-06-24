@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -62,8 +63,7 @@ public class SalesPlanOrdersController {
 
     private GenerateOrdersSalePlanResponse generateOrders(GenerateOrdersSalePlanRequest generateOrdersSalePlanRequest) {
         Entity helper = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
-                MasterOrdersConstants.MODEL_SALES_PLAN_ORDERS_GROUP_HELPER).get(
-                generateOrdersSalePlanRequest.getEntityId());
+                MasterOrdersConstants.MODEL_SALES_PLAN_ORDERS_GROUP_HELPER).get(generateOrdersSalePlanRequest.getEntityId());
 
         List<OrderSalePlanPosition> positionsWithQuantities = generateOrdersSalePlanRequest.getPositions();
         List<Entity> positions = helper.getHasManyField(SalesPlanOrdersGroupHelperFields.SALES_PLAN_ORDERS_GROUP_ENTRY_HELPERS);
@@ -78,21 +78,23 @@ public class SalesPlanOrdersController {
         } catch (Exception exc) {
             GenerateOrdersSalePlanResponse response = new GenerateOrdersSalePlanResponse();
             response.setStatus(GenerateOrdersSalePlanResponse.SimpleResponseStatus.ERROR);
-            response.setErrorMessages(Lists.newArrayList("orders.ordersGenerationFromProducts.error.ordersNotGenerated"));
+            response.setErrorMessages(Lists.newArrayList(translationService.translate(
+                    "orders.ordersGenerationFromProducts.error.ordersNotGenerated", LocaleContextHolder.getLocale())));
             return response;
         }
     }
 
-    private void generateOrders(GenerationOrderResult result, Entity salesPlan, List<OrderSalePlanPosition> positionsWithQuantities, List<Entity> positions) {
+    private void generateOrders(GenerationOrderResult result, Entity salesPlan,
+            List<OrderSalePlanPosition> positionsWithQuantities, List<Entity> positions) {
         Entity parameters = parameterService.getParameter();
         boolean automaticPps = parameters.getBooleanField(L_PPS_IS_AUTOMATIC);
 
         for (OrderSalePlanPosition pos : positionsWithQuantities) {
             Entity salesPlanOrderGroupEntry = positions.stream().filter(p -> p.getId().equals(pos.getId())).findAny().get();
             Entity product = salesPlanOrderGroupEntry.getBelongsToField(SalesPlanOrdersGroupEntryHelperFields.PRODUCT);
-            Entity order = ordersGenerationService.createOrder(parameters, product, pos.getValue(), salesPlan,null, null);
+            Entity order = ordersGenerationService.createOrder(parameters, product, pos.getValue(), salesPlan, null, null);
             if (!order.isValid()) {
-                result.addGeneratedOrderNumber(product.getStringField(ProductFields.NUMBER));
+                result.addProductOrderSimpleError(product.getStringField(ProductFields.NUMBER));
 
             } else {
                 if (Objects.isNull(order.getBelongsToField(OrderFields.TECHNOLOGY))) {
