@@ -74,6 +74,9 @@ public class ProductionCountingQuantityValidators {
                     .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT,
                             productionCountingQuantity
                                     .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT)))
+                    .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.TECHNOLOGY_INPUT_PRODUCT_TYPE,
+                            productionCountingQuantity
+                                    .getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_INPUT_PRODUCT_TYPE)))
                     .list().getEntities();
 
             if (productionCountingQuantities.isEmpty()) {

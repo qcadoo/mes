@@ -54,6 +54,8 @@
 
         <string name="operationName"/>
 
+        <string name="technologyInputProductTypeName"/>
+
         <enum name="role" values="01used,02produced" />
 
         <enum name="typeOfMaterial" values="01component,02intermediate,03finalProduct,04waste"/>

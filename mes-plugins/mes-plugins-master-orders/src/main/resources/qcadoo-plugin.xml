@@ -92,6 +92,8 @@
         <model:model model="salesPlanOrdersGroupHelper" resource="model/salesPlanOrdersGroupHelper.xml"/>
         <model:model model="salesPlanOrdersGroupEntryHelper" resource="model/salesPlanOrdersGroupEntryHelper.xml"/>
 
+        <model:dictionary name="masterOrderState"/>
+        <model:dictionary name="masterOrderPositionStatus"/>
 
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="salesPlanProducts" model="salesPlanProduct" plugin="masterOrders" joinField="product"/>
@@ -118,9 +120,6 @@
                            plugin="masterOrders" model="salesPlanStateChange"
                            joinField="shift"/>
         </model:model-field>
-
-        <model:dictionary name="masterOrderState"/>
-        <model:dictionary name="masterOrderPositionStatus"/>
 
         <model:model-field model="parameter" plugin="basic">
             <model:boolean name="sameOrderNumber" default="false"/>
@@ -159,7 +158,6 @@
                              plugin="masterOrders" lazy="true"/>
         </model:model-field>
 
-
         <model:model-field model="orderListDto" plugin="orders">
             <model:belongsTo name="masterOrder" model="masterOrder"
                              plugin="masterOrders" persistent="false"/>
@@ -177,6 +175,10 @@
 
         <model:model-field plugin="basic" model="address">
             <model:hasMany name="masterOrders" model="masterOrder" plugin="masterOrders" joinField="address"/>
+        </model:model-field>
+
+        <model:model-field plugin="deliveries" model="delivery">
+            <model:belongsTo name="salesPlan" model="salesPlan" plugin="masterOrders"/>
         </model:model-field>
 
         <model:model-hook model="order" plugin="orders">
@@ -254,6 +256,17 @@
         <view:view-grid-column plugin="orders"
                                view="ordersPlanningList" component="grid">
             <view:column name="masterOrderNumber" fields="masterOrderNumber" orderable="true" multiSearch="true" searchable="true"
+                         width="50"/>
+        </view:view-grid-column>
+
+        <view:view-grid-column plugin="deliveries"
+                               view="deliveriesList" component="grid">
+            <view:column name="salesPlanNumber" fields="salesPlan" expression="#salesPlan?.get('number')" orderable="true" multiSearch="true" searchable="true"
+                         width="50"/>
+        </view:view-grid-column>
+        <view:view-grid-column plugin="deliveries"
+                               view="deliveriesList" component="grid">
+            <view:column name="salesPlanName" fields="salesPlan" expression="#salesPlan?.get('name')" orderable="true" multiSearch="true" searchable="true"
                          width="50"/>
         </view:view-grid-column>
 

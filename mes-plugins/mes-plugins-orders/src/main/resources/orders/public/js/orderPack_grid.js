@@ -1,4 +1,5 @@
 var thatObject = this;
+    var showPackageProcesses = #{window}.getRibbonItem("processes.showPackageProcesses");
 
 this.addOnChangeListener({
     onChange: function (selectedEntitiesArray) {
@@ -9,8 +10,10 @@ this.addOnChangeListener({
         }
         if (selectedEntitiesArray && selectedEntitiesArray.length === 1) {
             thatObject.copy.enable();
+            showPackageProcesses.enable();
         } else {
             thatObject.copy.disable();
+            showPackageProcesses.disable();
         }
     }
 });
@@ -23,11 +26,11 @@ function updateRibbonBySelectedEntitiesArray(selectedEntitiesArray) {
         var state = selectedEntitiesArray[0].fields.state;
     }
 
+
     if (!state) {
         thatObject.duringProduction.disable(differentStatesMessage);
         thatObject.finishedProduction.disable(differentStatesMessage);
         thatObject.delete.disable(differentStatesMessage);
-
         return;
     }
 

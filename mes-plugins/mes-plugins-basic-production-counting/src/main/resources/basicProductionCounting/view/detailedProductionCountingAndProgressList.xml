@@ -60,6 +60,8 @@
 					link="true" width="70"/>
 				<option type="column" name="productName" fields="productName"
 					link="true" width="100"/>
+				<option type="column" name="technologyInputProductTypeName" fields="technologyInputProductTypeName"
+					link="true" width="100"/>
 				<option type="column" name="nodeNumber" fields="nodeNumber"
 					link="true" width="40"/>
 				<option type="column" name="operationNumber" fields="operationNumber"
@@ -77,9 +79,9 @@
 				<option type="column" name="replacementTo" fields="replacementTo" width="100"/>
 				<option type="order" column="productNumber" direction="asc" />
 
-				<option type="searchable" value="productNumber,productName,replacementTo,nodeNumber,operationNumber,operationName,role,
+				<option type="searchable" value="productNumber,productName,technologyInputProductTypeName,replacementTo,nodeNumber,operationNumber,operationName,role,
 					typeOfMaterial,plannedQuantity,usedQuantity,producedQuantity,productUnit" />
-				<option type="orderable" value="productNumber,productName,replacementTo,nodeNumber,operationNumber,operationName,role,
+				<option type="orderable" value="productNumber,productName,technologyInputProductTypeName,replacementTo,nodeNumber,operationNumber,operationName,role,
 					typeOfMaterial,plannedQuantity,usedQuantity,producedQuantity,productUnit" />
 				
 				<option type="correspondingView"

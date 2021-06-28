@@ -187,14 +187,17 @@
                     <component type="grid" name="stateChanges" reference="stateChanges"
                                source="#{form}.stateChanges">
                         <option type="column" name="dateAndTime" fields="dateAndTime"/>
-                        <option type="column" name="currentState" fields="targetState"/>
+                        <option type="column" name="sourceState" fields="sourceState"/>
+                        <option type="column" name="targetState" fields="targetState"/>
+                        <option type="column" name="shiftName" fields="shift"
+                                expression="#shift?.get('name')"/>
                         <option type="column" name="worker" fields="worker"/>
 
 
                         <option type="order" column="dateAndTime" direction="asc"/>
 
-                        <option type="searchable" value="dateAndTime,targetState,worker"/>
-                        <option type="orderable" value="dateAndTime,targetState,worker"/>
+                        <option type="searchable" value="dateAndTime,sourceState,targetState,shiftName,worker"/>
+                        <option type="orderable" value="dateAndTime,sourceState,targetState,shiftName,worker"/>
 
                         <criteriaModifier
                                 class="com.qcadoo.mes.states.criteriaModifier.CommonCriteriaModifiers"

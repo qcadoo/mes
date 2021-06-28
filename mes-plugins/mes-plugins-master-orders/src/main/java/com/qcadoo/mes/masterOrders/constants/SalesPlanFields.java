@@ -22,6 +22,8 @@ public final class SalesPlanFields {
 
     public static final String ORDERS = "orders";
 
+    public static final String DELIVERIES = "deliveries";
+
     public static final String PRODUCTS_DTO = "productsDto";
 
     public static final String STATE_CHANGES = "stateChanges";

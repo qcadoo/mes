@@ -24,6 +24,7 @@
 package com.qcadoo.mes.materialRequirementCoverageForOrder.aspects;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.MaterialRequirementCoverageForOrderConstans;
 import com.qcadoo.mes.orderSupplies.constants.CoverageProductFields;
@@ -39,6 +40,12 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.RunIfEnabled;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -49,11 +56,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Aspect
 @Configurable
@@ -69,6 +71,9 @@ public class MRCServiceOverideAspect {
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private ParameterService parameterService;
 
     private static final String L_PRODUCT_TYPE = "productType";
 
@@ -125,25 +130,48 @@ public class MRCServiceOverideAspect {
             List<Entity> orders = Lists.newArrayList(order);
             materialRequirementCoverage.setField("coverageOrders", orders);
 
-            String sql = "select distinct registry.product.id as productId from #orderSupplies_coverageRegister as registry "
-                    + "where registry.order.id = :ids";
-            List<Entity> regs = dataDefinitionService.get(OrderSuppliesConstants.PLUGIN_IDENTIFIER, "coverageRegister").find(sql)
-                    .setParameter("ids", order.getId()).list().getEntities();
-            List<Long> pids = getIdsFromRegisterProduct(regs);
-            for (Map.Entry<Long, Entity> productAndCoverageProduct : productAndCoverageProducts.entrySet()) {
-                Entity addedCoverageProduct = productAndCoverageProduct.getValue();
-                if (pids.contains(productAndCoverageProduct.getKey())) {
-                    addedCoverageProduct.setField(CoverageProductFields.FROM_SELECTED_ORDER, true);
-                } else {
-                    addedCoverageProduct.setField(CoverageProductFields.FROM_SELECTED_ORDER, false);
+            boolean coverageBasedOnProductionCounting = parameterService.getParameter().getBooleanField(
+                    "coverageBasedOnProductionCounting");
+
+            String sql = "";
+
+            if (coverageBasedOnProductionCounting) {
+                sql = "SELECT distinct registry.productId AS productId FROM #orderSupplies_productionCountingQuantityInput AS registry "
+                        + "WHERE registry.orderId IN :ids AND eventType IN ('04orderInput','03operationInput')";
+                List<Entity> regs = dataDefinitionService.get(OrderSuppliesConstants.PLUGIN_IDENTIFIER, "coverageRegister").find(sql)
+                        .setParameter("ids", order.getId().intValue()).list().getEntities();
+                List<Long> pids = getIdsFromRegisterProduct(regs);
+                for (Map.Entry<Long, Entity> productAndCoverageProduct : productAndCoverageProducts.entrySet()) {
+                    Entity addedCoverageProduct = productAndCoverageProduct.getValue();
+                    if (pids.contains(productAndCoverageProduct.getKey())) {
+                        addedCoverageProduct.setField(CoverageProductFields.FROM_SELECTED_ORDER, true);
+                    } else {
+                        addedCoverageProduct.setField(CoverageProductFields.FROM_SELECTED_ORDER, false);
+                    }
+                }
+            } else {
+                sql = "SELECT distinct registry.product.id AS productId FROM #orderSupplies_coverageRegister AS registry "
+                        + "WHERE registry.order.id IN :ids AND eventType IN ('04orderInput','03operationInput')";
+                List<Entity> regs = dataDefinitionService.get(OrderSuppliesConstants.PLUGIN_IDENTIFIER, "coverageRegister").find(sql)
+                        .setParameter("ids", order.getId()).list().getEntities();
+                List<Long> pids = getIdsFromRegisterProduct(regs);
+                for (Map.Entry<Long, Entity> productAndCoverageProduct : productAndCoverageProducts.entrySet()) {
+                    Entity addedCoverageProduct = productAndCoverageProduct.getValue();
+                    if (pids.contains(productAndCoverageProduct.getKey())) {
+                        addedCoverageProduct.setField(CoverageProductFields.FROM_SELECTED_ORDER, true);
+                    } else {
+                        addedCoverageProduct.setField(CoverageProductFields.FROM_SELECTED_ORDER, false);
+                    }
                 }
             }
+
+
         }
     }
 
     private List<Long> getIdsFromRegisterProduct(List<Entity> registerProducts) {
 
-        return registerProducts.stream().map(p -> (Long) p.getField("productId")).collect(Collectors.toList());
+        return registerProducts.stream().map(p -> ((Number) p.getField("productId")).longValue()).collect(Collectors.toList());
     }
 
     private boolean checkIfProductsAreSame(final Entity order, final Long product) {

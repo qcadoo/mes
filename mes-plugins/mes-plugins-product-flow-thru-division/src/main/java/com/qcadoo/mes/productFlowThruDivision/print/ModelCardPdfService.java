@@ -1,15 +1,51 @@
 package com.qcadoo.mes.productFlowThruDivision.print;
 
+import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Comparator.naturalOrder;
+import static java.util.Comparator.nullsFirst;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.lowagie.text.*;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Image;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfCell;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.*;
+import com.qcadoo.mes.basic.constants.AttributeFields;
+import com.qcadoo.mes.basic.constants.AttributeValueFields;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.CompanyFields;
+import com.qcadoo.mes.basic.constants.FormsFields;
+import com.qcadoo.mes.basic.constants.LabelFields;
+import com.qcadoo.mes.basic.constants.ModelFields;
+import com.qcadoo.mes.basic.constants.ProductAttachmentFields;
+import com.qcadoo.mes.basic.constants.ProductAttributeValueFields;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.SizeGroupFields;
 import com.qcadoo.mes.costCalculation.print.ProductsCostCalculationService;
 import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
 import com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields;
@@ -24,29 +60,19 @@ import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyInputProductTypeFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import static com.google.common.collect.Lists.newArrayList;
-import static java.util.Comparator.naturalOrder;
-import static java.util.Comparator.nullsFirst;
 
 @Service
 public final class ModelCardPdfService extends PdfDocumentService {
@@ -123,8 +149,8 @@ public final class ModelCardPdfService extends PdfDocumentService {
             List<ModelCardMaterialEntry> groupedEntries = groupMaterials(entries);
             BigDecimal materialUnitCostsSum = getMaterialUnitCostsSum(groupedEntries);
             List<ModelCardMaterialEntry> sortedEntries = groupedEntries.stream()
-                    .sorted(Comparator
-                            .comparing(ModelCardMaterialEntry::getTechnologyInputProductTypeId, nullsFirst(naturalOrder()))
+                    .sorted(Comparator.comparing(ModelCardMaterialEntry::getNodeNumber, new NodeNumberComparator().reversed())
+                            .thenComparing(ModelCardMaterialEntry::getPriority)
                             .thenComparing(ModelCardMaterialEntry::getSizeGroupId, nullsFirst(naturalOrder())))
                     .collect(Collectors.toList());
             addProductTable(document, modelCardProduct, productAttribute, materialUnitCostsSum, locale);
@@ -134,33 +160,31 @@ public final class ModelCardPdfService extends PdfDocumentService {
     }
 
     private BigDecimal getMaterialUnitCostsSum(List<ModelCardMaterialEntry> groupedEntries) {
-        Map<Long, BigDecimal> productTypePricesSum = Maps.newHashMap();
-        Map<Long, Integer> productTypePricesCount = Maps.newHashMap();
+        Map<Long, BigDecimal> productTypeCostsSum = Maps.newHashMap();
+        Map<Long, Integer> productTypeCostsCount = Maps.newHashMap();
         for (ModelCardMaterialEntry modelCardMaterialEntry : groupedEntries) {
             if (!Objects.isNull(modelCardMaterialEntry.getSizeGroupId())) {
-                if (productTypePricesSum.containsKey(modelCardMaterialEntry.getTechnologyInputProductTypeId())) {
-                    productTypePricesSum.computeIfPresent(modelCardMaterialEntry.getTechnologyInputProductTypeId(),
-                            (k, v) -> v.add(modelCardMaterialEntry.getPrice(), numberService.getMathContext()));
-                    productTypePricesCount.computeIfPresent(modelCardMaterialEntry.getTechnologyInputProductTypeId(),
+                if (productTypeCostsSum.containsKey(modelCardMaterialEntry.getTechnologyInputProductTypeId())) {
+                    productTypeCostsSum.computeIfPresent(modelCardMaterialEntry.getTechnologyInputProductTypeId(),
+                            (k, v) -> v.add(modelCardMaterialEntry.getMaterialUnitCost(), numberService.getMathContext()));
+                    productTypeCostsCount.computeIfPresent(modelCardMaterialEntry.getTechnologyInputProductTypeId(),
                             (k, v) -> v + 1);
                 } else {
-                    productTypePricesSum.put(modelCardMaterialEntry.getTechnologyInputProductTypeId(),
-                            modelCardMaterialEntry.getPrice());
-                    productTypePricesCount.put(modelCardMaterialEntry.getTechnologyInputProductTypeId(), 1);
+                    productTypeCostsSum.put(modelCardMaterialEntry.getTechnologyInputProductTypeId(),
+                            modelCardMaterialEntry.getMaterialUnitCost());
+                    productTypeCostsCount.put(modelCardMaterialEntry.getTechnologyInputProductTypeId(), 1);
                 }
             }
         }
         BigDecimal materialUnitCostsSum = BigDecimal.ZERO;
         for (ModelCardMaterialEntry modelCardMaterialEntry : groupedEntries) {
             if (Objects.isNull(modelCardMaterialEntry.getId())) {
-                BigDecimal price = numberService.setScaleWithDefaultMathContext(
-                        productTypePricesSum.get(modelCardMaterialEntry.getTechnologyInputProductTypeId())
+                BigDecimal materialUnitCost = numberService.setScaleWithDefaultMathContext(
+                        productTypeCostsSum.get(modelCardMaterialEntry.getTechnologyInputProductTypeId())
                                 .divide(new BigDecimal(
-                                        productTypePricesCount.get(modelCardMaterialEntry.getTechnologyInputProductTypeId())),
+                                        productTypeCostsCount.get(modelCardMaterialEntry.getTechnologyInputProductTypeId())),
                                         numberService.getMathContext()),
                         2);
-                modelCardMaterialEntry.setPrice(price);
-                BigDecimal materialUnitCost = modelCardMaterialEntry.getNorm().multiply(price, numberService.getMathContext());
                 modelCardMaterialEntry.setMaterialUnitCost(materialUnitCost);
             }
             if (Objects.isNull(modelCardMaterialEntry.getSizeGroupId())) {
@@ -177,12 +201,15 @@ public final class ModelCardPdfService extends PdfDocumentService {
         ModelCardMaterialEntry modelCardMaterialEntry = new ModelCardMaterialEntry();
         Entity material = neededProductQuantity.getKey().getProduct();
         Entity operationProductComponent = neededProductQuantity.getKey().getOperationProductComponent();
+        Entity technologyOperationComponent = neededProductQuantity.getKey().getTechnologyOperationComponent();
         Entity warehouse = operationProductComponent.getBelongsToField(OperationProductInComponentFieldsPFTD.COMPONENTS_LOCATION);
 
-        BigDecimal neededQuantity = numberService.setScaleWithDefaultMathContext(neededProductQuantity.getValue(), 2);
-        modelCardMaterialEntry.setNeededQuantity(neededQuantity);
         Entity technologyInputProductType = operationProductComponent
                 .getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE);
+
+        modelCardMaterialEntry
+                .setNodeNumber(technologyOperationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
+        modelCardMaterialEntry.setPriority(operationProductComponent.getIntegerField(OperationProductInComponentFields.PRIORITY));
 
         if (Objects.nonNull(technologyInputProductType)) {
             modelCardMaterialEntry.setTechnologyInputProductTypeId(technologyInputProductType.getId());
@@ -190,16 +217,12 @@ public final class ModelCardPdfService extends PdfDocumentService {
                     technologyInputProductType.getStringField(TechnologyInputProductTypeFields.NAME));
         }
 
-        modelCardMaterialEntry.setNorm(BigDecimal.ZERO);
-
         modelCardMaterialEntry
                 .setDescription(operationProductComponent.getStringField(OperationProductInComponentFields.DESCRIPTION));
         if (forFamily && operationProductComponent
                 .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES)) {
             modelCardMaterialEntry.setNumber(
                     translationService.translate("productFlowThruDivision.modelCard.report.productsBySize.label", locale));
-            modelCardMaterialEntry
-                    .setUnit(operationProductComponent.getStringField(OperationProductInComponentFields.GIVEN_UNIT));
 
             List<Entity> productBySizeGroups = getProductBySizeGroups(operationProductComponent.getId());
 
@@ -214,6 +237,10 @@ public final class ModelCardPdfService extends PdfDocumentService {
                 modelCardMaterialBySizeEntry.setWarehouseId(warehouse.getId());
                 modelCardMaterialBySizeEntry.setCurrentStock(BigDecimalUtils
                         .convertNullToZero(quantitiesInStock.get(warehouse.getId()).get(materialBySizeGroup.getId())));
+                modelCardMaterialBySizeEntry.setNodeNumber(
+                        technologyOperationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
+                modelCardMaterialBySizeEntry
+                        .setPriority(operationProductComponent.getIntegerField(OperationProductInComponentFields.PRIORITY));
                 if (Objects.nonNull(technologyInputProductType)) {
                     modelCardMaterialBySizeEntry.setTechnologyInputProductTypeId(technologyInputProductType.getId());
                 }
@@ -225,10 +252,9 @@ public final class ModelCardPdfService extends PdfDocumentService {
                 modelCardMaterialBySizeEntry.setSizeGroupNumber(sizeGroup.getStringField(SizeGroupFields.NUMBER));
 
                 BigDecimal norm = productBySizeGroup.getDecimalField(ProductBySizeGroupFields.QUANTITY);
+                modelCardMaterialBySizeEntry.setNorm(norm);
                 modelCardMaterialBySizeEntry.setNeededQuantity(numberService.setScaleWithDefaultMathContext(quantity.multiply(
                         productBySizeGroup.getDecimalField(ProductBySizeGroupFields.QUANTITY), numberService.getMathContext())));
-
-                modelCardMaterialBySizeEntry.setNorm(norm);
                 BigDecimal price = numberService.setScaleWithDefaultMathContext(
                         productsCostCalculationService.calculateProductCostPerUnit(materialBySizeGroup,
                                 modelCard.getStringField(ModelCardFields.MATERIAL_COSTS_USED),
@@ -256,6 +282,8 @@ public final class ModelCardPdfService extends PdfDocumentService {
             }
 
             modelCardMaterialEntry.setNorm(norm);
+            modelCardMaterialEntry
+                    .setNeededQuantity(numberService.setScaleWithDefaultMathContext(neededProductQuantity.getValue(), 2));
             modelCardMaterialEntry.setId(material.getId());
             modelCardMaterialEntry.setNumber(material.getStringField(ProductFields.NUMBER));
             modelCardMaterialEntry.setName(material.getStringField(ProductFields.NAME));
@@ -297,6 +325,8 @@ public final class ModelCardPdfService extends PdfDocumentService {
             k.setNorm(v.getNorm());
             k.setMaterialUnitCost(v.getMaterialUnitCost());
             k.setCurrentStock(v.getCurrentStock());
+            k.setNodeNumber(v.getNodeNumber());
+            k.setPriority(v.getPriority());
             k.setDescription(String.join(",", v.getDescriptions()));
         });
 
@@ -323,6 +353,11 @@ public final class ModelCardPdfService extends PdfDocumentService {
                     .setCurrentStock(quantityNormDescriptions.getCurrentStock().add(modelCardMaterialEntry.getCurrentStock()));
         }
         quantityNormDescriptions.getWarehouseIds().add(modelCardMaterialEntry.getWarehouseId());
+        NodeNumberComparator nodeNumberComparator = new NodeNumberComparator();
+        if (nodeNumberComparator.compare(modelCardMaterialEntry.getNodeNumber(), quantityNormDescriptions.getNodeNumber()) > 0) {
+            quantityNormDescriptions.setNodeNumber(modelCardMaterialEntry.getNodeNumber());
+            quantityNormDescriptions.setPriority(modelCardMaterialEntry.getPriority());
+        }
         if (modelCardMaterialEntry.getDescription() != null) {
             quantityNormDescriptions.getDescriptions().add(modelCardMaterialEntry.getDescription());
         }
@@ -338,6 +373,8 @@ public final class ModelCardPdfService extends PdfDocumentService {
         Set<Long> warehouseIds = Sets.newHashSet();
         warehouseIds.add(modelCardMaterialEntry.getWarehouseId());
         quantityNormDescriptions.setWarehouseIds(warehouseIds);
+        quantityNormDescriptions.setNodeNumber(modelCardMaterialEntry.getNodeNumber());
+        quantityNormDescriptions.setPriority(modelCardMaterialEntry.getPriority());
         Set<String> descriptions = Sets.newHashSet();
         if (modelCardMaterialEntry.getDescription() != null) {
             descriptions.add(modelCardMaterialEntry.getDescription());
@@ -419,18 +456,17 @@ public final class ModelCardPdfService extends PdfDocumentService {
         table.addCell(new Phrase(modelCardMaterialEntry.getNumber(), FontUtils.getDejavuItalic7Light()));
         table.addCell(new Phrase(StringUtils.EMPTY));
         table.addCell(new Phrase(StringUtils.EMPTY));
+        table.addCell(new Phrase(StringUtils.EMPTY));
+        table.addCell(new Phrase(StringUtils.EMPTY));
+
+        table.addCell(new Phrase(StringUtils.EMPTY));
         table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-        table.addCell(new Phrase(StringUtils.EMPTY));
-        table.addCell(new Phrase(StringUtils.EMPTY));
-
-        table.addCell(new Phrase(StringUtils.EMPTY));
-        table.addCell(new Phrase(StringUtils.EMPTY));
-
-        table.addCell(new Phrase(StringUtils.EMPTY));
-
-        table.addCell(new Phrase(StringUtils.EMPTY));
+        table.addCell(
+                new Phrase(numberService.format(modelCardMaterialEntry.getMaterialUnitCost()), FontUtils.getDejavuBold7Dark()));
         table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-        table.addCell(new Phrase(modelCardMaterialEntry.getUnit(), FontUtils.getDejavuRegular7Dark()));
+        table.addCell(new Phrase(StringUtils.EMPTY));
+        table.addCell(new Phrase(StringUtils.EMPTY));
+        table.addCell(new Phrase(StringUtils.EMPTY));
         table.getDefaultCell().enableBorderSide(PdfCell.BOTTOM);
     }
 

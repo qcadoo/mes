@@ -109,8 +109,9 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
             OperationProductComponentEntityType entityType = getEntityType(role);
 
             ProductMaterialType productMaterialType = ProductMaterialType.parseString(productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL));
+            Entity productInputType = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_INPUT_PRODUCT_TYPE);
             OperationProductComponentHolder operationProductComponentHolder = new OperationProductComponentHolder(product,
-                    technologyOperationComponent, productionCountingQuantity, entityType, productMaterialType);
+                    technologyOperationComponent, productInputType, productionCountingQuantity, entityType, productMaterialType);
 
             productComponentWithQuantities.put(operationProductComponentHolder, plannedQuantity);
         }
@@ -150,8 +151,10 @@ public class ProductQuantitiesServiceImplBPCOverrideUtil {
             ProductMaterialType productMaterialType = ProductMaterialType.parseString(
                     productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL));
 
+            Entity productInputType = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.TECHNOLOGY_INPUT_PRODUCT_TYPE);
+
             OperationProductComponentHolder operationProductComponentHolder = new OperationProductComponentHolder(product,
-                    technologyOperationComponent, productionCountingQuantity, entityType, productMaterialType);
+                    technologyOperationComponent, productInputType, productionCountingQuantity, entityType, productMaterialType);
 
             nonComponents.add(operationProductComponentHolder);
         }

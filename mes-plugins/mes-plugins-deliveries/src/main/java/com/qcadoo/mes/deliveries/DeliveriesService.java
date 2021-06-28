@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 
 import com.qcadoo.mes.deliveries.print.DeliveryProduct;
 import com.qcadoo.model.api.DataDefinition;
@@ -323,6 +324,14 @@ public interface DeliveriesService {
     Optional<Entity> getDefaultSupplierWithIntegration(final Long productId);
 
     List<Entity> getSuppliersWithIntegration(final Long productId);
+
+    List<Entity> getCompanyProducts(final Set<Long> productIds);
+
+    Optional<Entity> getCompanyProduct(final List<Entity> companyProducts, final Long productId);
+
+    List<Entity> getCompanyProductsFamilies(final Set<Long> productIds);
+
+    Optional<Entity> getCompanyProductsFamily(final List<Entity> companyProductsFamilies, final Long productId);
 
     List<Entity> getSelectedOrderedProducts(final GridComponent orderedProductsGrid);
 

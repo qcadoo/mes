@@ -23,8 +23,11 @@
  */
 package com.qcadoo.mes.technologies.dto;
 
+import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+
+import java.util.Objects;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -43,11 +46,15 @@ public class OperationProductComponentHolder {
 
     private final Long operationProductComponentId;
 
+    private final Long technologyInputProductTypeId;
+
     private final DataDefinition productDD;
 
     private final DataDefinition technologyOperationComponentDD;
-    
+
     private final DataDefinition operationProductComponentDD;
+
+    private final DataDefinition technologyInputProductTypeDD;
 
     private final OperationProductComponentEntityType entityType;
 
@@ -67,6 +74,21 @@ public class OperationProductComponentHolder {
         this.entityType = entityType;
         this.productMaterialType = ProductMaterialType.NONE;
         this.productionCountingQuantityId = null;
+        if (entityType.getStringValue().equals(
+                OperationProductComponentEntityType.OPERATION_PRODUCT_IN_COMPONENT.getStringValue())) {
+            Entity technologyInputProductType = operationProductComponent
+                    .getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE);
+            if (Objects.nonNull(technologyInputProductType)) {
+                this.technologyInputProductTypeId = technologyInputProductType.getId();
+                this.technologyInputProductTypeDD = technologyInputProductType.getDataDefinition();
+            } else {
+                this.technologyInputProductTypeId = null;
+                this.technologyInputProductTypeDD = null;
+            }
+        } else {
+            this.technologyInputProductTypeId = null;
+            this.technologyInputProductTypeDD = null;
+        }
         this.operationProductComponentId = operationProductComponent.getId();
         this.operationProductComponentDD = operationProductComponent.getDataDefinition();
     }
@@ -84,17 +106,32 @@ public class OperationProductComponentHolder {
         this.entityType = entityType;
         this.productMaterialType = ProductMaterialType.NONE;
         this.productionCountingQuantityId = null;
+        if (entityType.getStringValue().equals(
+                OperationProductComponentEntityType.OPERATION_PRODUCT_IN_COMPONENT.getStringValue())) {
+            Entity technologyInputProductType = operationProductComponent
+                    .getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE);
+            if (Objects.nonNull(technologyInputProductType)) {
+                this.technologyInputProductTypeId = technologyInputProductType.getId();
+                this.technologyInputProductTypeDD = technologyInputProductType.getDataDefinition();
+            } else {
+                this.technologyInputProductTypeId = null;
+                this.technologyInputProductTypeDD = null;
+            }
+        } else {
+            this.technologyInputProductTypeId = null;
+            this.technologyInputProductTypeDD = null;
+        }
         this.operationProductComponentId = operationProductComponent.getId();
         this.operationProductComponentDD = operationProductComponent.getDataDefinition();
     }
 
-    public OperationProductComponentHolder(final Entity product, final Entity technologyOperationComponent,
+    public OperationProductComponentHolder(final Entity product, final Entity technologyOperationComponent,  final Entity productInputType,
             final Entity productionCountingQuantity, final OperationProductComponentEntityType entityType,
             final ProductMaterialType productMaterialType) {
 
         Long productId = product.getId();
-        Long technologyOperationComponentId = (technologyOperationComponent == null) ? null
-                : technologyOperationComponent.getId();
+        Long technologyOperationComponentId = (technologyOperationComponent == null) ? null : technologyOperationComponent
+                .getId();
         DataDefinition productDD = product.getDataDefinition();
         DataDefinition technologyOperationComponentDD = (technologyOperationComponent == null) ? null
                 : technologyOperationComponent.getDataDefinition();
@@ -106,6 +143,10 @@ public class OperationProductComponentHolder {
         this.entityType = entityType;
         this.productMaterialType = productMaterialType;
         this.productionCountingQuantityId = (productionCountingQuantity == null) ? null : productionCountingQuantity.getId();
+
+        this.technologyInputProductTypeId = Objects.isNull(productInputType) ? null : productInputType.getId();
+        this.technologyInputProductTypeDD = Objects.isNull(productInputType) ? null : productInputType.getDataDefinition();
+
         this.operationProductComponentId = null;
         this.operationProductComponentDD = null;
     }
@@ -122,6 +163,8 @@ public class OperationProductComponentHolder {
         this.productionCountingQuantityId = null;
         this.operationProductComponentId = null;
         this.operationProductComponentDD = null;
+        this.technologyInputProductTypeId = null;
+        this.technologyInputProductTypeDD = null;
     }
 
     public Long getProductId() {
@@ -149,6 +192,14 @@ public class OperationProductComponentHolder {
             return null;
         } else {
             return getProductDD().get(getProductId());
+        }
+    }
+
+    public Entity getTechnologyInputProductType() {
+        if ((technologyInputProductTypeId == null) || (technologyInputProductTypeDD == null)) {
+            return null;
+        } else {
+            return technologyInputProductTypeDD.get(technologyInputProductTypeId);
         }
     }
 
@@ -191,10 +242,11 @@ public class OperationProductComponentHolder {
     @Override
     public int hashCode() {
         if (productId != null) {
-            return new HashCodeBuilder().append(productId).append(technologyOperationComponentId).append(entityType).toHashCode();
+            return new HashCodeBuilder().append(productId).append(technologyOperationComponentId).append(entityType)
+                    .append(technologyInputProductTypeId).toHashCode();
         } else {
             return new HashCodeBuilder().append(operationProductComponentId).append(technologyOperationComponentId)
-                    .append(entityType).toHashCode();
+                    .append(entityType).append(technologyInputProductTypeId).toHashCode();
         }
     }
 
@@ -213,11 +265,13 @@ public class OperationProductComponentHolder {
         if (productId != null) {
             return new EqualsBuilder().append(productId, other.productId)
                     .append(technologyOperationComponentId, other.technologyOperationComponentId)
-                    .append(entityType, other.entityType).isEquals();
+                    .append(entityType, other.entityType)
+                    .append(technologyInputProductTypeId, other.technologyInputProductTypeId).isEquals();
         } else {
             return new EqualsBuilder().append(operationProductComponentId, other.operationProductComponentId)
                     .append(technologyOperationComponentId, other.technologyOperationComponentId)
-                    .append(entityType, other.entityType).isEquals();
+                    .append(entityType, other.entityType)
+                    .append(technologyInputProductTypeId, other.technologyInputProductTypeId).isEquals();
         }
     }
 
