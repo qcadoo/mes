@@ -4931,7 +4931,8 @@ CREATE TABLE deliveries_delivery (
     synchronizationstatus character varying(255),
     entityversion bigint DEFAULT 0,
     positionsfile character varying(255),
-    paymentform character varying(255)
+    paymentform character varying(255),
+    salesplan_id bigint
 );
 
 
@@ -10580,7 +10581,8 @@ CREATE TABLE basicproductioncounting_productioncountingquantity (
     productsflowlocation_id bigint,
     entityversion bigint DEFAULT 0,
     replacementto_id bigint,
-    showmaterialcomponentinworkplan boolean DEFAULT false
+    showmaterialcomponentinworkplan boolean DEFAULT false,
+    technologyinputproducttype_id bigint
 );
 
 
@@ -10919,6 +10921,22 @@ CREATE VIEW basicproductioncounting_usedquantity_helper AS
 
 
 --
+-- Name: technologies_technologyinputproducttype; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE technologies_technologyinputproducttype (
+    id bigint NOT NULL,
+    name character varying(255),
+    averageprice numeric(9,2),
+    createdate timestamp without time zone,
+    updatedate timestamp without time zone,
+    createuser character varying(255),
+    updateuser character varying(255),
+    active boolean DEFAULT true
+);
+
+
+--
 -- Name: basicproductioncounting_productioncountingquantitydto; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -10938,13 +10956,15 @@ CREATE VIEW basicproductioncounting_productioncountingquantitydto AS
     pcq.plannedquantity,
     NULL::numeric AS usedquantity,
     NULL::numeric AS producedquantity,
-    replacementto.number AS replacementto
-   FROM (((((basicproductioncounting_productioncountingquantity pcq
+    replacementto.number AS replacementto,
+    tipt.name AS technologyinputproducttypename
+   FROM ((((((basicproductioncounting_productioncountingquantity pcq
      JOIN basic_product product ON ((product.id = pcq.product_id)))
      JOIN orders_order o ON ((o.id = pcq.order_id)))
      LEFT JOIN basic_product replacementto ON ((replacementto.id = pcq.replacementto_id)))
      LEFT JOIN technologies_technologyoperationcomponent toc ON ((pcq.technologyoperationcomponent_id = toc.id)))
      LEFT JOIN technologies_operation op ON ((op.id = toc.operation_id)))
+     LEFT JOIN technologies_technologyinputproducttype tipt ON ((tipt.id = pcq.technologyinputproducttype_id)))
   WHERE ((o.typeofproductionrecording)::text = '02cumulated'::text)
 UNION
  SELECT pcq.id,
@@ -10962,8 +10982,9 @@ UNION
     pcq.plannedquantity,
     COALESCE(uqh.usedquantity, (0)::numeric) AS usedquantity,
     COALESCE(pqh.producedquantity, (0)::numeric) AS producedquantity,
-    replacementto.number AS replacementto
-   FROM (((((((basicproductioncounting_productioncountingquantity pcq
+    replacementto.number AS replacementto,
+    tipt.name AS technologyinputproducttypename
+   FROM ((((((((basicproductioncounting_productioncountingquantity pcq
      JOIN basic_product product ON ((product.id = pcq.product_id)))
      JOIN orders_order o ON ((o.id = pcq.order_id)))
      JOIN technologies_technologyoperationcomponent toc ON ((pcq.technologyoperationcomponent_id = toc.id)))
@@ -10971,6 +10992,7 @@ UNION
      LEFT JOIN basic_product replacementto ON ((replacementto.id = pcq.replacementto_id)))
      LEFT JOIN basicproductioncounting_usedquantity_helper uqh ON (((uqh.order_id = pcq.order_id) AND (uqh.product_id = pcq.product_id) AND (uqh.technologyoperationcomponent_id = pcq.technologyoperationcomponent_id))))
      LEFT JOIN basicproductioncounting_producedquantity_helper pqh ON (((pqh.order_id = pcq.order_id) AND (pqh.product_id = pcq.product_id) AND (pqh.technologyoperationcomponent_id = pcq.technologyoperationcomponent_id))))
+     LEFT JOIN technologies_technologyinputproducttype tipt ON ((tipt.id = pcq.technologyinputproducttype_id)))
   WHERE ((o.typeofproductionrecording)::text = '03forEach'::text);
 
 
@@ -11032,12 +11054,14 @@ CREATE VIEW basicproductioncounting_productioncountingquantitylistdto AS
     pcq.plannedquantity,
     NULL::numeric AS usedquantity,
     NULL::numeric AS producedquantity,
-    replacementto.number AS replacementto
-   FROM ((((((basicproductioncounting_productioncountingquantity pcq
+    replacementto.number AS replacementto,
+    tipt.name AS technologyinputproducttypename
+   FROM (((((((basicproductioncounting_productioncountingquantity pcq
      JOIN basic_product product ON ((product.id = pcq.product_id)))
      JOIN orders_order o ON ((o.id = pcq.order_id)))
      LEFT JOIN technologies_technologyoperationcomponent toc ON ((pcq.technologyoperationcomponent_id = toc.id)))
      LEFT JOIN technologies_operation op ON ((op.id = toc.operation_id)))
+     LEFT JOIN technologies_technologyinputproducttype tipt ON ((tipt.id = pcq.technologyinputproducttype_id)))
      LEFT JOIN orders_operationaltask ot ON (((ot.order_id = o.id) AND (ot.technologyoperationcomponent_id = toc.id))))
      LEFT JOIN basic_product replacementto ON ((replacementto.id = pcq.replacementto_id)))
   WHERE (((o.typeofproductionrecording)::text = '02cumulated'::text) AND ((o.state)::text = ANY (ARRAY[('02accepted'::character varying)::text, ('03inProgress'::character varying)::text, ('06interrupted'::character varying)::text])))
@@ -11059,12 +11083,14 @@ UNION
     pcq.plannedquantity,
     COALESCE(uqh.usedquantity, (0)::numeric) AS usedquantity,
     COALESCE(pqh.producedquantity, (0)::numeric) AS producedquantity,
-    replacementto.number AS replacementto
-   FROM ((((((((basicproductioncounting_productioncountingquantity pcq
+    replacementto.number AS replacementto,
+    tipt.name AS technologyinputproducttypename
+   FROM (((((((((basicproductioncounting_productioncountingquantity pcq
      JOIN basic_product product ON ((product.id = pcq.product_id)))
      JOIN orders_order o ON ((o.id = pcq.order_id)))
      JOIN technologies_technologyoperationcomponent toc ON ((pcq.technologyoperationcomponent_id = toc.id)))
      JOIN technologies_operation op ON ((op.id = toc.operation_id)))
+     LEFT JOIN technologies_technologyinputproducttype tipt ON ((tipt.id = pcq.technologyinputproducttype_id)))
      LEFT JOIN orders_operationaltask ot ON (((ot.order_id = o.id) AND (ot.technologyoperationcomponent_id = toc.id))))
      LEFT JOIN basic_product replacementto ON ((replacementto.id = pcq.replacementto_id)))
      LEFT JOIN basicproductioncounting_usedquantity_helper uqh ON (((uqh.order_id = pcq.order_id) AND (uqh.product_id = pcq.product_id) AND (uqh.technologyoperationcomponent_id = pcq.technologyoperationcomponent_id))))
@@ -21004,7 +21030,8 @@ CREATE TABLE ordersgroups_ordersgroupmaterialrequirementproduct (
     orderstartdate date,
     division_id bigint,
     location_id bigint,
-    issuedquantity numeric(14,5)
+    issuedquantity numeric(14,5),
+    supplier_id bigint
 );
 
 
@@ -21707,7 +21734,7 @@ CREATE VIEW ordersupplies_productioncountingusedquantity AS
 --
 
 CREATE VIEW ordersupplies_productioncountingquantityinput AS
- SELECT row_number() OVER () AS id,
+ SELECT pcq.id,
     (o.id)::integer AS orderid,
     o.startdate,
     o.state AS orderstate,
@@ -21724,9 +21751,9 @@ CREATE VIEW ordersupplies_productioncountingquantityinput AS
      JOIN basic_product product ON ((product.id = pcq.product_id)))
      LEFT JOIN technologies_technologyoperationcomponent toc ON ((pcq.technologyoperationcomponent_id = toc.id)))
      LEFT JOIN ordersupplies_productioncountingusedquantity uqh ON (((uqh.order_id = pcq.order_id) AND (uqh.product_id = pcq.product_id))))
-  WHERE (((pcq.role)::text = '01used'::text) AND ((pcq.typeofmaterial)::text = ANY (ARRAY[('01component'::character varying)::text, ('02intermediate'::character varying)::text])) AND ((o.state)::text = ANY (ARRAY[('01pending'::character varying)::text, ('02accepted'::character varying)::text, ('03inProgress'::character varying)::text])) AND (o.active = true) AND ((o.typeofproductionrecording)::text = '02cumulated'::text))
+  WHERE (((pcq.role)::text = '01used'::text) AND ((pcq.typeofmaterial)::text = ANY (ARRAY[('01component'::character varying)::text])) AND ((o.state)::text = ANY (ARRAY[('01pending'::character varying)::text, ('02accepted'::character varying)::text, ('03inProgress'::character varying)::text, ('06interrupted'::character varying)::text])) AND (o.active = true) AND ((o.typeofproductionrecording)::text = '02cumulated'::text))
 UNION
- SELECT row_number() OVER () AS id,
+ SELECT pcq.id,
     (o.id)::integer AS orderid,
     o.startdate,
     o.state AS orderstate,
@@ -21743,7 +21770,7 @@ UNION
      JOIN basic_product product ON ((product.id = pcq.product_id)))
      JOIN technologies_technologyoperationcomponent toc ON ((pcq.technologyoperationcomponent_id = toc.id)))
      LEFT JOIN ordersupplies_productioncountingusedquantity uqh ON (((uqh.order_id = pcq.order_id) AND (uqh.product_id = pcq.product_id))))
-  WHERE (((pcq.role)::text = '01used'::text) AND ((pcq.typeofmaterial)::text = ANY (ARRAY[('01component'::character varying)::text, ('02intermediate'::character varying)::text])) AND ((o.state)::text = ANY (ARRAY[('01pending'::character varying)::text, ('02accepted'::character varying)::text, ('03inProgress'::character varying)::text])) AND (o.active = true) AND ((o.typeofproductionrecording)::text = '03forEach'::text));
+  WHERE (((pcq.role)::text = '01used'::text) AND ((pcq.typeofmaterial)::text = ANY (ARRAY[('01component'::character varying)::text])) AND ((o.state)::text = ANY (ARRAY[('01pending'::character varying)::text, ('02accepted'::character varying)::text, ('03inProgress'::character varying)::text, ('06interrupted'::character varying)::text])) AND (o.active = true) AND ((o.typeofproductionrecording)::text = '03forEach'::text));
 
 
 --
@@ -21763,7 +21790,7 @@ CREATE SEQUENCE ordersupplies_productioncountingquantityinput_id_seq
 --
 
 CREATE VIEW ordersupplies_productioncountingquantityoutput AS
- SELECT row_number() OVER () AS id,
+ SELECT pcq.id,
     (o.id)::integer AS orderid,
     o.finishdate,
     o.state AS orderstate,
@@ -27380,22 +27407,6 @@ CREATE SEQUENCE technologies_technologygroup_id_seq
 --
 
 ALTER SEQUENCE technologies_technologygroup_id_seq OWNED BY technologies_technologygroup.id;
-
-
---
--- Name: technologies_technologyinputproducttype; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE technologies_technologyinputproducttype (
-    id bigint NOT NULL,
-    name character varying(255),
-    averageprice numeric(9,2),
-    createdate timestamp without time zone,
-    updatedate timestamp without time zone,
-    createuser character varying(255),
-    updateuser character varying(255),
-    active boolean DEFAULT true
-);
 
 
 --
@@ -34840,7 +34851,7 @@ SELECT pg_catalog.setval('basicproductioncounting_productioncountingoperationrun
 -- Data for Name: basicproductioncounting_productioncountingquantity; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basicproductioncounting_productioncountingquantity (id, order_id, product_id, plannedquantity, isnoncomponent, technologyoperationcomponent_id, basicproductioncounting_id, typeofmaterial, role, componentsoutputlocation_id, componentslocation_id, productsinputlocation_id, productionflow, productsflowlocation_id, entityversion, replacementto_id, showmaterialcomponentinworkplan) FROM stdin;
+COPY basicproductioncounting_productioncountingquantity (id, order_id, product_id, plannedquantity, isnoncomponent, technologyoperationcomponent_id, basicproductioncounting_id, typeofmaterial, role, componentsoutputlocation_id, componentslocation_id, productsinputlocation_id, productionflow, productsflowlocation_id, entityversion, replacementto_id, showmaterialcomponentinworkplan, technologyinputproducttype_id) FROM stdin;
 \.
 
 
@@ -35537,7 +35548,7 @@ SELECT pg_catalog.setval('deliveries_deliveredproductreservation_id_seq', 1, fal
 -- Data for Name: deliveries_delivery; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY deliveries_delivery (id, number, name, description, supplier_id, deliverydate, deliveryaddress, relateddelivery_id, currency_id, externalnumber, externalsynchronized, state, location_id, active, createdate, updatedate, createuser, updateuser, synchronizationstatus, entityversion, positionsfile, paymentform) FROM stdin;
+COPY deliveries_delivery (id, number, name, description, supplier_id, deliverydate, deliveryaddress, relateddelivery_id, currency_id, externalnumber, externalsynchronized, state, location_id, active, createdate, updatedate, createuser, updateuser, synchronizationstatus, entityversion, positionsfile, paymentform, salesplan_id) FROM stdin;
 \.
 
 
@@ -38946,7 +38957,7 @@ SELECT pg_catalog.setval('ordersgroups_ordersgroupmaterialrequirement_id_seq', 1
 -- Data for Name: ordersgroups_ordersgroupmaterialrequirementproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY ordersgroups_ordersgroupmaterialrequirementproduct (id, ordersgroupmaterialrequirement_id, product_id, quantity, currentstock, technologyinputproducttype_id, orderstartdate, division_id, location_id, issuedquantity) FROM stdin;
+COPY ordersgroups_ordersgroupmaterialrequirementproduct (id, ordersgroupmaterialrequirement_id, product_id, quantity, currentstock, technologyinputproducttype_id, orderstartdate, division_id, location_id, issuedquantity, supplier_id) FROM stdin;
 \.
 
 
@@ -46128,7 +46139,7 @@ ALTER TABLE ONLY productioncounting_usedbatch
 --
 
 ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
-    ADD CONSTRAINT productioncountingquantity_unique UNIQUE (order_id, technologyoperationcomponent_id, product_id, role, typeofmaterial);
+    ADD CONSTRAINT productioncountingquantity_unique UNIQUE (order_id, technologyoperationcomponent_id, product_id, technologyinputproducttype_id, role, typeofmaterial);
 
 
 --
@@ -51395,6 +51406,14 @@ ALTER TABLE ONLY deliveries_deliveredproductreservation
 
 
 --
+-- Name: deliveries_delivery_salesplan_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY deliveries_delivery
+    ADD CONSTRAINT deliveries_delivery_salesplan_fkey FOREIGN KEY (salesplan_id) REFERENCES masterorders_salesplan(id) DEFERRABLE;
+
+
+--
 -- Name: delivery_company_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -54835,6 +54854,14 @@ ALTER TABLE ONLY ordersgroups_ordersgroupmaterialrequirementproduct
 
 
 --
+-- Name: ordersgroupmaterialrequirementproduct_supplier_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY ordersgroups_ordersgroupmaterialrequirementproduct
+    ADD CONSTRAINT ordersgroupmaterialrequirementproduct_supplier_fkey FOREIGN KEY (supplier_id) REFERENCES basic_company(id) DEFERRABLE;
+
+
+--
 -- Name: ordersgroupproducedproduct_batch_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -56544,6 +56571,14 @@ ALTER TABLE ONLY arch_basicproductioncounting_productioncountingquantity
 
 ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
     ADD CONSTRAINT productioncountingquantity_replacementto_fkey FOREIGN KEY (replacementto_id) REFERENCES basic_product(id) DEFERRABLE;
+
+
+--
+-- Name: productioncountingquantity_technologyinputproducttype_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
+    ADD CONSTRAINT productioncountingquantity_technologyinputproducttype_fkey FOREIGN KEY (technologyinputproducttype_id) REFERENCES technologies_technologyinputproducttype(id) DEFERRABLE;
 
 
 --
