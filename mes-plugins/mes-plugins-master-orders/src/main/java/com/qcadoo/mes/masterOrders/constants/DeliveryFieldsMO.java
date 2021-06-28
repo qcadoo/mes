@@ -23,18 +23,12 @@
  */
 package com.qcadoo.mes.masterOrders.constants;
 
-public final class OrderFieldsMO {
+public final class DeliveryFieldsMO {
 
-    private OrderFieldsMO() {
+    private DeliveryFieldsMO() {
 
     }
 
     public static final String SALES_PLAN = "salesPlan";
-
-    public static final String MASTER_ORDER = "masterOrder";
-
-    public static final String MASTER_ORDER_PRODUCT = "masterOrderProduct";
-
-    public static final String MASTER_ORDER_PRODUCT_COMPONENT = "masterOrderProductComponent";
 
 }

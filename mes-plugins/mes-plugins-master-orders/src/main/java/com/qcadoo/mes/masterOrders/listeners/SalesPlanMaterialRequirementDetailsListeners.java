@@ -22,6 +22,7 @@ import com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
+import com.qcadoo.mes.masterOrders.constants.DeliveryFieldsMO;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementFields;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementProductFields;
@@ -160,6 +161,7 @@ public class SalesPlanMaterialRequirementDetailsListeners {
         Entity delivery = deliveriesService.getDeliveryDD().create();
 
         Entity supplier = getSupplier(salesPlanMaterialRequirementProducts).orElse(null);
+        Entity salesPlan = salesPlanMaterialRequirement.getBelongsToField(SalesPlanMaterialRequirementFields.SALES_PLAN);
 
         List<Entity> products = salesPlanMaterialRequirementHelper
                 .getSalesPlanMaterialRequirementProducts(salesPlanMaterialRequirementProducts);
@@ -180,6 +182,7 @@ public class SalesPlanMaterialRequirementDetailsListeners {
             delivery.setField(DeliveryFields.SUPPLIER, supplier);
             delivery.setField(DeliveryFields.ORDERED_PRODUCTS, orderedProducts);
             delivery.setField(DeliveryFields.EXTERNAL_SYNCHRONIZED, true);
+            delivery.setField(DeliveryFieldsMO.SALES_PLAN, salesPlan);
 
             delivery = delivery.getDataDefinition().save(delivery);
         }
@@ -200,12 +203,12 @@ public class SalesPlanMaterialRequirementDetailsListeners {
         List<Entity> companyProducts = Lists.newArrayList();
 
         if (!productIds.isEmpty() && Objects.nonNull(company)) {
-            companyProducts = salesPlanMaterialRequirementHelper.getCompanyProductDD().find()
+            companyProducts = deliveriesService.getCompanyProductDD().find()
                     .createAlias(CompanyProductFields.PRODUCT, CompanyProductFields.PRODUCT, JoinType.LEFT)
                     .createAlias(CompanyProductFields.COMPANY, CompanyProductFields.COMPANY, JoinType.LEFT)
                     .add(SearchRestrictions.in(CompanyProductFields.PRODUCT + L_DOT + L_ID, productIds))
-                    .add(SearchRestrictions.eq(CompanyProductFields.COMPANY + L_DOT + L_ID, company.getId()))
-                    .list().getEntities();
+                    .add(SearchRestrictions.eq(CompanyProductFields.COMPANY + L_DOT + L_ID, company.getId())).list()
+                    .getEntities();
         }
 
         return companyProducts;
@@ -215,12 +218,12 @@ public class SalesPlanMaterialRequirementDetailsListeners {
         List<Entity> companyProductFamilies = Lists.newArrayList();
 
         if (!productIds.isEmpty() && Objects.nonNull(company)) {
-            companyProductFamilies = salesPlanMaterialRequirementHelper.getCompanyProductsFamilyDD().find()
+            companyProductFamilies = deliveriesService.getCompanyProductsFamilyDD().find()
                     .createAlias(CompanyProductsFamilyFields.PRODUCT, CompanyProductsFamilyFields.PRODUCT, JoinType.LEFT)
                     .createAlias(CompanyProductsFamilyFields.COMPANY, CompanyProductsFamilyFields.COMPANY, JoinType.LEFT)
                     .add(SearchRestrictions.in(CompanyProductsFamilyFields.PRODUCT + L_DOT + L_ID, productIds))
-                    .add(SearchRestrictions.eq(CompanyProductsFamilyFields.COMPANY + L_DOT + L_ID, company.getId()))
-                    .list().getEntities();
+                    .add(SearchRestrictions.eq(CompanyProductsFamilyFields.COMPANY + L_DOT + L_ID, company.getId())).list()
+                    .getEntities();
         }
 
         return companyProductFamilies;
@@ -267,6 +270,10 @@ public class SalesPlanMaterialRequirementDetailsListeners {
             orderedProduct.setField(OrderedProductFields.ORDERED_QUANTITY, orderedQuantity);
             orderedProduct.setField(OrderedProductFields.ADDITIONAL_QUANTITY, additionalQuantity);
         } else {
+            if (BigDecimal.ZERO.compareTo(orderedQuantity) > 0) {
+                orderedQuantity = BigDecimal.ZERO;
+            }
+
             additionalQuantity = orderedQuantity.multiply(conversion, numberService.getMathContext());
 
             orderedProduct = deliveriesService.getOrderedProductDD().create();
@@ -276,13 +283,11 @@ public class SalesPlanMaterialRequirementDetailsListeners {
             orderedProduct.setField(OrderedProductFields.ORDERED_QUANTITY, orderedQuantity);
             orderedProduct.setField(OrderedProductFields.ADDITIONAL_QUANTITY, additionalQuantity);
 
-            if (BigDecimal.ZERO.compareTo(orderedQuantity) <= 0) {
-                orderedProducts.add(orderedProduct);
+            orderedProducts.add(orderedProduct);
 
-                salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.IS_DELIVERY_CREATED, true);
+            salesPlanMaterialRequirementProduct.setField(SalesPlanMaterialRequirementProductFields.IS_DELIVERY_CREATED, true);
 
-                salesPlanMaterialRequirementProduct.getDataDefinition().save(salesPlanMaterialRequirementProduct);
-            }
+            salesPlanMaterialRequirementProduct.getDataDefinition().save(salesPlanMaterialRequirementProduct);
         }
 
         return orderedProduct;
@@ -290,7 +295,7 @@ public class SalesPlanMaterialRequirementDetailsListeners {
 
     private BigDecimal getMinimumOrderQuantity(final Entity product, final List<Entity> companyProducts,
             final List<Entity> companyProductsFamilies) {
-        Optional<Entity> mayBeCompanyProduct = salesPlanMaterialRequirementHelper.getCompanyProduct(companyProducts,
+        Optional<Entity> mayBeCompanyProduct = deliveriesService.getCompanyProduct(companyProducts,
                 product.getId());
 
         BigDecimal minimumOrderQuantity = null;
@@ -303,7 +308,7 @@ public class SalesPlanMaterialRequirementDetailsListeners {
             Entity parent = product.getBelongsToField(ProductFields.PARENT);
 
             if (Objects.nonNull(parent)) {
-                Optional<Entity> mayBeCompanyProductsFamily = salesPlanMaterialRequirementHelper
+                Optional<Entity> mayBeCompanyProductsFamily = deliveriesService
                         .getCompanyProductsFamily(companyProductsFamilies, parent.getId());
 
                 if (mayBeCompanyProductsFamily.isPresent()) {
