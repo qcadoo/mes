@@ -23,44 +23,68 @@
  */
 package com.qcadoo.mes.deliveries;
 
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.ParseException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.ProductService;
-import com.qcadoo.mes.basic.constants.*;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.CompanyFields;
+import com.qcadoo.mes.basic.constants.CurrencyFields;
+import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.util.CurrencyService;
-import com.qcadoo.mes.deliveries.constants.*;
+import com.qcadoo.mes.deliveries.constants.ColumnForDeliveriesFields;
+import com.qcadoo.mes.deliveries.constants.ColumnForOrdersFields;
+import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
+import com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields;
+import com.qcadoo.mes.deliveries.constants.DefaultAddressType;
+import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
+import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.mes.deliveries.constants.DeliveryFields;
+import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
+import com.qcadoo.mes.deliveries.constants.ParameterDeliveryOrderColumnFields;
+import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
 import com.qcadoo.mes.deliveries.print.DeliveryProduct;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.*;
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriterion;
+import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class DeliveriesServiceImpl implements DeliveriesService {
-
-    
-
-
 
     private static final String L_PRODUCT = "product";
 
@@ -77,6 +101,8 @@ public class DeliveriesServiceImpl implements DeliveriesService {
     private static final String L_OFFER = "offer";
 
     private static final String L_EXPIRATION_DATE = "expirationDate";
+
+    private static final String L_DOT = ".";
 
     private static final String L_ID = "id";
 
@@ -686,6 +712,43 @@ public class DeliveriesServiceImpl implements DeliveriesService {
         String query = "select company.company from #deliveries_companyProduct company where company.product.id = :id";
 
         return getCompanyProductDD().find(query).setParameter("id", productId).list().getEntities();
+    }
+
+    public List<Entity> getCompanyProducts(final Set<Long> productIds) {
+        List<Entity> companyProducts = Lists.newArrayList();
+
+        if (!productIds.isEmpty()) {
+            companyProducts = getCompanyProductDD().find()
+                    .createAlias(CompanyProductFields.PRODUCT, CompanyProductFields.PRODUCT, JoinType.LEFT)
+                    .add(SearchRestrictions.in(CompanyProductFields.PRODUCT + L_DOT + L_ID, productIds))
+                    .add(SearchRestrictions.eq(CompanyProductFields.IS_DEFAULT, true)).list().getEntities();
+        }
+
+        return companyProducts;
+    }
+
+    public Optional<Entity> getCompanyProduct(final List<Entity> companyProducts, final Long productId) {
+        return companyProducts.stream().filter(
+                companyProduct -> companyProduct.getBelongsToField(CompanyProductFields.PRODUCT).getId().equals(productId))
+                .findAny();
+    }
+
+    public List<Entity> getCompanyProductsFamilies(final Set<Long> productIds) {
+        List<Entity> companyProductFamilies = Lists.newArrayList();
+
+        if (!productIds.isEmpty()) {
+            companyProductFamilies = getCompanyProductsFamilyDD().find()
+                    .createAlias(CompanyProductsFamilyFields.PRODUCT, CompanyProductsFamilyFields.PRODUCT, JoinType.LEFT)
+                    .add(SearchRestrictions.in(CompanyProductsFamilyFields.PRODUCT + L_DOT + L_ID, productIds))
+                    .add(SearchRestrictions.eq(CompanyProductsFamilyFields.IS_DEFAULT, true)).list().getEntities();
+        }
+
+        return companyProductFamilies;
+    }
+
+    public Optional<Entity> getCompanyProductsFamily(final List<Entity> companyProductsFamilies, final Long productId) {
+        return companyProductsFamilies.stream().filter(companyProductsFamily -> companyProductsFamily
+                .getBelongsToField(CompanyProductsFamilyFields.PRODUCT).getId().equals(productId)).findAny();
     }
 
     public List<Entity> getSelectedOrderedProducts(final GridComponent orderedProductGrid) {

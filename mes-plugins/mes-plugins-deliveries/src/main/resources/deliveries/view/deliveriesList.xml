@@ -35,90 +35,97 @@
                 <bigButton name="new" icon="newIcon24.png" state="enabled" action="#{grid}.performNew;" accesskey="n"/>
                 <smallButton name="copy" icon="copyIcon16.png" state="disabled" action="#{grid}.performCopy;"
                              accesskey="c">
-                    <script><![CDATA[
-                #{grid}.addOnChangeListener({
-                	onChange: function(selectedArray) {
-                		if (selectedArray.length == 0) {
-                			this.disable();
-                		} else {
-                			this.enable();
-                		}
-                	}
-                });
-			]]></script>
+                    <script>
+                        <![CDATA[
+                            #{grid}.addOnChangeListener({
+                                onChange: function(selectedArray) {
+                                    if (selectedArray.length == 0) {
+                                        this.disable();
+                                    } else {
+                                        this.enable();
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
                 </smallButton>
                 <smallButton name="delete" icon="deleteIcon16.png" state="disabled" action="#{grid}.performDelete;"
                              accesskey="d">
-                    <script><![CDATA[
-                #{grid}.addOnChangeListener({
-                	onChange: function(selectedArray) {
-                		if (selectedArray.length == 0) {
-                			this.disable();
-                		} else {
-                			this.enable();
-                		}
-                	}
-                });
-			]]></script>
+                    <script>
+                        <![CDATA[
+                            #{grid}.addOnChangeListener({
+                                onChange: function(selectedArray) {
+                                    if (selectedArray.length == 0) {
+                                        this.disable();
+                                    } else {
+                                        this.enable();
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
                 </smallButton>
             </group>
             <group name="actions">
                 <bigButton name="refresh" icon="updateIcon24.png" state="enabled" action="#{grid}.performRefresh;"
-                           accesskey="r"
-                        />
+                           accesskey="r"/>
             </group>
             <group name="states" if="#view.getComponentByReference('grid').dataDefinition.activable"
                    defaultAuthorizationRole="ROLE_DELIVERIES_EDIT">
                 <smallButton name="activate" icon="unactiveVisibleIcon.png" state="disabled"
                              action="#{grid}.performActivate;">
-                    <script><![CDATA[
-                #{grid}.addOnChangeListener({
-                	onChange: function(selectedArray) {
-                		if (selectedArray.length == 0) {
-                			this.disable();
-                		} else {
-                			this.enable();
-                		}
-                	}
-                });
-			]]></script>
+                    <script>
+                        <![CDATA[
+                            #{grid}.addOnChangeListener({
+                                onChange: function(selectedArray) {
+                                    if (selectedArray.length == 0) {
+                                        this.disable();
+                                    } else {
+                                        this.enable();
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
                 </smallButton>
                 <smallButton name="deactivate" icon="unactiveNotVisibleIcon.png" state="disabled"
                              action="#{grid}.performDeactivate;">
-                    <script><![CDATA[
-                #{grid}.addOnChangeListener({
-                	onChange: function(selectedArray) {
-                		if (selectedArray.length == 0) {
-                			this.disable();
-                		} else {
-                			this.enable();
-                		}
-                	}
-                });
-			]]></script>
+                    <script>
+                        <![CDATA[
+                            #{grid}.addOnChangeListener({
+                                onChange: function(selectedArray) {
+                                    if (selectedArray.length == 0) {
+                                        this.disable();
+                                    } else {
+                                        this.enable();
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
                 </smallButton>
             </group>
             <group name="genericExport">
                 <smallButton name="csv" state="enabled" icon="exportToCsvIcon16.png">
                     <script>
                         <![CDATA[
-					this.addOnChangeListener({
-						onClick: function() {
-							#{grid}.performEvent('exportToCsv', [], 'exportToCsv');
-						}
-					});
-				]]>
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent('exportToCsv', [], 'exportToCsv');
+                                }
+                            });
+                        ]]>
                     </script>
                 </smallButton>
                 <smallButton name="pdf" state="enabled" icon="pdfIcon16.png">
                     <script>
                         <![CDATA[
-					this.addOnChangeListener({
-						onClick: function() {
-							#{grid}.performEvent('exportToPdf', [], 'exportToPdf');
-						}
-					});
-				]]>
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{grid}.performEvent('exportToPdf', [], 'exportToPdf');
+                                }
+                            });
+                        ]]>
                     </script>
                 </smallButton>
             </group>
