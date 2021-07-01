@@ -147,12 +147,6 @@
                          orderable="true" searchable="true" width="35"/>
         </view:view-grid-column>
 
-        <view:view-grid-column plugin="orderSupplies"
-                               view="generateMaterialRequirementCoverage" component="coverageProducts">
-            <view:column name="allProductsType" fields="allProductsType"
-                         orderable="true" searchable="true" width="85"/>
-        </view:view-grid-column>
-
         <view:view-hook plugin="orderSupplies"
                         view="generateMaterialRequirementCoverage" type="beforeRender"
                         class="com.qcadoo.mes.materialRequirementCoverageForOrder.hooks.GenerateMaterialRequirementDetailsHooksMRCFO"

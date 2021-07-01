@@ -190,10 +190,10 @@ public class MRCServiceOverideAspect {
         String sql = "INSERT INTO ordersupplies_coverageproduct "
                 + "(materialrequirementcoverage_id, product_id, lackfromdate, demandquantity, coveredquantity, "
                 + "reservemissingquantity, deliveredquantity, locationsquantity, state, productnumber, productname, "
-                + "productunit, productType, planedQuantity, produceQuantity,fromSelectedOrder, allProductsType, company_id) "
+                + "productunit, productType, planedQuantity, produceQuantity,fromSelectedOrder, company_id) "
                 + "VALUES (:materialrequirementcoverage_id, :product_id, :lackfromdate, :demandquantity, :coveredquantity, "
                 + ":reservemissingquantity, :deliveredquantity, :locationsquantity, :state, :productnumber, :productname, "
-                + ":productunit, :productType, :planedQuantity, :produceQuantity,:fromSelectedOrder, :allProductsType, :company_id)";
+                + ":productunit, :productType, :planedQuantity, :produceQuantity,:fromSelectedOrder, :company_id)";
 
         Map<String, Object> parameters = new HashMap<String, Object>();
         parameters.put(L_PRODUCT_TYPE, covProduct.getStringField(L_PRODUCT_TYPE));
@@ -221,7 +221,6 @@ public class MRCServiceOverideAspect {
         parameters.put("productunit",
                 covProduct.getBelongsToField(CoverageProductFields.PRODUCT).getStringField(ProductFields.UNIT));
         parameters.put("fromSelectedOrder", covProduct.getBooleanField(CoverageProductFields.FROM_SELECTED_ORDER));
-        parameters.put("allProductsType", covProduct.getStringField("allProductsType"));
 
         SqlParameterSource namedParameters = new MapSqlParameterSource(parameters);
         jdbcTemplate.update(sql, namedParameters);

@@ -90,7 +90,6 @@ public class MaterialRequirementCoverageHelper {
 
         coverageProduct.setField(CoverageProductFields.PRODUCT, Long.valueOf(productId));
         coverageProduct.setField(CoverageProductFields.PRODUCT_TYPE, productType);
-        coverageProduct.setField(CoverageProductFields.ALL_PRODUCTS_TYPE, productType);
         coverageProduct.setField(CoverageProductFields.DEMAND_QUANTITY, numberService
                 .setScaleWithDefaultMathContext(coverageProductLogging.getDecimalField(CoverageProductLoggingFields.CHANGES)));
         coverageProduct.setField(CoverageProductFields.COVERAGE_PRODUCT_LOGGINGS, Lists.newArrayList(coverageProductLogging));
@@ -115,13 +114,6 @@ public class MaterialRequirementCoverageHelper {
         addedCoverageProduct.setField(CoverageProductFields.DEMAND_QUANTITY,
                 numberService.setScaleWithDefaultMathContext(demandQuantity));
         addedCoverageProduct.setField(CoverageProductFields.COVERAGE_PRODUCT_LOGGINGS, coverageProductLoggings);
-
-        String types = addedCoverageProduct.getStringField(CoverageProductFields.ALL_PRODUCTS_TYPE);
-
-        if (!types.contains(productType)) {
-            addedCoverageProduct.setField(CoverageProductFields.PRODUCT_TYPE, productType);
-            addedCoverageProduct.setField(CoverageProductFields.ALL_PRODUCTS_TYPE, "01component_02intermediate");
-        }
 
         productAndCoverageProducts.put(Long.valueOf(productId), addedCoverageProduct);
     }
