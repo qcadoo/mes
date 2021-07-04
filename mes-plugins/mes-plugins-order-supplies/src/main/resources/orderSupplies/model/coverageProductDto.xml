@@ -77,10 +77,6 @@
             <validatesUnscaledValue max="11"/>
             <validatesScale max="5"/>
         </decimal>
-        <decimal name="negotiatedQuantity">
-            <validatesUnscaledValue max="11"/>
-            <validatesScale max="5"/>
-        </decimal>
 
         <enum name="state" values="01covered,02delay,03lack"/>
 

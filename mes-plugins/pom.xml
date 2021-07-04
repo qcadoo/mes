@@ -64,8 +64,6 @@
         <module>mes-plugins-cat-numbers-in-negot</module>
         <module>mes-plugins-product-flow-thru-division</module>
         <module>mes-plugins-material-requirement-coverage-for-order</module>
-        <module>mes-plugins-negot-for-order-supplies</module>
-        <module>mes-plugins-negot-for-order-supplies-with-tech-subcontr</module>
         <module>mes-plugins-tech-subcontr-for-negot</module>
         <module>mes-plugins-tech-subcontr-for-order-supplies</module>
         <module>mes-plugins-order-supplies</module>
