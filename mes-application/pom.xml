@@ -325,7 +325,7 @@
             <artifactId>mes-plugins-material-requirement-coverage-for-order</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-tech-subcontr-for-negot</artifactId>
