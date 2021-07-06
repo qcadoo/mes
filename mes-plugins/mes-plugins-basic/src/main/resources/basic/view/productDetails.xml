@@ -85,7 +85,8 @@
                 </bigButton>
             </group>
             <group name="productFamily">
-                <bigButton name="productFamilySizes" icon="genealogyIcon24.png" message="basic.productDetails.window.ribbon.productFamily.productFamilySizes.description"
+                <bigButton name="productFamilySizes" icon="genealogyIcon24.png"
+                           message="basic.productDetails.window.ribbon.productFamily.productFamilySizes.description"
                            state="enabled">
                     <script>
                         <![CDATA[
@@ -151,7 +152,7 @@
 					]]>
                 </script>
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="7">
+                           rows="8">
                     <layoutElement column="1" row="1">
                         <component type="input" name="number" field="number"
                                    reference="number">
@@ -200,6 +201,20 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="6">
+                        <component type="lookup" name="supplier" field="#{form}.supplier"
+                                   reference="supplier" hasDescription="true">
+                            <option type="column" name="name" fields="name" link="true"/>
+
+                            <option type="searchable" value="number,name"/>
+                            <option type="orderable" value="number,name"/>
+
+                            <option type="expression"
+                                    value="#number + ' - ' + #name"/>
+                            <option type="fieldCode" value="number"/>
+
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="7">
                         <component type="lookup" name="assortment" field="#{form}.assortment"
                                    reference="assortment" hasDescription="true">
 
@@ -215,7 +230,7 @@
                                       method="onChangeRerender"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="2" row="7">
+                    <layoutElement column="2" row="8">
                         <component type="lookup" name="model" field="#{form}.model"
                                    reference="model" hasDescription="true">
 
@@ -369,7 +384,7 @@
         <windowTab name="attributes">
             <component type="flowGridLayout" name="gridsLayout" columns="1"
                        rows="5" hasBorders="false">
-                <layoutElement column="1" row="1"  minHeight="5">
+                <layoutElement column="1" row="1" minHeight="5">
                     <component type="grid" name="productAttributeValues" reference="productAttributeValues"
                                source="#{form}.productAttributeValues">
                         <option type="column" name="number" fields="attribute"
@@ -377,7 +392,7 @@
                         <option type="column" name="name" fields="attribute"
                                 expression="#attribute['name']" link="true" width="200"/>
                         <option type="column" name="value" fields="value"
-                               link="true" width="100"/>
+                                link="true" width="100"/>
                         <option type="column" name="description" fields="attributeValue"
                                 expression="#attributeValue['description']" width="200"/>
                         <option type="column" name="unit" fields="attribute"
@@ -409,17 +424,17 @@
                     <component type="lookup" name="size" field="#{form}.size"
                                reference="size">
 
-                        <option type="searchable" value="number" />
-                        <option type="orderable" value="number" />
+                        <option type="searchable" value="number"/>
+                        <option type="orderable" value="number"/>
 
-                        <option type="expression" value="#number" />
-                        <option type="fieldCode" value="number" />
+                        <option type="expression" value="#number"/>
+                        <option type="fieldCode" value="number"/>
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="2" width="3">
                     <component type="input" name="expiryDateValidity" field="#{form}.expiryDateValidity"
                                reference="expiryDateValidity" hasDescription="true">
-                        <option type="alignment" value="right" />
+                        <option type="alignment" value="right"/>
                     </component>
                 </layoutElement>
                 <layoutElement column="4" row="2">
@@ -430,20 +445,20 @@
                 <layoutElement column="1" row="3" width="3">
                     <component type="lookup" name="productForm" field="#{form}.productForm"
                                reference="productForm" hasDescription="true">
-                        <option type="column" name="name" fields="name"  />
+                        <option type="column" name="name" fields="name"/>
                         <option type="column" name="company" fields="company"
                                 expression="#company['name']"/>
                         <option type="column" name="size" fields="size"
-                                width="40" />
+                                width="40"/>
                         <option type="column" name="unit" fields="unit"
-                                width="40" />
+                                width="40"/>
 
-                        <option type="searchable" value="name,number,company,unit,size" />
-                        <option type="orderable" value="name,number,company,unit,size" />
+                        <option type="searchable" value="name,number,company,unit,size"/>
+                        <option type="orderable" value="name,number,company,unit,size"/>
 
                         <option type="expression"
-                                value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name" />
-                        <option type="fieldCode" value="number" />
+                                value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
+                        <option type="fieldCode" value="number"/>
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="4" width="3">

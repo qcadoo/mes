@@ -64,6 +64,7 @@
               default="01particularProduct" required="true"/>
 
         <belongsTo name="producer" model="company" plugin="basic"/>
+        <belongsTo name="supplier" model="company" plugin="basic"/>
 
         <dictionary name="additionalUnit" dictionary="units"/>
         <decimal name="conversion" persistent="false">

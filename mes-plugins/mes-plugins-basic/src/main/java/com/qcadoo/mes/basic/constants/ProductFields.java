@@ -57,6 +57,8 @@ public final class ProductFields {
     
     public static final String PRODUCER = "producer";
 
+    public static final String SUPPLIER = "supplier";
+
     public static final String ADDITIONAL_UNIT = "additionalUnit";
 
     public static final String CONVERSION = "conversion";

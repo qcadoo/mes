@@ -50,5 +50,7 @@
         <validatesWith
                 class="com.qcadoo.mes.deliveries.hooks.CompanyProductHooks"
                 method="checkIfProductHasDefaultSupplier"/>
+        <onSave class="com.qcadoo.mes.deliveries.hooks.CompanyProductHooks"
+                method="onSave" />
     </hooks>
 </model>

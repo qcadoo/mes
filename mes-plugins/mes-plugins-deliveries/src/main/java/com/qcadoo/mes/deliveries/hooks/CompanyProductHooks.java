@@ -23,12 +23,16 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.CompanyProductService;
+import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import static com.qcadoo.mes.deliveries.constants.CompanyFieldsD.PRODUCTS;
 import static com.qcadoo.mes.deliveries.constants.CompanyProductFields.COMPANY;
 import static com.qcadoo.mes.deliveries.constants.CompanyProductFields.IS_DEFAULT;
@@ -60,4 +64,22 @@ public class CompanyProductHooks {
         return true;
     }
 
+    public void onSave(final DataDefinition dataDefinition, final Entity companyProduct) {
+        Entity product = companyProduct.getBelongsToField(CompanyProductFields.PRODUCT);
+        if(Objects.isNull(companyProduct.getId())) {
+            if (companyProduct.getBooleanField(IS_DEFAULT)) {
+                if (Objects.isNull(product.getBelongsToField(ProductFields.SUPPLIER)) || !product.getBelongsToField(ProductFields.SUPPLIER).getId()
+                        .equals(companyProduct.getBelongsToField(COMPANY).getId())) {
+                    product.setField(ProductFields.SUPPLIER, companyProduct.getBelongsToField(COMPANY));
+                    product.getDataDefinition().fastSave(product);
+                }
+            }
+        } else {
+            Entity companyProductDb = companyProduct.getDataDefinition().get(companyProduct.getId());
+            if(companyProduct.getBooleanField(IS_DEFAULT) != companyProductDb.getBooleanField(IS_DEFAULT)) {
+                product.setField(ProductFields.SUPPLIER, companyProduct.getBelongsToField(COMPANY));
+                product.getDataDefinition().fastSave(product);
+            }
+        }
+    }
 }

@@ -65,6 +65,9 @@
         <hasMany name="producedProducts" plugin="basic" model="product" joinField="producer"
                  cascade="nullify"/>
 
+        <hasMany name="suppliedProducts" plugin="basic" model="product" joinField="supplier"
+                 cascade="nullify"/>
+
         <boolean name="isSupplier" default="false" required="true"/>
         <boolean name="isReceiver" default="false" required="true"/>
 
