@@ -47,6 +47,8 @@ public final class MasterOrdersConstants {
 
     public static final String MODEL_SALES_PLAN_PRODUCT = "salesPlanProduct";
 
+    public static final String MODEL_SALES_PLAN_PRODUCT_DTO = "salesPlanProductDto";
+
     public static final String MODEL_SALES_PLAN_STATE_CHANGE = "salesPlanStateChange";
 
     public static final String MODEL_PRODUCTS_BY_SIZE_HELPER = "productsBySizeHelper";
