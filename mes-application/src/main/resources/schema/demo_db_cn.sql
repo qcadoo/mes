@@ -5261,7 +5261,8 @@ CREATE TABLE basic_product (
     expirydatevalidity integer,
     productform_id bigint,
     size_id bigint,
-    model_id bigint
+    model_id bigint,
+    supplier_id bigint
 );
 
 
@@ -12398,6 +12399,53 @@ ALTER SEQUENCE costnormsforoperation_calculationoperationcomponent_id_seq OWNED 
 
 
 --
+-- Name: deliveries_companyproduct; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE deliveries_companyproduct (
+    id bigint NOT NULL,
+    company_id bigint,
+    product_id bigint,
+    isdefault boolean DEFAULT false,
+    entityversion bigint DEFAULT 0,
+    minimumorderquantity numeric(12,5),
+    bufferfordeliverytimes integer
+);
+
+
+--
+-- Name: deliveries_companyproductsfamily; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE deliveries_companyproductsfamily (
+    id bigint NOT NULL,
+    company_id bigint,
+    product_id bigint,
+    isdefault boolean DEFAULT false,
+    entityversion bigint DEFAULT 0,
+    minimumorderquantity numeric(12,5),
+    bufferfordeliverytimes integer
+);
+
+
+--
+-- Name: deliveries_bufferfordeliverytimes; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW deliveries_bufferfordeliverytimes AS
+ SELECT _companyproduct.bufferfordeliverytimes,
+    _companyproduct.company_id,
+    _companyproduct.product_id,
+    _companyproductsfamily.bufferfordeliverytimes AS bufferfordeliverytimesfamily,
+    _companyproductsfamily.company_id AS companyfamily_id,
+    _companyproductsfamily.product_id AS companyproduct_id
+   FROM (((basic_product product
+     LEFT JOIN basic_product parent ON ((parent.id = product.parent_id)))
+     LEFT JOIN deliveries_companyproduct _companyproduct ON ((_companyproduct.product_id = product.id)))
+     LEFT JOIN deliveries_companyproductsfamily _companyproductsfamily ON ((_companyproductsfamily.product_id = parent.id)));
+
+
+--
 -- Name: deliveries_columnfordeliveries; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -12470,21 +12518,6 @@ ALTER SEQUENCE deliveries_columnfororders_id_seq OWNED BY deliveries_columnforor
 
 
 --
--- Name: deliveries_companyproduct; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE deliveries_companyproduct (
-    id bigint NOT NULL,
-    company_id bigint,
-    product_id bigint,
-    isdefault boolean DEFAULT false,
-    entityversion bigint DEFAULT 0,
-    minimumorderquantity numeric(12,5),
-    bufferfordeliverytimes integer
-);
-
-
---
 -- Name: deliveries_companyproduct_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -12501,21 +12534,6 @@ CREATE SEQUENCE deliveries_companyproduct_id_seq
 --
 
 ALTER SEQUENCE deliveries_companyproduct_id_seq OWNED BY deliveries_companyproduct.id;
-
-
---
--- Name: deliveries_companyproductsfamily; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE deliveries_companyproductsfamily (
-    id bigint NOT NULL,
-    company_id bigint,
-    product_id bigint,
-    isdefault boolean DEFAULT false,
-    entityversion bigint DEFAULT 0,
-    minimumorderquantity numeric(12,5),
-    bufferfordeliverytimes integer
-);
 
 
 --
@@ -21401,7 +21419,6 @@ CREATE TABLE ordersupplies_coverageproduct (
     deliveredquantity numeric(16,5),
     locationsquantity numeric(16,5),
     state character varying(255),
-    negotiatedquantity numeric(16,5),
     issubcontracted boolean DEFAULT false,
     ispurchased boolean DEFAULT false,
     productnumber character varying(255),
@@ -21412,7 +21429,6 @@ CREATE TABLE ordersupplies_coverageproduct (
     producequantity numeric(16,5),
     fromselectedorder boolean DEFAULT false,
     entityversion bigint DEFAULT 0,
-    allproductstype character varying(255),
     company_id bigint
 );
 
@@ -21432,7 +21448,6 @@ CREATE VIEW ordersupplies_coverageproductdto AS
     coverageproduct.deliveredquantity,
     coverageproduct.locationsquantity,
     coverageproduct.state,
-    coverageproduct.negotiatedquantity,
     coverageproduct.issubcontracted,
     coverageproduct.ispurchased,
     coverageproduct.productnumber,
@@ -21444,7 +21459,6 @@ CREATE VIEW ordersupplies_coverageproductdto AS
     coverageproduct.producequantity,
     coverageproduct.fromselectedorder,
     coverageproduct.entityversion,
-    coverageproduct.allproductstype,
     (coverageproduct.company_id)::integer AS companyid,
     _company.name AS companyname,
         CASE
@@ -21453,13 +21467,13 @@ CREATE VIEW ordersupplies_coverageproductdto AS
               WHERE (basic_substitutecomponent.baseproduct_id = _product.id)) > 0) THEN true
             ELSE false
         END AS replacement,
-    COALESCE(_companyproduct.bufferfordeliverytimes, _company.buffer) AS deliverybuffer,
-    (coverageproduct.lackfromdate - make_interval(days => _company.buffer)) AS orderatlatest
+    COALESCE(bufferfordeliverytimes.bufferfordeliverytimes, bufferfordeliverytimes.bufferfordeliverytimesfamily, _company.buffer) AS deliverybuffer,
+    (coverageproduct.lackfromdate - make_interval(days => COALESCE(bufferfordeliverytimes.bufferfordeliverytimes, bufferfordeliverytimes.bufferfordeliverytimesfamily, _company.buffer))) AS orderatlatest
    FROM ((((ordersupplies_coverageproduct coverageproduct
      JOIN basic_product _product ON ((_product.id = coverageproduct.product_id)))
      LEFT JOIN basic_product _parent ON ((_parent.id = _product.parent_id)))
      LEFT JOIN basic_company _company ON ((_company.id = coverageproduct.company_id)))
-     LEFT JOIN deliveries_companyproduct _companyproduct ON (((_companyproduct.product_id = _product.id) AND (_companyproduct.company_id = _company.id))));
+     LEFT JOIN deliveries_bufferfordeliverytimes bufferfordeliverytimes ON ((((bufferfordeliverytimes.product_id = _product.id) AND (bufferfordeliverytimes.company_id = _company.id)) OR ((bufferfordeliverytimes.product_id = _product.id) AND (bufferfordeliverytimes.companyfamily_id = _company.id)))));
 
 
 --
@@ -34440,7 +34454,7 @@ SELECT pg_catalog.setval('basic_parameter_id_seq', 2, false);
 -- Data for Name: basic_product; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY basic_product (id, number, name, globaltypeofmaterial, ean, category, unit, externalnumber, description, parent_id, entitytype, durabilityinmonths, averageoffercost, costfornumber, lastpurchasecost, lastoffercost, isglutenproduct, symbol, averagecost, goodsgroup, nominalcost, bio, isdoublepallet, technologygroup_id, active, createdate, updatedate, createuser, updateuser, quantityofextrusioningredient, norm, actualversion, hasnutritionelements, quantityfornutritions, quantityfornutritionsunit, showinproductdata, doublequantityfordoublepallet, usedquantitycontrol, automaticusedquantity, nominalweight, countusedquantityforfullpallets, quantityinpackage, synchronize, capacitynormfortwodimensionalmachines, downform_id, upform_id, downshelve_id, upshelve_id, costnormsgenerator_id, producer_id, machinepart, drawingnumber, catalognumber, isproductiondate, entityversion, ispallet, additionalunit, fromgenerator, generatorcontext_id, dateformatinqcp5code, assortment_id, isoil, isaroma, capacitynormforthreedimensionalmachines, recommendednumofheadsfortwodimensionalmachines, recommendednumofheadsforthreedimensionalmachines, iscartonlabel, isactivecartonlabelquantity, batchevidence, expirydatevalidity, productform_id, size_id, model_id) FROM stdin;
+COPY basic_product (id, number, name, globaltypeofmaterial, ean, category, unit, externalnumber, description, parent_id, entitytype, durabilityinmonths, averageoffercost, costfornumber, lastpurchasecost, lastoffercost, isglutenproduct, symbol, averagecost, goodsgroup, nominalcost, bio, isdoublepallet, technologygroup_id, active, createdate, updatedate, createuser, updateuser, quantityofextrusioningredient, norm, actualversion, hasnutritionelements, quantityfornutritions, quantityfornutritionsunit, showinproductdata, doublequantityfordoublepallet, usedquantitycontrol, automaticusedquantity, nominalweight, countusedquantityforfullpallets, quantityinpackage, synchronize, capacitynormfortwodimensionalmachines, downform_id, upform_id, downshelve_id, upshelve_id, costnormsgenerator_id, producer_id, machinepart, drawingnumber, catalognumber, isproductiondate, entityversion, ispallet, additionalunit, fromgenerator, generatorcontext_id, dateformatinqcp5code, assortment_id, isoil, isaroma, capacitynormforthreedimensionalmachines, recommendednumofheadsfortwodimensionalmachines, recommendednumofheadsforthreedimensionalmachines, iscartonlabel, isactivecartonlabelquantity, batchevidence, expirydatevalidity, productform_id, size_id, model_id, supplier_id) FROM stdin;
 \.
 
 
@@ -39096,7 +39110,7 @@ SELECT pg_catalog.setval('ordersupplies_coverageorderstate_id_seq', 1, false);
 -- Data for Name: ordersupplies_coverageproduct; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY ordersupplies_coverageproduct (id, materialrequirementcoverage_id, product_id, lackfromdate, demandquantity, coveredquantity, reservemissingquantity, deliveredquantity, locationsquantity, state, negotiatedquantity, issubcontracted, ispurchased, productnumber, productname, productunit, producttype, planedquantity, producequantity, fromselectedorder, entityversion, allproductstype, company_id) FROM stdin;
+COPY ordersupplies_coverageproduct (id, materialrequirementcoverage_id, product_id, lackfromdate, demandquantity, coveredquantity, reservemissingquantity, deliveredquantity, locationsquantity, state, issubcontracted, ispurchased, productnumber, productname, productunit, producttype, planedquantity, producequantity, fromselectedorder, entityversion, company_id) FROM stdin;
 \.
 
 
@@ -40287,7 +40301,6 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 56	timeGapsPreview	1.5.0	ENABLED	f	0	other	AGPL
 66	orderSupplies	1.5.0	ENABLED	f	0	supplies	AGPL
 67	catNumbersInNegot	1.5.0	ENABLED	f	0	supplies	AGPL
-70	negotForOrderSupplies	1.5.0	ENABLED	f	0	supplies	AGPL
 71	techSubcontrForOrderSupplies	1.5.0	ENABLED	f	0	supplies	AGPL
 72	ordersForSubproductsGeneration	1.5.0	ENABLED	f	0	other	AGPL
 121	advancedGenealogy	1.5.0	ENABLED	f	0	genealogy	AGPL
@@ -40295,7 +40308,6 @@ COPY qcadooplugin_plugin (id, identifier, version, state, issystem, entityversio
 134	techSubcontrForNegot	1.5.0	ENABLED	f	0	supplies	AGPL
 141	productFlowThruDivision	1.5.0	ENABLED	f	0	other	AGPL
 142	materialRequirementCoverageForOrder	1.5.0	ENABLED	f	0	other	AGPL
-144	negotForOrderSuppliesWithTechSubcontr	1.5.0	ENABLED	f	0	supplies	AGPL
 149	integrationBaseLinker	1.5.0	DISABLED	f	0	other	Commercial
 152	integrationPipedrive	1.5.0	DISABLED	f	0	\N	\N
 153	arch	1.5.0	DISABLED	f	0	\N	Commercial
@@ -56155,6 +56167,14 @@ ALTER TABLE ONLY jointable_product_scale
 
 ALTER TABLE ONLY basic_product
     ADD CONSTRAINT product_size_fkey FOREIGN KEY (size_id) REFERENCES basic_size(id) DEFERRABLE;
+
+
+--
+-- Name: product_supplier_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY basic_product
+    ADD CONSTRAINT product_supplier_fkey FOREIGN KEY (supplier_id) REFERENCES basic_company(id) DEFERRABLE;
 
 
 --

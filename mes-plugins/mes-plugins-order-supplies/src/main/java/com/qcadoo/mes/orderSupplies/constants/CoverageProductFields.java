@@ -63,6 +63,5 @@ public final class CoverageProductFields {
 
     public static final String PRODUCT_TYPE = "productType";
 
-    public static final String ALL_PRODUCTS_TYPE = "allProductsType";
 
 }

@@ -23,13 +23,17 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.CompanyProductService;
+import com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+
+import java.util.Objects;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import static com.qcadoo.mes.deliveries.constants.CompanyFieldsD.PRODUCTS_FAMILIES;
 import static com.qcadoo.mes.deliveries.constants.CompanyProductFields.IS_DEFAULT;
 import static com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields.COMPANY;
@@ -67,5 +71,24 @@ public class CompanyProductsFamilyHooks {
         }
 
         return true;
+    }
+
+    public void onSave(final DataDefinition dataDefinition, final Entity companyProduct) {
+        Entity product = companyProduct.getBelongsToField(CompanyProductsFamilyFields.PRODUCT);
+        if(Objects.isNull(companyProduct.getId())) {
+            if (companyProduct.getBooleanField(IS_DEFAULT)) {
+                if (Objects.isNull(product.getBelongsToField(ProductFields.SUPPLIER)) || !product.getBelongsToField(ProductFields.SUPPLIER).getId()
+                        .equals(companyProduct.getBelongsToField(CompanyProductsFamilyFields.COMPANY).getId())) {
+                    product.setField(ProductFields.SUPPLIER, companyProduct.getBelongsToField(CompanyProductsFamilyFields.COMPANY));
+                    product.getDataDefinition().fastSave(product);
+                }
+            }
+        } else {
+            Entity companyProductDb = companyProduct.getDataDefinition().get(companyProduct.getId());
+            if(companyProduct.getBooleanField(IS_DEFAULT) != companyProductDb.getBooleanField(IS_DEFAULT)) {
+                product.setField(ProductFields.SUPPLIER, companyProduct.getBelongsToField(CompanyProductsFamilyFields.COMPANY));
+                product.getDataDefinition().fastSave(product);
+            }
+        }
     }
 }

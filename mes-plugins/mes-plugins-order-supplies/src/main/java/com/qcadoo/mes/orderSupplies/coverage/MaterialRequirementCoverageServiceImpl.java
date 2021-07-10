@@ -394,10 +394,10 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
         String sql = "INSERT INTO ordersupplies_coverageproduct "
                 + "(materialrequirementcoverage_id, product_id, lackfromdate, demandquantity, coveredquantity, "
                 + "reservemissingquantity, deliveredquantity, locationsquantity, state, productnumber, productname, "
-                + "productunit, produceQuantity, fromSelectedOrder, allProductsType, company_id) "
+                + "productunit, produceQuantity, fromSelectedOrder, company_id) "
                 + "VALUES (:materialrequirementcoverage_id, :product_id, :lackfromdate, :demandquantity, :coveredquantity, "
                 + ":reservemissingquantity, :deliveredquantity, :locationsquantity, :state, :productnumber, :productname, "
-                + ":productunit, :produceQuantity, :fromSelectedOrder, :allProductsType, :company_id)";
+                + ":productunit, :produceQuantity, :fromSelectedOrder, :company_id)";
 
         Map<String, Object> parameters = Maps.newHashMap();
 
@@ -427,7 +427,6 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
         parameters.put("productunit",
                 coverageProduct.getBelongsToField(CoverageProductFields.PRODUCT).getStringField(ProductFields.UNIT));
         parameters.put("fromSelectedOrder", coverageProduct.getBooleanField(CoverageProductFields.FROM_SELECTED_ORDER));
-        parameters.put("allProductsType", coverageProduct.getStringField(CoverageProductFields.ALL_PRODUCTS_TYPE));
 
         SqlParameterSource namedParameters = new MapSqlParameterSource(parameters);
 
@@ -800,7 +799,6 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
 
         coverageProduct.setField(CoverageProductFields.PRODUCT, product);
         coverageProduct.setField(CoverageProductFields.PRODUCT_TYPE, productType);
-        coverageProduct.setField(CoverageProductFields.ALL_PRODUCTS_TYPE, productType);
         coverageProduct.setField(CoverageProductFields.DEMAND_QUANTITY, numberService
                 .setScaleWithDefaultMathContext(coverageProductLogging.getDecimalField(CoverageProductLoggingFields.CHANGES)));
         coverageProduct.setField(CoverageProductFields.COVERAGE_PRODUCT_LOGGINGS, Lists.newArrayList(coverageProductLogging));
@@ -825,13 +823,6 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
         addedCoverageProduct.setField(CoverageProductFields.DEMAND_QUANTITY,
                 numberService.setScaleWithDefaultMathContext(demandQuantity));
         addedCoverageProduct.setField(CoverageProductFields.COVERAGE_PRODUCT_LOGGINGS, coverageProductLoggings);
-
-        String types = addedCoverageProduct.getStringField(CoverageProductFields.ALL_PRODUCTS_TYPE);
-
-        if (!types.contains(productType)) {
-            addedCoverageProduct.setField(CoverageProductFields.PRODUCT_TYPE, productType);
-            addedCoverageProduct.setField(CoverageProductFields.ALL_PRODUCTS_TYPE, "01component_02intermediate");
-        }
 
         productAndCoverageProducts.put(product.getId(), addedCoverageProduct);
     }

@@ -79,7 +79,7 @@ public class SalesPlanOrdersController {
             GenerateOrdersSalePlanResponse response = new GenerateOrdersSalePlanResponse();
             response.setStatus(GenerateOrdersSalePlanResponse.SimpleResponseStatus.ERROR);
             response.setErrorMessages(Lists.newArrayList(translationService.translate(
-                    "orders.ordersGenerationFromProducts.error.ordersNotGenerated", LocaleContextHolder.getLocale())));
+                    "masterOrders.ordersGenerationFromProducts.error.ordersNotGenerated", LocaleContextHolder.getLocale())));
             return response;
         }
     }

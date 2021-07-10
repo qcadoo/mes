@@ -77,16 +77,10 @@
             <validatesUnscaledValue max="11"/>
             <validatesScale max="5"/>
         </decimal>
-        <decimal name="negotiatedQuantity">
-            <validatesUnscaledValue max="11"/>
-            <validatesScale max="5"/>
-        </decimal>
 
         <enum name="state" values="01covered,02delay,03lack"/>
 
         <enum name="productType" values="01component,02intermediate"/>
-
-        <enum name="allProductsType" values="01component,02intermediate,01component_02intermediate"/>
 
         <integer name="deliveryBuffer"/>
 

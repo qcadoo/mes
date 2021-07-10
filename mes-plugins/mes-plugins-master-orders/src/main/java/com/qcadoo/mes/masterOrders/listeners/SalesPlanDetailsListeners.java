@@ -14,6 +14,7 @@ import com.qcadoo.mes.masterOrders.constants.SalesPlanOrdersGroupHelperFields;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanProductFields;
 import com.qcadoo.mes.masterOrders.states.SalesPlanServiceMarker;
 import com.qcadoo.mes.newstates.StateExecutorService;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -43,7 +44,6 @@ public class SalesPlanDetailsListeners {
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-
     public void changeState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         stateExecutorService.changeState(SalesPlanServiceMarker.class, view, args);
     }
@@ -71,7 +71,8 @@ public class SalesPlanDetailsListeners {
                                 Entity salesPlanOrdersGroupEntry = dataDefinitionService.get(
                                         MasterOrdersConstants.PLUGIN_IDENTIFIER,
                                         MasterOrdersConstants.MODEL_SALES_PLAN_ORDERS_GROUP_ENTRY_HELPER).create();
-
+                                Entity salesPlanProductDto = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
+                                        MasterOrdersConstants.MODEL_SALES_PLAN_PRODUCT_DTO).get(salesPlanProductDtoId);
                                 salesPlanOrdersGroupEntry.setField(
                                         SalesPlanOrdersGroupEntryHelperFields.SALES_PLAN_ORDERS_GROUP_HELPER,
                                         finalSalesPlanOrdersGroupHelper);
@@ -82,9 +83,13 @@ public class SalesPlanDetailsListeners {
                                         salesPlanProduct.getDecimalField(SalesPlanProductFields.ORDERED_QUANTITY));
                                 salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.PLANNED_QUANTITY,
                                         salesPlanProduct.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY));
-
+                                BigDecimal orderQuantity = salesPlanProductDto.getDecimalField("plannedQuantity").subtract(
+                                        salesPlanProductDto.getDecimalField("ordersPlannedQuantity"), MathContext.DECIMAL64);
+                                if (orderQuantity.compareTo(BigDecimal.ZERO) < 0) {
+                                    orderQuantity = BigDecimal.ZERO;
+                                }
                                 salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.ORDER_QUANTITY,
-                                        salesPlanProduct.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY));
+                                        orderQuantity);
 
                                 salesPlanOrdersGroupEntry = salesPlanOrdersGroupEntry.getDataDefinition().save(
                                         salesPlanOrdersGroupEntry);
@@ -104,17 +109,25 @@ public class SalesPlanDetailsListeners {
                                                 product);
 
                                         BigDecimal orderedQuantity = BigDecimal.ZERO;
-                                        for (Entity masterOrder : masterOrders) {
-                                            List<Entity> masterOrderProducts = masterOrder
-                                                    .getHasManyField(MasterOrderFields.MASTER_ORDER_PRODUCTS);
-                                            for (Entity masterOrderProduct : masterOrderProducts) {
-                                                if (child.getId().equals(
-                                                        masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT)
-                                                                .getId())) {
-                                                    orderedQuantity = orderedQuantity.add(masterOrderProduct
-                                                            .getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY));
-                                                    break;
-                                                }
+
+                                        StringBuilder hql = new StringBuilder();
+                                        hql.append("SELECT o.plannedQuantity as orderedQuantity ");
+                                        hql.append("FROM #orders_order o ");
+                                        hql.append("WHERE o.salesPlan.id = :salesPlanId AND o.product.id = :productId ");
+
+
+
+                                        List<Entity> orderedQuantityEntity = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
+                                                .find(hql.toString())
+                                                .setLong("salesPlanId", salesPlan.getId())
+                                                .setLong("productId", child.getId())
+                                                .list().getEntities();
+                                        if(!orderedQuantityEntity.isEmpty()) {
+                                            orderedQuantity = orderedQuantityEntity.stream()
+                                                    .map(oq -> oq.getDecimalField("orderedQuantity"))
+                                                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+                                            if(BigDecimal.ZERO.compareTo(orderedQuantity) > 0) {
+                                                orderedQuantity = BigDecimal.ZERO;
                                             }
                                         }
 
@@ -123,9 +136,11 @@ public class SalesPlanDetailsListeners {
                                         salesPlanOrdersGroupEntry.setField(
                                                 SalesPlanOrdersGroupEntryHelperFields.PLANNED_QUANTITY,
                                                 salesPlanProduct.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY));
+                                        BigDecimal orderQuantity = salesPlanProduct.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY).subtract(
+                                                orderedQuantity, MathContext.DECIMAL64);
 
                                         salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.ORDER_QUANTITY,
-                                                orderedQuantity);
+                                                orderQuantity);
 
                                         salesPlanOrdersGroupEntry = salesPlanOrdersGroupEntry.getDataDefinition().save(
                                                 salesPlanOrdersGroupEntry);
@@ -159,6 +174,10 @@ public class SalesPlanDetailsListeners {
                         salesPlanProductDtoId -> {
                             Entity salesPlanProduct = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
                                     MasterOrdersConstants.MODEL_SALES_PLAN_PRODUCT).get(salesPlanProductDtoId);
+
+                            Entity salesPlanProductDto = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
+                                    MasterOrdersConstants.MODEL_SALES_PLAN_PRODUCT_DTO).get(salesPlanProductDtoId);
+
                             Entity product = salesPlanProduct.getBelongsToField(SalesPlanProductFields.PRODUCT);
                             if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue().equals(
                                     product.getStringField(ProductFields.ENTITY_TYPE))) {
@@ -177,10 +196,8 @@ public class SalesPlanDetailsListeners {
                                 salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.PLANNED_QUANTITY,
                                         salesPlanProduct.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY));
 
-                                BigDecimal orderQuantity = salesPlanProduct.getDecimalField(
-                                        SalesPlanProductFields.PLANNED_QUANTITY).subtract(
-                                        salesPlanProduct.getDecimalField(SalesPlanProductFields.ORDERED_QUANTITY),
-                                        MathContext.DECIMAL64);
+                                BigDecimal orderQuantity = salesPlanProductDto.getDecimalField("plannedQuantity").subtract(
+                                        salesPlanProductDto.getDecimalField("ordersPlannedQuantity"), MathContext.DECIMAL64);
                                 if (orderQuantity.compareTo(BigDecimal.ZERO) < 0) {
                                     orderQuantity = BigDecimal.ZERO;
                                 }
@@ -205,17 +222,25 @@ public class SalesPlanDetailsListeners {
                                                 product);
 
                                         BigDecimal orderedQuantity = BigDecimal.ZERO;
-                                        for (Entity masterOrder : masterOrders) {
-                                            List<Entity> masterOrderProducts = masterOrder
-                                                    .getHasManyField(MasterOrderFields.MASTER_ORDER_PRODUCTS);
-                                            for (Entity masterOrderProduct : masterOrderProducts) {
-                                                if (child.getId().equals(
-                                                        masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT)
-                                                                .getId())) {
-                                                    orderedQuantity = orderedQuantity.add(masterOrderProduct
-                                                            .getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY));
-                                                    break;
-                                                }
+
+                                        StringBuilder hql = new StringBuilder();
+                                        hql.append("SELECT o.plannedQuantity as orderedQuantity ");
+                                        hql.append("FROM #orders_order o ");
+                                        hql.append("WHERE o.salesPlan.id = :salesPlanId AND o.product.id = :productId ");
+
+
+
+                                        List<Entity> orderedQuantityEntity = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
+                                        .find(hql.toString())
+                                        .setLong("salesPlanId", salesPlan.getId())
+                                        .setLong("productId", child.getId())
+                                            .list().getEntities();
+                                        if(!orderedQuantityEntity.isEmpty()) {
+                                            orderedQuantity = orderedQuantityEntity.stream()
+                                                    .map(oq -> oq.getDecimalField("orderedQuantity"))
+                                                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+                                            if(BigDecimal.ZERO.compareTo(orderedQuantity) > 0) {
+                                                orderedQuantity = BigDecimal.ZERO;
                                             }
                                         }
 
@@ -225,8 +250,11 @@ public class SalesPlanDetailsListeners {
                                                 SalesPlanOrdersGroupEntryHelperFields.PLANNED_QUANTITY,
                                                 salesPlanProduct.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY));
 
+                                        BigDecimal orderQuantity = salesPlanProduct.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY).subtract(
+                                                orderedQuantity, MathContext.DECIMAL64);
+
                                         salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.ORDER_QUANTITY,
-                                                orderedQuantity);
+                                                orderQuantity);
 
                                         salesPlanOrdersGroupEntry = salesPlanOrdersGroupEntry.getDataDefinition().save(
                                                 salesPlanOrdersGroupEntry);

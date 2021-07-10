@@ -147,6 +147,7 @@ public final class ModelCardPdfService extends PdfDocumentService {
             }
 
             List<ModelCardMaterialEntry> groupedEntries = groupMaterials(entries);
+            regroupProductWithSizeGroup(groupedEntries);
             BigDecimal materialUnitCostsSum = getMaterialUnitCostsSum(groupedEntries);
             List<ModelCardMaterialEntry> sortedEntries = groupedEntries.stream()
                     .sorted(Comparator.comparing(ModelCardMaterialEntry::getNodeNumber, new NodeNumberComparator().reversed())
@@ -193,6 +194,23 @@ public final class ModelCardPdfService extends PdfDocumentService {
             }
         }
         return materialUnitCostsSum;
+    }
+
+    private void regroupProductWithSizeGroup(List<ModelCardMaterialEntry> groupedEntries) {
+        Map<Long, ModelCardMaterialEntry> productTypeMap = Maps.newHashMap();
+        for (ModelCardMaterialEntry modelCardMaterialEntry : groupedEntries) {
+            if (Objects.isNull(modelCardMaterialEntry.getId())) {
+                productTypeMap.put(modelCardMaterialEntry.getTechnologyInputProductTypeId(), modelCardMaterialEntry);
+            }
+        }
+        for (ModelCardMaterialEntry modelCardMaterialEntry : groupedEntries) {
+            if (!Objects.isNull(modelCardMaterialEntry.getSizeGroupId())) {
+                modelCardMaterialEntry.setNodeNumber(
+                        productTypeMap.get(modelCardMaterialEntry.getTechnologyInputProductTypeId()).getNodeNumber());
+                modelCardMaterialEntry
+                        .setPriority(productTypeMap.get(modelCardMaterialEntry.getTechnologyInputProductTypeId()).getPriority());
+            }
+        }
     }
 
     private void mapToModelCardMaterialEntry(Entity modelCard, Map<Long, Map<Long, BigDecimal>> quantitiesInStock,
