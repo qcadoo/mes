@@ -36,7 +36,7 @@
 
         <component type="form" name="numberPatternElement" reference="form">
             <component type="gridLayout" name="gridLayout" columns="1"
-                       rows="3">
+                       rows="4">
                 <layoutElement column="1" row="1">
                     <component type="input" name="succession" field="succession" defaultEnabled="never"/>
                 </layoutElement>
@@ -49,6 +49,13 @@
                 </layoutElement>
                 <layoutElement column="1" row="3">
                     <component type="input" name="value" field="value" reference="value" defaultEnabled="false"/>
+                </layoutElement>
+                <layoutElement column="1" row="4">
+                    <component type="select" name="sequenceCycle" field="sequenceCycle" reference="sequenceCycle" hasDescription="true">
+                        <listener event="onSelectedEntityChange"
+                                  class="com.qcadoo.mes.basic.listeners.NumberPatternElementDetailsListeners"
+                                  method="onChangeSequenceCycle"/>
+                    </component>
                 </layoutElement>
             </component>
 
