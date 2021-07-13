@@ -101,7 +101,8 @@
 
             <option type="fullscreen" value="true"/>
             <option type="multiselect" value="true"/>
-
+            <listener event="changeState" class="com.qcadoo.mes.orders.listeners.OrderPacksSingleOrderListListeners"
+                      method="changeState"/>
 
             <listener event="showPackageProcesses" class="com.qcadoo.mes.orders.listeners.OrderPacksSingleOrderListListeners"
                       method="showPackageProcessesFromList"/>
