@@ -348,6 +348,11 @@
                             method="showTechnologiesWithProduct"/>
 
         <view:view-listener plugin="basic" view="productDetails"
+                            component="form" event="showTechnologiesWithFamilyProduct"
+                            class="com.qcadoo.mes.technologies.listeners.ProductDetailsListenersT"
+                            method="showTechnologiesWithFamilyProduct"/>
+
+        <view:view-listener plugin="basic" view="productDetails"
                             component="form" event="showTechnologiesWithUsingProduct"
                             class="com.qcadoo.mes.technologies.listeners.ProductDetailsListenersT"
                             method="showTechnologiesWithUsingProduct"/>
