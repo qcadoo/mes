@@ -119,6 +119,12 @@
 			type="beforeRender" class="com.qcadoo.mes.costNormsForProduct.hooks.ProductDetailsHooksCNFP"
 			method="enabledFieldForExternalID" />
 
+		<model:model-hook model="product" plugin="basic">
+			<model:onSave
+					class="com.qcadoo.mes.costNormsForProduct.hooks.ProductHooksCNFP"
+					method="onSave"/>
+		</model:model-hook>
+
 	</modules>
 	
 	<features>
