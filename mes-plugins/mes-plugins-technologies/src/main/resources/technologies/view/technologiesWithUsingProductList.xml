@@ -42,7 +42,7 @@
         </ribbon>
 
         <component type="form" name="form" reference="form">
-            <component type="grid" name="operations" reference="grid" source="operationProductInComponentsDto">
+            <component type="grid" name="operations" reference="grid" source="operationProductInProductsDto">
                 <script>
                     <![CDATA[
 					this.addOnChangeListener({
@@ -52,7 +52,12 @@
 						    var allAccepted = isAllAccepted(selectedEntitiesArray);
 
 							if (selectedEntitiesArray && selectedEntitiesArray.length > 0 && allMaster && allAccepted) {
-							    modifyTechnology.enable("#{translate(technologies.modifyTechnology.window.ribbon.modifyTechnology.desc)}");
+							    if(isAllProductBySize(selectedEntitiesArray) || isAllProduct(selectedEntitiesArray)) {
+							        modifyTechnology.enable("#{translate(technologies.modifyTechnology.window.ribbon.modifyTechnology.desc)}");
+							    } else {
+                                    modifyTechnology.disable("#{translate(technologies.modifyTechnology.window.ribbon.modifyTechnology.descType)}");
+							    }
+
 							} else {
 							   modifyTechnology.disable("#{translate(technologies.modifyTechnology.window.ribbon.modifyTechnology.desc)}");
 							}
@@ -66,6 +71,24 @@
 					function isAllMaster(selectedEntitiesArray) {
 						for (var i = 0; i < selectedEntitiesArray.length; i++) {
 							if (selectedEntitiesArray[i].fields.masterTechnology == '0') {
+								return false;
+							}
+						}
+						return true;
+					}
+
+					function isAllProductBySize(selectedEntitiesArray) {
+						for (var i = 0; i < selectedEntitiesArray.length; i++) {
+							if (selectedEntitiesArray[i].fields.sizeProduct == '0') {
+								return false;
+							}
+						}
+						return true;
+					}
+
+					function isAllProduct(selectedEntitiesArray) {
+						for (var i = 0; i < selectedEntitiesArray.length; i++) {
+							if (selectedEntitiesArray[i].fields.sizeProduct == '1') {
 								return false;
 							}
 						}
@@ -93,10 +116,11 @@
                 <option type="column" name="quantity" fields="quantity"/>
                 <option type="column" name="technologyState" fields="technologyState"/>
                 <option type="column" name="masterTechnology" fields="masterTechnology"/>
+                <option type="column" name="sizeProduct" fields="sizeProduct"/>
 
                 <option type="order" column="technologyNumber" direction="asc"/>
-                <option type="orderable" value="technologyName,technologyNumber,nodeNumber,operationName,quantity,technologyState,masterTechnology"/>
-                <option type="searchable" value="technologyName,technologyNumber,nodeNumber,operationName,quantity,technologyState,masterTechnology"/>
+                <option type="orderable" value="technologyName,technologyNumber,nodeNumber,operationName,quantity,technologyState,masterTechnology,sizeProduct"/>
+                <option type="searchable" value="technologyName,technologyNumber,nodeNumber,operationName,quantity,technologyState,masterTechnology,sizeProduct"/>
 
                 <option type="fullscreen" value="true"/>
                 <option type="multiselect" value="true"/>

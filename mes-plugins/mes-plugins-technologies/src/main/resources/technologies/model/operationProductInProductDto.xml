@@ -24,33 +24,33 @@
     ***************************************************************************
 
 -->
-<model name="modifyTechnologyHelper" auditable="true"
+<model name="operationProductInProductDto" activable="false" auditable="false" deletable="false"
+       insertable="false" updatable="false"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
        xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
-    <fields>
-        <boolean name="remove" default="false"/>
-        <boolean name="addNew" default="false"/>
-        <boolean name="replace" default="false"/>
-        <boolean name="sizeProduct" default="false"/>
-        <string name="selectedEntities" required="true">
-            <validatesLength max="4096"/>
-        </string>
-        <belongsTo name="product" plugin="basic" model="product"
-                   required="true"/>
-        <belongsTo name="replaceProduct" plugin="basic" model="product"/>
-        <decimal name="replaceProductQuantity">
-            <validatesRange from="0" exclusively="true"/>
-            <validatesUnscaledValue max="9"/>
-            <validatesScale max="5"/>
-        </decimal>
 
-        <hasMany name="modifyTechnologyAddProducts" model="modifyTechnologyAddProductHelper"
-                 joinField="modifyTechnologyHelper" cascade="delete"/>
+    <fields>
+        <belongsTo name="operationComponent" model="technologyOperationComponent"
+                   persistent="false"/>
+        <belongsTo name="product" plugin="basic" model="product"/>
+        <integer name="operationProductInComponentId"/>
+        <integer name="productBySizeGroupId"/>
+        <integer name="operationComponentId"/>
+        <integer name="productId"/>
+        <string name="nodeNumber"/>
+        <string name="operationName"/>
+        <integer name="technologyId"/>
+        <string name="technologyName"/>
+        <string name="technologyNumber"/>
+        <boolean name="masterTechnology"/>
+        <decimal name="quantity"/>
+        <boolean name="sizeProduct"/>
+        <boolean name="activeTechnology"/>
+        <string name="technologyType"/>
+
+        <enum name="technologyState" values="01draft,02accepted,03declined,04outdated,05checked"/>
 
     </fields>
-    <hooks>
-        <validatesWith
-                class="com.qcadoo.mes.technologies.validators.ModifyTechnologyHelperValidators"
-                method="validatesWith"/>
-    </hooks>
+
+    <hooks/>
 </model>

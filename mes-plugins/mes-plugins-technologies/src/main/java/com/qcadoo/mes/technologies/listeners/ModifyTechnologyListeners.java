@@ -4,7 +4,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.mes.technologies.TechnologyNameAndNumberGenerator;
-import com.qcadoo.mes.technologies.constants.*;
+import com.qcadoo.mes.technologies.constants.ModifyTechnologyAddProductHelperFields;
+import com.qcadoo.mes.technologies.constants.ModifyTechnologyHelperFields;
+import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.ModifyTechnologyResult;
 import com.qcadoo.mes.technologies.states.TechnologyStateChangeViewClient;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
@@ -17,17 +22,18 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ModifyTechnologyListeners {
@@ -90,19 +96,28 @@ public class ModifyTechnologyListeners {
             ModifyTechnologyResult modifyTechnologyResult) {
 
         String selectedEntities = mt.getStringField(ModifyTechnologyHelperFields.SELECTED_ENTITIES);
+        boolean sizeProduct = mt.getBooleanField("sizeProduct");
+
         List<Long> ids = Lists.newArrayList(selectedEntities.split(",")).stream().map(Long::valueOf).collect(Collectors.toList());
-        List<Entity> opicDtos = dataDefinitionService
-                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT_DTO)
-                .find().add(SearchRestrictions.in("id", ids)).list().getEntities();
         Map<Long, List<Entity>> opicsByTechnology = Maps.newHashMap();
-        for (Entity opicDto : opicDtos) {
-            if (opicsByTechnology.containsKey(opicDto.getIntegerField(L_TECHNOLOGY_ID).longValue())) {
-                opicsByTechnology.get(opicDto.getIntegerField(L_TECHNOLOGY_ID).longValue()).add(opicDto);
-            } else {
-                List<Entity> opiIds = Lists.newArrayList();
-                opiIds.add(opicDto);
-                opicsByTechnology.put(opicDto.getIntegerField(L_TECHNOLOGY_ID).longValue(), opiIds);
+
+        if(sizeProduct) {
+
+            List<Entity> opicDtos = dataDefinitionService
+                    .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT_DTO)
+                    .find().add(SearchRestrictions.in("id", ids)).list().getEntities();
+            for (Entity opicDto : opicDtos) {
+                if (opicsByTechnology.containsKey(opicDto.getIntegerField(L_TECHNOLOGY_ID).longValue())) {
+                    opicsByTechnology.get(opicDto.getIntegerField(L_TECHNOLOGY_ID).longValue()).add(opicDto);
+                } else {
+                    List<Entity> opiIds = Lists.newArrayList();
+                    opiIds.add(opicDto);
+                    opicsByTechnology.put(opicDto.getIntegerField(L_TECHNOLOGY_ID).longValue(), opiIds);
+                }
             }
+
+        } else {
+
         }
 
         for (Map.Entry<Long, List<Entity>> entry : opicsByTechnology.entrySet()) {
