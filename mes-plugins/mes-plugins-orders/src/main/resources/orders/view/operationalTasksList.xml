@@ -48,6 +48,8 @@
                     correspondingView="orders/orderDetails" correspondingField="orderId"
                     width="100"/>
             <option type="column" name="orderId" fields="orderId" hidden="true"/>
+            <option type="column" name="orderProductNumber" fields="orderProductNumber" width="75"/>
+            <option type="column" name="orderProductName" fields="orderProductName" width="75"/>
             <option type="column" name="technologyOperationComponentNodeNumber" fields="technologyOperationComponentNodeNumber"
                     width="75"/>
             <option type="column" name="productNumber" fields="productNumber" width="75"/>
@@ -68,9 +70,9 @@
             <option type="order" column="startDate" direction="desc"/>
 
             <option type="searchable" value="name,number,startDate,finishDate,staffName,productionLineNumber,workstationNumber,orderNumber,state,type,
-							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,usedQuantity,remainingQuantity,doneInPercentage,productUnit"/>
+							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,usedQuantity,remainingQuantity,doneInPercentage,productUnit,orderProductName,orderProductNumber"/>
             <option type="orderable" value="name,number,startDate,finishDate,staffName,productionLineNumber,workstationNumber,orderNumber,state,type,
-							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,usedQuantity,remainingQuantity,doneInPercentage,productUnit"/>
+							technologyOperationComponentNodeNumber,productNumber,productName,plannedQuantity,usedQuantity,remainingQuantity,doneInPercentage,productUnit,orderProductName,orderProductNumber"/>
 
             <option type="correspondingView" value="orders/operationalTaskDetails"/>
             <option type="correspondingComponent" value="form"/>
