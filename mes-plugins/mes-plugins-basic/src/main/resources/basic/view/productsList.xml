@@ -111,15 +111,16 @@
             <option type="column" name="unit" fields="unit"/>
             <option type="column" name="additionalUnit" fields="additionalUnit"/>
             <option type="column" name="size" fields="sizeNumber"/>
+            <option type="column" name="supplier" fields="supplier"/>
 
             <option type="order" column="name" direction="asc"/>
 
             <option type="searchable"
-                    value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,model,externalNumber,hasAttachments,additionalCodes,unit,additionalUnit,size,entityType"/>
+                    value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,model,externalNumber,hasAttachments,additionalCodes,unit,additionalUnit,size,entityType,supplier"/>
             <option type="multiSearch"
-                    value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,model,externalNumber,hasAttachments,additionalCodes,unit,additionalUnit,size,entityType"/>
+                    value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,model,externalNumber,hasAttachments,additionalCodes,unit,additionalUnit,size,entityType,supplier"/>
             <option type="orderable"
-                    value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,model,externalNumber,hasAttachments,additionalCodes,unit,additionalUnit,size,entityType"/>
+                    value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,model,externalNumber,hasAttachments,additionalCodes,unit,additionalUnit,size,entityType,supplier"/>
 
             <option type="correspondingView" value="basic/productDetails"/>
             <option type="correspondingComponent" value="form"/>
