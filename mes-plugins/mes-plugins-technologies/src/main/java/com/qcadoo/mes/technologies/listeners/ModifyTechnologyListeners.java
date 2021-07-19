@@ -7,6 +7,7 @@ import com.qcadoo.mes.technologies.TechnologyNameAndNumberGenerator;
 import com.qcadoo.mes.technologies.constants.ModifyTechnologyAddProductHelperFields;
 import com.qcadoo.mes.technologies.constants.ModifyTechnologyHelperFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
@@ -99,28 +100,40 @@ public class ModifyTechnologyListeners {
         boolean sizeProduct = mt.getBooleanField("sizeProduct");
 
         List<Long> ids = Lists.newArrayList(selectedEntities.split(",")).stream().map(Long::valueOf).collect(Collectors.toList());
-        Map<Long, List<Entity>> opicsByTechnology = Maps.newHashMap();
+        Map<Long, List<Entity>> entriesByTechnology = Maps.newHashMap();
 
-        if(sizeProduct) {
-
-            List<Entity> opicDtos = dataDefinitionService
-                    .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT_DTO)
-                    .find().add(SearchRestrictions.in("id", ids)).list().getEntities();
-            for (Entity opicDto : opicDtos) {
-                if (opicsByTechnology.containsKey(opicDto.getIntegerField(L_TECHNOLOGY_ID).longValue())) {
-                    opicsByTechnology.get(opicDto.getIntegerField(L_TECHNOLOGY_ID).longValue()).add(opicDto);
+        if (sizeProduct) {
+            List<Entity> productsBySizes = dataDefinitionService
+                    .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_PRODUCT_BY_SIZE_GROUP).find()
+                    .add(SearchRestrictions.in("id", ids)).list().getEntities();
+            for (Entity pbs : productsBySizes) {
+                Long technologyId = pbs.getBelongsToField(ProductBySizeGroupFields.OPERATION_PRODUCT_IN_COMPONENT)
+                        .getBelongsToField(OperationProductInComponentFields.TECHNOLOGY).getId();
+                if (entriesByTechnology.containsKey(technologyId)) {
+                    entriesByTechnology.get(technologyId).add(pbs);
                 } else {
                     List<Entity> opiIds = Lists.newArrayList();
-                    opiIds.add(opicDto);
-                    opicsByTechnology.put(opicDto.getIntegerField(L_TECHNOLOGY_ID).longValue(), opiIds);
+                    opiIds.add(pbs);
+                    entriesByTechnology.put(technologyId, opiIds);
                 }
             }
 
         } else {
-
+            List<Entity> opicDtos = dataDefinitionService
+                    .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT_DTO)
+                    .find().add(SearchRestrictions.in("id", ids)).list().getEntities();
+            for (Entity opicDto : opicDtos) {
+                if (entriesByTechnology.containsKey(opicDto.getIntegerField(L_TECHNOLOGY_ID).longValue())) {
+                    entriesByTechnology.get(opicDto.getIntegerField(L_TECHNOLOGY_ID).longValue()).add(opicDto);
+                } else {
+                    List<Entity> opiIds = Lists.newArrayList();
+                    opiIds.add(opicDto);
+                    entriesByTechnology.put(opicDto.getIntegerField(L_TECHNOLOGY_ID).longValue(), opiIds);
+                }
+            }
         }
 
-        for (Map.Entry<Long, List<Entity>> entry : opicsByTechnology.entrySet()) {
+        for (Map.Entry<Long, List<Entity>> entry : entriesByTechnology.entrySet()) {
             Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                     TechnologiesConstants.MODEL_TECHNOLOGY).get(entry.getKey());
             try {
@@ -134,7 +147,7 @@ public class ModifyTechnologyListeners {
 
     @Transactional
     private void customizeTechnology(final ViewDefinitionState view, final ComponentState state, Entity technology,
-            List<Entity> opics, Entity mt, ModifyTechnologyResult modifyTechnologyResult) {
+            List<Entity> entries, Entity mt, ModifyTechnologyResult modifyTechnologyResult) {
 
         technology.setField(TechnologyFields.MASTER, Boolean.FALSE);
         technology = technology.getDataDefinition().save(technology);
@@ -147,8 +160,8 @@ public class ModifyTechnologyListeners {
 
             copyTechnology = copyTechnology.getDataDefinition().save(copyTechnology);
 
-            for (Entity opicDto : opics) {
-                modifyOperation(mt, copyTechnology, opicDto);
+            for (Entity entry : entries) {
+                modifyOperation(mt, copyTechnology, entry);
             }
 
             copyTechnology = copyTechnology.getDataDefinition().get(copyTechnology.getId());
@@ -166,19 +179,28 @@ public class ModifyTechnologyListeners {
 
     }
 
-    private void modifyOperation(Entity mt, Entity copyTechnology, Entity opicDto) {
+    private void modifyOperation(Entity mt, Entity copyTechnology, Entity entry) {
+        boolean sizeProduct = mt.getBooleanField("sizeProduct");
+
+        if (sizeProduct) {
+            modifyOperationForPSG(mt, copyTechnology, entry);
+        } else {
+            modifyOperationForOPIC(mt, copyTechnology, entry);
+        }
+    }
+
+    private void modifyOperationForOPIC(Entity mt, Entity copyTechnology, Entity entry) {
         Entity toc = dataDefinitionService
-                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
-                .find()
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).find()
                 .add(SearchRestrictions.belongsTo(TechnologyOperationComponentFields.TECHNOLOGY, copyTechnology))
-                .add(SearchRestrictions.eq(TechnologyOperationComponentFields.NODE_NUMBER,
-                        opicDto.getStringField(NODE_NUMBER))).setMaxResults(1).uniqueResult();
+                .add(SearchRestrictions.eq(TechnologyOperationComponentFields.NODE_NUMBER, entry.getStringField(NODE_NUMBER)))
+                .setMaxResults(1).uniqueResult();
 
         Entity opic = toc
                 .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS)
                 .stream()
                 .filter(opc -> opc.getBelongsToField(OperationProductInComponentFields.PRODUCT).getId()
-                        .equals(opicDto.getIntegerField(L_PRODUCT_ID).longValue())).findFirst()
+                        .equals(entry.getIntegerField(L_PRODUCT_ID).longValue())).findFirst()
                 .orElseThrow(() -> new IllegalStateException("Product not found"));
 
         if (mt.getBooleanField(ModifyTechnologyHelperFields.ADD_NEW)) {
@@ -190,6 +212,72 @@ public class ModifyTechnologyListeners {
         } else if (mt.getBooleanField(ModifyTechnologyHelperFields.REMOVE)) {
             removeProduct(opic);
         }
+    }
+
+    private void modifyOperationForPSG(Entity mt, Entity copyTechnology, Entity entry) {
+        Entity opicPrev = entry.getBelongsToField(ProductBySizeGroupFields.OPERATION_PRODUCT_IN_COMPONENT);
+        Entity tocPrev = opicPrev.getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT);
+
+        Entity toc = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
+                .find()
+                .add(SearchRestrictions.belongsTo(TechnologyOperationComponentFields.TECHNOLOGY, copyTechnology))
+                .add(SearchRestrictions.eq(TechnologyOperationComponentFields.NODE_NUMBER,
+                        tocPrev.getStringField(TechnologyOperationComponentFields.NODE_NUMBER))).setMaxResults(1).uniqueResult();
+
+        Entity opic = toc
+                .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS)
+                .stream()
+                .filter(opc -> opc.getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE).getId()
+                        .equals(opicPrev.getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE).getId()))
+                .findFirst().orElseThrow(() -> new IllegalStateException("Product not found"));
+
+        Entity pbsg = opic
+                .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS)
+                .stream()
+                .filter(pbs -> pbs.getBelongsToField(ProductBySizeGroupFields.PRODUCT).getId()
+                        .equals(entry.getBelongsToField(ProductBySizeGroupFields.PRODUCT).getId()))
+                .findFirst().orElseThrow(() -> new IllegalStateException("Product not found"));
+
+        if (mt.getBooleanField(ModifyTechnologyHelperFields.ADD_NEW)) {
+            addNewProductsPSG(mt, toc, opic, pbsg);
+        }
+
+        if (mt.getBooleanField(ModifyTechnologyHelperFields.REPLACE)) {
+            replaceProductPSG(mt, toc, opic, pbsg);
+        } else if (mt.getBooleanField(ModifyTechnologyHelperFields.REMOVE)) {
+            removeProductPSG(pbsg);
+        }
+    }
+
+    private void removeProductPSG(Entity pbsg) {
+        EntityOpResult entityOpResult = pbsg.getDataDefinition().delete(pbsg.getId());
+        if (!entityOpResult.isSuccessfull()) {
+            throw new IllegalStateException("Error while deleting opic");
+        }
+
+    }
+
+    private void replaceProductPSG(Entity mt, Entity toc, Entity opic, Entity pbsg) {
+        removeProductPSG(pbsg);
+
+        Entity newPBSG = createPBSG(toc, opic, pbsg, mt.getBelongsToField(ModifyTechnologyHelperFields.REPLACE_PRODUCT),
+                mt.getDecimalField(ModifyTechnologyHelperFields.REPLACE_PRODUCT_QUANTITY));
+        if (!newPBSG.isValid()) {
+            throw new IllegalStateException("Error while saving product size group");
+        }
+    }
+
+    private void addNewProductsPSG(Entity mt, Entity toc, Entity opic, Entity pbsg) {
+        mt.getHasManyField(ModifyTechnologyHelperFields.MODIFY_TECHNOLOGY_ADD_PRODUCTS).forEach(
+                pr -> {
+                    Entity newPBSG = createPBSG(toc, opic, pbsg , pr.getBelongsToField(ModifyTechnologyAddProductHelperFields.PRODUCT),
+                            pr.getDecimalField(ModifyTechnologyAddProductHelperFields.QUANTITY));
+                    if (!newPBSG.isValid()) {
+                        throw new IllegalStateException("Error while saving product size group");
+                    }
+
+                });
     }
 
     private void removeProduct(Entity opic) {
@@ -212,8 +300,7 @@ public class ModifyTechnologyListeners {
     private void addNewProducts(Entity mt, Entity toc, Entity opic) {
         mt.getHasManyField(ModifyTechnologyHelperFields.MODIFY_TECHNOLOGY_ADD_PRODUCTS).forEach(
                 pr -> {
-                    Entity newOpic = createOpic(toc, opic,
-                            pr.getBelongsToField(ModifyTechnologyAddProductHelperFields.PRODUCT),
+                    Entity newOpic = createOpic(toc, opic, pr.getBelongsToField(ModifyTechnologyAddProductHelperFields.PRODUCT),
                             pr.getDecimalField(ModifyTechnologyAddProductHelperFields.QUANTITY));
                     if (!newOpic.isValid()) {
                         throw new IllegalStateException("Error while saving opic");
@@ -245,4 +332,17 @@ public class ModifyTechnologyListeners {
         return newOpic;
     }
 
+    private Entity createPBSG(Entity toc, Entity opic, Entity pbsg, Entity product, BigDecimal quantity) {
+        Entity newPBSG = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_PRODUCT_BY_SIZE_GROUP).create();
+
+        newPBSG.setField(ProductBySizeGroupFields.OPERATION_PRODUCT_IN_COMPONENT, opic.getId());
+        newPBSG.setField(ProductBySizeGroupFields.PRODUCT, product.getId());
+        newPBSG.setField(ProductBySizeGroupFields.QUANTITY, quantity);
+        newPBSG.setField(ProductBySizeGroupFields.SIZE_GROUP, pbsg.getBelongsToField(ProductBySizeGroupFields.SIZE_GROUP));
+
+        newPBSG = newPBSG.getDataDefinition().save(newPBSG);
+
+        return newPBSG;
+    }
 }
