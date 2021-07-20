@@ -78,6 +78,9 @@ public class CompanyProductHooks {
             Entity companyProductDb = companyProduct.getDataDefinition().get(companyProduct.getId());
             if(companyProduct.getBooleanField(IS_DEFAULT) != companyProductDb.getBooleanField(IS_DEFAULT)) {
                 product.setField(ProductFields.SUPPLIER, companyProduct.getBelongsToField(COMPANY));
+                if(!companyProduct.getBooleanField(IS_DEFAULT)){
+                    product.setField(ProductFields.SUPPLIER, null);
+                }
                 product.getDataDefinition().fastSave(product);
             }
         }

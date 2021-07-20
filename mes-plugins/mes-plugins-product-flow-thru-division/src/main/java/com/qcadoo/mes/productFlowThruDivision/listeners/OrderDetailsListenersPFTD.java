@@ -23,13 +23,6 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.listeners;
 
-import java.util.Map;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productFlowThruDivision.OrderMaterialAvailability;
@@ -41,6 +34,11 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderDetailsListenersPFTD {
@@ -83,6 +81,7 @@ public class OrderDetailsListenersPFTD {
         parameters.put(L_GRID_OPTIONS, gridOptions);
 
         parameters.put(L_WINDOW_ACTIVE_MENU, "requirements.warehouseIssue");
+        parameters.put("window.showBack", true);
 
         String url = "/page/productFlowThruDivision/warehouseIssueList.html";
         view.redirectTo(url, false, true, parameters);
@@ -111,18 +110,17 @@ public class OrderDetailsListenersPFTD {
     }
 
     private void showMaterialAvailability(ViewDefinitionState view, Long orderId) {
-        JSONObject json = new JSONObject();
 
-        try {
-            json.put("order.id", orderId);
-        } catch (JSONException e) {
-            throw new IllegalStateException(e);
-        }
 
         orderMaterialAvailability.generateAndSaveMaterialAvailabilityForOrder(getOrderDD().get(orderId));
 
-        String url = "../page/productFlowThruDivision/orderWithMaterialAvailabilityList.html?context=" + json.toString();
-        view.redirectTo(url, false, true);
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("order.id", orderId);
+
+        parameters.put("window.showBack", true);
+
+        String url = "/page/productFlowThruDivision/orderWithMaterialAvailabilityList.html";
+        view.redirectTo(url, false, true, parameters);
     }
 
     private DataDefinition getOrderDD() {

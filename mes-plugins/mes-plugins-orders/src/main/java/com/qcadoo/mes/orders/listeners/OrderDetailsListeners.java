@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.orders.listeners;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
@@ -67,6 +59,14 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderDetailsListeners {
@@ -474,6 +474,7 @@ public class OrderDetailsListeners {
 
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put(L_GRID_OPTIONS, gridOptions);
+        parameters.put("window.showBack", true);
 
         String url = "/page/orders/operationalTasksList.html";
         view.redirectTo(url, false, true, parameters);
@@ -494,6 +495,7 @@ public class OrderDetailsListeners {
 
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("order.id", orderId);
+        parameters.put("window.showBack", true);
 
         String url = "/page/orders/orderPacksSingleOrderList.html";
         view.redirectTo(url, false, true, parameters);
@@ -510,6 +512,7 @@ public class OrderDetailsListeners {
 
         Map<String, Object> parameters = Maps.newHashMap();
         parameters.put("form.id", orderId);
+        parameters.put("window.showBack", true);
 
         String url = "/page/orders/orderTechnologicalProcessesSingleOrderList.html";
         view.redirectTo(url, false, true, parameters);

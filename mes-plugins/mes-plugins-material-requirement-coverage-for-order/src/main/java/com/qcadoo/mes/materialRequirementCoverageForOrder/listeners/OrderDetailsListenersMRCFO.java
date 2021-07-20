@@ -23,10 +23,13 @@
  */
 package com.qcadoo.mes.materialRequirementCoverageForOrder.listeners;
 
-import org.springframework.stereotype.Service;
-
+import com.google.common.collect.Maps;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+
+import java.util.Map;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderDetailsListenersMRCFO {
@@ -37,10 +40,11 @@ public class OrderDetailsListenersMRCFO {
         if (orderId == null) {
             return;
         }
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("form.orderd", orderId);
+        parameters.put("window.showBack", true);
+        String url = "/page/orderSupplies/generateMaterialRequirementCoverage.html";
 
-        String url = "/page/orderSupplies/generateMaterialRequirementCoverage.html?context={form.order: "
-                + orderId + "}";
-
-        view.redirectTo(url, false, true);
+        view.redirectTo(url, false, true, parameters);
     }
 }
