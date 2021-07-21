@@ -190,78 +190,83 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
             operationProductComponents.addAll(technologyOperationComponent
                     .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS));
 
-            for (Entity operationProductComponent : operationProductComponents) {
-                table.getDefaultCell().enableBorderSide(PdfCell.TOP);
-                table.getDefaultCell().enableBorderSide(PdfCell.BOTTOM);
-                Entity product = operationProductComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
-
-                String productType = "technologies.technologiesTechnologyDetails.report.direction.out";
-                String productUnit;
-                String productNumber = product != null ? product.getStringField(ProductFields.NUMBER) : StringUtils.EMPTY;
-                String technologyInputProductTypeName = StringUtils.EMPTY;
-                List<Entity> productBySizeGroups = Lists.newArrayList();
-
-                if (operationProductComponent.getDataDefinition().getName().equals("operationProductInComponent")) {
-                    Entity technologyInputProductType = operationProductComponent
-                            .getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE);
-                    if (technologyInputProductType != null) {
-                        technologyInputProductTypeName = technologyInputProductType
-                                .getStringField(TechnologyInputProductTypeFields.NAME);
-                        productUnit = operationProductComponent.getStringField(OperationProductInComponentFields.GIVEN_UNIT);
-                    } else {
-                        productUnit = product.getStringField(ProductFields.UNIT);
-                    }
-                    productType = "technologies.technologiesTechnologyDetails.report.direction.in";
-                    if (operationProductComponent
-                            .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES)) {
-                        productBySizeGroups = operationProductComponent
-                                .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS);
-                        productNumber = translationService
-                                .translate("technologies.technologiesTechnologyDetails.report.productsBySize.label", locale);
-                        table.getDefaultCell().disableBorderSide(PdfCell.TOP);
-                        table.getDefaultCell().disableBorderSide(PdfCell.BOTTOM);
-                    }
-                } else {
-                    productUnit = product.getStringField(ProductFields.UNIT);
-                }
-
-                table.addCell(new Phrase(nodeNumber, FontUtils.getDejavuRegular7Dark()));
-                table.addCell(new Phrase(operationName, FontUtils.getDejavuRegular7Dark()));
-                table.addCell(new Phrase(translationService.translate(productType, locale), FontUtils.getDejavuRegular7Dark()));
-                table.addCell(new Phrase(technologyInputProductTypeName, FontUtils.getDejavuRegular7Dark()));
-                table.addCell(new Phrase(productNumber, FontUtils.getDejavuRegular7Dark()));
-                table.addCell(new Phrase(product != null ? product.getStringField(ProductFields.NAME) : StringUtils.EMPTY,
-                        FontUtils.getDejavuRegular7Dark()));
-                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-                table.addCell(new Phrase(
-                        numberService.format(operationProductComponent.getField(OperationProductInComponentFields.QUANTITY)),
-                        FontUtils.getDejavuRegular7Dark()));
-                table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-                table.addCell(new Phrase(productUnit, FontUtils.getDejavuRegular7Dark()));
-                for (Entity productBySizeGroup : productBySizeGroups) {
-                    Entity productBySize = productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT);
-                    table.addCell(new Phrase(StringUtils.EMPTY));
-                    table.addCell(new Phrase(StringUtils.EMPTY));
-                    table.addCell(new Phrase(StringUtils.EMPTY));
-                    table.addCell(new Phrase(StringUtils.EMPTY));
-                    table.addCell(
-                            new Phrase(productBySize.getStringField(ProductFields.NUMBER), FontUtils.getDejavuRegular7Dark()));
-                    table.addCell(
-                            new Phrase(productBySize.getStringField(ProductFields.NAME), FontUtils.getDejavuRegular7Dark()));
-                    table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
-                    table.addCell(new Phrase(
-                            numberService.format(productBySizeGroup.getDecimalField(ProductBySizeGroupFields.QUANTITY)),
-                            FontUtils.getDejavuRegular7Dark()));
-                    table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-                    table.addCell(
-                            new Phrase(productBySize.getStringField(ProductFields.UNIT), FontUtils.getDejavuRegular7Dark()));
-                }
-            }
+            addProducts(locale, table, nodeNumber, operationName, operationProductComponents);
         }
 
         document.add(table);
 
         return translationService.translate("technologies.technologiesTechnologyDetails.report.fileName", locale);
+    }
+
+    private void addProducts(Locale locale, PdfPTable table, String nodeNumber, String operationName, List<Entity> operationProductComponents) {
+        for (Entity operationProductComponent : operationProductComponents) {
+            table.getDefaultCell().enableBorderSide(PdfCell.TOP);
+            table.getDefaultCell().enableBorderSide(PdfCell.BOTTOM);
+            Entity product = operationProductComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
+
+            String productType = "technologies.technologiesTechnologyDetails.report.direction.out";
+            String productNumber = StringUtils.EMPTY;
+            String productName = StringUtils.EMPTY;
+            String productUnit = StringUtils.EMPTY;
+            if (product != null) {
+                productNumber = product.getStringField(ProductFields.NUMBER);
+                productName = product.getStringField(ProductFields.NAME);
+                productUnit = product.getStringField(ProductFields.UNIT);
+            }
+            String technologyInputProductTypeName = StringUtils.EMPTY;
+            List<Entity> productBySizeGroups = Lists.newArrayList();
+
+            if (operationProductComponent.getDataDefinition().getName().equals("operationProductInComponent")) {
+                productType = "technologies.technologiesTechnologyDetails.report.direction.in";
+                Entity technologyInputProductType = operationProductComponent
+                        .getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE);
+                if (technologyInputProductType != null) {
+                    productUnit = operationProductComponent.getStringField(OperationProductInComponentFields.GIVEN_UNIT);
+                    technologyInputProductTypeName = technologyInputProductType
+                            .getStringField(TechnologyInputProductTypeFields.NAME);
+                }
+                if (operationProductComponent
+                        .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES)) {
+                    productNumber = translationService
+                            .translate("technologies.technologiesTechnologyDetails.report.productsBySize.label", locale);
+                    productBySizeGroups = operationProductComponent
+                            .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS);
+                    table.getDefaultCell().disableBorderSide(PdfCell.TOP);
+                    table.getDefaultCell().disableBorderSide(PdfCell.BOTTOM);
+                }
+            }
+
+            table.addCell(new Phrase(nodeNumber, FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(operationName, FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(translationService.translate(productType, locale), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(technologyInputProductTypeName, FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(productNumber, FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(productName, FontUtils.getDejavuRegular7Dark()));
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+            table.addCell(new Phrase(
+                    numberService.format(operationProductComponent.getField(OperationProductInComponentFields.QUANTITY)),
+                    FontUtils.getDejavuRegular7Dark()));
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+            table.addCell(new Phrase(productUnit, FontUtils.getDejavuRegular7Dark()));
+            addProductsBySize(table, productBySizeGroups);
+        }
+    }
+
+    private void addProductsBySize(PdfPTable table, List<Entity> productBySizeGroups) {
+        for (Entity productBySizeGroup : productBySizeGroups) {
+            Entity productBySize = productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT);
+            table.addCell(new Phrase(StringUtils.EMPTY));
+            table.addCell(new Phrase(StringUtils.EMPTY));
+            table.addCell(new Phrase(StringUtils.EMPTY));
+            table.addCell(new Phrase(StringUtils.EMPTY));
+            table.addCell(new Phrase(productBySize.getStringField(ProductFields.NUMBER), FontUtils.getDejavuRegular7Dark()));
+            table.addCell(new Phrase(productBySize.getStringField(ProductFields.NAME), FontUtils.getDejavuRegular7Dark()));
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+            table.addCell(new Phrase(numberService.format(productBySizeGroup.getDecimalField(ProductBySizeGroupFields.QUANTITY)),
+                    FontUtils.getDejavuRegular7Dark()));
+            table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
+            table.addCell(new Phrase(productBySize.getStringField(ProductFields.UNIT), FontUtils.getDejavuRegular7Dark()));
+        }
     }
 
     @Override

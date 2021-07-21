@@ -440,10 +440,6 @@ public class ProductStructureTreeService {
 
                 parent = getEntityById(tocTree, parentId);
 
-                if (Objects.isNull(parent)) {
-                    parent.getId();
-                }
-
                 addChildTOC(tocTree, toc, parent, node.getBelongsToField(ProductStructureTreeNodeFields.PRODUCT), entityType);
             }
 
