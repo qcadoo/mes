@@ -36,6 +36,8 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
@@ -54,6 +56,7 @@ import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.TreeComponent;
 import com.qcadoo.view.api.components.WindowComponent;
@@ -79,6 +82,9 @@ public class TechnologyDetailsListeners {
 
     @Autowired
     private TechnologyValidationService technologyValidationService;
+
+    @Autowired
+    private TechnologyService technologyService;
 
     public void setGridEditable(final ViewDefinitionState view, final ComponentState state, final String[] args) {
     }
@@ -114,6 +120,32 @@ public class TechnologyDetailsListeners {
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         window.setActiveTab(L_PRODUCT_STRUCTURE);
+    }
+
+    public void moveProducts(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent inProducts = (GridComponent) view.getComponentByReference("inProducts");
+        if (inProducts.getSelectedEntitiesIds().isEmpty()) {
+            state.addMessage("technologies.technologyDetails.window.noSelectedProducts", MessageType.INFO);
+            return;
+        }
+        for (Entity inProductDto : inProducts.getSelectedEntities()) {
+            DataDefinition operationProductInComponentDD = getOperationProductInComponentDD();
+            Entity inProduct = operationProductInComponentDD.get(inProductDto.getId());
+            Entity operationComponent = inProduct.getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT);
+            Entity parent = operationComponent.getBelongsToField(TechnologyOperationComponentFields.PARENT);
+            if (parent != null) {
+                Entity product = inProduct.getBelongsToField(OperationProductInComponentFields.PRODUCT);
+                if (product != null && technologyService.isIntermediateProduct(inProduct)) {
+                    state.addMessage("technologies.technologyDetails.window.noOutProductInOperation", MessageType.INFO,
+                            product.getStringField(ProductFields.NUMBER));
+                }
+                inProduct.setField(OperationProductInComponentFields.OPERATION_COMPONENT, parent);
+                operationProductInComponentDD.save(inProduct);
+            } else {
+                state.addMessage("technologies.technologyDetails.window.operationWithoutParent", MessageType.INFO);
+                break;
+            }
+        }
     }
 
     public void fillProducts(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -210,9 +242,8 @@ public class TechnologyDetailsListeners {
     }
 
     private boolean validateTemplate(final FormComponent technologyForm, final Entity technology) {
-        boolean isValid = true;
 
-        isValid = isValid && technologyValidationService.checkIfTechnologyTreeIsSet(technologyForm, technology);
+        boolean isValid = technologyValidationService.checkIfTechnologyTreeIsSet(technologyForm, technology);
         isValid = isValid
                 && technologyValidationService.checkTopComponentsProducesProductForTechnology(technologyForm, technology);
         isValid = isValid && technologyValidationService.checkIfOperationsUsesSubOperationsProds(technologyForm, technology);

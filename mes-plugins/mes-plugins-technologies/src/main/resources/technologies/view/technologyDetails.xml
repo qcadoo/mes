@@ -70,6 +70,8 @@
             <group name="fillProducts">
                 <bigButton name="fillProducts" icon="generateIcon24.png"
                            action="#{form}.fireEvent(fillProducts);" state="disabled"/>
+                <bigButton name="moveProducts" icon="generateIcon24.png"
+                           action="#{form}.fireEvent(moveProducts);" state="disabled"/>
             </group>
             <group name="import">
                 <bigButton name="openOperationProductInComponentsImportPage" state="enabled" icon="xlsIcon24.png"
@@ -118,7 +120,7 @@
 									return;
 								}
 
-								if (! value.content.entityId) {
+								if (!value.content.entityId) {
 									var acceptState = #{window}.getRibbonItem("status.acceptTechnology");
 									var cancelState = #{window}.getRibbonItem("status.cancelTechnology");
 									var checkState = #{window}.getRibbonItem("status.checkTechnology");
@@ -176,10 +178,7 @@
 							var cancelState = #{window}.getRibbonItem("status.cancelTechnology");
 							var checkState = #{window}.getRibbonItem("status.checkTechnology");
 							var deleteItem = #{window}.getRibbonItem("actions.delete");
-
 							var generateProductStructure = #{window}.getRibbonItem("productStructure.generateProductStructure");
-							var fillProducts = #{window}.getRibbonItem("fillProducts.fillProducts");
-
 							var acceptTemplate = #{window}.getRibbonItem("template.acceptTemplate");
 
 							acceptState.forState="02accepted";
@@ -199,7 +198,6 @@
 								checkState.enable();
 								generateProductStructure.disable();
 								toggleEditable(true, "");
-								fillProducts.enable();
 							} else if (state == "02accepted") {
 								acceptState.disable();
 								checkState.disable();
@@ -210,7 +208,6 @@
 								cancelState.setLabel("#{translate(technologies.technologyDetails.window.ribbon.status.outdateTechnology)}");
 								toggleEditable(true, "");
 								deleteItem.disable();
-								fillProducts.disable();
 							} else if (state == "03declined" || state == "04outdated") {
 								acceptState.disable();
 								checkState.disable();
@@ -218,7 +215,6 @@
 								generateProductStructure.disable();
 								toggleEditable(false);
 								deleteItem.enable();
-								fillProducts.disable();
 							} else if ( state == "05checked"){
 								cancelState.enable();
 								checkState.enable();
@@ -229,7 +225,6 @@
 								acceptState.enable();
 								toggleEditable(true, "");
                                 deleteItem.disable();
-                                fillProducts.disable();
 							}
 
 							var template = #{template}.getValue().content.value;
@@ -251,7 +246,6 @@
 								generateProductStructure.disable();
 								toggleEditable(false);
 								deleteItem.disable();
-								fillProducts.disable();
 
                                 acceptTemplate.confirmMessage = "#{translate(technologies.technologyDetails.window.ribbon.template.confirm.edit)}";
                                 acceptTemplate.setLabel("#{translate(technologies.technologyDetails.window.ribbon.template.editTemplate)}");
@@ -391,6 +385,9 @@
                 <listener event="fillProducts"
                           class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
                           method="fillProducts"/>
+                <listener event="moveProducts"
+                          class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
+                          method="moveProducts"/>
                 <listener event="openOperationProductInComponentsImportPage"
                           class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
                           method="openOperationProductInComponentsImportPage"/>

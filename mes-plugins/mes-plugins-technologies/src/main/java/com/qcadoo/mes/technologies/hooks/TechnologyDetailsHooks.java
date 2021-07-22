@@ -55,6 +55,7 @@ import com.qcadoo.view.api.components.TreeComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
+import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
@@ -63,6 +64,10 @@ public class TechnologyDetailsHooks {
     private static final String L_IMPORT = "import";
 
     private static final String L_OPEN_OPERATION_PRODUCT_IN_COMPONENTS_IMPORT_PAGE = "openOperationProductInComponentsImportPage";
+
+    private static final String L_FILL_PRODUCTS = "fillProducts";
+
+    private static final String L_MOVE_PRODUCTS = "moveProducts";
 
     private static final String L_TREE_TAB = "treeTab";
 
@@ -112,7 +117,8 @@ public class TechnologyDetailsHooks {
     }
 
     private boolean isTemplateAccepted(final ViewDefinitionState view) {
-        CheckBoxComponent isTemplateAcceptedCheckBox = (CheckBoxComponent) view.getComponentByReference(TechnologyFields.IS_TEMPLATE_ACCEPTED);
+        CheckBoxComponent isTemplateAcceptedCheckBox = (CheckBoxComponent) view
+                .getComponentByReference(TechnologyFields.IS_TEMPLATE_ACCEPTED);
 
         if (Objects.nonNull(isTemplateAcceptedCheckBox)) {
             return isTemplateAcceptedCheckBox.isChecked();
@@ -222,6 +228,9 @@ public class TechnologyDetailsHooks {
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
 
+        RibbonGroup fillProductsGroup = window.getRibbon().getGroupByName(L_FILL_PRODUCTS);
+        RibbonActionItem fillProductsRibbonActionItem = fillProductsGroup.getItemByName(L_FILL_PRODUCTS);
+        RibbonActionItem moveProductsRibbonActionItem = fillProductsGroup.getItemByName(L_MOVE_PRODUCTS);
         RibbonActionItem openOperationProductInComponentsImportPageRibbonActionItem = window.getRibbon().getGroupByName(L_IMPORT)
                 .getItemByName(L_OPEN_OPERATION_PRODUCT_IN_COMPONENTS_IMPORT_PAGE);
 
@@ -229,14 +238,20 @@ public class TechnologyDetailsHooks {
 
         String state = technology.getStringField(TechnologyFields.STATE);
         boolean isTemplateAccepted = technology.getBooleanField(TechnologyFields.IS_TEMPLATE_ACCEPTED);
-
-        String descriptionMessage = "technologies.technologyDetails.window.ribbon.import.openOperationProductInComponentsImportPage.description";
-
         boolean isSaved = Objects.nonNull(technologyForm.getEntityId());
         boolean isDraft = TechnologyState.DRAFT.getStringValue().equals(state);
 
+        fillProductsRibbonActionItem.setEnabled(isSaved && isDraft && !isTemplateAccepted);
+        fillProductsRibbonActionItem
+                .setMessage("technologies.technologyDetails.window.ribbon.fillProducts.fillProducts.description");
+        fillProductsRibbonActionItem.requestUpdate(true);
+        moveProductsRibbonActionItem.setEnabled(isSaved && isDraft && !isTemplateAccepted);
+        moveProductsRibbonActionItem
+                .setMessage("technologies.technologyDetails.window.ribbon.fillProducts.moveProducts.description");
+        moveProductsRibbonActionItem.requestUpdate(true);
         openOperationProductInComponentsImportPageRibbonActionItem.setEnabled(isSaved && isDraft && !isTemplateAccepted);
-        openOperationProductInComponentsImportPageRibbonActionItem.setMessage(descriptionMessage);
+        openOperationProductInComponentsImportPageRibbonActionItem.setMessage(
+                "technologies.technologyDetails.window.ribbon.import.openOperationProductInComponentsImportPage.description");
         openOperationProductInComponentsImportPageRibbonActionItem.requestUpdate(true);
     }
 
