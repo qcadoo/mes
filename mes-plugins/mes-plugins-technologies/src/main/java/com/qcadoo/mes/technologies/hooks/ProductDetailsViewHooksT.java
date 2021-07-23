@@ -23,9 +23,7 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.SecurityService;
@@ -36,6 +34,11 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
+
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductDetailsViewHooksT {
@@ -67,6 +70,8 @@ public class ProductDetailsViewHooksT {
                 .getItemByName("showTechnologiesWithProduct");
         RibbonActionItem showProductGroupTechnologies = technologies
                 .getItemByName("showProductGroupTechnologies");
+        RibbonActionItem showTechnologiesWithFamilyProduct = technologies
+                .getItemByName("showTechnologiesWithFamilyProduct");
 
         if (product.getId() != null) {
             Entity technologyGroup = product.getBelongsToField("technologyGroup");
@@ -79,6 +84,16 @@ public class ProductDetailsViewHooksT {
             updateButtonState(showTechnologiesWithTechnologyGroup, false);
             updateButtonState(showTechnologiesWithProduct, false);
             updateButtonState(showProductGroupTechnologies, false);
+        }
+
+        Entity parent = product.getBelongsToField(ProductFields.PARENT);
+
+        if(Objects.nonNull(parent)) {
+            updateButtonState(showTechnologiesWithFamilyProduct, true);
+
+        } else {
+            updateButtonState(showTechnologiesWithFamilyProduct, false);
+
         }
     }
 

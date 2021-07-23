@@ -359,10 +359,14 @@ public class ProductStructureTreeService {
                 } else {
                     boolean differentProductsInDifferentSizes = operationProductInComponent
                             .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES);
+                    boolean variousQuantitiesInProductsBySize = operationProductInComponent
+                            .getBooleanField(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE);
 
                     child.setField(ProductStructureTreeNodeFields.TECHNOLOGY_INPUT_PRODUCT_TYPE, technologyInputProductType);
                     child.setField(ProductStructureTreeNodeFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES,
                             differentProductsInDifferentSizes);
+                    child.setField(ProductStructureTreeNodeFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE,
+                            variousQuantitiesInProductsBySize);
                     child.setField(ProductStructureTreeNodeFields.OPERATION, operation);
                     child.setField(ProductStructureTreeNodeFields.DIVISION,
                             operation.getBelongsToField(TechnologyOperationComponentFields.DIVISION));
@@ -370,8 +374,8 @@ public class ProductStructureTreeService {
                     child = addChild(tree, child, parent, L_MATERIAL);
 
                     if (differentProductsInDifferentSizes) {
-                        generateTreeForProductBySizeGroups(operationProductInComponent, operation, technology, tree, child, view,
-                                mainTechnology);
+                        generateTreeForProductBySizeGroups(operationProductInComponent, operation,
+                                variousQuantitiesInProductsBySize, technology, tree, child, view, mainTechnology);
                     }
                 }
             }
@@ -379,8 +383,8 @@ public class ProductStructureTreeService {
     }
 
     private void generateTreeForProductBySizeGroups(final Entity operationProductInComponent, final Entity operation,
-            final Entity technology, final List<Entity> tree, final Entity parent, final ViewDefinitionState view,
-            final Entity mainTechnology) {
+            final boolean variousQuantitiesInProductsBySize, final Entity technology, final List<Entity> tree,
+            final Entity parent, final ViewDefinitionState view, final Entity mainTechnology) {
         List<Entity> productBySizeGroups = operationProductInComponent
                 .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS);
 
@@ -389,12 +393,18 @@ public class ProductStructureTreeService {
 
             Entity product = productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT);
             Entity sizeGroup = productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.SIZE_GROUP);
+            BigDecimal quantity = productBySizeGroup.getDecimalField(ProductBySizeGroupFields.QUANTITY);
+            String unit = product.getStringField(ProductFields.UNIT);
 
             child.setField(ProductStructureTreeNodeFields.TECHNOLOGY, technology);
             child.setField(ProductStructureTreeNodeFields.MAIN_TECHNOLOGY, mainTechnology);
             child.setField(ProductStructureTreeNodeFields.PRODUCT, product);
             child.setField(ProductStructureTreeNodeFields.SIZE_GROUP, sizeGroup);
+            child.setField(ProductStructureTreeNodeFields.QUANTITY, quantity);
+            child.setField(ProductStructureTreeNodeFields.UNIT, unit);
             child.setField(ProductStructureTreeNodeFields.OPERATION, operation);
+            child.setField(ProductStructureTreeNodeFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE,
+                    variousQuantitiesInProductsBySize);
 
             addChild(tree, child, parent, L_PRODUCT_BY_SIZE_GROUP);
         }
@@ -439,10 +449,6 @@ public class ProductStructureTreeService {
                         : node.getBelongsToField(ProductStructureTreeNodeFields.OPERATION).getId();
 
                 parent = getEntityById(tocTree, parentId);
-
-                if (Objects.isNull(parent)) {
-                    parent.getId();
-                }
 
                 addChildTOC(tocTree, toc, parent, node.getBelongsToField(ProductStructureTreeNodeFields.PRODUCT), entityType);
             }

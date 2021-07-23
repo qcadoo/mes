@@ -42,6 +42,7 @@
 		<belongsTo name="product" model="product" plugin="basic" lazy="false" />
 		<belongsTo name="technologyInputProductType" plugin="technologies" model="technologyInputProductType" lazy="false"/>
 		<boolean name="differentProductsInDifferentSizes" default="false"/>
+		<boolean name="variousQuantitiesInProductsBySize" default="false"/>
 		<belongsTo name="operation" model="operation" plugin="technologies" lazy="false" />
 		<belongsTo name="productTechnology" model="technology" plugin="technologies" lazy="false" />
 		<belongsTo name="originalTechnology" model="technology" plugin="technologies" lazy="true" />

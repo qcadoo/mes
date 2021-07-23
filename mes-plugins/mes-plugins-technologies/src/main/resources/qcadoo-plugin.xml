@@ -98,6 +98,8 @@
 
         <model:model model="operationSkill" resource="model/operationSkill.xml"/>
 
+        <model:model model="operationProductInProductDto" resource="model/operationProductInProductDto.xml"/>
+
         <model:model model="qualityCard" resource="model/qualityCard.xml"/>
         <model:model model="qualityCardStateChange" resource="model/qualityCardStateChange.xml"/>
         <model:model model="technologyOperationComponentDto" resource="model/technologyOperationComponentDto.xml"/>
@@ -152,6 +154,11 @@
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="operationProductInComponentsDto"
                            plugin="technologies" model="operationProductInComponentDto" joinField="product"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="product">
+            <model:hasMany name="operationProductInProductsDto"
+                           plugin="technologies" model="operationProductInProductDto" joinField="product"/>
         </model:model-field>
 
         <model:model-field plugin="basic" model="product">
@@ -346,6 +353,11 @@
                             component="form" event="showTechnologiesWithProduct"
                             class="com.qcadoo.mes.technologies.listeners.ProductDetailsListenersT"
                             method="showTechnologiesWithProduct"/>
+
+        <view:view-listener plugin="basic" view="productDetails"
+                            component="form" event="showTechnologiesWithFamilyProduct"
+                            class="com.qcadoo.mes.technologies.listeners.ProductDetailsListenersT"
+                            method="showTechnologiesWithFamilyProduct"/>
 
         <view:view-listener plugin="basic" view="productDetails"
                             component="form" event="showTechnologiesWithUsingProduct"

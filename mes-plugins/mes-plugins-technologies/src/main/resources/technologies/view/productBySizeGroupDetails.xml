@@ -57,9 +57,10 @@
                                 width="200"/>
                         <option type="column" name="ean" fields="ean"/>
                         <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial"/>
+                        <option type="column" name="supplier" fields="supplier" expression="#supplier['number']" width="150"/>
 
-                        <option type="searchable" value="name,ean,globalTypeOfMaterial"/>
-                        <option type="orderable" value="name,ean,globalTypeOfMaterial"/>
+                        <option type="searchable" value="name,ean,globalTypeOfMaterial,supplier"/>
+                        <option type="orderable" value="name,ean,globalTypeOfMaterial,supplier"/>
 
                         <option type="expression"
                                 value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>

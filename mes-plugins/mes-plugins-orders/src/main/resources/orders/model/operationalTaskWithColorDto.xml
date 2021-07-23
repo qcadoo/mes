@@ -46,6 +46,8 @@
 		<string name="technologyOperationComponentNodeNumber"/>
 		<string name="productNumber"/>
 		<string name="productName"/>
+		<string name="orderProductNumber"/>
+		<string name="orderProductName"/>
 		<string name="productUnit"/>
 		<decimal name="plannedQuantity"/>
 		<decimal name="usedQuantity"/>

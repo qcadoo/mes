@@ -34,10 +34,15 @@
             <validatesLength max="10" />
         </string>
         <priority name="succession" scope="numberPattern" />
+
+        <enum name="sequenceCycle" values="01monthly,02annual"/>
+
     </fields>
 
     <hooks>
         <validatesWith class="com.qcadoo.mes.basic.hooks.NumberPatternElementHooks"
                        method="validatesWith"/>
+        <validatesWith class="com.qcadoo.mes.basic.hooks.NumberPatternElementHooks"
+                       method="onSave"/>
     </hooks>
 </model>

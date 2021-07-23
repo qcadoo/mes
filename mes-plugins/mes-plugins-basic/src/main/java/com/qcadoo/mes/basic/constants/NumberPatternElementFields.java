@@ -11,4 +11,6 @@ public final class NumberPatternElementFields {
     public static final String ELEMENT = "element";
 
     public static final String VALUE = "value";
+
+    public static final String SEQUENCE_CYCLE = "sequenceCycle";
 }

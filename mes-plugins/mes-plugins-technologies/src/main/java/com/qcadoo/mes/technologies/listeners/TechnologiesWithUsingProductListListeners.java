@@ -1,5 +1,6 @@
 package com.qcadoo.mes.technologies.listeners;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -9,12 +10,14 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class TechnologiesWithUsingProductListListeners {
@@ -25,13 +28,34 @@ public class TechnologiesWithUsingProductListListeners {
     public void goToModifyTechnology(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
-        Set<Long> selected = grid.getSelectedEntitiesIds();
+        List<Integer> entitiesId = Lists.newArrayList();
 
-               Entity modifyTechnology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+        Set<Long> selected = grid.getSelectedEntitiesIds();
+        List<Entity> entities = grid.getSelectedEntities();
+
+        boolean isProductBySize = entities.stream().anyMatch(entry -> selected.contains(entry.getId()) && entry.getBooleanField("sizeProduct"));
+
+        for (Entity entity : entities) {
+
+            if(selected.contains(entity.getId())) {
+                if(isProductBySize) {
+                    if(!entitiesId.contains(entity.getIntegerField("productBySizeGroupId"))) {
+                        entitiesId.add(entity.getIntegerField("productBySizeGroupId"));
+                    }
+                } else {
+                    if(!entitiesId.contains(entity.getIntegerField("operationProductInComponentId"))) {
+                        entitiesId.add(entity.getIntegerField("operationProductInComponentId"));
+                    }
+                }
+            }
+        }
+
+        Entity modifyTechnology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODIFY_TECHNOLOGY_HELPER).create();
 
         modifyTechnology.setField("product", form.getEntityId());
-        modifyTechnology.setField("selectedEntities", selected.stream().map(e -> e.toString()).collect( Collectors.joining( "," )));
+        modifyTechnology.setField("sizeProduct", isProductBySize);
+        modifyTechnology.setField("selectedEntities", entitiesId.stream().map(e -> e.toString()).collect(Collectors.joining(",")));
 
         modifyTechnology = modifyTechnology.getDataDefinition().save(modifyTechnology);
 

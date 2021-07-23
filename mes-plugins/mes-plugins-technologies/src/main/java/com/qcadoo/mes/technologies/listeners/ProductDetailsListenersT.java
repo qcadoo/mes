@@ -30,10 +30,11 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Objects;
 
+import org.springframework.stereotype.Service;
 import static com.qcadoo.mes.basic.constants.ProductFields.NUMBER;
 
 @Service
@@ -110,6 +111,39 @@ public class ProductDetailsListenersT {
         if (productNumber == null) {
             return;
         }
+
+        Map<String, String> filters = Maps.newHashMap();
+        filters.put("productNumber", applyInOperator(productNumber));
+
+        Map<String, Object> gridOptions = Maps.newHashMap();
+        gridOptions.put(L_FILTERS, filters);
+
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put(L_GRID_OPTIONS, gridOptions);
+
+        parameters.put(L_WINDOW_ACTIVE_MENU, "technology.technologies");
+
+        String url = "../page/technologies/technologiesList.html";
+        view.redirectTo(url, false, true, parameters);
+    }
+
+    public final void showTechnologiesWithFamilyProduct(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
+        FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        Entity product = productForm.getEntity();
+
+        if (product.getId() == null) {
+            return;
+        }
+
+        Entity productDb = product.getDataDefinition().get(product.getId());
+        Entity parent = productDb.getBelongsToField(ProductFields.PARENT);
+
+        if (Objects.isNull(parent)) {
+            return;
+        }
+
+        String productNumber = parent.getStringField(NUMBER);
 
         Map<String, String> filters = Maps.newHashMap();
         filters.put("productNumber", applyInOperator(productNumber));

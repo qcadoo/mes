@@ -48,6 +48,8 @@ public final class GeneratorTreeNodeFields {
 
     public static final String DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES = "differentProductsInDifferentSizes";
 
+    public static final String VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE = "variousQuantitiesInProductsBySize";
+
     public static final String OPERATION = "operation";
 
     public static final String PRODUCT_TECHNOLOGY = "productTechnology";

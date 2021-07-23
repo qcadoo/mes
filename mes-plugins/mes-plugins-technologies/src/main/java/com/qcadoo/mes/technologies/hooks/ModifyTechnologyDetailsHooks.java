@@ -8,16 +8,21 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.components.AwesomeDynamicListComponent;
+import com.qcadoo.view.api.components.CheckBoxComponent;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ModifyTechnologyDetailsHooks {
@@ -53,15 +58,35 @@ public class ModifyTechnologyDetailsHooks {
             String selectedEntities = mt.getStringField(ModifyTechnologyHelperFields.SELECTED_ENTITIES);
             List<Long> ids = Lists.newArrayList(selectedEntities.split(",")).stream().map(Long::valueOf)
                     .collect(Collectors.toList());
-            List<Entity> opicDtos = dataDefinitionService
-                    .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT_DTO)
-                    .find().add(SearchRestrictions.in(L_ID, ids)).list().getEntities();
-            Set<BigDecimal> quantities = opicDtos.stream().map(op -> op.getDecimalField(L_QUANTITY)).collect(Collectors.toSet());
-            if(quantities.size() == 1) {
-                FieldComponent qnt = (FieldComponent) view.getComponentByReference(ModifyTechnologyHelperFields.REPLACE_PRODUCT_QUANTITY);
-                qnt.setFieldValue(quantities.stream().findFirst().get());
-                qnt.requestComponentUpdateState();
+
+            boolean sizeProduct = mt.getBooleanField("sizeProduct");
+            if(sizeProduct) {
+                List<Entity> producstBySize = dataDefinitionService
+                        .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_PRODUCT_BY_SIZE_GROUP)
+                        .find().add(SearchRestrictions.in(L_ID, ids)).list().getEntities();
+
+                Set<BigDecimal> quantities = producstBySize.stream().map(op -> op.getDecimalField(L_QUANTITY)).collect(Collectors.toSet());
+
+                if(quantities.size() == 1) {
+                    FieldComponent qnt = (FieldComponent) view.getComponentByReference(ModifyTechnologyHelperFields.REPLACE_PRODUCT_QUANTITY);
+                    qnt.setFieldValue(quantities.stream().findFirst().get());
+                    qnt.requestComponentUpdateState();
+                }
+            } else {
+                List<Entity> opicDtos = dataDefinitionService
+                        .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT_DTO)
+                        .find().add(SearchRestrictions.in(L_ID, ids)).list().getEntities();
+
+                Set<BigDecimal> quantities = opicDtos.stream().map(op -> op.getDecimalField(L_QUANTITY)).collect(Collectors.toSet());
+
+                if(quantities.size() == 1) {
+                    FieldComponent qnt = (FieldComponent) view.getComponentByReference(ModifyTechnologyHelperFields.REPLACE_PRODUCT_QUANTITY);
+                    qnt.setFieldValue(quantities.stream().findFirst().get());
+                    qnt.requestComponentUpdateState();
+                }
             }
+
+
             FieldComponent replaceProductUnit = (FieldComponent) view.getComponentByReference(L_REPLACE_PRODUCT_UNIT);
             replaceProductUnit.setFieldValue(mt.getBelongsToField(L_MAIN_PRODUCT).getStringField(ProductFields.UNIT));
         }

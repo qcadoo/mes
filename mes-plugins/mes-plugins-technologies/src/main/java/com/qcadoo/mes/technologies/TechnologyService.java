@@ -311,10 +311,12 @@ public class TechnologyService {
         Predicate<Entity> condition;
 
         if (Objects.isNull(operationProductComponent.getId())) {
-            condition = opProduct -> Objects.nonNull(opProduct.getBelongsToField(L_PRODUCT)) && opProduct.getBelongsToField(L_PRODUCT).getId().equals(product.getId());
+            condition = opProduct -> Objects.nonNull(opProduct.getBelongsToField(L_PRODUCT))
+                    && opProduct.getBelongsToField(L_PRODUCT).getId().equals(product.getId());
         } else {
             condition = opProduct -> !opProduct.getId().equals(operationProductComponent.getId())
-                    && Objects.nonNull(opProduct.getBelongsToField(L_PRODUCT)) && opProduct.getBelongsToField(L_PRODUCT).getId().equals(product.getId());
+                    && Objects.nonNull(opProduct.getBelongsToField(L_PRODUCT))
+                    && opProduct.getBelongsToField(L_PRODUCT).getId().equals(product.getId());
         }
 
         return list.stream().anyMatch(condition);
@@ -347,7 +349,8 @@ public class TechnologyService {
             Entity product = technology.getBelongsToField(TechnologyFields.PRODUCT);
 
             for (Entity operationProductOutComponent : operationProductOutComponents) {
-                if (operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId().equals(product.getId())) {
+                if (operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId()
+                        .equals(product.getId())) {
                     return operationProductOutComponent;
                 }
             }
@@ -359,8 +362,8 @@ public class TechnologyService {
                 for (Entity operationProductInComponent : operationProductInComponents) {
                     Entity product = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
 
-                    if (Objects.nonNull(product) && operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId()
-                            .equals(product.getId())) {
+                    if (Objects.nonNull(product) && operationProductOutComponent
+                            .getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId().equals(product.getId())) {
                         return operationProductOutComponent;
                     }
                 }

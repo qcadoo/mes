@@ -279,8 +279,8 @@
                         <dataType name="material">
                             <option type="nodeLabelExpression"
                                     value="
-                                    (#technologyInputProductType != null ? '&lt;i&gt;' + #technologyInputProductType.get('name') + '&lt;/i&gt;' +' - ' : '') +
-                                    (#product != null ? '&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - ' + #product.get('name') + ' - ' + #quantity + ' ' + #product.get('unit') : #quantity + ' ' + #unit) +
+                                    (#technologyInputProductType != null ? '&lt;i&gt;' + #technologyInputProductType.get('name') + '&lt;/i&gt;' : '') +
+                                    (#product != null ? (#technologyInputProductType != null ? ' - ' : '') + '&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - ' + #product.get('name') + ' - ' + #quantity + ' ' + #product.get('unit') : (#variousQuantitiesInProductsBySize == '1' ? '' : ' - ' + #quantity + ' ' + #unit)) +
                                     (#differentProductsInDifferentSizes == '1' ? ' - ' + '@technologiesGenerator.generator.window.productStructure.differentProductsInDifferentSizes' : '')"/>
                             <option type="nodeIcon" value="/technologies/public/css/icons/materialIcon16.png"/>
                             <option type="newIcon" value="/technologies/public/css/icons/materialIcon16.png"/>
@@ -288,7 +288,8 @@
                         <dataType name="productBySizeGroup">
                             <option type="nodeLabelExpression"
                                     value="
-                                        '&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - ' + #product.get('name') + ' - ' + #sizeGroup.get('number')"/>
+                                        '&lt;span class=&quot;grey&quot;&gt;' + #product.get('number') + '&lt;/span&gt;' + ' - ' + #product.get('name') + ' - ' + #sizeGroup.get('number') +
+                                        (#variousQuantitiesInProductsBySize == '1' ? ' - ' + #quantity + ' ' + #unit : '')"/>
                             <option type="nodeIcon" value="/technologies/public/css/icons/productBySizeGroupIcon16.png"/>
                             <option type="newIcon" value="/technologies/public/css/icons/productBySizeGroupIcon16.png"/>
                         </dataType>
