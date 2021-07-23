@@ -101,6 +101,7 @@ public class TechnologyStructureTreeDataProvider {
             + "opic.givenUnit AS givenUnit,                                                       \n"
             + "technologyInputProductType.id AS technologyInputProductTypeId,                     \n"
             + "opic.differentProductsInDifferentSizes AS differentProductsInDifferentSizes,       \n"
+            + "opic.variousQuantitiesInProductsBySize AS variousQuantitiesInProductsBySize,       \n"
             + "operation.id AS operationId,                                                       \n"
             + "(SELECT count(*) FROM children c WHERE c.parent = toc.id) AS childrenCnt,          \n"
             + "(                                                                                  \n"
@@ -128,11 +129,14 @@ public class TechnologyStructureTreeDataProvider {
 
     private static final String PRODUCT_BY_SIZES_HQL = "SELECT                                    \n"
             + "opic.id AS opicId,                                                                 \n"
+            + "opic.variousQuantitiesInProductsBySize AS variousQuantitiesInProductsBySize,       \n"
             + "toc.id AS tocId,                                                                   \n"
             + "parent.id AS parentId,                                                             \n"
             + "operation.id AS operationId,                                                       \n"
             + "prod.id AS prodId,                                                                 \n"
-            + "sizeGroup.id AS sizeGroupId                                                        \n"
+            + "sizeGroup.id AS sizeGroupId,                                                       \n"
+            + "pbsg.quantity AS quantity,                                                         \n"
+            + "prod.unit AS givenUnit                                                             \n"
             + "FROM                                                                               \n"
             + "#technologies_productBySizeGroup pbsg                                              \n"
             + "LEFT JOIN pbsg.operationProductInComponent opic                                    \n"
@@ -195,6 +199,7 @@ public class TechnologyStructureTreeDataProvider {
         Optional<TechnologyInputProductTypeId> technologyInputProductType = Optional
                 .ofNullable((Long) projection.getField("technologyInputProductTypeId")).map(TechnologyInputProductTypeId::new);
         boolean differentProductsInDifferentSizes = projection.getBooleanField("differentProductsInDifferentSizes");
+        boolean variousQuantitiesInProductsBySize = projection.getBooleanField("variousQuantitiesInProductsBySize");
         OperationId operation = buildOperation(projection);
         BigDecimal quantity = projection.getDecimalField("quantity");
         boolean isIntermediate = projection.getBooleanField("isIntermediate");
@@ -202,7 +207,7 @@ public class TechnologyStructureTreeDataProvider {
         Optional<SizeGroupId> sizeGroup = Optional.ofNullable((Long) projection.getField("sizeGroupId")).map(SizeGroupId::new);
 
         return new ProductInfo(opicId, tocId, parentId, productId, quantity, prodTechnology, prodTechnology, technologyInputProductType,
-                differentProductsInDifferentSizes, operation, isIntermediate, givenUnit, sizeGroup);
+                differentProductsInDifferentSizes, variousQuantitiesInProductsBySize, operation, isIntermediate, givenUnit, sizeGroup);
     }
 
     private OperationId buildOperation(final Entity projection) {

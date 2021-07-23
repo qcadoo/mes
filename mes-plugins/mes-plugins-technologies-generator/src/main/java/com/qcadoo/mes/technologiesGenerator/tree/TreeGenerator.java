@@ -204,6 +204,8 @@ public class TreeGenerator {
         setUpTechnologyInputProductTypeField(entity, productInfo);
         entity.setField(GeneratorTreeNodeFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES,
                 productInfo.getDifferentProductsInDifferentSizes());
+        entity.setField(GeneratorTreeNodeFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE,
+                productInfo.getVariousQuantitiesInProductsBySize());
         setUpOperationField(entity, productInfo);
         setUpDivisionField(entity, productInfo);
         setUpTechnologyGeneratorAndPerformance(entity, productInfo);

@@ -40,6 +40,7 @@
 		<belongsTo name="product" plugin="basic" model="product"/>
 		<belongsTo name="technologyInputProductType" plugin="technologies" model="technologyInputProductType"/>
 		<boolean name="differentProductsInDifferentSizes" default="false"/>
+		<boolean name="variousQuantitiesInProductsBySize" default="false"/>
 		<belongsTo name="operation" model="technologyOperationComponent"/>
 		<belongsTo name="technology" model="technology" />
 		<belongsTo name="mainTechnology" model="technology" />
