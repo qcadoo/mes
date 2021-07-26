@@ -23,9 +23,19 @@
  */
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
-import com.qcadoo.mes.basicProductionCounting.constants.*;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityDtoFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -36,16 +46,9 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class ProductionCountingQuantityAdvancedDetailsHooks {
-
-    
 
     private static final String L_PLANNED_QUANTITY_UNIT = "plannedQuantityUnit";
 
@@ -56,6 +59,8 @@ public class ProductionCountingQuantityAdvancedDetailsHooks {
     private static final String L_USED_QUANTITY_GRID_LAYOUT = "usedQuantityGridLayout";
 
     private static final String L_PRODUCED_QUANTITY_GRID_LAYOUT = "producedQuantityGridLayout";
+
+    public static final String ATTRIBUTES = "attributes";
 
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
@@ -70,21 +75,30 @@ public class ProductionCountingQuantityAdvancedDetailsHooks {
         fillProductField(view);
         fillUnitFields(view);
         setTechnologyOperationComponentFieldRequired(view);
+        hideTab(view);
 
         FormComponent productionCountingQuantityForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (productionCountingQuantityForm.getEntityId() != null) {
-            Entity productionCountingQuantityDto = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                    BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY_DTO).get(
-                    productionCountingQuantityForm.getEntityId());
+            Entity productionCountingQuantityDto = dataDefinitionService
+                    .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                            BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY_DTO)
+                    .get(productionCountingQuantityForm.getEntityId());
             FieldComponent usedQuantity = (FieldComponent) view
                     .getComponentByReference(ProductionCountingQuantityDtoFields.USED_QUANTITY);
             FieldComponent producedQuantity = (FieldComponent) view
                     .getComponentByReference(ProductionCountingQuantityDtoFields.PRODUCED_QUANTITY);
-            usedQuantity.setFieldValue(productionCountingQuantityDto
-                    .getDecimalField(ProductionCountingQuantityDtoFields.USED_QUANTITY));
-            producedQuantity.setFieldValue(productionCountingQuantityDto
-                    .getDecimalField(ProductionCountingQuantityDtoFields.PRODUCED_QUANTITY));
+            usedQuantity.setFieldValue(
+                    productionCountingQuantityDto.getDecimalField(ProductionCountingQuantityDtoFields.USED_QUANTITY));
+            producedQuantity.setFieldValue(
+                    productionCountingQuantityDto.getDecimalField(ProductionCountingQuantityDtoFields.PRODUCED_QUANTITY));
         }
+    }
+
+    private void hideTab(ViewDefinitionState view) {
+        ComponentState attributesTab = view.getComponentByReference(ATTRIBUTES);
+        FieldComponent roleField = (FieldComponent) view.getComponentByReference(ProductionCountingQuantityFields.ROLE);
+        boolean isProduced = checkIfIsProduced((String) roleField.getFieldValue());
+        attributesTab.setVisible(isProduced);
     }
 
     private void setCriteriaModifierParameters(final ViewDefinitionState view) {
@@ -122,8 +136,6 @@ public class ProductionCountingQuantityAdvancedDetailsHooks {
                     filterValueHolder.put(OrderFields.TECHNOLOGY, technology.getId());
 
                     technologyOperationComponentLookup.setFilterValue(filterValueHolder);
-
-                    return;
                 }
             }
         }

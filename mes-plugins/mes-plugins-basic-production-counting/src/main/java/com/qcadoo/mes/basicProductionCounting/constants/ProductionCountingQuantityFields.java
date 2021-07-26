@@ -65,4 +65,6 @@ public final class ProductionCountingQuantityFields {
 
     public static final String SHOW_MATERIAL_COMPONENT_IN_WORK_PLAN = "showMaterialComponentInWorkPlan";
 
+    public static final String PRODUCTION_COUNTING_ATTRIBUTE_VALUES = "productionCountingAttributeValues";
+
 }

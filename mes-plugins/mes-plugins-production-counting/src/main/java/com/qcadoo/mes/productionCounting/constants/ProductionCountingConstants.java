@@ -61,14 +61,14 @@ public final class ProductionCountingConstants {
 
     public static final String MODEL_USED_BATCH = "usedBatch";
 
+    public static final String MODEL_PROD_OUT_RESOURCE_ATTR_VAL = "prodOutResourceAttrVal";
+
     // VIEW
 
     public static final String VIEW_EMPLOYEE_WORKING_TIME_SETTLEMENT = "employeeWorkingTimeSettlement";
 
-
-
     public static String productionTrackingDetailsUrl(final Long id) {
-        return "#page/" + PLUGIN_IDENTIFIER + "/" + MODEL_PRODUCTION_TRACKING + "Details.html?context=%7B%22form.id%22%3A%22"
-                + id + "%22%2C%22form.undefined%22%3Anull%7D";
+        return "#page/" + PLUGIN_IDENTIFIER + "/" + MODEL_PRODUCTION_TRACKING + "Details.html?context=%7B%22form.id%22%3A%22" + id
+                + "%22%2C%22form.undefined%22%3Anull%7D";
     }
 }

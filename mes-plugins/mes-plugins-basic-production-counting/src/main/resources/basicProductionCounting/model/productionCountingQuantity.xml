@@ -57,7 +57,8 @@
 
         <boolean name="flowFilled" persistent="false" default="false"/>
         <boolean name="showMaterialComponentInWorkPlan" default="false"/>
-
+        <hasMany name="productionCountingAttributeValues" joinField="productionCountingQuantity"
+                 model="productionCountingAttributeValue" cascade="delete"/>
     </fields>
 
     <hooks>

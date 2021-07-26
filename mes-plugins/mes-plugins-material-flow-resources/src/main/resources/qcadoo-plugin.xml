@@ -182,11 +182,6 @@
                            model="positionAttributeValue"/>
         </model:model-field>
 
-        <model:model-field plugin="materialFlowResources" model="position">
-            <model:hasMany name="positionAttributeValues" plugin="materialFlowResources" joinField="position"
-                           model="positionAttributeValue"/>
-        </model:model-field>
-
         <model:model-field plugin="basic" model="palletNumber">
             <model:hasMany name="resources" model="resource"
                            plugin="materialFlowResources" joinField="palletNumber" cascade="nullify"/>
@@ -197,23 +192,6 @@
                            plugin="materialFlowResources" joinField="address" cascade="nullify"/>
         </model:model-field>
 
-        <model:model-field plugin="materialFlowResources" model="resource">
-            <model:hasMany name="resourceAttributeValues" plugin="materialFlowResources" joinField="resource"
-                           model="resourceAttributeValue" cascade="delete"/>
-        </model:model-field>
-
-        <model:model-field plugin="materialFlowResources" model="resourceCorrection">
-            <model:hasMany name="resourceAttributeValueAfterCorrections" plugin="materialFlowResources"
-                           joinField="resourceCorrection"
-                           model="resourceAttributeValueAfterCorrection" cascade="nullify"/>
-        </model:model-field>
-
-        <model:model-field plugin="materialFlowResources" model="resourceCorrection">
-            <model:hasMany name="resourceAttributeValueBeforeCorrections" plugin="materialFlowResources"
-                           joinField="resourceCorrection"
-                           model="resourceAttributeValueBeforeCorrection" cascade="nullify"/>
-        </model:model-field>
-
         <model:model-field plugin="materialFlow" model="location">
             <model:enum name="algorithm" values="01fifo,02lifo,03fefo,04lefo" default="01fifo"/>
         </model:model-field>
@@ -222,7 +200,6 @@
             <model:enum name="directionConvertingQuantityAfterChangingConverter"
                         values="01fromBasicToAdditional,02fromAdditionalToBasicQuantity" default="01fromBasicToAdditional"/>
         </model:model-field>
-
 
         <model:model-field plugin="materialFlow" model="location">
             <model:boolean name="requirePrice"/>
