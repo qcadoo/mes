@@ -56,11 +56,18 @@
         <windowTab name="operationalTasksTab" reference="operationalTasksTab">
             <component type="form" name="planningParameters" reference="form">
                 <component type="gridLayout" name="mainTabGridLayout"
-                           columns="3" rows="1">
+                           columns="3" rows="2">
                     <layoutElement column="1" row="1">
                         <component type="checkbox" name="operTaskFlagPercentExecutionWithColor"
                                    field="#{form}.operTaskFlagPercentExecutionWithColor"
                                    reference="operTaskFlagPercentExecutionWithColor" hasDescription="true">
+                            <option type="labelWidth" value="40"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="2">
+                        <component type="checkbox" name="otCopyDescriptionFromProductionOrder"
+                                   field="#{form}.otCopyDescriptionFromProductionOrder"
+                                   reference="otCopyDescriptionFromProductionOrder" hasDescription="true">
                             <option type="labelWidth" value="40"/>
                         </component>
                     </layoutElement>

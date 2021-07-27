@@ -248,6 +248,11 @@
         <model:model-field plugin="basic" model="parameter">
             <model:boolean name="alwaysOrderItemsWithPersonalization" default="false"/>
         </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="otCopyDescriptionFromProductionOrder" default="false"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="parameter">
             <model:hasMany name="realizationLocations" joinField="realizationLocation" model="location" plugin="materialFlow"/>
         </model:model-field>
