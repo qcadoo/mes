@@ -1,10 +1,5 @@
 package com.qcadoo.mes.productionCounting.controller;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.ColumnDTO;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -14,6 +9,11 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.ColumnDTO;
 
 @Service
 public class EmployeeWorkingTimeSettlementDataProvider {
@@ -56,25 +56,26 @@ public class EmployeeWorkingTimeSettlementDataProvider {
 
         List<ColumnDTO> columns = Lists.newArrayList();
 
-        columns.add(new ColumnDTO(L_WORKER, translationService.translate(
-                "productionCounting.employeeWorkingTimeSettlement.window.mainTab.grid.column.worker", locale)));
-        columns.add(new ColumnDTO(L_START_DATE, translationService.translate(
-                "productionCounting.employeeWorkingTimeSettlement.window.mainTab.grid.column.startDate", locale)));
-        columns.add(new ColumnDTO(L_FINISH_DATE, translationService.translate(
-                "productionCounting.employeeWorkingTimeSettlement.window.mainTab.grid.column.finishDate", locale)));
-        columns.add(new ColumnDTO(L_WORK_TIME, translationService.translate(
-                "productionCounting.employeeWorkingTimeSettlement.window.mainTab.grid.column.workTime", locale),
+        columns.add(new ColumnDTO(L_WORKER, translationService
+                .translate("productionCounting.employeeWorkingTimeSettlement.window.mainTab.grid.column.worker", locale)));
+        columns.add(new ColumnDTO(L_START_DATE, translationService
+                .translate("productionCounting.employeeWorkingTimeSettlement.window.mainTab.grid.column.startDate", locale)));
+        columns.add(new ColumnDTO(L_FINISH_DATE, translationService
+                .translate("productionCounting.employeeWorkingTimeSettlement.window.mainTab.grid.column.finishDate", locale)));
+        columns.add(new ColumnDTO(L_WORK_TIME,
+                translationService.translate(
+                        "productionCounting.employeeWorkingTimeSettlement.window.mainTab.grid.column.workTime", locale),
                 NUMERIC_DATA_TYPE));
-        columns.add(new ColumnDTO(L_SHIFT_NUMBER, translationService.translate(
-                "productionCounting.employeeWorkingTimeSettlement.window.mainTab.grid.column.shiftNumber", locale)));
+        columns.add(new ColumnDTO(L_SHIFT_NUMBER, translationService
+                .translate("productionCounting.employeeWorkingTimeSettlement.window.mainTab.grid.column.shiftNumber", locale)));
         columns.add(new ColumnDTO(L_SHIFT_START_DATE, translationService.translate(
                 "productionCounting.employeeWorkingTimeSettlement.window.mainTab.grid.column.shiftStartDate", locale)));
-        columns.add(new ColumnDTO(L_ORDER_NUMBER, translationService.translate(
-                "productionCounting.employeeWorkingTimeSettlement.window.mainTab.grid.column.orderNumber", locale)));
+        columns.add(new ColumnDTO(L_ORDER_NUMBER, translationService
+                .translate("productionCounting.employeeWorkingTimeSettlement.window.mainTab.grid.column.orderNumber", locale)));
         columns.add(new ColumnDTO(L_OPERATION_NUMBER, translationService.translate(
                 "productionCounting.employeeWorkingTimeSettlement.window.mainTab.grid.column.operationNumber", locale)));
-        columns.add(new ColumnDTO(L_PRODUCT_NUMBER, translationService.translate(
-                "productionCounting.employeeWorkingTimeSettlement.window.mainTab.grid.column.productNumber", locale)));
+        columns.add(new ColumnDTO(L_PRODUCT_NUMBER, translationService
+                .translate("productionCounting.employeeWorkingTimeSettlement.window.mainTab.grid.column.productNumber", locale)));
         columns.add(new ColumnDTO(L_DIVISION_NUMBER, translationService.translate(
                 "productionCounting.employeeWorkingTimeSettlement.window.mainTab.grid.column.divisionNumber", locale)));
         columns.add(new ColumnDTO(L_PRODUCTION_LINE_NUMBER, translationService.translate(
@@ -101,9 +102,10 @@ public class EmployeeWorkingTimeSettlementDataProvider {
         appendBaseQuery(queryShiftPart);
         appendBaseQuery(queryCreateDatePart);
 
-        queryShiftPart.append("WHERE pt.shiftstartday IS NOT NULL AND pt.shiftstartday BETWEEN '").append(dateFrom).append("' AND '").append(dateTo + L_TIME_PART).append("'  ");
-        queryCreateDatePart.append("WHERE pt.shiftstartday IS NULL AND pt.createdate BETWEEN '").append(dateFrom).append("' AND '").append(dateTo + L_TIME_PART).append("'  ");
-
+        queryShiftPart.append("WHERE pt.shiftstartday IS NOT NULL AND pt.shiftstartday BETWEEN '").append(dateFrom)
+                .append("' AND '").append(dateTo).append(L_TIME_PART).append("'  ");
+        queryCreateDatePart.append("WHERE pt.shiftstartday IS NULL AND pt.createdate BETWEEN '").append(dateFrom)
+                .append("' AND '").append(dateTo).append(L_TIME_PART).append("'  ");
 
         appendFilters(filters, queryShiftPart);
         appendFilters(filters, queryCreateDatePart);
@@ -111,9 +113,9 @@ public class EmployeeWorkingTimeSettlementDataProvider {
         appendSort(sortColumn, sortAsc, queryShiftPart);
         appendSort(sortColumn, sortAsc, queryCreateDatePart);
 
-        query.append(queryShiftPart.toString());
+        query.append("(").append(queryShiftPart).append(")");
         query.append(" UNION ALL ");
-        query.append(queryCreateDatePart.toString());
+        query.append("(").append(queryCreateDatePart).append(")");
 
         return jdbcTemplate.queryForList(query.toString(), Maps.newHashMap());
     }
@@ -135,7 +137,8 @@ public class EmployeeWorkingTimeSettlementDataProvider {
         query.append("pl.number AS \"productionLineNumber\", ");
         query.append("w.number AS \"workstationNumber\" ");
         query.append("FROM productioncounting_staffworktime swt ");
-        query.append("JOIN productioncounting_productiontracking pt ON swt.productionrecord_id = pt.id AND pt.state = '02accepted' ");
+        query.append(
+                "JOIN productioncounting_productiontracking pt ON swt.productionrecord_id = pt.id AND pt.state = '02accepted' ");
         query.append("JOIN orders_order o ON o.id = pt.order_id ");
         query.append("JOIN basic_product p ON o.product_id = p.id ");
         query.append("LEFT JOIN productionlines_productionline pl ON o.productionline_id = pl.id ");
