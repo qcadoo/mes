@@ -194,9 +194,7 @@
                 <option type="fullscreen" value="true"/>
                 <option type="multiselect" value="true"/>
             </component>
-
         </windowTab>
-
     </component>
 
     <hooks>

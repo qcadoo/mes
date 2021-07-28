@@ -57,4 +57,6 @@ public final class MasterOrderProductFields {
 
     public static final String ORDERS = "orders";
 
+    public static final String MASTER_ORDER_PRODUCT_ATTR_VALUES = "masterOrderProductAttrValues";
+
 }

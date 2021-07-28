@@ -135,7 +135,7 @@ public class MasterOrderPositionsListListeners {
 
             ordersGenerationService.generateOrders(masterOrderProducts, null, null, true).showMessage(view);
 
-            state.performEvent(view, "reset", new String[0]);
+            state.performEvent(view, "reset");
         }
     }
 
@@ -161,9 +161,7 @@ public class MasterOrderPositionsListListeners {
 
     public void openMasterOrdersImportPage(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
-        StringBuilder url = new StringBuilder("../page/masterOrders/masterOrdersImport.html");
-
-        view.openModal(url.toString());
+        view.openModal("../page/masterOrders/masterOrdersImport.html");
     }
 
     private DataDefinition getGeneratingOrdersHelperDD() {

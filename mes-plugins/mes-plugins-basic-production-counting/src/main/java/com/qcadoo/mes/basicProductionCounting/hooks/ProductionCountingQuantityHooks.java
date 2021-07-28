@@ -23,32 +23,85 @@
  */
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
+import static com.qcadoo.model.api.search.SearchOrders.asc;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
+import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
 import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingAttributeValueFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import static com.qcadoo.model.api.search.SearchOrders.asc;
+import com.qcadoo.plugin.api.PluginUtils;
 
 @Service
 public class ProductionCountingQuantityHooks {
 
+    public static final String MASTER_ORDERS = "masterOrders";
+
+    public static final String MASTER_ORDER = "masterOrder";
+
+    public static final String MASTER_ORDER_PRODUCT = "masterOrderProduct";
+
+    public static final String MASTER_ORDER_PRODUCT_ATTR_VALUES = "masterOrderProductAttrValues";
+
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public void onCreate(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
         fillOrder(productionCountingQuantity);
         fillBasicProductionCounting(productionCountingQuantity);
         fillIsNonComponent(productionCountingQuantity);
+        moveAttributesFromMasterOrderProduct(productionCountingQuantity);
+    }
+
+    private void moveAttributesFromMasterOrderProduct(Entity productionCountingQuantity) {
+        Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
+        if (order != null && PluginUtils.isEnabled(MASTER_ORDERS) && order.getBelongsToField(MASTER_ORDER) != null) {
+            Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
+            if (product != null) {
+                String typeOfMaterial = productionCountingQuantity
+                        .getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
+                if (checkIfIsFinalProduct(typeOfMaterial)) {
+                    List<Entity> masterOrderProductAttrValues = dataDefinitionService.get(MASTER_ORDERS, MASTER_ORDER_PRODUCT)
+                            .find().add(SearchRestrictions.belongsTo(MASTER_ORDER, order.getBelongsToField(MASTER_ORDER)))
+                            .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product)).setMaxResults(1)
+                            .uniqueResult().getHasManyField(MASTER_ORDER_PRODUCT_ATTR_VALUES);
+                    List<Entity> productionCountingAttributeValues = Lists.newArrayList();
+                    for (Entity masterOrderProductAttrValue : masterOrderProductAttrValues) {
+                        Entity productionCountingAttributeValue = dataDefinitionService
+                                .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                                        BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_ATTRIBUTE_VALUE)
+                                .create();
+                        productionCountingAttributeValue.setField(ProductionCountingAttributeValueFields.ATTRIBUTE,
+                                masterOrderProductAttrValue.getField(ProductionCountingAttributeValueFields.ATTRIBUTE));
+                        productionCountingAttributeValue.setField(ProductionCountingAttributeValueFields.ATTRIBUTE_VALUE,
+                                masterOrderProductAttrValue.getField(ProductionCountingAttributeValueFields.ATTRIBUTE_VALUE));
+                        productionCountingAttributeValue.setField(ProductionCountingAttributeValueFields.VALUE,
+                                masterOrderProductAttrValue.getField(ProductionCountingAttributeValueFields.VALUE));
+                        productionCountingAttributeValues.add(productionCountingAttributeValue);
+                    }
+                    productionCountingQuantity.setField(ProductionCountingQuantityFields.PRODUCTION_COUNTING_ATTRIBUTE_VALUES,
+                            productionCountingAttributeValues);
+                }
+            }
+        }
     }
 
     public boolean onDelete(final DataDefinition productionCountingQuantityDD, final Entity productionCountingQuantity) {
@@ -115,11 +168,7 @@ public class ProductionCountingQuantityHooks {
         if (productionCountingQuantity.getField(ProductionCountingQuantityFields.IS_NON_COMPONENT) == null) {
             String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
 
-            boolean isNonComponent = true;
-
-            if (checkIfIsFinalProduct(typeOfMaterial) || checkIfIsComponent(typeOfMaterial)) {
-                isNonComponent = false;
-            }
+            boolean isNonComponent = !checkIfIsFinalProduct(typeOfMaterial) && !checkIfIsComponent(typeOfMaterial);
 
             productionCountingQuantity.setField(ProductionCountingQuantityFields.IS_NON_COMPONENT, isNonComponent);
         }

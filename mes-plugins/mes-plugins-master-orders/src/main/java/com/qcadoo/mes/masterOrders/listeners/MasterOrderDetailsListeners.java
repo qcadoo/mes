@@ -23,9 +23,20 @@
  */
 package com.qcadoo.mes.masterOrders.listeners;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.masterOrders.OrdersFromMOProductsGenerationService;
-import com.qcadoo.mes.masterOrders.constants.*;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
+import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
+import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
+import com.qcadoo.mes.masterOrders.constants.ProductsBySizeHelperFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.PluginUtils;
@@ -38,12 +49,6 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class MasterOrderDetailsListeners {
@@ -58,12 +63,12 @@ public class MasterOrderDetailsListeners {
 
     public void onAddExistingEntity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        form.performEvent(view, "reset", new String[0]);
+        form.performEvent(view, "reset");
     }
 
     public void onRemoveSelectedEntity(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        form.performEvent(view, "reset", new String[0]);
+        form.performEvent(view, "reset");
     }
 
     public void changeState(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -80,7 +85,7 @@ public class MasterOrderDetailsListeners {
             masterOrderDB.setField(MasterOrderFields.STATE, MasterOrderState.DECLINED.getStringValue());
             masterOrderDB.getDataDefinition().save(masterOrderDB);
         }
-        state.performEvent(view, "reset", new String[0]);
+        state.performEvent(view, "reset");
     }
 
     public void clearAddress(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -94,15 +99,13 @@ public class MasterOrderDetailsListeners {
                 .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
-        RibbonGroup orders = (RibbonGroup) window.getRibbon().getGroupByName("orders");
-        RibbonActionItem createOrder = (RibbonActionItem) orders.getItemByName("createOrder");
+        RibbonGroup orders = window.getRibbon().getGroupByName("orders");
+        RibbonActionItem createOrder = orders.getItemByName("createOrder");
 
         if (masterOrderProductsGrid.getSelectedEntities().isEmpty()) {
             createOrder.setEnabled(false);
-        } else if (masterOrderProductsGrid.getSelectedEntities().size() == 1) {
-            createOrder.setEnabled(true);
         } else {
-            createOrder.setEnabled(false);
+            createOrder.setEnabled(masterOrderProductsGrid.getSelectedEntities().size() == 1);
         }
 
         createOrder.requestUpdate(true);
@@ -115,7 +118,8 @@ public class MasterOrderDetailsListeners {
 
     public void addProductsBySize(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Entity helper = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_PRODUCTS_BY_SIZE_HELPER).create();
+        Entity helper = dataDefinitionService
+                .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_PRODUCTS_BY_SIZE_HELPER).create();
         helper.setField(ProductsBySizeHelperFields.MASTER_ORDER, form.getEntityId());
         helper = helper.getDataDefinition().save(helper);
 
@@ -131,7 +135,7 @@ public class MasterOrderDetailsListeners {
                 .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
         List<Entity> masterOrderProducts = masterOrderProductsGrid.getSelectedEntities();
         ordersGenerationService.generateOrders(masterOrderProducts, null, null, true).showMessage(view);
-        state.performEvent(view, "reset", new String[0]);
+        state.performEvent(view, "reset");
     }
 
     public void createOrder(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -170,13 +174,9 @@ public class MasterOrderDetailsListeners {
     }
 
     private Entity extractMasterOrderProduct(Entity masterOrderProduct) {
-        Optional<Entity> dtoEntity = Optional.ofNullable(masterOrderProduct.getDataDefinition().getMasterModelEntity(
-                masterOrderProduct.getId()));
-        if (dtoEntity.isPresent()) {
-            return dtoEntity.get();
-        } else {
-            return masterOrderProduct;
-        }
+        Optional<Entity> dtoEntity = Optional
+                .ofNullable(masterOrderProduct.getDataDefinition().getMasterModelEntity(masterOrderProduct.getId()));
+        return dtoEntity.orElse(masterOrderProduct);
     }
 
 }
