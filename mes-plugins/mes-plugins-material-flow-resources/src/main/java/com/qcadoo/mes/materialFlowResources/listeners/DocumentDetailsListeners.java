@@ -23,13 +23,44 @@
  */
 package com.qcadoo.mes.materialFlowResources.listeners;
 
+import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.ESILCO;
+import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.REALIZED;
+
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.exception.LockAcquisitionException;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.materialFlowResources.constants.*;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
+import com.qcadoo.mes.materialFlowResources.constants.OrdersGroupIssuedMaterialFields;
+import com.qcadoo.mes.materialFlowResources.constants.ParameterFieldsMFR;
+import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
+import com.qcadoo.mes.materialFlowResources.constants.ResourceFields;
 import com.qcadoo.mes.materialFlowResources.exceptions.InvalidResourceException;
 import com.qcadoo.mes.materialFlowResources.print.DispositionOrderPdfService;
-import com.qcadoo.mes.materialFlowResources.service.*;
+import com.qcadoo.mes.materialFlowResources.service.DocumentErrorsLogger;
+import com.qcadoo.mes.materialFlowResources.service.DocumentService;
+import com.qcadoo.mes.materialFlowResources.service.DocumentStateChangeService;
+import com.qcadoo.mes.materialFlowResources.service.ReceiptDocumentForReleaseHelper;
+import com.qcadoo.mes.materialFlowResources.service.ResourceManagementService;
+import com.qcadoo.mes.materialFlowResources.service.ResourceStockService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -45,20 +76,6 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.exception.LockAcquisitionException;
-import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.TransactionAspectSupport;
-
-import java.util.*;
-
-import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.ESILCO;
-import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.REALIZED;
 
 @Service
 public class DocumentDetailsListeners {
@@ -289,16 +306,14 @@ public class DocumentDetailsListeners {
                 } catch (InvalidResourceException ire) {
                     document.setNotValid();
 
+                    String productNumber = ire.getEntity().getBelongsToField(ResourceFields.PRODUCT)
+                            .getStringField(ProductFields.NUMBER);
                     if ("materialFlow.error.position.batch.required"
                             .equals(ire.getEntity().getError(ResourceFields.BATCH).getMessage())) {
-                        String productNumber = ire.getEntity().getBelongsToField(ResourceFields.PRODUCT)
-                                .getStringField(ProductFields.NUMBER);
                         documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource.batchRequired",
                                 MessageType.FAILURE, false, productNumber);
                     } else {
                         String resourceNumber = ire.getEntity().getStringField(ResourceFields.NUMBER);
-                        String productNumber = ire.getEntity().getBelongsToField(ResourceFields.PRODUCT)
-                                .getStringField(ProductFields.NUMBER);
 
                         documentForm.addMessage("materialFlow.document.validate.global.error.invalidResource",
                                 MessageType.FAILURE, false, resourceNumber, productNumber);
@@ -308,12 +323,13 @@ public class DocumentDetailsListeners {
                 document.setNotValid();
 
                 documentForm.addMessage("materialFlow.document.validate.global.error.positionsBlockedForQualityControl",
-                        MessageType.FAILURE, blockedResources);
+                        MessageType.FAILURE, document.getStringField(DocumentFields.NUMBER), blockedResources);
             }
         } else {
             document.setNotValid();
 
-            documentForm.addMessage("materialFlow.document.validate.global.error.emptyPositions", MessageType.FAILURE);
+            documentForm.addMessage("materialFlow.document.validate.global.error.emptyPositions", MessageType.FAILURE,
+                    document.getStringField(DocumentFields.NUMBER));
         }
 
         if (!document.isValid()) {
