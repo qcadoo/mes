@@ -521,6 +521,8 @@
         <view:view resource="view/technologicalProcessRateDetails.xml"/>
         <view:view resource="view/technologicalProcessRateItemDetails.xml"/>
 
+        <view:view resource="view/companyDefaultProducts.xml"/>
+
         <menu:menu-item name="technologicalProcessRateList" category="staff"
                         view="technologicalProcessRateList" defaultAuthorizationRole="ROLE_TECHNOLOGICAL_PROCESSES"/>
 
