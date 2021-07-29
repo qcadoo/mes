@@ -42,6 +42,26 @@ public class OperationalTaskHooks {
     public void onSave(final DataDefinition operationalTaskDD, final Entity operationalTask) {
         fillNameAndDescription(operationalTask);
         fillProductionLine(operationalTask);
+        changeDateInOrder(operationalTask);
+    }
+
+    private void changeDateInOrder(Entity operationalTask) {
+        if (parameterService.getParameter().getBooleanField("setOrderDatesBasedOnTaskDates")) {
+            Entity order = operationalTask.getBelongsToField(OperationalTaskFields.ORDER);
+            boolean changed = false;
+            if (order.getDateField(OrderFields.START_DATE).after(operationalTask.getDateField(OperationalTaskFields.START_DATE))) {
+                changed = true;
+                order.setField(OrderFields.START_DATE, operationalTask.getDateField(OperationalTaskFields.START_DATE));
+            }
+            if (order.getDateField(OrderFields.FINISH_DATE).before(
+                    operationalTask.getDateField(OperationalTaskFields.FINISH_DATE))) {
+                changed = true;
+                order.setField(OrderFields.FINISH_DATE, operationalTask.getDateField(OperationalTaskFields.FINISH_DATE));
+            }
+            if (changed) {
+                order.getDataDefinition().save(order);
+            }
+        }
     }
 
     private void fillNameAndDescription(final Entity operationalTask) {
