@@ -1,5 +1,20 @@
 package com.qcadoo.mes.masterOrders;
 
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
@@ -32,21 +47,6 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.constants.DictionaryItemFields;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
 
 @Service
 public class OrdersFromMOProductsGenerationService {
@@ -133,7 +133,7 @@ public class OrdersFromMOProductsGenerationService {
                         .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO)
                         .find(hql);
 
-                scb.setParameterList("ids", entry.getValue().stream().map(e -> e.getId()).collect(Collectors.toList()));
+                scb.setParameterList("ids", entry.getValue().stream().map(Entity::getId).collect(Collectors.toList()));
 
                 Entity quantityRemainingToOrderResult = scb.setMaxResults(1).uniqueResult();
 
@@ -235,7 +235,7 @@ public class OrdersFromMOProductsGenerationService {
 
                 masterOrderProductEntity.setField(MasterOrderProductFields.QUANTITY_TAKEN_FROM_WAREHOUSE,
                         quantityRemainingToOrder);
-                setMasterOrderPositionStatus(masterOrderProductEntity, MasterOrderPositionStatus.ORDERED);
+                setMasterOrderPositionStatus(masterOrderProductEntity);
                 masterOrderProductEntity.getDataDefinition().save(masterOrderProductEntity);
             }
 
@@ -428,12 +428,12 @@ public class OrdersFromMOProductsGenerationService {
         if (!masterOrderProduct.isCreateCollectiveOrders()) {
             Entity masterOrderProductEntity = masterOrderProduct.getMasterOrderProduct();
 
-            setMasterOrderPositionStatus(masterOrderProductEntity, MasterOrderPositionStatus.ORDERED);
+            setMasterOrderPositionStatus(masterOrderProductEntity);
 
             masterOrderProductEntity.getDataDefinition().save(masterOrderProductEntity);
         } else {
             for (Entity mop : masterOrderProduct.getGroupedMasterOrderProduct()) {
-                setMasterOrderPositionStatus(mop, MasterOrderPositionStatus.ORDERED);
+                setMasterOrderPositionStatus(mop);
 
                 mop = mop.getDataDefinition().save(mop);
                 mop.isValid();
@@ -551,8 +551,8 @@ public class OrdersFromMOProductsGenerationService {
         }
     }
 
-    private void setMasterOrderPositionStatus(final Entity masterOrderProduct, final MasterOrderPositionStatus status) {
-        Entity item = dictionaryService.getItemEntityByTechnicalCode(L_MASTER_ORDER_POSITION_STATUS, status.getStringValue());
+    private void setMasterOrderPositionStatus(final Entity masterOrderProduct) {
+        Entity item = dictionaryService.getItemEntityByTechnicalCode(L_MASTER_ORDER_POSITION_STATUS, MasterOrderPositionStatus.ORDERED.getStringValue());
 
         if (Objects.nonNull(item)) {
             masterOrderProduct.setField(MasterOrderProductFields.MASTER_ORDER_POSITION_STATUS,
