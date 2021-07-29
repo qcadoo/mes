@@ -64,15 +64,6 @@
         </ribbon>
 
         <component type="form" name="product" reference="form">
-            <script>
-                <![CDATA[
-						var addMultipleDefaultProducts = #{window}.getRibbonItem("products.addMultipleDefaultProducts");
-
-						this.addOnChangeListener({
-						    addMultipleDefaultProducts.enable("#{translate(basic.companyDetails.window.ribbon.products.addMultipleDefaultProducts.desc)}");
-						});
-					]]>
-            </script>
             <component type="gridLayout" name="gridsLayout" columns="1"
                        rows="1" hasBorders="false">
                 <layoutElement column="1" row="1">
