@@ -56,7 +56,7 @@
         <windowTab name="operationalTasksTab" reference="operationalTasksTab">
             <component type="form" name="planningParameters" reference="form">
                 <component type="gridLayout" name="mainTabGridLayout"
-                           columns="3" rows="3">
+                           columns="3" rows="4">
                     <layoutElement column="1" row="1">
                         <component type="checkbox" name="operTaskFlagPercentExecutionWithColor"
                                    field="#{form}.operTaskFlagPercentExecutionWithColor"
@@ -75,6 +75,13 @@
                         <component type="checkbox" name="setOrderDatesBasedOnTaskDates"
                                    field="#{form}.setOrderDatesBasedOnTaskDates"
                                    reference="setOrderDatesBasedOnTaskDates" hasDescription="true">
+                            <option type="labelWidth" value="40"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="4">
+                        <component type="checkbox" name="automaticallyGenerateTasksForOrder"
+                                   field="#{form}.automaticallyGenerateTasksForOrder"
+                                   reference="automaticallyGenerateTasksForOrder" hasDescription="true">
                             <option type="labelWidth" value="40"/>
                         </component>
                     </layoutElement>

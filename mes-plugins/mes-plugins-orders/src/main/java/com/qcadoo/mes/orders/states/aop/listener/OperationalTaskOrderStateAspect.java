@@ -1,11 +1,5 @@
 package com.qcadoo.mes.orders.states.aop.listener;
 
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
-
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.OperationalTaskOrderStateService;
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
@@ -17,6 +11,12 @@ import com.qcadoo.mes.states.annotation.RunInPhase;
 import com.qcadoo.mes.states.aop.AbstractStateListenerAspect;
 import com.qcadoo.plugin.api.RunIfEnabled;
 
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Configurable;
+
 @Aspect
 @Configurable
 @RunIfEnabled(OrdersConstants.PLUGIN_IDENTIFIER)
@@ -27,6 +27,13 @@ public class OperationalTaskOrderStateAspect extends AbstractStateListenerAspect
 
     @Pointcut(OrderStateChangeAspect.SELECTOR_POINTCUT)
     protected void targetServicePointcut() {
+    }
+
+    @RunInPhase(OrderStateChangePhase.DEFAULT)
+    @RunForStateTransition(targetState = OrderStateStringValues.ACCEPTED)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void generateOperationalTasks(final StateChangeContext stateChangeContext, final int phase) {
+        operationalTaskOrderStateService.generateOperationalTasks(stateChangeContext);
     }
 
     @RunInPhase(OrderStateChangePhase.DEFAULT)
