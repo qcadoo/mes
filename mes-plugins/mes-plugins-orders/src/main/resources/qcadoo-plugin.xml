@@ -393,6 +393,10 @@
             <model:boolean name="automaticallyGenerateTasksForOrder" default="false"/>
         </model:model-field>
 
+        <model:model-field plugin="basic"  model="parameter">
+            <model:boolean name="automaticallyGenerateProcessesForOrder" default="false"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="shift">
             <model:hasMany name="operationalTaskStateChanges"
                            plugin="orders" model="operationalTaskStateChange"

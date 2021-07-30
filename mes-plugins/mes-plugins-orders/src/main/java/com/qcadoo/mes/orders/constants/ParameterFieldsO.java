@@ -91,4 +91,6 @@ public final class ParameterFieldsO {
 
     public static final String SCHEDULE_SORT_ORDER = "scheduleSortOrder";
 
+    public static final String AUTOMATICALLY_GENERATE_PROCESSES_FOR_ORDER = "automaticallyGenerateProcessesForOrder";
+
 }
