@@ -25,6 +25,7 @@ package com.qcadoo.mes.orders;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ShiftsService;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
@@ -173,6 +174,15 @@ public class TechnologyServiceO {
 
     public DataDefinition getTechnologyDD() {
         return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY);
+    }
+
+    public Long getDefaultTechnology(final Long productId) {
+        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(productId);
+        Entity dt = getDefaultTechnology(product);
+        if(Objects.nonNull(dt)) {
+            return dt.getId();
+        }
+        return null;
     }
 
     public Entity getDefaultTechnology(final Entity product) {
