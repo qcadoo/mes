@@ -33,6 +33,7 @@
                    required="true"/>
         <belongsTo name="productFamily" plugin="basic" model="product"/>
         <belongsTo name="product" plugin="basic" model="product"/>
+        <belongsTo name="technology" plugin="technologies" model="technology"/>
         <decimal name="plannedQuantity"/>
         <decimal name="orderedQuantity"/>
         <decimal name="orderQuantity"/>
