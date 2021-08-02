@@ -30,7 +30,7 @@
     <component type="window" name="window">
 
         <ribbon>
-            <template name="standardFormTemplate" includeItems="navigation.back, actions.saveBack, actions.saveNew"/>
+            <template name="standardFormTemplate" includeItems="navigation.back, actions.save, actions.saveBack, actions.saveNew"/>
         </ribbon>
 
         <windowTab name="mainTab">
