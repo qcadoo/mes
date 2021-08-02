@@ -40,18 +40,18 @@ import com.qcadoo.model.constants.DictionaryFields;
 import com.qcadoo.model.constants.DictionaryItemFields;
 import com.qcadoo.model.constants.QcadooModelConstants;
 import com.qcadoo.report.api.xls.XlsDocumentService;
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.ss.util.CellRangeAddress;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class AssignmentToShiftXlsService extends XlsDocumentService {
@@ -216,7 +216,6 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
                 HSSFCell cell = firstRowInSection.createCell(0);
                 cell.setCellValue(productionLineValue);
-                sheet.addMergedRegion(new CellRangeAddress(rowNumFromLastSection, rowNum - 1, 0, 0));
 
                 int columnNumber = 1;
                 int maxLength = 0;
@@ -361,7 +360,6 @@ public class AssignmentToShiftXlsService extends XlsDocumentService {
 
             HSSFCell cell = firstRowInSection.createCell(0);
             cell.setCellValue(occupationTypeValue);
-            sheet.addMergedRegion(new CellRangeAddress(rowNumFromLastSection, rowNum - 1, 0, 0));
 
             int columnNumber = 1;
 
