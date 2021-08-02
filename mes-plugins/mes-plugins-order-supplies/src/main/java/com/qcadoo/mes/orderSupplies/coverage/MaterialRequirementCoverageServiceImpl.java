@@ -877,9 +877,6 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
     private void fillCoverageProductSupplier(final Map<Long, Entity> productAndCoverageProducts) {
         productAndCoverageProducts
                 .values()
-                .stream()
-                .filter(coverageProduct -> CoverageProductState.LACK.getStringValue().equals(
-                        coverageProduct.getStringField(CoverageProductFields.STATE)))
                 .forEach(
                         coverageProduct -> deliveriesService.getDefaultSupplierWithIntegration(
                                 coverageProduct.getBelongsToField(CoverageProductFields.PRODUCT).getId()).ifPresent(
