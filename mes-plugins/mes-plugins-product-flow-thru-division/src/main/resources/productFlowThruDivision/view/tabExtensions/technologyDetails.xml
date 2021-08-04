@@ -182,7 +182,7 @@
             </layoutElement>
 
             <layoutElement column="1" row="2" width="2">
-                <component type="lookup" name="componentsOutputLocation"
+                <component type="lookup" name="componentsOutputLocation" hasDescription="true"
                            field="#{form}.componentsOutputLocation" reference="componentsOutputLocation">
                     <option type="column" name="name" fields="name"/>
 
