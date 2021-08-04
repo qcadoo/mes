@@ -87,4 +87,6 @@ public final class ProductFields {
 
     public static final String PRODUCT_ATTACHMENTS = "productAttachments";
 
+    public static final String SYNCHRONIZE = "synchronize";
+
 }
