@@ -43,6 +43,7 @@ public class CompanyDefaultProductsListeners {
             Long companyId = obj.getLong("window.mainTab.product.companyId");
             try {
                 tryCreatePositions(grid, companyId);
+                view.addMessage("basic.companyDefaultProducts.info.generationSuccess", ComponentState.MessageType.SUCCESS);
                 generated.setChecked(true);
             } catch (EntityRuntimeException ere) {
                 generated.setChecked(false);
@@ -58,14 +59,16 @@ public class CompanyDefaultProductsListeners {
             Entity defaultProductCompany = getCompanyProductDD()
                     .find()
                     .add(SearchRestrictions.belongsTo(L_PRODUCT, BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT,
-                            productId)).add(SearchRestrictions.eq(L_IS_DEFAULT, Boolean.TRUE)).setMaxResults(1).uniqueResult();
+                            productId)).setMaxResults(1).uniqueResult();
 
             Entity productCompany = null;
             if (Objects.nonNull(defaultProductCompany)) {
                 if (defaultProductCompany.getBelongsToField(L_COMPANY).getId().equals(companyId)) {
                     productCompany = defaultProductCompany;
-                } else {
+                } else if (defaultProductCompany.getBooleanField(L_IS_DEFAULT)) {
                     throw new EntityRuntimeException(defaultProductCompany);
+                } else {
+                    productCompany = getCompanyProductDD().create();
                 }
 
             } else {
