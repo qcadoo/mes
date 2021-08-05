@@ -1,6 +1,7 @@
 package com.qcadoo.mes.orders.hooks;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.newstates.StateExecutorService;
@@ -80,11 +81,12 @@ public class OperationalTaskHooks {
         if (operationalTasksService.isOperationalTaskTypeExecutionOperationInOrder(type)) {
             if (parameterService.getParameter().getBooleanField("setOrderDatesBasedOnTaskDates")) {
                 Entity order = operationalTask.getBelongsToField(OperationalTaskFields.ORDER);
-                List<Entity> operationalTasks = order.getHasManyField(OrderFields.OPERATIONAL_TASKS);
+                List<Entity> operationalTasks = Lists.newArrayList(order.getHasManyField(OrderFields.OPERATIONAL_TASKS));
                 if(Objects.nonNull(operationalTask.getId())) {
                     operationalTasks = operationalTasks.stream().filter(op -> !op.getId().equals(operationalTask.getId())).collect(
                             Collectors.toList());
                 }
+
                 operationalTasks.add(operationalTask);
                 Date start = operationalTasks.stream().map(o -> o.getDateField(OperationalTaskFields.START_DATE))
                         .min(Date::compareTo).get();
