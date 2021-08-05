@@ -14,8 +14,10 @@ import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,20 +75,36 @@ public class OperationalTaskHooks {
     }
 
     private void changeDateInOrder(Entity operationalTask) {
-        if (parameterService.getParameter().getBooleanField("setOrderDatesBasedOnTaskDates")) {
-            Entity order = operationalTask.getBelongsToField(OperationalTaskFields.ORDER);
-            boolean changed = false;
-            if (order.getDateField(OrderFields.START_DATE).after(operationalTask.getDateField(OperationalTaskFields.START_DATE))) {
-                changed = true;
-                order.setField(OrderFields.START_DATE, operationalTask.getDateField(OperationalTaskFields.START_DATE));
-            }
-            if (order.getDateField(OrderFields.FINISH_DATE).before(
-                    operationalTask.getDateField(OperationalTaskFields.FINISH_DATE))) {
-                changed = true;
-                order.setField(OrderFields.FINISH_DATE, operationalTask.getDateField(OperationalTaskFields.FINISH_DATE));
-            }
-            if (changed) {
-                order.getDataDefinition().save(order);
+        String type = operationalTask.getStringField(OperationalTaskFields.TYPE);
+
+        if (operationalTasksService.isOperationalTaskTypeExecutionOperationInOrder(type)) {
+            if (parameterService.getParameter().getBooleanField("setOrderDatesBasedOnTaskDates")) {
+                Entity order = operationalTask.getBelongsToField(OperationalTaskFields.ORDER);
+                List<Entity> operationalTasks = order.getHasManyField(OrderFields.OPERATIONAL_TASKS);
+                if(Objects.nonNull(operationalTask.getId())) {
+                    operationalTasks = operationalTasks.stream().filter(op -> !op.getId().equals(operationalTask.getId())).collect(
+                            Collectors.toList());
+                }
+                operationalTasks.add(operationalTask);
+                Date start = operationalTasks.stream().map(o -> o.getDateField(OperationalTaskFields.START_DATE))
+                        .min(Date::compareTo).get();
+
+                Date finish = operationalTasks.stream().map(o -> o.getDateField(OperationalTaskFields.FINISH_DATE))
+                        .max(Date::compareTo).get();
+
+
+                boolean changed = false;
+                if (!order.getDateField(OrderFields.START_DATE).equals(start)) {
+                    changed = true;
+                    order.setField(OrderFields.START_DATE, operationalTask.getDateField(OperationalTaskFields.START_DATE));
+                }
+                if (!order.getDateField(OrderFields.FINISH_DATE).equals(finish)) {
+                    changed = true;
+                    order.setField(OrderFields.FINISH_DATE, operationalTask.getDateField(OperationalTaskFields.FINISH_DATE));
+                }
+                if (changed) {
+                    order.getDataDefinition().save(order);
+                }
             }
         }
     }
