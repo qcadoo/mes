@@ -30,9 +30,16 @@ public class OperationalTaskOrderStateAspect extends AbstractStateListenerAspect
     }
 
     @RunInPhase(OrderStateChangePhase.DEFAULT)
-    @RunForStateTransition(targetState = OrderStateStringValues.ACCEPTED)
+    @RunForStateTransition(sourceState = OrderStateStringValues.PENDING, targetState = OrderStateStringValues.ACCEPTED)
     @Before(PHASE_EXECUTION_POINTCUT)
-    public void generateOperationalTasks(final StateChangeContext stateChangeContext, final int phase) {
+    public void generateOperationalTasksForAccepted(final StateChangeContext stateChangeContext, final int phase) {
+        operationalTaskOrderStateService.generateOperationalTasks(stateChangeContext);
+    }
+
+    @RunInPhase(OrderStateChangePhase.DEFAULT)
+    @RunForStateTransition(sourceState = OrderStateStringValues.PENDING, targetState = OrderStateStringValues.IN_PROGRESS)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void generateOperationalTasksForInProgres(final StateChangeContext stateChangeContext, final int phase) {
         operationalTaskOrderStateService.generateOperationalTasks(stateChangeContext);
     }
 
