@@ -98,6 +98,7 @@
                     width="300"/>
             <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial" width="85"/>
             <option type="column" name="category" fields="category" width="85"/>
+            <option type="column" name="supplier" fields="supplier"/>
             <option type="column" name="parent" fields="parentName" width="200"/>
             <option type="column" name="entityType" fields="entityType"/>
             <option type="column" name="ean" fields="ean" width="85"/>
@@ -111,7 +112,6 @@
             <option type="column" name="unit" fields="unit"/>
             <option type="column" name="additionalUnit" fields="additionalUnit"/>
             <option type="column" name="size" fields="sizeNumber"/>
-            <option type="column" name="supplier" fields="supplier"/>
 
             <option type="order" column="name" direction="asc"/>
 

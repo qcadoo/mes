@@ -88,6 +88,8 @@
         <belongsTo name="modelAssortment" model="assortment" persistent="false"/>
         <boolean name="batchEvidence" default="false"/>
         <boolean name="machinePart"/>
+        <boolean name="synchronize" copyable="false"/>
+
     </fields>
 
     <hooks>

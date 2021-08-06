@@ -23,6 +23,13 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderPositionDtoFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderProductFields;
@@ -38,12 +45,6 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Objects;
 
 @Service
 public class MasterOrderProductDetailsHooks {
@@ -56,6 +57,13 @@ public class MasterOrderProductDetailsHooks {
 
     @Autowired
     private NumberService numberService;
+
+    public void onBeforeRender(final ViewDefinitionState view) {
+        fillUnitField(view);
+        fillDefaultTechnology(view);
+        showErrorWhenCumulatedQuantity(view);
+        fillQuantities(view);
+    }
 
     public void fillUnitField(final ViewDefinitionState view) {
         LookupComponent productField = (LookupComponent) view.getComponentByReference(MasterOrderProductFields.PRODUCT);
@@ -76,7 +84,7 @@ public class MasterOrderProductDetailsHooks {
 
     }
 
-    public void fillQuantities(final ViewDefinitionState view) {
+    private void fillQuantities(final ViewDefinitionState view) {
         FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity productComponent = form.getEntity();
         if (productComponent.getId() != null) {
@@ -107,7 +115,7 @@ public class MasterOrderProductDetailsHooks {
         }
     }
 
-    public void fillDefaultTechnology(final ViewDefinitionState view) {
+    private void fillDefaultTechnology(final ViewDefinitionState view) {
         if (PluginUtils.isEnabled("goodFood")) {
             FieldComponent technology = (FieldComponent) view.getComponentByReference("technology");
             technology.setRequired(true);
@@ -116,7 +124,7 @@ public class MasterOrderProductDetailsHooks {
         masterOrderDetailsHooks.fillDefaultTechnology(view);
     }
 
-    public void showErrorWhenCumulatedQuantity(final ViewDefinitionState view) {
+    private void showErrorWhenCumulatedQuantity(final ViewDefinitionState view) {
         if (view.isViewAfterRedirect()) {
             FormComponent masterOrderProductForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
             Entity masterOrderProduct = masterOrderProductForm.getPersistedEntityWithIncludedFormValues();

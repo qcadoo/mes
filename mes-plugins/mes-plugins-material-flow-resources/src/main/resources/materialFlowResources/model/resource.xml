@@ -87,6 +87,8 @@
 
         <dictionary name="qualityRating" dictionary="qualityRating"/>
         <boolean name="blockedForQualityControl" default="false"/>
+        <hasMany name="resourceAttributeValues" joinField="resource"
+                       model="resourceAttributeValue" cascade="delete"/>
     </fields>
     <hooks>        
         <validatesWith

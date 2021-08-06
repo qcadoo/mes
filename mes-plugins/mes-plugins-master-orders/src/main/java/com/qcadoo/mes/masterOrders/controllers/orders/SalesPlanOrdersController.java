@@ -92,7 +92,9 @@ public class SalesPlanOrdersController {
         for (OrderSalePlanPosition pos : positionsWithQuantities) {
             Entity salesPlanOrderGroupEntry = positions.stream().filter(p -> p.getId().equals(pos.getId())).findAny().get();
             Entity product = salesPlanOrderGroupEntry.getBelongsToField(SalesPlanOrdersGroupEntryHelperFields.PRODUCT);
-            Entity order = ordersGenerationService.createOrder(parameters, product, pos.getValue(), salesPlan, null, null);
+            Entity order = ordersGenerationService.createOrder(parameters,
+                    salesPlanOrderGroupEntry.getBelongsToField(SalesPlanOrdersGroupEntryHelperFields.TECHNOLOGY), product,
+                    pos.getValue(), salesPlan, null, null);
             if (!order.isValid()) {
                 result.addProductOrderSimpleError(product.getStringField(ProductFields.NUMBER));
 

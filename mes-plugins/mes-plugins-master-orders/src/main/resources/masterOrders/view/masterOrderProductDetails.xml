@@ -30,7 +30,7 @@
     <component type="window" name="window">
 
         <ribbon>
-            <template name="standardFormTemplate" includeItems="navigation.back, actions.saveBack, actions.saveNew"/>
+            <template name="standardFormTemplate" includeItems="navigation.back, actions.save, actions.saveBack, actions.saveNew"/>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -54,10 +54,6 @@
                             <option type="fieldCode" value="number"/>
 
                             <listener event="onSelectedEntityChange" method="clearTechnologyOnProductChange"
-                                      class="com.qcadoo.mes.masterOrders.listeners.MasterOrderProductDetailsListeners"/>
-                            <listener event="onSelectedEntityChange" method="fillDefaultTechnology"
-                                      class="com.qcadoo.mes.masterOrders.listeners.MasterOrderProductDetailsListeners"/>
-                            <listener event="onSelectedEntityChange" method="fillUnitField"
                                       class="com.qcadoo.mes.masterOrders.listeners.MasterOrderProductDetailsListeners"/>
                         </component>
                     </layoutElement>
@@ -186,20 +182,46 @@
             </component>
         </windowTab>
 
+        <windowTab name="attributes" reference="attributes">
+            <component type="grid" name="masterOrderProductAttrValues" reference="masterOrderProductAttrValues"
+                       source="#{form}.masterOrderProductAttrValues">
+
+                <option type="column" name="number" fields="attribute"
+                        expression="#attribute['number']" link="true" width="100"/>
+
+                <option type="column" name="name" fields="attribute"
+                        expression="#attribute['name']" link="true" width="200"/>
+
+                <option type="column" name="value" fields="value"
+                        link="true" width="100"/>
+
+                <option type="column" name="description" fields="attributeValue"
+                        expression="#attributeValue['description']" width="200"/>
+
+                <option type="column" name="unit" fields="attribute"
+                        expression="#attribute['unit']" link="false" width="50"/>
+
+                <option type="order" column="number" direction="desc"/>
+
+
+                <option type="correspondingView" value="masterOrders/masterOrderProductAttrValueDetails"/>
+                <option type="correspondingComponent" value="form"/>
+                <option type="correspondingViewInModal" value="true"/>
+                <option type="orderable" value="number,name,value,description,unit"/>
+                <option type="searchable" value="number,name,value,description,unit"/>
+
+                <option type="paginable" value="true"/>
+                <option type="creatable" value="true"/>
+                <option type="deletable" value="true"/>
+                <option type="fullscreen" value="true"/>
+                <option type="multiselect" value="true"/>
+            </component>
+        </windowTab>
     </component>
 
     <hooks>
         <beforeRender
                 class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductDetailsHooks"
-                method="fillUnitField"/>
-        <beforeRender
-                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductDetailsHooks"
-                method="fillDefaultTechnology"/>
-        <beforeRender
-                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductDetailsHooks"
-                method="showErrorWhenCumulatedQuantity"/>
-        <beforeRender
-                class="com.qcadoo.mes.masterOrders.hooks.MasterOrderProductDetailsHooks"
-                method="fillQuantities"/>
+                method="onBeforeRender"/>
     </hooks>
 </view>

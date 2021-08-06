@@ -31,9 +31,10 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.stereotype.Service;
 
 import java.util.Map;
+
+import org.springframework.stereotype.Service;
 
 @Service
 public class CompanyDetailsListeners {
@@ -45,6 +46,16 @@ public class CompanyDetailsListeners {
     private static final String L_GRID_OPTIONS = "grid.options";
 
     private static final String L_FILTERS = "filters";
+
+    public void addMultipleDefaultProducts(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        Entity company = form.getEntity();
+        String url = "/basic/companyDefaultProducts.html";
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("form.companyId", company.getId());
+        view.openModal(url, parameters);
+    }
 
     public void redirectToFilteredOrderProductionList(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {

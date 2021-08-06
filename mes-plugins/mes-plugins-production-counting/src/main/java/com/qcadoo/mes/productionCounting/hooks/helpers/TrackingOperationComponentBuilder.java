@@ -23,10 +23,18 @@
  */
 package com.qcadoo.mes.productionCounting.hooks.helpers;
 
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingAttributeValueFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
+import com.qcadoo.mes.productionCounting.constants.ProdOutResourceAttrValFields;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
@@ -37,12 +45,6 @@ import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class TrackingOperationComponentBuilder {
@@ -72,7 +74,7 @@ public class TrackingOperationComponentBuilder {
 
     public Entity fromOperationProductComponentHolder(final OperationProductComponentHolder operationProductComponentHolder) {
         String modelName = operationProductComponentHolder.getEntityType().getStringValue();
-        ProductionCountingQuantityRole role = null;
+        ProductionCountingQuantityRole role;
 
         String typeOfMaterial = operationProductComponentHolder.getProductMaterialType().getStringValue();
         if (TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT.equals(modelName)) {
@@ -87,22 +89,48 @@ public class TrackingOperationComponentBuilder {
         Entity operationProductComponent = fromProduct(product, role, typeOfMaterial);
 
         Long productionCountingQuantityId = operationProductComponentHolder.getProductionCountingQuantityId();
-        if (Objects.nonNull(productionCountingQuantityId)
-                && (TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT.equals(modelName))) {
-            Entity productionCountingQuantity = dataDefinitionService.get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                    BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY).get(productionCountingQuantityId);
-            Entity replacement = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.REPLACEMENT_TO);
-            if (Objects.nonNull(replacement)) {
-                operationProductComponent.setField(TrackingOperationProductInComponentFields.REPLACEMENT_TO, replacement.getId());
+        if (Objects.nonNull(productionCountingQuantityId)) {
+            Entity productionCountingQuantity = dataDefinitionService
+                    .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                            BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_QUANTITY)
+                    .get(productionCountingQuantityId);
+            if (TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT.equals(modelName)) {
+                Entity replacement = productionCountingQuantity
+                        .getBelongsToField(ProductionCountingQuantityFields.REPLACEMENT_TO);
+                if (Objects.nonNull(replacement)) {
+                    operationProductComponent.setField(TrackingOperationProductInComponentFields.REPLACEMENT_TO,
+                            replacement.getId());
+                }
+            } else {
+                moveAttributesFromPCQ(operationProductComponent, productionCountingQuantity);
             }
         }
         return operationProductComponent;
     }
 
+    private void moveAttributesFromPCQ(Entity operationProductComponent, Entity productionCountingQuantity) {
+        List<Entity> productionCountingAttributeValues = productionCountingQuantity
+                .getHasManyField(ProductionCountingQuantityFields.PRODUCTION_COUNTING_ATTRIBUTE_VALUES);
+        List<Entity> prodOutResourceAttrVals = Lists.newArrayList();
+        for (Entity productionCountingAttributeValue : productionCountingAttributeValues) {
+            Entity prodOutResourceAttrVal = dataDefinitionService.get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                    ProductionCountingConstants.MODEL_PROD_OUT_RESOURCE_ATTR_VAL).create();
+            prodOutResourceAttrVal.setField(ProdOutResourceAttrValFields.ATTRIBUTE,
+                    productionCountingAttributeValue.getField(ProductionCountingAttributeValueFields.ATTRIBUTE));
+            prodOutResourceAttrVal.setField(ProdOutResourceAttrValFields.ATTRIBUTE_VALUE,
+                    productionCountingAttributeValue.getField(ProductionCountingAttributeValueFields.ATTRIBUTE_VALUE));
+            prodOutResourceAttrVal.setField(ProdOutResourceAttrValFields.VALUE,
+                    productionCountingAttributeValue.getField(ProductionCountingAttributeValueFields.VALUE));
+            prodOutResourceAttrVals.add(prodOutResourceAttrVal);
+        }
+        operationProductComponent.setField(TrackingOperationProductOutComponentFields.PROD_OUT_RESOURCE_ATTR_VALS,
+                prodOutResourceAttrVals);
+    }
+
     public Entity fromOperationProductComponent(final Entity operationProductComponent) {
         String modelName = operationProductComponent.getDataDefinition().getName();
-        String productFieldName = null;
-        ProductionCountingQuantityRole role = null;
+        String productFieldName;
+        ProductionCountingQuantityRole role;
 
         if (TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT.equals(modelName)) {
             productFieldName = OperationProductInComponentFields.PRODUCT;
@@ -120,10 +148,10 @@ public class TrackingOperationComponentBuilder {
     }
 
     public Entity fromProduct(final Entity product, final ProductionCountingQuantityRole role, final String typeOfMaterial) {
-        String modelName = null;
-        String productFieldName = null;
+        String modelName;
+        String productFieldName;
 
-        String typeOfMaterialFieldName = null;
+        String typeOfMaterialFieldName;
         if (role == ProductionCountingQuantityRole.PRODUCED) {
             modelName = ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT;
             productFieldName = TrackingOperationProductOutComponentFields.PRODUCT;

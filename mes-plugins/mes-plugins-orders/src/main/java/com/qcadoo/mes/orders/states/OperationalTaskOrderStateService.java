@@ -1,17 +1,12 @@
 package com.qcadoo.mes.orders.states;
 
-import java.util.List;
-import java.util.Objects;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
+import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ScheduleFields;
+import com.qcadoo.mes.orders.listeners.OrderDetailsListeners;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.constants.StateChangeStatus;
@@ -21,10 +16,22 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
 
+import java.util.List;
+import java.util.Objects;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 @Service
 public class OperationalTaskOrderStateService {
 
     private static final Logger LOG = LoggerFactory.getLogger(OperationalTaskOrderStateService.class);
+
+    public static final String FOR_EACH = "03forEach";
+
+    public static final String L_TYPE_OF_PRODUCTION_RECORDING = "typeOfProductionRecording";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -34,6 +41,12 @@ public class OperationalTaskOrderStateService {
 
     @Autowired
     private SecurityService securityService;
+
+    @Autowired
+    private ParameterService parameterService;
+
+    @Autowired
+    private OrderDetailsListeners orderDetailsListeners;
 
     public void startOperationalTask(StateChangeContext stateChangeContext) {
         try {
@@ -118,5 +131,18 @@ public class OperationalTaskOrderStateService {
             LOG.error("Error when finish operational task.", exc);
 
         }
+    }
+
+    public void generateOperationalTasks(StateChangeContext stateChangeContext) {
+
+        if(parameterService.getParameter().getBooleanField("automaticallyGenerateTasksForOrder")) {
+            Entity order = stateChangeContext.getOwner();
+
+            if (FOR_EACH.equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING)) && order.getHasManyField(OrderFields.OPERATIONAL_TASKS).isEmpty()) {
+                orderDetailsListeners.createOperationalTasksForOrder(order);
+            }
+
+        }
+
     }
 }

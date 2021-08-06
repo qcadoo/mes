@@ -87,7 +87,7 @@ public class OrdersGenerationService {
         ids.forEach(productId -> {
             Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
                     productId);
-            Entity order = createOrder(parameters, product, plannedQuantity, null, dateFrom, dateTo);
+            Entity order = createOrder(parameters, null, product, plannedQuantity, null, dateFrom, dateTo);
             if (!order.isValid()) {
                 result.addGeneratedOrderNumber(product.getStringField(ProductFields.NUMBER));
 
@@ -175,10 +175,15 @@ public class OrdersGenerationService {
     }
 
     @Transactional
-    public Entity createOrder(Entity parameters, final Entity product, final BigDecimal plannedQuantity, Entity salesPlan,
+    public Entity createOrder(Entity parameters, Entity technology, final Entity product, final BigDecimal plannedQuantity, Entity salesPlan,
             final Date dateFrom, final Date dateTo) {
-        Entity technology = technologyServiceO.getDefaultTechnology(product);
+
         Entity order = getOrderDD().create();
+
+        if(Objects.isNull(technology)) {
+            technology = technologyServiceO.getDefaultTechnology(product);
+        }
+
         order.setField(OrderFields.NUMBER,
                 numberGeneratorService.generateNumber(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER));
         order.setField(OrderFields.NAME, orderService.makeDefaultName(product, technology, LocaleContextHolder.getLocale()));

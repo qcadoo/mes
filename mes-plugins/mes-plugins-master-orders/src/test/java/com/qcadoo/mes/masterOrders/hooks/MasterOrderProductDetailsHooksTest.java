@@ -42,8 +42,6 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 
 public class MasterOrderProductDetailsHooksTest {
 
-    
-
     private MasterOrderProductDetailsHooks masterOrderProductDetailsHooks;
 
     @Mock private ViewDefinitionState view;

@@ -68,6 +68,7 @@
 		<model:model model="basicProductionCountingDto" resource="model/basicProductionCountingDto.xml" />
 		<model:model model="productionCountingQuantity" resource="model/productionCountingQuantity.xml" />
 		<model:model model="productionCountingQuantityDto" resource="model/productionCountingQuantityDto.xml" />
+		<model:model model="productionCountingAttributeValue" resource="model/productionCountingAttributeValue.xml" />
 		<model:model model="productionCountingQuantityListDto" resource="model/productionCountingQuantityListDto.xml" />
 		<model:model model="productionCountingOperationRun"
 			resource="model/productionCountingOperationRun.xml" />
@@ -123,6 +124,16 @@
 				joinField="order" cascade="delete" />
 		</model:model-field>
 
+		<model:model-field plugin="basic" model="attribute">
+			<model:hasMany name="productionCountingAttributeValues" plugin="basicProductionCounting" joinField="attribute"
+						   model="productionCountingAttributeValue"/>
+		</model:model-field>
+
+		<model:model-field plugin="basic" model="attributeValue">
+			<model:hasMany name="productionCountingAttributeValues" plugin="basicProductionCounting" joinField="attributeValue"
+						   model="productionCountingAttributeValue"/>
+		</model:model-field>
+
 		<model:model-hook model="order" plugin="orders">
 			<model:onSave
 				class="com.qcadoo.mes.basicProductionCounting.hooks.OrderHooksBPC"
@@ -168,6 +179,7 @@
 		<view:view resource="view/detailedProductionCountingAndProgressList.xml" />
 		<view:view resource="view/productionCountingQuantityAdvancedDetails.xml" />
 		<view:view resource="view/productionCountingQuantityList.xml" />
+		<view:view resource="view/productionCountingAttributeValueDetails.xml" />
 
 		<menu:menu-category name="requirements" />
 

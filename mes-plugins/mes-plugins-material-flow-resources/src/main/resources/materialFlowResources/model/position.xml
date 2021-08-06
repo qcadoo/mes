@@ -83,6 +83,8 @@
         <dictionary name="qualityRating" dictionary="qualityRating"/>
         <datetime name="pickingDate" copyable="false"/>
         <belongsTo name="pickingWorker" model="staff" plugin="basic" copyable="false"/>
+        <hasMany name="positionAttributeValues" joinField="position"
+                       model="positionAttributeValue"/>
     </fields>
     <hooks>
         <onCreate class="com.qcadoo.mes.materialFlowResources.hooks.PositionModelHooks" method="onCreate"/>

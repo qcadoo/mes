@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    ***************************************************************************
+    Copyright (c) 2010 Qcadoo Limited
+    Project: Qcadoo MES
+    Version: 1.4
+
+    This file is part of Qcadoo.
+
+    Qcadoo is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published
+    by the Free Software Foundation; either version 3 of the License,
+    or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty
+    of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    ***************************************************************************
+
+-->
+<view defaultAuthorizationRole="ROLE_PRODUCTS" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="companyDefaultProducts" modelName="productDto">
+
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <group name="navigation">
+                <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack"/>
+            </group>
+            <group name="products">
+                <bigButton name="addMultipleDefaultProducts" state="enabled" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
+					        this.addOnChangeListener({
+						        onClick: function() {
+						            #{form}.performEvent({
+                                        name : 'addMultipleDefaultProducts'
+							        });
+						        }
+					        });
+
+
+					        #{form}.addOnChangeListener({
+					            onSetValue: function(value) {
+								    var generated = #{generated}.getValue().content.value;
+
+                                    if (generated && generated == true) {
+									    #{window}.performBackWithoutConfirm();
+								    }
+						        }
+					        });
+				        ]]>
+                    </script>
+                </bigButton>
+            </group>
+        </ribbon>
+
+        <component type="form" name="product" reference="form">
+            <component type="gridLayout" name="gridsLayout" columns="1"
+                       rows="1" hasBorders="false">
+                <layoutElement column="1" row="1">
+                    <component type="checkbox" name="generated" defaultVisible="false"
+                               reference="generated" defaultEnabled="false"/>
+                    <component type="grid" name="products" reference="grid">
+                        <option type="column" name="number" fields="number"
+                                width="150"/>
+                        <option type="column" name="name" fields="name"
+                                width="300"/>
+                        <option type="column" name="globalTypeOfMaterial" fields="globalTypeOfMaterial" width="85"/>
+                        <option type="column" name="category" fields="category" width="85"/>
+                        <option type="column" name="parent" fields="parentName" width="200"/>
+                        <option type="column" name="ean" fields="ean" width="85"/>
+                        <option type="column" name="externalNumber" fields="externalNumber"
+                                hidden="true"/>
+
+                        <option type="column" name="assortment" fields="assortmentName"/>
+
+                        <option type="order" column="name" direction="asc"/>
+
+                        <option type="searchable"
+                                value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,externalNumber,hasAttachments,additionalCodes"/>
+
+                        <option type="orderable"
+                                value="number,name,globalTypeOfMaterial,category,ean,parent,assortment,externalNumber,hasAttachments,additionalCodes"/>
+
+                        <option type="activable" value="false"/>
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+
+                        <criteriaModifier
+                                class="com.qcadoo.mes.basic.criteriaModifiers.ProductCriteriaModifiers"
+                                method="showParticularProductOnly"/>
+
+                    </component>
+                </layoutElement>
+
+
+            </component>
+
+            <listener event="addMultipleDefaultProducts" class="com.qcadoo.mes.basic.listeners.CompanyDefaultProductsListeners"
+                      method="addMultipleDefaultProducts"/>
+        </component>
+        <option type="header" value="false"/>
+
+    </component>
+    <hooks>
+    <beforeRender class="com.qcadoo.mes.basic.hooks.CompanyDefaultProductsHooks"
+                  method="onBeforeRender"/>
+    </hooks>
+</view>

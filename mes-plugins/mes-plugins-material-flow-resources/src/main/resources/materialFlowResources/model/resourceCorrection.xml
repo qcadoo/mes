@@ -74,6 +74,12 @@
         <dictionary name="oldQualityRating" dictionary="qualityRating"/>
         <dictionary name="newQualityRating" dictionary="qualityRating"/>
 
+        <hasMany name="resourceAttributeValueAfterCorrections" joinField="resourceCorrection"
+                       model="resourceAttributeValueAfterCorrection" cascade="nullify"/>
+
+        <hasMany name="resourceAttributeValueBeforeCorrections" joinField="resourceCorrection"
+                       model="resourceAttributeValueBeforeCorrection" cascade="nullify"/>
+
     </fields>
     <hooks/>
 </model>
