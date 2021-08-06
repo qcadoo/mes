@@ -82,9 +82,9 @@ public class OperationalTaskHooks {
             if (parameterService.getParameter().getBooleanField("setOrderDatesBasedOnTaskDates")) {
                 Entity order = operationalTask.getBelongsToField(OperationalTaskFields.ORDER);
                 List<Entity> operationalTasks = Lists.newArrayList(order.getHasManyField(OrderFields.OPERATIONAL_TASKS));
-                if(Objects.nonNull(operationalTask.getId())) {
-                    operationalTasks = operationalTasks.stream().filter(op -> !op.getId().equals(operationalTask.getId())).collect(
-                            Collectors.toList());
+                if (Objects.nonNull(operationalTask.getId())) {
+                    operationalTasks = operationalTasks.stream().filter(op -> !op.getId().equals(operationalTask.getId()))
+                            .collect(Collectors.toList());
                 }
 
                 operationalTasks.add(operationalTask);
@@ -93,7 +93,6 @@ public class OperationalTaskHooks {
 
                 Date finish = operationalTasks.stream().map(o -> o.getDateField(OperationalTaskFields.FINISH_DATE))
                         .max(Date::compareTo).get();
-
 
                 boolean changed = false;
                 if (!order.getDateField(OrderFields.START_DATE).equals(start)) {
@@ -126,22 +125,25 @@ public class OperationalTaskHooks {
                 Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
                 operationalTask.setField(OperationalTaskFields.NAME, operation.getStringField(OperationFields.NAME));
 
-                boolean copyDescriptionFromProductionOrder = parameterService.getParameter().getBooleanField(
-                        "otCopyDescriptionFromProductionOrder");
+                if(Objects.isNull(operationalTask.getId())) {
+                    boolean copyDescriptionFromProductionOrder = parameterService.getParameter().getBooleanField("otCopyDescriptionFromProductionOrder");
+                    if (copyDescriptionFromProductionOrder) {
 
-                StringBuilder descriptionBuilder = new StringBuilder();
-                descriptionBuilder.append(Strings.nullToEmpty(technologyOperationComponent
-                        .getStringField(TechnologyOperationComponentFields.COMMENT)));
-                if (copyDescriptionFromProductionOrder) {
-                    if (StringUtils.isNoneBlank(descriptionBuilder.toString())) {
-                        descriptionBuilder.append("\n");
-                    }
-                    Entity order = operationalTask.getBelongsToField(OperationalTaskFields.ORDER);
-                    if (Objects.nonNull(order)) {
-                        descriptionBuilder.append(Strings.nullToEmpty(order.getStringField(OrderFields.DESCRIPTION)));
+                        StringBuilder descriptionBuilder = new StringBuilder();
+                        descriptionBuilder.append(Strings.nullToEmpty(technologyOperationComponent.getStringField(TechnologyOperationComponentFields.COMMENT)));
+                        if (StringUtils.isNoneBlank(descriptionBuilder.toString())) {
+                            descriptionBuilder.append("\n");
+                        }
+                        Entity order = operationalTask.getBelongsToField(OperationalTaskFields.ORDER);
+                        if (Objects.nonNull(order)) {
+                            descriptionBuilder.append(Strings.nullToEmpty(order.getStringField(OrderFields.DESCRIPTION)));
+                        }
+                        operationalTask.setField(OperationalTaskFields.DESCRIPTION, descriptionBuilder.toString());
+
+                    } else {
+                        operationalTask.setField(OperationalTaskFields.DESCRIPTION, technologyOperationComponent.getStringField(TechnologyOperationComponentFields.COMMENT));
                     }
                 }
-                operationalTask.setField(OperationalTaskFields.DESCRIPTION, descriptionBuilder.toString());
             }
         }
     }
