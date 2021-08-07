@@ -40,7 +40,9 @@ thatObject.generateOrdersGroup = function (eventPerformer, ribbonItemName, entit
                 invalid = true;
                 $("#orderQuantity_" + id).addClass('is-invalid');
             } else {
-                positions.push(position);
+                if(position.value != '0') {
+                    positions.push(position);
+                }
             }
 		}
 	});
