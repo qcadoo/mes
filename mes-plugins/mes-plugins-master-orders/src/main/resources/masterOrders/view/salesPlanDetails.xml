@@ -180,7 +180,7 @@
                 <option type="correspondingViewInModal" value="true"/>
 
                 <option type="footerRow" value="true"/>
-                <option type="columnsToSummary" value="plannedQuantity,orderedQuantity,surplusFromPlan"/>
+                <option type="columnsToSummary" value="plannedQuantity,orderedQuantity,surplusFromPlan,ordersPlannedQuantity"/>
 
                 <option type="fixedHeight" value="true"/>
                 <option type="multiselect" value="true"/>
