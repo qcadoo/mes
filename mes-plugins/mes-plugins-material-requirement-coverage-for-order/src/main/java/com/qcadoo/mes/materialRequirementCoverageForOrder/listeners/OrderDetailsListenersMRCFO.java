@@ -41,7 +41,7 @@ public class OrderDetailsListenersMRCFO {
             return;
         }
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("form.orderd", orderId);
+        parameters.put("form.order", orderId);
         parameters.put("window.showBack", true);
         String url = "/page/orderSupplies/generateMaterialRequirementCoverage.html";
 
