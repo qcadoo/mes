@@ -1,5 +1,14 @@
 package com.qcadoo.mes.productionScheduling.listeners;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
@@ -29,14 +38,6 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class ScheduleDetailsListenersPS {
@@ -143,7 +144,6 @@ public class ScheduleDetailsListenersPS {
         BigDecimal quantity = orderRealizationTimeService
                 .getBigDecimalFromField(order.getDecimalField(OrderFields.PLANNED_QUANTITY), LocaleContextHolder.getLocale());
         boolean includeTpz = parameterService.getParameter().getBooleanField("includeTpzPS");
-        boolean includeAdditionalTime = parameterService.getParameter().getBooleanField("includeAdditionalTimePS");
 
         final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
@@ -156,12 +156,12 @@ public class ScheduleDetailsListenersPS {
 
         operationWorkTimeService.deleteOperCompTimeCalculations(order);
 
-        operationWorkTimeService.estimateTotalWorkTimeForOrder(order, operationRuns, includeTpz, includeAdditionalTime,
+        operationWorkTimeService.estimateTotalWorkTimeForOrder(order, operationRuns, includeTpz, false,
                 productionLine, true);
 
         orderRealizationTimeService.estimateMaxOperationTimeConsumptionForWorkstation(order,
                 technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(), quantity, includeTpz,
-                includeAdditionalTime, productionLine);
+                false, productionLine);
         return operationProductComponentWithQuantityContainer;
     }
 }
