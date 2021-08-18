@@ -33,9 +33,15 @@ public final class ProductFieldsCNFP {
 
     public static final String NOMINAL_COST = "nominalCost";
 
+    public static final String NOMINAL_COST_CURRENCY = "nominalCostCurrency";
+
     public static final String LAST_PURCHASE_COST = "lastPurchaseCost";
 
+    public static final String LAST_PURCHASE_COST_CURRENCY = "lastPurchaseCostCurrency";
+
     public static final String AVERAGE_COST = "averageCost";
+
+    public static final String AVERAGE_COST_CURRENCY = "averageCostCurrency";
 
     public static final String AVERAGE_OFFER_COST = "averageOfferCost";
 

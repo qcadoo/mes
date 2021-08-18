@@ -26,24 +26,23 @@ package com.qcadoo.mes.basic.hooks;
 import java.util.Currency;
 import java.util.Locale;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.constants.CurrencyFields;
+import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.model.api.types.BelongsToType;
 
 @Service
 public class ParameterModelHooks {
 
-    private static final String FIELD_CURRENCY = "currency";
+    @Autowired
+    private CurrencyService currencyService;
 
     public void setDefaultCurrency(final DataDefinition parameterDD, final Entity parameter) {
         String defaultCurrencyAlphabeticCode = Currency.getInstance(Locale.getDefault()).getCurrencyCode();
-        DataDefinition currencyDataDef = ((BelongsToType) parameterDD.getField(FIELD_CURRENCY).getType()).getDataDefinition();
-        Entity defaultCurrency = currencyDataDef.find()
-                .add(SearchRestrictions.eq("alphabeticCode", defaultCurrencyAlphabeticCode)).setMaxResults(1).uniqueResult();
-        parameter.setField(FIELD_CURRENCY, defaultCurrency);
+        parameter.setField(CurrencyFields.CURRENCY, currencyService.getCurrencyByAlphabeticCode(defaultCurrencyAlphabeticCode));
     }
 
 }

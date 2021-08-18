@@ -102,6 +102,29 @@
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
+		<model:model-field plugin="basic" model="product">
+			<model:belongsTo name="nominalCostCurrency" plugin="basic" model="currency" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="currency" >
+			<model:hasMany name="nominalCostCurrencies" joinField="nominalCostCurrency"
+						   plugin="basic" model="product" />
+		</model:model-field>
+
+		<model:model-field plugin="basic" model="product">
+			<model:belongsTo name="lastPurchaseCostCurrency" plugin="basic" model="currency" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="currency" >
+			<model:hasMany name="lastPurchaseCostCurrencies" joinField="lastPurchaseCostCurrency"
+						   plugin="basic" model="product" />
+		</model:model-field>
+
+		<model:model-field plugin="basic" model="product">
+			<model:belongsTo name="averageCostCurrency" plugin="basic" model="currency" />
+		</model:model-field>
+		<model:model-field plugin="basic" model="currency" >
+			<model:hasMany name="averageCostCurrencies" joinField="averageCostCurrency"
+						   plugin="basic" model="product" />
+		</model:model-field>
 
 		<view:resource uri="public/**/*" />
 
@@ -119,12 +142,16 @@
 			type="beforeRender" class="com.qcadoo.mes.costNormsForProduct.hooks.ProductDetailsHooksCNFP"
 			method="enabledFieldForExternalID" />
 
-		<model:model-hook model="product" plugin="basic">
+		<model:model-hook plugin="basic" model="product" >
 			<model:onSave
 					class="com.qcadoo.mes.costNormsForProduct.hooks.ProductHooksCNFP"
 					method="onSave"/>
 		</model:model-hook>
-
+		<model:model-hook plugin="basic" model="product" >
+			<model:onCreate
+					class="com.qcadoo.mes.costNormsForProduct.hooks.ProductHooksCNFP"
+					method="onCreate"/>
+		</model:model-hook>
 	</modules>
 	
 	<features>
