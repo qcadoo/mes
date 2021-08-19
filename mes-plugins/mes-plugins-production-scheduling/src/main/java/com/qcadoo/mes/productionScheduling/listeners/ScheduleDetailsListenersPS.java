@@ -77,9 +77,10 @@ public class ScheduleDetailsListenersPS {
         GridComponent ordersGrid = (GridComponent) view.getComponentByReference(L_ORDERS);
         Map<Long, OperationProductComponentWithQuantityContainer> ordersOperationsQuantity = Maps.newHashMap();
         List<Entity> orders = ordersGrid.getEntities();
+        boolean includeTpz = parameterService.getParameter().getBooleanField("includeTpzPS");
         for (Entity order : orders) {
             OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = generateRealizationTime(
-                    order, order.getBelongsToField(OrderFields.PRODUCTION_LINE).getId());
+                    order, includeTpz);
             ordersOperationsQuantity.put(order.getId(), operationProductComponentWithQuantityContainer);
         }
 
@@ -135,15 +136,13 @@ public class ScheduleDetailsListenersPS {
     }
 
     @Transactional
-    public OperationProductComponentWithQuantityContainer generateRealizationTime(final Entity order,
-            final Long productionLineId) {
+    public OperationProductComponentWithQuantityContainer generateRealizationTime(final Entity order, final boolean includeTpz) {
         Entity productionLine = dataDefinitionService
                 .get(ProductionLinesConstants.PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_PRODUCTION_LINE)
-                .get(productionLineId);
+                .get(order.getBelongsToField(OrderFields.PRODUCTION_LINE).getId());
 
         BigDecimal quantity = orderRealizationTimeService
                 .getBigDecimalFromField(order.getDecimalField(OrderFields.PLANNED_QUANTITY), LocaleContextHolder.getLocale());
-        boolean includeTpz = parameterService.getParameter().getBooleanField("includeTpzPS");
 
         final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
@@ -156,12 +155,11 @@ public class ScheduleDetailsListenersPS {
 
         operationWorkTimeService.deleteOperCompTimeCalculations(order);
 
-        operationWorkTimeService.estimateTotalWorkTimeForOrder(order, operationRuns, includeTpz, false,
-                productionLine, true);
+        operationWorkTimeService.estimateTotalWorkTimeForOrder(order, operationRuns, includeTpz, false, productionLine, true);
 
         orderRealizationTimeService.estimateMaxOperationTimeConsumptionForWorkstation(order,
-                technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(), quantity, includeTpz,
-                false, productionLine);
+                technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(), quantity, includeTpz, false,
+                productionLine);
         return operationProductComponentWithQuantityContainer;
     }
 }
