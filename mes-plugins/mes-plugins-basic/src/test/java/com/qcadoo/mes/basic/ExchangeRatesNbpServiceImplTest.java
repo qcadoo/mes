@@ -49,11 +49,11 @@ public class ExchangeRatesNbpServiceImplTest {
 
     @Test
     public void shouldParseCorrectlyGivenExampleDocument() throws Exception {
-        Map<String, BigDecimal> map = service.parse(inputStream, ExchangeRatesNbpService.NbpProperties.LAST_C);
+        Map<String, BigDecimal> map = service.parse(inputStream, ExchangeRatesNbpService.NbpProperties.LAST_B);
         assertTrue(map.containsKey("USD"));
         assertTrue(map.containsKey("CAD"));
         assertTrue(map.containsKey("AUD"));
-        assertTrue(map.containsValue(new BigDecimal("0.3076")));
+        assertTrue(map.containsValue(new BigDecimal("3.0756")));
         assertTrue(map.containsValue(new BigDecimal("2.8927")));
         assertTrue(map.containsValue(new BigDecimal("2.8732")));
     }
@@ -61,7 +61,7 @@ public class ExchangeRatesNbpServiceImplTest {
     @Test
     public void shouldParseAlwaysCloseInputStream() throws Exception {
         InputStream inputStreamSpied = spy(inputStream);
-        service.parse(inputStreamSpied, ExchangeRatesNbpService.NbpProperties.LAST_C);
+        service.parse(inputStreamSpied, ExchangeRatesNbpService.NbpProperties.LAST_B);
         verify(inputStreamSpied, atLeastOnce()).close();
     }
 
