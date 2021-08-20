@@ -186,6 +186,13 @@
             <model:hasMany name="deliveries" joinField="supplier"
                            plugin="deliveries" model="delivery"/>
         </model:model-field>
+        <model:model-field plugin="basic" model="company">
+            <model:belongsTo name="currency" plugin="basic" model="currency" />
+        </model:model-field>
+        <model:model-field plugin="basic" model="currency" >
+            <model:hasMany name="companies" joinField="currency"
+                           plugin="basic" model="company" />
+        </model:model-field>
 
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="productCompanies" joinField="product"
@@ -210,6 +217,11 @@
                             method="onDelete"/>
         </model:model-hook>
 
+        <model:model-hook plugin="basic" model="company" >
+            <model:onCreate
+                    class="com.qcadoo.mes.deliveries.hooks.CompanyHooksD"
+                    method="onCreate"/>
+        </model:model-hook>
 
         <model:model-hook plugin="basic" model="product">
             <model:onSave class="com.qcadoo.mes.deliveries.hooks.ProductHooksD"
@@ -284,12 +296,15 @@
                         type="beforeRender" class="com.qcadoo.mes.deliveries.hooks.CompanyDetailsHooksD"
                         method="disableBufferWhenCompanyIsOwner"/>
 
+        <view:view-hook plugin="basic" view="companyDetails"
+                        type="beforeRender" class="com.qcadoo.mes.deliveries.hooks.CompanyDetailsHooksD"
+                        method="fillCurrencyFieldInCompany" />
+
         <view:view-hook plugin="basic" view="productAdditionalDetails"
                         type="beforeRender" class="com.qcadoo.mes.deliveries.hooks.ProductDetailsHooksD"
                         method="beforeRender"/>
 
         <custom:custom class="com.qcadoo.mes.deliveries.DeliveriesOnStartupService"/>
-
 
         <view:resource uri="public/**/*"/>
 

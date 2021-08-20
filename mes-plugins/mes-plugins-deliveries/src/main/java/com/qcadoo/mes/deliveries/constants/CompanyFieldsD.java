@@ -39,4 +39,6 @@ public final class CompanyFieldsD {
 
     public static final String DELIVERIES = "deliveries";
 
+    public static final String CURRENCY = "currency";
+
 }

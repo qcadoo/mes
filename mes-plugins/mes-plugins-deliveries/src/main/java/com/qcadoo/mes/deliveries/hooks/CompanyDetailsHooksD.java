@@ -23,7 +23,15 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.basic.CompanyService;
+import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -33,17 +41,11 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Objects;
 
 @Service
 public class CompanyDetailsHooksD {
 
-    
-
-
+    private static final String L_VIEW_DEFINITION_STATE_IS_NULL = "viewDefinitionState is null";
 
     private static final String L_SUPPLIERS = "suppliers";
 
@@ -51,6 +53,9 @@ public class CompanyDetailsHooksD {
 
     @Autowired
     private CompanyService companyService;
+
+    @Autowired
+    private CurrencyService currencyService;
 
     public void disabledGridWhenCompanyIsOwner(final ViewDefinitionState view) {
         companyService.disabledGridWhenCompanyIsOwner(view, "productsFamilies", "products");
@@ -82,6 +87,29 @@ public class CompanyDetailsHooksD {
     private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {
         ribbonActionItem.setEnabled(isEnabled);
         ribbonActionItem.requestUpdate(true);
+    }
+
+    public void fillCurrencyFieldInCompany(final ViewDefinitionState viewDefinitionState) {
+        checkArgument(viewDefinitionState != null, L_VIEW_DEFINITION_STATE_IS_NULL);
+
+        FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
+        if (form == null) {
+            return;
+        }
+
+        if (form.getEntityId() == null) {
+            Entity currency = currencyService.getCurrentCurrency();
+            if (currency != null) {
+                fillField((FieldComponent) viewDefinitionState.getComponentByReference(CompanyFieldsD.CURRENCY),
+                        currency.getId());
+            }
+        }
+    }
+
+    public void fillField(final FieldComponent fieldComponent, final Object fieldValue) {
+        checkArgument(fieldComponent != null, "fieldComponent is null");
+        fieldComponent.setFieldValue(fieldValue);
+        fieldComponent.requestComponentUpdateState();
     }
 
 }

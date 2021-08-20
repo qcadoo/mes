@@ -25,8 +25,10 @@ package com.qcadoo.mes.deliveries.hooks;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.model.api.DataDefinition;
@@ -34,6 +36,9 @@ import com.qcadoo.model.api.Entity;
 
 @Service
 public class CompanyHooksD {
+
+    @Autowired
+    private CurrencyService currencyService;
 
     public boolean onDelete(final DataDefinition companyDD, final Entity company) {
         return showDeliveriesForCompany(company);
@@ -61,5 +66,12 @@ public class CompanyHooksD {
         }
 
         return deliveriesDeleted;
+    }
+
+    public void onCreate(final DataDefinition companyDD, final Entity company) {
+        Entity currentCurrency = currencyService.getCurrentCurrency();
+        if (company.getBelongsToField(CompanyFieldsD.CURRENCY) == null) {
+            company.setField(CompanyFieldsD.CURRENCY, currentCurrency);
+        }
     }
 }

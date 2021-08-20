@@ -32,7 +32,7 @@
 	<windowTab name="deliveriesTab" reference="deliveriesTab">
 		<component type="form" name="company">
 			<component type="gridLayout" name="deliveriesTabGridLayout"
-				reference="deliveriesTabGridLayout" columns="3" rows="2">
+				reference="deliveriesTabGridLayout" columns="3" rows="3">
 				<layoutElement column="1" row="1">
 					<component type="input" name="buffer" field="#{form}.buffer"
 						reference="buffer" hasDescription="true" />
@@ -41,6 +41,20 @@
 					<component type="select" name="paymentForm"
 						field="#{form}.paymentForm" reference="paymentForm">
 						<option type="labelWidth" value="60" />
+					</component>
+				</layoutElement>
+				<layoutElement column="1" row="3">
+					<component type="lookup" name="currency" reference="currency"
+							   field="#{form}.currency" hasDescription="true">
+						<option type="column" name="currency" fields="currency"
+								link="true"/>
+						<option type="column" name="exchangeRate" fields="exchangeRate"/>
+
+						<option type="searchable" value="currency,alphabeticCode"/>
+						<option type="orderable" value="currency,alphabeticCode"/>
+
+						<option type="expression" value="#alphabeticCode + ' - ' + #currency"/>
+						<option type="fieldCode" value="alphabeticCode"/>
 					</component>
 				</layoutElement>
 			</component>
