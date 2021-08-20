@@ -58,6 +58,8 @@ public class ScheduleDetailsHooks {
                     parameter.getBooleanField(ScheduleFields.SCHEDULE_FOR_BUFFER), view);
             fillCheckboxWithProperty(ScheduleFields.ADDITIONAL_TIME_EXTENDS_OPERATION,
                     parameter.getBooleanField(ScheduleFields.ADDITIONAL_TIME_EXTENDS_OPERATION), view);
+            fillCheckboxWithProperty(ScheduleFields.INCLUDE_TPZ,
+                    parameter.getBooleanField(ParameterFieldsO.INCLUDE_TPZ_S), view);
 
             isSetFieldsFromParameter.setFieldValue(true);
             isSetFieldsFromParameter.requestComponentUpdateState();

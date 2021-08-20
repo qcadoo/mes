@@ -307,6 +307,10 @@
             <model:boolean name="additionalTimeExtendsOperation" default="true"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="includeTpzS" default="true"/>
+        </model:model-field>
+
         <model:model-field plugin="materialFlow" model="location">
             <model:belongsTo name="realizationLocation" model="parameter"
                              plugin="basic"/>

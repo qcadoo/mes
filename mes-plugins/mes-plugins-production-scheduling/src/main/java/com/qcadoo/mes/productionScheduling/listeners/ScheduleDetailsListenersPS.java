@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
@@ -57,9 +56,6 @@ public class ScheduleDetailsListenersPS {
     private OperationWorkTimeService operationWorkTimeService;
 
     @Autowired
-    private ParameterService parameterService;
-
-    @Autowired
     private TechnologyService technologyService;
 
     @Autowired
@@ -77,7 +73,9 @@ public class ScheduleDetailsListenersPS {
         GridComponent ordersGrid = (GridComponent) view.getComponentByReference(L_ORDERS);
         Map<Long, OperationProductComponentWithQuantityContainer> ordersOperationsQuantity = Maps.newHashMap();
         List<Entity> orders = ordersGrid.getEntities();
-        boolean includeTpz = parameterService.getParameter().getBooleanField("includeTpzPS");
+        FormComponent formComponent = (FormComponent) state;
+        Entity schedule = formComponent.getEntity();
+        boolean includeTpz = schedule.getBooleanField(ScheduleFields.INCLUDE_TPZ);
         for (Entity order : orders) {
             OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = generateRealizationTime(
                     order, includeTpz);
@@ -87,8 +85,6 @@ public class ScheduleDetailsListenersPS {
         DataDefinition schedulePositionDD = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
                 OrdersConstants.MODEL_SCHEDULE_POSITION);
         List<Entity> positions = Lists.newArrayList();
-        FormComponent formComponent = (FormComponent) state;
-        Entity schedule = formComponent.getEntity();
         for (Entity order : orders) {
             List<Entity> orderTimeCalculations = order.getHasManyField(OrderFieldsPS.ORDER_TIME_CALCULATIONS);
             if (!orderTimeCalculations.isEmpty()) {

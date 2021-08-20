@@ -93,4 +93,6 @@ public final class ParameterFieldsO {
 
     public static final String AUTOMATICALLY_GENERATE_PROCESSES_FOR_ORDER = "automaticallyGenerateProcessesForOrder";
 
+    public static final String INCLUDE_TPZ_S = "includeTpzS";
+
 }
