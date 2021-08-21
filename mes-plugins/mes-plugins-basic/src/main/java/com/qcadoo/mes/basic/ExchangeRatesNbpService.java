@@ -29,13 +29,13 @@ import java.util.Map;
 
 public interface ExchangeRatesNbpService {
 
-    String CRON_LAST_ALL = "0 20 13 ? * MON-FRI";     // working days  07:45 - 08:15 -> 08:20
+    String CRON_LAST_ALL = "0 20 13 ? * MON-FRI";     // working days  11:45 - 12:15 -> 12:20
 
     Map<String, BigDecimal> get(NbpProperties nbpProperties);
 
     Map<String, BigDecimal> parse(InputStream inputStream, NbpProperties nbpProperties);
 
-    public enum NbpProperties {
+    enum NbpProperties {
 
         LAST_A("LastA"){
             @Override
@@ -49,16 +49,9 @@ public interface ExchangeRatesNbpService {
             public String fieldName() {
                 return "kurs_sredni";
             }
-        },
-
-        LAST_C("LastC"){
-            @Override
-            public String fieldName() {
-                return "kurs_sprzedazy";
-            }
         };
 
-        private String xmlFileName;
+        private final String xmlFileName;
 
         NbpProperties(String xmlFileName) {
             this.xmlFileName = xmlFileName;

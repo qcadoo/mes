@@ -30,4 +30,6 @@ public final class ScheduleFields {
     public static final String SCHEDULE_FOR_BUFFER = "scheduleForBuffer";
 
     public static final String ADDITIONAL_TIME_EXTENDS_OPERATION = "additionalTimeExtendsOperation";
+
+    public static final String INCLUDE_TPZ = "includeTpz";
 }

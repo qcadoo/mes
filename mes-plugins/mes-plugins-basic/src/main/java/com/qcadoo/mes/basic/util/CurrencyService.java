@@ -23,11 +23,18 @@
  */
 package com.qcadoo.mes.basic.util;
 
+import static com.qcadoo.mes.basic.constants.BasicConstants.PLUGIN_IDENTIFIER;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.CurrencyFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 /**
  * Service for accessing currently used currency
@@ -39,13 +46,23 @@ public class CurrencyService {
     @Autowired
     private ParameterService parameterService;
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     /**
      * Returns currently used currency {@link Entity}.
      * 
      * @return currently used currency {@link Entity}.
      */
     public Entity getCurrentCurrency() {
-        return parameterService.getParameter().getBelongsToField("currency");
+        return parameterService.getParameter().getBelongsToField(CurrencyFields.CURRENCY);
+    }
+
+    public Entity getCurrencyByAlphabeticCode(String alphabeticCode) {
+        DataDefinition currencyDataDef = dataDefinitionService.get(PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY);
+        return currencyDataDef.find()
+                .add(SearchRestrictions.eq(CurrencyFields.ALPHABETIC_CODE, alphabeticCode)).setMaxResults(1)
+                .uniqueResult();
     }
 
     /**
@@ -57,6 +74,6 @@ public class CurrencyService {
         if (getCurrentCurrency() == null) {
             return "";
         }
-        return getCurrentCurrency().getStringField("alphabeticCode");
+        return getCurrentCurrency().getStringField(CurrencyFields.ALPHABETIC_CODE);
     }
 }

@@ -23,24 +23,26 @@
  */
 package com.qcadoo.mes.basic;
 
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.CurrencyFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.CurrencyFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 
 @Service
 public class ExchangeRatesUpdateServiceImpl implements ExchangeRatesUpdateService {
 
     private final ExchangeRatesNbpService nbpService;
+
     private final DataDefinitionService dataDefinitionService;
 
     @Autowired
@@ -56,7 +58,6 @@ public class ExchangeRatesUpdateServiceImpl implements ExchangeRatesUpdateServic
     public void update() {
         updateEntitiesExchangeRates(nbpService.get(ExchangeRatesNbpService.NbpProperties.LAST_A));
         updateEntitiesExchangeRates(nbpService.get(ExchangeRatesNbpService.NbpProperties.LAST_B));
-        updateEntitiesExchangeRates(nbpService.get(ExchangeRatesNbpService.NbpProperties.LAST_C));
     }
 
     private void updateEntitiesExchangeRates(Map<String, BigDecimal> exRates) {

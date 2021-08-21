@@ -26,6 +26,7 @@ package com.qcadoo.mes.basicProductionCounting.hooks;
 import static com.qcadoo.model.api.search.SearchOrders.asc;
 
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -73,32 +74,45 @@ public class ProductionCountingQuantityHooks {
 
     private void moveAttributesFromMasterOrderProduct(Entity productionCountingQuantity) {
         Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
-        if (order != null && PluginUtils.isEnabled(MASTER_ORDERS) && order.getBelongsToField(MASTER_ORDER) != null) {
+
+        if (Objects.nonNull(order) && PluginUtils.isEnabled(MASTER_ORDERS)
+                && Objects.nonNull(order.getBelongsToField(MASTER_ORDER))) {
             Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
-            if (product != null) {
+
+            if (Objects.nonNull(product)) {
                 String typeOfMaterial = productionCountingQuantity
                         .getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
+
                 if (checkIfIsFinalProduct(typeOfMaterial)) {
-                    List<Entity> masterOrderProductAttrValues = dataDefinitionService.get(MASTER_ORDERS, MASTER_ORDER_PRODUCT)
-                            .find().add(SearchRestrictions.belongsTo(MASTER_ORDER, order.getBelongsToField(MASTER_ORDER)))
+                    Entity masterOrderProduct = dataDefinitionService.get(MASTER_ORDERS, MASTER_ORDER_PRODUCT).find()
+                            .add(SearchRestrictions.belongsTo(MASTER_ORDER, order.getBelongsToField(MASTER_ORDER)))
                             .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product)).setMaxResults(1)
-                            .uniqueResult().getHasManyField(MASTER_ORDER_PRODUCT_ATTR_VALUES);
-                    List<Entity> productionCountingAttributeValues = Lists.newArrayList();
-                    for (Entity masterOrderProductAttrValue : masterOrderProductAttrValues) {
-                        Entity productionCountingAttributeValue = dataDefinitionService
-                                .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
-                                        BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_ATTRIBUTE_VALUE)
-                                .create();
-                        productionCountingAttributeValue.setField(ProductionCountingAttributeValueFields.ATTRIBUTE,
-                                masterOrderProductAttrValue.getField(ProductionCountingAttributeValueFields.ATTRIBUTE));
-                        productionCountingAttributeValue.setField(ProductionCountingAttributeValueFields.ATTRIBUTE_VALUE,
-                                masterOrderProductAttrValue.getField(ProductionCountingAttributeValueFields.ATTRIBUTE_VALUE));
-                        productionCountingAttributeValue.setField(ProductionCountingAttributeValueFields.VALUE,
-                                masterOrderProductAttrValue.getField(ProductionCountingAttributeValueFields.VALUE));
-                        productionCountingAttributeValues.add(productionCountingAttributeValue);
+                            .uniqueResult();
+
+                    if (Objects.nonNull(masterOrderProduct)) {
+                        List<Entity> masterOrderProductAttrValues = masterOrderProduct
+                                .getHasManyField(MASTER_ORDER_PRODUCT_ATTR_VALUES);
+
+                        List<Entity> productionCountingAttributeValues = Lists.newArrayList();
+
+                        for (Entity masterOrderProductAttrValue : masterOrderProductAttrValues) {
+                            Entity productionCountingAttributeValue = dataDefinitionService
+                                    .get(BasicProductionCountingConstants.PLUGIN_IDENTIFIER,
+                                            BasicProductionCountingConstants.MODEL_PRODUCTION_COUNTING_ATTRIBUTE_VALUE)
+                                    .create();
+
+                            productionCountingAttributeValue.setField(ProductionCountingAttributeValueFields.ATTRIBUTE,
+                                    masterOrderProductAttrValue.getField(ProductionCountingAttributeValueFields.ATTRIBUTE));
+                            productionCountingAttributeValue.setField(ProductionCountingAttributeValueFields.ATTRIBUTE_VALUE,
+                                    masterOrderProductAttrValue.getField(ProductionCountingAttributeValueFields.ATTRIBUTE_VALUE));
+                            productionCountingAttributeValue.setField(ProductionCountingAttributeValueFields.VALUE,
+                                    masterOrderProductAttrValue.getField(ProductionCountingAttributeValueFields.VALUE));
+                            productionCountingAttributeValues.add(productionCountingAttributeValue);
+                        }
+
+                        productionCountingQuantity.setField(ProductionCountingQuantityFields.PRODUCTION_COUNTING_ATTRIBUTE_VALUES,
+                                productionCountingAttributeValues);
                     }
-                    productionCountingQuantity.setField(ProductionCountingQuantityFields.PRODUCTION_COUNTING_ATTRIBUTE_VALUES,
-                            productionCountingAttributeValues);
                 }
             }
         }
@@ -109,11 +123,11 @@ public class ProductionCountingQuantityHooks {
     }
 
     private void fillOrder(final Entity productionCountingQuantity) {
-        if (productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER) == null) {
+        if (Objects.isNull(productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER))) {
             Entity basicProductionCounting = productionCountingQuantity
                     .getBelongsToField(ProductionCountingQuantityFields.BASIC_PRODUCTION_COUNTING);
 
-            if (basicProductionCounting != null) {
+            if (Objects.nonNull(basicProductionCounting)) {
                 Entity order = basicProductionCounting.getBelongsToField(BasicProductionCountingFields.ORDER);
 
                 productionCountingQuantity.setField(ProductionCountingQuantityFields.ORDER, order);
@@ -122,7 +136,8 @@ public class ProductionCountingQuantityHooks {
     }
 
     private void fillBasicProductionCounting(final Entity productionCountingQuantity) {
-        if (productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.BASIC_PRODUCTION_COUNTING) == null) {
+        if (Objects.isNull(
+                productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.BASIC_PRODUCTION_COUNTING))) {
             Entity order = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.ORDER);
             Entity product = productionCountingQuantity.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
             String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
@@ -137,7 +152,7 @@ public class ProductionCountingQuantityHooks {
 
     private boolean checkIfShouldFillBasicProductionCounting(final Entity order, final Entity product,
             final String typeOfMaterial, final String role) {
-        return ((order != null) && (product != null) && !checkIfBasicProductionCountingIsEmpty(order)
+        return (Objects.nonNull(order) && Objects.nonNull(product) && !checkIfBasicProductionCountingIsEmpty(order)
                 && (checkIfIsUsed(role) || (checkIfIsProduced(role) && checkIfIsWaste(typeOfMaterial))));
     }
 
@@ -151,7 +166,7 @@ public class ProductionCountingQuantityHooks {
     private Entity fillBasicProductionCounting(final Entity order, final Entity product) {
         Entity basicProductionCounting = getBasicProductionCounting(order, product);
 
-        if (basicProductionCounting == null) {
+        if (Objects.isNull(basicProductionCounting)) {
             basicProductionCounting = basicProductionCountingService.createBasicProductionCounting(order, product);
         }
 
@@ -165,7 +180,7 @@ public class ProductionCountingQuantityHooks {
     }
 
     private void fillIsNonComponent(final Entity productionCountingQuantity) {
-        if (productionCountingQuantity.getField(ProductionCountingQuantityFields.IS_NON_COMPONENT) == null) {
+        if (Objects.isNull(productionCountingQuantity.getField(ProductionCountingQuantityFields.IS_NON_COMPONENT))) {
             String typeOfMaterial = productionCountingQuantity.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
 
             boolean isNonComponent = !checkIfIsFinalProduct(typeOfMaterial) && !checkIfIsComponent(typeOfMaterial);
@@ -200,7 +215,7 @@ public class ProductionCountingQuantityHooks {
         Entity basicProductionCounting = productionCountingQuantity
                 .getBelongsToField(ProductionCountingQuantityFields.BASIC_PRODUCTION_COUNTING);
 
-        if ((basicProductionCounting != null) && checkIfItIsLastProductionCountingQuantity(basicProductionCounting)) {
+        if (Objects.nonNull(basicProductionCounting) && checkIfItIsLastProductionCountingQuantity(basicProductionCounting)) {
             productionCountingQuantity.setField(ProductionCountingQuantityFields.BASIC_PRODUCTION_COUNTING, null);
             productionCountingQuantity.getDataDefinition().save(productionCountingQuantity);
 

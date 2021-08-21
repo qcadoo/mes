@@ -70,8 +70,18 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="4" row="1">
-						<component type="input" name="nominalCostCurrency"
-							reference="nominalCostCurrency" hasLabel="false" defaultEnabled="never" />
+						<component type="lookup" name="nominalCostCurrency" field="#{form}.nominalCostCurrency"
+								   reference="nominalCostCurrency" hasLabel="false">
+							<option type="column" name="currency" fields="currency"
+									link="true"/>
+							<option type="column" name="exchangeRate" fields="exchangeRate"/>
+
+							<option type="searchable" value="currency,alphabeticCode"/>
+							<option type="orderable" value="currency,alphabeticCode"/>
+
+							<option type="expression" value="#alphabeticCode + ' - ' + #currency"/>
+							<option type="fieldCode" value="alphabeticCode"/>
+						</component>
 					</layoutElement>
 				</component>
 			</layoutElement>
@@ -87,9 +97,18 @@
 							</component>
 						</layoutElement>
 						<layoutElement column="4" row="1">
-							<component type="input" name="lastPurchaseCostCurrency"
-								reference="lastPurchaseCostCurrency" hasLabel="false"
-								defaultEnabled="never" />
+							<component type="lookup" name="lastPurchaseCostCurrency" field="#{form}.lastPurchaseCostCurrency"
+									   reference="lastPurchaseCostCurrency" hasLabel="false" defaultEnabled="never">
+								<option type="column" name="currency" fields="currency"
+										link="true"/>
+								<option type="column" name="exchangeRate" fields="exchangeRate"/>
+
+								<option type="searchable" value="currency,alphabeticCode"/>
+								<option type="orderable" value="currency,alphabeticCode"/>
+
+								<option type="expression" value="#alphabeticCode + ' - ' + #currency"/>
+								<option type="fieldCode" value="alphabeticCode"/>
+							</component>
 						</layoutElement>
 						<layoutElement column="1" row="2" width="3">
 							<component type="input" name="averageCost" reference="averageCost"
@@ -98,8 +117,18 @@
 							</component>
 						</layoutElement>
 						<layoutElement column="4" row="2">
-							<component type="input" name="averageCostCurrency"
-								reference="averageCostCurrency" hasLabel="false" defaultEnabled="never" />
+							<component type="lookup" name="averageCostCurrency" field="#{form}.averageCostCurrency"
+									   reference="averageCostCurrency" hasLabel="false" defaultEnabled="never">
+								<option type="column" name="currency" fields="currency"
+										link="true"/>
+								<option type="column" name="exchangeRate" fields="exchangeRate"/>
+
+								<option type="searchable" value="currency,alphabeticCode"/>
+								<option type="orderable" value="currency,alphabeticCode"/>
+
+								<option type="expression" value="#alphabeticCode + ' - ' + #currency"/>
+								<option type="fieldCode" value="alphabeticCode"/>
+							</component>
 						</layoutElement>
 					</component>
 				</component>

@@ -140,7 +140,9 @@ public class SalesPlanDetailsListeners {
                                         BigDecimal orderQuantity = salesPlanProduct.getDecimalField(
                                                 SalesPlanProductFields.PLANNED_QUANTITY).subtract(orderedQuantity,
                                                 MathContext.DECIMAL64);
-
+                                        if (orderQuantity.compareTo(BigDecimal.ZERO) < 0) {
+                                            orderQuantity = BigDecimal.ZERO;
+                                        }
                                         salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.ORDER_QUANTITY,
                                                 orderQuantity);
 
@@ -256,7 +258,9 @@ public class SalesPlanDetailsListeners {
                                         BigDecimal orderQuantity = salesPlanProduct.getDecimalField(
                                                 SalesPlanProductFields.PLANNED_QUANTITY).subtract(orderedQuantity,
                                                 MathContext.DECIMAL64);
-
+                                        if (orderQuantity.compareTo(BigDecimal.ZERO) < 0) {
+                                            orderQuantity = BigDecimal.ZERO;
+                                        }
                                         salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.ORDER_QUANTITY,
                                                 orderQuantity);
 

@@ -50,14 +50,14 @@ public class OperationalTaskOrderStateAspect extends AbstractStateListenerAspect
         operationalTaskOrderStateService.startOperationalTask(stateChangeContext);
     }
 
-    @RunInPhase(OrderStateChangePhase.DEFAULT)
+    @RunInPhase(OrderStateChangePhase.LAST)
     @RunForStateTransition(targetState = OrderStateStringValues.DECLINED)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void rejectOperationalTaskForDeclinedOrder(final StateChangeContext stateChangeContext, final int phase) {
         operationalTaskOrderStateService.rejectOperationalTask(stateChangeContext);
     }
 
-    @RunInPhase(OrderStateChangePhase.DEFAULT)
+    @RunInPhase(OrderStateChangePhase.LAST)
     @RunForStateTransition(targetState = OrderStateStringValues.ABANDONED)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void rejectOperationalTaskForAbandonedOrder(final StateChangeContext stateChangeContext, final int phase) {

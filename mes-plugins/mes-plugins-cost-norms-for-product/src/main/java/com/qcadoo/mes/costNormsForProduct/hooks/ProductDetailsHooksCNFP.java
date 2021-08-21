@@ -25,7 +25,11 @@ package com.qcadoo.mes.costNormsForProduct.hooks;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.*;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.AVERAGE_COST;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.AVERAGE_OFFER_COST;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.LAST_OFFER_COST;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.LAST_PURCHASE_COST;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.NOMINAL_COST;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -36,6 +40,7 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costNormsForProduct.constants.CostNormsForProductConstants;
+import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -47,8 +52,6 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 public class ProductDetailsHooksCNFP {
 
     private static final String L_VIEW_DEFINITION_STATE_IS_NULL = "viewDefinitionState is null";
-
-    
 
     private static final String L_COST_FOR_NUMBER_UNIT = "costForNumberUnit";
 
@@ -75,7 +78,7 @@ public class ProductDetailsHooksCNFP {
             return;
         }
 
-        Long productId = null;
+        Long productId;
 
         if (inProduct) {
             productId = (Long) form.getFieldValue();
@@ -109,16 +112,25 @@ public class ProductDetailsHooksCNFP {
 
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_FORM);
         clearFields(viewDefinitionState, fieldNames);
-        if (form == null || form.getEntityId() == null) {
+        if (form == null) {
             return;
         }
-        String currency = currencyService.getCurrencyAlphabeticCode();
-        if (currency == null) {
+
+        if(form.getEntityId() == null){
+            Entity currency = currencyService.getCurrentCurrency();
+            if(currency != null) {
+                fillField((FieldComponent) viewDefinitionState.getComponentByReference(ProductFieldsCNFP.NOMINAL_COST_CURRENCY), currency.getId());
+                fillField((FieldComponent) viewDefinitionState.getComponentByReference(ProductFieldsCNFP.LAST_PURCHASE_COST_CURRENCY), currency.getId());
+                fillField((FieldComponent) viewDefinitionState.getComponentByReference(ProductFieldsCNFP.AVERAGE_COST_CURRENCY), currency.getId());
+            }
+        }
+        String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
+        if (currencyAlphabeticCode == null) {
             return;
         }
         for (String fieldName : fieldNames) {
             FieldComponent currencyField = (FieldComponent) viewDefinitionState.getComponentByReference(fieldName);
-            fillField(currencyField, currency);
+            fillField(currencyField, currencyAlphabeticCode);
         }
     }
 
@@ -129,7 +141,7 @@ public class ProductDetailsHooksCNFP {
         }
     }
 
-    public void fillField(final FieldComponent fieldComponent, final String fieldValue) {
+    public void fillField(final FieldComponent fieldComponent, final Object fieldValue) {
         checkArgument(fieldComponent != null, "fieldComponent is null");
         fieldComponent.setFieldValue(fieldValue);
         fieldComponent.requestComponentUpdateState();
