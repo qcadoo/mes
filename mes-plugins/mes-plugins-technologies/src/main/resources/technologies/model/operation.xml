@@ -60,8 +60,8 @@
         <enum name="assignedToOperation" values="01workstations,02workstationTypes"
               default="01workstations" required="true"/>
 
-        <boolean name="createOperationOutput" default="false"/>
-        <belongsTo name="product" plugin="basic" model="product"/>
+        <boolean name="createOperationOutput" default="false" copyable="false"/>
+        <belongsTo name="product" plugin="basic" model="product" copyable="false"/>
         <belongsTo name="workstationType" plugin="basic" model="workstationType"/>
         <belongsTo name="division" plugin="basic" model="division"/>
         <belongsTo name="productionLine" model="productionLine" plugin="productionLines"/>
