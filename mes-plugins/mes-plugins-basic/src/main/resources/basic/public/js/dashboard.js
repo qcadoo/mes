@@ -479,13 +479,11 @@ const clearDrop = (event) => {
 }
 
 const updateDropzones = () => {
-    let dropzone = $('<div class="dropzone rounded" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="clearDrop(event)"> &nbsp; </div>');
-
     $('.dropzone').remove();
 
-    dropzone.insertAfter('.card.draggable');
+    $('<div class="dropzone rounded" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="clearDrop(event)"> &nbsp; </div>').insertAfter('.card.draggable');
 
-    $(".items:not(:has(.card.draggable))").append(dropzone);
+    $(".items:not(:has(.card.draggable))").append($('<div class="dropzone rounded" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="clearDrop(event)"> &nbsp; </div>'));
 };
 
 function hasClass(target, className) {
