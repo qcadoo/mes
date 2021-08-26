@@ -23,6 +23,15 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.apache.commons.lang3.BooleanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -43,15 +52,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.apache.commons.lang3.BooleanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class TrackingOperationProductOutComponentHooks {
@@ -134,18 +134,18 @@ public class TrackingOperationProductOutComponentHooks {
             return false;
         }
 
-        Entity product = trackingOperationProductOutComponent
-                .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
-        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
-        String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
-        Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
-
         boolean enteredFromTerminal = BooleanUtils.isTrue(trackingOperationProductOutComponent
                 .getBooleanField(TrackingOperationProductOutComponentFields.ENTERED_FROM_TERMINAL));
 
         if(enteredFromTerminal) {
             return false;
         }
+
+        Entity product = trackingOperationProductOutComponent
+                .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
+        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
+        Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
 
         boolean allowToOverrideQuantitiesFromTerminal = BooleanUtils.isTrue(parameterService.getParameter().getBooleanField(
                 ParameterFieldsPC.ALLOW_CHANGES_TO_USED_QUANTITY_ON_TERMINAL));
