@@ -23,10 +23,10 @@
  */
 package com.qcadoo.mes.orders.controllers.dto;
 
+import java.math.BigDecimal;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-import java.math.BigDecimal;
 
 public class OrderHolder {
 
@@ -35,6 +35,8 @@ public class OrderHolder {
     private String number;
 
     private String name;
+
+    private String description;
 
     private String state;
 
@@ -50,9 +52,15 @@ public class OrderHolder {
 
     private String productNumber;
 
+    private String productName;
+
     private String productUnit;
 
     private String companyName;
+
+    private String dashboardShowForProduct;
+
+    private boolean dashboardShowDescription;
 
     public Long getId() {
         return id;
@@ -163,18 +171,52 @@ public class OrderHolder {
         OrderHolder that = (OrderHolder) o;
 
         return new EqualsBuilder().append(id, that.id).append(number, that.number).append(name, that.name)
-                .append(state, that.state).append(typeOfProductionRecording, that.typeOfProductionRecording)
-                .append(plannedQuantity, that.plannedQuantity).append(doneQuantity, that.doneQuantity)
-                .append(masterOrderNumber, that.masterOrderNumber).append(productionLineNumber, that.productionLineNumber)
-                .append(productNumber, that.productNumber).append(productUnit, that.productUnit)
-                .append(companyName, that.companyName).isEquals();
+                .append(description, that.description).append(state, that.state)
+                .append(typeOfProductionRecording, that.typeOfProductionRecording).append(plannedQuantity, that.plannedQuantity)
+                .append(doneQuantity, that.doneQuantity).append(masterOrderNumber, that.masterOrderNumber)
+                .append(productionLineNumber, that.productionLineNumber).append(productNumber, that.productNumber)
+                .append(productName, that.productName).append(productUnit, that.productUnit).append(companyName, that.companyName)
+                .append(dashboardShowForProduct, that.dashboardShowForProduct)
+                .append(dashboardShowDescription, that.dashboardShowDescription).isEquals();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(id).append(number).append(name).append(state).append(typeOfProductionRecording)
-                .append(plannedQuantity).append(doneQuantity).append(masterOrderNumber).append(productionLineNumber)
-                .append(productNumber).append(productUnit).append(companyName).toHashCode();
+        return new HashCodeBuilder().append(id).append(number).append(name).append(description).append(state)
+                .append(typeOfProductionRecording).append(plannedQuantity).append(doneQuantity).append(masterOrderNumber)
+                .append(productionLineNumber).append(productNumber).append(productName).append(productUnit).append(companyName)
+                .append(dashboardShowForProduct).append(dashboardShowDescription).toHashCode();
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isDashboardShowDescription() {
+        return dashboardShowDescription;
+    }
+
+    public void setDashboardShowDescription(boolean dashboardShowDescription) {
+        this.dashboardShowDescription = dashboardShowDescription;
+    }
+
+    public String getDashboardShowForProduct() {
+        return dashboardShowForProduct;
+    }
+
+    public void setDashboardShowForProduct(String dashboardShowForProduct) {
+        this.dashboardShowForProduct = dashboardShowForProduct;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
 }

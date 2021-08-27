@@ -23,10 +23,10 @@
  */
 package com.qcadoo.mes.orders.controllers.dto;
 
+import java.math.BigDecimal;
+
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-import java.math.BigDecimal;
 
 public class OperationalTaskHolder {
 
@@ -35,6 +35,8 @@ public class OperationalTaskHolder {
     private String number;
 
     private String name;
+
+    private String description;
 
     private String state;
 
@@ -50,13 +52,21 @@ public class OperationalTaskHolder {
 
     private String productNumber;
 
+    private String productName;
+
     private String productUnit;
 
     private String staffName;
 
     private String orderProductNumber;
 
+    private String orderProductName;
+
     private Long orderId;
+
+    private String dashboardShowForProduct;
+
+    private boolean dashboardShowDescription;
 
     public Long getId() {
         return id;
@@ -175,18 +185,22 @@ public class OperationalTaskHolder {
         OperationalTaskHolder that = (OperationalTaskHolder) o;
 
         return new EqualsBuilder().append(id, that.id).append(number, that.number).append(name, that.name)
-                .append(state, that.state).append(type, that.type).append(plannedQuantity, that.plannedQuantity)
-                .append(usedQuantity, that.usedQuantity).append(orderNumber, that.orderNumber)
-                .append(workstationNumber, that.workstationNumber).append(productNumber, that.productNumber)
+                .append(description, that.description).append(state, that.state).append(type, that.type)
+                .append(plannedQuantity, that.plannedQuantity).append(usedQuantity, that.usedQuantity)
+                .append(orderNumber, that.orderNumber).append(workstationNumber, that.workstationNumber)
+                .append(productNumber, that.productNumber).append(productName, that.productName)
                 .append(productUnit, that.productUnit).append(staffName, that.staffName)
-                .append(orderProductNumber, that.orderProductNumber).append(orderId, that.orderId).isEquals();
+                .append(orderProductNumber, that.orderProductNumber).append(orderProductName, that.orderProductName)
+                .append(orderId, that.orderId).append(dashboardShowForProduct, that.dashboardShowForProduct)
+                .append(dashboardShowDescription, that.dashboardShowDescription).isEquals();
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder().append(id).append(number).append(name).append(state).append(type).append(plannedQuantity)
-                .append(usedQuantity).append(orderNumber).append(workstationNumber).append(productNumber).append(productUnit)
-                .append(staffName).append(orderProductNumber).append(orderId).toHashCode();
+        return new HashCodeBuilder().append(id).append(number).append(name).append(description).append(state).append(type)
+                .append(plannedQuantity).append(usedQuantity).append(orderNumber).append(workstationNumber).append(productNumber)
+                .append(productName).append(productUnit).append(staffName).append(orderProductNumber).append(orderProductName)
+                .append(orderId).append(dashboardShowForProduct).append(dashboardShowDescription).toHashCode();
     }
 
     public Long getOrderId() {
@@ -195,5 +209,45 @@ public class OperationalTaskHolder {
 
     public void setOrderId(Long orderId) {
         this.orderId = orderId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public boolean isDashboardShowDescription() {
+        return dashboardShowDescription;
+    }
+
+    public void setDashboardShowDescription(boolean dashboardShowDescription) {
+        this.dashboardShowDescription = dashboardShowDescription;
+    }
+
+    public String getDashboardShowForProduct() {
+        return dashboardShowForProduct;
+    }
+
+    public void setDashboardShowForProduct(String dashboardShowForProduct) {
+        this.dashboardShowForProduct = dashboardShowForProduct;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public String getOrderProductName() {
+        return orderProductName;
+    }
+
+    public void setOrderProductName(String orderProductName) {
+        this.orderProductName = orderProductName;
     }
 }
