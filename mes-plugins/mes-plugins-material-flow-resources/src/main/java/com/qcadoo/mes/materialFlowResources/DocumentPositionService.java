@@ -1,21 +1,6 @@
 package com.qcadoo.mes.materialFlowResources;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.GridResponse;
-import com.qcadoo.mes.basic.LookupUtils;
-import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
-import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
-import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
-import com.qcadoo.mes.materialFlowResources.dto.ColumnProperties;
-import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
-import com.qcadoo.plugin.api.PluginManager;
+import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.ESILCO;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -33,7 +18,23 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
-import static com.qcadoo.mes.materialFlowResources.listeners.DocumentsListListeners.ESILCO;
+
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.GridResponse;
+import com.qcadoo.mes.basic.LookupUtils;
+import com.qcadoo.mes.basic.controllers.dataProvider.DataProvider;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.AbstractDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.dto.ProductDTO;
+import com.qcadoo.mes.basic.controllers.dataProvider.responses.DataResponse;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentState;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentType;
+import com.qcadoo.mes.materialFlowResources.dto.ColumnProperties;
+import com.qcadoo.mes.materialFlowResources.service.ReservationsService;
+import com.qcadoo.plugin.api.PluginManager;
 
 @Repository
 public class DocumentPositionService {
@@ -372,7 +373,7 @@ public class DocumentPositionService {
         }
     }
 
-    private void updateDocumentPositionsNumbers(final Long documentId) {
+    public void updateDocumentPositionsNumbers(final Long documentId) {
         String query = "SELECT p.*, p.document_id AS document, product.number AS product, product.unit, additionalcode.code AS additionalcode, palletnumber.number AS palletnumber, "
                 + "location.number AS storagelocationnumber\n" + "	FROM materialflowresources_position p\n"
                 + "	LEFT JOIN basic_product product ON (p.product_id = product.id)\n"
