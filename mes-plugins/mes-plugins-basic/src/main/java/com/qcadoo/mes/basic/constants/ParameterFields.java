@@ -51,4 +51,6 @@ public final class ParameterFields {
 
     public static final String COPY_NOMINAL_COST_FAMILY_OF_PRODUCTS_SIZES = "copyNominalCostFamilyOfProductsSizes";
 
+    public static final String DASHBOARD_SHOW_FOR_PRODUCT = "dashboardShowForProduct";
+
 }

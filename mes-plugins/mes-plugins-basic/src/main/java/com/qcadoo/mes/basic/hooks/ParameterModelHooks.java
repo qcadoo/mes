@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.CurrencyFields;
+import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
@@ -40,9 +41,10 @@ public class ParameterModelHooks {
     @Autowired
     private CurrencyService currencyService;
 
-    public void setDefaultCurrency(final DataDefinition parameterDD, final Entity parameter) {
+    public void setDefaultValues(final DataDefinition parameterDD, final Entity parameter) {
         String defaultCurrencyAlphabeticCode = Currency.getInstance(Locale.getDefault()).getCurrencyCode();
         parameter.setField(CurrencyFields.CURRENCY, currencyService.getCurrencyByAlphabeticCode(defaultCurrencyAlphabeticCode));
+        parameter.setField(ParameterFields.DASHBOARD_SHOW_FOR_PRODUCT, "01number");
     }
 
 }
