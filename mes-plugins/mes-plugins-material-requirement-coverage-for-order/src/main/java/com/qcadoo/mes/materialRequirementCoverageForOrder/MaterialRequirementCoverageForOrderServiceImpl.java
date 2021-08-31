@@ -33,7 +33,17 @@ import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
-import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.*;
+import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.ColumnForCoveragesForOrderFields;
+import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageForOrderFields;
+import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageLocationFields;
+import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageProductFields;
+import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageProductForDelivery;
+import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageProductForOrder;
+import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageProductLoggingEventType;
+import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageProductLoggingFields;
+import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageProductLoggingState;
+import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageProductState;
+import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageType;
 import com.qcadoo.mes.materialRequirements.MaterialRequirementService;
 import com.qcadoo.mes.materialRequirements.constants.InputProductsRequiredForType;
 import com.qcadoo.mes.materialRequirements.constants.OrderFieldsMR;
@@ -45,28 +55,48 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.productFlowThruDivision.ProductFlowThruDivisionService;
-import com.qcadoo.mes.productionCounting.constants.*;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
+import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchRestrictions;
+
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.util.*;
-import java.util.Map.Entry;
-
 @Service
 public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialRequirementCoverageForOrderService {
+
+
+    private static final String L_DOT = ".";
+
+    private static final String L_ID = "id";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -89,6 +119,7 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
     @Autowired
     private ParameterService parameterService;
 
+
     @Transactional
     @Override
     public void estimateProductCoverageInTime(Entity coverageForOrder) {
@@ -110,7 +141,7 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
         }
 
         List<Entity> includedOrders = getOrdersFromDB(coverageToDate);
-        List<Entity> includedDeliveries = getDeliveriesFromDB(coverageToDate, includeDraftDeliveries);
+        List<Entity> includedDeliveries = getDeliveriesFromDB(coverageToDate, includeDraftDeliveries, coverageLocations);
 
         Map<Long, Entity> productAndCoverageProducts = Maps.newHashMap();
 
@@ -691,22 +722,46 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
                 .add(SearchRestrictions.eq(OrderFields.ACTIVE, true)).list().getEntities();
     }
 
-    private List<Entity> getDeliveriesFromDB(final Date coverageToDate, final boolean includeDraftDeliveries) {
+    private List<Entity> getDeliveriesFromDB(final Date coverageToDate, final boolean includeDraftDeliveries,
+            List<Entity> coverageLocations) {
         if (includeDraftDeliveries) {
-            return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY).find()
+            SearchCriteriaBuilder scb = getDeliveryDD()
+                    .find()
                     .add(SearchRestrictions.le(DeliveryFields.DELIVERY_DATE, coverageToDate))
                     .add(SearchRestrictions.or(SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.DRAFT),
                             SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.PREPARED),
                             SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.DURING_CORRECTION),
                             SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.APPROVED),
                             SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.RECEIVE_CONFIRM_WAITING)))
-                    .add(SearchRestrictions.eq(DeliveryFields.ACTIVE, true)).list().getEntities();
+                    .add(SearchRestrictions.eq(DeliveryFields.ACTIVE, true));
+            if (!coverageLocations.isEmpty()) {
+                scb = scb.createAlias(DeliveryFields.LOCATION, DeliveryFields.LOCATION, JoinType.LEFT).add(
+                        SearchRestrictions.in(
+                                DeliveryFields.LOCATION + L_DOT + L_ID,
+                                coverageLocations.stream()
+                                        .map(cl -> cl.getBelongsToField(
+                                                com.qcadoo.mes.orderSupplies.constants.CoverageLocationFields.LOCATION).getId())
+                                        .collect(Collectors.toList())));
+            }
+            return scb.list().getEntities();
         } else {
-            return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY).find()
+            SearchCriteriaBuilder scb = getDeliveryDD()
+                    .find()
                     .add(SearchRestrictions.le(DeliveryFields.DELIVERY_DATE, coverageToDate))
                     .add(SearchRestrictions.or(SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.APPROVED),
                             SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.RECEIVE_CONFIRM_WAITING)))
-                    .add(SearchRestrictions.eq(DeliveryFields.ACTIVE, true)).list().getEntities();
+                    .add(SearchRestrictions.eq(DeliveryFields.ACTIVE, true));
+            if (!coverageLocations.isEmpty()) {
+                scb = scb.createAlias(DeliveryFields.LOCATION, DeliveryFields.LOCATION, JoinType.LEFT).add(
+                        SearchRestrictions.in(
+                                DeliveryFields.LOCATION + L_DOT + L_ID,
+                                coverageLocations.stream()
+                                        .map(cl -> cl.getBelongsToField(
+                                                com.qcadoo.mes.orderSupplies.constants.CoverageLocationFields.LOCATION).getId())
+                                        .collect(Collectors.toList())));
+            }
+            return scb.list().getEntities();
+
         }
     }
 
@@ -915,5 +970,9 @@ public class MaterialRequirementCoverageForOrderServiceImpl implements MaterialR
             coverageProduct.setField(CoverageProductFields.ORDER, null);
             coverageProduct.getDataDefinition().save(coverageProduct);
         }
+    }
+
+    private DataDefinition getDeliveryDD() {
+        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY);
     }
 }
