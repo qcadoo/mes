@@ -31,6 +31,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.qcadoo.mes.basic.services.DashboardButtonService;
 import com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnLoader;
 
 public class DeliveriesOnStartupServiceTest {
@@ -40,6 +41,9 @@ public class DeliveriesOnStartupServiceTest {
     @Mock
     private DeliveriesColumnLoader deliveriesColumnLoader;
 
+    @Mock
+    private DashboardButtonService dashboardButtonService;
+
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
@@ -47,6 +51,7 @@ public class DeliveriesOnStartupServiceTest {
         deliveriesOnStartupService = new DeliveriesOnStartupService();
 
         ReflectionTestUtils.setField(deliveriesOnStartupService, "deliveriesColumnLoader", deliveriesColumnLoader);
+        ReflectionTestUtils.setField(deliveriesOnStartupService, "dashboardButtonService", dashboardButtonService);
     }
 
     @Test
