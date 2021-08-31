@@ -1,7 +1,7 @@
 /**
  * ***************************************************************************
  * Copyright (c) 2010 Qcadoo Limited
- * Project: Qcadoo MES
+ * Project: Qcadoo Framework
  * Version: 1.4
  *
  * This file is part of Qcadoo.
@@ -21,24 +21,20 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveries;
+package com.qcadoo.mes.technologies;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.basic.services.DashboardButtonService;
-import com.qcadoo.mes.deliveries.columnExtension.DeliveriesColumnLoader;
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.plugin.api.Module;
 
 @Component
-public class DeliveriesOnStartupService extends Module {
+public class TechnologiesLoaderModule extends Module {
 
-    public static final String BASIC_DASHBOARD_BUTTON_IDENTIFIER_REQUIREMENTS_DELIVERIES_LIST = "basic.dashboardButton.identifier.requirements.deliveriesList";
-
-    @Autowired
-    private DeliveriesColumnLoader deliveriesColumnLoader;
+    public static final String BASIC_DASHBOARD_BUTTON_IDENTIFIER_TECHNOLOGY_TECHNOLOGIES_LIST = "basic.dashboardButton.identifier.technology.technologiesList";
 
     @Autowired
     private DashboardButtonService dashboardButtonService;
@@ -46,19 +42,15 @@ public class DeliveriesOnStartupService extends Module {
     @Transactional
     @Override
     public void multiTenantEnable() {
-        deliveriesColumnLoader.addColumnsForDeliveries();
-        deliveriesColumnLoader.addColumnsForOrders();
-        dashboardButtonService.addButton(BASIC_DASHBOARD_BUTTON_IDENTIFIER_REQUIREMENTS_DELIVERIES_LIST,
-                "/qcadooView/public/css/core/images/dashboard/deliveries.png", DeliveriesConstants.PLUGIN_IDENTIFIER,
-                "deliveries");
+        dashboardButtonService.addButton(BASIC_DASHBOARD_BUTTON_IDENTIFIER_TECHNOLOGY_TECHNOLOGIES_LIST,
+                "/qcadooView/public/css/core/images/dashboard/technologies.png", TechnologiesConstants.PLUGIN_IDENTIFIER,
+                "technologies");
     }
 
     @Transactional
     @Override
     public void multiTenantDisable() {
-        deliveriesColumnLoader.deleteColumnsForDeliveries();
-        deliveriesColumnLoader.deleteColumnsForOrders();
-        dashboardButtonService.deleteButton(BASIC_DASHBOARD_BUTTON_IDENTIFIER_REQUIREMENTS_DELIVERIES_LIST);
+        dashboardButtonService.deleteButton(BASIC_DASHBOARD_BUTTON_IDENTIFIER_TECHNOLOGY_TECHNOLOGIES_LIST);
     }
 
 }

@@ -375,6 +375,7 @@
                         method="updateRibbonState"/>
 
         <custom:custom class="com.qcadoo.mes.technologies.states.module.TechnologyStateServiceRegisterModule"/>
+        <custom:custom class="com.qcadoo.mes.technologies.TechnologiesLoaderModule" />
     </modules>
 
     <features>

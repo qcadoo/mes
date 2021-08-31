@@ -538,6 +538,7 @@
         <view:resource uri="public/**/*"/>
 
         <custom:custom class="com.qcadoo.mes.orders.states.module.OrderStateServiceRegisterModule"/>
+        <custom:custom class="com.qcadoo.mes.orders.OrdersLoaderModule" />
     </modules>
 
     <features>
