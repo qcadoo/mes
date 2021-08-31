@@ -214,6 +214,23 @@ public class OrderDetailsListeners {
         }
     }
 
+    public void showTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        Long orderId = (Long) state.getFieldValue();
+
+        if (Objects.nonNull(orderId)) {
+            Entity order = orderService.getOrder(orderId);
+
+            Long technologyId = order.getBelongsToField(OrderFields.TECHNOLOGY).getId();
+
+            Map<String, Object> parameters = Maps.newHashMap();
+
+            parameters.put("form.id", technologyId);
+
+            String url = "/page/technologies/technologyDetails.html";
+            view.redirectTo(url, false, true, parameters);
+        }
+    }
+
     public void showOrderParameters(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         Long orderId = (Long) state.getFieldValue();
 

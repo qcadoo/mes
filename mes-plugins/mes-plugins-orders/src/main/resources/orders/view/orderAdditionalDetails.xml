@@ -46,6 +46,35 @@
                            accesskey="r"/>
             </group>
 
+            <group name="technology">
+                <bigButton name="technology" icon="settingsIcon24.png"
+                           state="disabled">
+                    <script>
+                        <![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if (window.canClose()) {
+										#{form}.performEvent('showTechnology', []);
+									}
+								}
+							});
+							#{form}.addOnChangeListener({
+								onSetValue: function(value) {
+									if (!value || !value.content) {
+										return;
+									}
+									if (!value.content.entityId) {
+										this.disable();
+									} else {
+										this.enable();
+									}
+								}
+							});
+						]]>
+                    </script>
+                </bigButton>
+            </group>
+
         </ribbon>
 
         <windowTab name="additionalTabs" reference="additionalTabs">
@@ -71,6 +100,9 @@
                 <option type="header" value="true"/>
                 <option type="expression"
                         value="#number"/>
+
+                <listener event="showTechnology" method="showTechnology"
+                          class="com.qcadoo.mes.orders.listeners.OrderDetailsListeners"/>
             </component>
         </windowTab>
     </component>
