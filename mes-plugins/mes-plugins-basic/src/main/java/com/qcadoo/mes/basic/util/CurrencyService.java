@@ -47,6 +47,8 @@ import com.qcadoo.model.api.search.SearchRestrictions;
 @Service
 public class CurrencyService {
 
+    public static final String PLN = "PLN";
+
     @Autowired
     private NumberService numberService;
 

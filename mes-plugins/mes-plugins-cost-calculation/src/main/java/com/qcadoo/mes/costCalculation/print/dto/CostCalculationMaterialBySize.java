@@ -1,10 +1,10 @@
 package com.qcadoo.mes.costCalculation.print.dto;
 
+import java.math.BigDecimal;
+
 import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-
-import java.math.BigDecimal;
 
 public class CostCalculationMaterialBySize {
 
@@ -22,9 +22,13 @@ public class CostCalculationMaterialBySize {
 
     private BigDecimal nominalCost;
 
+    private String nominalCostCurrency;
+
     private BigDecimal averageCost;
 
     private BigDecimal lastPurchaseCost;
+
+    private String lastPurchaseCostCurrency;
 
     private BigDecimal averageOfferCost;
 
@@ -147,5 +151,21 @@ public class CostCalculationMaterialBySize {
 
     public void setQuantity(BigDecimal quantity) {
         this.quantity = quantity;
+    }
+
+    public String getNominalCostCurrency() {
+        return nominalCostCurrency;
+    }
+
+    public void setNominalCostCurrency(String nominalCostCurrency) {
+        this.nominalCostCurrency = nominalCostCurrency;
+    }
+
+    public String getLastPurchaseCostCurrency() {
+        return lastPurchaseCostCurrency;
+    }
+
+    public void setLastPurchaseCostCurrency(String lastPurchaseCostCurrency) {
+        this.lastPurchaseCostCurrency = lastPurchaseCostCurrency;
     }
 }

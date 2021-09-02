@@ -110,8 +110,6 @@ public class DeliveryDetailsListeners {
 
     private static final String L_DOT = ".";
 
-    private static final String PLN = "PLN";
-
     private static final String L_OFFER = "offer";
 
     private static final Integer REPORT_WIDTH_A4 = 515;
@@ -180,7 +178,7 @@ public class DeliveryDetailsListeners {
         GridComponent orderedProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
         FieldComponent currencyField = (FieldComponent) view.getComponentByReference(DeliveryFields.CURRENCY);
         Long deliveryCurrencyId = (Long) currencyField.getFieldValue();
-        Entity plnCurrency = currencyService.getCurrencyByAlphabeticCode(PLN);
+        Entity plnCurrency = currencyService.getCurrencyByAlphabeticCode(CurrencyService.PLN);
 
         List<Entity> orderedProducts = deliveriesService.getSelectedOrderedProducts(orderedProductsGrid);
 
@@ -258,7 +256,7 @@ public class DeliveryDetailsListeners {
         GridComponent orderedProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
         FieldComponent currencyField = (FieldComponent) view.getComponentByReference(DeliveryFields.CURRENCY);
         Long deliveryCurrencyId = (Long) currencyField.getFieldValue();
-        Entity plnCurrency = currencyService.getCurrencyByAlphabeticCode(PLN);
+        Entity plnCurrency = currencyService.getCurrencyByAlphabeticCode(CurrencyService.PLN);
 
         List<Entity> orderedProducts = deliveriesService.getSelectedOrderedProducts(orderedProductsGrid);
 
@@ -303,7 +301,7 @@ public class DeliveryDetailsListeners {
         totalPriceComponent.requestComponentUpdateState();
     }
 
-    private BigDecimal getPricePerUnit(Long deliveryCurrencyId, Entity plnCurrency, Entity product, List<Entity> productsToShow,
+    private BigDecimal getPricePerUnit(Long deliveryCurrencyId, Entity plnCurrency, Entity product, List<Entity> productsToMessage,
             Entity productCurrency, BigDecimal price) {
         BigDecimal pricePerUnit = null;
         if (deliveryCurrencyId == null || productCurrency == null || deliveryCurrencyId.equals(productCurrency.getId())) {
@@ -311,7 +309,7 @@ public class DeliveryDetailsListeners {
         } else if (deliveryCurrencyId.equals(plnCurrency.getId()) && !deliveryCurrencyId.equals(productCurrency.getId())) {
             pricePerUnit = currencyService.getConvertedValue(price, productCurrency);
         } else if (!deliveryCurrencyId.equals(plnCurrency.getId()) && !deliveryCurrencyId.equals(productCurrency.getId())) {
-            productsToShow.add(product);
+            productsToMessage.add(product);
         }
         return pricePerUnit;
     }
