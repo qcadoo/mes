@@ -3,19 +3,19 @@
  * Copyright (c) 2010 Qcadoo Limited
  * Project: Qcadoo MES
  * Version: 1.4
- *
+ * <p>
  * This file is part of Qcadoo.
- *
+ * <p>
  * Qcadoo is free software; you can redistribute it and/or modify it under the
  * terms of the GNU Affero General Public License as published by the Free
  * Software Foundation; either version 3 of the License, or (at your option) any
  * later version.
- *
+ * <p>
  * This program is distributed in the hope that it will be useful, but WITHOUT
  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
  * FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
  * details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
@@ -30,11 +30,20 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
 import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
+import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
-import com.qcadoo.mes.productionCounting.constants.*;
+import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
+import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
+import com.qcadoo.mes.productionCounting.constants.StaffWorkTimeFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
+import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.productionCounting.utils.OrderClosingHelper;
 import com.qcadoo.mes.states.StateChangeContext;
@@ -47,16 +56,16 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.validators.ErrorMessage;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
 import static com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields.ORDER;
 import static com.qcadoo.mes.orders.constants.OrderFields.STATE;
 import static com.qcadoo.mes.orders.states.constants.OrderState.COMPLETED;
@@ -142,6 +151,7 @@ public final class ProductionTrackingListenerService {
 
     public void onAccept(final Entity productionTracking) {
         updateBasicProductionCounting(productionTracking, new Addition());
+        updateProductionCountingQuantity(productionTracking, new Addition());
         setOrderDoneAndWastesQuantity(productionTracking, new Addition());
         closeOrder(productionTracking);
     }
@@ -298,6 +308,182 @@ public final class ProductionTrackingListenerService {
         return orderWastesQuantity;
     }
 
+    private void updateProductionCountingQuantitySubtraction(Entity productionTracking, Operation operation) {
+        final Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
+
+        if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
+            Entity technologyOperationComponent = productionTracking
+                    .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+            Entity toc = technologyOperationComponent.getDataDefinition().get(technologyOperationComponent.getId());
+            final List<Entity> trackingOperationProductInComponents = productionTracking
+                    .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
+            final List<Entity> trackingOperationProductOutComponents = productionTracking
+                    .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
+
+            trackingOperationProductInComponents.forEach(trackingOperationProductInComponent -> {
+                List<Entity> productionCountingQuantities = getInProductionCountingQuantities(
+                        trackingOperationProductInComponent, order, toc);
+
+                if (productionCountingQuantities.isEmpty()) {
+                    return;
+                }
+
+                if (productionCountingQuantities.size() == 1) {
+                    Entity pcq = productionCountingQuantities.get(0);
+                    final BigDecimal usedQuantity = BigDecimalUtils.convertNullToZero(pcq
+                            .getDecimalField(ProductionCountingQuantityFields.USED_QUANTITY));
+                    final BigDecimal productQuantity = trackingOperationProductInComponent
+                            .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
+
+                    final BigDecimal result = operation.perform(usedQuantity, productQuantity);
+
+                    pcq.setField(ProductionCountingQuantityFields.USED_QUANTITY, result);
+                    pcq.getDataDefinition().save(pcq);
+                } else {
+
+                    BigDecimal productQuantity = trackingOperationProductInComponent
+                            .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
+
+                    for (int i = productionCountingQuantities.size() - 1; i >= 0; i--) {
+                        Entity pcq = productionCountingQuantities.get(i);
+                        final BigDecimal usedQuantity = BigDecimalUtils.convertNullToZero(pcq
+                                .getDecimalField(ProductionCountingQuantityFields.USED_QUANTITY));
+
+                        if (usedQuantity.compareTo(BigDecimal.ZERO) > 0) {
+                            if (usedQuantity.compareTo(productQuantity) <= 0) {
+
+                                pcq.setField(ProductionCountingQuantityFields.USED_QUANTITY, BigDecimal.ZERO);
+                                pcq.getDataDefinition().save(pcq);
+                                productQuantity = productQuantity.subtract(usedQuantity, numberService.getMathContext());
+                            } else {
+                                final BigDecimal result = operation.perform(usedQuantity, productQuantity);
+                                pcq.setField(ProductionCountingQuantityFields.USED_QUANTITY, result);
+                                pcq.getDataDefinition().save(pcq);
+                            }
+                        }
+                    }
+                }
+
+            });
+
+            trackingOperationProductOutComponents.forEach(trackingOperationProductOutComponent -> {
+
+                Entity productionCountingQuantity = getOutProductionCountingQuantity(trackingOperationProductOutComponent, order,
+                        toc);
+                if (productionCountingQuantity == null) {
+                    return;
+                }
+                final BigDecimal usedQuantity = productionCountingQuantity
+                        .getDecimalField(ProductionCountingQuantityFields.PRODUCED_QUANTITY);
+                final BigDecimal productQuantity = trackingOperationProductOutComponent
+                        .getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY);
+                final BigDecimal result = operation.perform(usedQuantity, productQuantity);
+                productionCountingQuantity.setField(ProductionCountingQuantityFields.PRODUCED_QUANTITY, result);
+                productionCountingQuantity.getDataDefinition().save(productionCountingQuantity);
+            });
+        }
+    }
+
+    private void updateProductionCountingQuantity(final Entity productionTracking, final Operation operation) {
+        final Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        String typeOfProductionRecording = order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING);
+
+        if (TypeOfProductionRecording.FOR_EACH.getStringValue().equals(typeOfProductionRecording)) {
+            Entity technologyOperationComponent = productionTracking
+                    .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+            Entity toc = technologyOperationComponent.getDataDefinition().get(technologyOperationComponent.getId());
+            final List<Entity> trackingOperationProductInComponents = productionTracking
+                    .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
+            final List<Entity> trackingOperationProductOutComponents = productionTracking
+                    .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
+
+            trackingOperationProductInComponents
+                    .forEach(trackingOperationProductInComponent -> {
+                        List<Entity> productionCountingQuantities = getInProductionCountingQuantities(
+                                trackingOperationProductInComponent, order, toc);
+
+                        if (productionCountingQuantities.isEmpty()) {
+                            return;
+                        }
+
+                        if (productionCountingQuantities.size() == 1) {
+                            Entity pcq = productionCountingQuantities.get(0);
+                            final BigDecimal usedQuantity = BigDecimalUtils.convertNullToZero(pcq
+                                    .getDecimalField(ProductionCountingQuantityFields.USED_QUANTITY));
+                            final BigDecimal productQuantity = trackingOperationProductInComponent
+                                    .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
+
+                            final BigDecimal result = operation.perform(usedQuantity, productQuantity);
+
+                            pcq.setField(ProductionCountingQuantityFields.USED_QUANTITY, result);
+                            pcq.getDataDefinition().save(pcq);
+                        } else {
+                            int lastIndex = productionCountingQuantities.size() - 1;
+                            BigDecimal productQuantity = trackingOperationProductInComponent
+                                    .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
+
+                            for (int i = 0; i < productionCountingQuantities.size(); i++) {
+                                Entity pcq = productionCountingQuantities.get(i);
+                                final BigDecimal usedQuantity = BigDecimalUtils.convertNullToZero(pcq
+                                        .getDecimalField(ProductionCountingQuantityFields.USED_QUANTITY));
+                                final BigDecimal plannedQuantity = pcq
+                                        .getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY);
+
+                                if (i == lastIndex) {
+
+                                    final BigDecimal result = operation.perform(usedQuantity, productQuantity);
+                                    pcq.setField(ProductionCountingQuantityFields.USED_QUANTITY, result);
+                                    pcq.getDataDefinition().save(pcq);
+                                    productQuantity = productQuantity.subtract(productQuantity, numberService.getMathContext());
+
+                                } else {
+
+                                    if (usedQuantity.compareTo(plannedQuantity) != 0) {
+
+                                        BigDecimal diff = plannedQuantity.subtract(usedQuantity, numberService.getMathContext());
+                                        if (diff.compareTo(BigDecimal.ZERO) > 0) {
+
+                                            if (diff.compareTo(productQuantity) >= 0) {
+                                                final BigDecimal result = operation.perform(usedQuantity, productQuantity);
+                                                pcq.setField(ProductionCountingQuantityFields.USED_QUANTITY, result);
+                                                pcq.getDataDefinition().save(pcq);
+                                                productQuantity = productQuantity.subtract(productQuantity,
+                                                        numberService.getMathContext());
+
+                                            } else {
+                                                final BigDecimal result = operation.perform(usedQuantity, diff);
+                                                pcq.setField(ProductionCountingQuantityFields.USED_QUANTITY, result);
+                                                pcq.getDataDefinition().save(pcq);
+                                                productQuantity = productQuantity.subtract(diff, numberService.getMathContext());
+                                            }
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+
+                    });
+
+            trackingOperationProductOutComponents.forEach(trackingOperationProductOutComponent -> {
+
+                Entity productionCountingQuantity = getOutProductionCountingQuantity(trackingOperationProductOutComponent, order,
+                        toc);
+                if (productionCountingQuantity == null) {
+                    return;
+                }
+                final BigDecimal usedQuantity = productionCountingQuantity
+                        .getDecimalField(ProductionCountingQuantityFields.PRODUCED_QUANTITY);
+                final BigDecimal productQuantity = trackingOperationProductOutComponent
+                        .getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY);
+                final BigDecimal result = operation.perform(usedQuantity, productQuantity);
+                productionCountingQuantity.setField(ProductionCountingQuantityFields.PRODUCED_QUANTITY, result);
+                productionCountingQuantity.getDataDefinition().save(productionCountingQuantity);
+            });
+        }
+    }
+
     private void updateBasicProductionCounting(final Entity productionTracking, final Operation operation) {
         final Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
 
@@ -390,8 +576,39 @@ public final class ProductionTrackingListenerService {
                 .uniqueResult();
     }
 
+    private List<Entity> getInProductionCountingQuantities(Entity trackingOperationProductComponent, Entity order, Entity toc) {
+        Entity product = trackingOperationProductComponent.getBelongsToField(L_PRODUCT);
+
+        return order
+                .getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES)
+                .find()
+                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
+                        ProductionCountingQuantityRole.USED.getStringValue()))
+                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.TYPE_OF_MATERIAL,
+                        ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()))
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product))
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT, toc)).list()
+                .getEntities();
+
+    }
+
+    private Entity getOutProductionCountingQuantity(Entity trackingOperationProductOutComponent, Entity order, Entity toc) {
+        Entity product = trackingOperationProductOutComponent.getBelongsToField(L_PRODUCT);
+
+        return order
+                .getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES)
+                .find()
+                .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
+                        ProductionCountingQuantityRole.PRODUCED.getStringValue()))
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.PRODUCT, product))
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT, toc))
+                .setMaxResults(1).uniqueResult();
+
+    }
+
     public void onCorrected(final Entity productionTracking) {
         updateBasicProductionCounting(productionTracking, new Substraction());
+        updateProductionCountingQuantitySubtraction(productionTracking, new Substraction());
         setOrderDoneAndWastesQuantity(productionTracking, new Substraction());
     }
 
