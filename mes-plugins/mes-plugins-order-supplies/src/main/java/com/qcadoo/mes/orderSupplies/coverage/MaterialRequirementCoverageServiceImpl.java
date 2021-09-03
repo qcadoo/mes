@@ -57,6 +57,8 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
@@ -91,6 +93,10 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
     private static final String L_PRODUCT_TYPE = "productType";
 
     private static final String L_PLANNED_QUANTITY = "planedQuantity";
+
+    private static final String L_DOT = ".";
+
+    private static final String L_ID = "id";
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -135,7 +141,7 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
         List<Entity> coverageLocations = materialRequirementCoverage
                 .getHasManyField(MaterialRequirementCoverageFields.COVERAGE_LOCATIONS);
 
-        List<Entity> includedDeliveries = getDeliveriesFromDB(coverageToDate, includeDraftDeliveries);
+        List<Entity> includedDeliveries = getDeliveriesFromDB(coverageToDate, includeDraftDeliveries, coverageLocations);
 
         Map<Long, Entity> productAndCoverageProducts = Maps.newHashMap();
 
@@ -219,10 +225,11 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
 
         for (Entity reg : regs) {
             if (BigDecimal.ZERO.compareTo(reg.getDecimalField(CoverageRegisterFields.QUANTITY)) < 0) {
-                Entity coverageProductLogging = materialRequirementCoverageHelper.createProductLoggingForOrderProduced(reg, actualDate, coverageToDate);
+                Entity coverageProductLogging = materialRequirementCoverageHelper.createProductLoggingForOrderProduced(reg,
+                        actualDate, coverageToDate);
 
-                materialRequirementCoverageHelper.fillCoverageProductForOrderProduced(productAndCoverageProducts, Long.valueOf(reg.getIntegerField("productId")),
-                        coverageProductLogging);
+                materialRequirementCoverageHelper.fillCoverageProductForOrderProduced(productAndCoverageProducts,
+                        Long.valueOf(reg.getIntegerField("productId")), coverageProductLogging);
             }
         }
     }
@@ -483,8 +490,9 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
             if (coverageBasedOnProductionCounting) {
                 sql = "SELECT distinct registry.productId AS productId FROM #orderSupplies_productionCountingQuantityInput AS registry "
                         + "WHERE registry.orderId IN :ids AND eventType IN ('04orderInput','03operationInput')";
-                List<Entity> regs = getCoverageRegisterDD().find(sql).setParameterList("ids", orderIds.stream().map(x -> x.intValue()).collect(
-                        Collectors.toList())).list().getEntities();
+                List<Entity> regs = getCoverageRegisterDD().find(sql)
+                        .setParameterList("ids", orderIds.stream().map(x -> x.intValue()).collect(Collectors.toList())).list()
+                        .getEntities();
 
                 List<Long> pids = getIdsFromRegisterProduct(regs);
 
@@ -500,8 +508,9 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
             } else {
                 sql = "SELECT distinct registry.product.id AS productId FROM #orderSupplies_coverageRegister AS registry "
                         + "WHERE registry.order.id IN :ids AND eventType IN ('04orderInput','03operationInput')";
-                List<Entity> regs = getCoverageRegisterDD().find(sql).setParameterList("ids", orderIds.stream().map(x -> x.longValue()).collect(
-                        Collectors.toList())).list().getEntities();
+                List<Entity> regs = getCoverageRegisterDD().find(sql)
+                        .setParameterList("ids", orderIds.stream().map(x -> x.longValue()).collect(Collectors.toList())).list()
+                        .getEntities();
 
                 List<Long> pids = getIdsFromRegisterProduct(regs);
 
@@ -516,8 +525,6 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
                 }
             }
 
-
-
         }
     }
 
@@ -530,8 +537,8 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
         return registerProducts.stream().map(p -> ((Number) p.getField("productId")).longValue()).collect(Collectors.toList());
     }
 
-    private void fillFromProductionCounting(final Map<Long, Entity> productAndCoverageProducts, Entity assignedOrder, final Date coverageToDate,
-            final Date actualDate, final List<Entity> orderStates) {
+    private void fillFromProductionCounting(final Map<Long, Entity> productAndCoverageProducts, Entity assignedOrder,
+            final Date coverageToDate, final Date actualDate, final List<Entity> orderStates) {
         List<String> states = Lists.newArrayList();
 
         if (!orderStates.isEmpty()) {
@@ -547,7 +554,7 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
         boolean appendOrderId = false;
 
         if (!states.isEmpty()) {
-            if(Objects.nonNull(assignedOrder)) {
+            if (Objects.nonNull(assignedOrder)) {
                 Optional<Entity> maybeState = orderStates
                         .stream()
                         .filter(state -> state.getStringField(CoverageOrderStateFields.STATE).equals(
@@ -564,13 +571,14 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
 
         }
 
-        SearchQueryBuilder queryBuilder = productionCountingQuantityInputDD().find(query.toString()).setParameter("dateTo", coverageToDate);
+        SearchQueryBuilder queryBuilder = productionCountingQuantityInputDD().find(query.toString()).setParameter("dateTo",
+                coverageToDate);
 
         if (!states.isEmpty()) {
             queryBuilder.setParameterList("states", states);
         }
 
-        if(appendOrderId) {
+        if (appendOrderId) {
             queryBuilder.setLong("orderId", assignedOrder.getId());
         }
 
@@ -875,12 +883,10 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
     }
 
     private void fillCoverageProductSupplier(final Map<Long, Entity> productAndCoverageProducts) {
-        productAndCoverageProducts
-                .values()
-                .forEach(
-                        coverageProduct -> deliveriesService.getDefaultSupplierWithIntegration(
-                                coverageProduct.getBelongsToField(CoverageProductFields.PRODUCT).getId()).ifPresent(
-                                supplier -> coverageProduct.setField(CoverageProductFields.COMPANY, supplier)));
+        productAndCoverageProducts.values().forEach(
+                coverageProduct -> deliveriesService.getDefaultSupplierWithIntegration(
+                        coverageProduct.getBelongsToField(CoverageProductFields.PRODUCT).getId()).ifPresent(
+                        supplier -> coverageProduct.setField(CoverageProductFields.COMPANY, supplier)));
     }
 
     private void fillCoverageProductStatesAndQuantities(final Map<Long, Entity> productAndCoverageProducts) {
@@ -1037,9 +1043,10 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
         return filteredCoverageProducts;
     }
 
-    private List<Entity> getDeliveriesFromDB(final Date coverageToDate, final boolean includeDraftDeliveries) {
+    private List<Entity> getDeliveriesFromDB(final Date coverageToDate, final boolean includeDraftDeliveries,
+            List<Entity> coverageLocations) {
         if (includeDraftDeliveries) {
-            return getDeliveryDD()
+            SearchCriteriaBuilder scb = getDeliveryDD()
                     .find()
                     .add(SearchRestrictions.le(DeliveryFields.DELIVERY_DATE, coverageToDate))
                     .add(SearchRestrictions.or(SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.DRAFT),
@@ -1047,14 +1054,33 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
                             SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.DURING_CORRECTION),
                             SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.APPROVED),
                             SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.RECEIVE_CONFIRM_WAITING)))
-                    .add(SearchRestrictions.eq(DeliveryFields.ACTIVE, true)).list().getEntities();
+                    .add(SearchRestrictions.eq(DeliveryFields.ACTIVE, true));
+            if (!coverageLocations.isEmpty()) {
+                scb = scb.createAlias(DeliveryFields.LOCATION, DeliveryFields.LOCATION, JoinType.LEFT).add(
+                        SearchRestrictions.in(
+                                DeliveryFields.LOCATION + L_DOT + L_ID,
+                                coverageLocations.stream()
+                                        .map(cl -> cl.getBelongsToField(CoverageLocationFields.LOCATION).getId())
+                                        .collect(Collectors.toList())));
+            }
+            return scb.list().getEntities();
         } else {
-            return getDeliveryDD()
+            SearchCriteriaBuilder scb = getDeliveryDD()
                     .find()
                     .add(SearchRestrictions.le(DeliveryFields.DELIVERY_DATE, coverageToDate))
                     .add(SearchRestrictions.or(SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.APPROVED),
                             SearchRestrictions.eq(DeliveryFields.STATE, DeliveryStateStringValues.RECEIVE_CONFIRM_WAITING)))
-                    .add(SearchRestrictions.eq(DeliveryFields.ACTIVE, true)).list().getEntities();
+                    .add(SearchRestrictions.eq(DeliveryFields.ACTIVE, true));
+            if (!coverageLocations.isEmpty()) {
+                scb = scb.createAlias(DeliveryFields.LOCATION, DeliveryFields.LOCATION, JoinType.LEFT).add(
+                        SearchRestrictions.in(
+                                DeliveryFields.LOCATION + L_DOT + L_ID,
+                                coverageLocations.stream()
+                                        .map(cl -> cl.getBelongsToField(CoverageLocationFields.LOCATION).getId())
+                                        .collect(Collectors.toList())));
+            }
+            return scb.list().getEntities();
+
         }
     }
 
@@ -1073,9 +1099,9 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
                 .get(OrderSuppliesConstants.PLUGIN_IDENTIFIER, OrderSuppliesConstants.MODEL_COVERAGE_REGISTER);
 
     }
+
     private DataDefinition productionCountingQuantityInputDD() {
-        return dataDefinitionService
-                .get(OrderSuppliesConstants.PLUGIN_IDENTIFIER,"productionCountingQuantityInput");
+        return dataDefinitionService.get(OrderSuppliesConstants.PLUGIN_IDENTIFIER, "productionCountingQuantityInput");
     }
 
     private DataDefinition getResourceDD() {

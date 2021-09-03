@@ -40,7 +40,7 @@
 
         <windowTab name="main" reference="main">
             <component type="form" name="dashboardParameters" reference="form">
-                <component type="flowGridLayout" name="dashboardGridLayout" columns="3" rows="4">
+                <component type="flowGridLayout" name="dashboardGridLayout" columns="3" rows="6">
                     <layoutElement column="1" row="1">
                         <component type="checkbox" name="showChartOnDashboard" field="showChartOnDashboard"
                                    reference="showChartOnDashboard" hasDescription="true">
@@ -58,6 +58,18 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="3">
+                        <component type="select" name="dashboardShowForProduct" field="dashboardShowForProduct"
+                                   reference="dashboardShowForProduct" hasDescription="true">
+                            <option type="labelWidth" value="60" />
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="4">
+                        <component type="checkbox" name="dashboardShowDescription" field="dashboardShowDescription"
+                                   reference="dashboardShowDescription" hasDescription="true">
+                            <option type="labelWidth" value="60"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="5">
                         <component type="borderLayout" name="dashboardOrdersBorderLayout"
                                    reference="dashboardButtonsBorderLayout">
                             <option type="label" value="dashboardButtonsLabel" />

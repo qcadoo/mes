@@ -23,12 +23,23 @@
  */
 package com.qcadoo.mes.deliveriesToMaterialFlow.states;
 
-import com.google.common.base.Optional;
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.CurrencyFields;
 import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductAttributeValFields;
 import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
@@ -45,18 +56,7 @@ import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.model.api.validators.ErrorMessage;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
 
 @Service
 public class DeliveryStateServiceMF {
@@ -73,10 +73,10 @@ public class DeliveryStateServiceMF {
     private ParameterService parameterService;
 
     @Autowired
-    private UnitConversionService unitConversionService;
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private CurrencyService currencyService;
 
     public void createDocumentsForTheReceivedProducts(final StateChangeContext stateChangeContext) {
         final Entity delivery = stateChangeContext.getOwner();
@@ -113,9 +113,10 @@ public class DeliveryStateServiceMF {
             BigDecimal quantity = deliveredProduct.getDecimalField(DeliveredProductFields.DELIVERED_QUANTITY);
 
             Optional<BigDecimal> damagedQuantity = Optional
-                    .fromNullable(deliveredProduct.getDecimalField(DeliveredProductFields.DAMAGED_QUANTITY));
+                    .ofNullable(deliveredProduct.getDecimalField(DeliveredProductFields.DAMAGED_QUANTITY));
 
-            BigDecimal positionQuantity = quantity.subtract(damagedQuantity.or(BigDecimal.ZERO), numberService.getMathContext());
+            BigDecimal positionQuantity = quantity.subtract(damagedQuantity.orElse(BigDecimal.ZERO),
+                    numberService.getMathContext());
 
             if (positionQuantity.compareTo(BigDecimal.ZERO) > 0) {
                 Entity product = getProduct(deliveredProduct);
@@ -131,10 +132,12 @@ public class DeliveryStateServiceMF {
 
                 documentBuilder.addPosition(product, positionQuantity,
                         numberService.setScaleWithDefaultMathContext(givenQuantity), additionalUnit, conversion,
-                        getPrice(deliveredProduct, currency), getBatch(deliveredProduct), getProductionDate(deliveredProduct),
-                        getExpirationDate(deliveredProduct), null, getStorageLocation(deliveredProduct),
-                        getPalletNumber(deliveredProduct), getTypeOfPallet(deliveredProduct), getAdditionalCode(deliveredProduct),
-                        isWaste(deliveredProduct), deliveredProduct.getStringField(L_QUALITY_RATING), attributes);
+                        currencyService.getConvertedValue(deliveredProduct.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT),
+                                currency),
+                        getBatch(deliveredProduct), getProductionDate(deliveredProduct), getExpirationDate(deliveredProduct),
+                        null, getStorageLocation(deliveredProduct), getPalletNumber(deliveredProduct),
+                        getTypeOfPallet(deliveredProduct), getAdditionalCode(deliveredProduct), isWaste(deliveredProduct),
+                        deliveredProduct.getStringField(L_QUALITY_RATING), attributes);
             }
         }
 
@@ -216,7 +219,8 @@ public class DeliveryStateServiceMF {
                 if (isExpirationDateRequired && Objects.isNull(getExpirationDate(deliveredProduct))) {
                     missingExpirationDate.add(productName);
                 }
-                if (isPriceRequired && Objects.isNull(getPrice(deliveredProduct, getCurrency(delivery)))) {
+                if (isPriceRequired && Objects.isNull(currencyService.getConvertedValue(
+                        deliveredProduct.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT), getCurrency(delivery)))) {
                     missingPrice.add(productName);
                 }
             }
@@ -252,26 +256,6 @@ public class DeliveryStateServiceMF {
 
     private Entity getLocation(final Entity delivery) {
         return delivery.getBelongsToField(DeliveryFields.LOCATION);
-    }
-
-    private BigDecimal getPrice(final Entity deliveredProduct, final Entity currency) {
-        BigDecimal exRate = currency.getDecimalField(CurrencyFields.EXCHANGE_RATE);
-
-        Optional<BigDecimal> pricePerUnit = Optional
-                .fromNullable(deliveredProduct.getDecimalField(DeliveredProductFields.PRICE_PER_UNIT));
-
-        if (!pricePerUnit.isPresent()) {
-            return null;
-        }
-
-        return exRateExists(exRate)
-                ? numberService
-                        .setScaleWithDefaultMathContext(pricePerUnit.get().multiply(exRate, numberService.getMathContext()))
-                : pricePerUnit.get();
-    }
-
-    private boolean exRateExists(final BigDecimal exRate) {
-        return exRate.compareTo(BigDecimal.ZERO) > 0;
     }
 
     private Entity getProduct(final Entity deliveredProduct) {

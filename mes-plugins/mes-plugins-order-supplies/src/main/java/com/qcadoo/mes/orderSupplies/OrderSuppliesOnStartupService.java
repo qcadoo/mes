@@ -28,24 +28,36 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.orderSupplies.columnExtension.OrderSuppliesColumnLoader;
+import com.qcadoo.mes.orderSupplies.constants.OrderSuppliesConstants;
+import com.qcadoo.mes.basic.services.DashboardButtonService;
 import com.qcadoo.plugin.api.Module;
 
 @Component
 public class OrderSuppliesOnStartupService extends Module {
 
+    private static final String BASIC_DASHBOARD_BUTTON_IDENTIFIER_REQUIREMENTS_GENERATE_MATERIAL_REQUIREMENT_COVERAGE = "basic.dashboardButton.identifier.requirements.generateMaterialRequirementCoverage";
+
     @Autowired
     private OrderSuppliesColumnLoader orderSuppliesColumnLoader;
+
+    @Autowired
+    private DashboardButtonService dashboardButtonService;
 
     @Transactional
     @Override
     public void multiTenantEnable() {
         orderSuppliesColumnLoader.addColumnsForCoverages();
+        dashboardButtonService.addButton(BASIC_DASHBOARD_BUTTON_IDENTIFIER_REQUIREMENTS_GENERATE_MATERIAL_REQUIREMENT_COVERAGE,
+                "/qcadooView/public/css/core/images/dashboard/materialRequirementCoverage.png",
+                OrderSuppliesConstants.PLUGIN_IDENTIFIER, "generateMaterialRequirementCoverage");
     }
 
     @Transactional
     @Override
     public void multiTenantDisable() {
         orderSuppliesColumnLoader.deleteColumnsForCoverages();
+        dashboardButtonService
+                .deleteButton(BASIC_DASHBOARD_BUTTON_IDENTIFIER_REQUIREMENTS_GENERATE_MATERIAL_REQUIREMENT_COVERAGE);
     }
 
 }

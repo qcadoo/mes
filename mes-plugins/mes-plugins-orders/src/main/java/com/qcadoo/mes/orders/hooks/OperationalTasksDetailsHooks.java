@@ -58,10 +58,6 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 @Service
 public class OperationalTasksDetailsHooks {
 
-
-
-
-
     private static final String L_ORDER = "order";
 
     private static final String L_TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
@@ -165,8 +161,7 @@ public class OperationalTasksDetailsHooks {
 
         String type = (String) typeField.getFieldValue();
 
-        List<String> referenceBasicFields = Lists.newArrayList(OperationalTaskFields.NAME, OperationalTaskFields.PRODUCTION_LINE,
-                OperationalTaskFields.DESCRIPTION);
+        List<String> referenceBasicFields = Lists.newArrayList(OperationalTaskFields.NAME, OperationalTaskFields.PRODUCTION_LINE);
         List<String> extendFields = Lists.newArrayList(OperationalTaskFields.ORDER,
                 OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
 

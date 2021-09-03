@@ -25,6 +25,9 @@ package com.qcadoo.mes.basic.util;
 
 import static com.qcadoo.mes.basic.constants.BasicConstants.PLUGIN_IDENTIFIER;
 
+import java.math.BigDecimal;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +37,7 @@ import com.qcadoo.mes.basic.constants.CurrencyFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
 /**
@@ -42,6 +46,11 @@ import com.qcadoo.model.api.search.SearchRestrictions;
  */
 @Service
 public class CurrencyService {
+
+    public static final String PLN = "PLN";
+
+    @Autowired
+    private NumberService numberService;
 
     @Autowired
     private ParameterService parameterService;
@@ -60,8 +69,7 @@ public class CurrencyService {
 
     public Entity getCurrencyByAlphabeticCode(String alphabeticCode) {
         DataDefinition currencyDataDef = dataDefinitionService.get(PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY);
-        return currencyDataDef.find()
-                .add(SearchRestrictions.eq(CurrencyFields.ALPHABETIC_CODE, alphabeticCode)).setMaxResults(1)
+        return currencyDataDef.find().add(SearchRestrictions.eq(CurrencyFields.ALPHABETIC_CODE, alphabeticCode)).setMaxResults(1)
                 .uniqueResult();
     }
 
@@ -75,5 +83,20 @@ public class CurrencyService {
             return "";
         }
         return getCurrentCurrency().getStringField(CurrencyFields.ALPHABETIC_CODE);
+    }
+
+    public BigDecimal getConvertedValue(final BigDecimal value, final Entity currency) {
+        BigDecimal exRate = currency.getDecimalField(CurrencyFields.EXCHANGE_RATE);
+
+        return Optional.ofNullable(value)
+                .map(v -> exRateExists(exRate)
+                        ? numberService.setScaleWithDefaultMathContext(v.multiply(exRate, numberService.getMathContext()))
+                        : v)
+                .orElse(null);
+
+    }
+
+    private boolean exRateExists(final BigDecimal exRate) {
+        return exRate.compareTo(BigDecimal.ZERO) > 0;
     }
 }

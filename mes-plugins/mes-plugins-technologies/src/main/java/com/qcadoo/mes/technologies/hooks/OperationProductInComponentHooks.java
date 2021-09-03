@@ -178,7 +178,7 @@ public class OperationProductInComponentHooks {
                 && checkIfTechnologyInputProductTypeOrProductIsSelected(operationProductInComponentDD,
                         operationProductInComponent);
         isValid = isValid
-                && checkIfOperationProductInComponentIsUnique(operationProductInComponentDD, operationProductInComponent);
+                && checkIfOperationInputProductTypeIsUnique(operationProductInComponentDD, operationProductInComponent);
         isValid = isValid
                 && technologyTreeValidators.invalidateIfBelongsToAcceptedTechnology(operationProductInComponentDD,
                         operationProductInComponent);
@@ -244,13 +244,17 @@ public class OperationProductInComponentHooks {
         return true;
     }
 
-    private boolean checkIfOperationProductInComponentIsUnique(final DataDefinition operationProductInComponentDD,
+    private boolean checkIfOperationInputProductTypeIsUnique(final DataDefinition operationProductInComponentDD,
             final Entity operationProductInComponent) {
         Entity operationComponent = operationProductInComponent
                 .getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT);
+
         Entity technologyInputProductType = operationProductInComponent
                 .getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE);
-        Entity product = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
+
+        if(Objects.isNull(technologyInputProductType)) {
+            return true;
+        }
 
         Long operationProductInComponentId = operationProductInComponent.getId();
 
@@ -260,9 +264,7 @@ public class OperationProductInComponentHooks {
                 operationComponent));
         searchCriteriaBuilder.add(SearchRestrictions.belongsTo(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE,
                 technologyInputProductType));
-        searchCriteriaBuilder.add(SearchRestrictions.or(
-                SearchRestrictions.belongsTo(OperationProductInComponentFields.PRODUCT, product),
-                SearchRestrictions.belongsTo(ProductBySizeGroupFields.PRODUCT, product)));
+
 
         if (Objects.nonNull(operationProductInComponentId)) {
             searchCriteriaBuilder.add(SearchRestrictions.idNe(operationProductInComponentId));
@@ -273,7 +275,7 @@ public class OperationProductInComponentHooks {
         List<Entity> operationProductInComponents = searchCriteriaBuilder.list().getEntities();
 
         if (!operationProductInComponents.isEmpty()) {
-            operationProductInComponent.addGlobalError("technologies.operationProductInComponent.error.notUnique");
+            operationProductInComponent.addGlobalError("technologies.operationProductInComponent.error.inputProductTypeNotUnique");
 
             return false;
         }

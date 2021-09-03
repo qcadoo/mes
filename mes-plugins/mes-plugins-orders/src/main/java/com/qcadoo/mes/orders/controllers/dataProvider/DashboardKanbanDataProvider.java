@@ -1,12 +1,5 @@
 package com.qcadoo.mes.orders.controllers.dataProvider;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.qcadoo.mes.orders.controllers.dto.OperationalTaskHolder;
-import com.qcadoo.mes.orders.controllers.dto.OrderHolder;
-import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
-import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
-
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.qcadoo.mes.orders.controllers.dto.OperationalTaskHolder;
+import com.qcadoo.mes.orders.controllers.dto.OrderHolder;
+import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
+import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 
 @Service
 public class DashboardKanbanDataProvider {
@@ -65,8 +65,9 @@ public class DashboardKanbanDataProvider {
                 + "orderlistdto.plannedquantity, orderlistdto.donequantity, "
                 + "orderlistdto.masterordernumber AS masterOrderNumber, "
                 + "orderlistdto.productionlinenumber AS productionLineNumber, orderlistdto.productnumber AS productNumber, "
-                + "orderlistdto.unit AS productunit, orderlistdto.companyname AS companyName "
-                + "FROM orders_orderlistdto orderlistdto ";
+                + "orderlistdto.unit AS productunit, orderlistdto.companyname AS companyName, orderlistdto.description, "
+                + "orderlistdto.productname AS productName, p.dashboardshowdescription, p.dashboardshowforproduct "
+                + "FROM orders_orderlistdto orderlistdto, basic_parameter p ";
 
     }
 
@@ -135,12 +136,13 @@ public class DashboardKanbanDataProvider {
         return "SELECT operationaltaskdto.id, operationaltaskdto.number, operationaltaskdto.name, "
                 + "operationaltaskdto.plannedquantity, operationaltaskdto.usedquantity, "
                 + "operationaltaskdto.state, operationaltaskdto.type, operationaltaskdto.ordernumber AS orderNumber, "
-                + "operationaltaskdto.workstationnumber AS workstationNumber, "
+                + "operationaltaskdto.workstationnumber AS workstationNumber, operationaltaskdto.productname AS productName, "
                 + "operationaltaskdto.productnumber AS productNumber, operationaltaskdto.productUnit AS productUnit, "
                 + "operationaltaskdto.staffname AS staffName, operationaltaskdto.orderid AS orderId, "
-                + "product.number AS orderProductNumber FROM orders_operationaltaskdto operationaltaskdto "
+                + "product.number AS orderProductNumber, product.name AS orderProductName, operationaltaskdto.description, "
+                + "p.dashboardshowdescription, p.dashboardshowforproduct FROM orders_operationaltaskdto operationaltaskdto "
                 + "LEFT JOIN orders_order ordersorder ON ordersorder.id = operationaltaskdto.orderid "
-                + "LEFT JOIN basic_product product ON product.id = ordersorder.product_id ";
+                + "LEFT JOIN basic_product product ON product.id = ordersorder.product_id CROSS JOIN basic_parameter p ";
     }
 
     private String getOperationalTasksQuery(final String additionalRestrictions, final boolean in) {

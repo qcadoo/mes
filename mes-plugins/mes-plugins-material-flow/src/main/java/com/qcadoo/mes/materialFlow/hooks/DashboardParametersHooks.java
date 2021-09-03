@@ -25,10 +25,8 @@ package com.qcadoo.mes.materialFlow.hooks;
 
 import java.util.Objects;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.materialFlow.constants.ParameterFieldsMF;
 import com.qcadoo.mes.materialFlow.constants.WhatToShowOnDashboard;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -39,9 +37,6 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Component
 public class DashboardParametersHooks {
-
-    @Autowired
-    private TranslationService translationService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
         setFieldsEnabledAndClear(view);

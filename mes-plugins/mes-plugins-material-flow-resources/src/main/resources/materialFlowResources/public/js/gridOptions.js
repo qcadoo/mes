@@ -1409,7 +1409,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
             autowidth: true,
             rowNum: 20,
             rowList: [20, 30, 50, 100, 200],
-            sortname: 'id',
+            sortname: 'number',
             toolbar: [true, "top"],
             rownumbers: false,
             altRows: true,

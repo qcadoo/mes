@@ -54,6 +54,7 @@ import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductAttachmentFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
+import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
 import com.qcadoo.mes.deliveries.DeliveredProductMultiPositionService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
@@ -120,6 +121,9 @@ public class DeliveryDetailsListeners {
     public static final String L_PRICES_FROM_LAST_DELIVERY_OFFER = "02pricesFromLastDeliveryOffer";
 
     @Autowired
+    private CurrencyService currencyService;
+
+    @Autowired
     private DeliveriesService deliveriesService;
 
     @Autowired
@@ -172,9 +176,13 @@ public class DeliveryDetailsListeners {
     private void fillBasedOnPricesFromLastDeliveryOffer(final ViewDefinitionState view,
             final boolean deliveryUseNominalCostWhenPriceNotSpecified) {
         GridComponent orderedProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
+        FieldComponent currencyField = (FieldComponent) view.getComponentByReference(DeliveryFields.CURRENCY);
+        Long deliveryCurrencyId = (Long) currencyField.getFieldValue();
+        Entity plnCurrency = currencyService.getCurrencyByAlphabeticCode(CurrencyService.PLN);
 
         List<Entity> orderedProducts = deliveriesService.getSelectedOrderedProducts(orderedProductsGrid);
 
+        List<Entity> productsToMessage = Lists.newArrayList();
         orderedProducts.forEach(orderedProduct -> {
             Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
             Entity supplier = orderedProduct.getBelongsToField(OrderedProductFields.DELIVERY)
@@ -182,8 +190,10 @@ public class DeliveryDetailsListeners {
 
             if (Objects.isNull(supplier)) {
                 if (deliveryUseNominalCostWhenPriceNotSpecified) {
-                    orderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT,
-                            product.getDecimalField(ProductFieldsCNFP.NOMINAL_COST));
+                    Entity currency = product.getBelongsToField(ProductFieldsCNFP.NOMINAL_COST_CURRENCY);
+                    BigDecimal pricePerUnit = getPricePerUnit(deliveryCurrencyId, plnCurrency, product, productsToMessage,
+                            currency, product.getDecimalField(ProductFieldsCNFP.NOMINAL_COST));
+                    orderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT, pricePerUnit);
                     orderedProduct.getDataDefinition().save(orderedProduct);
                 }
                 return;
@@ -192,15 +202,24 @@ public class DeliveryDetailsListeners {
             Entity offerProduct = getLastOfferProduct(supplier, product);
 
             if (Objects.nonNull(offerProduct)) {
-                orderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT, offerProduct.getDecimalField("pricePerUnit"));
-                orderedProduct.setField("offer", offerProduct.getBelongsToField("offer"));
+                Entity currency = currencyService.getCurrentCurrency();
+                BigDecimal pricePerUnit = getPricePerUnit(deliveryCurrencyId, plnCurrency, product, productsToMessage, currency,
+                        offerProduct.getDecimalField(OrderedProductFields.PRICE_PER_UNIT));
+                orderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT, pricePerUnit);
+                orderedProduct.setField(L_OFFER, offerProduct.getBelongsToField(L_OFFER));
                 orderedProduct.getDataDefinition().save(orderedProduct);
             } else if (deliveryUseNominalCostWhenPriceNotSpecified) {
-                orderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT,
+                Entity currency = product.getBelongsToField(ProductFieldsCNFP.NOMINAL_COST_CURRENCY);
+                BigDecimal pricePerUnit = getPricePerUnit(deliveryCurrencyId, plnCurrency, product, productsToMessage, currency,
                         product.getDecimalField(ProductFieldsCNFP.NOMINAL_COST));
+                orderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT, pricePerUnit);
                 orderedProduct.getDataDefinition().save(orderedProduct);
             }
         });
+        if (!productsToMessage.isEmpty()) {
+            view.addMessage("deliveries.orderedProducts.differentCurrencies", MessageType.INFO, false, productsToMessage.stream()
+                    .map(e -> e.getStringField(ProductFields.NUMBER)).collect(Collectors.joining(", ")));
+        }
 
         orderedProductsGrid.reloadEntities();
 
@@ -235,25 +254,38 @@ public class DeliveryDetailsListeners {
     private void fillBasedOnLastPurchasePrice(final ViewDefinitionState view,
             final boolean deliveryUseNominalCostWhenPriceNotSpecified) {
         GridComponent orderedProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
+        FieldComponent currencyField = (FieldComponent) view.getComponentByReference(DeliveryFields.CURRENCY);
+        Long deliveryCurrencyId = (Long) currencyField.getFieldValue();
+        Entity plnCurrency = currencyService.getCurrencyByAlphabeticCode(CurrencyService.PLN);
 
         List<Entity> orderedProducts = deliveriesService.getSelectedOrderedProducts(orderedProductsGrid);
 
+        List<Entity> productsToMessage = Lists.newArrayList();
         orderedProducts.forEach(orderedProduct -> {
             Entity product = orderedProduct.getBelongsToField(OrderedProductFields.PRODUCT);
             BigDecimal lastPurchaseCost = product.getDecimalField(ProductFieldsCNFP.LAST_PURCHASE_COST);
+            BigDecimal pricePerUnit;
             if (BigDecimalUtils.convertNullToZero(lastPurchaseCost).compareTo(BigDecimal.ZERO) == 0
                     && deliveryUseNominalCostWhenPriceNotSpecified) {
-                orderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT,
+                Entity currency = product.getBelongsToField(ProductFieldsCNFP.NOMINAL_COST_CURRENCY);
+                pricePerUnit = getPricePerUnit(deliveryCurrencyId, plnCurrency, product, productsToMessage, currency,
                         product.getDecimalField(ProductFieldsCNFP.NOMINAL_COST));
             } else {
                 if (Objects.isNull(lastPurchaseCost)) {
                     orderedProduct.setField(OrderedProductFields.TOTAL_PRICE, null);
                 }
-                orderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT, lastPurchaseCost);
+                Entity currency = product.getBelongsToField(ProductFieldsCNFP.LAST_PURCHASE_COST_CURRENCY);
+                pricePerUnit = getPricePerUnit(deliveryCurrencyId, plnCurrency, product, productsToMessage, currency,
+                        lastPurchaseCost);
             }
+            orderedProduct.setField(OrderedProductFields.PRICE_PER_UNIT, pricePerUnit);
 
             orderedProduct.getDataDefinition().save(orderedProduct);
         });
+        if (!productsToMessage.isEmpty()) {
+            view.addMessage("deliveries.orderedProducts.differentCurrencies", MessageType.INFO, false, productsToMessage.stream()
+                    .map(e -> e.getStringField(ProductFields.NUMBER)).collect(Collectors.joining(", ")));
+        }
 
         orderedProductsGrid.reloadEntities();
 
@@ -269,11 +301,26 @@ public class DeliveryDetailsListeners {
         totalPriceComponent.requestComponentUpdateState();
     }
 
+    private BigDecimal getPricePerUnit(Long deliveryCurrencyId, Entity plnCurrency, Entity product, List<Entity> productsToMessage,
+            Entity productCurrency, BigDecimal price) {
+        BigDecimal pricePerUnit = null;
+        if (deliveryCurrencyId == null || productCurrency == null || deliveryCurrencyId.equals(productCurrency.getId())) {
+            pricePerUnit = price;
+        } else if (deliveryCurrencyId.equals(plnCurrency.getId()) && !deliveryCurrencyId.equals(productCurrency.getId())) {
+            pricePerUnit = currencyService.getConvertedValue(price, productCurrency);
+        } else if (!deliveryCurrencyId.equals(plnCurrency.getId()) && !deliveryCurrencyId.equals(productCurrency.getId())) {
+            productsToMessage.add(product);
+        }
+        return pricePerUnit;
+    }
+
     public void fillCompanyFieldsForSupplier(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         LookupComponent supplierLookup = (LookupComponent) view.getComponentByReference(DeliveryFields.SUPPLIER);
         FieldComponent deliveryDateBufferField = (FieldComponent) view
                 .getComponentByReference(DeliveryFields.DELIVERY_DATE_BUFFER);
         FieldComponent paymentFormField = (FieldComponent) view.getComponentByReference(DeliveryFields.PAYMENT_FORM);
+        FieldComponent currencyField = (FieldComponent) view.getComponentByReference(DeliveryFields.CURRENCY);
+        GridComponent orderedProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
 
         Entity supplier = supplierLookup.getEntity();
 
@@ -283,6 +330,17 @@ public class DeliveryDetailsListeners {
         } else {
             deliveryDateBufferField.setFieldValue(supplier.getIntegerField(CompanyFieldsD.BUFFER));
             paymentFormField.setFieldValue(supplier.getStringField(CompanyFieldsD.PAYMENT_FORM));
+            Entity supplierCurrency = supplier.getBelongsToField(CompanyFieldsD.CURRENCY);
+            if (supplierCurrency != null) {
+                Long oldCurrency = (Long) currencyField.getFieldValue();
+                if (oldCurrency != null && !oldCurrency.equals(supplierCurrency.getId())
+                        && !orderedProductsGrid.getEntities().isEmpty()) {
+                    view.addMessage("deliveries.delivery.currencyChange.orderedProductsPriceVerificationRequired",
+                            MessageType.INFO, false);
+                }
+                currencyField.setFieldValue(supplierCurrency.getId());
+                currencyField.requestComponentUpdateState();
+            }
         }
 
         deliveryDateBufferField.requestComponentUpdateState();

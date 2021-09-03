@@ -95,7 +95,11 @@
 		<model:model-field plugin="basic" model="parameter">
 			<model:belongsTo name="dashboardProductsInputLocation" plugin="materialFlow" model="location"/>
 		</model:model-field>
-		
+
+		<model:model-field plugin="basic" model="parameter">
+			<model:boolean name="dashboardShowDescription" default="false"/>
+		</model:model-field>
+
 		<model:model-field plugin="technologies" model="operation">
 			<model:hasMany name="dashboardOperations" joinField="dashboardOperation"
 						   plugin="basic" model="parameter" cascade="nullify"/>

@@ -1,5 +1,12 @@
 package com.qcadoo.mes.basic.listeners;
 
+import java.util.Map;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
@@ -17,17 +24,12 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
-import java.util.Map;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 @Service
 public class ProductFamilySizesListeners {
 
     public static final String L_NOMINAL_COST = "nominalCost";
+
+    public static final String L_NOMINAL_COST_CURRENCY = "nominalCostCurrency";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -71,14 +73,15 @@ public class ProductFamilySizesListeners {
                         productFamily.getStringField(ProductFields.NUMBER) + "-" + size.getStringField(SizeFields.NUMBER));
                 if (parameterService.getParameter().getBooleanField(ParameterFields.COPY_NOMINAL_COST_FAMILY_OF_PRODUCTS_SIZES)) {
                     product.setField(L_NOMINAL_COST, productFamily.getDecimalField(L_NOMINAL_COST));
+                    product.setField(L_NOMINAL_COST_CURRENCY, productFamily.getBelongsToField(L_NOMINAL_COST_CURRENCY));
                 }
                 product = product.getDataDefinition().save(product);
                 if (product.isValid()) {
                     if (parameterService.getParameter().getBooleanField(ParameterFields.COPY_ATTRIBUTES_TO_SIZE_PRODUCTS)) {
                         for (Entity productFamilyAttributeValue : productFamily
                                 .getHasManyField(ProductFields.PRODUCT_ATTRIBUTE_VALUES)) {
-                            Entity productAttributeValue = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
-                                    BasicConstants.PRODUCT_ATTRIBUTE_VALUE).create();
+                            Entity productAttributeValue = dataDefinitionService
+                                    .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.PRODUCT_ATTRIBUTE_VALUE).create();
                             productAttributeValue.setField(ProductAttributeValueFields.PRODUCT, product.getId());
                             productAttributeValue.setField(ProductAttributeValueFields.VALUE,
                                     productFamilyAttributeValue.getStringField(ProductAttributeValueFields.VALUE));
@@ -97,8 +100,8 @@ public class ProductFamilySizesListeners {
             }
             int entitiesWithoutErrors = grid.getSelectedEntitiesIds().size() - errors;
             if (entitiesWithoutErrors > 0) {
-                view.addMessage("basic.addProductFamilySizes.generateProducts.success", ComponentState.MessageType.SUCCESS, ""
-                        + (entitiesWithoutErrors));
+                view.addMessage("basic.addProductFamilySizes.generateProducts.success", ComponentState.MessageType.SUCCESS,
+                        "" + (entitiesWithoutErrors));
             }
         }
     }

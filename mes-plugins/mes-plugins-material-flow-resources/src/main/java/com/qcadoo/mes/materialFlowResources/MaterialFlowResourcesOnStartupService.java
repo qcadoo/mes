@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.services.DashboardButtonService;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -18,11 +19,20 @@ import com.qcadoo.plugin.api.Module;
 @Component
 public class MaterialFlowResourcesOnStartupService extends Module {
 
+    public static final String BASIC_DASHBOARD_BUTTON_IDENTIFIER_MATERIAL_FLOW_DOCUMENTS_LIST = "basic.dashboardButton.identifier.materialFlow.documentsList";
+
+    public static final String BASIC_DASHBOARD_BUTTON_IDENTIFIER_MATERIAL_FLOW_RESOURCES_LIST = "basic.dashboardButton.identifier.materialFlow.resourcesList";
+
+    public static final String BASIC_DASHBOARD_BUTTON_IDENTIFIER_MATERIAL_FLOW_WAREHOUSE_STOCKS_LIST = "basic.dashboardButton.identifier.materialFlow.warehouseStocksList";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private ParameterService parameterService;
+
+    @Autowired
+    private DashboardButtonService dashboardButtonService;
 
     @Override
     public void enableOnStartup() {
@@ -92,6 +102,28 @@ public class MaterialFlowResourcesOnStartupService extends Module {
                 positionParametersItemDD.save(itemEntity);
             }
         }
+    }
+
+    @Transactional
+    @Override
+    public void multiTenantEnable() {
+        dashboardButtonService.addButton(BASIC_DASHBOARD_BUTTON_IDENTIFIER_MATERIAL_FLOW_DOCUMENTS_LIST,
+                "/qcadooView/public/css/core/images/dashboard/documents.png", MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                "documents");
+        dashboardButtonService.addButton(BASIC_DASHBOARD_BUTTON_IDENTIFIER_MATERIAL_FLOW_RESOURCES_LIST,
+                "/qcadooView/public/css/core/images/dashboard/resources.png", MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
+                "resources");
+        dashboardButtonService.addButton(BASIC_DASHBOARD_BUTTON_IDENTIFIER_MATERIAL_FLOW_WAREHOUSE_STOCKS_LIST,
+                "/qcadooView/public/css/core/images/dashboard/warehouseStocks.png",
+                MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, "warehouseStock");
+    }
+
+    @Transactional
+    @Override
+    public void multiTenantDisable() {
+        dashboardButtonService.deleteButton(BASIC_DASHBOARD_BUTTON_IDENTIFIER_MATERIAL_FLOW_DOCUMENTS_LIST);
+        dashboardButtonService.deleteButton(BASIC_DASHBOARD_BUTTON_IDENTIFIER_MATERIAL_FLOW_RESOURCES_LIST);
+        dashboardButtonService.deleteButton(BASIC_DASHBOARD_BUTTON_IDENTIFIER_MATERIAL_FLOW_WAREHOUSE_STOCKS_LIST);
     }
 
 }

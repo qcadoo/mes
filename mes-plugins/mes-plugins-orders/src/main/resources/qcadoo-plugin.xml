@@ -447,7 +447,7 @@
 
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="orderImport"/>
 
-        <menu:menu-category name="orders"/>
+        <menu:menu-category name="orders" defaultAuthorizationRole="ROLE_PLANNING_MENU"/>
         <menu:menu-category name="ordersTracking" defaultAuthorizationRole="ROLE_ORDERS_TRACKING"/>
 
         <menu:menu-item name="productionOrders" category="orders"
@@ -538,6 +538,7 @@
         <view:resource uri="public/**/*"/>
 
         <custom:custom class="com.qcadoo.mes.orders.states.module.OrderStateServiceRegisterModule"/>
+        <custom:custom class="com.qcadoo.mes.orders.OrdersLoaderModule" />
     </modules>
 
     <features>

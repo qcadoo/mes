@@ -177,57 +177,54 @@ QCD.dashboard = (function () {
     }
 
     function appendOperationalTask(operationalTasksType, operationalTask) {
-        let doneInPercent = Math.round(operationalTask.usedQuantity * 100 / operationalTask.plannedQuantity);
-
-        operationalTask.usedQuantity = operationalTask.usedQuantity ? operationalTask.usedQuantity : 0;
-
         $('#' + operationalTasksType).append(
-            '<div class="card" id="operationalTask' + operationalTask.id + '">' +
-                '<div class="card-header bg-secondary py-2">' +
-                    '<a href="#" class="card-title text-white" onclick="goToOperationalTaskDetails(' + operationalTask.id + ')">' + operationalTask.number + '</a>' +
-                '</div>' +
-                 '<div class="card-body py-2">' +
-                     '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.name.label") + ':</span> ' + operationalTask.name + '<br/>' +
-                     ((operationalTask.type == "02executionOperationInOrder" && operationalTask.orderNumber) ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.orderNumber.label") + ':</span> <a href="#" onclick="goToOrderDetails(' + operationalTask.orderId + ')">' + operationalTask.orderNumber + '</a><br/>' : '') +
-                     (operationalTask.workstationNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.workstationNumber.label") + ':</span> ' + operationalTask.workstationNumber + '<br/>' : '') +
-                     ((operationalTask.type == "02executionOperationInOrder" && operationalTask.orderProductNumber) ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.orderProductNumber.label") + ':</span> ' + operationalTask.orderProductNumber + '<br/>' : '') +
-                     ((operationalTask.type == "02executionOperationInOrder" && operationalTask.productNumber) ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.productNumber.label") + ':</span> ' + operationalTask.productNumber + '<br/>' : '') +
-                     ((operationalTask.type == "02executionOperationInOrder" && operationalTask.plannedQuantity && operationalTask.productUnit) ? '<span class="float-left"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.plannedQuantity.label") + ':</span> ' + operationalTask.plannedQuantity + ' ' + operationalTask.productUnit + '</span>' : '') +
-                     ((operationalTask.type == "02executionOperationInOrder" && operationalTasksType != 'operationalTasksPending') ? '<span class="float-right"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.usedQuantity.label") + ':</span> ' + operationalTask.usedQuantity + ' ' + operationalTask.productUnit + '</span>' : '') +
-                     ((operationalTask.type == "02executionOperationInOrder" && operationalTask.plannedQuantity) ? '<br/>' : '') +
-                     (operationalTask.staffName ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.staffName.label") + ':</span> ' + operationalTask.staffName + '<br/>' : '') +
-                     ((operationalTask.type == "02executionOperationInOrder" && operationalTask.state == "02started") ? '<a href="#" class="badge badge-success float-right" onclick="goToProductionTrackingTerminal(null, ' + operationalTask.id + ', ' + (operationalTask.workstationNumber ? '\'' + operationalTask.workstationNumber + '\'' : null) + ')">' + QCD.translate("basic.dashboard.operationalTasks.showTerminal.label") + '</a>' : '') +
-                 '</div>' +
-                 (operationalTask.type == "02executionOperationInOrder" ? '<div class="card-footer">' + '<div class="progress">' + '<div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: ' + doneInPercent + '%;" aria-valuenow="' + doneInPercent + '" aria-valuemin="0" aria-valuemax="100">' + doneInPercent + '%</div>' + '</div>' + '</div>' : '') +
-            '</div><div> &nbsp; </div>'
+            createOperationalTaskDiv(operationalTasksType, operationalTask)
         );
     }
 
     function prependOperationalTask(operationalTasksType, operationalTask) {
+        $('#' + operationalTasksType).prepend(
+            createOperationalTaskDiv(operationalTasksType, operationalTask)
+        );
+    }
+
+    function createOperationalTaskDiv(operationalTasksType, operationalTask) {
         let doneInPercent = Math.round(operationalTask.usedQuantity * 100 / operationalTask.plannedQuantity);
 
         operationalTask.usedQuantity = operationalTask.usedQuantity ? operationalTask.usedQuantity : 0;
 
-        $('#' + operationalTasksType).prepend(
-            '<div class="card" id="operationalTask' + operationalTask.id + '">' +
-                '<div class="card-header bg-secondary py-2">' +
-                    '<a href="#" class="card-title text-white" onclick="goToOperationalTaskDetails(' + operationalTask.id + ')">' + operationalTask.number + '</a>' +
-                '</div>' +
-                 '<div class="card-body py-2">' +
-                     '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.name.label") + ':</span> ' + operationalTask.name + '<br/>' +
-                     ((operationalTask.type == "02executionOperationInOrder" && operationalTask.orderNumber) ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.orderNumber.label") + ':</span> <a href="#" onclick="goToOrderDetails(' + operationalTask.orderId + ')">' + operationalTask.orderNumber + '</a><br/>' : '') +
-                     (operationalTask.workstationNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.workstationNumber.label") + ':</span> ' + operationalTask.workstationNumber + '<br/>' : '') +
-                     ((operationalTask.type == "02executionOperationInOrder" && operationalTask.orderProductNumber) ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.orderProductNumber.label") + ':</span> ' + operationalTask.orderProductNumber + '<br/>' : '') +
-                     ((operationalTask.type == "02executionOperationInOrder" && operationalTask.productNumber) ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.productNumber.label") + ':</span> ' + operationalTask.productNumber + '<br/>' : '') +
-                     ((operationalTask.type == "02executionOperationInOrder" && operationalTask.plannedQuantity && operationalTask.productUnit) ? '<span class="float-left"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.plannedQuantity.label") + ':</span> ' + operationalTask.plannedQuantity + ' ' + operationalTask.productUnit + '</span>' : '') +
-                     ((operationalTask.type == "02executionOperationInOrder" && operationalTasksType != 'operationalTasksPending') ? '<span class="float-right"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.usedQuantity.label") + ':</span> ' + operationalTask.usedQuantity + ' ' + operationalTask.productUnit + '</span>' : '') +
-                     ((operationalTask.type == "02executionOperationInOrder" && operationalTask.plannedQuantity) ? '<br/>' : '') +
-                     (operationalTask.staffName ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.staffName.label") + ':</span> ' + operationalTask.staffName + '<br/>' : '') +
-                     ((operationalTask.type == "02executionOperationInOrder" && operationalTask.state == "02started") ? '<a href="#" class="badge badge-success float-right" onclick="goToProductionTrackingTerminal(null, ' + operationalTask.id + ', ' + (operationalTask.workstationNumber ? '\'' + operationalTask.workstationNumber + '\'' : null) + ')">' + QCD.translate("basic.dashboard.operationalTasks.showTerminal.label") + '</a>' : '') +
-                 '</div>' +
-                 (operationalTask.type == "02executionOperationInOrder" ? '<div class="card-footer">' + '<div class="progress">' + '<div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: ' + doneInPercent + '%;" aria-valuenow="' + doneInPercent + '" aria-valuemin="0" aria-valuemax="100">' + doneInPercent + '%</div>' + '</div>' + '</div>' : '') +
-            '</div><div> &nbsp; </div>'
-        );
+        let orderProduct = operationalTask.orderProductNumber;
+        if(operationalTask.dashboardShowForProduct === '02name'){
+            orderProduct = operationalTask.orderProductName;
+        } else if(operationalTask.dashboardShowForProduct === '03both'){
+            orderProduct = operationalTask.orderProductNumber + ', ' + operationalTask.orderProductName;
+        }
+        let product = operationalTask.productNumber;
+        if(operationalTask.dashboardShowForProduct === '02name'){
+            product = operationalTask.productName;
+        } else if(operationalTask.dashboardShowForProduct === '03both' && operationalTask.productNumber && operationalTask.productName){
+            product = operationalTask.productNumber + ', ' + operationalTask.productName;
+        }
+
+        return '<div class="card" id="operationalTask' + operationalTask.id + '">' +
+            '<div class="card-header bg-secondary py-2">' +
+            '<a href="#" class="card-title text-white" onclick="goToOperationalTaskDetails(' + operationalTask.id + ')">' + operationalTask.number + '</a>' +
+            '</div>' +
+            '<div class="card-body py-2">' +
+            '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.name.label") + ':</span> ' + operationalTask.name + '<br/>' +
+            ((operationalTask.type == "02executionOperationInOrder" && operationalTask.orderNumber) ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.orderNumber.label") + ':</span> <a href="#" onclick="goToOrderDetails(' + operationalTask.orderId + ')">' + operationalTask.orderNumber + '</a><br/>' : '') +
+            (operationalTask.workstationNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.workstationNumber.label") + ':</span> ' + operationalTask.workstationNumber + '<br/>' : '') +
+            (operationalTask.type == "02executionOperationInOrder" ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.orderProduct.label") + ':</span> ' + orderProduct + '<br/>' : '') +
+            ((operationalTask.type == "02executionOperationInOrder" && product) ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.product.label") + ':</span> ' + product + '<br/>' : '') +
+            ((operationalTask.type == "02executionOperationInOrder" && operationalTask.plannedQuantity && operationalTask.productUnit) ? '<span class="float-left"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.plannedQuantity.label") + ':</span> ' + operationalTask.plannedQuantity + ' ' + operationalTask.productUnit + '</span>' : '') +
+            ((operationalTask.type == "02executionOperationInOrder" && operationalTasksType != 'operationalTasksPending') ? '<span class="float-right"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.usedQuantity.label") + ':</span> ' + operationalTask.usedQuantity + ' ' + operationalTask.productUnit + '</span>' : '') +
+            ((operationalTask.type == "02executionOperationInOrder" && operationalTask.plannedQuantity) ? '<br/>' : '') +
+            (operationalTask.staffName ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.staffName.label") + ':</span> ' + operationalTask.staffName + '<br/>' : '') +
+            (operationalTask.dashboardShowDescription ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.description.label") + ':</span> ' + (operationalTask.description ? operationalTask.description : '') + '<br/>' : '') +
+            ((operationalTask.type == "02executionOperationInOrder" && operationalTask.state == "02started") ? '<a href="#" class="badge badge-success float-right" onclick="goToProductionTrackingTerminal(null, ' + operationalTask.id + ', ' + (operationalTask.workstationNumber ? '\'' + operationalTask.workstationNumber + '\'' : null) + ')">' + QCD.translate("basic.dashboard.operationalTasks.showTerminal.label") + '</a>' : '') +
+            '</div>' +
+            (operationalTask.type == "02executionOperationInOrder" ? '<div class="card-footer">' + '<div class="progress">' + '<div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: ' + doneInPercent + '%;" aria-valuenow="' + doneInPercent + '" aria-valuemin="0" aria-valuemax="100">' + doneInPercent + '%</div>' + '</div>' + '</div>' : '') +
+            '</div><div> &nbsp; </div>';
     }
 
     function initOrders() {
@@ -442,6 +439,12 @@ const drop = (event) => {
 
 function createOrderDiv(order) {
     let doneInPercent = Math.round(order.doneQuantity * 100 / order.plannedQuantity);
+    let product = order.productNumber;
+    if(order.dashboardShowForProduct === '02name'){
+        product = order.productName;
+    } else if(order.dashboardShowForProduct === '03both'){
+        product = order.productNumber + ', ' + order.productName;
+    }
 
     order.doneQuantity = order.doneQuantity ? order.doneQuantity : 0;
 
@@ -451,12 +454,13 @@ function createOrderDiv(order) {
         '</div>' +
         '<div class="card-body py-2">' +
         (order.productionLineNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.productionLineNumber.label") + ':</span> ' + order.productionLineNumber + '<br/>' : '') +
-        (order.productNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.productNumber.label") + ':</span> ' + order.productNumber + '<br/>' : '') +
+        ('<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.product.label") + ':</span> ' + product + '<br/>') +
         ((order.plannedQuantity && order.productUnit) ? '<span class="float-left"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.plannedQuantity.label") + ':</span> ' + order.plannedQuantity + ' ' + order.productUnit + '</span>' : '') +
         ((order.state == "03inProgress" || order.state == "04completed") ? '<span class="float-right"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.doneQuantity.label") + ':</span> ' + order.doneQuantity + ' ' + order.productUnit + '</span>' : '') +
         (order.plannedQuantity ? '<br/>' : '') +
         (order.companyName ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.companyName.label") + ':</span> ' + order.companyName + '<br/>' : '') +
         (order.masterOrderNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.masterOrderNumber.label") + ':</span> ' + order.masterOrderNumber + '<br/>' : '') +
+        (order.dashboardShowDescription ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.description.label") + ':</span> ' + (order.description ? order.description : '') + '<br/>' : '') +
         ((order.state == "03inProgress" && order.typeOfProductionRecording == "02cumulated") ? '<a href="#" class="badge badge-success float-right" onclick="goToProductionTrackingTerminal(' + order.id + ', null, null)">' + QCD.translate("basic.dashboard.orders.showTerminal.label") + '</a>' : '') +
         '</div>' +
         '<div class="card-footer">' + '<div class="progress">' + '<div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: ' + doneInPercent + '%;" aria-valuenow="' + doneInPercent + '" aria-valuemin="0" aria-valuemax="100">' + doneInPercent + '%</div>' + '</div>' + '</div>' +
@@ -479,13 +483,11 @@ const clearDrop = (event) => {
 }
 
 const updateDropzones = () => {
-    let dropzone = $('<div class="dropzone rounded" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="clearDrop(event)"> &nbsp; </div>');
-
     $('.dropzone').remove();
 
-    dropzone.insertAfter('.card.draggable');
+    $('<div class="dropzone rounded" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="clearDrop(event)"> &nbsp; </div>').insertAfter('.card.draggable');
 
-    $(".items:not(:has(.card.draggable))").append(dropzone);
+    $(".items:not(:has(.card.draggable))").append($('<div class="dropzone rounded" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="clearDrop(event)"> &nbsp; </div>'));
 };
 
 function hasClass(target, className) {

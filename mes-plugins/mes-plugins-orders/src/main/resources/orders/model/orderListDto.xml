@@ -30,6 +30,7 @@
     <fields>
         <string name="number"/>
         <string name="name"/>
+        <string name="description"/>
         <datetime name="dateFrom"/>
         <datetime name="dateTo"/>
         <datetime name="startDate"/>
@@ -42,6 +43,7 @@
         <boolean name="isSubcontracted" default="false"/>
         <boolean name="workPlanDelivered" default="false"/>
         <string name="productNumber"/>
+        <string name="productName"/>
         <string name="unit"/>
         <string name="technologyNumber"/>
         <string name="masterOrderNumber"/>
