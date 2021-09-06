@@ -143,9 +143,10 @@ public class TechnologyDetailsListeners {
                 operationProductInComponentDD.save(inProduct);
             } else {
                 state.addMessage("technologies.technologyDetails.window.operationWithoutParent", MessageType.INFO);
-                break;
+                return;
             }
         }
+        state.addMessage("technologies.technologyDetails.window.moveProducts.success", MessageType.SUCCESS);
     }
 
     public void fillProducts(final ViewDefinitionState view, final ComponentState state, final String[] args) {
