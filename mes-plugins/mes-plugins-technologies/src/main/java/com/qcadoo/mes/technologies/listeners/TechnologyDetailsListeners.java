@@ -128,6 +128,7 @@ public class TechnologyDetailsListeners {
             state.addMessage("technologies.technologyDetails.window.noSelectedProducts", MessageType.INFO);
             return;
         }
+        boolean invalidProducts = false;
         for (Entity inProductDto : inProducts.getSelectedEntities()) {
             DataDefinition operationProductInComponentDD = getOperationProductInComponentDD();
             Entity inProduct = operationProductInComponentDD.get(inProductDto.getId());
@@ -140,11 +141,19 @@ public class TechnologyDetailsListeners {
                             product.getStringField(ProductFields.NUMBER));
                 }
                 inProduct.setField(OperationProductInComponentFields.OPERATION_COMPONENT, parent);
-                operationProductInComponentDD.save(inProduct);
+                inProduct = operationProductInComponentDD.save(inProduct);
+                if(!inProduct.isValid()){
+                    invalidProducts = true;
+                }
             } else {
                 state.addMessage("technologies.technologyDetails.window.operationWithoutParent", MessageType.INFO);
-                break;
+                return;
             }
+        }
+        if(invalidProducts){
+            state.addMessage("technologies.technologyDetails.window.moveProducts.info", MessageType.INFO);
+        } else {
+            state.addMessage("technologies.technologyDetails.window.moveProducts.success", MessageType.SUCCESS);
         }
     }
 
