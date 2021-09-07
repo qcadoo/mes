@@ -46,12 +46,7 @@ import com.qcadoo.mes.orderSupplies.constants.CoverageRegisterFields;
 import com.qcadoo.mes.orderSupplies.constants.CoverageType;
 import com.qcadoo.mes.orderSupplies.constants.MaterialRequirementCoverageFields;
 import com.qcadoo.mes.orderSupplies.constants.OrderSuppliesConstants;
-import com.qcadoo.mes.orderSupplies.constants.ProductType;
-import com.qcadoo.mes.orderSupplies.register.RegisterService;
 import com.qcadoo.mes.orders.constants.OrderFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -111,9 +106,6 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
     private OrderSuppliesService orderSuppliesService;
 
     @Autowired
-    private RegisterService registerService;
-
-    @Autowired
     private DeliveriesService deliveriesService;
 
     @Autowired
@@ -126,9 +118,6 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
     @Override
     public void estimateProductCoverageInTime(final Entity materialRequirementCoverage) {
         LOG.info("Start generation material requirement - id : " + materialRequirementCoverage.getId());
-
-        boolean coverageBasedOnProductionCounting = parameterService.getParameter().getBooleanField(
-                "coverageBasedOnProductionCounting");
 
         Date coverageToDate = materialRequirementCoverage.getDateField(MaterialRequirementCoverageFields.COVERAGE_TO_DATE);
         Date actualDate = materialRequirementCoverage.getDateField(MaterialRequirementCoverageFields.ACTUAL_DATE);
@@ -153,36 +142,15 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
             orderStates = Collections.emptyList();
         }
 
-        if (coverageBasedOnProductionCounting) {
-            Entity assignedOrder = materialRequirementCoverage.getBelongsToField(L_ORDER);
-            fillFromProductionCounting(productAndCoverageProducts, assignedOrder, coverageToDate, actualDate, orderStates);
-        } else {
-            fillFromRegistry(productAndCoverageProducts, coverageToDate, actualDate, orderStates);
-
-            Entity assignedOrder = materialRequirementCoverage.getBelongsToField(L_ORDER);
-
-            if (!orderStates.isEmpty() && Objects.nonNull(assignedOrder)) {
-                Optional<Entity> maybeState = orderStates
-                        .stream()
-                        .filter(state -> state.getStringField(CoverageOrderStateFields.STATE).equals(
-                                assignedOrder.getStringField(OrderFields.STATE))).findAny();
-                if (!maybeState.isPresent()) {
-                    fillFromRegistryAssignedOrder(productAndCoverageProducts, assignedOrder, coverageToDate, actualDate);
-                }
-            }
-
-        }
+        Entity assignedOrder = materialRequirementCoverage.getBelongsToField(L_ORDER);
+        fillFromProductionCounting(productAndCoverageProducts, assignedOrder, coverageToDate, actualDate, orderStates);
 
         estimateProductLocationsInTime(materialRequirementCoverage, productAndCoverageProducts, coverageLocations, actualDate);
 
         estimateProductDeliveriesInTime(materialRequirementCoverage, productAndCoverageProducts, includedDeliveries, actualDate,
                 coverageToDate, includeDraftDeliveries);
 
-        if (coverageBasedOnProductionCounting) {
-            estimateProductProducedInTimeFromPQ(productAndCoverageProducts, coverageToDate, actualDate, orderStates);
-        } else {
-            estimateProductProducedInTime(productAndCoverageProducts, coverageToDate, actualDate, orderStates);
-        }
+        estimateProductProducedInTimeFromPQ(productAndCoverageProducts, coverageToDate, actualDate, orderStates);
 
         additionalProcessProductCoverage(materialRequirementCoverage, productAndCoverageProducts);
 
@@ -232,105 +200,6 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
                         Long.valueOf(reg.getIntegerField("productId")), coverageProductLogging);
             }
         }
-    }
-
-    private void estimateProductProducedInTime(final Map<Long, Entity> productAndCoverageProducts, final Date coverageToDate,
-            final Date actualDate, final List<Entity> orderStates) {
-        List<String> states = Lists.newArrayList();
-
-        if (orderStates != null && !orderStates.isEmpty()) {
-            states = orderStates.stream().map(o -> o.getStringField(CoverageOrderStateFields.STATE)).collect(Collectors.toList());
-        }
-
-        StringBuilder query = new StringBuilder();
-        query.append("SELECT registry FROM #orderSupplies_coverageRegister AS registry ");
-
-        if (!states.isEmpty()) {
-            query.append("JOIN registry.order AS ord ");
-        }
-
-        query.append("WHERE registry.date <= :dateTo AND eventType IN ('05orderOutput') ");
-
-        if (!states.isEmpty()) {
-            query.append("AND ord.state IN (:states)");
-        }
-
-        SearchQueryBuilder queryBuilder = getCoverageRegisterDD().find(query.toString()).setParameter("dateTo", coverageToDate);
-
-        if (!states.isEmpty()) {
-            queryBuilder.setParameterList("states", states);
-        }
-
-        List<Entity> regs = queryBuilder.list().getEntities();
-
-        for (Entity reg : regs) {
-            if (BigDecimal.ZERO.compareTo(reg.getDecimalField(CoverageRegisterFields.QUANTITY)) < 0) {
-                Entity coverageProductLogging = createProductLoggingForOrderProduced(reg, actualDate, coverageToDate);
-
-                fillCoverageProductForOrderProduced(productAndCoverageProducts, reg.getBelongsToField("product"),
-                        coverageProductLogging);
-            }
-        }
-    }
-
-    private void fillCoverageProductForOrderProduced(final Map<Long, Entity> productAndCoverageProducts, final Entity product,
-            final Entity coverageProductLogging) {
-        if (coverageProductLogging != null) {
-            if (productAndCoverageProducts.containsKey(product.getId())) {
-                updateCoverageProductForOrderProduced(productAndCoverageProducts, product, coverageProductLogging);
-            }
-        }
-    }
-
-    private void updateCoverageProductForOrderProduced(final Map<Long, Entity> productAndCoverageProducts, final Entity product,
-            final Entity coverageProductLogging) {
-        Entity addedCoverageProduct = productAndCoverageProducts.get(product.getId());
-
-        BigDecimal demandQuantity = BigDecimalUtils.convertNullToZero(addedCoverageProduct
-                .getDecimalField(CoverageProductFields.PRODUCE_QUANTITY));
-
-        demandQuantity = demandQuantity.add(coverageProductLogging.getDecimalField(CoverageProductLoggingFields.CHANGES),
-                numberService.getMathContext());
-
-        List<Entity> coverageProductLoggings = Lists.newArrayList(addedCoverageProduct
-                .getHasManyField(CoverageProductFields.COVERAGE_PRODUCT_LOGGINGS));
-        coverageProductLoggings.add(coverageProductLogging);
-
-        addedCoverageProduct.setField(CoverageProductFields.PRODUCE_QUANTITY,
-                numberService.setScaleWithDefaultMathContext(demandQuantity));
-        addedCoverageProduct.setField(CoverageProductFields.COVERAGE_PRODUCT_LOGGINGS, coverageProductLoggings);
-
-        productAndCoverageProducts.put(product.getId(), addedCoverageProduct);
-    }
-
-    private Entity createProductLoggingForOrderProduced(final Entity registerEntry, final Date actualDate,
-            final Date coverageToDate) {
-        Entity coverageProductLogging = orderSuppliesService.getCoverageProductLoggingDD().create();
-
-        coverageProductLogging
-                .setField(
-                        CoverageProductLoggingFields.DATE,
-                        getCoverageProductLoggingDateForOrderProduced(registerEntry.getDateField(CoverageRegisterFields.DATE),
-                                actualDate));
-        coverageProductLogging.setField(CoverageProductLoggingFields.ORDER, registerEntry.getBelongsToField("order"));
-        coverageProductLogging.setField(CoverageProductLoggingFields.OPERATION, registerEntry.getBelongsToField("operation"));
-        coverageProductLogging.setField(CoverageProductLoggingFields.CHANGES,
-                numberService.setScaleWithDefaultMathContext(registerEntry.getDecimalField("quantity")));
-        coverageProductLogging.setField(CoverageProductLoggingFields.EVENT_TYPE, registerEntry.getStringField("eventType"));
-
-        return coverageProductLogging;
-    }
-
-    private Date getCoverageProductLoggingDateForOrderProduced(final Date finishDate, final Date actualDate) {
-        Date coverageDate = null;
-
-        if (finishDate.before(actualDate)) {
-            coverageDate = new DateTime(actualDate).plusSeconds(1).toDate();
-        } else {
-            coverageDate = finishDate;
-        }
-
-        return coverageDate;
     }
 
     private void saveCoverage(final Entity materialRequirementCoverage, final List<Entity> entities) {
@@ -444,88 +313,29 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
     public void additionalProcessProductCoverage(final Entity materialRequirementCoverage,
             final Map<Long, Entity> productAndCoverageProducts) {
         List<Entity> selectedOrders = materialRequirementCoverage.getHasManyField("coverageOrders");
-
         if (!selectedOrders.isEmpty()) {
-            for (Entity order : selectedOrders) {
-                List<Entity> entries = registerService.getRegisterEntriesForOrder(order);
-
-                for (Entity entry : entries) {
-                    Entity product = entry.getBelongsToField(CoverageRegisterFields.PRODUCT);
-
-                    Entity coverageProduct = productAndCoverageProducts.get(product.getId());
-                    if (coverageProduct == null) {
-                        continue;
-                    }
-                    if (checkIfProductsAreSame(order, product.getId())) {
-                        coverageProduct.setField(L_PRODUCT_TYPE, null);
-                        continue;
-                    }
-
-                    List<Entity> technologiesForProduct = getTechnologyDD().find()
-                            .add(SearchRestrictions.belongsTo(TechnologyFields.PRODUCT, product))
-                            .add(SearchRestrictions.isNull(TechnologyFields.TECHNOLOGY_TYPE))
-                            .add(SearchRestrictions.eq(TechnologyFields.STATE, TechnologyState.ACCEPTED.getStringValue()))
-                            .add(SearchRestrictions.eq(TechnologyFields.MASTER, true)).list().getEntities();
-
-                    if (technologiesForProduct.isEmpty()) {
-                        coverageProduct.setField(L_PRODUCT_TYPE, ProductType.COMPONENT.getStringValue());
-                        coverageProduct.setField(L_PLANNED_QUANTITY,
-                                entry.getDecimalField(CoverageRegisterFields.PRODUCTION_COUNTING_QUANTITIES));
-
-                    } else {
-                        coverageProduct.setField(L_PRODUCT_TYPE, ProductType.INTERMEDIATE.getStringValue());
-                        coverageProduct.setField(L_PLANNED_QUANTITY,
-                                entry.getDecimalField(CoverageRegisterFields.PRODUCTION_COUNTING_QUANTITIES));
-                    }
-                }
-            }
-
             List<Number> orderIds = getIdsFromCoverageOrders(selectedOrders);
-
-            boolean coverageBasedOnProductionCounting = parameterService.getParameter().getBooleanField(
-                    "coverageBasedOnProductionCounting");
 
             String sql = "";
 
-            if (coverageBasedOnProductionCounting) {
-                sql = "SELECT distinct registry.productId AS productId FROM #orderSupplies_productionCountingQuantityInput AS registry "
-                        + "WHERE registry.orderId IN :ids AND eventType IN ('04orderInput','03operationInput')";
-                List<Entity> regs = getCoverageRegisterDD().find(sql)
-                        .setParameterList("ids", orderIds.stream().map(x -> x.intValue()).collect(Collectors.toList())).list()
-                        .getEntities();
+            sql = "SELECT distinct registry.productId AS productId FROM #orderSupplies_productionCountingQuantityInput AS registry "
+                    + "WHERE registry.orderId IN :ids AND eventType IN ('04orderInput','03operationInput')";
+            List<Entity> regs = getCoverageRegisterDD().find(sql)
+                    .setParameterList("ids", orderIds.stream().map(x -> x.intValue()).collect(Collectors.toList())).list().getEntities();
 
-                List<Long> pids = getIdsFromRegisterProduct(regs);
+            List<Long> pids = getIdsFromRegisterProduct(regs);
 
-                for (Entry<Long, Entity> productAndCoverageProduct : productAndCoverageProducts.entrySet()) {
-                    Entity addedCoverageProduct = productAndCoverageProduct.getValue();
+            for (Entry<Long, Entity> productAndCoverageProduct : productAndCoverageProducts.entrySet()) {
+                Entity addedCoverageProduct = productAndCoverageProduct.getValue();
 
-                    if (pids.contains(productAndCoverageProduct.getKey())) {
-                        addedCoverageProduct.setField(CoverageProductFields.FROM_SELECTED_ORDER, true);
-                    } else {
-                        addedCoverageProduct.setField(CoverageProductFields.FROM_SELECTED_ORDER, false);
-                    }
-                }
-            } else {
-                sql = "SELECT distinct registry.product.id AS productId FROM #orderSupplies_coverageRegister AS registry "
-                        + "WHERE registry.order.id IN :ids AND eventType IN ('04orderInput','03operationInput')";
-                List<Entity> regs = getCoverageRegisterDD().find(sql)
-                        .setParameterList("ids", orderIds.stream().map(x -> x.longValue()).collect(Collectors.toList())).list()
-                        .getEntities();
-
-                List<Long> pids = getIdsFromRegisterProduct(regs);
-
-                for (Entry<Long, Entity> productAndCoverageProduct : productAndCoverageProducts.entrySet()) {
-                    Entity addedCoverageProduct = productAndCoverageProduct.getValue();
-
-                    if (pids.contains(productAndCoverageProduct.getKey())) {
-                        addedCoverageProduct.setField(CoverageProductFields.FROM_SELECTED_ORDER, true);
-                    } else {
-                        addedCoverageProduct.setField(CoverageProductFields.FROM_SELECTED_ORDER, false);
-                    }
+                if (pids.contains(productAndCoverageProduct.getKey())) {
+                    addedCoverageProduct.setField(CoverageProductFields.FROM_SELECTED_ORDER, true);
+                } else {
+                    addedCoverageProduct.setField(CoverageProductFields.FROM_SELECTED_ORDER, false);
                 }
             }
-
         }
+
     }
 
     private List<Number> getIdsFromCoverageOrders(final List<Entity> selectedOrders) {
@@ -593,93 +403,6 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
                         reg.getIntegerField("productId"), reg.getStringField("productType"), coverageProductLogging);
             }
         }
-    }
-
-    private void fillFromRegistry(final Map<Long, Entity> productAndCoverageProducts, final Date coverageToDate,
-            final Date actualDate, final List<Entity> orderStates) {
-        List<String> states = Lists.newArrayList();
-
-        if (!orderStates.isEmpty()) {
-            states = orderStates.stream().map(order -> order.getStringField(CoverageOrderStateFields.STATE))
-                    .collect(Collectors.toList());
-        }
-
-        StringBuilder query = new StringBuilder();
-        query.append("SELECT registry FROM #orderSupplies_coverageRegister AS registry ");
-
-        if (!states.isEmpty()) {
-            query.append("JOIN registry.order AS ord ");
-        }
-
-        query.append("WHERE registry.date <= :dateTo AND eventType IN ('04orderInput','03operationInput') ");
-
-        if (!states.isEmpty()) {
-            query.append("AND ord.state IN (:states)");
-        }
-
-        SearchQueryBuilder queryBuilder = getCoverageRegisterDD().find(query.toString()).setParameter("dateTo", coverageToDate);
-
-        if (!states.isEmpty()) {
-            queryBuilder.setParameterList("states", states);
-        }
-
-        List<Entity> regs = queryBuilder.list().getEntities();
-
-        for (Entity reg : regs) {
-            if (BigDecimal.ZERO.compareTo(reg.getDecimalField(CoverageRegisterFields.QUANTITY)) < 0) {
-                Entity coverageProductLogging = createCoverageProductLoggingForOrder(reg, actualDate);
-
-                fillCoverageProductForOrder(productAndCoverageProducts, reg.getBelongsToField("product"),
-                        reg.getStringField("productType"), coverageProductLogging);
-            }
-        }
-    }
-
-    private void fillFromRegistryAssignedOrder(final Map<Long, Entity> productAndCoverageProducts, final Entity assignedOrder,
-            final Date coverageToDate, final Date actualDate) {
-        String query = "SELECT registry FROM #orderSupplies_coverageRegister AS registry "
-                + "WHERE registry.date <= :dateTo AND eventType IN ('04orderInput','03operationInput') "
-                + "AND order_id = :orderId ";
-        SearchQueryBuilder queryBuilder = getCoverageRegisterDD().find(query).setParameter("dateTo", coverageToDate);
-
-        queryBuilder.setParameter("orderId", assignedOrder.getId());
-
-        List<Entity> regs = queryBuilder.list().getEntities();
-
-        for (Entity reg : regs) {
-            if (BigDecimal.ZERO.compareTo(reg.getDecimalField(CoverageRegisterFields.QUANTITY)) < 0) {
-                Entity coverageProductLogging = createCoverageProductLoggingForOrder(reg, actualDate);
-                fillCoverageProductForOrder(productAndCoverageProducts, reg.getBelongsToField("product"),
-                        reg.getStringField("productType"), coverageProductLogging);
-            }
-        }
-    }
-
-    private Entity createCoverageProductLoggingForOrder(final Entity registerEntry, final Date actualDate) {
-        Entity coverageProductLogging = orderSuppliesService.getCoverageProductLoggingDD().create();
-
-        coverageProductLogging.setField(CoverageProductLoggingFields.DATE,
-                getCoverageProductLoggingDateForOrder(registerEntry, actualDate));
-        coverageProductLogging.setField(CoverageProductLoggingFields.ORDER, registerEntry.getBelongsToField("order"));
-        coverageProductLogging.setField(CoverageProductLoggingFields.OPERATION, registerEntry.getBelongsToField("operation"));
-        coverageProductLogging.setField(CoverageProductLoggingFields.CHANGES,
-                numberService.setScaleWithDefaultMathContext(registerEntry.getDecimalField("quantity")));
-        coverageProductLogging.setField(CoverageProductLoggingFields.EVENT_TYPE, registerEntry.getStringField("eventType"));
-
-        return coverageProductLogging;
-    }
-
-    private Date getCoverageProductLoggingDateForOrder(final Entity registerEntry, final Date actualDate) {
-        Date startDate = registerEntry.getDateField("date");
-        Date coverageDate;
-
-        if (startDate.before(actualDate)) {
-            coverageDate = new DateTime(actualDate).plusSeconds(3).toDate();
-        } else {
-            coverageDate = startDate;
-        }
-
-        return coverageDate;
     }
 
     private void estimateProductDeliveriesInTime(final Entity materialRequirementCoverage,
@@ -785,51 +508,6 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
 
         addedCoverageProduct.setField(CoverageProductFields.DELIVERED_QUANTITY,
                 numberService.setScaleWithDefaultMathContext(deliveredQuantity));
-        addedCoverageProduct.setField(CoverageProductFields.COVERAGE_PRODUCT_LOGGINGS, coverageProductLoggings);
-
-        productAndCoverageProducts.put(product.getId(), addedCoverageProduct);
-    }
-
-    private void fillCoverageProductForOrder(final Map<Long, Entity> productAndCoverageProducts, final Entity product,
-            final String productType, final Entity coverageProductLogging) {
-        if (coverageProductLogging != null) {
-            if (productAndCoverageProducts.containsKey(product.getId())) {
-                updateCoverageProductForOrder(productAndCoverageProducts, product, productType, coverageProductLogging);
-            } else {
-                addCoverageProductForOrder(productAndCoverageProducts, product, productType, coverageProductLogging);
-            }
-        }
-    }
-
-    private void addCoverageProductForOrder(final Map<Long, Entity> productAndCoverageProducts, final Entity product,
-            final String productType, final Entity coverageProductLogging) {
-        Entity coverageProduct = orderSuppliesService.getCoverageProductDD().create();
-
-        coverageProduct.setField(CoverageProductFields.PRODUCT, product);
-        coverageProduct.setField(CoverageProductFields.PRODUCT_TYPE, productType);
-        coverageProduct.setField(CoverageProductFields.DEMAND_QUANTITY, numberService
-                .setScaleWithDefaultMathContext(coverageProductLogging.getDecimalField(CoverageProductLoggingFields.CHANGES)));
-        coverageProduct.setField(CoverageProductFields.COVERAGE_PRODUCT_LOGGINGS, Lists.newArrayList(coverageProductLogging));
-
-        productAndCoverageProducts.put(product.getId(), coverageProduct);
-    }
-
-    private void updateCoverageProductForOrder(final Map<Long, Entity> productAndCoverageProducts, final Entity product,
-            final String productType, final Entity coverageProductLogging) {
-        Entity addedCoverageProduct = productAndCoverageProducts.get(product.getId());
-
-        BigDecimal demandQuantity = BigDecimalUtils.convertNullToZero(addedCoverageProduct
-                .getDecimalField(CoverageProductFields.DEMAND_QUANTITY));
-
-        demandQuantity = demandQuantity.add(coverageProductLogging.getDecimalField(CoverageProductLoggingFields.CHANGES),
-                numberService.getMathContext());
-
-        List<Entity> coverageProductLoggings = Lists.newArrayList(addedCoverageProduct
-                .getHasManyField(CoverageProductFields.COVERAGE_PRODUCT_LOGGINGS));
-        coverageProductLoggings.add(coverageProductLogging);
-
-        addedCoverageProduct.setField(CoverageProductFields.DEMAND_QUANTITY,
-                numberService.setScaleWithDefaultMathContext(demandQuantity));
         addedCoverageProduct.setField(CoverageProductFields.COVERAGE_PRODUCT_LOGGINGS, coverageProductLoggings);
 
         productAndCoverageProducts.put(product.getId(), addedCoverageProduct);
@@ -1084,19 +762,9 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
         }
     }
 
-    private boolean checkIfProductsAreSame(final Entity order, final Long product) {
-        Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
-
-        if (orderProduct == null) {
-            return false;
-        } else {
-            return product.equals(orderProduct.getId());
-        }
-    }
-
     private DataDefinition getCoverageRegisterDD() {
         return dataDefinitionService
-                .get(OrderSuppliesConstants.PLUGIN_IDENTIFIER, OrderSuppliesConstants.MODEL_COVERAGE_REGISTER);
+                .get(OrderSuppliesConstants.PLUGIN_IDENTIFIER, OrderSuppliesConstants.MODEL_COVERAGE_PRODUCT);
 
     }
 
@@ -1111,10 +779,6 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
 
     private DataDefinition getDeliveryDD() {
         return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY);
-    }
-
-    private DataDefinition getTechnologyDD() {
-        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY);
     }
 
 }

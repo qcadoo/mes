@@ -32,6 +32,7 @@
         <datetime name="startDate"/>
         <string name="orderState"/>
         <integer name="productId"/>
+        <integer name="orderProductId"/>
         <integer name="technologyOperationComponentId"/>
         <integer name="operationId"/>
         <decimal name="plannedQuantity"/>
