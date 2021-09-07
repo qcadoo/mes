@@ -436,7 +436,7 @@ public class DocumentDetailsListeners {
 
         JSONObject context = new JSONObject(parameters);
 
-        String url = "../page/materialFlowResources/positionAddMulti.html?context=" + context.toString();
+        String url = "../page/materialFlowResources/positionAddMulti.html?context=" + context;
         view.openModal(url);
     }
 
@@ -453,7 +453,7 @@ public class DocumentDetailsListeners {
 
             JSONObject context = new JSONObject(parameters);
 
-            String url = "../page/materialFlowResources/positionsImport.html?context=" + context.toString();
+            String url = "../page/materialFlowResources/positionsImport.html?context=" + context;
             view.openModal(url);
         }
     }

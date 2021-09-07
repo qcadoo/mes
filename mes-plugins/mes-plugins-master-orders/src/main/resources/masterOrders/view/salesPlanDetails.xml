@@ -39,6 +39,10 @@
                 <smallButton name="reject" icon="deleteIcon16.png" state="enabled"
                              action="#{form}.changeState(reject);"/>
             </group>
+            <group name="import">
+                <bigButton name="openPositionsImportPage" state="enabled" icon="xlsIcon24.png"
+                           action="#{form}.fireEvent(openPositionsImportPage);"/>
+            </group>
             <group name="products">
                 <bigButton name="addProductsBySize" icon="newIcon24.png"
                              state="enabled" action="#{form}.fireEvent(addProductsBySize);">
@@ -135,7 +139,9 @@
                           class="com.qcadoo.mes.masterOrders.listeners.SalesPlanDetailsListeners"/>
                 <listener event="changeState" class="com.qcadoo.mes.masterOrders.listeners.SalesPlanDetailsListeners"
                           method="changeState"/>
-
+                <listener event="openPositionsImportPage"
+                          class="com.qcadoo.mes.masterOrders.listeners.SalesPlanDetailsListeners"
+                          method="openPositionsImportPage"/>
             </component>
         </windowTab>
 

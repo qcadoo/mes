@@ -31,7 +31,7 @@
     <fields>
         <datetime name="createTime" required="true"/>
         <belongsTo name="user" model="user" plugin="qcadooSecurity" required="true"/>
-        <enum name="logType" values="order,productImport,staffImport,workstationImport,eanImport" required="true"/>
+        <enum name="logType" values="order,productImport,staffImport,workstationImport,eanImport,salesPlanProductImport" required="true"/>
         <string name="action"/>
         <text name="message"/>
         <string name="item1">
