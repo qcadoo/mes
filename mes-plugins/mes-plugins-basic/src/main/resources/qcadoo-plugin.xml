@@ -247,6 +247,8 @@
         <security:role identifier="ROLE_CLEAN_EXTERNAL_NUMBER"/>
 
         <security:role identifier="ROLE_DASHBOARD_KANBAN"/>
+        <security:role identifier="ROLE_DASHBOARD_KANBAN_CREATE_ORDERS"/>
+        <security:role identifier="ROLE_DASHBOARD_KANBAN_GOTO_ORDER_EDIT"/>
 
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
