@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.materialFlowResources.listeners;
+package com.qcadoo.mes.masterOrders.listeners;
 
 import java.io.IOException;
 
@@ -29,10 +29,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.imports.services.XlsxImportService;
-import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.materialFlowResources.constants.PositionFields;
-import com.qcadoo.mes.materialFlowResources.imports.position.PositionCellBinderRegistry;
-import com.qcadoo.mes.materialFlowResources.imports.position.PositionXlsxImportService;
+import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
+import com.qcadoo.mes.masterOrders.constants.SalesPlanProductFields;
+import com.qcadoo.mes.masterOrders.imports.salesPlanProduct.SalesPlanProductCellBinderRegistry;
+import com.qcadoo.mes.masterOrders.imports.salesPlanProduct.SalesPlanProductXlsxImportService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriterion;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -42,40 +42,41 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
-public class PositionsImportListeners {
+public class SalesPlanProductsImportListeners {
 
     @Autowired
-    private PositionXlsxImportService positionXlsxImportService;
+    private SalesPlanProductXlsxImportService salesPlanProductXlsxImportService;
 
     @Autowired
-    private PositionCellBinderRegistry positionCellBinderRegistry;
+    private SalesPlanProductCellBinderRegistry salesPlanProductCellBinderRegistry;
 
     public void downloadImportSchema(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        positionXlsxImportService.downloadImportSchema(view, MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
-                MaterialFlowResourcesConstants.MODEL_POSITION, XlsxImportService.L_XLSX);
+        salesPlanProductXlsxImportService.downloadImportSchema(view, MasterOrdersConstants.PLUGIN_IDENTIFIER,
+                MasterOrdersConstants.MODEL_SALES_PLAN_PRODUCT, XlsxImportService.L_XLSX);
     }
 
     public void processImportFile(final ViewDefinitionState view, final ComponentState state, final String[] args)
             throws IOException {
-        FormComponent documentForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Long documentId = documentForm.getEntityId();
-        Entity document = documentForm.getEntity().getDataDefinition().get(documentId);
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        Long salesPlanId = form.getEntityId();
+        Entity salesPlan = form.getEntity().getDataDefinition().get(salesPlanId);
 
-        positionXlsxImportService.processImportFile(view, positionCellBinderRegistry.getCellBinderRegistry(), true,
-                MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER, MaterialFlowResourcesConstants.MODEL_POSITION, document,
-                PositionFields.DOCUMENT, PositionsImportListeners::createRestrictionForPosition);
+        salesPlanProductXlsxImportService.processImportFile(view, salesPlanProductCellBinderRegistry.getCellBinderRegistry(),
+                true, MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_SALES_PLAN_PRODUCT, salesPlan,
+                SalesPlanProductFields.SALES_PLAN, SalesPlanProductsImportListeners::createRestrictionForProduct);
     }
 
-    private static SearchCriterion createRestrictionForPosition(final Entity position) {
-        return SearchRestrictions.eq(PositionFields.NUMBER, position.getStringField(PositionFields.NUMBER));
+    private static SearchCriterion createRestrictionForProduct(final Entity product) {
+        return SearchRestrictions.belongsTo(SalesPlanProductFields.PRODUCT,
+                product.getBelongsToField(SalesPlanProductFields.PRODUCT));
     }
 
     public void redirectToLogs(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        positionXlsxImportService.redirectToLogs(view, MaterialFlowResourcesConstants.MODEL_POSITION);
+        salesPlanProductXlsxImportService.redirectToLogs(view, MasterOrdersConstants.MODEL_SALES_PLAN_PRODUCT);
     }
 
     public void onInputChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        positionXlsxImportService.changeButtonsState(view, false);
+        salesPlanProductXlsxImportService.changeButtonsState(view, false);
     }
 
 }

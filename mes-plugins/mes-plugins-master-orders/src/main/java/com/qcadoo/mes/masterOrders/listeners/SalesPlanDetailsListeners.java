@@ -1,5 +1,15 @@
 package com.qcadoo.mes.masterOrders.listeners;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -23,15 +33,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class SalesPlanDetailsListeners {
@@ -277,6 +278,24 @@ public class SalesPlanDetailsListeners {
 
         String url = "../page/masterOrders/salesPlanOrders.html";
         view.openModal(url, parameters);
+    }
+
+    public void openPositionsImportPage(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        Entity salesPlan = form.getPersistedEntityWithIncludedFormValues();
+
+        Long salesPlanId = salesPlan.getId();
+
+        if (Objects.nonNull(salesPlanId)) {
+            Map<String, Object> parameters = Maps.newHashMap();
+
+            parameters.put("form.id", salesPlanId);
+
+            JSONObject context = new JSONObject(parameters);
+
+            String url = "../page/masterOrders/salesPlanProductsImport.html?context=" + context;
+            view.openModal(url);
+        }
     }
 
     public void addProductsBySize(final ViewDefinitionState view, final ComponentState state, final String[] args) {
