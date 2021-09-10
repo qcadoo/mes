@@ -302,9 +302,10 @@
                         <component type="lookup" name="company" reference="company"
                                    field="company" hasDescription="true">
                             <option type="column" name="name" fields="name" link="true"/>
+                            <option type="column" name="contractorCategory" fields="contractorCategory" link="true"/>
 
-                            <option type="searchable" value="name,number"/>
-                            <option type="orderable" value="name,number"/>
+                            <option type="searchable" value="name,number,contractorCategory"/>
+                            <option type="orderable" value="name,number,contractorCategory"/>
 
                             <option type="expression"
                                     value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>

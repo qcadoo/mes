@@ -67,4 +67,7 @@ public final class CompanyFields {
 
     public static final String ADDRESSES = "addresses";
 
+    public static final String CONTRACTOR_CATEGORY = "contractorCategory";
+
+
 }

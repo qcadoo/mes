@@ -73,6 +73,9 @@
 
         <hasMany name="addresses" model="address" plugin="basic" joinField="company"
                  cascade="delete"/>
+
+        <dictionary name="contractorCategory" dictionary="contractorCategory"/>
+
     </fields>
 
     <hooks>

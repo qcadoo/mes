@@ -491,9 +491,10 @@
                         <component type="lookup" name="supplier" reference="supplier"
                                    field="supplier">
                             <option type="column" name="name" fields="name" link="true"/>
+                            <option type="column" name="contractorCategory" fields="contractorCategory" link="true"/>
 
-                            <option type="searchable" value="name,number"/>
-                            <option type="orderable" value="name,number"/>
+                            <option type="searchable" value="name,number,contractorCategory"/>
+                            <option type="orderable" value="name,number,contractorCategory"/>
 
                             <option type="expression"
                                     value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
@@ -553,6 +554,11 @@
                             </layoutElement>
                         </component>
                     </layoutElement>
+
+                    <layoutElement column="3" row="3">
+                        <component type="select" reference="contractorCategory" name="contractorCategory" field="contractorCategory" defaultEnabled="never"/>
+                    </layoutElement>
+
                     <layoutElement column="3" row="4">
                         <component type="lookup" name="relatedDelivery"
                                    reference="relatedDelivery" field="relatedDelivery">
@@ -565,6 +571,7 @@
                             <option type="fieldCode" value="number"/>
                         </component>
                     </layoutElement>
+
                     <layoutElement column="3" row="5">
                         <component type="lookup" name="currency" reference="currency"
                                    field="currency">

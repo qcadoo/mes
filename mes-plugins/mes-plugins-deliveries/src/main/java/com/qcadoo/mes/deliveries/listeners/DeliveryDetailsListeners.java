@@ -23,33 +23,13 @@
  */
 package com.qcadoo.mes.deliveries.listeners;
 
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.field;
-
-import java.io.File;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.AdditionalCodeFields;
 import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.basic.constants.PalletNumberFields;
 import com.qcadoo.mes.basic.constants.ProductAttachmentFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -96,6 +76,26 @@ import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
+
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.field;
 
 @Component
 public class DeliveryDetailsListeners {
@@ -320,6 +320,7 @@ public class DeliveryDetailsListeners {
                 .getComponentByReference(DeliveryFields.DELIVERY_DATE_BUFFER);
         FieldComponent paymentFormField = (FieldComponent) view.getComponentByReference(DeliveryFields.PAYMENT_FORM);
         FieldComponent currencyField = (FieldComponent) view.getComponentByReference(DeliveryFields.CURRENCY);
+        FieldComponent contractorCategoryField = (FieldComponent) view.getComponentByReference(DeliveryFields.CONTRACTOR_CATEGORY);
         GridComponent orderedProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
 
         Entity supplier = supplierLookup.getEntity();
@@ -327,9 +328,12 @@ public class DeliveryDetailsListeners {
         if (Objects.isNull(supplier)) {
             deliveryDateBufferField.setFieldValue(null);
             paymentFormField.setFieldValue(null);
+            contractorCategoryField.setFieldValue(null);
         } else {
             deliveryDateBufferField.setFieldValue(supplier.getIntegerField(CompanyFieldsD.BUFFER));
             paymentFormField.setFieldValue(supplier.getStringField(CompanyFieldsD.PAYMENT_FORM));
+            contractorCategoryField.setFieldValue(supplier.getStringField(CompanyFields.CONTRACTOR_CATEGORY));
+
             Entity supplierCurrency = supplier.getBelongsToField(CompanyFieldsD.CURRENCY);
             if (supplierCurrency != null) {
                 Long oldCurrency = (Long) currencyField.getFieldValue();
@@ -345,6 +349,7 @@ public class DeliveryDetailsListeners {
 
         deliveryDateBufferField.requestComponentUpdateState();
         paymentFormField.requestComponentUpdateState();
+        contractorCategoryField.requestComponentUpdateState();
     }
 
     public final void printDeliveryReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {

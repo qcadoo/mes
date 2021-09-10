@@ -47,6 +47,8 @@
 				expression="#country['country']" link="true" width="50" />
 			<option type="column" name="tax" fields="tax" link="true"
 				width="70" />
+			<option type="column" name="contractorCategory" fields="contractorCategory" link="true"
+				width="70" />
 			<option type="column" name="isSupplier" fields="isSupplier" link="true"
 					width="50" />
 			<option type="column" name="isReceiver" fields="isReceiver" link="true"
@@ -54,8 +56,8 @@
 
 			<option type="order" column="number" direction="asc" />
 
-			<option type="searchable" value="number,name,city,state,country,tax,isSupplier,isReceiver" />
-			<option type="orderable" value="number,name,city,state,country,tax,isSupplier,isReceiver" />
+			<option type="searchable" value="number,name,city,state,country,tax,contractorCategory,isSupplier,isReceiver" />
+			<option type="orderable" value="number,name,city,state,country,tax,contractorCategory,isSupplier,isReceiver" />
 
 			<option type="correspondingView" value="basic/companyDetails" />
 			<option type="correspondingComponent" value="form" />

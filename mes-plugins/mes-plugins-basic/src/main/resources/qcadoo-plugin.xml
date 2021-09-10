@@ -335,6 +335,8 @@
 
         <model:dictionary name="typeOfProducts"/>
 
+        <model:dictionary name="contractorCategory"/>
+
         <menu:menu-category name="basic"/>
         <menu:menu-category name="calendars" defaultAuthorizationRole="ROLE_SHIFTS"/>
         <menu:menu-category name="staff"/>
