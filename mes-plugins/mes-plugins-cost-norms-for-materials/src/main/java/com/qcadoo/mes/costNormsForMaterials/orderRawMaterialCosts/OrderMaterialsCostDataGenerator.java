@@ -25,7 +25,6 @@ package com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts;
 
 import java.util.List;
 
-import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.domain.ProductWithCosts;
 import com.qcadoo.model.api.Entity;
 
 public interface OrderMaterialsCostDataGenerator {
