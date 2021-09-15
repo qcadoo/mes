@@ -23,9 +23,6 @@
  */
 package com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.dataProvider;
 
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.field;
-import static com.qcadoo.model.api.search.SearchProjections.list;
 import static com.qcadoo.model.api.search.SearchRestrictions.in;
 
 import java.util.ArrayList;
@@ -195,8 +192,6 @@ final class OrderMaterialsCostsDataGeneratorImpl implements OrderMaterialsCostDa
     private List<Entity> findRawInputProductsFor(final Entity order) {
         TechnologyRawInputProductComponentsCriteria criteria = TechnologyRawInputProductComponentsCriteria
                 .forTechnology(order.getBelongsToField(OrderFields.TECHNOLOGY).getId());
-        criteria.setSearchProjection(
-                list().add(alias(field(TechnologyRawInputProductComponentsCriteria.PRODUCT_ALIAS + ".id"), "id")));
         return technologyRawInputProductComponentsDataProvider.findAll(criteria).stream()
                 .map(e -> e.getBelongsToField(OperationProductInComponentFields.PRODUCT)).collect(Collectors.toList());
     }

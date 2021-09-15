@@ -67,6 +67,9 @@
 									expression="#product.get('unit')" />
 
 							<option type="order" column="name" direction="asc" />
+
+							<option type="fullscreen" value="true"/>
+							<option type="fixedHeight" value="true"/>
 						</component>
 					</layoutElement>
 				</component>
