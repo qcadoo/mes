@@ -350,7 +350,7 @@ public final class ProductionTrackingListenerService {
                         final BigDecimal usedQuantity = BigDecimalUtils.convertNullToZero(pcq
                                 .getDecimalField(ProductionCountingQuantityFields.USED_QUANTITY));
 
-                        if (usedQuantity.compareTo(BigDecimal.ZERO) > 0) {
+                        if (usedQuantity.compareTo(BigDecimal.ZERO) > 0 && productQuantity.compareTo(BigDecimal.ZERO) > 0) {
                             if (usedQuantity.compareTo(productQuantity) <= 0) {
 
                                 pcq.setField(ProductionCountingQuantityFields.USED_QUANTITY, BigDecimal.ZERO);
@@ -360,6 +360,7 @@ public final class ProductionTrackingListenerService {
                                 final BigDecimal result = operation.perform(usedQuantity, productQuantity);
                                 pcq.setField(ProductionCountingQuantityFields.USED_QUANTITY, result);
                                 pcq.getDataDefinition().save(pcq);
+                                productQuantity = productQuantity.subtract(productQuantity, numberService.getMathContext());
                             }
                         }
                     }
