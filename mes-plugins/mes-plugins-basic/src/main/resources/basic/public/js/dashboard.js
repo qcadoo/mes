@@ -208,15 +208,25 @@ QCD.dashboard = (function () {
 
         var opTaskDiv = '<div class="card" id="operationalTask' + operationalTask.id + '">' +
                                     '<div class="card-header bg-secondary py-2">';
-        if(QCD.enableOrdersLinkOnDashboard) {
+        if(QCD.enableOrdersLinkOnDashboard === 'true') {
             opTaskDiv = opTaskDiv + '<a href="#" class="card-title text-white" onclick="goToOperationalTaskDetails(' + operationalTask.id + ')">' + operationalTask.number + '</a>';
+        } else {
+             opTaskDiv = opTaskDiv + '<span class="card-title text-white">' + operationalTask.number + '</span>';
         }
 
         opTaskDiv = opTaskDiv +  '</div>' +
         '<div class="card-body py-2">' +
-        '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.name.label") + ':</span> ' + operationalTask.name + '<br/>' +
-        ((operationalTask.type == "02executionOperationInOrder" && operationalTask.orderNumber) ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.orderNumber.label") + ':</span> <a href="#" onclick="goToOrderDetails(' + operationalTask.orderId + ')">' + operationalTask.orderNumber + '</a><br/>' : '') +
-        (operationalTask.workstationNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.workstationNumber.label") + ':</span> ' + operationalTask.workstationNumber + '<br/>' : '') +
+        '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.name.label") + ':</span> ' + operationalTask.name + '<br/>';
+
+
+        if(QCD.enableOrdersLinkOnDashboard === 'true') {
+            opTaskDiv = opTaskDiv + ((operationalTask.type == "02executionOperationInOrder" && operationalTask.orderNumber) ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.orderNumber.label") + ':</span> <a href="#" onclick="goToOrderDetails(' + operationalTask.orderId + ')">' + operationalTask.orderNumber + '</a><br/>' : '');
+        } else {
+           opTaskDiv = opTaskDiv + ((operationalTask.type == "02executionOperationInOrder" && operationalTask.orderNumber) ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.orderNumber.label") + ':</span> <span>' + operationalTask.orderNumber + '<span><br/>' : '');
+        }
+
+
+        opTaskDiv = opTaskDiv +  (operationalTask.workstationNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.workstationNumber.label") + ':</span> ' + operationalTask.workstationNumber + '<br/>' : '') +
         (operationalTask.type == "02executionOperationInOrder" ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.orderProduct.label") + ':</span> ' + orderProduct + '<br/>' : '') +
         ((operationalTask.type == "02executionOperationInOrder" && product) ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.product.label") + ':</span> ' + product + '<br/>' : '') +
         ((operationalTask.type == "02executionOperationInOrder" && operationalTask.plannedQuantity && operationalTask.productUnit) ? '<span class="float-left"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.plannedQuantity.label") + ':</span> ' + operationalTask.plannedQuantity + ' ' + operationalTask.productUnit + '</span>' : '') +
