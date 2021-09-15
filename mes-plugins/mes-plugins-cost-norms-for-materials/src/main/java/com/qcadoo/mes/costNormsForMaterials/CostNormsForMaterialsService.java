@@ -23,35 +23,8 @@
  */
 package com.qcadoo.mes.costNormsForMaterials;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
-import com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields;
-import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.OrderMaterialsCostDataGenerator;
-import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.dataProvider.OrderMaterialCostsCriteria;
-import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.dataProvider.OrderMaterialCostsDataProvider;
-import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.domain.ProductWithQuantityAndCost;
-import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.mes.technologies.ProductQuantitiesService;
-import com.qcadoo.mes.technologies.TechnologyService;
-import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.constants.QcadooViewConstants;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.qcadoo.model.api.search.SearchRestrictions.in;
 
 import java.math.BigDecimal;
 import java.util.Collection;
@@ -61,8 +34,34 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.qcadoo.model.api.search.SearchRestrictions.in;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
+import com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields;
+import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.OrderMaterialsCostDataGenerator;
+import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.dataProvider.OrderMaterialCostsCriteria;
+import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.dataProvider.OrderMaterialCostsDataProvider;
+import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.domain.ProductWithQuantityAndCost;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
+import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class CostNormsForMaterialsService {
@@ -133,10 +132,8 @@ public class CostNormsForMaterialsService {
             try {
                 BigDecimal givenQty = technologyService.getProductCountForOperationComponent(operationComponentRoot);
 
-                Map<Long, BigDecimal> productQuantities = productQuantitiesService.getNeededProductQuantities(technology,
+                return productQuantitiesService.getNeededProductQuantities(technology,
                         givenQty, MrpAlgorithm.COMPONENTS_AND_SUBCONTRACTORS_PRODUCTS);
-
-                return productQuantities;
             } catch (IllegalStateException e) {
                 if (LOG.isWarnEnabled()) {
                     LOG.warn("Invalid technology tree!", e);
@@ -147,53 +144,7 @@ public class CostNormsForMaterialsService {
         return Maps.newHashMap();
     }
 
-    public void copyCostsFromProducts(final ViewDefinitionState viewDefinitionState, final ComponentState component,
-            final String[] args) {
-        checkArgument(viewDefinitionState != null, L_VIEW_DEFINITION_STATE_IS_NULL);
-
-        GridComponent grid = (GridComponent) viewDefinitionState.getComponentByReference(QcadooViewConstants.L_GRID);
-
-        FormComponent order = (FormComponent) viewDefinitionState.getComponentByReference(L_ORDER);
-
-        if ((order == null) || (order.getEntityId() == null)) {
-            return;
-        }
-
-        Long orderId = order.getEntityId();
-
-        List<Entity> inputProducts = Lists.newArrayList();
-
-        Entity existingOrder = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                orderId);
-
-        List<Entity> technologyInstOperProductInComps = existingOrder
-                .getHasManyField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS);
-
-        if (technologyInstOperProductInComps != null) {
-            for (Entity technologyInstOperProductInComp : technologyInstOperProductInComps) {
-                Entity product = technologyInstOperProductInComp.getBelongsToField(TechnologyInstOperProductInCompFields.PRODUCT);
-
-                technologyInstOperProductInComp.setField(TechnologyInstOperProductInCompFields.COST_FOR_NUMBER,
-                        product.getField(ProductFieldsCNFP.COST_FOR_NUMBER));
-                technologyInstOperProductInComp.setField(TechnologyInstOperProductInCompFields.NOMINAL_COST,
-                        product.getField(ProductFieldsCNFP.NOMINAL_COST));
-                technologyInstOperProductInComp.setField(TechnologyInstOperProductInCompFields.LAST_PURCHASE_COST,
-                        product.getField(ProductFieldsCNFP.LAST_PURCHASE_COST));
-                technologyInstOperProductInComp.setField(TechnologyInstOperProductInCompFields.AVERAGE_COST,
-                        product.getField(ProductFieldsCNFP.AVERAGE_COST));
-
-                technologyInstOperProductInComp = technologyInstOperProductInComp.getDataDefinition().save(
-                        technologyInstOperProductInComp);
-
-                inputProducts.add(technologyInstOperProductInComp);
-            }
-        }
-
-        grid.setEntities(inputProducts);
-    }
-
     public List<Entity> updateCostsForProductInOrder(Entity order, Collection<ProductWithQuantityAndCost> productsInfo) {
-
         List<Entity> result = Lists.newArrayList();
 
         if (!productsInfo.isEmpty()) {
@@ -220,17 +171,7 @@ public class CostNormsForMaterialsService {
                     Optional<BigDecimal> costForOrder = entry.getValue().getCostOpt();
                     orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.COST_FOR_ORDER,
                             numberService.setScaleWithDefaultMathContext(costForOrder.orElse(BigDecimal.ZERO)));
-                    BigDecimal oldQuantity = orderMaterialCosts
-                            .getDecimalField(TechnologyInstOperProductInCompFields.COST_FOR_NUMBER);
 
-                    if (oldQuantity == null) {
-                        LOG.debug(String.format(
-                                "There are no costs in TechnologyInstanceOperationProductInComponent (id: %d ) to recalculate.",
-                                orderMaterialCosts.getId()));
-                    } else {
-                        Optional<BigDecimal> newQuantity = entry.getValue().getQuantityOpt();
-                        updateCosts(zeroToOne(newQuantity.orElse(BigDecimal.ONE)), orderMaterialCosts, zeroToOne(oldQuantity));
-                    }
                     result.add(orderMaterialCosts.getDataDefinition().save(orderMaterialCosts));
                 } else {
                     if (LOG.isDebugEnabled()) {
@@ -244,48 +185,17 @@ public class CostNormsForMaterialsService {
         return result;
     }
 
-    private BigDecimal zeroToOne(final BigDecimal bigDecimal) {
-        if (BigDecimalUtils.valueEquals(bigDecimal, BigDecimal.ZERO)) {
-            return BigDecimal.ONE;
-        }
-        return bigDecimal;
-    }
-
-    private void updateCosts(final BigDecimal newQuantity, final Entity orderMaterialCosts, final BigDecimal oldQuantity) {
-        BigDecimal factor = newQuantity.divide(oldQuantity, numberService.getMathContext());
-
-        BigDecimal nominalCost = orderMaterialCosts.getDecimalField(TechnologyInstOperProductInCompFields.NOMINAL_COST);
-        BigDecimal lastPurchaseCost = orderMaterialCosts
-                .getDecimalField(TechnologyInstOperProductInCompFields.LAST_PURCHASE_COST);
-        BigDecimal averageCost = orderMaterialCosts.getDecimalField(TechnologyInstOperProductInCompFields.AVERAGE_COST);
-
-        orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.COST_FOR_NUMBER, numberService.setScaleWithDefaultMathContext(newQuantity));
-        orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.NOMINAL_COST, multiply(nominalCost, factor));
-        orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.LAST_PURCHASE_COST, multiply(lastPurchaseCost, factor));
-        orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.AVERAGE_COST, multiply(averageCost, factor));
-    }
-
-    private BigDecimal multiply(final BigDecimal value, final BigDecimal factor) {
-        if (value == null || factor == null) {
-            return BigDecimal.ZERO;
-        }
-        return numberService.setScaleWithDefaultMathContext(value.multiply(factor, numberService.getMathContext()));
-    }
-
     public void updateCosts(final ViewDefinitionState viewDefinitionState, final ComponentState component, final String[] args) {
         FormComponent form = (FormComponent) viewDefinitionState.getComponentByReference(L_ORDER);
         if ((form == null) || (form.getEntityId() == null)) {
             return;
         }
-        LOG.warn("--------> START");
         Long orderId = form.getEntityId();
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
         form.setEntity(updateCostsInOrder(order));
-        LOG.warn("--------> KONIEC");
     }
 
     private Entity updateCostsInOrder(Entity order) {
-
         List<Entity> orderMaterialsCosts = orderMaterialsCostDataGenerator.generateUpdatedMaterialsListFor(order);
         order.setField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS, orderMaterialsCosts);
         return order.getDataDefinition().save(order);
@@ -302,7 +212,6 @@ public class CostNormsForMaterialsService {
                 order.getStringField(OrderFieldsCNFM.DIRECT_ADDITIONAL_COST_DESCRIPTION));
 
         orderEntity.getDataDefinition().save(orderEntity);
-
     }
 
 }

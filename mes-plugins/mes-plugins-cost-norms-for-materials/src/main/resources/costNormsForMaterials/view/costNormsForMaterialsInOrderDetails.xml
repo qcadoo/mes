@@ -60,7 +60,8 @@
 						<component type="gridLayout" name="costForNumberGridLayout"
 								   columns="4" rows="1">
 							<layoutElement column="1" row="1" width="3">
-								<component type="input" name="costForNumber" field="costForNumber">
+								<component type="input" name="costForNumber" reference="costForNumber"
+										   defaultEnabled="never">
 									<option type="alignment" value="right"/>
 								</component>
 							</layoutElement>
@@ -75,7 +76,7 @@
 								   columns="4" rows="1">
 							<layoutElement column="1" row="1" width="3">
 								<component type="input" name="nominalCost" reference="nominalCost"
-										   field="nominalCost">
+										   defaultEnabled="never">
 									<option type="alignment" value="right"/>
 								</component>
 							</layoutElement>
@@ -92,7 +93,8 @@
 									   columns="4" rows="2">
 								<layoutElement column="1" row="1" width="3">
 									<component type="input" name="lastPurchaseCost"
-											   reference="lastPurchaseCost" field="lastPurchaseCost">
+											   reference="lastPurchaseCost"
+											   defaultEnabled="never">
 										<option type="alignment" value="right"/>
 									</component>
 								</layoutElement>
@@ -103,7 +105,7 @@
 								</layoutElement>
 								<layoutElement column="1" row="2" width="3">
 									<component type="input" name="averageCost" reference="averageCost"
-											   field="averageCost">
+											   defaultEnabled="never">
 										<option type="alignment" value="right"/>
 									</component>
 								</layoutElement>
@@ -122,7 +124,8 @@
 									   columns="4" rows="2">
 								<layoutElement column="1" row="1" width="3">
 									<component type="input" name="lastOfferCost"
-											   reference="lastOfferCost" field="lastOfferCost">
+											   reference="lastOfferCost"
+											   defaultEnabled="never">
 										<option type="alignment" value="right"/>
 									</component>
 								</layoutElement>
@@ -133,7 +136,8 @@
 								</layoutElement>
 								<layoutElement column="1" row="2" width="3">
 									<component type="input" name="averageOfferCost"
-											   reference="averageOfferCost" field="averageOfferCost">
+											   reference="averageOfferCost"
+											   defaultEnabled="never">
 										<option type="alignment" value="right"/>
 									</component>
 								</layoutElement>

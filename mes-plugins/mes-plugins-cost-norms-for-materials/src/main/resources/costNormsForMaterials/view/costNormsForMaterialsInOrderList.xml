@@ -42,8 +42,6 @@
             <template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete"/>
 
             <group name="costs">
-                <bigButton name="copyCostsFromProducts" icon="copyIcon24.png" state="enabled"
-                           action="#{form}.fireEvent(copyCostsFromProducts);"/>
                 <bigButton name="updateCosts" icon="updateIcon24.png" state="enabled" action="#{form}.fireEvent(updateCosts);"/>
             </group>
         </ribbon>
@@ -52,7 +50,6 @@
             <component type="form" name="order" reference="order"/>
             <script>
                 <![CDATA[
-					var copyCostsFromProducts = #{window}.getRibbonItemOrNull("costs.copyCostsFromProducts");
 					var updateCosts = #{window}.getRibbonItemOrNull("costs.updateCosts");
 
 					this.addOnChangeListener({
@@ -86,30 +83,39 @@
                             <option type="column" name="name" fields="product"
                                     expression="#product['name']"
                                     width="100" link="true"/>
-                            <option type="column" name="nominalCost" fields="nominalCost"
-                                    expression="#nominalCost != null ?
-								#nominalCost + ' / ' + #costForNumber + #product.get('unit') : ''"
-                                    link="true"/>
-                            <option type="column" name="lastPurchaseCost" fields="lastPurchaseCost"
-                                    expression="#lastPurchaseCost != null ?
-								#lastPurchaseCost + ' / ' + #costForNumber + #product.get('unit') : ''"
-                                    link="true"/>
-                            <option type="column" name="averageCost" fields="averageCost"
-                                    expression="#averageCost != null ?
-								#averageCost + ' / ' + #costForNumber + #product.get('unit') : ''"
-                                    link="true"/>
+                            <option type="column" name="nominalCost" fields="product"
+                                    expression="#product.get('nominalCost') != null ?
+								    #product.get('nominalCost') + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''"
+                                    width="100" link="true"/>
+                            <option type="column" name="nominalCostCurrency" fields="product"
+                                    expression="#product.get('nominalCostCurrency')?.get('alphabeticCode')"
+                                    width="50" link="true"/>
+                            <option type="column" name="lastPurchaseCost" fields="product"
+                                    expression="#product.get('lastPurchaseCost') != null ?
+								    #product.get('lastPurchaseCost') + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''"
+                                    width="100" link="true"/>
+                            <option type="column" name="lastPurchaseCostCurrency" fields="product"
+                                    expression="#product.get('lastPurchaseCostCurrency')?.get('alphabeticCode')"
+                                    width="50" link="true"/>
+                            <option type="column" name="averageCost" fields="product"
+                                    expression="#product.get('averageCost') != null ?
+								    #product.get('averageCost') + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''"
+                                    width="100" link="true"/>
+                            <option type="column" name="averageCostCurrency" fields="product"
+                                    expression="#product.get('averageCostCurrency')?.get('alphabeticCode')"
+                                    width="50" link="true"/>
                             <option type="column" name="costForOrder" fields="costForOrder"
                                     expression="#costForOrder != null ?
-								#costForOrder + ' / ' + #costForNumber + #product.get('unit') : ''"
-                                    link="true"/>
-                            <option type="column" name="lastOfferCost" fields="lastOfferCost"
-                                    expression="#lastOfferCost != null ?
-								#lastOfferCost + ' / ' + #costForNumber + #product.get('unit') : ''"
-                                    link="true"/>
-                            <option type="column" name="averageOfferCost" fields="averageOfferCost"
-                                    expression="#averageOfferCost != null ?
-								#averageOfferCost + ' / ' + #costForNumber + #product.get('unit') : ''"
-                                    link="true"/>
+								    #costForOrder + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''"
+                                    width="100" link="true"/>
+                            <option type="column" name="lastOfferCost" fields="product"
+                                    expression="#product.get('lastOfferCost') != null ?
+								    #product.get('lastOfferCost') + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''"
+                                    width="100" link="true"/>
+                            <option type="column" name="averageOfferCost" fields="product"
+                                    expression="#product.get('averageOfferCost') != null ?
+								    #product.get('averageOfferCost') + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''"
+                                    width="100" link="true"/>
 
                             <option type="order" column="name" direction="asc"/>
 
@@ -122,10 +128,6 @@
                         </component>
                     </layoutElement>
                 </component>
-
-                <listener event="copyCostsFromProducts"
-                          class="com.qcadoo.mes.costNormsForMaterials.CostNormsForMaterialsService"
-                          method="copyCostsFromProducts"/>
 
                 <listener event="updateCosts"
                           class="com.qcadoo.mes.costNormsForMaterials.CostNormsForMaterialsService"

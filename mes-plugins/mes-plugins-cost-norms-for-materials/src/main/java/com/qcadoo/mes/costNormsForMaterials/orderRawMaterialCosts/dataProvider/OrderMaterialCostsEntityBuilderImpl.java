@@ -28,7 +28,6 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMaterialsConstants;
 import com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields;
-import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.domain.ProductWithCosts;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 
@@ -39,23 +38,12 @@ final class OrderMaterialCostsEntityBuilderImpl implements OrderMaterialCostsEnt
     private DataDefinitionService dataDefinitionService;
 
     @Override
-    public Entity create(final Entity order, final ProductWithCosts productWithCosts) {
+    public Entity create(Entity order, Entity product) {
         Entity orderMaterialCosts = dataDefinitionService.get(CostNormsForMaterialsConstants.PLUGIN_IDENTIFIER,
                 CostNormsForMaterialsConstants.MODEL_TECHNOLOGY_INST_OPER_PRODUCT_IN_COMP).create();
         orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.ORDER, order);
-        orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.PRODUCT, productWithCosts.getProductId());
-        orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.COST_FOR_NUMBER, productWithCosts.getCostForNumber());
-        orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.NOMINAL_COST, productWithCosts.getNominalCost());
-        orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.LAST_PURCHASE_COST,
-                productWithCosts.getLastPurchaseCost());
-        orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.AVERAGE_COST, productWithCosts.getAverageCost());
+        orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.PRODUCT, product);
         return orderMaterialCosts;
-    }
-
-    @Override
-    public Entity create(Entity order, Entity product) {
-        ProductWithCosts productWithCosts = ProductWithCostsBuilder.fromProduct(product);
-        return create(order, productWithCosts);
     }
 
 }
