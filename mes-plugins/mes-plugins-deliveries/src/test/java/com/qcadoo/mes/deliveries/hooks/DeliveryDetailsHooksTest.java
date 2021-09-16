@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -31,13 +30,19 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import static com.qcadoo.mes.deliveries.constants.DeliveryFields.*;
-import static com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues.*;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.DELIVERED_PRODUCTS;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.ORDERED_PRODUCTS;
+import static com.qcadoo.mes.deliveries.constants.DeliveryFields.STATE;
+import static com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues.APPROVED;
+import static com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues.DECLINED;
+import static com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues.DRAFT;
+import static com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues.PREPARED;
+import static com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues.RECEIVED;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -84,39 +89,7 @@ public class DeliveryDetailsHooksTest {
         when(view.getComponentByReference(ORDERED_PRODUCTS)).thenReturn(orderedProducts);
     }
 
-    @Test
-    public void shouldFillCompanyFields() throws Exception {
-        // given
-        Integer buffer = Integer.valueOf(10);
-
-        when(view.getComponentByReference(SUPPLIER)).thenReturn(supplierLookup);
-        when(view.getComponentByReference(L_DELIVERY_DATE_BUFFER)).thenReturn(deliveryDateBufferField);
-
-        when(supplierLookup.getEntity()).thenReturn(supplier);
-        when(supplier.getIntegerField(CompanyFieldsD.BUFFER)).thenReturn(buffer);
-
-        // when
-        deliveryDetailsHooks.fillCompanyFieldsForSupplier(view);
-
-        // then
-        verify(deliveryDateBufferField).setFieldValue(buffer);
-    }
-
-    @Test
-    public void shouldntFillCompanyFieldsWhenSupplierIsNotSelected() throws Exception {
-        // given
-        when(view.getComponentByReference(SUPPLIER)).thenReturn(supplierLookup);
-        when(view.getComponentByReference(L_DELIVERY_DATE_BUFFER)).thenReturn(deliveryDateBufferField);
-
-        when(supplierLookup.getEntity()).thenReturn(null);
-
-        // when
-        deliveryDetailsHooks.fillCompanyFieldsForSupplier(view);
-
-        // then
-        verify(deliveryDateBufferField).setFieldValue(null);
-    }
-
+   
     @Test
     public void shouldReturnWhenEntityIdIsNull() throws Exception {
         // given
