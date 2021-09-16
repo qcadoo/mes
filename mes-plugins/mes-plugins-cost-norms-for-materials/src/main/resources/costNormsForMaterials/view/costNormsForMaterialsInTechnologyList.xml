@@ -58,7 +58,7 @@
 							<option type="column" name="averageCost" fields="product" 
 								expression="#product.get('averageCost')" align="right"/>
 							<option type="column" name="lastOfferCost" fields="product" 
-								expression=" #product.get('lastOfferCost')" align="right"/>
+								expression="#product.get('lastOfferCost')" align="right"/>
 							<option type="column" name="averageOfferCost" fields="product" 
 								expression="#product.get('averageOfferCost')" align="right"/>
 							<option type="column" name="costForNumber" fields="product"

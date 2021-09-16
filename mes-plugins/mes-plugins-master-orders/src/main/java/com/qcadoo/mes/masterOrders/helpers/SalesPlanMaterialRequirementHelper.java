@@ -1,18 +1,5 @@
 package com.qcadoo.mes.masterOrders.helpers;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
@@ -20,31 +7,25 @@ import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
 import com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields;
-import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
-import com.qcadoo.mes.masterOrders.constants.SalesPlanFields;
-import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementFields;
-import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementProductFields;
-import com.qcadoo.mes.masterOrders.constants.SalesPlanProductFields;
+import com.qcadoo.mes.masterOrders.constants.*;
 import com.qcadoo.mes.materialFlowResources.MaterialFlowResourcesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
+import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
 import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.JoinType;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SalesPlanMaterialRequirementHelper {
-
-    private static final String L_DOT = ".";
-
-    private static final String L_ID = "id";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -66,6 +47,9 @@ public class SalesPlanMaterialRequirementHelper {
 
     @Autowired
     private DeliveriesService deliveriesService;
+
+    @Autowired
+    private TechnologyService technologyService;
 
     public List<Entity> generateSalesPlanMaterialRequirementProducts(final Entity salesPlanMaterialRequirement) {
         List<Entity> salesPlanMaterialRequirementProducts = Lists.newArrayList();
@@ -101,7 +85,7 @@ public class SalesPlanMaterialRequirementHelper {
                     BigDecimal neededQuantity = neededProductQuantity.getValue();
 
                     if (Objects.isNull(productId)) {
-                        List<Entity> productBySizeGroups = getProductBySizeGroups(operationProductComponentId);
+                        List<Entity> productBySizeGroups = technologyService.getProductBySizeGroups(operationProductComponentId);
 
                         for (Entity productBySizeGroup : productBySizeGroups) {
                             createSalesPlanMaterialRequirementProductFromProductBySizeGroup(salesPlanMaterialRequirementProducts,
@@ -134,15 +118,6 @@ public class SalesPlanMaterialRequirementHelper {
         }
 
         return technology;
-    }
-
-    private List<Entity> getProductBySizeGroups(final Long operationProductComponentId) {
-        return getProductBySizeGroupDD().find()
-                .createAlias(ProductBySizeGroupFields.OPERATION_PRODUCT_IN_COMPONENT,
-                        ProductBySizeGroupFields.OPERATION_PRODUCT_IN_COMPONENT, JoinType.LEFT)
-                .add(SearchRestrictions.eq(ProductBySizeGroupFields.OPERATION_PRODUCT_IN_COMPONENT + L_DOT + L_ID,
-                        operationProductComponentId))
-                .list().getEntities();
     }
 
     private Entity createSalesPlanMaterialRequirementProductFromProduct(final List<Entity> salesPlanMaterialRequirementProducts,
@@ -370,10 +345,4 @@ public class SalesPlanMaterialRequirementHelper {
         return dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
                 MasterOrdersConstants.MODEL_SALES_PLAN_MATERIAL_REQUIREMENT_PRODUCT);
     }
-
-    private DataDefinition getProductBySizeGroupDD() {
-        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_PRODUCT_BY_SIZE_GROUP);
-    }
-
 }

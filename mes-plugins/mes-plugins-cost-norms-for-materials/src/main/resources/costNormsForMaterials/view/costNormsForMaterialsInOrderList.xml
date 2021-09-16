@@ -75,49 +75,42 @@
                     </layoutElement>
 
                     <layoutElement column="1" row="2" height="5" width="3">
-                        <component type="grid" name="inProductsGrid" source="#{order}.technologyInstOperProductInComps"
-                                   reference="grid">
-                            <option type="column" name="number" fields="product"
-                                    expression="#product['number']"
+                        <component type="grid" name="inProductsGrid" source="#{order}.technologyInstOperProductInCompDtos"
+                                   reference="grid" model="technologyInstOperProductInCompDto" useDto="true">
+                            <option type="column" name="productNumber" fields="productNumber"
                                     width="100" link="true"/>
-                            <option type="column" name="name" fields="product"
-                                    expression="#product['name']"
+                            <option type="column" name="productName" fields="productName"
                                     width="100" link="true"/>
-                            <option type="column" name="nominalCost" fields="product"
-                                    expression="#product.get('nominalCost') != null ?
-								    #product.get('nominalCost') + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''"
-                                    width="100" link="true"/>
-                            <option type="column" name="nominalCostCurrency" fields="product"
-                                    expression="#product.get('nominalCostCurrency')?.get('alphabeticCode')"
-                                    width="50" link="true"/>
-                            <option type="column" name="lastPurchaseCost" fields="product"
-                                    expression="#product.get('lastPurchaseCost') != null ?
-								    #product.get('lastPurchaseCost') + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''"
-                                    width="100" link="true"/>
-                            <option type="column" name="lastPurchaseCostCurrency" fields="product"
-                                    expression="#product.get('lastPurchaseCostCurrency')?.get('alphabeticCode')"
-                                    width="50" link="true"/>
-                            <option type="column" name="averageCost" fields="product"
-                                    expression="#product.get('averageCost') != null ?
-								    #product.get('averageCost') + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''"
-                                    width="100" link="true"/>
-                            <option type="column" name="averageCostCurrency" fields="product"
-                                    expression="#product.get('averageCostCurrency')?.get('alphabeticCode')"
-                                    width="50" link="true"/>
+                            <option type="column" name="nominalCost" fields="nominalCost"
+                                    width="80"/>
+                            <option type="column" name="nominalCostCurrency" fields="nominalCostCurrency"
+                                    width="40"/>
+                            <option type="column" name="lastPurchaseCost" fields="lastPurchaseCost"
+                                    width="80"/>
+                            <option type="column" name="lastPurchaseCostCurrency" fields="lastPurchaseCostCurrency"
+                                    width="40"/>
+                            <option type="column" name="averageCost" fields="averageCost"
+                                    width="80"/>
+                            <option type="column" name="averageCostCurrency" fields="averageCostCurrency"
+                                    width="40"/>
                             <option type="column" name="costForOrder" fields="costForOrder"
-                                    expression="#costForOrder != null ?
-								    #costForOrder + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''"
-                                    width="100" link="true"/>
-                            <option type="column" name="lastOfferCost" fields="product"
-                                    expression="#product.get('lastOfferCost') != null ?
-								    #product.get('lastOfferCost') + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''"
-                                    width="100" link="true"/>
-                            <option type="column" name="averageOfferCost" fields="product"
-                                    expression="#product.get('averageOfferCost') != null ?
-								    #product.get('averageOfferCost') + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''"
-                                    width="100" link="true"/>
+                                    width="80"/>
+                            <option type="column" name="costForOrderCurrency" fields="costForOrderCurrency"
+                                    width="40"/>
+                            <option type="column" name="lastOfferCost" fields="lastOfferCost"
+                                    width="80"/>
+                            <option type="column" name="lastOfferCostCurrency" fields="lastOfferCostCurrency"
+                                    width="40"/>
+                            <option type="column" name="averageOfferCost" fields="averageOfferCost"
+                                    width="80"/>
+                            <option type="column" name="averageOfferCostCurrency" fields="averageOfferCostCurrency"
+                                    width="40"/>
+                            <option type="column" name="costForNumber" fields="costForNumber"
+                                    width="80"/>
+                            <option type="column" name="unit" fields="unit"
+                                    width="30"/>
 
-                            <option type="order" column="name" direction="asc"/>
+                            <option type="order" column="productName" direction="asc"/>
 
                             <option type="correspondingView" value="costNormsForMaterials/costNormsForMaterialsInOrderDetails"/>
                             <option type="correspondingComponent" value="form"/>

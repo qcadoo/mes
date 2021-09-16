@@ -67,11 +67,19 @@
 
         <model:model model="technologyInstOperProductInComp"
                      resource="model/technologyInstOperProductInComp.xml"/>
+        <model:model model="technologyInstOperProductInCompDto"
+                     resource="model/technologyInstOperProductInCompDto.xml"/>
 
         <model:model-field plugin="orders" model="order">
             <model:hasMany name="technologyInstOperProductInComps"
                            plugin="costNormsForMaterials" model="technologyInstOperProductInComp"
                            joinField="order" cascade="delete" copyable="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="orders" model="order">
+            <model:hasMany name="technologyInstOperProductInCompDtos"
+                           plugin="costNormsForMaterials" model="technologyInstOperProductInCompDto"
+                           joinField="order" persistent="false"/>
         </model:model-field>
 
         <model:model-field plugin="orders" model="order">
