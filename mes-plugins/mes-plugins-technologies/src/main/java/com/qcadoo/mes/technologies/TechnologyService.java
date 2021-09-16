@@ -23,31 +23,17 @@
  */
 package com.qcadoo.mes.technologies;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import com.beust.jcommander.internal.Sets;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.technologies.constants.OperationFields;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
-import com.qcadoo.mes.technologies.constants.ProductToProductGroupFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.mes.technologies.states.constants.TechnologyState;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -59,6 +45,14 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Service
 public class TechnologyService {
@@ -81,6 +75,10 @@ public class TechnologyService {
 
     private static final String L_00_UNRELATED = "00unrelated";
 
+    private static final String L_DOT = ".";
+
+    private static final String L_ID = "id";
+
     private static final String IS_SYNCHRONIZED_QUERY = String.format(
             "SELECT t.id as id, t.%s as %s from #%s_%s t where t.id = :technologyId", TechnologyFields.EXTERNAL_SYNCHRONIZED,
             TechnologyFields.EXTERNAL_SYNCHRONIZED, TechnologiesConstants.PLUGIN_IDENTIFIER,
@@ -97,6 +95,9 @@ public class TechnologyService {
 
     @Autowired
     private TechnologyNameAndNumberGenerator technologyNameAndNumberGenerator;
+
+    @Autowired
+    private OperationComponentDataProvider operationComponentDataProvider;
 
     public void copyCommentAndAttachmentFromLowerInstance(final Entity technologyOperationComponent, final String belongsToName) {
         Entity operation = technologyOperationComponent.getBelongsToField(belongsToName);
@@ -451,18 +452,8 @@ public class TechnologyService {
     }
 
     public List<Entity> findComponentsForTechnology(final Long technologyId) {
-        String query = "SELECT DISTINCT opic.id AS opicId, opic.product AS product, (SELECT count(*) FROM "
-                + "#technologies_operationProductOutComponent opoc LEFT JOIN opoc.operationComponent oc  "
-                + "LEFT JOIN oc.technology AS tech LEFT JOIN oc.parent par WHERE "
-                + "opoc.product = inputProd AND par.id = toc.id ) AS isIntermediate "
-                + "FROM #technologies_operationProductInComponent opic LEFT JOIN opic.product AS inputProd "
-                + "LEFT JOIN opic.operationComponent toc LEFT JOIN toc.technology tech WHERE tech.id = :technologyId ";
-
-        return dataDefinitionService
-                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
-                .find(query).setLong("technologyId", technologyId).list().getEntities().stream()
-                .filter(p -> (Long) p.getField("isIntermediate") == 0L).map(cmp -> cmp.getBelongsToField(L_PRODUCT))
-                .collect(Collectors.toList());
+        return operationComponentDataProvider.getOperationProductsForTechnology(technologyId).stream()
+                .map(cmp -> cmp.getBelongsToField(OperationProductInComponentFields.PRODUCT)).collect(Collectors.toList());
     }
 
     public Entity getProductToProductGroupTechnology(final Entity orderProduct, final Long productId) {
@@ -472,6 +463,42 @@ public class TechnologyService {
                 .add(SearchRestrictions.belongsTo(ProductToProductGroupFields.PRODUCT_FAMILY, BasicConstants.PLUGIN_IDENTIFIER,
                         BasicConstants.MODEL_PRODUCT, productId))
                 .setMaxResults(1).uniqueResult();
+    }
+
+    public List<Entity> getProductBySizeGroups(final Long operationProductComponentId) {
+        return getProductBySizeGroupDD().find()
+                .createAlias(ProductBySizeGroupFields.OPERATION_PRODUCT_IN_COMPONENT,
+                        ProductBySizeGroupFields.OPERATION_PRODUCT_IN_COMPONENT, JoinType.LEFT)
+                .add(SearchRestrictions.eq(ProductBySizeGroupFields.OPERATION_PRODUCT_IN_COMPONENT + L_DOT + L_ID,
+                        operationProductComponentId))
+                .list().getEntities();
+    }
+
+    public List<Entity> getComponentsWithProductWithSizes(Long technologyId) {
+        List<Entity> opics = operationComponentDataProvider.getOperationProductsForTechnology(technologyId);
+
+        Set<Entity> products = Sets.newHashSet();
+
+        for (Entity opic : opics) {
+            Entity product = opic.getBelongsToField(OperationProductInComponentFields.PRODUCT);
+
+            if (Objects.isNull(product)) {
+                List<Entity> productBySizeGroups = getProductBySizeGroups(opic.getId());
+
+                for (Entity productBySizeGroup : productBySizeGroups) {
+                    products.add(productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT));
+                }
+            } else {
+                products.add(product);
+            }
+        }
+        return products.stream().sorted(Comparator.comparing(e -> e.getStringField(ProductFields.NAME)))
+                .collect(Collectors.toList());
+    }
+
+    private DataDefinition getProductBySizeGroupDD() {
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_PRODUCT_BY_SIZE_GROUP);
     }
 
     private DataDefinition getTechnologyDD() {

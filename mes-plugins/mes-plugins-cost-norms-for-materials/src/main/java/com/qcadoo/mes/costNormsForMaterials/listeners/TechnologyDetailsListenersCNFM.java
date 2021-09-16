@@ -68,7 +68,7 @@ public class TechnologyDetailsListenersCNFM {
             return;
         }
 
-        List<Entity> products = technologyService.findComponentsForTechnology(technologyId);
+        List<Entity> products = technologyService.getComponentsWithProductWithSizes(technologyId);
 
         for (Entity product : products) {
             if ((product.getField(ProductFieldsCNFP.COST_FOR_NUMBER) == null)
