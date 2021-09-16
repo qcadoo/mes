@@ -27,42 +27,19 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.CalculationQuantityService;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.AdditionalCodeFields;
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.CompanyFields;
-import com.qcadoo.mes.basic.constants.PalletNumberFields;
-import com.qcadoo.mes.basic.constants.ProductAttachmentFields;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
+import com.qcadoo.mes.basic.constants.*;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
 import com.qcadoo.mes.deliveries.DeliveredProductMultiPositionService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.ReservationService;
-import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductFields;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiFields;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductMultiPositionFields;
-import com.qcadoo.mes.deliveries.constants.DeliveredProductReservationFields;
-import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
-import com.qcadoo.mes.deliveries.constants.DeliveryAttachmentFields;
-import com.qcadoo.mes.deliveries.constants.DeliveryFields;
-import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
-import com.qcadoo.mes.deliveries.constants.OrderedProductReservationFields;
+import com.qcadoo.mes.deliveries.constants.*;
 import com.qcadoo.mes.deliveries.print.DeliveryReportPdf;
 import com.qcadoo.mes.deliveries.print.OrderReportPdf;
 import com.qcadoo.mes.deliveries.states.constants.DeliveryStateStringValues;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.file.FileService;
-import com.qcadoo.model.api.search.JoinType;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchProjections;
-import com.qcadoo.model.api.search.SearchQueryBuilder;
-import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.*;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.plugin.api.PluginUtils;
@@ -76,24 +53,18 @@ import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
-
-import java.io.File;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.io.File;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import static com.qcadoo.model.api.search.SearchProjections.alias;
 import static com.qcadoo.model.api.search.SearchProjections.field;
 
@@ -301,8 +272,8 @@ public class DeliveryDetailsListeners {
         totalPriceComponent.requestComponentUpdateState();
     }
 
-    private BigDecimal getPricePerUnit(Long deliveryCurrencyId, Entity plnCurrency, Entity product, List<Entity> productsToMessage,
-            Entity productCurrency, BigDecimal price) {
+    private BigDecimal getPricePerUnit(Long deliveryCurrencyId, Entity plnCurrency, Entity product,
+            List<Entity> productsToMessage, Entity productCurrency, BigDecimal price) {
         BigDecimal pricePerUnit = null;
         if (deliveryCurrencyId == null || productCurrency == null || deliveryCurrencyId.equals(productCurrency.getId())) {
             pricePerUnit = price;
@@ -320,7 +291,8 @@ public class DeliveryDetailsListeners {
                 .getComponentByReference(DeliveryFields.DELIVERY_DATE_BUFFER);
         FieldComponent paymentFormField = (FieldComponent) view.getComponentByReference(DeliveryFields.PAYMENT_FORM);
         FieldComponent currencyField = (FieldComponent) view.getComponentByReference(DeliveryFields.CURRENCY);
-        FieldComponent contractorCategoryField = (FieldComponent) view.getComponentByReference(DeliveryFields.CONTRACTOR_CATEGORY);
+        FieldComponent contractorCategoryField = (FieldComponent) view
+                .getComponentByReference(DeliveryFields.CONTRACTOR_CATEGORY);
         GridComponent orderedProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
 
         Entity supplier = supplierLookup.getEntity();
@@ -350,6 +322,18 @@ public class DeliveryDetailsListeners {
         deliveryDateBufferField.requestComponentUpdateState();
         paymentFormField.requestComponentUpdateState();
         contractorCategoryField.requestComponentUpdateState();
+    }
+
+    public void onCurrencyChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent orderedProductsGrid = (GridComponent) view.getComponentByReference(DeliveryFields.ORDERED_PRODUCTS);
+        FormComponent deliveryForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        Entity oldCurrency = dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_DELIVERY)
+                .get(deliveryForm.getEntityId()).getBelongsToField(DeliveryFields.CURRENCY);
+        Long newCurrency = (Long) state.getFieldValue();
+        if (oldCurrency != null && !oldCurrency.getId().equals(newCurrency) && !orderedProductsGrid.getEntities().isEmpty()) {
+            view.addMessage("deliveries.delivery.currencyChange.orderedProductsPriceVerificationRequired", MessageType.INFO,
+                    false);
+        }
     }
 
     public final void printDeliveryReport(final ViewDefinitionState view, final ComponentState state, final String[] args) {
