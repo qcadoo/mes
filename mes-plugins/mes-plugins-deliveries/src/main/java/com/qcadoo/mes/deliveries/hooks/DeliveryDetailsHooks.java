@@ -27,6 +27,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
@@ -43,20 +44,29 @@ import com.qcadoo.model.api.search.CustomRestriction;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.*;
+import com.qcadoo.view.api.components.FieldComponent;
+import com.qcadoo.view.api.components.FormComponent;
+import com.qcadoo.view.api.components.GridComponent;
+import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
 import com.qcadoo.view.constants.RowStyle;
+
+import java.math.BigDecimal;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.*;
 
 @Service
 public class DeliveryDetailsHooks {
@@ -111,15 +121,19 @@ public class DeliveryDetailsHooks {
         LookupComponent supplierLookup = (LookupComponent) view.getComponentByReference(DeliveryFields.SUPPLIER);
         FieldComponent deliveryDateBufferField = (FieldComponent) view
                 .getComponentByReference(DeliveryFields.DELIVERY_DATE_BUFFER);
+        FieldComponent contractorCategoryField = (FieldComponent) view.getComponentByReference(DeliveryFields.CONTRACTOR_CATEGORY);
 
         Entity supplier = supplierLookup.getEntity();
 
         if (Objects.isNull(supplier)) {
             deliveryDateBufferField.setFieldValue(null);
+            contractorCategoryField.setFieldValue(null);
         } else {
             deliveryDateBufferField.setFieldValue(supplier.getIntegerField(CompanyFieldsD.BUFFER));
+            contractorCategoryField.setFieldValue(supplier.getStringField(CompanyFields.CONTRACTOR_CATEGORY));
         }
 
+        contractorCategoryField.requestComponentUpdateState();
         deliveryDateBufferField.requestComponentUpdateState();
     }
 

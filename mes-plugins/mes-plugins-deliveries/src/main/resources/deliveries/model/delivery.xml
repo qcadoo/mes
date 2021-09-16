@@ -85,7 +85,7 @@
 
         <hasMany name="attachments" model="deliveryAttachment" joinField="delivery" cascade="delete"/>
 
-        <dictionary name="contractorCategory" dictionary="contractorCategory"/>
+        <dictionary name="contractorCategory" dictionary="contractorCategory" persistent="false"/>
 
     </fields>
     <hooks>
