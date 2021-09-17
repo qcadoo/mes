@@ -34,6 +34,8 @@ public class MaterialCost {
 
     private String usedWasteUnit;
 
+    private Long costCurrencyId;
+
     public String getOrderNumber() {
         return orderNumber;
     }
@@ -152,5 +154,13 @@ public class MaterialCost {
 
     public void setReplacementTo(String replacementTo) {
         this.replacementTo = replacementTo;
+    }
+
+    public Long getCostCurrencyId() {
+        return costCurrencyId;
+    }
+
+    public void setCostCurrencyId(Long costCurrencyId) {
+        this.costCurrencyId = costCurrencyId;
     }
 }
