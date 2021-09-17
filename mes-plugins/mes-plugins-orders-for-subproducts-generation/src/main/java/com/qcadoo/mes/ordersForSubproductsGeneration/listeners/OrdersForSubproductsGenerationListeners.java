@@ -23,25 +23,14 @@
  */
 package com.qcadoo.mes.ordersForSubproductsGeneration.listeners;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.MaterialRequirementCoverageForOrderService;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageForOrderFields;
 import com.qcadoo.mes.orderSupplies.constants.MaterialRequirementCoverageFields;
 import com.qcadoo.mes.orderSupplies.constants.OrderSuppliesConstants;
+import com.qcadoo.mes.orderSupplies.coverage.MaterialRequirementCoverageHelper;
 import com.qcadoo.mes.orderSupplies.coverage.MaterialRequirementCoverageService;
-import com.qcadoo.mes.orderSupplies.register.RegisterService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.ordersForSubproductsGeneration.OrdersForSubproductsGenerationService;
@@ -59,6 +48,17 @@ import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrdersForSubproductsGenerationListeners {
@@ -81,10 +81,10 @@ public class OrdersForSubproductsGenerationListeners {
     private MaterialRequirementCoverageForOrderService forOrderService;
 
     @Autowired
-    private RegisterService registerService;
+    private DataDefinitionService dataDefinitionService;
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private MaterialRequirementCoverageHelper materialRequirementCoverageHelper;
 
     public final void generateSimpleOrdersForSubProducts(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
@@ -123,9 +123,10 @@ public class OrdersForSubproductsGenerationListeners {
         for (Entity order : orders) {
             showMessagesForNotAcceptedComponents(view, order);
 
-            List<Entity> registryEntries = registerService.findComponentRegistryEntries(order);
+            List<Entity> registryEntries = materialRequirementCoverageHelper.findComponentEntries(order);
 
-			generatedOrders = generateSimpleOrders(registryEntries, order, generatedOrders);
+
+            generatedOrders = generateSimpleOrders(registryEntries, order, generatedOrders);
 
             if (!registryEntries.isEmpty()) {
                 subOrders.setField(SubOrdersFields.GENERATED_ORDERS, true);
@@ -146,7 +147,7 @@ public class OrdersForSubproductsGenerationListeners {
                 }
 
                 for (Entity subOrderForActualLevel : subOrdersForActualLevel) {
-                    registryEntries = registerService.findComponentRegistryEntries(subOrderForActualLevel);
+                    registryEntries = materialRequirementCoverageHelper.findComponentEntries(subOrderForActualLevel);
 
 					generatedOrders = generateSimpleOrders(registryEntries, subOrderForActualLevel, generatedOrders);
                 }

@@ -42,8 +42,6 @@
             <template name="standardGridTemplate" excludeItems="actions.new, actions.copy, actions.delete"/>
 
             <group name="costs">
-                <bigButton name="copyCostsFromProducts" icon="copyIcon24.png" state="enabled"
-                           action="#{form}.fireEvent(copyCostsFromProducts);"/>
                 <bigButton name="updateCosts" icon="updateIcon24.png" state="enabled" action="#{form}.fireEvent(updateCosts);"/>
             </group>
         </ribbon>
@@ -52,7 +50,6 @@
             <component type="form" name="order" reference="order"/>
             <script>
                 <![CDATA[
-					var copyCostsFromProducts = #{window}.getRibbonItemOrNull("costs.copyCostsFromProducts");
 					var updateCosts = #{window}.getRibbonItemOrNull("costs.updateCosts");
 
 					this.addOnChangeListener({
@@ -78,40 +75,42 @@
                     </layoutElement>
 
                     <layoutElement column="1" row="2" height="5" width="3">
-                        <component type="grid" name="inProductsGrid" source="#{order}.technologyInstOperProductInComps"
-                                   reference="grid">
-                            <option type="column" name="number" fields="product"
-                                    expression="#product['number']"
+                        <component type="grid" name="inProductsGrid" source="#{order}.technologyInstOperProductInCompDtos"
+                                   reference="grid" model="technologyInstOperProductInCompDto" useDto="true">
+                            <option type="column" name="productNumber" fields="productNumber"
                                     width="100" link="true"/>
-                            <option type="column" name="name" fields="product"
-                                    expression="#product['name']"
+                            <option type="column" name="productName" fields="productName"
                                     width="100" link="true"/>
                             <option type="column" name="nominalCost" fields="nominalCost"
-                                    expression="#nominalCost != null ?
-								#nominalCost + ' / ' + #costForNumber + #product.get('unit') : ''"
-                                    link="true"/>
+                                    width="80"/>
+                            <option type="column" name="nominalCostCurrency" fields="nominalCostCurrency"
+                                    width="40"/>
                             <option type="column" name="lastPurchaseCost" fields="lastPurchaseCost"
-                                    expression="#lastPurchaseCost != null ?
-								#lastPurchaseCost + ' / ' + #costForNumber + #product.get('unit') : ''"
-                                    link="true"/>
+                                    width="80"/>
+                            <option type="column" name="lastPurchaseCostCurrency" fields="lastPurchaseCostCurrency"
+                                    width="40"/>
                             <option type="column" name="averageCost" fields="averageCost"
-                                    expression="#averageCost != null ?
-								#averageCost + ' / ' + #costForNumber + #product.get('unit') : ''"
-                                    link="true"/>
+                                    width="80"/>
+                            <option type="column" name="averageCostCurrency" fields="averageCostCurrency"
+                                    width="40"/>
                             <option type="column" name="costForOrder" fields="costForOrder"
-                                    expression="#costForOrder != null ?
-								#costForOrder + ' / ' + #costForNumber + #product.get('unit') : ''"
-                                    link="true"/>
+                                    width="80"/>
+                            <option type="column" name="costForOrderCurrency" fields="costForOrderCurrency"
+                                    width="40"/>
                             <option type="column" name="lastOfferCost" fields="lastOfferCost"
-                                    expression="#lastOfferCost != null ?
-								#lastOfferCost + ' / ' + #costForNumber + #product.get('unit') : ''"
-                                    link="true"/>
+                                    width="80"/>
+                            <option type="column" name="lastOfferCostCurrency" fields="lastOfferCostCurrency"
+                                    width="40"/>
                             <option type="column" name="averageOfferCost" fields="averageOfferCost"
-                                    expression="#averageOfferCost != null ?
-								#averageOfferCost + ' / ' + #costForNumber + #product.get('unit') : ''"
-                                    link="true"/>
+                                    width="80"/>
+                            <option type="column" name="averageOfferCostCurrency" fields="averageOfferCostCurrency"
+                                    width="40"/>
+                            <option type="column" name="costForNumber" fields="costForNumber"
+                                    width="80"/>
+                            <option type="column" name="unit" fields="unit"
+                                    width="30"/>
 
-                            <option type="order" column="name" direction="asc"/>
+                            <option type="order" column="productName" direction="asc"/>
 
                             <option type="correspondingView" value="costNormsForMaterials/costNormsForMaterialsInOrderDetails"/>
                             <option type="correspondingComponent" value="form"/>
@@ -122,10 +121,6 @@
                         </component>
                     </layoutElement>
                 </component>
-
-                <listener event="copyCostsFromProducts"
-                          class="com.qcadoo.mes.costNormsForMaterials.CostNormsForMaterialsService"
-                          method="copyCostsFromProducts"/>
 
                 <listener event="updateCosts"
                           class="com.qcadoo.mes.costNormsForMaterials.CostNormsForMaterialsService"

@@ -339,7 +339,6 @@ public class CostCalculationXlsService extends XlsDocumentService {
         int rowCounter = 0;
         DataDefinition productDataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
                 BasicConstants.MODEL_PRODUCT);
-        List<String> productsToMessage = Lists.newArrayList();
         for (CostCalculationMaterialBySize costCalculationMaterialBySize : costCalculationService.getMaterialsBySize(entity)) {
             Entity product = costCalculationMaterialBySize.getProductEntity(productDataDefinition);
             BigDecimal costPerUnit = productsCostCalculationService.calculateProductCostPerUnit(product,

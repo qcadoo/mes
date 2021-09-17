@@ -206,25 +206,44 @@ QCD.dashboard = (function () {
             product = operationalTask.productNumber + ', ' + operationalTask.productName;
         }
 
-        return '<div class="card" id="operationalTask' + operationalTask.id + '">' +
-            '<div class="card-header bg-secondary py-2">' +
-            '<a href="#" class="card-title text-white" onclick="goToOperationalTaskDetails(' + operationalTask.id + ')">' + operationalTask.number + '</a>' +
-            '</div>' +
-            '<div class="card-body py-2">' +
-            '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.name.label") + ':</span> ' + operationalTask.name + '<br/>' +
-            ((operationalTask.type == "02executionOperationInOrder" && operationalTask.orderNumber) ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.orderNumber.label") + ':</span> <a href="#" onclick="goToOrderDetails(' + operationalTask.orderId + ')">' + operationalTask.orderNumber + '</a><br/>' : '') +
-            (operationalTask.workstationNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.workstationNumber.label") + ':</span> ' + operationalTask.workstationNumber + '<br/>' : '') +
-            (operationalTask.type == "02executionOperationInOrder" ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.orderProduct.label") + ':</span> ' + orderProduct + '<br/>' : '') +
-            ((operationalTask.type == "02executionOperationInOrder" && product) ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.product.label") + ':</span> ' + product + '<br/>' : '') +
-            ((operationalTask.type == "02executionOperationInOrder" && operationalTask.plannedQuantity && operationalTask.productUnit) ? '<span class="float-left"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.plannedQuantity.label") + ':</span> ' + operationalTask.plannedQuantity + ' ' + operationalTask.productUnit + '</span>' : '') +
-            ((operationalTask.type == "02executionOperationInOrder" && operationalTasksType != 'operationalTasksPending') ? '<span class="float-right"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.usedQuantity.label") + ':</span> ' + operationalTask.usedQuantity + ' ' + operationalTask.productUnit + '</span>' : '') +
-            ((operationalTask.type == "02executionOperationInOrder" && operationalTask.plannedQuantity) ? '<br/>' : '') +
-            (operationalTask.staffName ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.staffName.label") + ':</span> ' + operationalTask.staffName + '<br/>' : '') +
-            (operationalTask.dashboardShowDescription ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.description.label") + ':</span> ' + (operationalTask.description ? operationalTask.description : '') + '<br/>' : '') +
-            ((operationalTask.type == "02executionOperationInOrder" && operationalTask.state == "02started") ? '<a href="#" class="badge badge-success float-right" onclick="goToProductionTrackingTerminal(null, ' + operationalTask.id + ', ' + (operationalTask.workstationNumber ? '\'' + operationalTask.workstationNumber + '\'' : null) + ')">' + QCD.translate("basic.dashboard.operationalTasks.showTerminal.label") + '</a>' : '') +
-            '</div>' +
-            (operationalTask.type == "02executionOperationInOrder" ? '<div class="card-footer">' + '<div class="progress">' + '<div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: ' + doneInPercent + '%;" aria-valuenow="' + doneInPercent + '" aria-valuemin="0" aria-valuemax="100">' + doneInPercent + '%</div>' + '</div>' + '</div>' : '') +
-            '</div><div> &nbsp; </div>';
+        var opTaskDiv = '<div class="card" id="operationalTask' + operationalTask.id + '">' +
+                                    '<div class="card-header bg-secondary py-2">';
+        if(QCD.enableOrdersLinkOnDashboard === 'true') {
+            opTaskDiv = opTaskDiv + '<a href="#" class="card-title text-white" onclick="goToOperationalTaskDetails(' + operationalTask.id + ')">' + operationalTask.number + '</a>';
+        } else {
+             opTaskDiv = opTaskDiv + '<span class="card-title text-white">' + operationalTask.number + '</span>';
+        }
+
+        opTaskDiv = opTaskDiv +  '</div>' +
+        '<div class="card-body py-2">' +
+        '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.name.label") + ':</span> ' + operationalTask.name + '<br/>';
+
+
+        if(QCD.enableOrdersLinkOnDashboard === 'true') {
+            opTaskDiv = opTaskDiv + ((operationalTask.type == "02executionOperationInOrder" && operationalTask.orderNumber) ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.orderNumber.label") + ':</span> <a href="#" onclick="goToOrderDetails(' + operationalTask.orderId + ')">' + operationalTask.orderNumber + '</a><br/>' : '');
+        } else {
+           opTaskDiv = opTaskDiv + ((operationalTask.type == "02executionOperationInOrder" && operationalTask.orderNumber) ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.orderNumber.label") + ':</span> <span>' + operationalTask.orderNumber + '<span><br/>' : '');
+        }
+
+
+        opTaskDiv = opTaskDiv +  (operationalTask.workstationNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.workstationNumber.label") + ':</span> ' + operationalTask.workstationNumber + '<br/>' : '') +
+        (operationalTask.type == "02executionOperationInOrder" ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.orderProduct.label") + ':</span> ' + orderProduct + '<br/>' : '') +
+        ((operationalTask.type == "02executionOperationInOrder" && product) ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.product.label") + ':</span> ' + product + '<br/>' : '') +
+        ((operationalTask.type == "02executionOperationInOrder" && operationalTask.plannedQuantity && operationalTask.productUnit) ? '<span class="float-left"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.plannedQuantity.label") + ':</span> ' + operationalTask.plannedQuantity + ' ' + operationalTask.productUnit + '</span>' : '') +
+        ((operationalTask.type == "02executionOperationInOrder" && operationalTasksType != 'operationalTasksPending') ? '<span class="float-right"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.usedQuantity.label") + ':</span> ' + operationalTask.usedQuantity + ' ' + operationalTask.productUnit + '</span>' : '') +
+        ((operationalTask.type == "02executionOperationInOrder" && operationalTask.plannedQuantity) ? '<br/>' : '') +
+        (operationalTask.staffName ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.staffName.label") + ':</span> ' + operationalTask.staffName + '<br/>' : '') +
+        (operationalTask.dashboardShowDescription ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.operationalTasks.description.label") + ':</span> ' + (operationalTask.description ? operationalTask.description : '') + '<br/>' : '');
+
+        if(QCD.enableRegistrationTerminalOnDashboard === 'true') {
+            opTaskDiv = opTaskDiv + ((operationalTask.type == "02executionOperationInOrder" && operationalTask.state == "02started") ? '<a href="#" class="badge badge-success float-right" onclick="goToProductionTrackingTerminal(null, ' + operationalTask.id + ', ' + (operationalTask.workstationNumber ? '\'' + operationalTask.workstationNumber + '\'' : null) + ')">' + QCD.translate("basic.dashboard.operationalTasks.showTerminal.label") + '</a>' : '');
+        }
+
+        opTaskDiv = opTaskDiv + '</div>' +
+        (operationalTask.type == "02executionOperationInOrder" ? '<div class="card-footer">' + '<div class="progress">' + '<div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: ' + doneInPercent + '%;" aria-valuenow="' + doneInPercent + '" aria-valuemin="0" aria-valuemax="100">' + doneInPercent + '%</div>' + '</div>' + '</div>' : '') +
+        '</div><div> &nbsp; </div>';
+
+        return opTaskDiv;
     }
 
     function initOrders() {
@@ -448,10 +467,16 @@ function createOrderDiv(order) {
 
     order.doneQuantity = order.doneQuantity ? order.doneQuantity : 0;
 
-    return '<div class="card draggable" id="order' + order.id + '" draggable="true" ondragstart="drag(event)">' +
-        '<div class="card-header bg-secondary py-2">' +
-        '<a href="#" class="card-title text-white" onclick="goToOrderDetails(' + order.id + ')">' + order.number + '</a>' +
-        '</div>' +
+    var orderDiv = '<div class="card draggable" id="order' + order.id + '" draggable="true" ondragstart="drag(event)">' +
+                           '<div class="card-header bg-secondary py-2">';
+
+    if(QCD.enableOrdersLinkOnDashboard === 'true') {
+        orderDiv = orderDiv + '<a href="#" class="card-title text-white" onclick="goToOrderDetails(' + order.id + ')">' + order.number + '</a>';
+    } else {
+        orderDiv = orderDiv + '<span class="card-title text-white">' + order.number + '</span>';
+    }
+
+     orderDiv = orderDiv + '</div>' +
         '<div class="card-body py-2">' +
         (order.productionLineNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.productionLineNumber.label") + ':</span> ' + order.productionLineNumber + '<br/>' : '') +
         ('<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.product.label") + ':</span> ' + product + '<br/>') +
@@ -460,11 +485,17 @@ function createOrderDiv(order) {
         (order.plannedQuantity ? '<br/>' : '') +
         (order.companyName ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.companyName.label") + ':</span> ' + order.companyName + '<br/>' : '') +
         (order.masterOrderNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.masterOrderNumber.label") + ':</span> ' + order.masterOrderNumber + '<br/>' : '') +
-        (order.dashboardShowDescription ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.description.label") + ':</span> ' + (order.description ? order.description : '') + '<br/>' : '') +
-        ((order.state == "03inProgress" && order.typeOfProductionRecording == "02cumulated") ? '<a href="#" class="badge badge-success float-right" onclick="goToProductionTrackingTerminal(' + order.id + ', null, null)">' + QCD.translate("basic.dashboard.orders.showTerminal.label") + '</a>' : '') +
-        '</div>' +
+        (order.dashboardShowDescription ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.description.label") + ':</span> ' + (order.description ? order.description : '') + '<br/>' : '');
+
+        if(QCD.enableRegistrationTerminalOnDashboard === 'true') {
+            orderDiv = orderDiv +((order.state == "03inProgress" && order.typeOfProductionRecording == "02cumulated") ? '<a href="#" class="badge badge-success float-right" onclick="goToProductionTrackingTerminal(' + order.id + ', null, null)">' + QCD.translate("basic.dashboard.orders.showTerminal.label") + '</a>' : '');
+        }
+
+        orderDiv = orderDiv +'</div>' +
         '<div class="card-footer">' + '<div class="progress">' + '<div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: ' + doneInPercent + '%;" aria-valuenow="' + doneInPercent + '" aria-valuemin="0" aria-valuemax="100">' + doneInPercent + '%</div>' + '</div>' + '</div>' +
         '</div>';
+
+    return orderDiv;
 }
 
 const allowDrop = (event) => {

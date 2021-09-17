@@ -186,7 +186,10 @@
                                       method="setTaxCountryCode"/>
                         </component>
                     </layoutElement>
-
+                    <layoutElement column="2" row="8">
+                        <component type="select" name="contractorCategory" hasDescription="true"
+                                   field="contractorCategory"/>
+                    </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>

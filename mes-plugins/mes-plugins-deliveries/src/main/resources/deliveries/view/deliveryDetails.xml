@@ -472,6 +472,8 @@
                 <component type="gridLayout" name="gridLayout" columns="3"
                            rows="6">
                     <layoutElement column="1" row="1">
+                        <component type="select" name="state" field="state" defaultVisible="false"
+                                   reference="state" defaultEnabled="never"/>
                         <component type="input" name="number" field="number"
                                    reference="number">
                             <option type="alignment" value="right"/>
@@ -491,9 +493,10 @@
                         <component type="lookup" name="supplier" reference="supplier"
                                    field="supplier">
                             <option type="column" name="name" fields="name" link="true"/>
+                            <option type="column" name="contractorCategory" fields="contractorCategory" link="true"/>
 
-                            <option type="searchable" value="name,number"/>
-                            <option type="orderable" value="name,number"/>
+                            <option type="searchable" value="name,number,contractorCategory"/>
+                            <option type="orderable" value="name,number,contractorCategory"/>
 
                             <option type="expression"
                                     value="'&lt;b&gt;' + #number + '&lt;/b&gt; - ' + #name"/>
@@ -531,11 +534,8 @@
                         <component type="select" name="paymentForm" field="paymentForm"
                                    reference="paymentForm"/>
                     </layoutElement>
+
                     <layoutElement column="3" row="1">
-                        <component type="select" name="state" field="state"
-                                   reference="state" defaultEnabled="never"/>
-                    </layoutElement>
-                    <layoutElement column="3" row="2">
                         <component type="gridLayout" name="gridLayoutDeliveryDateBuffer"
                                    hasBorders="false" columns="4" rows="1">
                             <layoutElement column="1" row="1" width="3">
@@ -553,7 +553,12 @@
                             </layoutElement>
                         </component>
                     </layoutElement>
-                    <layoutElement column="3" row="4">
+
+                    <layoutElement column="3" row="2">
+                        <component type="select" reference="contractorCategory" name="contractorCategory" field="contractorCategory" defaultEnabled="never"/>
+                    </layoutElement>
+
+                    <layoutElement column="3" row="3">
                         <component type="lookup" name="relatedDelivery"
                                    reference="relatedDelivery" field="relatedDelivery">
                             <option type="column" name="name" fields="name" link="true"/>
@@ -565,7 +570,8 @@
                             <option type="fieldCode" value="number"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="3" row="5">
+
+                    <layoutElement column="3" row="4">
                         <component type="lookup" name="currency" reference="currency"
                                    field="currency">
                             <option type="column" name="currency" fields="currency"
@@ -577,12 +583,16 @@
 
                             <option type="expression" value="#alphabeticCode + ' - ' + #currency"/>
                             <option type="fieldCode" value="alphabeticCode"/>
+
+                            <listener event="onSelectedEntityChange"
+                                      class="com.qcadoo.mes.deliveries.listeners.DeliveryDetailsListeners"
+                                      method="onCurrencyChange"/>
                         </component>
                     </layoutElement>
                 </component>
 
                 <option type="header" value="true"/>
-                <option type="expression" value="#number"/>
+                <option type="expression" value="#number + ', ' + '@deliveries.delivery.state.value.' + #state"/>
 
                 <listener event="changeState"
                           class="com.qcadoo.mes.deliveries.states.client.DeliveryStateChangeViewClient"

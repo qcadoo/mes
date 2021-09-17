@@ -52,22 +52,24 @@
 								expression="#product['name']"
 								width="100" />
 							<option type="column" name="nominalCost" fields="product"
-								expression="#product.get('nominalCost') != null ? 
-								#product.get('nominalCost') + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''" /> 
+								expression="#product.get('nominalCost')" align="right"/>
 							<option type="column" name="lastPurchaseCost" fields="product"
-								expression="#product.get('lastPurchaseCost') != null ? 
-								#product.get('lastPurchaseCost') + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''" />
+								expression="#product.get('lastPurchaseCost')" align="right"/>
 							<option type="column" name="averageCost" fields="product" 
-								expression="#product.get('averageCost') != null ? 
-								#product.get('averageCost') + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''" /> 
+								expression="#product.get('averageCost')" align="right"/>
 							<option type="column" name="lastOfferCost" fields="product" 
-								expression="#product.get('lastOfferCost') != null ? 
-								#product.get('lastOfferCost') + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''" /> 
+								expression="#product.get('lastOfferCost')" align="right"/>
 							<option type="column" name="averageOfferCost" fields="product" 
-								expression="#product.get('averageOfferCost') != null ? 
-								#product.get('averageOfferCost') + ' / ' + #product.get('costForNumber') + #product.get('unit') : ''" /> 
-								
+								expression="#product.get('averageOfferCost')" align="right"/>
+							<option type="column" name="costForNumber" fields="product"
+									expression="#product.get('costForNumber')" align="right"/>
+							<option type="column" name="unit" fields="product"
+									expression="#product.get('unit')" />
+
 							<option type="order" column="name" direction="asc" />
+
+							<option type="fullscreen" value="true"/>
+							<option type="fixedHeight" value="true"/>
 						</component>
 					</layoutElement>
 				</component>

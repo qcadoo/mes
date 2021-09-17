@@ -21,29 +21,38 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.dataProvider;
+package com.qcadoo.mes.masterOrders.imports.salesPlanProduct;
+
+import java.math.BigDecimal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMaterialsConstants;
-import com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields;
-import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.mes.basic.imports.services.XlsxImportService;
+import com.qcadoo.mes.masterOrders.constants.SalesPlanProductFields;
+import com.qcadoo.mes.orders.TechnologyServiceO;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 
 @Service
-final class OrderMaterialCostsEntityBuilderImpl implements OrderMaterialCostsEntityBuilder {
+public class SalesPlanProductXlsxImportService extends XlsxImportService {
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private TechnologyServiceO technologyServiceO;
 
     @Override
-    public Entity create(Entity order, Entity product) {
-        Entity orderMaterialCosts = dataDefinitionService.get(CostNormsForMaterialsConstants.PLUGIN_IDENTIFIER,
-                CostNormsForMaterialsConstants.MODEL_TECHNOLOGY_INST_OPER_PRODUCT_IN_COMP).create();
-        orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.ORDER, order);
-        orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.PRODUCT, product);
-        return orderMaterialCosts;
+    public void validateEntity(final Entity product, final DataDefinition productDD) {
+        setAdditionalFields(product);
+    }
+
+    private void setAdditionalFields(Entity product) {
+        product.setField(SalesPlanProductFields.ORDERED_QUANTITY, BigDecimal.ZERO);
+        product.setField(SalesPlanProductFields.SURPLUS_FROM_PLAN,
+                product.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY));
+        if (product.getBelongsToField(SalesPlanProductFields.PRODUCT) != null) {
+            product.setField(SalesPlanProductFields.TECHNOLOGY,
+                    technologyServiceO.getDefaultTechnology(product.getBelongsToField(SalesPlanProductFields.PRODUCT)));
+        }
     }
 
 }

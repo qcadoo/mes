@@ -1,25 +1,17 @@
 package com.qcadoo.mes.productionCounting.xls;
 
-import java.util.List;
-
+import com.qcadoo.mes.costCalculation.constants.MaterialCostsUsed;
+import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
+import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
+import com.qcadoo.mes.productionCounting.xls.dto.*;
+import com.qcadoo.model.api.Entity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.qcadoo.mes.costCalculation.constants.MaterialCostsUsed;
-import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
-import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
-import com.qcadoo.mes.productionCounting.xls.dto.LaborTime;
-import com.qcadoo.mes.productionCounting.xls.dto.LaborTimeDetails;
-import com.qcadoo.mes.productionCounting.xls.dto.MaterialCost;
-import com.qcadoo.mes.productionCounting.xls.dto.OrderBalance;
-import com.qcadoo.mes.productionCounting.xls.dto.PieceworkDetails;
-import com.qcadoo.mes.productionCounting.xls.dto.ProducedQuantity;
-import com.qcadoo.mes.productionCounting.xls.dto.ProductionCost;
-import com.qcadoo.mes.productionCounting.xls.dto.Stoppage;
-import com.qcadoo.model.api.Entity;
+import java.util.List;
 
 @Repository
 class ProductionBalanceRepository {
@@ -185,6 +177,8 @@ class ProductionBalanceRepository {
         query.append("- ");
         appendPlannedCost(query, entity);
         query.append("AS valueDeviation, ");
+        appendCostCurrency(query, entity);
+        query.append("AS costCurrencyId, ");
         query.append("COALESCE(SUM(topic.wasteusedquantity), 0) AS usedWasteQuantity, ");
     }
 
@@ -245,6 +239,19 @@ class ProductionBalanceRepository {
                 return "COALESCE(MIN(p.lastoffercost), 0) ";
             default:
                 throw new IllegalStateException("Unsupported materialCostsUsed: " + materialCostsUsed);
+        }
+    }
+
+    private void appendCostCurrency(StringBuilder query, Entity entity) {
+        switch (MaterialCostsUsed.parseString(entity.getStringField(ProductionBalanceFields.MATERIAL_COSTS_USED))) {
+            case NOMINAL:
+                query.append("MIN(p.nominalcostcurrency_id) ");
+                break;
+            case LAST_PURCHASE:
+                query.append("MIN(p.lastpurchasecostcurrency_id) ");
+                break;
+            default:
+                query.append("NULL ");
         }
     }
 

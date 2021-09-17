@@ -30,6 +30,7 @@ import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.AVE
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.LAST_OFFER_COST;
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.LAST_PURCHASE_COST;
 import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.NOMINAL_COST;
+import static com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP.NOMINAL_COST_CURRENCY;
 
 import java.util.Arrays;
 import java.util.Set;
@@ -116,12 +117,15 @@ public class ProductDetailsHooksCNFP {
             return;
         }
 
-        if(form.getEntityId() == null){
+        if (form.getEntityId() == null) {
             Entity currency = currencyService.getCurrentCurrency();
-            if(currency != null) {
-                fillField((FieldComponent) viewDefinitionState.getComponentByReference(ProductFieldsCNFP.NOMINAL_COST_CURRENCY), currency.getId());
-                fillField((FieldComponent) viewDefinitionState.getComponentByReference(ProductFieldsCNFP.LAST_PURCHASE_COST_CURRENCY), currency.getId());
-                fillField((FieldComponent) viewDefinitionState.getComponentByReference(ProductFieldsCNFP.AVERAGE_COST_CURRENCY), currency.getId());
+            if (currency != null) {
+                fillField((FieldComponent) viewDefinitionState.getComponentByReference(ProductFieldsCNFP.NOMINAL_COST_CURRENCY),
+                        currency.getId());
+                fillField((FieldComponent) viewDefinitionState
+                        .getComponentByReference(ProductFieldsCNFP.LAST_PURCHASE_COST_CURRENCY), currency.getId());
+                fillField((FieldComponent) viewDefinitionState.getComponentByReference(ProductFieldsCNFP.AVERAGE_COST_CURRENCY),
+                        currency.getId());
             }
         }
         String currencyAlphabeticCode = currencyService.getCurrencyAlphabeticCode();
@@ -152,8 +156,8 @@ public class ProductDetailsHooksCNFP {
         if (form.getEntityId() == null) {
             return;
         }
-        Entity entity = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
-                form.getEntityId());
+        Entity entity = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT)
+                .get(form.getEntityId());
 
         if (entity == null) {
             return;
@@ -161,8 +165,8 @@ public class ProductDetailsHooksCNFP {
         String externalNumber = entity.getStringField("externalNumber");
 
         if (externalNumber != null) {
-            for (String reference : Arrays.asList(NOMINAL_COST, LAST_PURCHASE_COST, AVERAGE_COST, LAST_OFFER_COST,
-                    AVERAGE_OFFER_COST)) {
+            for (String reference : Arrays.asList(NOMINAL_COST, NOMINAL_COST_CURRENCY, LAST_PURCHASE_COST, AVERAGE_COST,
+                    LAST_OFFER_COST, AVERAGE_OFFER_COST)) {
                 FieldComponent field = (FieldComponent) view.getComponentByReference(reference);
                 field.setEnabled(true);
             }

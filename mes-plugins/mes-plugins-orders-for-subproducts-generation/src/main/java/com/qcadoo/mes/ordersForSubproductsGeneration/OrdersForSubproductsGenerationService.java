@@ -23,35 +23,18 @@
  */
 package com.qcadoo.mes.ordersForSubproductsGeneration;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.MaterialRequirementCoverageForOrderService;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageProductFields;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageProductState;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.MaterialRequirementCoverageForOrderConstans;
 import com.qcadoo.mes.orderSupplies.constants.CoverageProductLoggingFields;
-import com.qcadoo.mes.orderSupplies.constants.CoverageRegisterFields;
 import com.qcadoo.mes.orderSupplies.constants.MaterialRequirementCoverageFields;
 import com.qcadoo.mes.orderSupplies.constants.OrderSuppliesConstants;
 import com.qcadoo.mes.orderSupplies.constants.ProductType;
+import com.qcadoo.mes.orderSupplies.coverage.MaterialRequirementCoverageHelper;
 import com.qcadoo.mes.orderSupplies.coverage.MaterialRequirementCoverageService;
-import com.qcadoo.mes.orderSupplies.register.RegisterService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -81,6 +64,20 @@ import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ViewDefinitionState;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 @Service
 public class OrdersForSubproductsGenerationService {
 
@@ -102,9 +99,6 @@ public class OrdersForSubproductsGenerationService {
     private NumberService numberService;
 
     @Autowired
-    private RegisterService registerService;
-
-    @Autowired
     private MaterialRequirementCoverageForOrderService materialRequirementCoverageForOrderService;
 
     @Autowired
@@ -115,6 +109,9 @@ public class OrdersForSubproductsGenerationService {
 
     @Autowired
     private TechnologyServiceO technologyServiceO;
+
+    @Autowired
+    private MaterialRequirementCoverageHelper materialRequirementCoverageHelper;
 
     private static final Integer START_LEVEL = 1;
 
@@ -183,8 +180,8 @@ public class OrdersForSubproductsGenerationService {
         LOG.info(String.format("Start generation order for order : %s , product %s",
                 parentOrder.getStringField(OrderFields.NUMBER), product.getStringField(ProductFields.NUMBER)));
 
-        order.setField(OrderFields.COMMISSIONED_PLANNED_QUANTITY, entry.getDecimalField("productionCountingQuantities"));
-        order.setField(OrderFields.PLANNED_QUANTITY, entry.getDecimalField("productionCountingQuantities"));
+        order.setField(OrderFields.COMMISSIONED_PLANNED_QUANTITY, entry.getDecimalField("plannedQuantity"));
+        order.setField(OrderFields.PLANNED_QUANTITY, entry.getDecimalField("plannedQuantity"));
 
         Entity technology = technologyServiceO.getDefaultTechnology(product);
         order.setField(OrderFieldsOFSPG.PARENT, parentOrder);
@@ -233,7 +230,7 @@ public class OrdersForSubproductsGenerationService {
 
         Entity productLog = findForOrder(parentOrder, coverageProduct);
 
-        BigDecimal planedQuantity = coverageProduct.getDecimalField(CoverageProductFields.PLANED_QUANTITY);
+        BigDecimal planedQuantity = productLog.getDecimalField(CoverageProductLoggingFields.CHANGES);
         BigDecimal missing = productLog.getDecimalField(CoverageProductLoggingFields.RESERVE_MISSING_QUANTITY)
                 .abs(numberService.getMathContext());
 
@@ -360,24 +357,16 @@ public class OrdersForSubproductsGenerationService {
 
     private List<Entity> getComponentProductsForOrder(final List<Entity> components, final Entity order) {
         List<Entity> componentsForOrder = Lists.newArrayList();
-        List<Entity> entries = registerService.getRegisterEntriesForOrder(order);
-        Map<Long, Entity> entriesProductMap = Maps.newHashMap();
+        List<Long> productsIds = materialRequirementCoverageHelper.getOrderProductsIds(order);
 
-        for (Entity entity : entries) {
-            if (!entriesProductMap.containsKey(entity.getBelongsToField(CoverageRegisterFields.PRODUCT).getId())) {
-                entriesProductMap.put(entity.getBelongsToField(CoverageRegisterFields.PRODUCT).getId(),
-                        entity.getBelongsToField(CoverageRegisterFields.PRODUCT));
-            }
-        }
-
-        components.forEach(c -> addComponent(c, componentsForOrder, entriesProductMap));
+        components.forEach(c -> addComponent(c, componentsForOrder, productsIds));
 
         return componentsForOrder;
     }
 
     private void addComponent(final Entity component, final List<Entity> componentsForOrder,
-            final Map<Long, Entity> entriesProductMap) {
-        if (entriesProductMap.containsKey(component.getBelongsToField(CoverageProductFields.PRODUCT).getId())) {
+            final List<Long> productsIds) {
+        if (productsIds.contains(component.getBelongsToField(CoverageProductFields.PRODUCT).getId())) {
             componentsForOrder.add(component);
         }
     }
@@ -519,7 +508,7 @@ public class OrdersForSubproductsGenerationService {
         List<Entity> orders = Lists.newArrayList(order);
 
         for (Entity orderEntity : orders) {
-            List<Entity> registryEntries = registerService.findComponentRegistryEntries(orderEntity);
+            List<Entity> registryEntries = materialRequirementCoverageHelper.findComponentEntries(orderEntity);
 
             int index = 1;
             for (Entity registryEntry : registryEntries) {
@@ -541,7 +530,7 @@ public class OrdersForSubproductsGenerationService {
                 }
 
                 for (Entity subOrder : subOrdersForActualLevel) {
-                    List<Entity> entries = registerService.findComponentRegistryEntries(subOrder);
+                    List<Entity> entries = materialRequirementCoverageHelper.findComponentEntries(subOrder);
 
                     int in = 1;
                     for (Entity _entry : entries) {

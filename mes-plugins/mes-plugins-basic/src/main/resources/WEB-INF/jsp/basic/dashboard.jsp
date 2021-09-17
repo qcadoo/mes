@@ -33,6 +33,8 @@
 
     QCD.currentLang = '<c:out value="${locale}" />';
     QCD.wizardToOpen = '<c:out value="${wizardToOpen}" />';
+    QCD.enableOrdersLinkOnDashboard = '<c:out value="${enableOrdersLinkOnDashboard}" />';
+    QCD.enableRegistrationTerminalOnDashboard = '<c:out value="${enableRegistrationTerminalOnDashboard}" />';
 
     QCD.translate = function (key) {
         return QCD.translations[key] || '[' + key + ']';
@@ -118,8 +120,10 @@
                             <div class="col">
                                 <div class="card bg-light" style="display: none;">
                                     <div class="card-body p-3">
-                                        <button id="addOrder" class="btn btn-success btn-sm float-right"
-                                            onclick="addOrder()">${translationsMap['basic.dashboard.orders.addNew.label']}</button>
+                                        <c:if test="${enableCreateOrdersOnDashboard}">
+                                            <button id="addOrder" class="btn btn-success btn-sm float-right"
+                                                onclick="addOrder()">${translationsMap['basic.dashboard.orders.addNew.label']}</button>
+                                        </c:if>
                                         <h6 class="card-title text-uppercase text-truncate py-2">${translationsMap['basic.dashboard.orders.pending.label']}</h6>
                                         <div id="ordersPending" class="items"></div>
                                     </div>
@@ -150,8 +154,11 @@
                             <div class="col">
                                 <div class="card bg-light" style="display: none;">
                                     <div class="card-body p-3">
-                                        <button id="addOperationalTask" class="btn btn-success btn-sm float-right"
-                                            onclick="addOperationalTask()">${translationsMap['basic.dashboard.operationalTasks.addNew.label']}</button>
+                                        <c:if test="${enableCreateOrdersOnDashboard}">
+                                            <button id="addOperationalTask" class="btn btn-success btn-sm float-right"
+                                                onclick="addOperationalTask()">${translationsMap['basic.dashboard.operationalTasks.addNew.label']}</button>
+                                         </c:if>
+
                                         <h6 class="card-title text-uppercase text-truncate py-2">${translationsMap['basic.dashboard.operationalTasks.pending.label']}</h6>
                                         <div id="operationalTasksPending" class="items"></div>
                                     </div>

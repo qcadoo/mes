@@ -99,9 +99,6 @@
                         category="requirements" view="generateMaterialRequirementCoverage"
                         defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
 
-        <menu:menu-item name="coverageRegistryList"
-                        category="requirements" view="coverageRegistryList" defaultAuthorizationRole="ROLE_SUPERADMIN"/>
-
         <model:model model="columnForCoverages" resource="model/columnForCoverages.xml"/>
         <!-- DTO -->
         <model:model model="materialRequirementCoverageDTO" resource="model/materialRequirementCoverageDTO.xml"/>
@@ -112,15 +109,10 @@
         <model:model model="coverageProductSelected" resource="model/coverageProductSelected.xml"/>
         <model:model model="coverageProductLogging" resource="model/coverageProductLogging.xml"/>
         <model:model model="coverageLocation" resource="model/coverageLocation.xml"/>
-        <model:model model="coverageRegister" resource="model/coverageRegister.xml"/>
         <model:model model="coverageOrderState" resource="model/coverageOrderState.xml"/>
         <model:model model="coverageProductDto" resource="model/coverageProductDto.xml"/>
         <model:model model="productionCountingQuantityInput" resource="model/productionCountingQuantityInput.xml"/>
         <model:model model="productionCountingQuantityOutput" resource="model/productionCountingQuantityOutput.xml"/>
-
-        <model:model-field plugin="basic" model="parameter">
-            <model:boolean name="coverageBasedOnProductionCounting"/>
-        </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">
             <model:integer name="defaultCoverageFromDays"/>
@@ -178,68 +170,15 @@
         <view:view resource="view/requestForQuotationDetails.xml"/>
         <view:view resource="view/supplierModalRequestForQuotation.xml"/>
         <view:view resource="view/supplierModalDelivery.xml"/>
-        <view:view resource="view/coverageRegistryList.xml"/>
 
         <view:view-tab resource="view/tabExtensions/supplyParametersForCoverages.xml"/>
         <view:view-tab resource="view/tabExtensions/supplyParametersForMinimalStates.xml"/>
-
-
-        <!--
-            Register section
-        -->
-        <model:model-field plugin="orders" model="order">
-            <model:hasMany name="coverageRegisters"
-                           model="coverageRegister" plugin="orderSupplies" joinField="order"
-                           cascade="delete" copyable="false"/>
-        </model:model-field>
-
-        <model:model-field model="technologyOperationComponent" plugin="technologies">
-            <model:hasMany name="coverageRegisters"
-                           model="coverageRegister" plugin="orderSupplies" joinField="technologyOperationComponent"
-                           cascade="delete" copyable="false"/>
-        </model:model-field>
 
         <model:model-field plugin="orders" model="order">
             <model:hasMany name="coverageProductLoggings"
                            model="coverageProductLogging" plugin="orderSupplies" joinField="order"
                            cascade="delete" copyable="false"/>
         </model:model-field>
-
-        <model:model-hook plugin="orders" model="order">
-            <model:onSave
-                    class="com.qcadoo.mes.orderSupplies.register.RegisterEvents"
-                    method="onSaveOrder"/>
-        </model:model-hook>
-
-        <model:model-hook plugin="orders" model="order">
-            <model:onDelete
-                    class="com.qcadoo.mes.orderSupplies.register.RegisterEvents"
-                    method="onDeleteOrder"/>
-        </model:model-hook>
-
-        <model:model-hook plugin="technologies" model="technology">
-            <model:onSave
-                    class="com.qcadoo.mes.orderSupplies.register.RegisterEvents"
-                    method="onChangeTechnologyInOrder"/>
-        </model:model-hook>
-
-        <model:model-hook plugin="basicProductionCounting" model="basicProductionCounting">
-            <model:onSave
-                    class="com.qcadoo.mes.orderSupplies.register.RegisterEvents"
-                    method="onBasicProductionCounting"/>
-        </model:model-hook>
-
-        <model:model-hook plugin="basicProductionCounting" model="productionCountingQuantity">
-            <model:onDelete
-                    class="com.qcadoo.mes.orderSupplies.register.RegisterEvents"
-                    method="onDeleteProductionCountingQuantity"/>
-        </model:model-hook>
-
-        <model:model-hook plugin="basicProductionCounting" model="productionCountingQuantity">
-            <model:onSave
-                    class="com.qcadoo.mes.orderSupplies.register.RegisterEvents"
-                    method="onSaveProductionCountingQuantity"/>
-        </model:model-hook>
 
         <view:view-hook plugin="deliveries" view="supplyParameters"
                         type="beforeRender" class="com.qcadoo.mes.orderSupplies.hooks.SupplyParametersHooksOS"

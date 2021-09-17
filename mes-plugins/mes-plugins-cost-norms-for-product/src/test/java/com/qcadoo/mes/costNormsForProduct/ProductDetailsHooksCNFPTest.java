@@ -65,7 +65,7 @@ public class ProductDetailsHooksCNFPTest {
     private FormComponent form;
 
     @Mock
-    private FieldComponent field1, field2, field3, field4, field5;
+    private FieldComponent field1, field2, field3, field4, field5, field6;
 
     @Mock
     private Entity entity;
@@ -119,6 +119,7 @@ public class ProductDetailsHooksCNFPTest {
         when(viewDefinitionState.getComponentByReference(ProductFieldsCNFP.LAST_OFFER_COST)).thenReturn(field3);
         when(viewDefinitionState.getComponentByReference(ProductFieldsCNFP.LAST_PURCHASE_COST)).thenReturn(field4);
         when(viewDefinitionState.getComponentByReference(ProductFieldsCNFP.AVERAGE_COST)).thenReturn(field5);
+        when(viewDefinitionState.getComponentByReference(ProductFieldsCNFP.NOMINAL_COST_CURRENCY)).thenReturn(field6);
         // when
         costNormsForProductService.enabledFieldForExternalID(viewDefinitionState);
         // then
@@ -127,6 +128,7 @@ public class ProductDetailsHooksCNFPTest {
         Mockito.verify(field3).setEnabled(true);
         Mockito.verify(field4).setEnabled(true);
         Mockito.verify(field5).setEnabled(true);
+        Mockito.verify(field6).setEnabled(true);
     }
 
     @Test

@@ -77,4 +77,6 @@ public final class DeliveryFields {
 
     public static final String ATTACHMENTS = "attachments";
 
+    public static final String CONTRACTOR_CATEGORY = "contractorCategory";
+
 }

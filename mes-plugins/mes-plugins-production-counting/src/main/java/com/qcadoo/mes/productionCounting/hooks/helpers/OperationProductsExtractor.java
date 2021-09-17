@@ -44,6 +44,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class OperationProductsExtractor {
+
+    public static final String L_PRODUCT = "product";
 
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
@@ -103,11 +106,11 @@ public class OperationProductsExtractor {
                         continue;
                     }
                 } else {
-                    if ((operationComponent == null)
-                            || !technologyOperationComponent.getId().equals(operationComponent.getId())) {
+                    if ((operationComponent == null) || !technologyOperationComponent.getId().equals(operationComponent.getId())) {
                         continue;
                     }
                 }
+
             } else if (cumulated(typeOfProductionRecording)) {
                 OperationProductComponentEntityType entityType = operationProductComponentHolder.getEntityType();
                 Entity product = operationProductComponentHolder.getProduct();
@@ -142,7 +145,18 @@ public class OperationProductsExtractor {
             Entity trackingOperationProductComponent = trackingOperationComponentBuilder
                     .fromOperationProductComponentHolder(operationProductComponentHolder);
 
-            trackingOperationProductComponents.add(trackingOperationProductComponent);
+            if (forEach(typeOfProductionRecording)) {
+                Optional<Entity> mabyExist = trackingOperationProductComponents
+                        .stream()
+                        .filter(toc -> toc.getBelongsToField(L_PRODUCT).getId()
+                                .equals(trackingOperationProductComponent.getBelongsToField(L_PRODUCT).getId())).findAny();
+                if (!mabyExist.isPresent()) {
+                    trackingOperationProductComponents.add(trackingOperationProductComponent);
+                }
+            } else {
+                trackingOperationProductComponents.add(trackingOperationProductComponent);
+
+            }
         }
 
         return trackingOperationProductComponents;
@@ -152,8 +166,9 @@ public class OperationProductsExtractor {
             Map<OperationProductComponentEntityType, Set<Entity>> entityTypeWithAlreadyAddedProducts,
             String typeOfProductionRecording) {
 
-        if (cumulated(typeOfProductionRecording) && operationProductComponentHolder.getProductMaterialType().getStringValue()
-                .equals(TechnologyService.L_02_INTERMEDIATE)) {
+        if (cumulated(typeOfProductionRecording)
+                && operationProductComponentHolder.getProductMaterialType().getStringValue()
+                        .equals(TechnologyService.L_02_INTERMEDIATE)) {
             return true;
         }
 

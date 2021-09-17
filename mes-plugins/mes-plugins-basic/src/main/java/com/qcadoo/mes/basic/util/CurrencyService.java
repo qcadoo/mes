@@ -23,14 +23,6 @@
  */
 package com.qcadoo.mes.basic.util;
 
-import static com.qcadoo.mes.basic.constants.BasicConstants.PLUGIN_IDENTIFIER;
-
-import java.math.BigDecimal;
-import java.util.Optional;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.CurrencyFields;
@@ -39,6 +31,13 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.search.SearchRestrictions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Optional;
+
+import static com.qcadoo.mes.basic.constants.BasicConstants.PLUGIN_IDENTIFIER;
 
 /**
  * Service for accessing currently used currency
@@ -65,6 +64,11 @@ public class CurrencyService {
      */
     public Entity getCurrentCurrency() {
         return parameterService.getParameter().getBelongsToField(CurrencyFields.CURRENCY);
+    }
+
+    public Entity getCurrencyById(Long id) {
+        DataDefinition currencyDataDef = dataDefinitionService.get(PLUGIN_IDENTIFIER, BasicConstants.MODEL_CURRENCY);
+        return currencyDataDef.get(id);
     }
 
     public Entity getCurrencyByAlphabeticCode(String alphabeticCode) {

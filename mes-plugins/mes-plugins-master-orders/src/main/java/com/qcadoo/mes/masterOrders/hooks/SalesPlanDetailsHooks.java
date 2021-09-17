@@ -1,5 +1,9 @@
 package com.qcadoo.mes.masterOrders.hooks;
 
+import java.util.Objects;
+
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.masterOrders.constants.SalesPlanFields;
 import com.qcadoo.mes.masterOrders.states.constants.SalesPlanStateStringValues;
 import com.qcadoo.model.api.Entity;
@@ -10,13 +14,7 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
-
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class SalesPlanDetailsHooks {
@@ -27,8 +25,9 @@ public class SalesPlanDetailsHooks {
 
     private static final String L_PRODUCTS = "products";
 
-    @Autowired
-    private NumberGeneratorService numberGeneratorService;
+    private static final String L_IMPORT = "import";
+
+    private static final String L_OPEN_POSITIONS_IMPORT_PAGE = "openPositionsImportPage";
 
     public void onBeforeRender(final ViewDefinitionState view) {
         setRibbonEnabled(view);
@@ -63,18 +62,15 @@ public class SalesPlanDetailsHooks {
 
         RibbonActionItem createSalesPlanMaterialRequirementRibbonActionItem = salesPlanMaterialRequirementRibbonGroup
                 .getItemByName(L_CREATE_SALES_PLAN_MATERIAL_REQUIREMENT);
+        RibbonActionItem openPositionsImportPageRibbonActionItem = window.getRibbon().getGroupByName(L_IMPORT)
+                .getItemByName(L_OPEN_POSITIONS_IMPORT_PAGE);
 
-        Long salesPlanId = salesPlanForm.getEntityId();
-
-        boolean isEnabled = Objects.nonNull(salesPlanId);
-
-        if (Objects.nonNull(salesPlanId)
-                && (state.equals(SalesPlanStateStringValues.REJECTED) || state.equals(SalesPlanStateStringValues.COMPLETED))) {
-            isEnabled = false;
-        }
+        boolean isEnabled = Objects.nonNull(salesPlanForm.getEntityId()) && state.equals(SalesPlanStateStringValues.DRAFT);
 
         createSalesPlanMaterialRequirementRibbonActionItem.setEnabled(isEnabled);
         createSalesPlanMaterialRequirementRibbonActionItem.requestUpdate(true);
+        openPositionsImportPageRibbonActionItem.setEnabled(isEnabled);
+        openPositionsImportPageRibbonActionItem.requestUpdate(true);
     }
 
 }

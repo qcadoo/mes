@@ -21,29 +21,38 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.dataProvider;
+package com.qcadoo.mes.masterOrders.imports.salesPlanProduct;
+
+import static com.qcadoo.mes.basic.imports.dtos.CellBinder.required;
+
+import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-import com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMaterialsConstants;
-import com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
+import com.qcadoo.mes.basic.imports.dtos.CellBinderRegistry;
+import com.qcadoo.mes.basic.imports.helpers.CellParser;
+import com.qcadoo.mes.masterOrders.constants.SalesPlanProductFields;
 
-@Service
-final class OrderMaterialCostsEntityBuilderImpl implements OrderMaterialCostsEntityBuilder {
+@Component
+public class SalesPlanProductCellBinderRegistry {
+
+    private CellBinderRegistry cellBinderRegistry = new CellBinderRegistry();
 
     @Autowired
-    private DataDefinitionService dataDefinitionService;
+    private CellParser productCellParser;
 
-    @Override
-    public Entity create(Entity order, Entity product) {
-        Entity orderMaterialCosts = dataDefinitionService.get(CostNormsForMaterialsConstants.PLUGIN_IDENTIFIER,
-                CostNormsForMaterialsConstants.MODEL_TECHNOLOGY_INST_OPER_PRODUCT_IN_COMP).create();
-        orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.ORDER, order);
-        orderMaterialCosts.setField(TechnologyInstOperProductInCompFields.PRODUCT, product);
-        return orderMaterialCosts;
+    @Autowired
+    private CellParser bigDecimalCellParser;
+
+    @PostConstruct
+    private void init() {
+        cellBinderRegistry.setCellBinder(required(SalesPlanProductFields.PRODUCT, productCellParser));
+        cellBinderRegistry.setCellBinder(required(SalesPlanProductFields.PLANNED_QUANTITY, bigDecimalCellParser));
+    }
+
+    public CellBinderRegistry getCellBinderRegistry() {
+        return cellBinderRegistry;
     }
 
 }

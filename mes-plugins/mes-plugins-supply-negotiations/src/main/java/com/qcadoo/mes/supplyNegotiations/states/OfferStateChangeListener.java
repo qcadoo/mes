@@ -31,8 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.costNormsForMaterials.constants.CostNormsForMaterialsConstants;
-import com.qcadoo.mes.costNormsForMaterials.constants.TechnologyInstOperProductInCompFields;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.supplyNegotiations.constants.OfferFields;
 import com.qcadoo.mes.supplyNegotiations.constants.OfferProductFields;
@@ -65,8 +63,6 @@ public class OfferStateChangeListener {
             BigDecimal lastOfferCost = offerProduct.getDecimalField(OfferProductFields.PRICE_PER_UNIT);
             product.setField("lastOfferCost", lastOfferCost);
             productDD.save(product);
-            setCostToTechnologyInstOperProductInComp(TechnologyInstOperProductInCompFields.LAST_OFFER_COST, product,
-                    lastOfferCost);
         }
     }
 
@@ -77,20 +73,6 @@ public class OfferStateChangeListener {
             BigDecimal averageOfferCost = countAveragePrice(product);
             product.setField("averageOfferCost", countAveragePrice(product));
             productDD.save(product);
-            setCostToTechnologyInstOperProductInComp(TechnologyInstOperProductInCompFields.AVERAGE_OFFER_COST, product,
-                    averageOfferCost);
-        }
-    }
-
-    private void setCostToTechnologyInstOperProductInComp(final String refenceToField, final Entity product, final BigDecimal cost) {
-        DataDefinition technologyInstOperProductInCompDD = dataDefinitionService.get(
-                CostNormsForMaterialsConstants.PLUGIN_IDENTIFIER,
-                CostNormsForMaterialsConstants.MODEL_TECHNOLOGY_INST_OPER_PRODUCT_IN_COMP);
-        List<Entity> technologyInstOperProductInComps = technologyInstOperProductInCompDD.find()
-                .add(SearchRestrictions.belongsTo(TechnologyInstOperProductInCompFields.PRODUCT, product)).list().getEntities();
-        for (Entity technologyInstOperProductInComp : technologyInstOperProductInComps) {
-            technologyInstOperProductInComp.setField(refenceToField, cost);
-            technologyInstOperProductInCompDD.save(technologyInstOperProductInComp);
         }
     }
 

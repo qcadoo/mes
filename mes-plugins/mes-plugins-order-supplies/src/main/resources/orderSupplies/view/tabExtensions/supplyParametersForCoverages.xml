@@ -33,10 +33,6 @@
         <component type="gridLayout" name="coverageParametersGridLayout"
                    columns="3" rows="7">
             <layoutElement column="1" row="1">
-                <component type="checkbox" name="coverageBasedOnProductionCounting"
-                           field="#{form}.coverageBasedOnProductionCounting" reference="coverageBasedOnProductionCounting"/>
-            </layoutElement>
-            <layoutElement column="1" row="2">
                 <component type="gridLayout" name="gridLayoutDefaultCoverageFromDays"
                            hasBorders="false" columns="4" rows="1">
                     <layoutElement column="1" row="1" width="3">
@@ -51,7 +47,7 @@
                     </layoutElement>
                 </component>
             </layoutElement>
-            <layoutElement column="1" row="3" height="5">
+            <layoutElement column="1" row="2" height="5">
                 <component type="borderLayout" name="locationBorderLayout">
                     <component type="awesomeDynamicList" name="coverageLocations"
                                source="#{form}.coverageLocations" reference="coverageLocations">

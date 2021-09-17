@@ -45,6 +45,10 @@ public final class ProductionCountingQuantityFields {
 
     public static final String PLANNED_QUANTITY = "plannedQuantity";
 
+    public static final String USED_QUANTITY = "usedQuantity";
+
+    public static final String PRODUCED_QUANTITY = "producedQuantity";
+
     public static final String IS_NON_COMPONENT = "isNonComponent";
 
     public static final String SET = "set";

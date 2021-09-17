@@ -39,13 +39,9 @@ public class TechnologyDetailsHooksCNFM {
         FormComponent orderForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
-        RibbonGroup materials = (RibbonGroup) window.getRibbon().getGroupByName("materials");
-        RibbonActionItem viewCosts = (RibbonActionItem) materials.getItemByName("viewCosts");
-        if (orderForm.getEntityId() == null) {
-            viewCosts.setEnabled(false);
-        } else {
-            viewCosts.setEnabled(true);
-        }
+        RibbonGroup materials = window.getRibbon().getGroupByName("materials");
+        RibbonActionItem viewCosts = materials.getItemByName("viewCosts");
+        viewCosts.setEnabled(orderForm.getEntityId() != null);
         viewCosts.requestUpdate(true);
 
     }

@@ -317,11 +317,13 @@
                 <option type="column" name="deliveryDate" fields="deliveryDate" width="100"/>
                 <option type="column" name="state" fields="state"/>
                 <option type="column" name="createDate" fields="createDate" width="100"/>
+                <option type="column" name="contractorCategory" fields="supplier"
+                        expression="#supplier['contractorCategory']" width="100"/>
 
                 <option type="order" column="number" direction="desc"/>
 
-                <option type="searchable" value="name,number,supplierName,deliveryDate,state,createDate"/>
-                <option type="orderable" value="name,number,supplierName,deliveryDate,state,createDate"/>
+                <option type="searchable" value="name,number,supplierName,deliveryDate,contractorCategory,state,createDate"/>
+                <option type="orderable" value="name,number,supplierName,deliveryDate,contractorCategory,state,createDate"/>
 
                 <option type="correspondingView" value="deliveries/deliveryDetails"/>
                 <option type="correspondingComponent" value="form"/>
