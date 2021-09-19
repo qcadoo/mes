@@ -24,14 +24,28 @@
 package com.qcadoo.mes.costNormsForMaterials.listeners;
 
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
+import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.OrderMaterialsCostDataGenerator;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
-import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderDetailsListenersCNFM {
+
+    @Autowired
+    private OrderMaterialsCostDataGenerator orderMaterialsCostDataGenerator;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public final void showInputProductsCostInOrder(final ViewDefinitionState viewState, final ComponentState componentState,
             final String[] args) {
@@ -39,6 +53,13 @@ public class OrderDetailsListenersCNFM {
 
         if (orderId == null) {
             return;
+        }
+
+        Entity orderDb = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
+        if(orderDb.getHasManyField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS).isEmpty()) {
+            List<Entity> orderMaterialsCosts = orderMaterialsCostDataGenerator.generateUpdatedMaterialsListFor(orderDb);
+            orderDb.setField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS, orderMaterialsCosts);
+            orderDb.getDataDefinition().save(orderDb);
         }
 
         Map<String, Object> parameters = Maps.newHashMap();
