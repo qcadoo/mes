@@ -23,16 +23,16 @@
  */
 package com.qcadoo.mes.costNormsForMaterials.hooks;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.costNormsForMaterials.constants.OrderFieldsCNFM;
 import com.qcadoo.mes.costNormsForMaterials.orderRawMaterialCosts.OrderMaterialsCostDataGenerator;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderHooksCNFM {
@@ -47,8 +47,11 @@ public class OrderHooksCNFM {
             if (order.getId() != null) {
                 Entity orderFromDb = orderDD.get(order.getId());
                 shouldUpdate = orderFromDb.getBelongsToField(OrderFields.TECHNOLOGY) == null;
+                if(orderFromDb.getHasManyField(OrderFieldsCNFM.TECHNOLOGY_INST_OPER_PRODUCT_IN_COMPS).isEmpty()) {
+                    shouldUpdate = true;
+                }
             } else {
-                shouldUpdate = true;
+                shouldUpdate = false;
             }
             if (shouldUpdate) {
                 List<Entity> orderMaterialsCosts = orderMaterialsCostDataGenerator.generateUpdatedMaterialsListFor(order);
