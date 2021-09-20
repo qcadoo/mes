@@ -1,56 +1,16 @@
 package com.qcadoo.mes.productFlowThruDivision.print;
 
-import static com.google.common.collect.Lists.newArrayList;
-import static java.util.Comparator.naturalOrder;
-import static java.util.Comparator.nullsFirst;
-
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Image;
-import com.lowagie.text.Phrase;
-import com.lowagie.text.Rectangle;
+import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfCell;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.AttributeFields;
-import com.qcadoo.mes.basic.constants.AttributeValueFields;
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.CompanyFields;
-import com.qcadoo.mes.basic.constants.CurrencyFields;
-import com.qcadoo.mes.basic.constants.FormsFields;
-import com.qcadoo.mes.basic.constants.LabelFields;
-import com.qcadoo.mes.basic.constants.ModelFields;
-import com.qcadoo.mes.basic.constants.ProductAttachmentFields;
-import com.qcadoo.mes.basic.constants.ProductAttributeValueFields;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.constants.SizeGroupFields;
-import com.qcadoo.mes.basic.util.CurrencyService;
+import com.qcadoo.mes.basic.constants.*;
 import com.qcadoo.mes.costCalculation.print.ProductsCostCalculationService;
-import com.qcadoo.mes.costNormsForMaterials.constants.ProductsCostFields;
-import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
 import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
 import com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
@@ -60,23 +20,30 @@ import com.qcadoo.mes.productFlowThruDivision.constants.ModelCardProductFields;
 import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductInComponentFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.ParameterFieldsPFTD;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyInputProductTypeFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.mes.technologies.constants.*;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfDocumentService;
 import com.qcadoo.report.api.pdf.PdfHelper;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Comparator.naturalOrder;
+import static java.util.Comparator.nullsFirst;
 
 @Service
 public final class ModelCardPdfService extends PdfDocumentService {
@@ -114,9 +81,6 @@ public final class ModelCardPdfService extends PdfDocumentService {
 
     @Autowired
     private MaterialFlowResourcesService materialFlowResourcesService;
-
-    @Autowired
-    private CurrencyService currencyService;
 
     @Override
     public String getReportTitle(Locale locale) {
@@ -286,10 +250,11 @@ public final class ModelCardPdfService extends PdfDocumentService {
                                 modelCard.getBooleanField(ModelCardFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED)),
                         2);
                 modelCardMaterialBySizeEntry.setPrice(price);
-                String currency = getCurrency(materialBySizeGroup, modelCard.getStringField(ModelCardFields.MATERIAL_COSTS_USED),
-                        modelCard.getBooleanField(ModelCardFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED));
-                modelCardMaterialBySizeEntry.setCurrency(currency);
-                modelCardMaterialBySizeEntry.setMaterialUnitCost(getMaterialUnitCost(norm, price, currency));
+                modelCardMaterialBySizeEntry.setCurrency(productsCostCalculationService.getCurrency(materialBySizeGroup,
+                        modelCard.getStringField(ModelCardFields.MATERIAL_COSTS_USED),
+                        modelCard.getBooleanField(ModelCardFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED)));
+                modelCardMaterialBySizeEntry.setMaterialUnitCost(
+                        numberService.setScaleWithDefaultMathContext(norm.multiply(price, numberService.getMathContext()), 2));
 
                 entries.add(modelCardMaterialBySizeEntry);
             }
@@ -327,43 +292,13 @@ public final class ModelCardPdfService extends PdfDocumentService {
                             modelCard.getBooleanField(ModelCardFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED)),
                     2);
             modelCardMaterialEntry.setPrice(price);
-            String currency = getCurrency(material, modelCard.getStringField(ModelCardFields.MATERIAL_COSTS_USED),
-                    modelCard.getBooleanField(ModelCardFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED));
-            modelCardMaterialEntry.setCurrency(currency);
-            modelCardMaterialEntry.setMaterialUnitCost(getMaterialUnitCost(norm, price, currency));
+            modelCardMaterialEntry.setCurrency(productsCostCalculationService.getCurrency(material,
+                    modelCard.getStringField(ModelCardFields.MATERIAL_COSTS_USED),
+                    modelCard.getBooleanField(ModelCardFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED)));
+            modelCardMaterialEntry.setMaterialUnitCost(
+                    numberService.setScaleWithDefaultMathContext(norm.multiply(price, numberService.getMathContext()), 2));
         }
         entries.add(modelCardMaterialEntry);
-    }
-
-    private BigDecimal getMaterialUnitCost(BigDecimal norm, BigDecimal price, String currency) {
-        BigDecimal materialUnitCost = numberService
-                .setScaleWithDefaultMathContext(norm.multiply(price, numberService.getMathContext()), 2);
-        if (CurrencyService.PLN.equals(currencyService.getCurrencyAlphabeticCode()) && !CurrencyService.PLN.equals(currency)) {
-            materialUnitCost = currencyService.getConvertedValue(materialUnitCost,
-                    currencyService.getCurrencyByAlphabeticCode(currency));
-        }
-        return materialUnitCost;
-    }
-
-    private String getCurrency(final Entity product, final String materialCostsUsed,
-            final boolean useNominalCostPriceNotSpecified) {
-        Entity currency = null;
-        BigDecimal cost = BigDecimalUtils
-                .convertNullToZero(product.getField(ProductsCostFields.forMode(materialCostsUsed).getStrValue()));
-        if (useNominalCostPriceNotSpecified && BigDecimalUtils.valueEquals(cost, BigDecimal.ZERO)) {
-            currency = product.getBelongsToField(ProductFieldsCNFP.NOMINAL_COST_CURRENCY);
-        } else if (ProductsCostFields.NOMINAL.getMode().equals(materialCostsUsed)) {
-            currency = product.getBelongsToField(ProductFieldsCNFP.NOMINAL_COST_CURRENCY);
-        } else if (ProductsCostFields.LAST_PURCHASE.getMode().equals(materialCostsUsed)) {
-            currency = product.getBelongsToField(ProductFieldsCNFP.LAST_PURCHASE_COST_CURRENCY);
-        }
-        if (currency == null) {
-            currency = currencyService.getCurrentCurrency();
-        }
-        if (currency != null) {
-            return currency.getStringField(CurrencyFields.ALPHABETIC_CODE);
-        }
-        return "";
     }
 
     private List<ModelCardMaterialEntry> groupMaterials(List<ModelCardMaterialEntry> entries) {

@@ -23,18 +23,6 @@
  */
 package com.qcadoo.mes.costCalculation.print;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.mes.costCalculation.constants.CalculationResultFields;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
@@ -43,11 +31,18 @@ import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CostCalculationService {
@@ -183,7 +178,7 @@ public class CostCalculationService {
         String query = "SELECT t.number AS technologyNumber, p.number AS productNumber, "
                 + "tipt.name AS technologyInputProductType, pbsgp.number AS materialNumber, "
                 + "sg.number AS sizeGroupNumber, pbsgp.nominalCost AS nominalCost, pbsgp.averageCost AS averageCost, "
-                + "ncc.alphabeticcode AS nominalCostCurrency, lpcc.alphabeticcode AS lastPurchaseCostCurrency, "
+                + "pbsgp.nominalcostcurrency_id AS nominalCostCurrency, pbsgp.lastpurchasecostcurrency_id AS lastPurchaseCostCurrency, "
                 + "pbsgp.lastPurchaseCost AS lastPurchaseCost, pbsgp.averageOfferCost AS averageOfferCost, "
                 + "pbsgp.lastOfferCost AS lastOfferCost, pbsgp.costForNumber AS costForNumber, "
                 + "pbsg.quantity as quantity, pbsgp.unit as unit "
@@ -193,10 +188,8 @@ public class CostCalculationService {
                 + "JOIN technologies_technologyinputproducttype tipt ON opic.technologyinputproducttype_id = tipt.id "
                 + "JOIN technologies_productbysizegroup pbsg ON pbsg.operationproductincomponent_id = opic.id "
                 + "JOIN basic_product pbsgp ON pbsg.product_id = pbsgp.id "
-                + "JOIN basic_sizegroup sg ON pbsg.sizegroup_id = sg.id "
-                + "LEFT JOIN basic_currency ncc ON pbsgp.nominalcostcurrency_id = ncc.id "
-                + "LEFT JOIN basic_currency lpcc ON pbsgp.lastpurchasecostcurrency_id = lpcc.id "
-                + "WHERE t.id IN (:technologiesIds) ORDER BY technologyNumber, materialNumber ";
+                + "JOIN basic_sizegroup sg ON pbsg.sizegroup_id = sg.id WHERE t.id IN (:technologiesIds) "
+                + "ORDER BY technologyNumber, materialNumber ";
         return jdbcTemplate.query(query, new MapSqlParameterSource("technologiesIds", technologiesIds),
                 BeanPropertyRowMapper.newInstance(CostCalculationMaterialBySize.class));
     }

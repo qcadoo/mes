@@ -1,52 +1,31 @@
 package com.qcadoo.mes.costCalculation.print;
 
-import java.math.BigDecimal;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.BorderStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
-import org.apache.poi.ss.usermodel.IndexedColors;
-import org.apache.poi.ss.usermodel.VerticalAlignment;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.CurrencyFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.util.CurrencyService;
-import com.qcadoo.mes.costCalculation.constants.CalculationResultFields;
-import com.qcadoo.mes.costCalculation.constants.CostCalculationConstants;
-import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
-import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
-import com.qcadoo.mes.costCalculation.constants.StandardLaborCostFields;
+import com.qcadoo.mes.costCalculation.constants.*;
 import com.qcadoo.mes.costCalculation.print.dto.ComponentsCalculationHolder;
 import com.qcadoo.mes.costCalculation.print.dto.CostCalculationMaterial;
 import com.qcadoo.mes.costCalculation.print.dto.CostCalculationMaterialBySize;
-import com.qcadoo.mes.costNormsForMaterials.constants.ProductsCostFields;
 import com.qcadoo.mes.costNormsForOperation.constants.CalculationOperationComponentFields;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.model.api.BigDecimalUtils;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.*;
 import com.qcadoo.report.api.xls.XlsDocumentService;
+import org.apache.poi.hssf.usermodel.*;
+import org.apache.poi.ss.usermodel.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 @Service
 public class CostCalculationXlsService extends XlsDocumentService {
@@ -77,9 +56,6 @@ public class CostCalculationXlsService extends XlsDocumentService {
 
     @Autowired
     private TechnologyService technologyService;
-
-    @Autowired
-    private CurrencyService currencyService;
 
     private static final List<String> CALCULATION_RESULTS_HEADERS = Lists.newArrayList("technologyNumber", "technologyName",
             "productNumber", "quantity", "unit", "materialCosts", "labourCost", "productionCosts", "materialCostMargin",
@@ -339,16 +315,13 @@ public class CostCalculationXlsService extends XlsDocumentService {
         int rowCounter = 0;
         DataDefinition productDataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
                 BasicConstants.MODEL_PRODUCT);
+        DataDefinition currencyDataDefinition = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER,
+                BasicConstants.MODEL_CURRENCY);
         for (CostCalculationMaterialBySize costCalculationMaterialBySize : costCalculationService.getMaterialsBySize(entity)) {
-            Entity product = costCalculationMaterialBySize.getProductEntity(productDataDefinition);
+            Entity product = costCalculationMaterialBySize.getProductEntity(productDataDefinition, currencyDataDefinition);
             BigDecimal costPerUnit = productsCostCalculationService.calculateProductCostPerUnit(product,
                     entity.getStringField(CostCalculationFields.MATERIAL_COSTS_USED),
                     entity.getBooleanField(CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED));
-
-            String materialCurrency = getMaterialCurrency(costCalculationMaterialBySize, product,
-                    entity.getStringField(CostCalculationFields.MATERIAL_COSTS_USED),
-                    entity.getBooleanField(CostCalculationFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED));
-            costPerUnit = getCostPerUnit(materialCurrency, costPerUnit);
 
             BigDecimal quantity = entity.getDecimalField(CostCalculationFields.QUANTITY)
                     .multiply(costCalculationMaterialBySize.getQuantity(), numberService.getMathContext());
@@ -371,41 +344,6 @@ public class CostCalculationXlsService extends XlsDocumentService {
         for (int i = 0; i <= 5; i++) {
             sheet.autoSizeColumn(i, false);
         }
-    }
-
-    private String getMaterialCurrency(final CostCalculationMaterialBySize costCalculationMaterialBySize, final Entity product,
-            final String materialCostsUsed, final boolean useNominalCostPriceNotSpecified) {
-        String alphabeticCode = null;
-        BigDecimal cost = BigDecimalUtils
-                .convertNullToZero(product.getField(ProductsCostFields.forMode(materialCostsUsed).getStrValue()));
-        if (useNominalCostPriceNotSpecified && BigDecimalUtils.valueEquals(cost, BigDecimal.ZERO)) {
-            alphabeticCode = costCalculationMaterialBySize.getNominalCostCurrency();
-        } else if (ProductsCostFields.NOMINAL.getMode().equals(materialCostsUsed)) {
-            alphabeticCode = costCalculationMaterialBySize.getNominalCostCurrency();
-        } else if (ProductsCostFields.LAST_PURCHASE.getMode().equals(materialCostsUsed)) {
-            alphabeticCode = costCalculationMaterialBySize.getLastPurchaseCostCurrency();
-        }
-        if (alphabeticCode == null) {
-            Entity currency = currencyService.getCurrentCurrency();
-            if (currency != null) {
-                return currency.getStringField(CurrencyFields.ALPHABETIC_CODE);
-            }
-            return "";
-        }
-        return alphabeticCode;
-    }
-
-    private BigDecimal getCostPerUnit(String materialCurrency, BigDecimal cost) {
-        String currency = currencyService.getCurrencyAlphabeticCode();
-        BigDecimal costPerUnit;
-        if (currency.isEmpty() || materialCurrency.isEmpty() || currency.equals(materialCurrency)) {
-            costPerUnit = cost;
-        } else if (CurrencyService.PLN.equals(currency)) {
-            costPerUnit = currencyService.getConvertedValue(cost, currencyService.getCurrencyByAlphabeticCode(materialCurrency));
-        } else {
-            costPerUnit = BigDecimal.ZERO;
-        }
-        return costPerUnit;
     }
 
     private void createLabourCostSheet(List<Entity> calculationOperationComponents, HSSFSheet sheet, Locale locale) {
