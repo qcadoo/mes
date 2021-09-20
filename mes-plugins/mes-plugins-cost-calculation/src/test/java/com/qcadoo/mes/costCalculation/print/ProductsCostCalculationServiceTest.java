@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.costCalculation.print;
 
+import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costNormsForMaterials.constants.ProductsCostFields;
 import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
 import com.qcadoo.model.api.BigDecimalUtils;
@@ -30,6 +31,7 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.testing.model.NumberServiceMock;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -38,10 +40,16 @@ import java.math.BigDecimal;
 import static com.qcadoo.testing.model.EntityTestUtils.mockEntity;
 import static com.qcadoo.testing.model.EntityTestUtils.stubDecimalField;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 public class ProductsCostCalculationServiceTest {
 
     private ProductsCostCalculationService productsCostCalculationService;
+
+    @Mock
+    private CurrencyService currencyService;
+
+    private String currency = "PLN";
 
     @Before
     public void init() {
@@ -50,6 +58,7 @@ public class ProductsCostCalculationServiceTest {
         MockitoAnnotations.initMocks(this);
 
         ReflectionTestUtils.setField(productsCostCalculationService, "numberService", NumberServiceMock.scaleAware());
+        ReflectionTestUtils.setField(productsCostCalculationService, "currencyService", currencyService);
 
     }
 
@@ -79,6 +88,8 @@ public class ProductsCostCalculationServiceTest {
         }
         stubDecimalField(product, costFields.getStrValue(), BigDecimal.valueOf(5L));
 
+        when(currencyService.getCurrencyAlphabeticCode()).thenReturn(currency);
+
         // when
         BigDecimal result = productsCostCalculationService.calculateProductCostPerUnit(product,
                 costFields.getMode(), false);
@@ -96,6 +107,8 @@ public class ProductsCostCalculationServiceTest {
         String materialCostsUsed = "02average";
 
         Entity product = mockProduct(averageCost, costForNumber);
+
+        when(currencyService.getCurrencyAlphabeticCode()).thenReturn(currency);
 
         // when
         BigDecimal result = productsCostCalculationService.calculateProductCostPerUnit(product,
