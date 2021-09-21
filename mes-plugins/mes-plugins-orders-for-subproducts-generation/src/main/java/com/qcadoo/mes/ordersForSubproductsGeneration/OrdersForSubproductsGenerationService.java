@@ -24,6 +24,7 @@
 package com.qcadoo.mes.ordersForSubproductsGeneration;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.MaterialRequirementCoverageForOrderService;
 import com.qcadoo.mes.materialRequirementCoverageForOrder.constans.CoverageProductFields;
@@ -175,7 +176,8 @@ public class OrdersForSubproductsGenerationService {
     public void generateSimpleOrderForSubProduct(final Entity entry, final Entity parentOrder, final Locale locale,
             final int index) {
         Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).create();
-        Entity product = entry.getBelongsToField("product");
+        Entity product = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT).get(
+                Long.valueOf(entry.getIntegerField("productId")));
 
         LOG.info(String.format("Start generation order for order : %s , product %s",
                 parentOrder.getStringField(OrderFields.NUMBER), product.getStringField(ProductFields.NUMBER)));

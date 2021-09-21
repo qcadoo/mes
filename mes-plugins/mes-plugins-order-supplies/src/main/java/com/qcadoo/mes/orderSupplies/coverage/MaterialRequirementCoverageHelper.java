@@ -41,7 +41,7 @@ public class MaterialRequirementCoverageHelper {
     public List<Long> getOrdersProductsIds(final List<Entity> orders) {
 
         List<Number> orderIds = orders.stream().map(Entity::getId).collect(Collectors.toList());
-        ;
+
 
         String sqlIn = "SELECT distinct registry.productId AS productId FROM #orderSupplies_productionCountingQuantityInput AS registry "
                 + "WHERE registry.orderId IN :ids AND eventType IN ('04orderInput','03operationInput') ";
@@ -73,7 +73,7 @@ public class MaterialRequirementCoverageHelper {
                 + "                (select productFamily from #technologies_productToProductGroupTechnology as productToProductGroupTechnology \n"
                 + "                where productToProductGroupTechnology.finalProduct.id = registry.orderProductId and \n"
                 + "                productToProductGroupTechnology.orderProduct.id = registry.productId)) order by operationProductInComponent.priority ";
-        return getCoverageRegisterDD().find(query).setParameter("orderId", order.getId()).list().getEntities();
+        return getCoverageRegisterDD().find(query).setParameter("orderId", order.getId().intValue()).list().getEntities();
     }
 
     public Entity createCoverageProductLoggingForOrder(final Entity registerEntry, final Date actualDate) {
