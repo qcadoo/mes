@@ -56,7 +56,7 @@ public final class ModelCardPdfService extends PdfDocumentService {
 
     private static final int[] defaultModelCardProductColumnWidth = new int[] { 10, 20, 5, 10, 10 };
 
-    private static final int[] defaultModelCardMaterialsColumnWidth = new int[] { 9, 6, 15, 6, 6, 4, 4, 4, 3, 4, 5, 7, 3 };
+    private static final int[] defaultModelCardMaterialsColumnWidth = new int[] { 9, 6, 15, 6, 6, 4, 4, 4, 4, 5, 7, 3 };
 
     @Autowired
     private TranslationService translationService;
@@ -150,7 +150,7 @@ public final class ModelCardPdfService extends PdfDocumentService {
         }
         BigDecimal materialUnitCostsSum = BigDecimal.ZERO;
         for (ModelCardMaterialEntry modelCardMaterialEntry : groupedEntries) {
-            if (Objects.isNull(modelCardMaterialEntry.getId())) {
+            if (Objects.isNull(modelCardMaterialEntry.getId()) && Objects.isNull(modelCardMaterialEntry.getMaterialUnitCost())) {
                 BigDecimal materialUnitCost = numberService.setScaleWithDefaultMathContext(
                         productTypeCostsSum.get(modelCardMaterialEntry.getTechnologyInputProductTypeId())
                                 .divide(new BigDecimal(
@@ -250,14 +250,23 @@ public final class ModelCardPdfService extends PdfDocumentService {
                                 modelCard.getBooleanField(ModelCardFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED)),
                         2);
                 modelCardMaterialBySizeEntry.setPrice(price);
-                modelCardMaterialBySizeEntry.setCurrency(productsCostCalculationService.getCurrency(materialBySizeGroup,
-                        modelCard.getStringField(ModelCardFields.MATERIAL_COSTS_USED),
-                        modelCard.getBooleanField(ModelCardFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED)));
                 modelCardMaterialBySizeEntry.setMaterialUnitCost(
                         numberService.setScaleWithDefaultMathContext(norm.multiply(price, numberService.getMathContext()), 2));
 
                 entries.add(modelCardMaterialBySizeEntry);
             }
+        } else if (material == null) {
+            BigDecimal norm = operationProductComponent.getDecimalField(OperationProductInComponentFields.QUANTITY);
+            modelCardMaterialEntry.setNorm(norm);
+            modelCardMaterialEntry
+                    .setNeededQuantity(numberService.setScaleWithDefaultMathContext(neededProductQuantity.getValue(), 2));
+            BigDecimal price = BigDecimalUtils.convertNullToZero(
+                    technologyInputProductType.getDecimalField(TechnologyInputProductTypeFields.AVERAGE_PRICE));
+            modelCardMaterialEntry.setPrice(price);
+            modelCardMaterialEntry.setMaterialUnitCost(
+                    numberService.setScaleWithDefaultMathContext(norm.multiply(price, numberService.getMathContext()), 2));
+            modelCardMaterialEntry
+                    .setUnit(operationProductComponent.getStringField(OperationProductInComponentFields.GIVEN_UNIT));
         } else {
             BigDecimal norm = operationProductComponent.getDecimalField(OperationProductInComponentFields.QUANTITY);
 
@@ -292,9 +301,6 @@ public final class ModelCardPdfService extends PdfDocumentService {
                             modelCard.getBooleanField(ModelCardFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED)),
                     2);
             modelCardMaterialEntry.setPrice(price);
-            modelCardMaterialEntry.setCurrency(productsCostCalculationService.getCurrency(material,
-                    modelCard.getStringField(ModelCardFields.MATERIAL_COSTS_USED),
-                    modelCard.getBooleanField(ModelCardFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED)));
             modelCardMaterialEntry.setMaterialUnitCost(
                     numberService.setScaleWithDefaultMathContext(norm.multiply(price, numberService.getMathContext()), 2));
         }
@@ -450,17 +456,32 @@ public final class ModelCardPdfService extends PdfDocumentService {
         table.addCell(new Phrase(StringUtils.EMPTY));
         table.addCell(new Phrase(StringUtils.EMPTY));
         table.addCell(new Phrase(StringUtils.EMPTY));
-        table.addCell(new Phrase(StringUtils.EMPTY));
-
-        table.addCell(new Phrase(StringUtils.EMPTY));
-        table.addCell(new Phrase(StringUtils.EMPTY));
         table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
+        if (modelCardMaterialEntry.getNorm() != null) {
+            table.addCell(new Phrase(numberService.format(modelCardMaterialEntry.getNorm()), FontUtils.getDejavuBold7Dark()));
+        } else {
+            table.addCell(new Phrase(StringUtils.EMPTY));
+        }
+        if (modelCardMaterialEntry.getPrice() != null) {
+            table.addCell(new Phrase(numberService.format(modelCardMaterialEntry.getPrice()), FontUtils.getDejavuBold7Dark()));
+        } else {
+            table.addCell(new Phrase(StringUtils.EMPTY));
+        }
         table.addCell(
                 new Phrase(numberService.format(modelCardMaterialEntry.getMaterialUnitCost()), FontUtils.getDejavuBold7Dark()));
+        if (modelCardMaterialEntry.getNeededQuantity() != null) {
+            table.addCell(
+                    new Phrase(numberService.format(modelCardMaterialEntry.getNeededQuantity()), FontUtils.getDejavuBold7Dark()));
+        } else {
+            table.addCell(new Phrase(StringUtils.EMPTY));
+        }
         table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
         table.addCell(new Phrase(StringUtils.EMPTY));
-        table.addCell(new Phrase(StringUtils.EMPTY));
-        table.addCell(new Phrase(StringUtils.EMPTY));
+        if (modelCardMaterialEntry.getUnit() != null) {
+            table.addCell(new Phrase(modelCardMaterialEntry.getUnit(), FontUtils.getDejavuRegular7Dark()));
+        } else {
+            table.addCell(new Phrase(StringUtils.EMPTY));
+        }
         table.getDefaultCell().enableBorderSide(PdfCell.BOTTOM);
     }
 
@@ -492,9 +513,6 @@ public final class ModelCardPdfService extends PdfDocumentService {
                 FontUtils.getDejavuBold7Dark()));
         table.addCell(new Phrase(numberService.format(modelCardMaterialEntry.getNorm()), FontUtils.getDejavuBold7Dark()));
         table.addCell(new Phrase(numberService.format(modelCardMaterialEntry.getPrice()), FontUtils.getDejavuBold7Dark()));
-        table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-        table.addCell(new Phrase(modelCardMaterialEntry.getCurrency(), FontUtils.getDejavuBold7Dark()));
-        table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
         table.addCell(
                 new Phrase(numberService.format(modelCardMaterialEntry.getMaterialUnitCost()), FontUtils.getDejavuBold7Dark()));
         table.addCell(
@@ -533,9 +551,6 @@ public final class ModelCardPdfService extends PdfDocumentService {
                 FontUtils.getDejavuRegular7Light()));
         table.addCell(new Phrase(numberService.format(modelCardMaterialEntry.getNorm()), FontUtils.getDejavuRegular7Light()));
         table.addCell(new Phrase(numberService.format(modelCardMaterialEntry.getPrice()), FontUtils.getDejavuRegular7Light()));
-        table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_LEFT);
-        table.addCell(new Phrase(modelCardMaterialEntry.getCurrency(), FontUtils.getDejavuRegular7Light()));
-        table.getDefaultCell().setHorizontalAlignment(Element.ALIGN_RIGHT);
         table.addCell(new Phrase(numberService.format(modelCardMaterialEntry.getMaterialUnitCost()),
                 FontUtils.getDejavuRegular7Light()));
         table.addCell(new Phrase(new Phrase(numberService.format(modelCardMaterialEntry.getNeededQuantity()),
@@ -568,8 +583,6 @@ public final class ModelCardPdfService extends PdfDocumentService {
                 HeaderAlignment.RIGHT);
         headersWithAlignments.put(translationService.translate("productFlowThruDivision.modelCard.report.price.label", locale),
                 HeaderAlignment.RIGHT);
-        headersWithAlignments.put(translationService.translate("productFlowThruDivision.modelCard.report.currency.label", locale),
-                HeaderAlignment.LEFT);
         headersWithAlignments.put(translationService.translate("productFlowThruDivision.modelCard.report.unitCost.label", locale),
                 HeaderAlignment.RIGHT);
         headersWithAlignments.put(

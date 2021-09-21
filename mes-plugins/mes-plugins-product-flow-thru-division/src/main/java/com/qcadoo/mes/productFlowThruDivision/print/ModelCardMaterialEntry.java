@@ -15,8 +15,6 @@ class ModelCardMaterialEntry {
 
     private BigDecimal price;
 
-    private String currency;
-
     private BigDecimal materialUnitCost;
 
     private BigDecimal neededQuantity;
@@ -201,13 +199,5 @@ class ModelCardMaterialEntry {
 
     public void setNodeNumber(String nodeNumber) {
         this.nodeNumber = nodeNumber;
-    }
-
-    public String getCurrency() {
-        return currency;
-    }
-
-    public void setCurrency(String currency) {
-        this.currency = currency;
     }
 }

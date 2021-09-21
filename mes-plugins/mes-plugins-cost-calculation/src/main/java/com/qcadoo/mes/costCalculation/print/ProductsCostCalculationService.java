@@ -33,7 +33,4 @@ public interface ProductsCostCalculationService {
 
     BigDecimal calculateProductCostPerUnit(final Entity product, final String materialCostsUsed,
             final boolean useNominalCostPriceNotSpecified);
-
-    String getCurrency(final Entity product, final String materialCostsUsed, final boolean useNominalCostPriceNotSpecified);
-
 }

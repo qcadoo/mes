@@ -116,26 +116,4 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
 
         return cost.divide(costForNumber, numberService.getMathContext());
     }
-
-    @Override
-    public String getCurrency(final Entity product, final String materialCostsUsed,
-                               final boolean useNominalCostPriceNotSpecified) {
-        Entity currency = null;
-        BigDecimal cost = BigDecimalUtils
-                .convertNullToZero(product.getField(ProductsCostFields.forMode(materialCostsUsed).getStrValue()));
-        if (useNominalCostPriceNotSpecified && BigDecimalUtils.valueEquals(cost, BigDecimal.ZERO)) {
-            currency = product.getBelongsToField(ProductFieldsCNFP.NOMINAL_COST_CURRENCY);
-        } else if (ProductsCostFields.NOMINAL.getMode().equals(materialCostsUsed)) {
-            currency = product.getBelongsToField(ProductFieldsCNFP.NOMINAL_COST_CURRENCY);
-        } else if (ProductsCostFields.LAST_PURCHASE.getMode().equals(materialCostsUsed)) {
-            currency = product.getBelongsToField(ProductFieldsCNFP.LAST_PURCHASE_COST_CURRENCY);
-        }
-        if (currency == null) {
-            currency = currencyService.getCurrentCurrency();
-        }
-        if (currency != null) {
-            return currency.getStringField(CurrencyFields.ALPHABETIC_CODE);
-        }
-        return "";
-    }
 }
