@@ -495,9 +495,9 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
 
     @Override
     public List<Entity> getUsedMaterialsFromProductionCountingQuantities(final Entity order, final boolean onlyComponents) {
-        SearchCriteriaBuilder scb = order
-                .getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES)
+        SearchCriteriaBuilder scb = getProductionCountingQuantityDD()
                 .find()
+                .add(SearchRestrictions.belongsTo(ProductionCountingQuantityFields.ORDER, order))
                 .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
                         ProductionCountingQuantityRole.USED.getStringValue()));
         if (onlyComponents) {
