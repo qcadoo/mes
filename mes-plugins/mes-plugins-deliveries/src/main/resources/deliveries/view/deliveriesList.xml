@@ -314,11 +314,12 @@
                 <option type="column" name="name" fields="name" link="true" width="100"/>
                 <option type="column" name="supplierName" fields="supplier"
                         expression="#supplier['name']"/>
+                <option type="column" name="contractorCategory" fields="supplier"
+                        expression="#supplier['contractorCategory']" width="70"/>
                 <option type="column" name="deliveryDate" fields="deliveryDate" width="100"/>
                 <option type="column" name="state" fields="state"/>
                 <option type="column" name="createDate" fields="createDate" width="100"/>
-                <option type="column" name="contractorCategory" fields="supplier"
-                        expression="#supplier['contractorCategory']" width="100"/>
+
 
                 <option type="order" column="number" direction="desc"/>
 
