@@ -249,8 +249,6 @@
         <security:role identifier="ROLE_DASHBOARD_KANBAN"/>
         <security:role identifier="ROLE_DASHBOARD_KANBAN_CREATE_ORDERS"/>
         <security:role identifier="ROLE_DASHBOARD_KANBAN_GOTO_ORDER_EDIT"/>
-        <security:role identifier="ROLE_GROUPS_VIEW"/>
-        <security:role identifier="ROLE_GROUPS_EDIT"/>
 
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
