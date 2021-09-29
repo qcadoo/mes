@@ -23,6 +23,12 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
@@ -36,12 +42,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
-
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class ProductHooksD {
@@ -67,6 +67,7 @@ public class ProductHooksD {
                 }
             }
         }
+
         updateDefaultSupplier(dataDefinition, product);
     }
 
@@ -84,13 +85,13 @@ public class ProductHooksD {
             } else {
                 unmarkDefaultSupplierForProduct(product);
             }
-
         }
     }
 
-    private void createOrUpdateCompanyProduct(Entity product, Entity company) {
+    private void createOrUpdateCompanyProduct(final Entity product, final Entity company) {
         boolean isNewProduct = Objects.isNull(product.getId());
-        if(isNewProduct || isSupplierChanged(product, company)) {
+
+        if (isNewProduct || isSupplierChanged(product, company)) {
             unmarkDefaultSupplierForProduct(product);
 
             if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()
@@ -104,9 +105,10 @@ public class ProductHooksD {
                     productCompany = getCompanyProductDD().create();
                     productCompany.setField(CompanyProductFields.COMPANY, company);
                     productCompany.setField(CompanyProductFields.PRODUCT, product);
-
                 }
+
                 productCompany.setField(CompanyProductFields.IS_DEFAULT, Boolean.TRUE);
+
                 productCompany = productCompany.getDataDefinition().save(productCompany);
             } else {
                 Entity productCompany = getCompanyProductsFamily().find()
@@ -118,43 +120,46 @@ public class ProductHooksD {
                     productCompany = getCompanyProductDD().create();
                     productCompany.setField(CompanyProductsFamilyFields.COMPANY, company);
                     productCompany.setField(CompanyProductsFamilyFields.PRODUCT, product);
-
                 }
+
                 productCompany.setField(CompanyProductsFamilyFields.IS_DEFAULT, Boolean.TRUE);
+
                 productCompany = productCompany.getDataDefinition().save(productCompany);
             }
         }
-       
     }
 
-    private boolean isSupplierChanged(Entity product, Entity company) {
-        Entity productDb = product.getDataDefinition().get(product.getId());
-        Entity supplier = productDb.getBelongsToField(ProductFields.SUPPLIER);
-        if(Objects.isNull(company)) {
+    private boolean isSupplierChanged(final Entity product, final Entity company) {
+        Entity productFromDB = product.getDataDefinition().get(product.getId());
+
+        Entity supplier = productFromDB.getBelongsToField(ProductFields.SUPPLIER);
+
+        if (Objects.isNull(company)) {
             return false;
         }
 
-        if(Objects.isNull(company) && Objects.isNull(supplier)) {
+        if (Objects.isNull(company) && Objects.isNull(supplier)) {
             return false;
         }
 
-        if(Objects.nonNull(company) && Objects.isNull(supplier)) {
+        if (Objects.nonNull(company) && Objects.isNull(supplier)) {
             return true;
         }
 
-        if(company.getId().equals(supplier.getId())) {
+        if (company.getId().equals(supplier.getId())) {
             return false;
         }
 
         return true;
     }
 
-    private void unmarkDefaultSupplierForProduct(Entity product) {
+    private void unmarkDefaultSupplierForProduct(final Entity product) {
         if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()
                 .equals(product.getStringField(ProductFields.ENTITY_TYPE))) {
             Entity defaultProductCompany = getCompanyProductDD().find()
                     .add(SearchRestrictions.belongsTo(CompanyProductFields.PRODUCT, product))
                     .add(SearchRestrictions.eq(CompanyProductFields.IS_DEFAULT, Boolean.TRUE)).setMaxResults(1).uniqueResult();
+
             if (Objects.nonNull(defaultProductCompany)) {
                 defaultProductCompany.setField(CompanyProductFields.IS_DEFAULT, Boolean.FALSE);
                 defaultProductCompany.getDataDefinition().save(defaultProductCompany);
@@ -164,6 +169,7 @@ public class ProductHooksD {
                     .add(SearchRestrictions.belongsTo(CompanyProductsFamilyFields.PRODUCT, product))
                     .add(SearchRestrictions.eq(CompanyProductsFamilyFields.IS_DEFAULT, Boolean.TRUE)).setMaxResults(1)
                     .uniqueResult();
+
             if (Objects.nonNull(defaultProductCompany)) {
                 defaultProductCompany.setField(CompanyProductsFamilyFields.IS_DEFAULT, Boolean.FALSE);
                 defaultProductCompany.getDataDefinition().save(defaultProductCompany);
@@ -171,23 +177,25 @@ public class ProductHooksD {
         }
     }
 
-    private void createDefaultProductCompany(Entity product, Entity company) {
-
+    private void createDefaultProductCompany(final Entity product, final Entity company) {
         if (ProductFamilyElementType.PARTICULAR_PRODUCT.getStringValue()
                 .equals(product.getStringField(ProductFields.ENTITY_TYPE))) {
             Entity productCompany = getCompanyProductDD().create();
+
             productCompany.setField(CompanyProductFields.COMPANY, company);
             productCompany.setField(CompanyProductFields.PRODUCT, product);
             productCompany.setField(CompanyProductFields.IS_DEFAULT, Boolean.TRUE);
+
             product.setField(ProductFieldsD.PRODUCT_COMPANIES, Lists.newArrayList(productCompany));
         } else {
             Entity productCompany = getCompanyProductsFamily().create();
+
             productCompany.setField(CompanyProductsFamilyFields.COMPANY, company);
             productCompany.setField(CompanyProductsFamilyFields.PRODUCT, product);
             productCompany.setField(CompanyProductsFamilyFields.IS_DEFAULT, Boolean.TRUE);
+
             product.setField(ProductFieldsD.PRODUCT_COMPANIES, Lists.newArrayList(productCompany));
         }
-
     }
 
     private void moveCompanyProductsToCompanyProductFamilies(final Entity particularProduct) {
@@ -265,8 +273,8 @@ public class ProductHooksD {
     }
 
     private DataDefinition getCompanyProductsFamily() {
-        return dataDefinitionService
-                .get(DeliveriesConstants.PLUGIN_IDENTIFIER, DeliveriesConstants.MODEL_COMPANY_PRODUCTS_FAMILY);
+        return dataDefinitionService.get(DeliveriesConstants.PLUGIN_IDENTIFIER,
+                DeliveriesConstants.MODEL_COMPANY_PRODUCTS_FAMILY);
     }
 
 }
