@@ -329,10 +329,6 @@ public class OrderCreationService {
     }
 
     private Entity createProductionCoutingQuantity(Entity order, MaterialDto material, Entity toc) {
-        Entity tech = order.getBelongsToField(OrderFields.TECHNOLOGY);
-        Entity componentsLocation = tech.getBelongsToField("componentsLocation");
-        Entity productsInputLocation = tech.getBelongsToField("productsInputLocation");
-
         Entity productionCountingQuantity = dataDefinitionService
                 .get(L_BASIC_PRODUCTION_COUNTING, L_PRODUCTION_COUNTING_QUANTITY).create();
         productionCountingQuantity.setField(L_ORDER, order.getId());
@@ -345,9 +341,6 @@ public class OrderCreationService {
         productionCountingQuantity.setField(L_ROLE, L_USED);
         productionCountingQuantity.setField(L_TYPE_OF_MATERIAL, L_COMPONENT);
         productionCountingQuantity.setField(L_FLOW_FILLED, Boolean.TRUE);
-
-        productionCountingQuantity.setField(L_PRODUCTS_INPUT_LOCATION, productsInputLocation);
-        productionCountingQuantity.setField(L_COMPONENTS_LOCATION, componentsLocation);
         return productionCountingQuantity;
     }
 
