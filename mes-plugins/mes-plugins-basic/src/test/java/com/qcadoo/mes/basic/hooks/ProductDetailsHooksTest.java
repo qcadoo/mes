@@ -79,7 +79,7 @@ public class ProductDetailsHooksTest {
     private FieldComponent parentField, entityTypeField, unitField, categoryField;
 
     @Mock
-    private LookupComponent assortmentLookup, modelLookup;
+    private LookupComponent supplierLookup, assortmentLookup, modelLookup;
 
     @Mock
     private DataDefinition productDD;
@@ -106,6 +106,8 @@ public class ProductDetailsHooksTest {
         given(view.getComponentByReference(ProductFields.PARENT)).willReturn(parentField);
         given(view.getComponentByReference(ProductFields.ENTITY_TYPE)).willReturn(entityTypeField);
         given(view.getComponentByReference(ProductFields.CATEGORY)).willReturn(categoryField);
+        given(view.getComponentByReference(ProductFields.SUPPLIER)).willReturn(supplierLookup);
+        given(view.getComponentByReference(ProductFields.ASSORTMENT)).willReturn(assortmentLookup);
         given(view.getComponentByReference(ProductFields.ASSORTMENT)).willReturn(assortmentLookup);
         given(view.getComponentByReference(ProductFields.MODEL)).willReturn(modelLookup);
 

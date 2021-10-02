@@ -132,6 +132,7 @@ public class ProductDetailsHooks {
         FieldComponent entityTypeField = (FieldComponent) view.getComponentByReference(ProductFields.ENTITY_TYPE);
         FieldComponent parentField = (FieldComponent) view.getComponentByReference(ProductFields.PARENT);
         FieldComponent categoryField = (FieldComponent) view.getComponentByReference(ProductFields.CATEGORY);
+        LookupComponent supplierLookup = (LookupComponent) view.getComponentByReference(ProductFields.SUPPLIER);
         LookupComponent assortmentLookup = (LookupComponent) view.getComponentByReference(ProductFields.ASSORTMENT);
         LookupComponent modelLookup = (LookupComponent) view.getComponentByReference(ProductFields.MODEL);
 
@@ -156,8 +157,9 @@ public class ProductDetailsHooks {
         } else {
             productForm.setFormEnabled(false);
             entityTypeField.setEnabled(true);
-            categoryField.setEnabled(true);
             parentField.setEnabled(true);
+            categoryField.setEnabled(true);
+            supplierLookup.setEnabled(true);
             assortmentLookup.setEnabled(true);
             modelLookup.setEnabled(true);
         }

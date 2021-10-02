@@ -90,7 +90,7 @@
 
                             <option type="column" name="orderQuantity" fields="orderQuantity" formatter="input"/>
 
-                            <option type="order" column="succession" direction="asc"/>
+                            <option type="order" column="productFamily,succession" direction="asc"/>
 
                             <option type="searchable" value=""/>
                             <option type="orderable" value=""/>

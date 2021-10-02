@@ -630,7 +630,12 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
                         .compare(entity1.getDateField(CoverageProductLoggingFields.DATE),
                                 entity2.getDateField(CoverageProductLoggingFields.DATE))
                         .compare(entity2.getStringField(CoverageProductLoggingFields.EVENT_TYPE),
-                                entity1.getStringField(CoverageProductLoggingFields.EVENT_TYPE)).result();
+                                entity1.getStringField(CoverageProductLoggingFields.EVENT_TYPE))
+                        .compare(entity2.getLongField(CoverageProductLoggingFields.ORDER),
+                                entity1.getLongField(CoverageProductLoggingFields.ORDER))
+                        .compare(entity2.getLongField(CoverageProductLoggingFields.OPERATION),
+                                entity1.getLongField(CoverageProductLoggingFields.OPERATION))
+                                .result();
             }
         });
 

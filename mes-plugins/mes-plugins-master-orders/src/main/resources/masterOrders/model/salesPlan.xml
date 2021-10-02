@@ -46,6 +46,8 @@
         <hasMany name="stateChanges" model="salesPlanStateChange" joinField="salesPlan" cascade="delete"/>
         <hasMany name="masterOrders" model="masterOrder" joinField="salesPlan"/>
         <hasMany name="productsBySizeHelpers" model="productsBySizeHelper" joinField="salesPlan"/>
+        <hasMany name="salesPlanOrdersGroupHelpers" joinField="salesPlan" model="salesPlanOrdersGroupHelper"/>
+
         <hasMany name="salesPlanMaterialRequirements" model="salesPlanMaterialRequirement"
                  joinField="salesPlan"/>
         <hasMany name="orders" joinField="salesPlan" model="order"

@@ -97,11 +97,11 @@ public class OperationalTaskHooks {
                 boolean changed = false;
                 if (!order.getDateField(OrderFields.START_DATE).equals(start)) {
                     changed = true;
-                    order.setField(OrderFields.START_DATE, operationalTask.getDateField(OperationalTaskFields.START_DATE));
+                    order.setField(OrderFields.START_DATE, start);
                 }
                 if (!order.getDateField(OrderFields.FINISH_DATE).equals(finish)) {
                     changed = true;
-                    order.setField(OrderFields.FINISH_DATE, operationalTask.getDateField(OperationalTaskFields.FINISH_DATE));
+                    order.setField(OrderFields.FINISH_DATE, finish);
                 }
                 if (changed) {
                     order.getDataDefinition().save(order);

@@ -23,8 +23,11 @@
  */
 package com.qcadoo.mes.costCalculation.print;
 
+import com.qcadoo.mes.basic.constants.CurrencyFields;
+import com.qcadoo.mes.basic.util.CurrencyService;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
 import com.qcadoo.mes.costNormsForMaterials.constants.ProductsCostFields;
+import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
 import com.qcadoo.mes.technologies.constants.TechnologyInputProductTypeFields;
@@ -42,6 +45,9 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
 
     @Autowired
     private NumberService numberService;
+
+    @Autowired
+    private CurrencyService currencyService;
 
     @Override
     public BigDecimal calculateOperationProductCostPerUnit(Entity costCalculation, Entity product,
@@ -79,11 +85,30 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
     @Override
     public BigDecimal calculateProductCostPerUnit(final Entity product, final String materialCostsUsed,
             final boolean useNominalCostPriceNotSpecified) {
+        Entity materialCurrency = null;
         BigDecimal cost = BigDecimalUtils
                 .convertNullToZero(product.getField(ProductsCostFields.forMode(materialCostsUsed).getStrValue()));
         if (useNominalCostPriceNotSpecified && BigDecimalUtils.valueEquals(cost, BigDecimal.ZERO)) {
             cost = BigDecimalUtils.convertNullToZero(product.getField(ProductsCostFields.NOMINAL.getStrValue()));
+            materialCurrency = product.getBelongsToField(ProductFieldsCNFP.NOMINAL_COST_CURRENCY);
+        } else if (ProductsCostFields.NOMINAL.getMode().equals(materialCostsUsed)) {
+            materialCurrency = product.getBelongsToField(ProductFieldsCNFP.NOMINAL_COST_CURRENCY);
+        } else if (ProductsCostFields.LAST_PURCHASE.getMode().equals(materialCostsUsed)) {
+            materialCurrency = product.getBelongsToField(ProductFieldsCNFP.LAST_PURCHASE_COST_CURRENCY);
         }
+        if (materialCurrency == null) {
+            materialCurrency = currencyService.getCurrentCurrency();
+        }
+
+        String currency = currencyService.getCurrencyAlphabeticCode();
+        if (!currency.isEmpty() && materialCurrency != null && !currency.equals(materialCurrency.getStringField(CurrencyFields.ALPHABETIC_CODE))) {
+            if (CurrencyService.PLN.equals(currency)) {
+                cost = currencyService.getConvertedValue(cost, materialCurrency);
+            } else {
+                cost = BigDecimal.ZERO;
+            }
+        }
+
         BigDecimal costForNumber = BigDecimalUtils.convertNullToOne(product.getDecimalField("costForNumber"));
         if (BigDecimalUtils.valueEquals(costForNumber, BigDecimal.ZERO)) {
             costForNumber = BigDecimal.ONE;
@@ -91,5 +116,4 @@ public class ProductsCostCalculationServiceImpl implements ProductsCostCalculati
 
         return cost.divide(costForNumber, numberService.getMathContext());
     }
-
 }

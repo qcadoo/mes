@@ -10,10 +10,13 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.utils.DateUtils;
+import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveriesService;
@@ -22,6 +25,7 @@ import com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
 import com.qcadoo.mes.deliveries.constants.DeliveryFields;
 import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
+import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
 import com.qcadoo.mes.masterOrders.constants.DeliveryFieldsMO;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementFields;
@@ -70,6 +74,9 @@ public class SalesPlanMaterialRequirementDetailsListeners {
 
     @Autowired
     private UnitConversionService unitConversionService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     @Autowired
     private DeliveriesService deliveriesService;
@@ -125,6 +132,7 @@ public class SalesPlanMaterialRequirementDetailsListeners {
         return isValid;
     }
 
+    @Transactional
     public void createDelivery(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         FormComponent salesPlanMaterialRequirementForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         GridComponent salesPlanMaterialRequirementProductsGrid = (GridComponent) view
@@ -140,18 +148,31 @@ public class SalesPlanMaterialRequirementDetailsListeners {
 
             Entity delivery = createDelivery(salesPlanMaterialRequirement, salesPlanMaterialRequirementProducts);
 
-            Long deliveryId = delivery.getId();
+            if (delivery.isValid()) {
+                Long deliveryId = delivery.getId();
 
-            if (Objects.nonNull(deliveryId)) {
-                Map<String, Object> parameters = Maps.newHashMap();
-                parameters.put("form.id", deliveryId);
+                if (Objects.nonNull(deliveryId)) {
+                    Map<String, Object> parameters = Maps.newHashMap();
+                    parameters.put("form.id", deliveryId);
 
-                parameters.put(L_WINDOW_ACTIVE_MENU, "requirements.deliveries");
+                    parameters.put(L_WINDOW_ACTIVE_MENU, "requirements.deliveries");
 
-                String url = "../page/deliveries/deliveryDetails.html";
-                view.redirectTo(url, false, true, parameters);
+                    String url = "../page/deliveries/deliveryDetails.html";
+                    view.redirectTo(url, false, true, parameters);
+                } else {
+                    view.addMessage("masterOrders.salesPlanMaterialRequirement.createDelivery.info",
+                            ComponentState.MessageType.INFO);
+                }
             } else {
-                view.addMessage("masterOrders.salesPlanMaterialRequirement.createDelivery.info", ComponentState.MessageType.INFO);
+                delivery.getErrors().keySet().stream().filter(fieldName -> DeliveryFields.SUPPLIER.equals(fieldName)).findAny()
+                        .ifPresent(fieldName -> {
+                            if (parameterService.getParameter()
+                                    .getBooleanField(ParameterFieldsD.REQUIRE_SUPPLIER_IDENTYFICATION)) {
+                                view.addMessage("deliveries.delivery.supplier.isRequired", ComponentState.MessageType.FAILURE);
+                            }
+                        });
+
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             }
         }
     }
@@ -295,8 +316,7 @@ public class SalesPlanMaterialRequirementDetailsListeners {
 
     private BigDecimal getMinimumOrderQuantity(final Entity product, final List<Entity> companyProducts,
             final List<Entity> companyProductsFamilies) {
-        Optional<Entity> mayBeCompanyProduct = deliveriesService.getCompanyProduct(companyProducts,
-                product.getId());
+        Optional<Entity> mayBeCompanyProduct = deliveriesService.getCompanyProduct(companyProducts, product.getId());
 
         BigDecimal minimumOrderQuantity = null;
 
@@ -308,8 +328,8 @@ public class SalesPlanMaterialRequirementDetailsListeners {
             Entity parent = product.getBelongsToField(ProductFields.PARENT);
 
             if (Objects.nonNull(parent)) {
-                Optional<Entity> mayBeCompanyProductsFamily = deliveriesService
-                        .getCompanyProductsFamily(companyProductsFamilies, parent.getId());
+                Optional<Entity> mayBeCompanyProductsFamily = deliveriesService.getCompanyProductsFamily(companyProductsFamilies,
+                        parent.getId());
 
                 if (mayBeCompanyProductsFamily.isPresent()) {
                     Entity companyProductsFamily = mayBeCompanyProductsFamily.get();

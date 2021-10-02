@@ -1,10 +1,10 @@
 package com.qcadoo.mes.costCalculation.print.dto;
 
-import java.math.BigDecimal;
-
 import com.qcadoo.mes.costNormsForProduct.constants.ProductFieldsCNFP;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
+
+import java.math.BigDecimal;
 
 public class CostCalculationMaterialBySize {
 
@@ -22,13 +22,13 @@ public class CostCalculationMaterialBySize {
 
     private BigDecimal nominalCost;
 
-    private String nominalCostCurrency;
+    private Long nominalCostCurrency;
 
     private BigDecimal averageCost;
 
     private BigDecimal lastPurchaseCost;
 
-    private String lastPurchaseCostCurrency;
+    private Long lastPurchaseCostCurrency;
 
     private BigDecimal averageOfferCost;
 
@@ -38,11 +38,17 @@ public class CostCalculationMaterialBySize {
 
     private BigDecimal quantity;
 
-    public Entity getProductEntity(DataDefinition productDataDefinition) {
+    public Entity getProductEntity(DataDefinition productDataDefinition, DataDefinition currencyDataDefinition) {
         Entity product = productDataDefinition.create();
         product.setField(ProductFieldsCNFP.NOMINAL_COST, nominalCost);
+        if (nominalCostCurrency != null) {
+            product.setField(ProductFieldsCNFP.NOMINAL_COST_CURRENCY, currencyDataDefinition.get(nominalCostCurrency));
+        }
         product.setField(ProductFieldsCNFP.AVERAGE_COST, averageCost);
         product.setField(ProductFieldsCNFP.LAST_PURCHASE_COST, lastPurchaseCost);
+        if (lastPurchaseCostCurrency != null) {
+            product.setField(ProductFieldsCNFP.LAST_PURCHASE_COST_CURRENCY, currencyDataDefinition.get(lastPurchaseCostCurrency));
+        }
         product.setField(ProductFieldsCNFP.AVERAGE_OFFER_COST, averageOfferCost);
         product.setField(ProductFieldsCNFP.LAST_OFFER_COST, lastOfferCost);
         product.setField(ProductFieldsCNFP.COST_FOR_NUMBER, costForNumber);
@@ -153,19 +159,19 @@ public class CostCalculationMaterialBySize {
         this.quantity = quantity;
     }
 
-    public String getNominalCostCurrency() {
+    public Long getNominalCostCurrency() {
         return nominalCostCurrency;
     }
 
-    public void setNominalCostCurrency(String nominalCostCurrency) {
+    public void setNominalCostCurrency(Long nominalCostCurrency) {
         this.nominalCostCurrency = nominalCostCurrency;
     }
 
-    public String getLastPurchaseCostCurrency() {
+    public Long getLastPurchaseCostCurrency() {
         return lastPurchaseCostCurrency;
     }
 
-    public void setLastPurchaseCostCurrency(String lastPurchaseCostCurrency) {
+    public void setLastPurchaseCostCurrency(Long lastPurchaseCostCurrency) {
         this.lastPurchaseCostCurrency = lastPurchaseCostCurrency;
     }
 }

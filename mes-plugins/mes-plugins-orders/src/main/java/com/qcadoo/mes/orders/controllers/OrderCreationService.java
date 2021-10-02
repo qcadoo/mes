@@ -163,10 +163,10 @@ public class OrderCreationService {
 
         Entity parameter = parameterService.getParameter();
         boolean createOperationalTasks = !orderCreationRequest.getTechnologyOperations().isEmpty();
-        if(Objects.isNull(orderCreationRequest.getTechnologyId())) {
+        if (Objects.isNull(orderCreationRequest.getTechnologyId())) {
             if (!isParameterSet(parameter, createOperationalTasks)) {
-                return new OrderCreationResponse(translationService
-                        .translate("basic.dashboard.orderDefinitionWizard.createOrder.parameterNotSet", LocaleContextHolder.getLocale()));
+                return new OrderCreationResponse(translationService.translate(
+                        "basic.dashboard.orderDefinitionWizard.createOrder.parameterNotSet", LocaleContextHolder.getLocale()));
             }
         }
         Entity product = getProduct(orderCreationRequest.getProductId());
@@ -280,17 +280,20 @@ public class OrderCreationService {
                     pcq.getDataDefinition().delete(pcq.getId());
                 }
             }
-            Entity dashboardComponentsLocation = parameter.getBelongsToField(L_DASHBOARD_COMPONENTS_LOCATION);
-            Entity dashboardProductsInputLocation = parameter.getBelongsToField(L_DASHBOARD_PRODUCTS_INPUT_LOCATION);
+
+            List<Entity> pcqs = Lists.newArrayList();
             for (MaterialDto material : addedMaterials) {
-                createProductionCoutingQuantity(order, dashboardComponentsLocation, dashboardProductsInputLocation, material, toc);
+                Entity pcq = createProductionCoutingQuantity(order, material, toc);
+                pcqs.add(pcq);
             }
+
+            fillFlow(pcqs, order);
+            pcqs.forEach(p -> p.getDataDefinition().save(p));
         }
 
     }
 
     private void modifyProductionCountingQuantity(Entity order, List<MaterialDto> materials) {
-        Entity parameter = parameterService.getParameter();
         List<MaterialDto> addedMaterials = materials.stream().filter(m -> Objects.isNull(m.getProductInId()))
                 .collect(Collectors.toList());
         List<Long> technologyMaterials = materials.stream().filter(m -> Objects.nonNull(m.getProductInId()))
@@ -306,17 +309,26 @@ public class OrderCreationService {
                 pcq.getDataDefinition().delete(pcq.getId());
             }
         }
-        Entity dashboardComponentsLocation = parameter.getBelongsToField(L_DASHBOARD_COMPONENTS_LOCATION);
-        Entity dashboardProductsInputLocation = parameter.getBelongsToField(L_DASHBOARD_PRODUCTS_INPUT_LOCATION);
+
+        List<Entity> pcqs = Lists.newArrayList();
         for (MaterialDto material : addedMaterials) {
             Entity toc = order.getBelongsToField(OrderFields.TECHNOLOGY).getTreeField(TechnologyFields.OPERATION_COMPONENTS)
                     .getRoot();
-            createProductionCoutingQuantity(order, dashboardComponentsLocation, dashboardProductsInputLocation, material, toc);
+            Entity pcq = createProductionCoutingQuantity(order, material, toc);
+            pcqs.add(pcq);
         }
+
+        fillFlow(pcqs, order);
+        pcqs.forEach(p -> p.getDataDefinition().save(p));
     }
 
-    private void createProductionCoutingQuantity(Entity order, Entity dashboardComponentsLocation,
-            Entity dashboardProductsInputLocation, MaterialDto material, Entity toc) {
+    //override be aspect
+    public void fillFlow(final List<Entity> productionCountingQuantities, final Entity order) {
+
+
+    }
+
+    private Entity createProductionCoutingQuantity(Entity order, MaterialDto material, Entity toc) {
         Entity productionCountingQuantity = dataDefinitionService
                 .get(L_BASIC_PRODUCTION_COUNTING, L_PRODUCTION_COUNTING_QUANTITY).create();
         productionCountingQuantity.setField(L_ORDER, order.getId());
@@ -329,10 +341,7 @@ public class OrderCreationService {
         productionCountingQuantity.setField(L_ROLE, L_USED);
         productionCountingQuantity.setField(L_TYPE_OF_MATERIAL, L_COMPONENT);
         productionCountingQuantity.setField(L_FLOW_FILLED, Boolean.TRUE);
-
-        productionCountingQuantity.setField(L_PRODUCTS_INPUT_LOCATION, dashboardProductsInputLocation);
-        productionCountingQuantity.setField(L_COMPONENTS_LOCATION, dashboardComponentsLocation);
-        productionCountingQuantity = productionCountingQuantity.getDataDefinition().save(productionCountingQuantity);
+        return productionCountingQuantity;
     }
 
     private List<Entity> getMaterialsFromOrder(Entity order, Entity toc) {
@@ -468,10 +477,13 @@ public class OrderCreationService {
             }
             toc.setField(TechnologyOperationComponentFields.TECHNOLOGY, technology.getId());
             toc = toc.getDataDefinition().save(toc);
-            if(Objects.nonNull(technologyOperation.getWorkstationId())) {
-                List<Entity> workstations = Lists.newArrayList(toc.getHasManyField(TechnologyOperationComponentFields.WORKSTATIONS));
+            if (Objects.nonNull(technologyOperation.getWorkstationId())) {
+                List<Entity> workstations = Lists.newArrayList(toc
+                        .getHasManyField(TechnologyOperationComponentFields.WORKSTATIONS));
 
-                Entity workstation = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION).get(technologyOperation.getWorkstationId());
+                Entity workstation = dataDefinitionService
+                        .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION).get(
+                                technologyOperation.getWorkstationId());
                 workstations.add(workstation);
                 toc.setField(TechnologyOperationComponentFields.WORKSTATIONS, workstations);
             }
