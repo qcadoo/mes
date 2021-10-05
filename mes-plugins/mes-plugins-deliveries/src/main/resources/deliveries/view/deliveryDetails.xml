@@ -124,8 +124,32 @@
                 </smallButton>
             </group>
 
+            <group name="exportOrderedProducts">
+                <smallButton name="csv" state="enabled" icon="exportToCsvIcon16.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{orderedProducts}.performEvent('exportToCsv', [], 'exportToCsv');
+                                }
+                            });
+                        ]]>
+                    </script>
+                </smallButton>
+                <smallButton name="pdf" state="enabled" icon="pdfIcon16.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{orderedProducts}.performEvent('exportToPdf', [], 'exportToPdf');
+                                }
+                            });
+                        ]]>
+                    </script>
+                </smallButton>
+            </group>
             <group name="generate">
-                <bigButton name="generateOrder" icon="pdfIcon24.png"
+                <smallButton name="generateOrder" icon="pdfIcon16.png"
                            state="enabled">
                     <script>
                         <![CDATA[
@@ -144,8 +168,8 @@
                             });
                         ]]>
                     </script>
-                </bigButton>
-                <bigButton name="generateDelivery" icon="pdfIcon24.png"
+                </smallButton>
+                <smallButton name="generateDelivery" icon="pdfIcon16.png"
                            state="enabled">
                     <script>
                         <![CDATA[
@@ -164,7 +188,7 @@
                             });
                         ]]>
                     </script>
-                </bigButton>
+                </smallButton>
             </group>
 
             <group name="status">
