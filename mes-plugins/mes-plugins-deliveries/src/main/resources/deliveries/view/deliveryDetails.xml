@@ -130,7 +130,7 @@
                         <![CDATA[
                             this.addOnChangeListener({
                                 onClick: function() {
-                                    #{orderedProducts}.performEvent('exportToCsv', [], 'exportToCsv');
+                                    #{orderedProducts}.performEvent('exportToCsv', ['orderedProducts'], 'exportToCsv');
                                 }
                             });
                         ]]>
@@ -141,7 +141,7 @@
                         <![CDATA[
                             this.addOnChangeListener({
                                 onClick: function() {
-                                    #{orderedProducts}.performEvent('exportToPdf', [], 'exportToPdf');
+                                    #{orderedProducts}.performEvent('exportToPdf', ['orderedProducts'], 'exportToPdf');
                                 }
                             });
                         ]]>
