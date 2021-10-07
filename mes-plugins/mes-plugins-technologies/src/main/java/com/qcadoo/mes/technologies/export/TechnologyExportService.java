@@ -1,19 +1,24 @@
 package com.qcadoo.mes.technologies.export;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.nio.charset.Charset;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-
+import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.technologies.ProductQuantitiesWithComponentsService;
+import com.qcadoo.mes.technologies.constants.MrpAlgorithm;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.dto.OperationProductComponentHolder;
+import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeFields;
+import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
+import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.file.FileService;
+import com.qcadoo.model.api.search.SearchOrders;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.tenant.api.MultiTenantCallback;
+import com.qcadoo.tenant.api.MultiTenantService;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.slf4j.Logger;
@@ -24,24 +29,15 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import com.qcadoo.localization.api.TranslationService;
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.technologies.constants.ProductStructureTreeNodeFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeFields;
-import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
-import com.qcadoo.mes.technologies.tree.ProductStructureTreeService;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.file.FileService;
-import com.qcadoo.model.api.search.SearchOrders;
-import com.qcadoo.model.api.search.SearchRestrictions;
-import com.qcadoo.tenant.api.MultiTenantCallback;
-import com.qcadoo.tenant.api.MultiTenantService;
+import java.io.*;
+import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @Service
 public class TechnologyExportService {
@@ -91,6 +87,9 @@ public class TechnologyExportService {
     @Autowired
     private ProductStructureTreeService productStructureTreeService;
 
+    @Autowired
+    private ProductQuantitiesWithComponentsService productQuantitiesWithComponentsService;
+
     public void exportTechnologiesTrigger() {
         multiTenantService.doInMultiTenantContext(new MultiTenantCallback() {
 
@@ -136,7 +135,7 @@ public class TechnologyExportService {
             fileOutputStream.write(191);
 
             try (BufferedWriter bufferedWriter = new BufferedWriter(
-                    new OutputStreamWriter(fileOutputStream, Charset.forName("UTF-8")))) {
+                    new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8))) {
                 createHeader(bufferedWriter);
 
                 createRows(technologies, exportDate, bufferedWriter);
@@ -151,8 +150,6 @@ public class TechnologyExportService {
     private void createRows(final List<Entity> technologies, final String exportDate, final BufferedWriter bufferedWriter)
             throws IOException {
         for (Entity technology : technologies) {
-            EntityTree productStructureTree = productStructureTreeService.generateProductStructureTree(null, technology);
-
             String technologyNumber = normalizeString(technology.getStringField(TechnologyFields.NUMBER));
             String technologyName = normalizeString(technology.getStringField(TechnologyFields.NAME));
             String technologyState = translationService.translate(
@@ -168,46 +165,45 @@ public class TechnologyExportService {
             String technologyProduct = normalizeString(
                     technology.getBelongsToField(TechnologyFields.PRODUCT).getStringField(ProductFields.NUMBER));
 
-            for (Entity productNode : productStructureTree) {
-                if (ProductStructureTreeService.L_MATERIAL
-                        .equals(productNode.getStringField(ProductStructureTreeNodeFields.ENTITY_TYPE))) {
-                    Entity material = productNode.getBelongsToField(ProductStructureTreeNodeFields.PRODUCT);
+            Map<OperationProductComponentHolder, BigDecimal> materialQuantitiesByOPC = productQuantitiesWithComponentsService
+                    .getNeededProductQuantitiesByOPC(technology, BigDecimal.ONE, MrpAlgorithm.ONLY_MATERIALS);
 
-                    bufferedWriter.append(BACKSLASH).append(technologyNumber).append(BACKSLASH);
-                    bufferedWriter.append(exportedCsvSeparator);
-                    bufferedWriter.append(BACKSLASH).append(technologyName).append(BACKSLASH);
-                    bufferedWriter.append(exportedCsvSeparator);
-                    bufferedWriter.append(BACKSLASH).append(technologyState).append(BACKSLASH);
-                    bufferedWriter.append(exportedCsvSeparator);
-                    bufferedWriter.append(BACKSLASH).append(isDefaultTechnology).append(BACKSLASH);
-                    bufferedWriter.append(exportedCsvSeparator);
-                    bufferedWriter.append(BACKSLASH).append(technologyStandardPerformance).append(BACKSLASH);
-                    bufferedWriter.append(exportedCsvSeparator);
-                    bufferedWriter.append(BACKSLASH).append(technologyStateChange).append(BACKSLASH);
-                    bufferedWriter.append(exportedCsvSeparator);
-                    bufferedWriter.append(BACKSLASH).append(technologyAcceptStateChange).append(BACKSLASH);
-                    bufferedWriter.append(exportedCsvSeparator);
-                    bufferedWriter.append(BACKSLASH).append(technologyOutdatedStateChange).append(BACKSLASH);
-                    bufferedWriter.append(exportedCsvSeparator);
-                    bufferedWriter.append(BACKSLASH).append(technologyProduct).append(BACKSLASH);
-                    bufferedWriter.append(exportedCsvSeparator);
-                    bufferedWriter.append(BACKSLASH).append(normalizeString(material.getStringField(ProductFields.NUMBER)))
-                            .append(BACKSLASH);
-                    bufferedWriter.append(exportedCsvSeparator);
-                    bufferedWriter.append(BACKSLASH).append(normalizeString(material.getStringField(ProductFields.NAME)))
-                            .append(BACKSLASH);
-                    bufferedWriter.append(exportedCsvSeparator);
-                    bufferedWriter.append(BACKSLASH)
-                            .append(numberService.format(productNode.getDecimalField(ProductStructureTreeNodeFields.QUANTITY)))
-                            .append(BACKSLASH);
-                    bufferedWriter.append(exportedCsvSeparator);
-                    bufferedWriter.append(BACKSLASH).append(normalizeString(material.getStringField(ProductFields.UNIT)))
-                            .append(BACKSLASH);
-                    bufferedWriter.append(exportedCsvSeparator);
-                    bufferedWriter.append(BACKSLASH).append(exportDate).append(BACKSLASH);
+            for (Map.Entry<OperationProductComponentHolder, BigDecimal> neededProductQuantity : materialQuantitiesByOPC
+                    .entrySet()) {
+                Entity material = neededProductQuantity.getKey().getProduct();
 
-                    bufferedWriter.append(NEWLINE);
-                }
+                bufferedWriter.append(BACKSLASH).append(technologyNumber).append(BACKSLASH);
+                bufferedWriter.append(exportedCsvSeparator);
+                bufferedWriter.append(BACKSLASH).append(technologyName).append(BACKSLASH);
+                bufferedWriter.append(exportedCsvSeparator);
+                bufferedWriter.append(BACKSLASH).append(technologyState).append(BACKSLASH);
+                bufferedWriter.append(exportedCsvSeparator);
+                bufferedWriter.append(BACKSLASH).append(isDefaultTechnology).append(BACKSLASH);
+                bufferedWriter.append(exportedCsvSeparator);
+                bufferedWriter.append(BACKSLASH).append(technologyStandardPerformance).append(BACKSLASH);
+                bufferedWriter.append(exportedCsvSeparator);
+                bufferedWriter.append(BACKSLASH).append(technologyStateChange).append(BACKSLASH);
+                bufferedWriter.append(exportedCsvSeparator);
+                bufferedWriter.append(BACKSLASH).append(technologyAcceptStateChange).append(BACKSLASH);
+                bufferedWriter.append(exportedCsvSeparator);
+                bufferedWriter.append(BACKSLASH).append(technologyOutdatedStateChange).append(BACKSLASH);
+                bufferedWriter.append(exportedCsvSeparator);
+                bufferedWriter.append(BACKSLASH).append(technologyProduct).append(BACKSLASH);
+                bufferedWriter.append(exportedCsvSeparator);
+                bufferedWriter.append(BACKSLASH).append(normalizeString(material.getStringField(ProductFields.NUMBER)))
+                        .append(BACKSLASH);
+                bufferedWriter.append(exportedCsvSeparator);
+                bufferedWriter.append(BACKSLASH).append(normalizeString(material.getStringField(ProductFields.NAME)))
+                        .append(BACKSLASH);
+                bufferedWriter.append(exportedCsvSeparator);
+                bufferedWriter.append(BACKSLASH).append(numberService.format(neededProductQuantity.getValue())).append(BACKSLASH);
+                bufferedWriter.append(exportedCsvSeparator);
+                bufferedWriter.append(BACKSLASH).append(normalizeString(material.getStringField(ProductFields.UNIT)))
+                        .append(BACKSLASH);
+                bufferedWriter.append(exportedCsvSeparator);
+                bufferedWriter.append(BACKSLASH).append(exportDate).append(BACKSLASH);
+
+                bufferedWriter.append(NEWLINE);
             }
         }
     }

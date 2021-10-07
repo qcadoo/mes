@@ -60,6 +60,8 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
 
     private static final Logger LOG = LoggerFactory.getLogger(TechnologiesTechnologyDetailsPdfView.class);
 
+    public static final String TECHNOLOGIES_TECHNOLOGIES_TECHNOLOGY_DETAILS_REPORT_PANEL_TECHNOLOGY = "technologies.technologiesTechnologyDetails.report.panel.technology.";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -97,16 +99,16 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
         PdfPTable panelTable = pdfHelper.createPanelTable(3);
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
                 translationService.translate(
-                        "technologies.technologiesTechnologyDetails.report.panel.technology." + TechnologyFields.NAME, locale),
+                        TECHNOLOGIES_TECHNOLOGIES_TECHNOLOGY_DETAILS_REPORT_PANEL_TECHNOLOGY + TechnologyFields.NAME, locale),
                 technology.getStringField(TechnologyFields.NAME));
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
                 translationService.translate(
-                        "technologies.technologiesTechnologyDetails.report.panel.technology." + TechnologyFields.NUMBER, locale),
+                        TECHNOLOGIES_TECHNOLOGIES_TECHNOLOGY_DETAILS_REPORT_PANEL_TECHNOLOGY + TechnologyFields.NUMBER, locale),
                 technology.getStringField(TechnologyFields.NUMBER));
         panelTable.addCell(createImageCell(product));
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
                 translationService.translate(
-                        "technologies.technologiesTechnologyDetails.report.panel.technology." + TechnologyFields.PRODUCT, locale),
+                        TECHNOLOGIES_TECHNOLOGIES_TECHNOLOGY_DETAILS_REPORT_PANEL_TECHNOLOGY + TechnologyFields.PRODUCT, locale),
                 product.getStringField(ProductFields.NAME));
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
                 translationService.translate("technologies.technologiesTechnologyDetails.report.panel.technology.default",
@@ -115,7 +117,7 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
                         : translationService.translate("qcadooView.false", locale));
         pdfHelper.addTableCellAsOneColumnTable(panelTable,
                 translationService.translate(
-                        "technologies.technologiesTechnologyDetails.report.panel.technology." + TechnologyFields.DESCRIPTION,
+                        TECHNOLOGIES_TECHNOLOGIES_TECHNOLOGY_DETAILS_REPORT_PANEL_TECHNOLOGY + TechnologyFields.DESCRIPTION,
                         locale),
                 technology.getStringField(ProductFields.DESCRIPTION));
         panelTable.addCell(StringUtils.EMPTY);
