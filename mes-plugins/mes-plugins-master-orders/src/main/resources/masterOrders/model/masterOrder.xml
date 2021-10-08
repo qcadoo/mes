@@ -102,6 +102,7 @@
 
         <belongsTo name="salesPlan" model="salesPlan"/>
 
+        <dictionary name="companyCategory" dictionary="companyCategory" persistent="false"/>
     </fields>
 
     <hooks>

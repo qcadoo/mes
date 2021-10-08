@@ -36,6 +36,7 @@
         <string name="externalNumber"/>
         <datetime name="deadline"/>
         <string name="company"/>
+        <string name="companyCategory"/>
         <string name="companyPayer"/>
         <string name="masterOrderState"/>
         <enum name="state" values="01new,02inExecution,03completed,04declined"/>
