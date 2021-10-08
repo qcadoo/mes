@@ -48,6 +48,8 @@ public class OrderHolder {
 
     private String masterOrderNumber;
 
+    private String orderCategory;
+
     private String productionLineNumber;
 
     private String productNumber;
@@ -174,8 +176,9 @@ public class OrderHolder {
                 .append(description, that.description).append(state, that.state)
                 .append(typeOfProductionRecording, that.typeOfProductionRecording).append(plannedQuantity, that.plannedQuantity)
                 .append(doneQuantity, that.doneQuantity).append(masterOrderNumber, that.masterOrderNumber)
-                .append(productionLineNumber, that.productionLineNumber).append(productNumber, that.productNumber)
-                .append(productName, that.productName).append(productUnit, that.productUnit).append(companyName, that.companyName)
+                .append(orderCategory, that.orderCategory).append(productionLineNumber, that.productionLineNumber)
+                .append(productNumber, that.productNumber).append(productName, that.productName)
+                .append(productUnit, that.productUnit).append(companyName, that.companyName)
                 .append(dashboardShowForProduct, that.dashboardShowForProduct)
                 .append(dashboardShowDescription, that.dashboardShowDescription).isEquals();
     }
@@ -184,8 +187,8 @@ public class OrderHolder {
     public int hashCode() {
         return new HashCodeBuilder().append(id).append(number).append(name).append(description).append(state)
                 .append(typeOfProductionRecording).append(plannedQuantity).append(doneQuantity).append(masterOrderNumber)
-                .append(productionLineNumber).append(productNumber).append(productName).append(productUnit).append(companyName)
-                .append(dashboardShowForProduct).append(dashboardShowDescription).toHashCode();
+                .append(orderCategory).append(productionLineNumber).append(productNumber).append(productName).append(productUnit)
+                .append(companyName).append(dashboardShowForProduct).append(dashboardShowDescription).toHashCode();
     }
 
     public String getDescription() {
@@ -218,5 +221,13 @@ public class OrderHolder {
 
     public void setProductName(String productName) {
         this.productName = productName;
+    }
+
+    public String getOrderCategory() {
+        return orderCategory;
+    }
+
+    public void setOrderCategory(String orderCategory) {
+        this.orderCategory = orderCategory;
     }
 }

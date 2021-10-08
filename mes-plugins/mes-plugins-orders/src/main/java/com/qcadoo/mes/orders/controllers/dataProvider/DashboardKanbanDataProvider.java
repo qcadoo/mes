@@ -63,7 +63,7 @@ public class DashboardKanbanDataProvider {
         return "SELECT orderlistdto.id, orderlistdto.number, orderlistdto.name,  "
                 + "orderlistdto.state, orderlistdto.typeofproductionrecording, "
                 + "orderlistdto.plannedquantity, orderlistdto.donequantity, "
-                + "orderlistdto.masterordernumber AS masterOrderNumber, "
+                + "orderlistdto.masterordernumber AS masterOrderNumber, orderlistdto.ordercategory AS orderCategory, "
                 + "orderlistdto.productionlinenumber AS productionLineNumber, orderlistdto.productnumber AS productNumber, "
                 + "orderlistdto.unit AS productunit, orderlistdto.companyname AS companyName, orderlistdto.description, "
                 + "orderlistdto.productname AS productName, p.dashboardshowdescription, p.dashboardshowforproduct "

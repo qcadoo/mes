@@ -485,6 +485,7 @@ function createOrderDiv(order) {
         (order.plannedQuantity ? '<br/>' : '') +
         (order.companyName ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.companyName.label") + ':</span> ' + order.companyName + '<br/>' : '') +
         (order.masterOrderNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.masterOrderNumber.label") + ':</span> ' + order.masterOrderNumber + '<br/>' : '') +
+        (order.orderCategory ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.orderCategory.label") + ':</span> ' + order.orderCategory + '<br/>' : '') +
         (order.dashboardShowDescription ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.description.label") + ':</span> ' + (order.description ? order.description : '') + '<br/>' : '');
 
         if(QCD.enableRegistrationTerminalOnDashboard === 'true') {
