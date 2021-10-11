@@ -62,13 +62,14 @@ public class DashboardKanbanDataProvider {
     private String getOrderQueryProjections() {
         return "SELECT orderlistdto.id, orderlistdto.number, orderlistdto.name,  "
                 + "orderlistdto.state, orderlistdto.typeofproductionrecording, "
-                + "orderlistdto.plannedquantity, orderlistdto.donequantity, "
+                + "orderlistdto.plannedquantity, orderlistdto.donequantity, mop.masterorderquantity, "
                 + "orderlistdto.masterordernumber AS masterOrderNumber, orderlistdto.ordercategory AS orderCategory, "
                 + "orderlistdto.productionlinenumber AS productionLineNumber, orderlistdto.productnumber AS productNumber, "
                 + "orderlistdto.unit AS productunit, orderlistdto.companyname AS companyName, orderlistdto.description, "
                 + "orderlistdto.productname AS productName, p.dashboardshowdescription, p.dashboardshowforproduct "
-                + "FROM orders_orderlistdto orderlistdto, basic_parameter p ";
-
+                + "FROM orders_orderlistdto orderlistdto CROSS JOIN basic_parameter p "
+                + "LEFT JOIN masterorders_masterorderproduct mop ON mop.product_id = orderlistdto.productid "
+                + "AND mop.masterorder_id = orderlistdto.masterorderid ";
     }
 
     private String getOrdersQuery() {

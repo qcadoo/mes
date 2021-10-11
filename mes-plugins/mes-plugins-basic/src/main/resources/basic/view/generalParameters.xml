@@ -44,7 +44,7 @@
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="parameter" reference="form">
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="4">
+                           rows="5">
                     <layoutElement column="1" row="1">
                         <component type="lookup" name="company" field="company"
                                    reference="company">
@@ -60,6 +60,9 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
+                        <component type="file" name="logo" field="logo" reference="logo"/>
+                    </layoutElement>
+                    <layoutElement column="1" row="3">
                         <component type="lookup" name="country" field="country"
                                    reference="country" hasDescription="true">
                             <option type="column" name="country" fields="country"
@@ -74,7 +77,7 @@
                             <option type="fieldCode" value="code"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="3">
+                    <layoutElement column="1" row="4">
                         <component type="lookup" name="currency" field="currency"
                                    reference="currency" hasDescription="true">
                             <option type="column" name="currency" fields="currency"
@@ -91,7 +94,7 @@
 
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="4">
+                    <layoutElement column="1" row="5">
                         <component type="select" name="unit" field="#{form}.unit"
                                    reference="unit" hasDescription="true">
                         </component>

@@ -23,6 +23,17 @@
  */
 package com.qcadoo.mes.materialFlow;
 
+import java.util.LinkedList;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.ModelAndView;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
@@ -37,17 +48,6 @@ import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.view.constants.MenuItemFields;
-
-import java.util.LinkedList;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Primary;
-import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.ModelAndView;
 
 @Service
 @Primary
@@ -94,6 +94,7 @@ public class DashboardViewMF implements DashboardView {
         mav.addObject("showKanbanOnDashboard", securityService.hasCurrentUserRole("ROLE_DASHBOARD_KANBAN"));
         mav.addObject("enableCreateOrdersOnDashboard", securityService.hasCurrentUserRole("ROLE_DASHBOARD_KANBAN_CREATE_ORDERS"));
         mav.addObject("enableOrdersLinkOnDashboard", securityService.hasCurrentUserRole("ROLE_DASHBOARD_KANBAN_GOTO_ORDER_EDIT"));
+        mav.addObject("enablePrintLabelOnDashboard", securityService.hasCurrentUserRole("ROLE_DASHBOARD_KANBAN_PRINT_LABEL"));
         mav.addObject("enableRegistrationTerminalOnDashboard", securityService.hasCurrentUserRole("ROLE_PRODUCTION_REGISTRATION_TERMINAL"));
         mav.addObject("whatToShowOnDashboard", getWhatToShowOnDashboard(parameter));
         mav.addObject("dashboardButtons", filterDashboardButtons(getDashboardButtons(parameter), currentUser));

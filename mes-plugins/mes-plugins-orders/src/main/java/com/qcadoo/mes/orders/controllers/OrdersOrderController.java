@@ -23,10 +23,9 @@
  */
 package com.qcadoo.mes.orders.controllers;
 
-import com.google.common.collect.ImmutableMap;
-import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.orders.constants.OrdersConstants;
-import com.qcadoo.view.api.crud.CrudService;
+import java.util.Locale;
+import java.util.Map;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -35,8 +34,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.Locale;
-import java.util.Map;
+import com.google.common.collect.ImmutableMap;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
+import com.qcadoo.view.api.crud.CrudService;
 
 @Controller
 public class OrdersOrderController {
@@ -52,6 +53,16 @@ public class OrdersOrderController {
         ModelAndView mav = new ModelAndView();
 
         mav.setViewName("ordersOrderReportPdf");
+        mav.addObject("id", id);
+
+        return mav;
+    }
+
+    @RequestMapping(value = OrdersConstants.PLUGIN_IDENTIFIER + "/ordersLabelReport.pdf" , method = RequestMethod.GET)
+    public final ModelAndView ordersLabelReport(@RequestParam("id") final String id) {
+        ModelAndView mav = new ModelAndView();
+
+        mav.setViewName("ordersLabelReportPdf");
         mav.addObject("id", id);
 
         return mav;
