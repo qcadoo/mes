@@ -419,4 +419,20 @@ public class SalesPlanMaterialRequirementDetailsListeners {
                 MasterOrdersConstants.MODEL_SALES_PLAN_MATERIAL_REQUIREMENT_PRODUCT);
     }
 
+    public final void showTechnologiesWithUsingProduct(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        GridComponent salesPlanMaterialRequirementProductsGrid = (GridComponent) view
+                .getComponentByReference(QcadooViewConstants.L_GRID);
+
+        Entity product = salesPlanMaterialRequirementProductsGrid.getSelectedEntities().get(0)
+                .getBelongsToField(SalesPlanMaterialRequirementProductFields.PRODUCT);
+
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        parameters.put("form.id", product.getId());
+
+        String url = "../page/technologies/technologiesWithUsingProductList.html";
+        view.redirectTo(url, false, true, parameters);
+    }
+
 }
