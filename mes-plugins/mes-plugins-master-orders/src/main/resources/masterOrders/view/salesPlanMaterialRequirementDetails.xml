@@ -64,6 +64,8 @@
             <group name="deliveries">
                 <bigButton name="createDelivery" icon="genealogyIcon24.png"
                            action="#{form}.fireEvent(createDelivery);" state="enabled"/>
+                <bigButton name="showSalesPlanDeliveries" icon="genealogyIcon24.png"
+                           action="#{form}.fireEvent(showSalesPlanDeliveries);" state="enabled"/>
             </group>
             <group name="technologies">
                 <bigButton name="showTechnologiesWithUsingProduct" icon="genealogyIcon24.png">
@@ -135,6 +137,9 @@
                 <listener event="showTechnologiesWithUsingProduct"
                           class="com.qcadoo.mes.masterOrders.listeners.SalesPlanMaterialRequirementDetailsListeners"
                           method="showTechnologiesWithUsingProduct"/>
+                <listener event="showSalesPlanDeliveries"
+                          class="com.qcadoo.mes.masterOrders.listeners.SalesPlanMaterialRequirementDetailsListeners"
+                          method="showSalesPlanDeliveries"/>
             </component>
         </windowTab>
 

@@ -49,6 +49,8 @@ public class SalesPlanMaterialRequirementDetailsHooks {
 
     private static final String L_CREATE_DELIVERY = "createDelivery";
 
+    private static final String SHOW_SALES_PLAN_DELIVERIES = "showSalesPlanDeliveries";
+
     private static final String TECHNOLOGIES = "technologies";
 
     private static final String SHOW_TECHNOLOGIES_WITH_USING_PRODUCT = "showTechnologiesWithUsingProduct";
@@ -74,6 +76,8 @@ public class SalesPlanMaterialRequirementDetailsHooks {
 
         RibbonActionItem generateRibbonActionItem = generateRibbonGroup.getItemByName(L_GENERATE_SALES_PLAN_MATERIAL_REQUIREMENT);
         RibbonActionItem createDeliveryRibbonActionItem = deliveriesRibbonGroup.getItemByName(L_CREATE_DELIVERY);
+        RibbonActionItem showSalesPlanDeliveriesRibbonActionItem = deliveriesRibbonGroup
+                .getItemByName(SHOW_SALES_PLAN_DELIVERIES);
         RibbonActionItem showTechnologiesWithUsingProductRibbonActionItem = technologiesRibbonGroup
                 .getItemByName(SHOW_TECHNOLOGIES_WITH_USING_PRODUCT);
 
@@ -91,6 +95,8 @@ public class SalesPlanMaterialRequirementDetailsHooks {
         showTechnologiesWithUsingProductRibbonActionItem
                 .setEnabled(salesPlanMaterialRequirementProductsGrid.getSelectedEntities().size() == 1);
         showTechnologiesWithUsingProductRibbonActionItem.requestUpdate(true);
+        showSalesPlanDeliveriesRibbonActionItem.setEnabled(isEnabled);
+        showSalesPlanDeliveriesRibbonActionItem.requestUpdate(true);
     }
 
     private void setFormEnabled(final ViewDefinitionState view) {
