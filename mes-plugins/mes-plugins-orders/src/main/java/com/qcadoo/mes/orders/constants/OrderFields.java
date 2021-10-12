@@ -85,6 +85,8 @@ public final class OrderFields {
 
     public static final String DONE_QUANTITY = "doneQuantity";
 
+    public static final String REPORTED_PRODUCTION_QUANTITY = "reportedProductionQuantity";
+
     public static final String EXTERNAL_SYNCHRONIZED = "externalSynchronized";
 
     public static final String STATE_CHANGES = "stateChanges";

@@ -1,5 +1,12 @@
 package com.qcadoo.mes.orders.controllers.dataProvider;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+import com.qcadoo.mes.orders.controllers.dto.OperationalTaskHolder;
+import com.qcadoo.mes.orders.controllers.dto.OrderHolder;
+import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
+import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
+
 import java.util.List;
 import java.util.Map;
 
@@ -7,13 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
-
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.qcadoo.mes.orders.controllers.dto.OperationalTaskHolder;
-import com.qcadoo.mes.orders.controllers.dto.OrderHolder;
-import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
-import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 
 @Service
 public class DashboardKanbanDataProvider {
@@ -60,7 +60,7 @@ public class DashboardKanbanDataProvider {
     }
 
     private String getOrderQueryProjections() {
-        return "SELECT orderlistdto.id, orderlistdto.number, orderlistdto.name,  "
+        return "SELECT orderlistdto.id, orderlistdto.number, orderlistdto.name,  orderlistdto.reportedProductionQuantity,  "
                 + "orderlistdto.state, orderlistdto.typeofproductionrecording, "
                 + "orderlistdto.plannedquantity, orderlistdto.donequantity, "
                 + "orderlistdto.masterordernumber AS masterOrderNumber, orderlistdto.ordercategory AS orderCategory, "

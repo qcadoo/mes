@@ -110,7 +110,7 @@ public class OrderProductQuantityHooks {
     }
 
     public void fillProductUnit(final ViewDefinitionState state) {
-        List<String> references = Arrays.asList("unitCCQ", "unitCPQ", "unitAOPP", "unitRAOPTP", "wastesQuantityUnit");
+        List<String> references = Arrays.asList("unitCCQ", "unitCPQ", "unitAOPP", "unitRAOPTP", "wastesQuantityUnit", "unitReportedProductionQuantity");
         fillProductUnit(state, references);
     }
 

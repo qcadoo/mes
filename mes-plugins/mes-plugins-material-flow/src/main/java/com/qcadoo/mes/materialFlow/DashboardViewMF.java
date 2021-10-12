@@ -96,6 +96,7 @@ public class DashboardViewMF implements DashboardView {
         mav.addObject("enableOrdersLinkOnDashboard", securityService.hasCurrentUserRole("ROLE_DASHBOARD_KANBAN_GOTO_ORDER_EDIT"));
         mav.addObject("enableRegistrationTerminalOnDashboard", securityService.hasCurrentUserRole("ROLE_PRODUCTION_REGISTRATION_TERMINAL"));
         mav.addObject("whatToShowOnDashboard", getWhatToShowOnDashboard(parameter));
+        mav.addObject("quantityMadeOnTheBasisOfDashboard", parameter.getStringField("quantityMadeOnTheBasisOfDashboard"));
         mav.addObject("dashboardButtons", filterDashboardButtons(getDashboardButtons(parameter), currentUser));
 
         if(arguments.containsKey("wizardToOpen")) {

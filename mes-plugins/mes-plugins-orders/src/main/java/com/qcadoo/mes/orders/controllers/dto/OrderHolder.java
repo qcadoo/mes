@@ -46,6 +46,8 @@ public class OrderHolder {
 
     private BigDecimal doneQuantity;
 
+    private BigDecimal reportedProductionQuantity;
+
     private String masterOrderNumber;
 
     private String orderCategory;
@@ -158,6 +160,14 @@ public class OrderHolder {
 
     public void setCompanyName(final String companyName) {
         this.companyName = companyName;
+    }
+
+    public BigDecimal getReportedProductionQuantity() {
+        return reportedProductionQuantity;
+    }
+
+    public void setReportedProductionQuantity(BigDecimal reportedProductionQuantity) {
+        this.reportedProductionQuantity = reportedProductionQuantity;
     }
 
     @Override

@@ -1000,7 +1000,7 @@
                        columns="3" rows="3">
                 <layoutElement column="1" row="1" height="3">
                     <component type="gridLayout" name="prodQuantityTablayout"
-                               columns="1" rows="5">
+                               columns="1" rows="6">
                         <layoutElement column="1" row="1">
                             <component type="borderLayout" name="commissionedAmount">
                                 <component type="gridLayout" name="commissionedAmountGridLayout"
@@ -1046,7 +1046,7 @@
                                 <layoutElement column="1" row="1" width="3">
                                     <component type="input" name="amountOfProductProduced"
                                                reference="amountOfProductProduced"
-                                               field="#{form}.amountOfProductProduced">
+                                               field="#{form}.amountOfProductProduced" hasDescription="true">
                                         <option type="labelWidth" value="55"/>
                                         <option type="alignment" value="right"/>
                                     </component>
@@ -1060,6 +1060,26 @@
                             </component>
                         </layoutElement>
                         <layoutElement column="1" row="3">
+                            <component type="gridLayout" name="reportedProductionQuantityGridLayout"
+                                       columns="4" rows="1" reference="reportedProductionQuantityGridLayout"
+                                       hasBorders="false">
+                                <layoutElement column="1" row="1" width="3">
+                                    <component type="input" name="reportedProductionQuantity"
+                                               reference="reportedProductionQuantity"
+                                               field="#{form}.reportedProductionQuantity" hasDescription="true">
+                                        <option type="labelWidth" value="55"/>
+                                        <option type="alignment" value="right"/>
+                                    </component>
+                                </layoutElement>
+                                <layoutElement column="4" row="1">
+                                    <component type="input" name="unitReportedProductionQuantity" reference="unitReportedProductionQuantity"
+                                               hasLabel="false">
+                                        <option type="textRepresentationOnDisabled" value="true"/>
+                                    </component>
+                                </layoutElement>
+                            </component>
+                        </layoutElement>
+                        <layoutElement column="1" row="4">
                             <component type="gridLayout" name="doneInPercentageGridLayout"
                                        columns="4" rows="1" reference="doneInPercentageGridLayout"
                                        hasBorders="false">
@@ -1078,7 +1098,7 @@
                                 </layoutElement>
                             </component>
                         </layoutElement>
-                        <layoutElement column="1" row="4">
+                        <layoutElement column="1" row="5">
                             <component type="gridLayout" name="wastesQuantityGridLayout"
                                        columns="4" rows="1" reference="wastesQuantityGridLayout"
                                        hasBorders="false">
@@ -1098,7 +1118,7 @@
                                 </layoutElement>
                             </component>
                         </layoutElement>
-                        <layoutElement column="1" row="5">
+                        <layoutElement column="1" row="6">
                             <component type="gridLayout"
                                        name="remainingAmountOfProductToProduceGridLayout" columns="4"
                                        rows="1" reference="remainingAmountOfProductToProduceGridLayout"
