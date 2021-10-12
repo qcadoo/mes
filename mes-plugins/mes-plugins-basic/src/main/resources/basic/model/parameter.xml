@@ -47,6 +47,7 @@
 
 		<hasMany name="dashboardButtons" model="dashboardButton"
 				 joinField="parameter" cascade="delete" copyable="true" />
+		<file name="logo"/>
 	</fields>
 
 	<hooks>

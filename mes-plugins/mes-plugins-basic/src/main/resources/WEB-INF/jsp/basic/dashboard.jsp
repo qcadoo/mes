@@ -36,6 +36,7 @@
     QCD.enableOrdersLinkOnDashboard = '<c:out value="${enableOrdersLinkOnDashboard}" />';
     QCD.enableRegistrationTerminalOnDashboard = '<c:out value="${enableRegistrationTerminalOnDashboard}" />';
     QCD.quantityMadeOnTheBasisOfDashboard = '<c:out value="${quantityMadeOnTheBasisOfDashboard}" />';
+    QCD.enablePrintLabelOnDashboard = '<c:out value="${enablePrintLabelOnDashboard}" />';
 
     QCD.translate = function (key) {
         return QCD.translations[key] || '[' + key + ']';

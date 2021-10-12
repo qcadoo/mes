@@ -57,6 +57,7 @@
         <string name="productionLineNumber"/>
         <string name="typeOfProductionRecording"/>
         <integer name="masterOrderId"/>
+        <integer name="productId"/>
     </fields>
 
     <hooks/>
