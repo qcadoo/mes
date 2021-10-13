@@ -251,6 +251,8 @@
         <security:role identifier="ROLE_DASHBOARD_KANBAN_GOTO_ORDER_EDIT"/>
         <security:role identifier="ROLE_DASHBOARD_KANBAN_PRINT_LABEL"/>
 
+        <security:role identifier="ROLE_ORDER_MATERIAL_AVAILABILITY_SHOW_RESOURCES"/>
+
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
         <model:model model="crew" resource="model/crew.xml"/>

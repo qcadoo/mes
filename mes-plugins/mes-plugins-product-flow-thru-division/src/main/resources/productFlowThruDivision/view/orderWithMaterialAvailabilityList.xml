@@ -61,6 +61,21 @@
 					</script>
 				</bigButton>
 			</group>
+			<group name="resources" defaultAuthorizationRole="ROLE_ORDER_MATERIAL_AVAILABILITY_SHOW_RESOURCES">
+				<bigButton name="showWarehouseResources" icon="generateIcon24.png">
+					<script>
+						<![CDATA[
+							this.addOnChangeListener({
+								onClick: function() {
+									if(window.canClose()) {
+										#{grid}.performEvent('showWarehouseResources', []);
+									}
+								}
+							});
+						]]>
+					</script>
+				</bigButton>
+			</group>
 		</ribbon>
 		
 		<component type="form" name="order" reference="order">
@@ -101,6 +116,9 @@
 						<listener event="showReplacementsAvailability"
 								  class="com.qcadoo.mes.productFlowThruDivision.listeners.OrderWithMaterialAvailabilityListListeners"
 								  method="showReplacementsAvailability"/>
+						<listener event="showWarehouseResources"
+								  class="com.qcadoo.mes.productFlowThruDivision.listeners.OrderWithMaterialAvailabilityListListeners"
+								  method="showWarehouseResources"/>
 					</component>
 				</layoutElement>
 			</component>

@@ -41,15 +41,15 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 @Service
 public class OrderWithMaterialAvailabilityListHooks {
 
-
-
-
-
     private static final String L_MATERIAL_AVAILABILITY = "materialAvailability";
+
+    private static final String RESOURCES = "resources";
 
     private static final String L_SHOW_AVAILABILITY = "showAvailability";
 
     private static final String L_SHOW_REPLACEMENTS_AVAILABILITY = "showReplacementsAvailability";
+
+    private static final String SHOW_WAREHOUSE_RESOURCES = "showWarehouseResources";
 
     private static final String FROM_TERMINAL = "window.mainTab.availabilityComponentForm.gridLayout.terminal";
 
@@ -58,10 +58,11 @@ public class OrderWithMaterialAvailabilityListHooks {
 
     public void toggleShowAvailabilityButton(final ViewDefinitionState view) {
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
-        RibbonGroup materialAvailability = (RibbonGroup) window.getRibbon().getGroupByName(L_MATERIAL_AVAILABILITY);
-        RibbonActionItem showAvailability = (RibbonActionItem) materialAvailability.getItemByName(L_SHOW_AVAILABILITY);
-        RibbonActionItem showReplacementsAvailability = (RibbonActionItem) materialAvailability
-                .getItemByName(L_SHOW_REPLACEMENTS_AVAILABILITY);
+        RibbonGroup materialAvailability = window.getRibbon().getGroupByName(L_MATERIAL_AVAILABILITY);
+        RibbonGroup resources = window.getRibbon().getGroupByName(RESOURCES);
+        RibbonActionItem showAvailability = materialAvailability.getItemByName(L_SHOW_AVAILABILITY);
+        RibbonActionItem showReplacementsAvailability = materialAvailability.getItemByName(L_SHOW_REPLACEMENTS_AVAILABILITY);
+        RibbonActionItem showWarehouseResources = resources.getItemByName(SHOW_WAREHOUSE_RESOURCES);
         JSONObject obj = view.getJsonContext();
 
         GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
@@ -69,28 +70,32 @@ public class OrderWithMaterialAvailabilityListHooks {
         if (grid.getSelectedEntitiesIds().size() != 1) {
             showAvailability.setEnabled(false);
             showReplacementsAvailability.setEnabled(false);
+            showWarehouseResources.setEnabled(false);
         } else {
             showAvailability.setEnabled(true);
-            Entity selected = dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
-                    ProductFlowThruDivisionConstants.MODEL_MATERIAL_AVAILABILITY).get(
-                    grid.getSelectedEntitiesIds().stream().findFirst().get());
-            if (selected.getBooleanField(MaterialAvailabilityFields.REPLACEMENT)) {
-                showReplacementsAvailability.setEnabled(true);
-            } else {
-                showReplacementsAvailability.setEnabled(false);
-            }
+            showWarehouseResources.setEnabled(true);
+            Entity selected = dataDefinitionService
+                    .get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
+                            ProductFlowThruDivisionConstants.MODEL_MATERIAL_AVAILABILITY)
+                    .get(grid.getSelectedEntitiesIds().stream().findFirst().get());
+            showReplacementsAvailability.setEnabled(selected.getBooleanField(MaterialAvailabilityFields.REPLACEMENT));
         }
         showAvailability.setMessage("orderWithMaterialAvailabilityList.materialAvailability.ribbon.message.selectOneRecord");
-        showReplacementsAvailability
-                .setMessage("orderWithMaterialAvailabilityList.materialAvailability.ribbon.message.selectOneRecordWithReplacements");
+        showReplacementsAvailability.setMessage(
+                "orderWithMaterialAvailabilityList.materialAvailability.ribbon.message.selectOneRecordWithReplacements");
+        showWarehouseResources
+                .setMessage("orderWithMaterialAvailabilityList.resources.ribbon.showWarehouseResources.message");
         if (obj.has(FROM_TERMINAL)) {
             showAvailability.setEnabled(false);
             showAvailability.setMessage(null);
             showReplacementsAvailability.setEnabled(false);
             showReplacementsAvailability.setMessage(null);
+            showWarehouseResources.setEnabled(false);
+            showWarehouseResources.setMessage(null);
 
         }
         showAvailability.requestUpdate(true);
         showReplacementsAvailability.requestUpdate(true);
+        showWarehouseResources.requestUpdate(true);
     }
 }
