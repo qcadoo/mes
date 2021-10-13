@@ -47,6 +47,7 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.CompanyFields;
+import com.qcadoo.mes.basic.constants.CountryFields;
 import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -136,11 +137,17 @@ public class LabelReportPdf extends ReportPdfView {
         table.addCell(new Phrase(orderEntity.getBelongsToField(OrderFields.PRODUCT).getStringField(ProductFields.NAME),
                 FontUtils.getDejavuRegular10Dark()));
 
-        Entity companyEntity = orderEntity.getBelongsToField(OrderFields.COMPANY);
-        if (companyEntity != null) {
+        Entity company = orderEntity.getBelongsToField(OrderFields.COMPANY);
+        if (company != null) {
             table.addCell(new Phrase(translationService.translate("orders.label.report.company.label", locale),
                     FontUtils.getDejavuBold10Dark()));
-            table.addCell(new Phrase(companyEntity.getStringField(CompanyFields.NAME), FontUtils.getDejavuRegular10Dark()));
+            table.addCell(new Phrase(company.getStringField(CompanyFields.NAME), FontUtils.getDejavuRegular10Dark()));
+            Entity country = company.getBelongsToField(CompanyFields.COUNTRY);
+            if (country != null) {
+                table.addCell(new Phrase(translationService.translate("orders.label.report.country.label", locale),
+                        FontUtils.getDejavuBold10Dark()));
+                table.addCell(new Phrase(country.getStringField(CountryFields.COUNTRY), FontUtils.getDejavuRegular10Dark()));
+            }
         }
 
         String description = orderEntity.getStringField(OrderFields.DESCRIPTION);
