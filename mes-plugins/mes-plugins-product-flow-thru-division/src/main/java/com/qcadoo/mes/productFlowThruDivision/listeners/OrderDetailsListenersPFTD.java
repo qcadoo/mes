@@ -23,6 +23,11 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.listeners;
 
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.productFlowThruDivision.OrderMaterialAvailability;
@@ -35,11 +40,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 @Service
 public class OrderDetailsListenersPFTD {
 
@@ -48,8 +48,6 @@ public class OrderDetailsListenersPFTD {
     private static final String L_GRID_OPTIONS = "grid.options";
 
     private static final String L_FILTERS = "filters";
-
-    
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -88,8 +86,7 @@ public class OrderDetailsListenersPFTD {
     }
 
     private String applyInOperator(final String value) {
-        StringBuilder builder = new StringBuilder();
-        return builder.append("[").append(value).append("]").toString();
+        return "[" + value + "]";
     }
 
     public void showMaterialAvailabilityForProductionTracking(final ViewDefinitionState view, final ComponentState state,
@@ -110,8 +107,6 @@ public class OrderDetailsListenersPFTD {
     }
 
     private void showMaterialAvailability(ViewDefinitionState view, Long orderId) {
-
-
         orderMaterialAvailability.generateAndSaveMaterialAvailabilityForOrder(getOrderDD().get(orderId));
 
         Map<String, Object> parameters = Maps.newHashMap();
