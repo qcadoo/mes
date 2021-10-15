@@ -531,6 +531,11 @@
                         class="com.qcadoo.mes.productFlowThruDivision.hooks.OrderDetailsHooksPFTD"
                         method="onBeforeRender"/>
 
+        <view:view-hook plugin="basic" view="productDetails"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.productFlowThruDivision.hooks.ProductDetailsHooksPFTD"
+                        method="onBeforeRender"/>
+
         <view:view-hook plugin="productionCounting" view="productionTrackingDetails"
                         type="beforeRender"
                         class="com.qcadoo.mes.productFlowThruDivision.hooks.ProductionTrackingDetailsHooksPFTD"

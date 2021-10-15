@@ -59,7 +59,7 @@ public class OrderWithMaterialAvailabilityListListeners {
             throw new IllegalStateException(e);
         }
 
-        String url = "/page/productFlowThruDivision/materialAvailabilityList.html?context=" + json.toString();
+        String url = "/page/productFlowThruDivision/materialAvailabilityList.html?context=" + json;
         view.redirectTo(url, false, true);
     }
 
