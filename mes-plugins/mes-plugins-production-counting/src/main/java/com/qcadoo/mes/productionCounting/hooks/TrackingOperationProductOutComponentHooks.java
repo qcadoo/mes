@@ -95,8 +95,11 @@ public class TrackingOperationProductOutComponentHooks {
             BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
 
             List<Entity> trackings = findTrackingOperationProductOutComponents(order, toc, orderProduct);
-
-            BigDecimal trackedQuantity = getTrackedQuantity(trackingOperationProductOutComponent, trackings);
+            boolean useTracking = productionTracking.getStringField(ProductionTrackingFields.STATE).equals(
+                    ProductionTrackingStateStringValues.DRAFT)
+                    || productionTracking.getStringField(ProductionTrackingFields.STATE).equals(
+                            ProductionTrackingStateStringValues.ACCEPTED);
+            BigDecimal trackedQuantity = getTrackedQuantity(trackingOperationProductOutComponent, trackings, useTracking);
 
             if (!parameterService.getParameter().getBooleanField("producingMoreThanPlanned")) {
                 if (trackedQuantity.compareTo(plannedQuantity) > 0) {
@@ -124,8 +127,11 @@ public class TrackingOperationProductOutComponentHooks {
         if (orderProduct.getId().equals(product.getId())) {
 
             List<Entity> trackings = findTrackingOperationProductOutComponents(order, toc, orderProduct);
-
-            BigDecimal trackedQuantity = getTrackedQuantity(trackingOperationProductOutComponent, trackings);
+            boolean useTracking = productionTracking.getStringField(ProductionTrackingFields.STATE).equals(
+                    ProductionTrackingStateStringValues.DRAFT)
+                    || productionTracking.getStringField(ProductionTrackingFields.STATE).equals(
+                            ProductionTrackingStateStringValues.ACCEPTED);
+            BigDecimal trackedQuantity = getTrackedQuantity(trackingOperationProductOutComponent, trackings, useTracking);
 
             Entity orderDb = order.getDataDefinition().get(order.getId());
             orderDb.setField(OrderFields.REPORTED_PRODUCTION_QUANTITY, trackedQuantity);
@@ -134,24 +140,22 @@ public class TrackingOperationProductOutComponentHooks {
         }
     }
 
-    private BigDecimal getTrackedQuantity(Entity trackingOperationProductOutComponent, List<Entity> trackings) {
+    private BigDecimal getTrackedQuantity(Entity trackingOperationProductOutComponent, List<Entity> trackings, boolean useTracking) {
         BigDecimal trackedQuantity = BigDecimal.ZERO;
 
         for (Entity trackingProduct : trackings) {
-            if (trackingOperationProductOutComponent.getId() != null
-                    && trackingProduct.getId().equals(trackingOperationProductOutComponent.getId())) {
-
-                trackedQuantity = trackedQuantity
-                        .add(trackingOperationProductOutComponent
-                                .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY), numberService
-                                .getMathContext());
-
-            } else {
+            if (!trackingProduct.getId().equals(trackingOperationProductOutComponent.getId())) {
                 trackedQuantity = trackedQuantity.add(BigDecimalUtils.convertNullToZero(trackingProduct
                         .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY)), numberService
                         .getMathContext());
             }
 
+        }
+        if (useTracking) {
+            trackedQuantity = trackedQuantity
+                    .add(BigDecimalUtils.convertNullToZero(trackingOperationProductOutComponent
+                            .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY)), numberService
+                            .getMathContext());
         }
         return trackedQuantity;
     }

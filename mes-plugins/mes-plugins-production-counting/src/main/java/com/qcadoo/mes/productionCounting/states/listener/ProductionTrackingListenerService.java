@@ -271,6 +271,24 @@ public final class ProductionTrackingListenerService {
         }
     }
 
+    private void fillOrderReportedQuantity(final Entity productionTracking, final Operation operation) {
+        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        order = order.getDataDefinition().get(order.getId());
+        Entity mainProduct = order.getBelongsToField(OrderFields.PRODUCT);
+        Entity mainTrackingOperationProductOutComponent = productionTracking
+                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS).find()
+                .add(SearchRestrictions.belongsTo(TrackingOperationProductOutComponentFields.PRODUCT, mainProduct))
+                .setMaxResults(1).uniqueResult();
+        if (mainTrackingOperationProductOutComponent != null) {
+            BigDecimal trackedQuantity = mainTrackingOperationProductOutComponent
+                    .getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY);
+            BigDecimal reported = BigDecimalUtils.convertNullToZero(order.getDecimalField(OrderFields.REPORTED_PRODUCTION_QUANTITY));
+            BigDecimal newQuantity =  operation.perform(reported, trackedQuantity);
+            order.setField(OrderFields.REPORTED_PRODUCTION_QUANTITY, newQuantity);
+            order.getDataDefinition().save(order);
+        }
+    }
+
     private void setOrderDoneAndWastesQuantity(final Entity productionTracking, final Operation operation) {
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
         order = order.getDataDefinition().get(order.getId());
@@ -611,6 +629,7 @@ public final class ProductionTrackingListenerService {
         updateBasicProductionCounting(productionTracking, new Substraction());
         updateProductionCountingQuantitySubtraction(productionTracking, new Substraction());
         setOrderDoneAndWastesQuantity(productionTracking, new Substraction());
+        fillOrderReportedQuantity(productionTracking, new Substraction());
     }
 
     private interface Operation {

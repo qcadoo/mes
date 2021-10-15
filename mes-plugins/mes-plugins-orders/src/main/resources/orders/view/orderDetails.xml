@@ -1064,7 +1064,7 @@
                                        columns="4" rows="1" reference="reportedProductionQuantityGridLayout"
                                        hasBorders="false">
                                 <layoutElement column="1" row="1" width="3">
-                                    <component type="input" name="reportedProductionQuantity"
+                                    <component type="input" name="reportedProductionQuantity" defaultEnabled="never"
                                                reference="reportedProductionQuantity"
                                                field="#{form}.reportedProductionQuantity" hasDescription="true">
                                         <option type="labelWidth" value="55"/>
