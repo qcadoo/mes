@@ -45,6 +45,7 @@ public class ParameterModelHooks {
         String defaultCurrencyAlphabeticCode = Currency.getInstance(Locale.getDefault()).getCurrencyCode();
         parameter.setField(CurrencyFields.CURRENCY, currencyService.getCurrencyByAlphabeticCode(defaultCurrencyAlphabeticCode));
         parameter.setField(ParameterFields.DASHBOARD_SHOW_FOR_PRODUCT, "01number");
+        parameter.setField(ParameterFields.QUANTITY_MADE_ON_THE_BASIS_OF_DASHBOARD, "01approvedProduction");
     }
 
 }
