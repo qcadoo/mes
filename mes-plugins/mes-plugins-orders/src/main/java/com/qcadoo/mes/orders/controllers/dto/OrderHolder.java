@@ -46,7 +46,13 @@ public class OrderHolder {
 
     private BigDecimal doneQuantity;
 
+    private BigDecimal reportedProductionQuantity;
+
+    private BigDecimal masterOrderQuantity;
+
     private String masterOrderNumber;
+
+    private String orderCategory;
 
     private String productionLineNumber;
 
@@ -158,6 +164,14 @@ public class OrderHolder {
         this.companyName = companyName;
     }
 
+    public BigDecimal getReportedProductionQuantity() {
+        return reportedProductionQuantity;
+    }
+
+    public void setReportedProductionQuantity(BigDecimal reportedProductionQuantity) {
+        this.reportedProductionQuantity = reportedProductionQuantity;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
@@ -173,7 +187,8 @@ public class OrderHolder {
         return new EqualsBuilder().append(id, that.id).append(number, that.number).append(name, that.name)
                 .append(description, that.description).append(state, that.state)
                 .append(typeOfProductionRecording, that.typeOfProductionRecording).append(plannedQuantity, that.plannedQuantity)
-                .append(doneQuantity, that.doneQuantity).append(masterOrderNumber, that.masterOrderNumber)
+                .append(doneQuantity, that.doneQuantity).append(masterOrderQuantity, that.masterOrderQuantity)
+                .append(masterOrderNumber, that.masterOrderNumber).append(orderCategory, that.orderCategory)
                 .append(productionLineNumber, that.productionLineNumber).append(productNumber, that.productNumber)
                 .append(productName, that.productName).append(productUnit, that.productUnit).append(companyName, that.companyName)
                 .append(dashboardShowForProduct, that.dashboardShowForProduct)
@@ -183,9 +198,10 @@ public class OrderHolder {
     @Override
     public int hashCode() {
         return new HashCodeBuilder().append(id).append(number).append(name).append(description).append(state)
-                .append(typeOfProductionRecording).append(plannedQuantity).append(doneQuantity).append(masterOrderNumber)
-                .append(productionLineNumber).append(productNumber).append(productName).append(productUnit).append(companyName)
-                .append(dashboardShowForProduct).append(dashboardShowDescription).toHashCode();
+                .append(typeOfProductionRecording).append(plannedQuantity).append(doneQuantity).append(masterOrderQuantity)
+                .append(masterOrderNumber).append(orderCategory).append(productionLineNumber).append(productNumber)
+                .append(productName).append(productUnit).append(companyName).append(dashboardShowForProduct)
+                .append(dashboardShowDescription).toHashCode();
     }
 
     public String getDescription() {
@@ -218,5 +234,21 @@ public class OrderHolder {
 
     public void setProductName(String productName) {
         this.productName = productName;
+    }
+
+    public String getOrderCategory() {
+        return orderCategory;
+    }
+
+    public void setOrderCategory(String orderCategory) {
+        this.orderCategory = orderCategory;
+    }
+
+    public BigDecimal getMasterOrderQuantity() {
+        return masterOrderQuantity;
+    }
+
+    public void setMasterOrderQuantity(BigDecimal masterOrderQuantity) {
+        this.masterOrderQuantity = masterOrderQuantity;
     }
 }

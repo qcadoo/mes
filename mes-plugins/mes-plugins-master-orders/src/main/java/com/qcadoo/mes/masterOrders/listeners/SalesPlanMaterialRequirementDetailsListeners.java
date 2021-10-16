@@ -17,9 +17,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.deliveries.DeliveriesService;
+import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
 import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
 import com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
@@ -28,6 +30,7 @@ import com.qcadoo.mes.deliveries.constants.OrderedProductFields;
 import com.qcadoo.mes.deliveries.constants.ParameterFieldsD;
 import com.qcadoo.mes.masterOrders.constants.DeliveryFieldsMO;
 import com.qcadoo.mes.masterOrders.constants.MasterOrdersConstants;
+import com.qcadoo.mes.masterOrders.constants.SalesPlanFields;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementFields;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementProductFields;
 import com.qcadoo.mes.masterOrders.helpers.SalesPlanMaterialRequirementHelper;
@@ -55,6 +58,10 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 public class SalesPlanMaterialRequirementDetailsListeners {
 
     private static final String L_WINDOW_ACTIVE_MENU = "window.activeMenu";
+
+    private static final String L_GRID_OPTIONS = "grid.options";
+
+    private static final String L_FILTERS = "filters";
 
     private static final String L_DOT = ".";
 
@@ -146,7 +153,8 @@ public class SalesPlanMaterialRequirementDetailsListeners {
             List<Entity> salesPlanMaterialRequirementProducts = getSalesPlanMaterialRequirementProducts(
                     salesPlanMaterialRequirementProductIds);
 
-            Entity delivery = createDelivery(salesPlanMaterialRequirement, salesPlanMaterialRequirementProducts);
+            Entity parameter = parameterService.getParameter();
+            Entity delivery = createDelivery(salesPlanMaterialRequirement, salesPlanMaterialRequirementProducts, parameter);
 
             if (delivery.isValid()) {
                 Long deliveryId = delivery.getId();
@@ -164,13 +172,11 @@ public class SalesPlanMaterialRequirementDetailsListeners {
                             ComponentState.MessageType.INFO);
                 }
             } else {
-                delivery.getErrors().keySet().stream().filter(fieldName -> DeliveryFields.SUPPLIER.equals(fieldName)).findAny()
-                        .ifPresent(fieldName -> {
-                            if (parameterService.getParameter()
-                                    .getBooleanField(ParameterFieldsD.REQUIRE_SUPPLIER_IDENTYFICATION)) {
-                                view.addMessage("deliveries.delivery.supplier.isRequired", ComponentState.MessageType.FAILURE);
-                            }
-                        });
+                delivery.getErrors().keySet().stream().filter(DeliveryFields.SUPPLIER::equals).findAny().ifPresent(fieldName -> {
+                    if (parameter.getBooleanField(ParameterFieldsD.REQUIRE_SUPPLIER_IDENTYFICATION)) {
+                        view.addMessage("deliveries.delivery.supplier.isRequired", ComponentState.MessageType.FAILURE);
+                    }
+                });
 
                 TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             }
@@ -178,7 +184,7 @@ public class SalesPlanMaterialRequirementDetailsListeners {
     }
 
     private Entity createDelivery(final Entity salesPlanMaterialRequirement,
-            final List<Entity> salesPlanMaterialRequirementProducts) {
+            final List<Entity> salesPlanMaterialRequirementProducts, Entity parameter) {
         Entity delivery = deliveriesService.getDeliveryDD().create();
 
         Entity supplier = getSupplier(salesPlanMaterialRequirementProducts).orElse(null);
@@ -201,6 +207,14 @@ public class SalesPlanMaterialRequirementDetailsListeners {
 
             delivery.setField(DeliveryFields.NUMBER, number);
             delivery.setField(DeliveryFields.SUPPLIER, supplier);
+            Entity currency = null;
+            if (supplier != null) {
+                currency = supplier.getBelongsToField(CompanyFieldsD.CURRENCY);
+            }
+            if (currency == null) {
+                currency = parameter.getBelongsToField(ParameterFields.CURRENCY);
+            }
+            delivery.setField(DeliveryFields.CURRENCY, currency);
             delivery.setField(DeliveryFields.ORDERED_PRODUCTS, orderedProducts);
             delivery.setField(DeliveryFields.EXTERNAL_SYNCHRONIZED, true);
             delivery.setField(DeliveryFieldsMO.SALES_PLAN, salesPlan);
@@ -410,4 +424,45 @@ public class SalesPlanMaterialRequirementDetailsListeners {
                 MasterOrdersConstants.MODEL_SALES_PLAN_MATERIAL_REQUIREMENT_PRODUCT);
     }
 
+    public final void showTechnologiesWithUsingProduct(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        GridComponent salesPlanMaterialRequirementProductsGrid = (GridComponent) view
+                .getComponentByReference(QcadooViewConstants.L_GRID);
+
+        Entity product = salesPlanMaterialRequirementProductsGrid.getSelectedEntities().get(0)
+                .getBelongsToField(SalesPlanMaterialRequirementProductFields.PRODUCT);
+
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        parameters.put("form.id", product.getId());
+
+        String url = "../page/technologies/technologiesWithUsingProductList.html";
+        view.redirectTo(url, false, true, parameters);
+    }
+
+    public final void showSalesPlanDeliveries(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        Entity entity = form.getEntity();
+
+        String salesPlanNumber = entity.getBelongsToField(SalesPlanMaterialRequirementFields.SALES_PLAN)
+                .getStringField(SalesPlanFields.NUMBER);
+
+        Map<String, String> filters = Maps.newHashMap();
+        filters.put("salesPlanNumber", applyInOperator(salesPlanNumber));
+
+        Map<String, Object> gridOptions = Maps.newHashMap();
+        gridOptions.put(L_FILTERS, filters);
+
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put(L_GRID_OPTIONS, gridOptions);
+
+        parameters.put(L_WINDOW_ACTIVE_MENU, "requirements.deliveries");
+
+        String url = "../page/deliveries/deliveriesList.html";
+        view.redirectTo(url, false, true, parameters);
+    }
+
+    private String applyInOperator(final String value){
+        return "[" + value + "]";
+    }
 }

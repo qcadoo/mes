@@ -23,54 +23,44 @@
  */
 package com.qcadoo.mes.technologies.print;
 
-import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.collect.Lists.newArrayList;
-import static com.google.common.collect.Maps.newLinkedHashMap;
-import static java.lang.Long.valueOf;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.lowagie.text.Document;
-import com.lowagie.text.DocumentException;
-import com.lowagie.text.Element;
-import com.lowagie.text.Phrase;
+import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfCell;
+import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
 import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
+import com.qcadoo.mes.basic.constants.ProductAttachmentFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.technologies.constants.OperationFields;
-import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
-import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyInputProductTypeFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityTree;
-import com.qcadoo.model.api.NumberService;
+import com.qcadoo.mes.technologies.constants.*;
+import com.qcadoo.model.api.*;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.model.api.utils.TreeNumberingService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.*;
+
+import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.Lists.newArrayList;
+import static java.lang.Long.valueOf;
 
 @Component(value = "technologiesTechnologyDetailsPdfView")
 public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
+
+    private static final Logger LOG = LoggerFactory.getLogger(TechnologiesTechnologyDetailsPdfView.class);
+
+    public static final String TECHNOLOGIES_TECHNOLOGIES_TECHNOLOGY_DETAILS_REPORT_PANEL_TECHNOLOGY = "technologies.technologiesTechnologyDetails.report.panel.technology.";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -104,26 +94,33 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
                 TechnologiesConstants.MODEL_TECHNOLOGY);
 
         Entity technology = technologyDD.get(valueOf(model.get("id").toString()));
+        Entity product = technology.getBelongsToField(TechnologyFields.PRODUCT);
 
-        Map<String, String> panelTableValues = newLinkedHashMap();
-        panelTableValues.put(TechnologyFields.NAME, technology.getStringField(TechnologyFields.NAME));
-        panelTableValues.put(TechnologyFields.NUMBER, technology.getStringField(TechnologyFields.NUMBER));
-        panelTableValues.put(TechnologyFields.PRODUCT,
-                technology.getBelongsToField(TechnologyFields.PRODUCT).getStringField(ProductFields.NAME));
-        panelTableValues.put("default",
+        PdfPTable panelTable = pdfHelper.createPanelTable(3);
+        pdfHelper.addTableCellAsOneColumnTable(panelTable,
+                translationService.translate(
+                        TECHNOLOGIES_TECHNOLOGIES_TECHNOLOGY_DETAILS_REPORT_PANEL_TECHNOLOGY + TechnologyFields.NAME, locale),
+                technology.getStringField(TechnologyFields.NAME));
+        pdfHelper.addTableCellAsOneColumnTable(panelTable,
+                translationService.translate(
+                        TECHNOLOGIES_TECHNOLOGIES_TECHNOLOGY_DETAILS_REPORT_PANEL_TECHNOLOGY + TechnologyFields.NUMBER, locale),
+                technology.getStringField(TechnologyFields.NUMBER));
+        panelTable.addCell(createImageCell(product));
+        pdfHelper.addTableCellAsOneColumnTable(panelTable,
+                translationService.translate(
+                        TECHNOLOGIES_TECHNOLOGIES_TECHNOLOGY_DETAILS_REPORT_PANEL_TECHNOLOGY + TechnologyFields.PRODUCT, locale),
+                product.getStringField(ProductFields.NAME));
+        pdfHelper.addTableCellAsOneColumnTable(panelTable,
+                translationService.translate("technologies.technologiesTechnologyDetails.report.panel.technology.default",
+                        locale),
                 technology.getBooleanField(TechnologyFields.MASTER) ? translationService.translate("qcadooView.true", locale)
                         : translationService.translate("qcadooView.false", locale));
-
-        panelTableValues.put(TechnologyFields.DESCRIPTION, technology.getStringField(TechnologyFields.DESCRIPTION));
-
-        PdfPTable panelTable = pdfHelper.createPanelTable(2);
-
-        for (Map.Entry<String, String> panelEntry : panelTableValues.entrySet()) {
-            pdfHelper.addTableCellAsOneColumnTable(panelTable,
-                    translationService.translate(
-                            "technologies.technologiesTechnologyDetails.report.panel.technology." + panelEntry.getKey(), locale),
-                    panelEntry.getValue());
-        }
+        pdfHelper.addTableCellAsOneColumnTable(panelTable,
+                translationService.translate(
+                        TECHNOLOGIES_TECHNOLOGIES_TECHNOLOGY_DETAILS_REPORT_PANEL_TECHNOLOGY + TechnologyFields.DESCRIPTION,
+                        locale),
+                technology.getStringField(ProductFields.DESCRIPTION));
+        panelTable.addCell(StringUtils.EMPTY);
 
         panelTable.setSpacingAfter(20);
         panelTable.setSpacingBefore(20);
@@ -198,7 +195,8 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
         return translationService.translate("technologies.technologiesTechnologyDetails.report.fileName", locale);
     }
 
-    private void addProducts(Locale locale, PdfPTable table, String nodeNumber, String operationName, List<Entity> operationProductComponents) {
+    private void addProducts(Locale locale, PdfPTable table, String nodeNumber, String operationName,
+            List<Entity> operationProductComponents) {
         for (Entity operationProductComponent : operationProductComponents) {
             table.getDefaultCell().enableBorderSide(PdfCell.TOP);
             table.getDefaultCell().enableBorderSide(PdfCell.BOTTOM);
@@ -272,6 +270,38 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
     @Override
     protected final void addTitle(final Document document, final Locale locale) {
         document.addTitle(translationService.translate("technologies.technologiesTechnologyDetails.report.title", locale));
+    }
+
+    private PdfPCell createImageCell(Entity product) {
+        PdfPCell cell;
+        String fileName = null;
+        for (Entity productAttachment : product.getHasManyField(ProductFields.PRODUCT_ATTACHMENTS)) {
+            String ext = productAttachment.getStringField(ProductAttachmentFields.EXT);
+            if ("JPG".equalsIgnoreCase(ext) || "JPEG".equalsIgnoreCase(ext) || "PNG".equalsIgnoreCase(ext)) {
+                fileName = productAttachment.getStringField(ProductAttachmentFields.ATTACHMENT);
+                break;
+            }
+        }
+        if (fileName != null) {
+            try {
+                Image img = Image.getInstance(fileName);
+                if (img.getWidth() > 150 || img.getHeight() > 90) {
+                    img.scaleToFit(150, 90);
+                }
+
+                cell = new PdfPCell(img);
+            } catch (IOException | DocumentException e) {
+                LOG.error(e.getMessage(), e);
+                cell = new PdfPCell(new Phrase(StringUtils.EMPTY));
+            }
+        } else {
+            cell = new PdfPCell(new Phrase(StringUtils.EMPTY));
+        }
+        cell.setBorder(Rectangle.NO_BORDER);
+        cell.setVerticalAlignment(Element.ALIGN_TOP);
+        cell.setPadding(4.0f);
+        cell.setRowspan(6);
+        return cell;
     }
 
 }

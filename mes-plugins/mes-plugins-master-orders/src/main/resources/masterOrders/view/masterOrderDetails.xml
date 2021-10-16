@@ -245,7 +245,7 @@
                     ]]>
                 </script>
                 <component type="gridLayout" name="gridLayout" columns="3"
-                           rows="8">
+                           rows="7">
                     <layoutElement column="1" row="1">
 
                         <component type="lookup" name="masterOrderDefinition" reference="masterOrderDefinition"
@@ -318,6 +318,12 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="3">
+                        <component type="select" reference="companyCategory" name="companyCategory"
+                                   field="companyCategory" defaultEnabled="never">
+                            <option type="labelWidth" value="40"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="4">
                         <component type="lookup" name="address" reference="address"
                                    field="address" source="#{company}.addresses">
                             <option type="column" fields="name" name="name" link="true"/>
@@ -331,9 +337,7 @@
                             <option type="labelWidth" value="40"/>
                         </component>
                     </layoutElement>
-
-
-                    <layoutElement column="2" row="4">
+                    <layoutElement column="2" row="5">
                         <component type="lookup" name="companyPayer" reference="companyPayer"
                                    field="companyPayer" hasDescription="true">
                             <option type="column" name="name" fields="name" link="true"/>
@@ -351,50 +355,48 @@
                                       method="clearAddress"/>
                         </component>
                     </layoutElement>
-
-                    <layoutElement column="2" row="5">
-                        <component type="calendar" name="deadline" field="deadline"
-                                   reference="deadline" hasDescription="true">
-                            <option type="labelWidth" value="40"/>
-                            <option type="withTimePicker" value="true"/>
-                        </component>
-                    </layoutElement>
                     <layoutElement column="2" row="6">
-                        <component type="calendar" name="startDate" field="startDate"
-                                   reference="startDate">
+                        <component type="select" name="masterOrderState"
+                                   reference="masterOrderState" field="masterOrderState">
                             <option type="labelWidth" value="40"/>
-                            <option type="withTimePicker" value="true"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="7">
-                        <component type="calendar" name="finishDate" field="finishDate"
-                                   reference="finishDate">
+                        <component type="select" name="state" field="state"
+                                   reference="state" defaultVisible="false">
                             <option type="labelWidth" value="40"/>
-                            <option type="withTimePicker" value="true"/>
-                        </component>
-                    </layoutElement>
-                    <layoutElement column="2" row="8">
-                        <component type="calendar" name="dateOfReceipt" field="dateOfReceipt"
-                                   reference="dateOfReceipt">
-                            <option type="labelWidth" value="40"/>
-                            <option type="withTimePicker" value="true"/>
                         </component>
                     </layoutElement>
 
                     <layoutElement column="3" row="1">
-                        <component type="select" name="masterOrderState"
-                                   reference="masterOrderState" field="masterOrderState"/>
-
+                        <component type="calendar" name="deadline" field="deadline"
+                                   reference="deadline" hasDescription="true">
+                            <option type="withTimePicker" value="true"/>
+                        </component>
                     </layoutElement>
                     <layoutElement column="3" row="2">
-                        <component type="calendar" name="createDate" reference="createDate" field="createDate"
-                                   defaultEnabled="never">
+                        <component type="calendar" name="startDate" field="startDate"
+                                   reference="startDate">
                             <option type="withTimePicker" value="true"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="3" row="3">
-                        <component type="select" name="state" field="state"
-                                   reference="state" defaultVisible="false"/>
+                        <component type="calendar" name="finishDate" field="finishDate"
+                                   reference="finishDate">
+                            <option type="withTimePicker" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="3" row="4">
+                        <component type="calendar" name="dateOfReceipt" field="dateOfReceipt"
+                                   reference="dateOfReceipt">
+                            <option type="withTimePicker" value="true"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="3" row="5">
+                        <component type="calendar" name="createDate" reference="createDate" field="createDate"
+                                   defaultEnabled="never">
+                            <option type="withTimePicker" value="true"/>
+                        </component>
                     </layoutElement>
                 </component>
 

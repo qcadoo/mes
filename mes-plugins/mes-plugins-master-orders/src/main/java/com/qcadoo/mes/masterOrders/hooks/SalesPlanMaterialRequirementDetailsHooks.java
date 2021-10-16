@@ -25,7 +25,6 @@ package com.qcadoo.mes.masterOrders.hooks;
 
 import java.util.Objects;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.masterOrders.constants.SalesPlanMaterialRequirementFields;
@@ -37,7 +36,6 @@ import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.api.ribbon.Ribbon;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
-import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
@@ -51,8 +49,11 @@ public class SalesPlanMaterialRequirementDetailsHooks {
 
     private static final String L_CREATE_DELIVERY = "createDelivery";
 
-    @Autowired
-    private NumberGeneratorService numberGeneratorService;
+    private static final String SHOW_SALES_PLAN_DELIVERIES = "showSalesPlanDeliveries";
+
+    private static final String TECHNOLOGIES = "technologies";
+
+    private static final String SHOW_TECHNOLOGIES_WITH_USING_PRODUCT = "showTechnologiesWithUsingProduct";
 
     public void onBeforeRender(final ViewDefinitionState view) {
         setRibbonEnabled(view);
@@ -71,9 +72,14 @@ public class SalesPlanMaterialRequirementDetailsHooks {
 
         RibbonGroup generateRibbonGroup = ribbon.getGroupByName(L_GENERATE);
         RibbonGroup deliveriesRibbonGroup = ribbon.getGroupByName(L_DELIVERIES);
+        RibbonGroup technologiesRibbonGroup = ribbon.getGroupByName(TECHNOLOGIES);
 
         RibbonActionItem generateRibbonActionItem = generateRibbonGroup.getItemByName(L_GENERATE_SALES_PLAN_MATERIAL_REQUIREMENT);
         RibbonActionItem createDeliveryRibbonActionItem = deliveriesRibbonGroup.getItemByName(L_CREATE_DELIVERY);
+        RibbonActionItem showSalesPlanDeliveriesRibbonActionItem = deliveriesRibbonGroup
+                .getItemByName(SHOW_SALES_PLAN_DELIVERIES);
+        RibbonActionItem showTechnologiesWithUsingProductRibbonActionItem = technologiesRibbonGroup
+                .getItemByName(SHOW_TECHNOLOGIES_WITH_USING_PRODUCT);
 
         Long salesPlanMaterialRequirementId = salesPlanMaterialRequirementForm.getEntityId();
 
@@ -86,6 +92,11 @@ public class SalesPlanMaterialRequirementDetailsHooks {
         generateRibbonActionItem.requestUpdate(true);
         createDeliveryRibbonActionItem.setEnabled(isEnabled && isGenerated && isSalesPlanMaterialRequirementProductsSelected);
         createDeliveryRibbonActionItem.requestUpdate(true);
+        showTechnologiesWithUsingProductRibbonActionItem
+                .setEnabled(salesPlanMaterialRequirementProductsGrid.getSelectedEntities().size() == 1);
+        showTechnologiesWithUsingProductRibbonActionItem.requestUpdate(true);
+        showSalesPlanDeliveriesRibbonActionItem.setEnabled(isEnabled);
+        showSalesPlanDeliveriesRibbonActionItem.requestUpdate(true);
     }
 
     private void setFormEnabled(final ViewDefinitionState view) {

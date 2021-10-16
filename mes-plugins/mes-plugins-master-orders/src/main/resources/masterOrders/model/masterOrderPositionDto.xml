@@ -37,11 +37,14 @@
         <string name="name"/>
         <datetime name="deadline"/>
         <string name="companyName"/>
+        <string name="companyCategory"/>
         <string name="companyPayer"/>
         <string name="masterOrderStatus"/>
         <string name="productNumber"/>
         <string name="productName"/>
         <string name="technologyName"/>
+        <string name="salesPlanNumber"/>
+        <string name="salesPlanName"/>
         <string name="masterOrderPositionStatus"/>
         <string name="comments"/>
         <decimal name="masterOrderQuantity"/>

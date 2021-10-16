@@ -1,15 +1,5 @@
 package com.qcadoo.mes.masterOrders.listeners;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -33,6 +23,16 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class SalesPlanDetailsListeners {
@@ -113,33 +113,17 @@ public class SalesPlanDetailsListeners {
                                         salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.PRODUCT_FAMILY,
                                                 product);
 
-                                        BigDecimal orderedQuantity = BigDecimal.ZERO;
+                                        BigDecimal moProductQuantity = getMasterOrderProductQuantity(salesPlan, child);
 
-                                        StringBuilder hql = new StringBuilder();
-                                        hql.append("SELECT o.plannedQuantity as orderedQuantity ");
-                                        hql.append("FROM #orders_order o ");
-                                        hql.append("WHERE o.salesPlan.id = :salesPlanId AND o.product.id = :productId ");
-
-                                        List<Entity> orderedQuantityEntity = dataDefinitionService
-                                                .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
-                                                .find(hql.toString()).setLong("salesPlanId", salesPlan.getId())
-                                                .setLong("productId", child.getId()).list().getEntities();
-                                        if (!orderedQuantityEntity.isEmpty()) {
-                                            orderedQuantity = orderedQuantityEntity.stream()
-                                                    .map(oq -> oq.getDecimalField("orderedQuantity"))
-                                                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-                                            if (BigDecimal.ZERO.compareTo(orderedQuantity) > 0) {
-                                                orderedQuantity = BigDecimal.ZERO;
-                                            }
-                                        }
+                                        BigDecimal orderedQuantity = getOrderedQuantity(salesPlan, child);
 
                                         salesPlanOrdersGroupEntry.setField(
                                                 SalesPlanOrdersGroupEntryHelperFields.ORDERED_QUANTITY, orderedQuantity);
                                         salesPlanOrdersGroupEntry.setField(
                                                 SalesPlanOrdersGroupEntryHelperFields.PLANNED_QUANTITY,
                                                 salesPlanProduct.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY));
-                                        BigDecimal orderQuantity = salesPlanProduct.getDecimalField(
-                                                SalesPlanProductFields.PLANNED_QUANTITY).subtract(orderedQuantity,
+
+                                        BigDecimal orderQuantity = moProductQuantity.subtract(orderedQuantity,
                                                 MathContext.DECIMAL64);
                                         if (orderQuantity.compareTo(BigDecimal.ZERO) < 0) {
                                             orderQuantity = BigDecimal.ZERO;
@@ -160,6 +144,31 @@ public class SalesPlanDetailsListeners {
 
         String url = "../page/masterOrders/salesPlanOrdersGroup.html";
         view.openModal(url, parameters);
+    }
+
+    private BigDecimal getMasterOrderProductQuantity(Entity salesPlan, Entity child) {
+        StringBuilder moHql = new StringBuilder();
+        moHql.append("SELECT moProduct.masterOrderQuantity as moProductQuantity ");
+        moHql.append("FROM #masterOrders_masterOrderProduct moProduct ");
+        moHql.append("JOIN moProduct.product as product ");
+        moHql.append("JOIN moProduct.masterOrder as masterOrder ");
+        moHql.append("JOIN masterOrder.salesPlan as salesPlan ");
+        moHql.append("WHERE salesPlan.id = :salesPlanId AND product.id = :productId ");
+        BigDecimal moProductQuantity = BigDecimal.ZERO;
+        List<Entity> moProductQuantityEntities = dataDefinitionService
+                .get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
+                        MasterOrdersConstants.MODEL_MASTER_ORDER_PRODUCT).find(moHql.toString())
+                .setLong("salesPlanId", salesPlan.getId()).setLong("productId", child.getId())
+                .list().getEntities();
+
+        if (!moProductQuantityEntities.isEmpty()) {
+
+            moProductQuantity = moProductQuantityEntities.stream()
+                    .map(oq -> oq.getDecimalField("moProductQuantity"))
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        }
+        return moProductQuantity;
     }
 
     public void createOrders(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -230,25 +239,9 @@ public class SalesPlanDetailsListeners {
                                         salesPlanOrdersGroupEntry.setField(SalesPlanOrdersGroupEntryHelperFields.PRODUCT_FAMILY,
                                                 product);
 
-                                        BigDecimal orderedQuantity = BigDecimal.ZERO;
+                                        BigDecimal moProductQuantity = getMasterOrderProductQuantity(salesPlan, child);
 
-                                        StringBuilder hql = new StringBuilder();
-                                        hql.append("SELECT o.plannedQuantity as orderedQuantity ");
-                                        hql.append("FROM #orders_order o ");
-                                        hql.append("WHERE o.salesPlan.id = :salesPlanId AND o.product.id = :productId ");
-
-                                        List<Entity> orderedQuantityEntity = dataDefinitionService
-                                                .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
-                                                .find(hql.toString()).setLong("salesPlanId", salesPlan.getId())
-                                                .setLong("productId", child.getId()).list().getEntities();
-                                        if (!orderedQuantityEntity.isEmpty()) {
-                                            orderedQuantity = orderedQuantityEntity.stream()
-                                                    .map(oq -> oq.getDecimalField("orderedQuantity"))
-                                                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-                                            if (BigDecimal.ZERO.compareTo(orderedQuantity) > 0) {
-                                                orderedQuantity = BigDecimal.ZERO;
-                                            }
-                                        }
+                                        BigDecimal orderedQuantity = getOrderedQuantity(salesPlan, child);
 
                                         salesPlanOrdersGroupEntry.setField(
                                                 SalesPlanOrdersGroupEntryHelperFields.ORDERED_QUANTITY, orderedQuantity);
@@ -256,8 +249,7 @@ public class SalesPlanDetailsListeners {
                                                 SalesPlanOrdersGroupEntryHelperFields.PLANNED_QUANTITY,
                                                 salesPlanProduct.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY));
 
-                                        BigDecimal orderQuantity = salesPlanProduct.getDecimalField(
-                                                SalesPlanProductFields.PLANNED_QUANTITY).subtract(orderedQuantity,
+                                        BigDecimal orderQuantity = moProductQuantity.subtract(orderedQuantity,
                                                 MathContext.DECIMAL64);
                                         if (orderQuantity.compareTo(BigDecimal.ZERO) < 0) {
                                             orderQuantity = BigDecimal.ZERO;
@@ -278,6 +270,27 @@ public class SalesPlanDetailsListeners {
 
         String url = "../page/masterOrders/salesPlanOrders.html";
         view.openModal(url, parameters);
+    }
+
+    private BigDecimal getOrderedQuantity(Entity salesPlan, Entity child) {
+        BigDecimal orderedQuantity = BigDecimal.ZERO;
+
+        StringBuilder hql = new StringBuilder();
+        hql.append("SELECT o.plannedQuantity as orderedQuantity ");
+        hql.append("FROM #orders_order o ");
+        hql.append("WHERE o.salesPlan.id = :salesPlanId AND o.product.id = :productId ");
+
+        List<Entity> orderedQuantityEntity = dataDefinitionService
+                .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find(hql.toString())
+                .setLong("salesPlanId", salesPlan.getId()).setLong("productId", child.getId()).list().getEntities();
+        if (!orderedQuantityEntity.isEmpty()) {
+            orderedQuantity = orderedQuantityEntity.stream().map(oq -> oq.getDecimalField("orderedQuantity"))
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            if (BigDecimal.ZERO.compareTo(orderedQuantity) > 0) {
+                orderedQuantity = BigDecimal.ZERO;
+            }
+        }
+        return orderedQuantity;
     }
 
     public void openPositionsImportPage(final ViewDefinitionState view, final ComponentState state, final String[] args) {

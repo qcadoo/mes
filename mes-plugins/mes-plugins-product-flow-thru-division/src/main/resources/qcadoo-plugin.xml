@@ -531,6 +531,11 @@
                         class="com.qcadoo.mes.productFlowThruDivision.hooks.OrderDetailsHooksPFTD"
                         method="onBeforeRender"/>
 
+        <view:view-hook plugin="basic" view="productDetails"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.productFlowThruDivision.hooks.ProductDetailsHooksPFTD"
+                        method="onBeforeRender"/>
+
         <view:view-hook plugin="productionCounting" view="productionTrackingDetails"
                         type="beforeRender"
                         class="com.qcadoo.mes.productFlowThruDivision.hooks.ProductionTrackingDetailsHooksPFTD"
@@ -578,6 +583,7 @@
         </view:view-grid-column>
         <custom:custom class="com.qcadoo.mes.productFlowThruDivision.ProductFlowThruDivisionOnStartupService"/>
 
+        <view:view-ribbon-group resource="view/ribbonExtensions/productDetails.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/orderDetails.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/technologyDetails.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/copyOfTechnologyDetails.xml"/>
@@ -597,6 +603,11 @@
                             component="form" event="showMaterialAvailabilityForOrder"
                             class="com.qcadoo.mes.productFlowThruDivision.listeners.OrderDetailsListenersPFTD"
                             method="showMaterialAvailabilityForOrder"/>
+
+        <view:view-listener plugin="basic" view="productDetails"
+                            component="form" event="showProductAvailability"
+                            class="com.qcadoo.mes.productFlowThruDivision.listeners.ProductDetailsListenersPFTD"
+                            method="showProductAvailability"/>
 
         <view:view-listener plugin="productionCounting" view="productionTrackingDetails"
                             component="form" event="showMaterialAvailabilityForProductionTracking"

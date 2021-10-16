@@ -64,6 +64,8 @@
         <onCopy class="com.qcadoo.mes.masterOrders.hooks.SalesPlanHooks" method="onCopy"/>
         <onSave class="com.qcadoo.mes.masterOrders.hooks.SalesPlanHooks"
                 method="onSave"/>
+        <onDelete class="com.qcadoo.mes.masterOrders.hooks.SalesPlanHooks"
+                method="onDelete"/>
     </hooks>
 
     <identifier expression="#number + ' - ' + #name"/>

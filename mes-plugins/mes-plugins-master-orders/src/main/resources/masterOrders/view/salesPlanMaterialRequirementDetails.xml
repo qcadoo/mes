@@ -64,6 +64,23 @@
             <group name="deliveries">
                 <bigButton name="createDelivery" icon="genealogyIcon24.png"
                            action="#{form}.fireEvent(createDelivery);" state="enabled"/>
+                <bigButton name="showSalesPlanDeliveries" icon="genealogyIcon24.png"
+                           action="#{form}.fireEvent(showSalesPlanDeliveries);" state="enabled"/>
+            </group>
+            <group name="technologies">
+                <bigButton name="showTechnologiesWithUsingProduct" icon="genealogyIcon24.png">
+                    <script>
+                        <![CDATA[
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    if(window.canClose()) {
+                                        #{form}.performEvent('showTechnologiesWithUsingProduct', []);
+                                    }
+                                }
+                            });
+                        ]]>
+                    </script>
+                </bigButton>
             </group>
         </ribbon>
 
@@ -117,6 +134,12 @@
                 <listener event="createDelivery"
                           class="com.qcadoo.mes.masterOrders.listeners.SalesPlanMaterialRequirementDetailsListeners"
                           method="createDelivery"/>
+                <listener event="showTechnologiesWithUsingProduct"
+                          class="com.qcadoo.mes.masterOrders.listeners.SalesPlanMaterialRequirementDetailsListeners"
+                          method="showTechnologiesWithUsingProduct"/>
+                <listener event="showSalesPlanDeliveries"
+                          class="com.qcadoo.mes.masterOrders.listeners.SalesPlanMaterialRequirementDetailsListeners"
+                          method="showSalesPlanDeliveries"/>
             </component>
         </windowTab>
 

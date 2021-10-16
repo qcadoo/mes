@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.apache.commons.lang3.BooleanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -47,11 +38,24 @@ import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutCo
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.constants.UsedBatchFields;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchRestrictions;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.apache.commons.lang3.BooleanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class TrackingOperationProductOutComponentHooks {
@@ -72,6 +76,106 @@ public class TrackingOperationProductOutComponentHooks {
 
     public void onSave(final DataDefinition trackingOperationProductOutComponentDD, Entity trackingOperationProductOutComponent) {
         fillTrackingOperationProductInComponentsQuantities(trackingOperationProductOutComponent);
+        fillOrderReportedQuantity(trackingOperationProductOutComponent);
+    }
+
+    public boolean validatesWith(final DataDefinition trackingOperationProductOutComponentDD,
+            final Entity trackingOperationProductOutComponent) {
+        Entity productionTracking = trackingOperationProductOutComponent
+                .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
+
+        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        Entity toc = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+
+        Entity product = trackingOperationProductOutComponent
+                .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
+        Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
+
+        if (orderProduct.getId().equals(product.getId())) {
+            BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
+
+            List<Entity> trackings = findTrackingOperationProductOutComponents(order, toc, orderProduct);
+            boolean useTracking = productionTracking.getStringField(ProductionTrackingFields.STATE).equals(
+                    ProductionTrackingStateStringValues.DRAFT)
+                    || productionTracking.getStringField(ProductionTrackingFields.STATE).equals(
+                            ProductionTrackingStateStringValues.ACCEPTED);
+            BigDecimal trackedQuantity = getTrackedQuantity(trackingOperationProductOutComponent, trackings, useTracking);
+
+            if (!parameterService.getParameter().getBooleanField("producingMoreThanPlanned")) {
+                if (trackedQuantity.compareTo(plannedQuantity) > 0) {
+                    trackingOperationProductOutComponent.addError(trackingOperationProductOutComponentDD
+                            .getField(TrackingOperationProductOutComponentFields.USED_QUANTITY),
+                            "productionCounting.trackingOperationProductOutComponent.error.usedQuantityGreaterThanReported");
+                    return false;
+                }
+            }
+
+        }
+        return true;
+    }
+
+    private void fillOrderReportedQuantity(final Entity trackingOperationProductOutComponent) {
+
+        Entity productionTracking = trackingOperationProductOutComponent
+                .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
+
+        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        Entity toc = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+        Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
+        Entity product = trackingOperationProductOutComponent
+                .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
+        if (orderProduct.getId().equals(product.getId())) {
+
+            List<Entity> trackings = findTrackingOperationProductOutComponents(order, toc, orderProduct);
+            boolean useTracking = productionTracking.getStringField(ProductionTrackingFields.STATE).equals(
+                    ProductionTrackingStateStringValues.DRAFT)
+                    || productionTracking.getStringField(ProductionTrackingFields.STATE).equals(
+                            ProductionTrackingStateStringValues.ACCEPTED);
+            BigDecimal trackedQuantity = getTrackedQuantity(trackingOperationProductOutComponent, trackings, useTracking);
+
+            Entity orderDb = order.getDataDefinition().get(order.getId());
+            orderDb.setField(OrderFields.REPORTED_PRODUCTION_QUANTITY, trackedQuantity);
+            orderDb.getDataDefinition().fastSave(orderDb);
+
+        }
+    }
+
+    private BigDecimal getTrackedQuantity(Entity trackingOperationProductOutComponent, List<Entity> trackings, boolean useTracking) {
+        BigDecimal trackedQuantity = BigDecimal.ZERO;
+
+        for (Entity trackingProduct : trackings) {
+            if (!trackingProduct.getId().equals(trackingOperationProductOutComponent.getId())) {
+                trackedQuantity = trackedQuantity.add(BigDecimalUtils.convertNullToZero(trackingProduct
+                        .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY)), numberService
+                        .getMathContext());
+            }
+
+        }
+        if (useTracking) {
+            trackedQuantity = trackedQuantity
+                    .add(BigDecimalUtils.convertNullToZero(trackingOperationProductOutComponent
+                            .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY)), numberService
+                            .getMathContext());
+        }
+        return trackedQuantity;
+    }
+
+    private List<Entity> findTrackingOperationProductOutComponents(Entity order, Entity toc, Entity product) {
+        SearchCriteriaBuilder scb = dataDefinitionService
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                        ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT)
+                .find()
+                .createAlias(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING, "pTracking", JoinType.INNER)
+                .add(SearchRestrictions.belongsTo("pTracking." + ProductionTrackingFields.ORDER, order))
+                .add(SearchRestrictions.in("pTracking." + ProductionTrackingFields.STATE, Lists.newArrayList(
+                        ProductionTrackingStateStringValues.ACCEPTED, ProductionTrackingStateStringValues.DRAFT)))
+                .add(SearchRestrictions.belongsTo(TrackingOperationProductOutComponentFields.PRODUCT, product));
+
+        if (Objects.nonNull(toc)) {
+            scb.add(SearchRestrictions.belongsTo("pTracking." + ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc));
+        }
+
+        return scb.list().getEntities();
     }
 
     private void fillTrackingOperationProductInComponentsQuantities(final Entity trackingOperationProductOutComponent) {
@@ -121,7 +225,8 @@ public class TrackingOperationProductOutComponentHooks {
     private void clearUsedBatches(Entity trackingOperationProductInComponent, Entity trackingOperationProductOutComponent) {
         trackingOperationProductInComponent
                 .setField(TrackingOperationProductInComponentFields.USED_BATCHES, Lists.newArrayList());
-        trackingOperationProductInComponent = trackingOperationProductInComponent.getDataDefinition().save(trackingOperationProductInComponent);
+        trackingOperationProductInComponent = trackingOperationProductInComponent.getDataDefinition().save(
+                trackingOperationProductInComponent);
         trackingOperationProductOutComponent.addGlobalMessage(
                 "technologies.operationProductInComponent.info.consumptionOfRawMaterialsBasedOnStandards.typeBatch",
                 trackingOperationProductInComponent.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT)
@@ -137,7 +242,7 @@ public class TrackingOperationProductOutComponentHooks {
         boolean enteredFromTerminal = BooleanUtils.isTrue(trackingOperationProductOutComponent
                 .getBooleanField(TrackingOperationProductOutComponentFields.ENTERED_FROM_TERMINAL));
 
-        if(enteredFromTerminal) {
+        if (enteredFromTerminal) {
             return false;
         }
 

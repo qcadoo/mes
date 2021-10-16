@@ -81,4 +81,6 @@ public final class MasterOrderFields {
 
     public static final String MASTER_ORDER_POSITION_STATUS = "masterOrderPositionStatus";
 
+    public static final String COMPANY_CATEGORY = "companyCategory";
+
 }

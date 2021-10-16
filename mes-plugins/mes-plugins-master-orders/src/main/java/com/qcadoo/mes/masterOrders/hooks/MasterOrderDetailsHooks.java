@@ -23,15 +23,25 @@
  */
 package com.qcadoo.mes.masterOrders.hooks;
 
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER;
+import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.NUMBER;
+
+import java.util.Collections;
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
+import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderFields;
 import com.qcadoo.mes.masterOrders.constants.MasterOrderState;
 import com.qcadoo.mes.masterOrders.criteriaModifier.OrderCriteriaModifier;
-import com.qcadoo.mes.masterOrders.util.MasterOrderOrdersDataProvider;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.criteriaModifiers.TechnologyCriteriaModifiersO;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.ExpressionService;
-import com.qcadoo.model.api.NumberService;
 import com.qcadoo.plugin.api.PluginUtils;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -43,16 +53,6 @@ import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
-
-import java.util.Collections;
-import java.util.Objects;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.ADD_MASTER_PREFIX_TO_NUMBER;
-import static com.qcadoo.mes.masterOrders.constants.MasterOrderFields.NUMBER;
 
 @Service
 public class MasterOrderDetailsHooks {
@@ -74,12 +74,6 @@ public class MasterOrderDetailsHooks {
 
     @Autowired
     private OrderCriteriaModifier orderCriteriaModifier;
-
-    @Autowired
-    private MasterOrderOrdersDataProvider masterOrderOrdersDataProvider;
-
-    @Autowired
-    private NumberService numberService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
         initState(view);
@@ -112,11 +106,7 @@ public class MasterOrderDetailsHooks {
 
         if (masterOrderProductsGrid.getSelectedEntities().isEmpty()) {
             createOrder.setEnabled(false);
-        } else if (masterOrderProductsGrid.getSelectedEntities().size() == 1) {
-            createOrder.setEnabled(true);
-        } else {
-            createOrder.setEnabled(false);
-        }
+        } else createOrder.setEnabled(masterOrderProductsGrid.getSelectedEntities().size() == 1);
         if (PluginUtils.isEnabled("goodFood") && !masterOrderProductsGrid.getEntities().isEmpty()) {
             createOrder.setEnabled(true);
         } else {
@@ -137,11 +127,7 @@ public class MasterOrderDetailsHooks {
         GridComponent masterOrderProductsGrid = (GridComponent) view
                 .getComponentByReference(MasterOrderFields.MASTER_ORDER_PRODUCTS);
 
-        if (masterOrderProductsGrid.getSelectedEntities().isEmpty()) {
-            createOrder.setEnabled(false);
-        } else {
-            createOrder.setEnabled(true);
-        }
+        createOrder.setEnabled(!masterOrderProductsGrid.getSelectedEntities().isEmpty());
 
         createOrder.requestUpdate(true);
     }
@@ -163,8 +149,8 @@ public class MasterOrderDetailsHooks {
         if (checkIfShouldInsertNumber(view)) {
             FieldComponent numberField = (FieldComponent) view.getComponentByReference(MasterOrderFields.NUMBER);
 
-            numberField.setFieldValue(jdbcTemplate.queryForObject("select generate_master_order_number()",
-                    Collections.emptyMap(), String.class));
+            numberField.setFieldValue(
+                    jdbcTemplate.queryForObject("select generate_master_order_number()", Collections.emptyMap(), String.class));
 
             numberField.requestComponentUpdateState();
         }
@@ -182,12 +168,8 @@ public class MasterOrderDetailsHooks {
             // number is already chosen
             return false;
         }
-        if (number.isHasError()) {
-            // there is a validation message for that field
-            return false;
-        }
-
-        return true;
+        // there is a validation message for that field
+        return !number.isHasError();
     }
 
     private void disableFields(final ViewDefinitionState view) {
@@ -195,12 +177,15 @@ public class MasterOrderDetailsHooks {
         Entity masterOrder = form.getEntity();
         Entity company = masterOrder.getBelongsToField(MasterOrderFields.COMPANY);
         LookupComponent addressLookup = (LookupComponent) view.getComponentByReference(MasterOrderFields.ADDRESS);
+        FieldComponent companyCategoryField = (FieldComponent) view.getComponentByReference(MasterOrderFields.COMPANY_CATEGORY);
 
         if (company == null) {
             addressLookup.setFieldValue(null);
             addressLookup.setEnabled(false);
+            companyCategoryField.setFieldValue(null);
         } else {
             addressLookup.setEnabled(true);
+            companyCategoryField.setFieldValue(company.getStringField(CompanyFields.CONTRACTOR_CATEGORY));
         }
     }
 

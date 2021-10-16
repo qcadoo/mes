@@ -1,18 +1,19 @@
 package com.qcadoo.mes.masterOrders.hooks;
 
+import java.util.Collections;
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.masterOrders.constants.SalesPlanFields;
 import com.qcadoo.mes.masterOrders.states.SalesPlanServiceMarker;
 import com.qcadoo.mes.masterOrders.states.constants.SalesPlanStateStringValues;
 import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
-import java.util.Collections;
-import java.util.Objects;
 
 @Service
 public class SalesPlanHooks {
@@ -52,5 +53,15 @@ public class SalesPlanHooks {
             return false;
         }
         return !StringUtils.isNotBlank(salesPlan.getStringField(SalesPlanFields.NUMBER));
+    }
+
+    public boolean onDelete(final DataDefinition dataDefinition, final Entity entity) {
+        if (!entity.getHasManyField(SalesPlanFields.ORDERS).isEmpty()
+                || !entity.getHasManyField(SalesPlanFields.DELIVERIES).isEmpty()
+                || !entity.getHasManyField(SalesPlanFields.MASTER_ORDERS).isEmpty()) {
+            entity.addGlobalError("qcadooView.errorPage.error.dataIntegrityViolationException.objectInUse.explanation");
+            return false;
+        }
+        return true;
     }
 }

@@ -457,15 +457,20 @@ const drop = (event) => {
 }
 
 function createOrderDiv(order) {
-    let doneInPercent = Math.round(order.doneQuantity * 100 / order.plannedQuantity);
+
+    var quantityMade = order.doneQuantity ? order.doneQuantity : 0;
+
+    if(QCD.quantityMadeOnTheBasisOfDashboard === '02reportedProduction') {
+        quantityMade = order.reportedProductionQuantity ? order.reportedProductionQuantity : 0;
+    }
+
+    let doneInPercent = Math.round(quantityMade * 100 / order.plannedQuantity);
     let product = order.productNumber;
     if(order.dashboardShowForProduct === '02name'){
         product = order.productName;
     } else if(order.dashboardShowForProduct === '03both'){
         product = order.productNumber + ', ' + order.productName;
     }
-
-    order.doneQuantity = order.doneQuantity ? order.doneQuantity : 0;
 
     var orderDiv = '<div class="card draggable" id="order' + order.id + '" draggable="true" ondragstart="drag(event)">' +
                            '<div class="card-header bg-secondary py-2">';
@@ -481,14 +486,19 @@ function createOrderDiv(order) {
         (order.productionLineNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.productionLineNumber.label") + ':</span> ' + order.productionLineNumber + '<br/>' : '') +
         ('<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.product.label") + ':</span> ' + product + '<br/>') +
         ((order.plannedQuantity && order.productUnit) ? '<span class="float-left"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.plannedQuantity.label") + ':</span> ' + order.plannedQuantity + ' ' + order.productUnit + '</span>' : '') +
-        ((order.state == "03inProgress" || order.state == "04completed") ? '<span class="float-right"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.doneQuantity.label") + ':</span> ' + order.doneQuantity + ' ' + order.productUnit + '</span>' : '') +
+        ((order.state == "03inProgress" || order.state == "04completed") ? '<span class="float-right"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.doneQuantity.label") + ':</span> ' + quantityMade + ' ' + order.productUnit + '</span>' : '') +
         (order.plannedQuantity ? '<br/>' : '') +
         (order.companyName ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.companyName.label") + ':</span> ' + order.companyName + '<br/>' : '') +
-        (order.masterOrderNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.masterOrderNumber.label") + ':</span> ' + order.masterOrderNumber + '<br/>' : '') +
+        (order.masterOrderNumber ? '<span class="float-left"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.masterOrderNumber.label") + ':</span> ' + order.masterOrderNumber +
+        (order.masterOrderQuantity ? '</span><span class="float-right"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.masterOrderQuantity.label") + ':</span> ' + order.masterOrderQuantity + ' ' + order.productUnit : '') + '</span><br/>' : '') +
+        (order.orderCategory ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.orderCategory.label") + ':</span> ' + order.orderCategory + '<br/>' : '') +
         (order.dashboardShowDescription ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.description.label") + ':</span> ' + (order.description ? order.description : '') + '<br/>' : '');
 
         if(QCD.enableRegistrationTerminalOnDashboard === 'true') {
             orderDiv = orderDiv +((order.state == "03inProgress" && order.typeOfProductionRecording == "02cumulated") ? '<a href="#" class="badge badge-success float-right" onclick="goToProductionTrackingTerminal(' + order.id + ', null, null)">' + QCD.translate("basic.dashboard.orders.showTerminal.label") + '</a>' : '');
+        }
+        if(QCD.enablePrintLabelOnDashboard === 'true') {
+            orderDiv = orderDiv + ((order.state == "03inProgress") ? '<span><a href="#" style="margin-right:5px;" class="badge badge-success float-right" onclick="printLabel(' + order.id + ')">' + QCD.translate("basic.dashboard.orders.printLabel.label") + '</a></span>' : '');
         }
 
         orderDiv = orderDiv +'</div>' +
@@ -592,6 +602,11 @@ function goToProductionTrackingTerminal(orderId, operationalTaskId, workstationN
             url += '&workstationNumber=' + workstationNumber;
         }
     }
+    goToPage(url, false);
+}
+
+function printLabel(orderId){
+    let url = "orders/ordersLabelReport.pdf?id=" + orderId;
     goToPage(url, false);
 }
 

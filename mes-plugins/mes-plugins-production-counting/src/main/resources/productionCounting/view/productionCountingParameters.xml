@@ -41,7 +41,7 @@
         <windowTab name="productionCounting" reference="productionCounting">
             <component type="form" name="parameters" reference="form">
                 <component type="gridLayout" name="gridLayout" reference="gridLayout"
-                           columns="3" rows="6">
+                           columns="3" rows="7">
                     <layoutElement column="1" row="1">
                         <component type="select" name="typeOfProductionRecording"
                                    reference="typeOfProductionRecording" field="#{form}.typeOfProductionRecording"
@@ -91,32 +91,38 @@
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="2">
+                        <component type="checkbox" name="producingMoreThanPlanned" reference="producingMoreThanPlanned"
+                                   field="#{form}.producingMoreThanPlanned" hasDescription="true">
+                            <option type="labelWidth" value="80"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="3">
                         <component type="checkbox" name="allowToClose" reference="allowToClose"
                                    field="#{form}.allowToClose" hasDescription="true">
                             <option type="labelWidth" value="80"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="2" row="3">
+                    <layoutElement column="2" row="4">
                         <component type="checkbox" name="autoCloseOrder"
                                    reference="autoCloseOrder" field="#{form}.autoCloseOrder"
                                    hasDescription="true">
                             <option type="labelWidth" value="80"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="2" row="4">
+                    <layoutElement column="2" row="5">
                         <component type="checkbox" name="autoRecalculateOrder"
                                    reference="autoRecalculateOrder" field="#{form}.autoRecalculateOrder"
                                    hasDescription="true">
                             <option type="labelWidth" value="80"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="2" row="5">
+                    <layoutElement column="2" row="6">
                         <component type="checkbox" name="validateProductionRecordTimes" hasDescription="true"
                                    reference="validateProductionRecordTimes" field="#{form}.validateProductionRecordTimes">
                             <option type="labelWidth" value="80"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="2" row="6">
+                    <layoutElement column="2" row="7">
                         <component type="checkbox" name="allowMultipleRegisteringTimeForWorker"
                                    reference="allowMultipleRegisteringTimeForWorker"
                                    field="#{form}.allowMultipleRegisteringTimeForWorker">
