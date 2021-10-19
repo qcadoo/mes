@@ -619,6 +619,11 @@
                             class="com.qcadoo.mes.productFlowThruDivision.listeners.TechnologyDetailsListenersPFTD"
                             method="fillLocationsInComponents"/>
 
+        <view:view-listener plugin="technologies" view="technologyDetails"
+                            component="form" event="createModelCard"
+                            class="com.qcadoo.mes.productFlowThruDivision.listeners.TechnologyDetailsListenersPFTD"
+                            method="createModelCard"/>
+
         <view:view-listener plugin="orders" view="copyOfTechnologyDetails"
                             component="form" event="fillLocationsInComponents"
                             class="com.qcadoo.mes.productFlowThruDivision.listeners.TechnologyDetailsListenersPFTD"
