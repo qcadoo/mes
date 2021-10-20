@@ -43,6 +43,11 @@
 					joinField="shiftTimetableExceptions" cascade="nullify"/>
 
 		<boolean name="relatesToPrevDay" default="false"/>
+
+		<enum name="reproductionType" persistent="false" values="01everyDay,02everyWeek,03everyMonth,04everyYear"
+			  default="01everyDay" />
+		<date name="reproductionToDate" persistent="false" />
+
 	</fields>
 
 	<hooks>

@@ -499,6 +499,8 @@
 
 		<view:view resource="view/productReplacements.xml"/>
 
+		<view:view resource="view/generateShiftTimetableExceptionDetails.xml"/>
+
         <view:view-tab resource="view/tabExtensions/userDetailsStaffTab.xml"/>
         <view:view-tab resource="view/tabExtensions/userProfile.xml"/>
 
