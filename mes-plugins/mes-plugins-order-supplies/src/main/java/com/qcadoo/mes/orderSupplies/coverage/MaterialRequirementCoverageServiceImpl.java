@@ -23,10 +23,30 @@
  */
 package com.qcadoo.mes.orderSupplies.coverage;
 
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.ParameterService;
+import com.google.common.collect.Ordering;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.deliveries.DeliveriesService;
 import com.qcadoo.mes.deliveries.constants.DeliveriesConstants;
@@ -57,37 +77,12 @@ import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchQueryBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 
-import java.math.BigDecimal;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 @Service
 public class MaterialRequirementCoverageServiceImpl implements MaterialRequirementCoverageService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MaterialRequirementCoverageServiceImpl.class);
 
     private static final String L_ORDER = "order";
-
-    private static final String L_PRODUCT_TYPE = "productType";
-
-    private static final String L_PLANNED_QUANTITY = "planedQuantity";
 
     private static final String L_DOT = ".";
 
@@ -107,9 +102,6 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
 
     @Autowired
     private DeliveriesService deliveriesService;
-
-    @Autowired
-    private ParameterService parameterService;
 
     @Autowired
     private MaterialRequirementCoverageHelper materialRequirementCoverageHelper;
@@ -619,25 +611,18 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
     }
 
     private void fillCoverageProductLoggingsStates(final Entity coverageProduct) {
-        List<Entity> coverageProductLoggings = Lists.newLinkedList(coverageProduct
-                .getHasManyField(CoverageProductFields.COVERAGE_PRODUCT_LOGGINGS));
-        Collections.sort(coverageProductLoggings, new Comparator<Entity>() {
-
-            @Override
-            public int compare(final Entity entity1, final Entity entity2) {
-                return ComparisonChain
-                        .start()
-                        .compare(entity1.getDateField(CoverageProductLoggingFields.DATE),
-                                entity2.getDateField(CoverageProductLoggingFields.DATE))
-                        .compare(entity2.getStringField(CoverageProductLoggingFields.EVENT_TYPE),
-                                entity1.getStringField(CoverageProductLoggingFields.EVENT_TYPE))
-                        .compare(entity2.getLongField(CoverageProductLoggingFields.ORDER),
-                                entity1.getLongField(CoverageProductLoggingFields.ORDER))
-                        .compare(entity2.getLongField(CoverageProductLoggingFields.OPERATION),
-                                entity1.getLongField(CoverageProductLoggingFields.OPERATION))
-                                .result();
-            }
-        });
+        List<Entity> coverageProductLoggings = Lists
+                .newLinkedList(coverageProduct.getHasManyField(CoverageProductFields.COVERAGE_PRODUCT_LOGGINGS));
+        coverageProductLoggings.sort((entity1, entity2) -> ComparisonChain.start()
+                .compare(entity1.getDateField(CoverageProductLoggingFields.DATE),
+                        entity2.getDateField(CoverageProductLoggingFields.DATE))
+                .compare(entity2.getStringField(CoverageProductLoggingFields.EVENT_TYPE),
+                        entity1.getStringField(CoverageProductLoggingFields.EVENT_TYPE))
+                .compare(entity2.getLongField(CoverageProductLoggingFields.ORDER),
+                        entity1.getLongField(CoverageProductLoggingFields.ORDER), Ordering.natural().nullsFirst())
+                .compare(entity2.getLongField(CoverageProductLoggingFields.OPERATION),
+                        entity1.getLongField(CoverageProductLoggingFields.OPERATION), Ordering.natural().nullsFirst())
+                .result());
 
         BigDecimal reserveMissingQuantity = BigDecimal.ZERO;
 
