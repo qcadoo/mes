@@ -619,25 +619,18 @@ public class MaterialRequirementCoverageServiceImpl implements MaterialRequireme
     }
 
     private void fillCoverageProductLoggingsStates(final Entity coverageProduct) {
-        List<Entity> coverageProductLoggings = Lists.newLinkedList(coverageProduct
-                .getHasManyField(CoverageProductFields.COVERAGE_PRODUCT_LOGGINGS));
-        Collections.sort(coverageProductLoggings, new Comparator<Entity>() {
-
-            @Override
-            public int compare(final Entity entity1, final Entity entity2) {
-                return ComparisonChain
-                        .start()
-                        .compare(entity1.getDateField(CoverageProductLoggingFields.DATE),
-                                entity2.getDateField(CoverageProductLoggingFields.DATE))
-                        .compare(entity2.getStringField(CoverageProductLoggingFields.EVENT_TYPE),
-                                entity1.getStringField(CoverageProductLoggingFields.EVENT_TYPE))
-                        .compare(entity2.getLongField(CoverageProductLoggingFields.ORDER),
-                                entity1.getLongField(CoverageProductLoggingFields.ORDER))
-                        .compare(entity2.getLongField(CoverageProductLoggingFields.OPERATION),
-                                entity1.getLongField(CoverageProductLoggingFields.OPERATION))
-                                .result();
-            }
-        });
+        List<Entity> coverageProductLoggings = Lists
+                .newLinkedList(coverageProduct.getHasManyField(CoverageProductFields.COVERAGE_PRODUCT_LOGGINGS));
+        coverageProductLoggings.sort((entity1, entity2) -> ComparisonChain.start()
+                .compare(entity1.getDateField(CoverageProductLoggingFields.DATE),
+                        entity2.getDateField(CoverageProductLoggingFields.DATE))
+                .compare(entity2.getStringField(CoverageProductLoggingFields.EVENT_TYPE),
+                        entity1.getStringField(CoverageProductLoggingFields.EVENT_TYPE))
+                .compare(entity2.getLongField(CoverageProductLoggingFields.ORDER),
+                        entity1.getLongField(CoverageProductLoggingFields.ORDER), Ordering.natural().nullsFirst())
+                .compare(entity2.getLongField(CoverageProductLoggingFields.OPERATION),
+                        entity1.getLongField(CoverageProductLoggingFields.OPERATION), Ordering.natural().nullsFirst())
+                .result());
 
         BigDecimal reserveMissingQuantity = BigDecimal.ZERO;
 
