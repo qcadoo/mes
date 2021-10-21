@@ -91,17 +91,17 @@ public class ShiftTimetableExceptionListeners {
             isValid = false;
         }
 
-        Date reproductionToDate = generateTimetableExceptionEntity.getDateField(L_REPRODUCTION_TO_DATE);
-        LocalDateTime reproductionToLocalDateTime = convertToLocalDateTime(reproductionToDate);
+        if(isValid) {
+            Date reproductionToDate = generateTimetableExceptionEntity.getDateField(L_REPRODUCTION_TO_DATE);
+            LocalDateTime reproductionToLocalDateTime = convertToLocalDateTime(reproductionToDate);
 
-        LocalDateTime fromLocalDateTime = convertToLocalDateTime(generateTimetableExceptionEntity
-                .getDateField(ShiftTimetableExceptionFields.FROM_DATE));
+            LocalDateTime fromLocalDateTime = convertToLocalDateTime(generateTimetableExceptionEntity.getDateField(ShiftTimetableExceptionFields.FROM_DATE));
 
-        if (isValid && reproductionToLocalDateTime.isBefore(fromLocalDateTime)) {
-            generateTimetableExceptionEntity.addError(
-                    generateTimetableExceptionEntity.getDataDefinition().getField(L_REPRODUCTION_TO_DATE),
-                    "basic.generateShiftTimetableException.error.reproductionDateBeforeFromDate");
-            isValid = false;
+            if (reproductionToLocalDateTime.isBefore(fromLocalDateTime)) {
+                generateTimetableExceptionEntity.addError(generateTimetableExceptionEntity.getDataDefinition().getField(L_REPRODUCTION_TO_DATE),
+                        "basic.generateShiftTimetableException.error.reproductionDateBeforeFromDate");
+                isValid = false;
+            }
         }
 
         if (!isValid) {
