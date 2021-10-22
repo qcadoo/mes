@@ -109,6 +109,7 @@
 
         <model:model model="technologyInputProductType" resource="model/technologyInputProductType.xml"/>
         <model:model model="productBySizeGroup" resource="model/productBySizeGroup.xml"/>
+        <model:model model="productionLineTechnologyGroup" resource="model/productionLineTechnologyGroup.xml"/>
 
         <model:model-field plugin="basic" model="workstationType">
             <model:hasMany name="technologicalProcesses" plugin="technologies"
@@ -291,6 +292,9 @@
         <menu:menu-item name="technologyInputProductTypesList" category="technology"
                         view="technologyInputProductTypesList" defaultAuthorizationRole="ROLE_TECHNOLOGIES"/>
 
+        <menu:menu-item name="productionLineTechnologyGroupList" category="technology"
+                        view="productionLineTechnologyGroupList" defaultAuthorizationRole="ROLE_TECHNOLOGIES"/>
+
         <menu:menu-item-url name="technologiesParameters" category="parameters" url="/technologiesParameters.html"
                             defaultAuthorizationRole="ROLE_PARAMETERS"/>
 
@@ -334,6 +338,9 @@
 
         <view:view resource="view/technologyInputProductTypesList.xml"/>
         <view:view resource="view/technologyInputProductTypeDetails.xml"/>
+
+        <view:view resource="view/productionLineTechnologyGroupList.xml"/>
+        <view:view resource="view/productionLineTechnologyGroupDetails.xml"/>
 
         <view:view resource="view/productBySizeGroupDetails.xml"/>
 
