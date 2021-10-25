@@ -66,8 +66,9 @@ public class SalesPlanDetailsHooks {
         RibbonActionItem openPositionsImportPageRibbonActionItem = window.getRibbon().getGroupByName(L_IMPORT)
                 .getItemByName(L_OPEN_POSITIONS_IMPORT_PAGE);
 
-        RibbonActionItem useOtherTechnologyActionItem = window.getRibbon().getGroupByName("technologies")
-                .getItemByName("useOtherTechnology");
+        RibbonGroup technologiesRibbonGroup = ribbon.getGroupByName("technologies");
+        RibbonActionItem useOtherTechnologyActionItem = technologiesRibbonGroup.getItemByName("useOtherTechnology");
+        RibbonActionItem fillTechnologyActionItem = technologiesRibbonGroup.getItemByName("fillTechnology");
 
         boolean isEnabled = Objects.nonNull(salesPlanForm.getEntityId()) && state.equals(SalesPlanStateStringValues.DRAFT);
 
@@ -80,6 +81,15 @@ public class SalesPlanDetailsHooks {
                 && productsGrid.getSelectedEntities().stream().map(e -> e.getStringField("technologyNumber")).distinct()
                         .count() == 1L);
         useOtherTechnologyActionItem.requestUpdate(true);
+        fillTechnologyActionItem
+                .setEnabled(
+                        !productsGrid.getSelectedEntitiesIds().isEmpty()
+                                && productsGrid.getSelectedEntities().stream()
+                                        .allMatch(e -> e.getStringField("technologyNumber") == null
+                                                && e.getStringField("productFamily") != null)
+                                && productsGrid.getSelectedEntities().stream().map(e -> e.getStringField("productFamily"))
+                                        .distinct().count() == 1L);
+        fillTechnologyActionItem.requestUpdate(true);
     }
 
 }

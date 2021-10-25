@@ -36,6 +36,7 @@
         <string name="productNumber"/>
         <string name="productName"/>
         <enum name="productEntityType" values="01particularProduct,02productsFamily"/>
+        <string name="productFamily"/>
         <string name="productModel"/>
         <string name="productAssortment"/>
         <string name="technologyNumber"/>

@@ -240,6 +240,7 @@
         <view:view resource="view/salesPlansList.xml"/>
         <view:view resource="view/salesPlanDetails.xml"/>
         <view:view resource="view/salesPlanUseOtherTechnology.xml"/>
+        <view:view resource="view/salesPlanFillTechnology.xml"/>
         <view:view resource="view/salesPlanProductDetails.xml"/>
         <view:view resource="view/orderedProductsForFamily.xml"/>
         <view:view resource="view/salesPlanMaterialRequirementsList.xml"/>

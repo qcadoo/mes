@@ -409,6 +409,22 @@ public class SalesPlanDetailsListeners {
         view.openModal(url, parameters);
     }
 
+    public void fillTechnology(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        GridComponent productsGrid = (GridComponent) view.getComponentByReference(SalesPlanFields.PRODUCTS);
+
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        parameters.put("productFamilyId",
+                dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_SALES_PLAN_PRODUCT)
+                        .get(productsGrid.getSelectedEntities().stream().findFirst().get().getId())
+                        .getBelongsToField(SalesPlanProductFields.PRODUCT).getBelongsToField(ProductFields.PARENT).getId());
+        parameters.put("salesPlanProductsIds",
+                productsGrid.getSelectedEntitiesIds().stream().map(String::valueOf).collect(Collectors.joining(",")));
+
+        String url = "../page/masterOrders/salesPlanFillTechnology.html";
+        view.openModal(url, parameters);
+    }
+
     public void createSalesPlanMaterialRequirement(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
         FormComponent salesPlanForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);

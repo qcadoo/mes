@@ -71,6 +71,9 @@
                 <bigButton name="useOtherTechnology" icon="genealogyIcon24.png"
                            state="disabled" action="#{form}.fireEvent(useOtherTechnology);">
                 </bigButton>
+                <bigButton name="fillTechnology" icon="genealogyIcon24.png"
+                           state="disabled" action="#{form}.fireEvent(fillTechnology);">
+                </bigButton>
             </group>
         </ribbon>
 
@@ -150,6 +153,9 @@
                 <listener event="useOtherTechnology"
                           class="com.qcadoo.mes.masterOrders.listeners.SalesPlanDetailsListeners"
                           method="useOtherTechnology"/>
+                <listener event="fillTechnology"
+                          class="com.qcadoo.mes.masterOrders.listeners.SalesPlanDetailsListeners"
+                          method="fillTechnology"/>
             </component>
         </windowTab>
 
@@ -173,6 +179,7 @@
                 <option type="column" name="productNumber" fields="productNumber" link="true" width="100"/>
                 <option type="column" name="productName" fields="productName" link="true" width="100"/>
                 <option type="column" name="productEntityType" fields="productEntityType" width="50"/>
+                <option type="column" name="productFamily" fields="productFamily" width="60"/>
                 <option type="column" name="productModel" fields="productModel" width="60"/>
                 <option type="column" name="productAssortment" fields="productAssortment" width="60"/>
                 <option type="column" name="technologyNumber" fields="technologyNumber" width="60"/>
@@ -185,9 +192,9 @@
                 <option type="order" column="productNumber" direction="asc"/>
 
                 <option type="searchable"
-                        value="productNumber,productName,productEntityType,productModel,productAssortment,technologyNumber,plannedQuantity,productUnit,orderedQuantity,surplusFromPlan,ordersPlannedQuantity"/>
+                        value="productNumber,productName,productEntityType,productFamily,productModel,productAssortment,technologyNumber,plannedQuantity,productUnit,orderedQuantity,surplusFromPlan,ordersPlannedQuantity"/>
                 <option type="orderable"
-                        value="productNumber,productName,productEntityType,productModel,productAssortment,technologyNumber,plannedQuantity,productUnit,orderedQuantity,surplusFromPlan,ordersPlannedQuantity"/>
+                        value="productNumber,productName,productEntityType,productFamily,productModel,productAssortment,technologyNumber,plannedQuantity,productUnit,orderedQuantity,surplusFromPlan,ordersPlannedQuantity"/>
 
                 <listener event="onSelect"
                           class="com.qcadoo.view.api.listeners.RerenderListener"
