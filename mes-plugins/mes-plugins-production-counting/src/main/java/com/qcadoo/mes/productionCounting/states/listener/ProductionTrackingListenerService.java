@@ -159,6 +159,7 @@ public final class ProductionTrackingListenerService {
     public void onChangeFromAcceptedToDeclined(final Entity productionTracking) {
         updateBasicProductionCounting(productionTracking, new Substraction());
         setOrderDoneAndWastesQuantity(productionTracking, new Substraction());
+        fillOrderReportedQuantity(productionTracking, new Substraction());
     }
 
     public boolean checkIfUsedQuantitiesWereNotFilled(final Entity productionTracking) {
@@ -269,6 +270,10 @@ public final class ProductionTrackingListenerService {
                 productionTracking.addGlobalError("orders.order.orderStates.error", errorMessages.toString());
             }
         }
+    }
+
+    public void updateOrderReportedQuantityOnRemove(final Entity productionTracking) {
+        fillOrderReportedQuantity(productionTracking, new Substraction());
     }
 
     private void fillOrderReportedQuantity(final Entity productionTracking, final Operation operation) {
@@ -435,7 +440,7 @@ public final class ProductionTrackingListenerService {
                 final BigDecimal result = operation.perform(usedQuantity, productQuantity);
 
                 pcq.setField(ProductionCountingQuantityFields.USED_QUANTITY, result);
-                pcq= pcq.getDataDefinition().save(pcq);
+                pcq = pcq.getDataDefinition().save(pcq);
                 pcq.isValid();
             } else {
                 int lastIndex = productionCountingQuantities.size() - 1;

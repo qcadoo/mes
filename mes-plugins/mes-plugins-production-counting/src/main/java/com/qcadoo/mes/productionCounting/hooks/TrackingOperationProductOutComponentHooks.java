@@ -99,6 +99,11 @@ public class TrackingOperationProductOutComponentHooks {
                     ProductionTrackingStateStringValues.DRAFT)
                     || productionTracking.getStringField(ProductionTrackingFields.STATE).equals(
                             ProductionTrackingStateStringValues.ACCEPTED);
+
+            if (productionTracking.getBooleanField(ProductionTrackingFields.IS_CORRECTED)) {
+                useTracking = false;
+            }
+
             BigDecimal trackedQuantity = getTrackedQuantity(trackingOperationProductOutComponent, trackings, useTracking);
 
             if (!parameterService.getParameter().getBooleanField("producingMoreThanPlanned")) {
@@ -152,10 +157,8 @@ public class TrackingOperationProductOutComponentHooks {
 
         }
         if (useTracking) {
-            trackedQuantity = trackedQuantity
-                    .add(BigDecimalUtils.convertNullToZero(trackingOperationProductOutComponent
-                            .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY)), numberService
-                            .getMathContext());
+            trackedQuantity = trackedQuantity.add(BigDecimalUtils.convertNullToZero(trackingOperationProductOutComponent
+                    .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY)), numberService.getMathContext());
         }
         return trackedQuantity;
     }
