@@ -67,6 +67,11 @@
                            state="disabled" action="#{form}.fireEvent(createSalesPlanMaterialRequirement);">
                 </bigButton>
             </group>
+            <group name="technologies">
+                <bigButton name="useOtherTechnology" icon="genealogyIcon24.png"
+                           state="disabled" action="#{form}.fireEvent(useOtherTechnology);">
+                </bigButton>
+            </group>
         </ribbon>
 
         <windowTab name="mainTab">
@@ -142,6 +147,9 @@
                 <listener event="openPositionsImportPage"
                           class="com.qcadoo.mes.masterOrders.listeners.SalesPlanDetailsListeners"
                           method="openPositionsImportPage"/>
+                <listener event="useOtherTechnology"
+                          class="com.qcadoo.mes.masterOrders.listeners.SalesPlanDetailsListeners"
+                          method="useOtherTechnology"/>
             </component>
         </windowTab>
 
@@ -180,6 +188,10 @@
                         value="productNumber,productName,productEntityType,productModel,productAssortment,technologyNumber,plannedQuantity,productUnit,orderedQuantity,surplusFromPlan,ordersPlannedQuantity"/>
                 <option type="orderable"
                         value="productNumber,productName,productEntityType,productModel,productAssortment,technologyNumber,plannedQuantity,productUnit,orderedQuantity,surplusFromPlan,ordersPlannedQuantity"/>
+
+                <listener event="onSelect"
+                          class="com.qcadoo.view.api.listeners.RerenderListener"
+                          method="onChangeRerender"/>
 
                 <option type="correspondingView" value="masterOrders/salesPlanProductDetails"/>
                 <option type="correspondingComponent" value="form"/>

@@ -54,6 +54,7 @@ public class SalesPlanDetailsHooks {
         FormComponent salesPlanForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity salesPlan = salesPlanForm.getEntity();
         String state = salesPlan.getStringField(SalesPlanFields.STATE);
+        GridComponent productsGrid = (GridComponent) view.getComponentByReference(SalesPlanFields.PRODUCTS);
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         Ribbon ribbon = window.getRibbon();
@@ -65,12 +66,20 @@ public class SalesPlanDetailsHooks {
         RibbonActionItem openPositionsImportPageRibbonActionItem = window.getRibbon().getGroupByName(L_IMPORT)
                 .getItemByName(L_OPEN_POSITIONS_IMPORT_PAGE);
 
+        RibbonActionItem useOtherTechnologyActionItem = window.getRibbon().getGroupByName("technologies")
+                .getItemByName("useOtherTechnology");
+
         boolean isEnabled = Objects.nonNull(salesPlanForm.getEntityId()) && state.equals(SalesPlanStateStringValues.DRAFT);
 
         createSalesPlanMaterialRequirementRibbonActionItem.setEnabled(isEnabled);
         createSalesPlanMaterialRequirementRibbonActionItem.requestUpdate(true);
         openPositionsImportPageRibbonActionItem.setEnabled(isEnabled);
         openPositionsImportPageRibbonActionItem.requestUpdate(true);
+        useOtherTechnologyActionItem.setEnabled(!productsGrid.getSelectedEntitiesIds().isEmpty()
+                && productsGrid.getSelectedEntities().stream().noneMatch(e -> e.getStringField("technologyNumber") == null)
+                && productsGrid.getSelectedEntities().stream().map(e -> e.getStringField("technologyNumber")).distinct()
+                        .count() == 1L);
+        useOtherTechnologyActionItem.requestUpdate(true);
     }
 
 }
