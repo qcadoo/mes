@@ -28,18 +28,12 @@ import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
 
-import java.util.List;
-import java.util.Objects;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.id;
 
 @Service
 public class ProductBySizeGroupHooks {
@@ -50,7 +44,6 @@ public class ProductBySizeGroupHooks {
     public boolean validatesWith(final DataDefinition productBySizeGroupDD, final Entity productBySizeGroup) {
         boolean isValid = true;
 
-        isValid = isValid && checkIfProductBySizeGroupIsUnique(productBySizeGroupDD, productBySizeGroup);
         isValid = isValid && checkIfUnitOrConverterIsCompatible(productBySizeGroupDD, productBySizeGroup);
         return isValid;
 
@@ -79,39 +72,6 @@ public class ProductBySizeGroupHooks {
             }
 
         }
-        return true;
-    }
-
-    private boolean checkIfProductBySizeGroupIsUnique(final DataDefinition productBySizeGroupDD, final Entity productBySizeGroup) {
-        Entity operationProductInComponent = productBySizeGroup
-                .getBelongsToField(ProductBySizeGroupFields.OPERATION_PRODUCT_IN_COMPONENT);
-        Entity sizeGroup = productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.SIZE_GROUP);
-        Entity product = productBySizeGroup.getBelongsToField(ProductBySizeGroupFields.PRODUCT);
-
-        Long productBySizeGroupId = productBySizeGroup.getId();
-
-        SearchCriteriaBuilder searchCriteriaBuilder = productBySizeGroupDD.find();
-
-        searchCriteriaBuilder.add(SearchRestrictions.belongsTo(ProductBySizeGroupFields.OPERATION_PRODUCT_IN_COMPONENT,
-                operationProductInComponent));
-        searchCriteriaBuilder.add(SearchRestrictions.or(
-                SearchRestrictions.belongsTo(ProductBySizeGroupFields.SIZE_GROUP, sizeGroup),
-                SearchRestrictions.belongsTo(ProductBySizeGroupFields.PRODUCT, product)));
-
-        if (Objects.nonNull(productBySizeGroupId)) {
-            searchCriteriaBuilder.add(SearchRestrictions.idNe(productBySizeGroupId));
-        }
-
-        searchCriteriaBuilder.setProjection(alias(id(), "id"));
-
-        List<Entity> productBySizeGroups = searchCriteriaBuilder.list().getEntities();
-
-        if (!productBySizeGroups.isEmpty()) {
-            productBySizeGroup.addGlobalError("technologies.productBySizeGroup.error.notUnique");
-
-            return false;
-        }
-
         return true;
     }
 
