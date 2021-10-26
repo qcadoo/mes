@@ -29,6 +29,8 @@ public class SalesPlanDetailsHooks {
 
     private static final String L_OPEN_POSITIONS_IMPORT_PAGE = "openPositionsImportPage";
 
+    private static final String TECHNOLOGY_NUMBER = "technologyNumber";
+
     public void onBeforeRender(final ViewDefinitionState view) {
         setRibbonEnabled(view);
         disableForm(view);
@@ -77,15 +79,15 @@ public class SalesPlanDetailsHooks {
         openPositionsImportPageRibbonActionItem.setEnabled(isEnabled);
         openPositionsImportPageRibbonActionItem.requestUpdate(true);
         useOtherTechnologyActionItem.setEnabled(!productsGrid.getSelectedEntitiesIds().isEmpty()
-                && productsGrid.getSelectedEntities().stream().noneMatch(e -> e.getStringField("technologyNumber") == null)
-                && productsGrid.getSelectedEntities().stream().map(e -> e.getStringField("technologyNumber")).distinct()
+                && productsGrid.getSelectedEntities().stream().noneMatch(e -> e.getStringField(TECHNOLOGY_NUMBER) == null)
+                && productsGrid.getSelectedEntities().stream().map(e -> e.getStringField(TECHNOLOGY_NUMBER)).distinct()
                         .count() == 1L);
         useOtherTechnologyActionItem.requestUpdate(true);
         fillTechnologyActionItem
                 .setEnabled(
                         !productsGrid.getSelectedEntitiesIds().isEmpty()
                                 && productsGrid.getSelectedEntities().stream()
-                                        .allMatch(e -> e.getStringField("technologyNumber") == null
+                                        .allMatch(e -> e.getStringField(TECHNOLOGY_NUMBER) == null
                                                 && e.getStringField("productFamily") != null)
                                 && productsGrid.getSelectedEntities().stream().map(e -> e.getStringField("productFamily"))
                                         .distinct().count() == 1L);

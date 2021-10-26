@@ -44,9 +44,6 @@
                     <option type="fieldCode" value="number"/>
 
                     <option type="multiselect" value="true"/>
-                    <!--<criteriaModifier-->
-                    <!--class="com.qcadoo.mes.productionLines.criteriaModifiers.ProductionLineCriteriaModifiers"-->
-                    <!--method="showProductionLinesWithoutDivisionOnly"/>-->
                 </component>
                 <component type="grid" name="productionLines" reference="productionLines"
                            source="#{form}.productionLines" defaultAuthorizationRole="ROLE_COMPANY_STRUCTURE_EDIT">
