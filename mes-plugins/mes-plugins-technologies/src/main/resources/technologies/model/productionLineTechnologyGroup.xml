@@ -35,6 +35,7 @@
 
     </fields>
     <hooks>
-
+        <validatesWith class="com.qcadoo.mes.technologies.hooks.ProductionLineTechnologyGroupHooks"
+                       method="validatesWith"/>
     </hooks>
 </model>

@@ -43,10 +43,8 @@ public class ProductBySizeGroupHooks {
 
     public boolean validatesWith(final DataDefinition productBySizeGroupDD, final Entity productBySizeGroup) {
         boolean isValid = true;
-
         isValid = isValid && checkIfUnitOrConverterIsCompatible(productBySizeGroupDD, productBySizeGroup);
         return isValid;
-
     }
 
     private boolean checkIfUnitOrConverterIsCompatible(final DataDefinition productBySizeGroupDD, final Entity productBySizeGroup) {
