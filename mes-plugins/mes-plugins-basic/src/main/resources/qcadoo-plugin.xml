@@ -93,7 +93,6 @@
         <security:role identifier="ROLE_MACHINE_PARTS"/>
         <security:role identifier="ROLE_COUNTRIES"/>
         <security:role identifier="ROLE_PARAMETERS"/>
-        <security:role identifier="ROLE_BASIC"/>
 
         <security:role identifier="ROLE_TECHNOLOGIES"/>
         <security:role identifier="ROLE_TECHNOLOGIES_ADVANCED"/>
@@ -188,6 +187,7 @@
         <security:role identifier="ROLE_RECURRING_EVENTS"/>
         <security:role identifier="ROLE_CALCULATIONS"/>
 
+        <security:role identifier="ROLE_DELIVERIES"/>
         <security:role identifier="ROLE_DELIVERIES_EDIT"/>
         <security:role identifier="ROLE_DELIVERIES_STATES_DECLINE"/>
         <security:role identifier="ROLE_DELIVERIES_STATES_OTHER"/>
@@ -254,6 +254,20 @@
         <security:role identifier="ROLE_ORDER_MATERIAL_AVAILABILITY_SHOW_RESOURCES"/>
 
         <security:role identifier="ROLE_MASTER_ORDER_WITH_EXTERNAL_NUMBER_DELETE"/>
+
+        <security:role identifier="ROLE_RESOURCES"/>
+
+        <security:role identifier="ROLE_PRODUCTS_ADDITIONAL"/>
+
+        <security:role identifier="ROLE_ATTACHMENTS"/>
+
+        <security:role identifier="ROLE_FORMS"/>
+
+        <security:role identifier="ROLE_ORDERS_PROGRESS_GANTT_CHART"/>
+
+        <security:role identifier="ROLE_OPERATIONAL_TASKS_GANTT_VIEW"/>
+
+        <security:role identifier="ROLE_OPERATIONAL_TASKS_GANTT_EDIT"/>
 
         <model:model model="company" resource="model/company.xml"/>
         <model:model model="staff" resource="model/staff.xml"/>
@@ -371,11 +385,11 @@
         <menu:menu-item name="productsFamilies" category="products"
                         view="productsFamilies" defaultAuthorizationRole="ROLE_PRODUCT_FAMILIES"/>
         <menu:menu-item name="assortments" category="products" view="assortmentsList"
-                        defaultAuthorizationRole="ROLE_PRODUCTS"/>
+                        defaultAuthorizationRole="ROLE_PRODUCTS_ADDITIONAL"/>
         <menu:menu-item-url name="productsAttributes" category="products" url="/productsAttributes.html"
                             defaultAuthorizationRole="ROLE_PRODUCTS"/>
 
-        <menu:menu-item name="attributesList" category="basic" view="attributesList" defaultAuthorizationRole="ROLE_PRODUCTS"/>
+        <menu:menu-item name="attributesList" category="basic" view="attributesList" defaultAuthorizationRole="ROLE_PRODUCTS_ADDITIONAL"/>
 
         <menu:menu-item name="palletNumbers" category="basic" view="palletNumbersList"
                         defaultAuthorizationRole="ROLE_PALLET_NUMBERS"/>
@@ -415,18 +429,18 @@
                         view="logsList" defaultAuthorizationRole="ROLE_LOGS"/>
 
         <menu:menu-item name="attachmentsList" category="basic"
-                        view="attachmentsList" defaultAuthorizationRole="ROLE_BASIC"/>
+                        view="attachmentsList" defaultAuthorizationRole="ROLE_ATTACHMENTS"/>
 
         <menu:menu-item name="numberPatternsList" category="administration"
                         view="numberPatternsList" defaultAuthorizationRole="ROLE_NUMBER_PATTERN"/>
 
-        <menu:menu-item name="sizesList" category="products" view="sizesList" defaultAuthorizationRole="ROLE_PRODUCTS"/>
+        <menu:menu-item name="sizesList" category="products" view="sizesList" defaultAuthorizationRole="ROLE_PRODUCTS_ADDITIONAL"/>
 
-        <menu:menu-item name="sizeGroupsList" category="products" view="sizeGroupsList" defaultAuthorizationRole="ROLE_PRODUCTS"/>
+        <menu:menu-item name="sizeGroupsList" category="products" view="sizeGroupsList" defaultAuthorizationRole="ROLE_PRODUCTS_ADDITIONAL"/>
 
         <menu:menu-item name="labelsList" category="basic" view="labelsList" defaultAuthorizationRole="ROLE_BASE_FUNCTIONALITY"/>
 
-        <menu:menu-item name="modelsList" category="products" view="modelsList" defaultAuthorizationRole="ROLE_PRODUCTS"/>
+        <menu:menu-item name="modelsList" category="products" view="modelsList" defaultAuthorizationRole="ROLE_PRODUCTS_ADDITIONAL"/>
 
         <view:view resource="view/reportColumnWidthDetails.xml"/>
         <view:view resource="view/companiesList.xml"/>
@@ -446,7 +460,6 @@
         <view:view resource="view/productsImport.xml"/>
         <view:view resource="view/productDetails.xml"/>
         <view:view resource="view/productAdditionalDetails.xml"/>
-        <view:view resource="view/productSubstituteDetails.xml"/>
         <view:view resource="view/productSubstituteComponentDetails.xml"/>
         <view:view resource="view/productsFamilies.xml"/>
         <view:view resource="view/productChildren.xml"/>
@@ -543,7 +556,7 @@
                         method="setFieldsEnabledForAdmin" />
 
         <menu:menu-item name="formsList" category="basic"
-                        view="formsList" defaultAuthorizationRole="ROLE_BASIC"/>
+                        view="formsList" defaultAuthorizationRole="ROLE_FORMS"/>
 
         <model:model-field plugin="qcadooSecurity" model="user">
             <model:belongsTo model="staff" plugin="basic" name="staff"/>

@@ -25,7 +25,7 @@
 
 -->
 <view name="sizesList" modelName="size" menuAccessible="true"
-      defaultAuthorizationRole="ROLE_PRODUCTS"
+      defaultAuthorizationRole="ROLE_PRODUCTS_ADDITIONAL"
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">

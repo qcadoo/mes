@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" defaultAuthorizationRole="ROLE_REQUIREMENTS"
+<view xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" defaultAuthorizationRole="ROLE_DELIVERIES"
       name="deliveredProductReservationDetails"
       modelName="deliveredProductReservation" xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"

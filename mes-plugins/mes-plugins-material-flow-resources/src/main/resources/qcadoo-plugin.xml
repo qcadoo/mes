@@ -286,7 +286,7 @@
         <model:model-enum-value plugin="basic" model="log" enum="logType" value="positionImport"/>
 
         <menu:menu-item name="resources" category="materialFlow"
-                        view="resourcesList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
+                        view="resourcesList" defaultAuthorizationRole="ROLE_RESOURCES"/>
         <menu:menu-item name="resourceCorrections" category="materialFlow"
                         view="resourceCorrectionsList"
                         defaultAuthorizationRole="ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES"/>
@@ -320,7 +320,7 @@
                         view="warehouseStockReportsList" defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
 
         <menu:menu-item-url name="resourcesAttributes" category="materialFlow" url="/resourcesAttributes.html"
-                            defaultAuthorizationRole="ROLE_MATERIAL_FLOW"/>
+                            defaultAuthorizationRole="ROLE_RESOURCES"/>
 
         <menu:menu-item-url name="documentPositionsAttributes" category="materialFlow" url="/documentPositionsAttributes.html"
                             defaultAuthorizationRole="ROLE_DOCUMENT_POSITIONS"/>
@@ -329,7 +329,6 @@
                             url="/materialFlowResourcesParameters.html"
                             defaultAuthorizationRole="ROLE_PARAMETERS"/>
 
-        <view:view resource="view/productsLookup.xml"/>
         <view:view resource="view/resourceDetails.xml"/>
         <view:view resource="view/resourcesList.xml"/>
         <view:view resource="view/documentDetails.xml"/>

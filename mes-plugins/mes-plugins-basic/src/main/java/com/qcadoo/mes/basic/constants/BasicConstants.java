@@ -118,10 +118,6 @@ public final class BasicConstants {
 
     public static final String VIEW_PRODUCTS_LIST = "productsList";
 
-    public static final String VIEW_PRODUCT_SUBSTITUTE_COMPONENT_DETAILS = "productSubstituteComponentDetails";
-
-    public static final String VIEW_PRODUCT_SUBSTITUTE_DETAILS = "productSubstituteDetails";
-
     public static final String VIEW_STAFF_DETAILS = "staffDetails";
 
     public static final String VIEW_COMPANY_DETAILS = "companyInAdministrationDetails";

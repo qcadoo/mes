@@ -23,7 +23,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_PRODUCTS" name="productCatalogNumbersDetails" modelName="productCatalogNumbers"
+<view defaultAuthorizationRole="ROLE_PRODUCTS_ADDITIONAL" name="productCatalogNumbersDetails" modelName="productCatalogNumbers"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
 	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd">
 	<component type="window" name="window">
