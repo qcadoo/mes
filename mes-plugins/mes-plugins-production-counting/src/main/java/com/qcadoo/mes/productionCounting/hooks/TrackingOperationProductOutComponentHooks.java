@@ -44,9 +44,6 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.NumberService;
-import com.qcadoo.model.api.search.JoinType;
-import com.qcadoo.model.api.search.SearchCriteriaBuilder;
-import com.qcadoo.model.api.search.SearchRestrictions;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -94,7 +91,8 @@ public class TrackingOperationProductOutComponentHooks {
         if (orderProduct.getId().equals(product.getId())) {
             BigDecimal plannedQuantity = order.getDecimalField(OrderFields.PLANNED_QUANTITY);
 
-            List<Entity> trackings = findTrackingOperationProductOutComponents(order, toc, orderProduct);
+            List<Entity> trackings = productionTrackingService
+                    .findTrackingOperationProductOutComponents(order, toc, orderProduct);
             boolean useTracking = productionTracking.getStringField(ProductionTrackingFields.STATE).equals(
                     ProductionTrackingStateStringValues.DRAFT)
                     || productionTracking.getStringField(ProductionTrackingFields.STATE).equals(
@@ -104,7 +102,8 @@ public class TrackingOperationProductOutComponentHooks {
                 useTracking = false;
             }
 
-            BigDecimal trackedQuantity = getTrackedQuantity(trackingOperationProductOutComponent, trackings, useTracking);
+            BigDecimal trackedQuantity = productionTrackingService.getTrackedQuantity(trackingOperationProductOutComponent,
+                    trackings, useTracking);
 
             if (!parameterService.getParameter().getBooleanField("producingMoreThanPlanned")) {
                 if (trackedQuantity.compareTo(plannedQuantity) > 0) {
@@ -131,54 +130,25 @@ public class TrackingOperationProductOutComponentHooks {
                 .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
         if (orderProduct.getId().equals(product.getId())) {
 
-            List<Entity> trackings = findTrackingOperationProductOutComponents(order, toc, orderProduct);
+            List<Entity> trackings = productionTrackingService
+                    .findTrackingOperationProductOutComponents(order, toc, orderProduct);
             boolean useTracking = productionTracking.getStringField(ProductionTrackingFields.STATE).equals(
                     ProductionTrackingStateStringValues.DRAFT)
                     || productionTracking.getStringField(ProductionTrackingFields.STATE).equals(
                             ProductionTrackingStateStringValues.ACCEPTED);
-            BigDecimal trackedQuantity = getTrackedQuantity(trackingOperationProductOutComponent, trackings, useTracking);
+
+            if (productionTracking.getBooleanField(ProductionTrackingFields.IS_CORRECTED)) {
+                useTracking = false;
+            }
+
+            BigDecimal trackedQuantity = productionTrackingService.getTrackedQuantity(trackingOperationProductOutComponent,
+                    trackings, useTracking);
 
             Entity orderDb = order.getDataDefinition().get(order.getId());
             orderDb.setField(OrderFields.REPORTED_PRODUCTION_QUANTITY, trackedQuantity);
             orderDb.getDataDefinition().fastSave(orderDb);
 
         }
-    }
-
-    private BigDecimal getTrackedQuantity(Entity trackingOperationProductOutComponent, List<Entity> trackings, boolean useTracking) {
-        BigDecimal trackedQuantity = BigDecimal.ZERO;
-
-        for (Entity trackingProduct : trackings) {
-            if (!trackingProduct.getId().equals(trackingOperationProductOutComponent.getId())) {
-                trackedQuantity = trackedQuantity.add(BigDecimalUtils.convertNullToZero(trackingProduct
-                        .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY)), numberService
-                        .getMathContext());
-            }
-
-        }
-        if (useTracking) {
-            trackedQuantity = trackedQuantity.add(BigDecimalUtils.convertNullToZero(trackingOperationProductOutComponent
-                    .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY)), numberService.getMathContext());
-        }
-        return trackedQuantity;
-    }
-
-    private List<Entity> findTrackingOperationProductOutComponents(Entity order, Entity toc, Entity product) {
-        SearchCriteriaBuilder scb = dataDefinitionService
-                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
-                        ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT)
-                .find()
-                .createAlias(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING, "pTracking", JoinType.INNER)
-                .add(SearchRestrictions.belongsTo("pTracking." + ProductionTrackingFields.ORDER, order))
-                .add(SearchRestrictions.in("pTracking." + ProductionTrackingFields.STATE, Lists.newArrayList(
-                        ProductionTrackingStateStringValues.ACCEPTED, ProductionTrackingStateStringValues.DRAFT)))
-                .add(SearchRestrictions.belongsTo(TrackingOperationProductOutComponentFields.PRODUCT, product));
-
-        if (Objects.nonNull(toc)) {
-            scb.add(SearchRestrictions.belongsTo("pTracking." + ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc));
-        }
-
-        return scb.list().getEntities();
     }
 
     private void fillTrackingOperationProductInComponentsQuantities(final Entity trackingOperationProductOutComponent) {

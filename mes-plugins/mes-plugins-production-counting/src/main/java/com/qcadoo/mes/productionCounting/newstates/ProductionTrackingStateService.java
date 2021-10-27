@@ -1,11 +1,5 @@
 package com.qcadoo.mes.productionCounting.newstates;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Service;
-
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.LogService;
 import com.qcadoo.mes.newstates.BasicStateService;
@@ -22,6 +16,12 @@ import com.qcadoo.mes.states.StateChangeEntityDescriber;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Service;
 
 @Service
 @Order(1)
@@ -86,6 +86,7 @@ public class ProductionTrackingStateService extends BasicStateService implements
                 if (ProductionTrackingStateStringValues.ACCEPTED.equals(sourceState)) {
                     productionTrackingListenerService.onChangeFromAcceptedToDeclined(entity);
                 }
+                productionTrackingListenerService.updateOrderReportedQuantity(entity);
                 break;
 
             case ProductionTrackingStateStringValues.CORRECTED:

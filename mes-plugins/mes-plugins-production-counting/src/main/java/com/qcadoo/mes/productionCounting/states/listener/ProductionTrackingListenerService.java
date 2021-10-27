@@ -37,6 +37,7 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.aop.OrderStateChangeAspect;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
+import com.qcadoo.mes.productionCounting.ProductionTrackingService;
 import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
@@ -88,6 +89,9 @@ public final class ProductionTrackingListenerService {
 
     @Autowired
     private ProductionCountingService productionCountingService;
+
+    @Autowired
+    private ProductionTrackingService productionTrackingService;
 
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
@@ -270,6 +274,35 @@ public final class ProductionTrackingListenerService {
                 productionTracking.addGlobalError("orders.order.orderStates.error", errorMessages.toString());
             }
         }
+    }
+
+    public void updateOrderReportedQuantity(final Entity productionTracking) {
+        Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+        Entity toc = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+        Entity orderProduct = order.getBelongsToField(OrderFields.PRODUCT);
+
+        Entity mainTrackingOperationProductOutComponent = productionTracking
+                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS).find()
+                .add(SearchRestrictions.belongsTo(TrackingOperationProductOutComponentFields.PRODUCT, orderProduct))
+                .setMaxResults(1).uniqueResult();
+        List<Entity> trackings = productionTrackingService
+                .findTrackingOperationProductOutComponents(order, toc, orderProduct);
+        boolean useTracking = productionTracking.getStringField(ProductionTrackingFields.STATE).equals(
+                ProductionTrackingStateStringValues.DRAFT)
+                || productionTracking.getStringField(ProductionTrackingFields.STATE).equals(
+                ProductionTrackingStateStringValues.ACCEPTED);
+
+        if (productionTracking.getBooleanField(ProductionTrackingFields.IS_CORRECTED)) {
+            useTracking = false;
+        }
+
+        BigDecimal trackedQuantity = productionTrackingService.getTrackedQuantity(mainTrackingOperationProductOutComponent,
+                trackings, useTracking);
+
+        Entity orderDb = order.getDataDefinition().get(order.getId());
+        orderDb.setField(OrderFields.REPORTED_PRODUCTION_QUANTITY, trackedQuantity);
+        orderDb.getDataDefinition().fastSave(orderDb);
+
     }
 
     public void updateOrderReportedQuantityOnRemove(final Entity productionTracking) {
