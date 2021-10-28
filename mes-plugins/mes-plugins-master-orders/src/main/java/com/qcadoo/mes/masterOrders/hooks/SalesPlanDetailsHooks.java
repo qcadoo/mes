@@ -78,19 +78,16 @@ public class SalesPlanDetailsHooks {
         createSalesPlanMaterialRequirementRibbonActionItem.requestUpdate(true);
         openPositionsImportPageRibbonActionItem.setEnabled(isEnabled);
         openPositionsImportPageRibbonActionItem.requestUpdate(true);
-        useOtherTechnologyActionItem.setEnabled(!productsGrid.getSelectedEntitiesIds().isEmpty()
+        useOtherTechnologyActionItem.setEnabled(isEnabled && !productsGrid.getSelectedEntitiesIds().isEmpty()
                 && productsGrid.getSelectedEntities().stream().noneMatch(e -> e.getStringField(TECHNOLOGY_NUMBER) == null)
                 && productsGrid.getSelectedEntities().stream().map(e -> e.getStringField(TECHNOLOGY_NUMBER)).distinct()
                         .count() == 1L);
         useOtherTechnologyActionItem.requestUpdate(true);
-        fillTechnologyActionItem
-                .setEnabled(
-                        !productsGrid.getSelectedEntitiesIds().isEmpty()
-                                && productsGrid.getSelectedEntities().stream()
-                                        .allMatch(e -> e.getStringField(TECHNOLOGY_NUMBER) == null
-                                                && e.getStringField("productFamily") != null)
-                                && productsGrid.getSelectedEntities().stream().map(e -> e.getStringField("productFamily"))
-                                        .distinct().count() == 1L);
+        fillTechnologyActionItem.setEnabled(isEnabled && !productsGrid.getSelectedEntitiesIds().isEmpty()
+                && productsGrid.getSelectedEntities().stream()
+                        .allMatch(e -> e.getStringField(TECHNOLOGY_NUMBER) == null && e.getStringField("productFamily") != null)
+                && productsGrid.getSelectedEntities().stream().map(e -> e.getStringField("productFamily")).distinct()
+                        .count() == 1L);
         fillTechnologyActionItem.requestUpdate(true);
     }
 
