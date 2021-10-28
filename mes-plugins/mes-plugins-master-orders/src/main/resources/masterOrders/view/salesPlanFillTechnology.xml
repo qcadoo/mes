@@ -36,7 +36,28 @@
                 <bigButton name="back" icon="backIcon24.png" state="enabled" action="#{window}.performBack" />
             </group>
             <group name="actions">
-                <bigButton name="fill" icon="saveIcon24.png" action="#{form}.fireEvent(fill); #{window}.performBackWithoutConfirm;"/>
+                <bigButton name="fill" icon="saveIcon24.png">
+                    <script>
+                        <![CDATA[
+                                this.addOnChangeListener({
+                                    onClick: function() {
+                                        #{form}.performEvent({
+                                            name : 'fill'
+                                        });
+                                    }
+                                });
+
+                                #{form}.addOnChangeListener({
+                                    onSetValue: function(value) {
+                                        var generated = #{generated}.getValue().content.value;
+                                        if (generated && generated == true) {
+                                                #{window}.performBackWithoutConfirm();
+                                        }
+                                    }
+                                });
+                            ]]>
+                    </script>
+                </bigButton>
             </group>
         </ribbon>
 
@@ -52,6 +73,8 @@
                     <component type="hidden" name="productFamilyId" persistent="false"
                                reference="productFamilyId">
                     </component>
+                    <component type="checkbox" name="generated" defaultVisible="false"
+                               reference="generated" defaultEnabled="false"/>
                 </layoutElement>
                 <layoutElement column="1" row="2">
                     <component type="lookup" name="technology" reference="technology"

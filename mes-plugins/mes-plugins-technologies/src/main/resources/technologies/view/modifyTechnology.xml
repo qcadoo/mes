@@ -40,25 +40,23 @@
                 <bigButton name="modifyTechnology" icon="newIcon24.png">
                     <script>
                         <![CDATA[
-					this.addOnChangeListener({
-						onClick: function() {
-						    #{form}.performEvent({
-                                name : 'createTechnologies'
-							});
-						}
-					});
+                            this.addOnChangeListener({
+                                onClick: function() {
+                                    #{form}.performEvent({
+                                        name : 'createTechnologies'
+                                    });
+                                }
+                            });
 
-
-					#{form}.addOnChangeListener({
-					    onSetValue: function(value) {
-								var generated = #{generated}.getValue().content.value;
-
-                                if (generated && generated == true) {
-									    #{window}.performBackWithoutConfirm();
-								}
-						}
-					});
-				]]>
+                            #{form}.addOnChangeListener({
+                                onSetValue: function(value) {
+                                        var generated = #{generated}.getValue().content.value;
+                                        if (generated && generated == true) {
+                                                #{window}.performBackWithoutConfirm();
+                                        }
+                                }
+                            });
+                        ]]>
                     </script>
                 </bigButton>
             </group>
@@ -75,9 +73,6 @@
 							var remove = #{remove}.getValue().content.value;
 							var addNew = #{addNew}.getValue().content.value;
 							var replace = #{replace}.getValue().content.value;
-                            console.log(remove);
-                            console.log(addNew);
-                            console.log(replace);
 							if(remove  == '1' || addNew  == '1' || replace == '1') {
 							    modifyTechnology.enable();
 							} else {

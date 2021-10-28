@@ -16,16 +16,21 @@ import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 
 @Service
 public class SalesPlanUseOtherTechnologyListeners {
 
+    public static final String L_GENERATED = "generated";
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     public void update(final ViewDefinitionState view, final ComponentState state, final String[] args) throws JSONException {
-        String ordersIds = view.getJsonContext().get("window.mainTab.salesPlanProduct.gridLayout.salesPlanProductsIds").toString();
+        CheckBoxComponent generated = (CheckBoxComponent) view.getComponentByReference(L_GENERATED);
+        String ordersIds = view.getJsonContext().get("window.mainTab.salesPlanProduct.gridLayout.salesPlanProductsIds")
+                .toString();
         List<Long> salesPlanProductsIds = Lists.newArrayList(ordersIds.split(",")).stream().map(Long::valueOf)
                 .collect(Collectors.toList());
         DataDefinition salesPlanProductDataDefinition = dataDefinitionService.get(MasterOrdersConstants.PLUGIN_IDENTIFIER,
@@ -35,7 +40,8 @@ public class SalesPlanUseOtherTechnologyListeners {
         LookupComponent technologyLookup = (LookupComponent) view.getComponentByReference(SalesPlanProductFields.TECHNOLOGY);
         Entity technology = technologyLookup.getEntity();
         if (technology == null) {
-            view.addMessage("masterOrders.salesPlanUseOtherTechnology.update.noTechnology", ComponentState.MessageType.INFO);
+            technologyLookup.addMessage("qcadooView.validate.field.error.missing", ComponentState.MessageType.FAILURE);
+            view.addMessage("qcadooView.validate.global.error.custom", ComponentState.MessageType.FAILURE);
             return;
         }
         for (Entity salesPlanProduct : salesPlanProducts) {
@@ -43,5 +49,6 @@ public class SalesPlanUseOtherTechnologyListeners {
             salesPlanProductDataDefinition.save(salesPlanProduct);
         }
         view.addMessage("masterOrders.salesPlanUseOtherTechnology.update.success", ComponentState.MessageType.SUCCESS);
+        generated.setChecked(true);
     }
 }
