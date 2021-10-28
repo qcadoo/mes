@@ -30,7 +30,7 @@
 	plugin="basic" 
 	view="companyDetails">
 
-	<group name="suppliersGroup">
+	<group name="suppliersGroup" defaultAuthorizationRole="ROLE_REQUIREMENTS">
 		<bigButton name="redirectToFilteredOffersList" icon="genealogyIcon24.png">
 			<script>
 				<![CDATA[

@@ -29,7 +29,7 @@
                  xsi:schemaLocation="http://schema.qcadoo.org/modules/ribbonExtension http://schema.qcadoo.org/modules/ribbonExtension.xsd"
                  plugin="basic" view="productDetails">
 
-    <group name="materialFlow">
+    <group name="materialFlow" defaultAuthorizationRole="ROLE_WAREHOUSE_STATES">
         <smallButton name="productAvailability" icon="iconProducts16.png"
                    action="#{form}.fireEvent(showProductAvailability);"/>
     </group>

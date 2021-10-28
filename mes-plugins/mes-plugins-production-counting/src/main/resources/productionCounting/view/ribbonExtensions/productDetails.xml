@@ -30,7 +30,7 @@
                  plugin="basic"
                  view="productDetails">
 
-    <group name="showProductionTrackings">
+    <group name="showProductionTrackings" defaultAuthorizationRole="ROLE_PRODUCTION_TRACKING">
         <bigButton name="showProductionTrackingsForProduct" icon="genealogyIcon24.png"
                    state="enabled">
             <script>

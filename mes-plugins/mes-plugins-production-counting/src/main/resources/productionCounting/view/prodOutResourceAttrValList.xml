@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_MATERIAL_FLOW" name="prodOutResourceAttrValList"
+<view defaultAuthorizationRole="ROLE_RESOURCES" name="prodOutResourceAttrValList"
       modelName="trackingOperationProductOutComponent"
       menuAccessible="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"

@@ -381,6 +381,11 @@
                         class="com.qcadoo.mes.technologies.hooks.ProductDetailsViewHooksT"
                         method="updateRibbonState"/>
 
+        <view:view-hook plugin="basic" view="productAdditionalDetails"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.technologies.hooks.ProductDetailsViewHooksT"
+                        method="updateTabsVisible"/>
+
         <custom:custom class="com.qcadoo.mes.technologies.states.module.TechnologyStateServiceRegisterModule"/>
         <custom:custom class="com.qcadoo.mes.technologies.TechnologiesLoaderModule" />
     </modules>

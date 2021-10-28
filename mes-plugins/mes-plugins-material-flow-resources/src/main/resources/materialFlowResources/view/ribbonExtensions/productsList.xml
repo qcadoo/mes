@@ -30,7 +30,7 @@
                  plugin="basic"
                  view="productsList">
 
-    <group name="productCosts">
+    <group name="productCosts" defaultAuthorizationRole="ROLE_MATERIAL_FLOW">
         <bigButton name="updateCostProducts" state="enabled" action="#{window}.fireEvent(updateProductCosts);"
                    icon="updateIcon24.png">
         </bigButton>

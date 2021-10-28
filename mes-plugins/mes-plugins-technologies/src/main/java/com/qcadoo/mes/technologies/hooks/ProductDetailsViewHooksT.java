@@ -23,11 +23,14 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.security.api.SecurityService;
-import com.qcadoo.security.constants.QcadooSecurityConstants;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.WindowComponent;
@@ -35,29 +38,14 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 @Service
 public class ProductDetailsViewHooksT {
-
-    @Autowired
-    private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private SecurityService securityService;
 
     // TODO lupo fix when problem with navigation will be done
     public void updateRibbonState(final ViewDefinitionState view) {
-        Entity loggedUser = dataDefinitionService
-                .get(QcadooSecurityConstants.PLUGIN_IDENTIFIER, QcadooSecurityConstants.MODEL_USER)
-                .get(securityService.getCurrentUserId());
-
-        if (!securityService.hasRole(loggedUser, "ROLE_TECHNOLOGIES")) {
-            view.getComponentByReference("technologyTab").setVisible(false);
-        }
         FormComponent productForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity product = productForm.getEntity();
 
@@ -88,18 +76,18 @@ public class ProductDetailsViewHooksT {
 
         Entity parent = product.getBelongsToField(ProductFields.PARENT);
 
-        if(Objects.nonNull(parent)) {
-            updateButtonState(showTechnologiesWithFamilyProduct, true);
-
-        } else {
-            updateButtonState(showTechnologiesWithFamilyProduct, false);
-
-        }
+        updateButtonState(showTechnologiesWithFamilyProduct, Objects.nonNull(parent));
     }
 
     private void updateButtonState(final RibbonActionItem ribbonActionItem, final boolean isEnabled) {
         ribbonActionItem.setEnabled(isEnabled);
         ribbonActionItem.requestUpdate(true);
+    }
+
+    public void updateTabsVisible(final ViewDefinitionState view) {
+        if (!securityService.hasCurrentUserRole("ROLE_TECHNOLOGIES")) {
+            view.getComponentByReference("technologyTab").setVisible(false);
+        }
     }
 
 }
