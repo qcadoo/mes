@@ -30,6 +30,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 public interface ProductionTrackingService {
@@ -51,4 +52,8 @@ public interface ProductionTrackingService {
     Optional<BigDecimal> calculateGivenQuantity(Entity trackingOperationProductInComponent, BigDecimal usedQuantity);
 
     Either<Boolean,Optional<Date>> findExpirationDate(final Entity productionTracking, final Entity order, final Entity toc, final Entity batch);
+
+    BigDecimal getTrackedQuantity(Entity trackingOperationProductOutComponent, List<Entity> trackings, boolean useTracking);
+
+    List<Entity> findTrackingOperationProductOutComponents(Entity order, Entity toc, Entity product);
 }

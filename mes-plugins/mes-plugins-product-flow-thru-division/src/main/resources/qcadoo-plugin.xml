@@ -619,6 +619,11 @@
                             class="com.qcadoo.mes.productFlowThruDivision.listeners.TechnologyDetailsListenersPFTD"
                             method="fillLocationsInComponents"/>
 
+        <view:view-listener plugin="technologies" view="technologyDetails"
+                            component="form" event="createModelCard"
+                            class="com.qcadoo.mes.productFlowThruDivision.listeners.TechnologyDetailsListenersPFTD"
+                            method="createModelCard"/>
+
         <view:view-listener plugin="orders" view="copyOfTechnologyDetails"
                             component="form" event="fillLocationsInComponents"
                             class="com.qcadoo.mes.productFlowThruDivision.listeners.TechnologyDetailsListenersPFTD"
@@ -725,7 +730,7 @@
                         view="productsToIssueList" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
         <menu:menu-item name="issueList" category="requirements"
                         view="issueList" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
-        <menu:menu-item name="modelCardsList" category="products" defaultAuthorizationRole="ROLE_PRODUCTS"
+        <menu:menu-item name="modelCardsList" category="products" defaultAuthorizationRole="ROLE_PRODUCTS_ADDITIONAL"
                         view="modelCardsList"/>
 
         <view:view-listener plugin="orders" view="orderDetails"

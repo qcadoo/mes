@@ -24,7 +24,7 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_MATERIAL_FLOW" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<view defaultAuthorizationRole="ROLE_RESOURCES" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xmlns="http://schema.qcadoo.org/view"
       xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
       name="resourcesList"

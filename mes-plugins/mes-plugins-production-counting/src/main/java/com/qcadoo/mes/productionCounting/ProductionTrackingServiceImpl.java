@@ -39,16 +39,22 @@ import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
 import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.constants.StaffWorkTimeFields;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
 import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.mes.productionCounting.constants.UsedBatchFields;
 import com.qcadoo.mes.productionCounting.newstates.ProductionTrackingStateServiceMarker;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
+import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.states.service.StateChangeContextBuilder;
 import com.qcadoo.mes.technologies.TechnologyService;
+import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.NumberService;
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.view.api.ComponentState;
@@ -86,10 +92,6 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
     private static final String L_CALC_LABOR_TOTAL_TIME_RIBBON_BUTTON = "calcTotalLaborTime";
 
-
-
-
-
     private static final String USER_CHANGE_STATE = "user";
 
     private static final String L_ID = ".id";
@@ -114,6 +116,9 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
+
+    @Autowired
+    private NumberService numberService;
 
     @Override
     public void setTimeAndPieceworkComponentsVisible(final ViewDefinitionState view, final Entity order) {
@@ -242,7 +247,6 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
         copyStaffWorkTimes(productionTracking, correctingProductionTracking);
         copyTrackingOperationProductInComponents(productionTracking, correctingProductionTracking);
-        copyTrackingOperationProductOutComponents(productionTracking, correctingProductionTracking);
     }
 
     private void copyStaffWorkTimes(Entity productionTracking, Entity correctingProductionTracking) {
@@ -291,16 +295,6 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
                 });
         correctingProductionTracking.setField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS,
                 copiedTrackingOperationProductInComponents);
-    }
-
-    private void copyTrackingOperationProductOutComponents(Entity productionTracking, Entity correctingProductionTracking) {
-        EntityList trackingOperationProductOutComponents = productionTracking
-                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
-        List<Entity> copiedTrackingOperationProductOutComponents = Lists.newArrayList();
-        trackingOperationProductOutComponents.forEach(t -> copiedTrackingOperationProductOutComponents.add(t.getDataDefinition()
-                .copy(t.getId()).get(0)));
-        correctingProductionTracking.setField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS,
-                copiedTrackingOperationProductOutComponents);
     }
 
     @Override
@@ -403,5 +397,44 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
         }
         return null;
     }
+
+    @Override
+    public BigDecimal getTrackedQuantity(Entity trackingOperationProductOutComponent, List<Entity> trackings, boolean useTracking) {
+        BigDecimal trackedQuantity = BigDecimal.ZERO;
+
+        for (Entity trackingProduct : trackings) {
+            if (!trackingProduct.getId().equals(trackingOperationProductOutComponent.getId())) {
+                trackedQuantity = trackedQuantity.add(BigDecimalUtils.convertNullToZero(trackingProduct
+                        .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY)), numberService
+                        .getMathContext());
+            }
+
+        }
+        if (useTracking) {
+            trackedQuantity = trackedQuantity.add(BigDecimalUtils.convertNullToZero(trackingOperationProductOutComponent
+                    .getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY)), numberService.getMathContext());
+        }
+        return trackedQuantity;
+    }
+
+    @Override
+    public List<Entity> findTrackingOperationProductOutComponents(Entity order, Entity toc, Entity product) {
+        SearchCriteriaBuilder scb = dataDefinitionService
+                .get(ProductionCountingConstants.PLUGIN_IDENTIFIER,
+                        ProductionCountingConstants.MODEL_TRACKING_OPERATION_PRODUCT_OUT_COMPONENT)
+                .find()
+                .createAlias(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING, "pTracking", JoinType.INNER)
+                .add(SearchRestrictions.belongsTo("pTracking." + ProductionTrackingFields.ORDER, order))
+                .add(SearchRestrictions.in("pTracking." + ProductionTrackingFields.STATE, Lists.newArrayList(
+                        ProductionTrackingStateStringValues.ACCEPTED, ProductionTrackingStateStringValues.DRAFT)))
+                .add(SearchRestrictions.belongsTo(TrackingOperationProductOutComponentFields.PRODUCT, product));
+
+        if (Objects.nonNull(toc)) {
+            scb.add(SearchRestrictions.belongsTo("pTracking." + ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc));
+        }
+
+        return scb.list().getEntities();
+    }
+
 
 }

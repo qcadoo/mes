@@ -23,22 +23,6 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Maps;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.advancedGenealogy.AdvancedGenealogyService;
@@ -58,6 +42,7 @@ import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.hooks.helpers.OperationProductsExtractor;
 import com.qcadoo.mes.productionCounting.states.ProductionTrackingStatesHelper;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
+import com.qcadoo.mes.productionCounting.states.listener.ProductionTrackingListenerService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -65,6 +50,22 @@ import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
+
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
 
 @Service
 public class ProductionTrackingHooks {
@@ -107,6 +108,9 @@ public class ProductionTrackingHooks {
     @Autowired
     private NumberPatternGeneratorService numberPatternGeneratorService;
 
+    @Autowired
+    private ProductionTrackingListenerService productionTrackingListenerService;
+
     public void onCreate(final DataDefinition productionTrackingDD, final Entity productionTracking) {
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
 
@@ -127,18 +131,17 @@ public class ProductionTrackingHooks {
         setTimesToZeroIfEmpty(productionTracking);
         copyProducts(productionTracking);
 
-        boolean generateBatchForOrderedProduct = parameterService.getParameter()
-                .getBooleanField(ParameterFieldsPC.GENERATE_BATCH_FOR_ORDERED_PRODUCT);
+        boolean generateBatchForOrderedProduct = parameterService.getParameter().getBooleanField(
+                ParameterFieldsPC.GENERATE_BATCH_FOR_ORDERED_PRODUCT);
 
         if (productionTracking.getBooleanField(ProductionTrackingFields.ADD_BATCH)
-                && (StringUtils.isNoneEmpty(productionTracking.getStringField(ProductionTrackingFields.BATCH_NUMBER))
-                        || generateBatchForOrderedProduct)) {
+                && (StringUtils.isNoneEmpty(productionTracking.getStringField(ProductionTrackingFields.BATCH_NUMBER)) || generateBatchForOrderedProduct)) {
             Entity product = order.getBelongsToField(OrderFields.PRODUCT);
             String number = productionTracking.getStringField(ProductionTrackingFields.BATCH_NUMBER);
 
             if (generateBatchForOrderedProduct) {
-                number = numberPatternGeneratorService
-                        .generateNumber(parameterService.getParameter().getBelongsToField(ParameterFieldsPC.NUMBER_PATTERN));
+                number = numberPatternGeneratorService.generateNumber(parameterService.getParameter().getBelongsToField(
+                        ParameterFieldsPC.NUMBER_PATTERN));
             }
 
             Entity batch = advancedGenealogyService.createOrGetBatch(number, product);
@@ -181,17 +184,19 @@ public class ProductionTrackingHooks {
             }
 
             String number = productionTracking.getStringField(ProductionTrackingFields.NUMBER);
-            String orderNumber = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER)
-                    .getStringField(OrderFields.NUMBER);
+            String orderNumber = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER).getStringField(
+                    OrderFields.NUMBER);
             Date createDate = productionTracking.getDateField("createDate");
 
             logService.add(LogService.Builder
-                    .activity("productionTracking",
+                    .activity(
+                            "productionTracking",
                             translationService.translate("productionCounting.productionTracking.activity.created.action",
                                     LocaleContextHolder.getLocale()))
-                    .withMessage(translationService.translate("productionCounting.productionTracking.activity.created.message",
-                            LocaleContextHolder.getLocale(), worker, number, generateOrderDetailsUrl(orderNumber, order.getId())))
-                    .withCreateTime(createDate));
+                    .withMessage(
+                            translationService.translate("productionCounting.productionTracking.activity.created.message",
+                                    LocaleContextHolder.getLocale(), worker, number,
+                                    generateOrderDetailsUrl(orderNumber, order.getId()))).withCreateTime(createDate));
         }
     }
 
@@ -213,7 +218,7 @@ public class ProductionTrackingHooks {
 
     public void onDelete(final DataDefinition productionTrackingDD, final Entity productionTracking) {
         productionTrackingService.unCorrect(productionTracking);
-
+        productionTrackingListenerService.updateOrderReportedQuantityOnRemove(productionTracking);
         logPerformDelete(productionTracking);
     }
 
@@ -226,8 +231,7 @@ public class ProductionTrackingHooks {
         logService.add(LogService.Builder
                 .info("productionTracking",
                         translationService.translate("productionCounting.productionTracking.delete",
-                                LocaleContextHolder.getLocale()))
-                .withItem1("ID: " + productionTracking.getId().toString())
+                                LocaleContextHolder.getLocale())).withItem1("ID: " + productionTracking.getId().toString())
                 .withItem2("Number: " + productionTracking.getStringField(ProductionTrackingFields.NUMBER))
                 .withItem3("User: " + username));
     }
@@ -237,11 +241,12 @@ public class ProductionTrackingHooks {
         Entity technologyOperationComponent = productionTracking
                 .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
 
-        final List<Entity> productionTrackings = productionTrackingDD.find()
+        final List<Entity> productionTrackings = productionTrackingDD
+                .find()
                 .add(SearchRestrictions.eq(ProductionTrackingFields.STATE, ProductionTrackingStateStringValues.ACCEPTED))
-                .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order)).add(SearchRestrictions
-                        .belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent))
-                .list().getEntities();
+                .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
+                .add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT,
+                        technologyOperationComponent)).list().getEntities();
 
         return willOrderAcceptOneMoreValidator(productionTrackingDD, productionTracking, productionTrackings);
     }
@@ -312,7 +317,7 @@ public class ProductionTrackingHooks {
         if (registerQuantityInProduct) {
             productionTracking.setField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS, inputs);
         }
-        
+
         if (registerQuantityOutProduct) {
             productionTracking.setField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS, outputs);
         }

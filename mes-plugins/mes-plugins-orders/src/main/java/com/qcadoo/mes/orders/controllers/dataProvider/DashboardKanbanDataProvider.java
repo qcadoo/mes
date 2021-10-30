@@ -1,19 +1,25 @@
 package com.qcadoo.mes.orders.controllers.dataProvider;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.orders.controllers.dto.OperationalTaskHolder;
 import com.qcadoo.mes.orders.controllers.dto.OrderHolder;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
-
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.stereotype.Service;
+import com.qcadoo.mes.productionLines.constants.UserFieldsPL;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.security.api.SecurityService;
+import com.qcadoo.security.constants.QcadooSecurityConstants;
 
 @Service
 public class DashboardKanbanDataProvider {
@@ -24,31 +30,54 @@ public class DashboardKanbanDataProvider {
 
     public static final String L_ORDER_ID = "orderId";
 
+    public static final String L_PRODUCTION_LINE_ID = "productionLineId";
+
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private SecurityService securityService;
 
     public List<OrderHolder> getOrdersPending() {
         Map<String, Object> params = Maps.newHashMap();
 
         params.put(L_STATES, Sets.newHashSet(OrderStateStringValues.ACCEPTED, OrderStateStringValues.INTERRUPTED));
 
-        return jdbcTemplate.query(getOrdersQuery(), params, new BeanPropertyRowMapper(OrderHolder.class));
+        Entity productionLine = getCurrentUserProductionLine();
+        if (!Objects.isNull(productionLine)) {
+            params.put(L_PRODUCTION_LINE_ID, productionLine.getId());
+        }
+
+        return jdbcTemplate.query(getOrdersQuery(productionLine), params, new BeanPropertyRowMapper(OrderHolder.class));
     }
 
     public List<OrderHolder> getOrdersInProgress() {
         Map<String, Object> params = Maps.newHashMap();
 
+        Entity productionLine = getCurrentUserProductionLine();
+        if (!Objects.isNull(productionLine)) {
+            params.put(L_PRODUCTION_LINE_ID, productionLine.getId());
+        }
+
         params.put(L_STATES, Sets.newHashSet(OrderStateStringValues.IN_PROGRESS));
 
-        return jdbcTemplate.query(getOrdersQuery(), params, new BeanPropertyRowMapper(OrderHolder.class));
+        return jdbcTemplate.query(getOrdersQuery(productionLine), params, new BeanPropertyRowMapper(OrderHolder.class));
     }
 
     public List<OrderHolder> getOrdersCompleted() {
         Map<String, Object> params = Maps.newHashMap();
 
+        Entity productionLine = getCurrentUserProductionLine();
+        if (!Objects.isNull(productionLine)) {
+            params.put(L_PRODUCTION_LINE_ID, productionLine.getId());
+        }
+
         params.put(L_STATES, Sets.newHashSet(OrderStateStringValues.COMPLETED));
 
-        return jdbcTemplate.query(getOrdersQuery(), params, new BeanPropertyRowMapper(OrderHolder.class));
+        return jdbcTemplate.query(getOrdersQuery(productionLine), params, new BeanPropertyRowMapper(OrderHolder.class));
     }
 
     public OrderHolder getOrder(Long orderId) {
@@ -72,10 +101,15 @@ public class DashboardKanbanDataProvider {
                 + "AND mop.masterorder_id = orderlistdto.masterorderid ";
     }
 
-    private String getOrdersQuery() {
+    private String getOrdersQuery(Entity productionLine) {
         String query = getOrderQueryProjections();
         query += "WHERE orderlistdto.state IN (:states) ";
         query += "AND date_trunc('day', orderlistdto.startdate) <= current_date AND current_date <= date_trunc('day', orderlistdto.finishdate) ";
+
+        if (!Objects.isNull(productionLine)) {
+            query += "AND orderlistdto.productionlineid = :productionLineId ";
+        }
+
         query += "ORDER BY orderlistdto.productionlinenumber, orderlistdto.startdate";
 
         return query;
@@ -88,16 +122,23 @@ public class DashboardKanbanDataProvider {
         return query;
     }
 
+    private Entity getCurrentUserProductionLine() {
+        Entity currentUser = dataDefinitionService
+                .get(QcadooSecurityConstants.PLUGIN_IDENTIFIER, QcadooSecurityConstants.MODEL_USER)
+                .get(securityService.getCurrentUserId());
+        return currentUser.getBelongsToField(UserFieldsPL.PRODUCTION_LINE);
+    }
+
     public List<OperationalTaskHolder> getOperationalTasksPendingForOrder(Long orderId) {
         String additionalRestrictions = "AND operationaltaskdto.orderid = :orderId AND coalesce(operationaltaskdto.usedquantity, 0) = 0 ";
 
         Map<String, Object> params = Maps.newHashMap();
 
-        params.put(L_STATES,
-                Sets.newHashSet(OperationalTaskStateStringValues.FINISHED));
+        params.put(L_STATES, Sets.newHashSet(OperationalTaskStateStringValues.FINISHED));
         params.put(L_ORDER_ID, orderId);
 
-        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions, false), params, new BeanPropertyRowMapper(OperationalTaskHolder.class));
+        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions, false), params,
+                new BeanPropertyRowMapper(OperationalTaskHolder.class));
     }
 
     public List<OperationalTaskHolder> getOperationalTasksPending() {
@@ -105,10 +146,10 @@ public class DashboardKanbanDataProvider {
 
         Map<String, Object> params = Maps.newHashMap();
 
-        params.put(L_STATES,
-                Sets.newHashSet(OperationalTaskStateStringValues.PENDING, OperationalTaskStateStringValues.STARTED));
+        params.put(L_STATES, Sets.newHashSet(OperationalTaskStateStringValues.PENDING, OperationalTaskStateStringValues.STARTED));
 
-        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions, true), params, new BeanPropertyRowMapper(OperationalTaskHolder.class));
+        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions, true), params,
+                new BeanPropertyRowMapper(OperationalTaskHolder.class));
     }
 
     public List<OperationalTaskHolder> getOperationalTasksInProgress() {
@@ -116,10 +157,10 @@ public class DashboardKanbanDataProvider {
 
         Map<String, Object> params = Maps.newHashMap();
 
-        params.put(L_STATES,
-                Sets.newHashSet(OperationalTaskStateStringValues.STARTED));
+        params.put(L_STATES, Sets.newHashSet(OperationalTaskStateStringValues.STARTED));
 
-        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions, true), params, new BeanPropertyRowMapper(OperationalTaskHolder.class));
+        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions, true), params,
+                new BeanPropertyRowMapper(OperationalTaskHolder.class));
     }
 
     public List<OperationalTaskHolder> getOperationalTasksCompleted() {
@@ -130,7 +171,8 @@ public class DashboardKanbanDataProvider {
         params.put(L_STATES,
                 Sets.newHashSet(OperationalTaskStateStringValues.STARTED, OperationalTaskStateStringValues.FINISHED));
 
-        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions, true), params, new BeanPropertyRowMapper(OperationalTaskHolder.class));
+        return jdbcTemplate.query(getOperationalTasksQuery(additionalRestrictions, true), params,
+                new BeanPropertyRowMapper(OperationalTaskHolder.class));
     }
 
     private String getOperationalTaskQueryProjections() {

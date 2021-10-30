@@ -23,16 +23,25 @@
  */
 package com.qcadoo.mes.productFlowThruDivision.listeners;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.Maps;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.productFlowThruDivision.constants.DivisionFieldsPFTD;
+import com.qcadoo.mes.productFlowThruDivision.constants.ModelCardFields;
+import com.qcadoo.mes.productFlowThruDivision.constants.ModelCardProductFields;
 import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductInComponentFieldsPFTD;
 import com.qcadoo.mes.productFlowThruDivision.constants.OperationProductOutComponentFieldsPFTD;
+import com.qcadoo.mes.productFlowThruDivision.constants.ParameterFieldsPFTD;
+import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
 import com.qcadoo.mes.productFlowThruDivision.constants.ProductionFlowComponent;
 import com.qcadoo.mes.productFlowThruDivision.constants.Range;
 import com.qcadoo.mes.productFlowThruDivision.constants.TechnologyFieldsPFTD;
@@ -44,6 +53,7 @@ import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -69,6 +79,9 @@ public class TechnologyDetailsListenersPFTD {
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     public void setWorkstationsLookup(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
         if (!(componentState instanceof GridComponent)) {
@@ -363,6 +376,36 @@ public class TechnologyDetailsListenersPFTD {
     private DataDefinition getOperationProductOutComponent() {
         return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
                 TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT);
+    }
+
+    public void createModelCard(final ViewDefinitionState view, final ComponentState componentState, final String[] args) {
+        FormComponent technologyForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+
+        Entity technology = technologyForm.getPersistedEntityWithIncludedFormValues();
+        Entity product = technology.getBelongsToField(TechnologyFields.PRODUCT);
+        Entity parameter = parameterService.getParameter();
+
+        DataDefinition modelCardDD = dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
+                ProductFlowThruDivisionConstants.MODEL_MODEL_CARD);
+        Entity modelCard = modelCardDD.create();
+        modelCard.setField(ModelCardFields.NAME, product.getField(ProductFields.NAME));
+        modelCard.setField(ModelCardFields.MATERIAL_COSTS_USED,
+                parameter.getStringField(ParameterFieldsPFTD.MATERIAL_COSTS_USED_MC));
+        modelCard.setField(ModelCardFields.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED,
+                parameter.getBooleanField(ParameterFieldsPFTD.USE_NOMINAL_COST_PRICE_NOT_SPECIFIED_MC));
+        DataDefinition modelCardProductDD = dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER,
+                ProductFlowThruDivisionConstants.MODEL_MODEL_CARD_PRODUCT);
+        Entity modelCardProduct = modelCardProductDD.create();
+        modelCardProduct.setField(ModelCardProductFields.PRODUCT, product);
+        modelCardProduct.setField(ModelCardProductFields.TECHNOLOGY, technology);
+        modelCardProduct.setField(ModelCardProductFields.QUANTITY, 1L);
+        modelCard.setField(ModelCardFields.MODEL_CARD_PRODUCTS, Collections.singletonList(modelCardProduct));
+        modelCard = modelCardDD.save(modelCard);
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("form.id", modelCard.getId());
+
+        String url = "../page/productFlowThruDivision/modelCardDetails.html";
+        view.redirectTo(url, false, true, parameters);
     }
 
 }

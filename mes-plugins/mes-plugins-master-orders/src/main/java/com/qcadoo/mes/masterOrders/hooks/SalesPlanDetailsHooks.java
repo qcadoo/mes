@@ -29,6 +29,8 @@ public class SalesPlanDetailsHooks {
 
     private static final String L_OPEN_POSITIONS_IMPORT_PAGE = "openPositionsImportPage";
 
+    private static final String TECHNOLOGY_NUMBER = "technologyNumber";
+
     public void onBeforeRender(final ViewDefinitionState view) {
         setRibbonEnabled(view);
         disableForm(view);
@@ -54,6 +56,7 @@ public class SalesPlanDetailsHooks {
         FormComponent salesPlanForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         Entity salesPlan = salesPlanForm.getEntity();
         String state = salesPlan.getStringField(SalesPlanFields.STATE);
+        GridComponent productsGrid = (GridComponent) view.getComponentByReference(SalesPlanFields.PRODUCTS);
 
         WindowComponent window = (WindowComponent) view.getComponentByReference(QcadooViewConstants.L_WINDOW);
         Ribbon ribbon = window.getRibbon();
@@ -65,12 +68,27 @@ public class SalesPlanDetailsHooks {
         RibbonActionItem openPositionsImportPageRibbonActionItem = window.getRibbon().getGroupByName(L_IMPORT)
                 .getItemByName(L_OPEN_POSITIONS_IMPORT_PAGE);
 
+        RibbonGroup technologiesRibbonGroup = ribbon.getGroupByName("technologies");
+        RibbonActionItem useOtherTechnologyActionItem = technologiesRibbonGroup.getItemByName("useOtherTechnology");
+        RibbonActionItem fillTechnologyActionItem = technologiesRibbonGroup.getItemByName("fillTechnology");
+
         boolean isEnabled = Objects.nonNull(salesPlanForm.getEntityId()) && state.equals(SalesPlanStateStringValues.DRAFT);
 
         createSalesPlanMaterialRequirementRibbonActionItem.setEnabled(isEnabled);
         createSalesPlanMaterialRequirementRibbonActionItem.requestUpdate(true);
         openPositionsImportPageRibbonActionItem.setEnabled(isEnabled);
         openPositionsImportPageRibbonActionItem.requestUpdate(true);
+        useOtherTechnologyActionItem.setEnabled(isEnabled && !productsGrid.getSelectedEntitiesIds().isEmpty()
+                && productsGrid.getSelectedEntities().stream().noneMatch(e -> e.getStringField(TECHNOLOGY_NUMBER) == null)
+                && productsGrid.getSelectedEntities().stream().map(e -> e.getStringField(TECHNOLOGY_NUMBER)).distinct()
+                        .count() == 1L);
+        useOtherTechnologyActionItem.requestUpdate(true);
+        fillTechnologyActionItem.setEnabled(isEnabled && !productsGrid.getSelectedEntitiesIds().isEmpty()
+                && productsGrid.getSelectedEntities().stream()
+                        .allMatch(e -> e.getStringField(TECHNOLOGY_NUMBER) == null && e.getStringField("productFamily") != null)
+                && productsGrid.getSelectedEntities().stream().map(e -> e.getStringField("productFamily")).distinct()
+                        .count() == 1L);
+        fillTechnologyActionItem.requestUpdate(true);
     }
 
 }

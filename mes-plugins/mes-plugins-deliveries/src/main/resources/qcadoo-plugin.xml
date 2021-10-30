@@ -239,9 +239,9 @@
 
         <menu:menu-category name="requirements" defaultAuthorizationRole="ROLE_REQUIREMENTS"/>
 
-        <menu:menu-item name="deliveries" category="requirements" defaultAuthorizationRole="ROLE_REQUIREMENTS"
+        <menu:menu-item name="deliveries" category="requirements" defaultAuthorizationRole="ROLE_DELIVERIES"
                         view="deliveriesList"/>
-        <menu:menu-item name="supplyItems" category="requirements" defaultAuthorizationRole="ROLE_REQUIREMENTS"
+        <menu:menu-item name="supplyItems" category="requirements" defaultAuthorizationRole="ROLE_DELIVERIES"
                         view="supplyItems"/>
 
         <menu:menu-item name="deliveryByPalletTypeReport" category="requirements" defaultAuthorizationRole="ROLE_REQUIREMENTS"
