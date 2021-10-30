@@ -5069,7 +5069,8 @@ CREATE TABLE qcadoosecurity_user (
     entityversion bigint DEFAULT 0,
     factory_id bigint,
     ipaddress character varying,
-    showonlymyregistrationrecords boolean DEFAULT false
+    showonlymyregistrationrecords boolean DEFAULT false,
+    productionline_id bigint
 );
 
 
@@ -11061,8 +11062,8 @@ CREATE VIEW basicproductioncounting_productioncountingquantitydto AS
     pcq.role,
     pcq.typeofmaterial,
     pcq.plannedquantity,
-    NULL::numeric AS usedquantity,
-    NULL::numeric AS producedquantity,
+    COALESCE(pcq.usedquantity, (0)::numeric) AS usedquantity,
+    COALESCE(pcq.producedquantity, (0)::numeric) AS producedquantity,
     replacementto.number AS replacementto,
     tipt.name AS technologyinputproducttypename
    FROM ((((((basicproductioncounting_productioncountingquantity pcq
@@ -11157,8 +11158,8 @@ CREATE VIEW basicproductioncounting_productioncountingquantitylistdto AS
     pcq.role,
     pcq.typeofmaterial,
     pcq.plannedquantity,
-    NULL::numeric AS usedquantity,
-    NULL::numeric AS producedquantity,
+    COALESCE(pcq.usedquantity, (0)::numeric) AS usedquantity,
+    COALESCE(pcq.producedquantity, (0)::numeric) AS producedquantity,
     replacementto.number AS replacementto,
     tipt.name AS technologyinputproducttypename
    FROM (((((((basicproductioncounting_productioncountingquantity pcq
@@ -11252,6 +11253,39 @@ CREATE VIEW basicproductioncounting_usedquantity_helper AS
      JOIN productioncounting_productiontracking pt ON ((pt.id = topic.productiontracking_id)))
   WHERE ((pt.state)::text = '02accepted'::text)
   GROUP BY pt.order_id, topic.product_id, pt.technologyoperationcomponent_id;
+
+
+--
+-- Name: cdnrcgoodfood_cancelprotocol; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE cdnrcgoodfood_cancelprotocol (
+    id bigint NOT NULL,
+    extrusionprotocol_id bigint,
+    confectionprotocol_id bigint,
+    createdate timestamp without time zone,
+    laststatechangefailcause character varying(8192),
+    iscanceled boolean DEFAULT false
+);
+
+
+--
+-- Name: cdnrcgoodfood_cancelprotocol_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE cdnrcgoodfood_cancelprotocol_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: cdnrcgoodfood_cancelprotocol_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE cdnrcgoodfood_cancelprotocol_id_seq OWNED BY cdnrcgoodfood_cancelprotocol.id;
 
 
 --
@@ -17237,6 +17271,7 @@ CREATE VIEW masterorders_salesplanproductdto AS
     p.name AS productname,
     p.entitytype AS productentitytype,
     assortment.name AS productassortment,
+    family.number AS productfamily,
     model.name AS productmodel,
     p.unit AS productunit,
     t.number AS technologynumber,
@@ -17253,11 +17288,12 @@ CREATE VIEW masterorders_salesplanproductdto AS
                        FROM basic_product prod
                       WHERE (prod.parent_id = p.id))))), (0)::numeric)
         END AS ordersplannedquantity
-   FROM ((((masterorders_salesplanproduct spp
+   FROM (((((masterorders_salesplanproduct spp
      JOIN basic_product p ON ((spp.product_id = p.id)))
      LEFT JOIN basic_assortment assortment ON ((p.assortment_id = assortment.id)))
      LEFT JOIN basic_model model ON ((p.model_id = model.id)))
-     LEFT JOIN technologies_technology t ON ((t.id = spp.technology_id)));
+     LEFT JOIN technologies_technology t ON ((t.id = spp.technology_id)))
+     LEFT JOIN basic_product family ON ((p.parent_id = family.id)));
 
 
 --
@@ -20064,7 +20100,8 @@ CREATE VIEW orders_orderlistdto AS
     productionline.number AS productionlinenumber,
     ''::character varying(255) AS annotation,
     (product.id)::integer AS productid,
-    ordersorder.reportedproductionquantity
+    ordersorder.reportedproductionquantity,
+    (productionline.id)::integer AS productionlineid
    FROM ((((((((orders_order ordersorder
      JOIN basic_product product ON ((product.id = ordersorder.product_id)))
      LEFT JOIN technologies_technology technology ON ((technology.id = ordersorder.technology_id)))
@@ -21092,22 +21129,14 @@ CREATE SEQUENCE ordersgroups_drafrptquantitydto_id_seq
 
 
 --
--- Name: ordersgroups_ordersgroup_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: technologies_productionlinetechnologygroup; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE ordersgroups_ordersgroup_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: ordersgroups_ordersgroup_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE ordersgroups_ordersgroup_id_seq OWNED BY ordersgroups_ordersgroup.id;
+CREATE TABLE technologies_productionlinetechnologygroup (
+    id bigint NOT NULL,
+    technologygroup_id bigint,
+    productionline_id bigint
+);
 
 
 --
@@ -21150,7 +21179,12 @@ CREATE VIEW ordersgroups_ordersgroupdto AS
     (masterorder.deadline)::date AS clientdate,
     masterorder.number AS masterordernumber,
     salesplan.number AS salesplannumber,
-    salesplan.name AS salesplanname
+    salesplan.name AS salesplanname,
+    ( SELECT (count(productionlinetechnologygroup.id) <> 0)
+           FROM (technologies_productionlinetechnologygroup productionlinetechnologygroup
+             LEFT JOIN technologies_technologygroup technologygroup ON ((productionlinetechnologygroup.technologygroup_id = technologygroup.id)))
+          WHERE ((productionlinetechnologygroup.productionline_id = ordersgroup.productionline_id) AND ((productionlinetechnologygroup.technologygroup_id IS NULL) OR (tgn.number ~~ (('%'::text || (technologygroup.number)::text) || '%'::text))))) AS materials,
+    masterorder.id AS masterorderid
    FROM ((((((((ordersgroups_ordersgroup ordersgroup
      LEFT JOIN basic_assortment assortment ON ((ordersgroup.assortment_id = assortment.id)))
      LEFT JOIN productionlines_productionline productionline ON ((ordersgroup.productionline_id = productionline.id)))
@@ -21160,6 +21194,41 @@ CREATE VIEW ordersgroups_ordersgroupdto AS
      LEFT JOIN ordersgroups_drafrptquantitydto drafrptquantity ON ((ordersgroup.id = drafrptquantity.id)))
      LEFT JOIN technology_group_numbers tgn ON ((tgn.ordersgroup_id = ordersgroup.id)))
      LEFT JOIN performance p ON ((p.ordersgroup_id = ordersgroup.id)));
+
+
+--
+-- Name: ordersgroups_masterordergroupswithmaterials; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW ordersgroups_masterordergroupswithmaterials AS
+ SELECT mo.id AS master_order_id,
+    ( SELECT count(gro.id) AS count
+           FROM ordersgroups_ordersgroupdto gro
+          WHERE ((gro.masterorderid = mo.id) AND (gro.materials = true))) AS groupswithmaterials,
+    ( SELECT count(gro.id) AS count
+           FROM ordersgroups_ordersgroupdto gro
+          WHERE ((gro.masterorderid = mo.id) AND (gro.materials = true) AND (gro.remainingquantityinorderswithdraft = (0)::numeric))) AS groupswithmaterialsdone
+   FROM masterorders_masterorder mo
+  WHERE ((mo.materialsissued = false) AND ((mo.state)::text = ANY (ARRAY[('01new'::character varying)::text, ('02inExecution'::character varying)::text])));
+
+
+--
+-- Name: ordersgroups_ordersgroup_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE ordersgroups_ordersgroup_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: ordersgroups_ordersgroup_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE ordersgroups_ordersgroup_id_seq OWNED BY ordersgroups_ordersgroup.id;
 
 
 --
@@ -21958,22 +22027,6 @@ CREATE VIEW ordersupplies_productioncountingproducedquantitydrafts AS
 
 
 --
--- Name: ordersupplies_productioncountingusedquantity; Type: VIEW; Schema: public; Owner: -
---
-
-CREATE VIEW ordersupplies_productioncountingusedquantity AS
- SELECT sum(topic.usedquantity) AS usedquantity,
-    pt.order_id,
-    topic.product_id,
-    pt.technologyoperationcomponent_id
-   FROM ((productioncounting_trackingoperationproductincomponent topic
-     JOIN productioncounting_productiontracking pt ON ((pt.id = topic.productiontracking_id)))
-     JOIN orders_order o ON ((o.id = pt.order_id)))
-  WHERE (((pt.state)::text = ANY (ARRAY[('02accepted'::character varying)::text])) AND ((o.state)::text = ANY (ARRAY[('03inProgress'::character varying)::text, ('06interrupted'::character varying)::text])))
-  GROUP BY pt.order_id, topic.product_id, pt.technologyoperationcomponent_id;
-
-
---
 -- Name: ordersupplies_productioncountingquantityinput; Type: VIEW; Schema: public; Owner: -
 --
 
@@ -21986,16 +22039,15 @@ CREATE VIEW ordersupplies_productioncountingquantityinput AS
     (toc.operation_id)::integer AS operationid,
     (pcq.technologyoperationcomponent_id)::integer AS technologyoperationcomponentid,
     pcq.plannedquantity,
-    COALESCE(uqh.usedquantity, (0)::numeric) AS usedquantity,
-    GREATEST((pcq.plannedquantity - COALESCE(uqh.usedquantity, (0)::numeric)), (0)::numeric) AS quantity,
+    COALESCE(pcq.usedquantity, (0)::numeric) AS usedquantity,
+    GREATEST((pcq.plannedquantity - COALESCE(pcq.usedquantity, (0)::numeric)), (0)::numeric) AS quantity,
     '04orderInput'::text AS eventtype,
     COALESCE((coverageproducttype.producttype)::character varying(255), '01component'::character varying(255)) AS producttype,
     (o.product_id)::integer AS orderproductid
-   FROM (((((basicproductioncounting_productioncountingquantity pcq
+   FROM ((((basicproductioncounting_productioncountingquantity pcq
      JOIN orders_order o ON ((o.id = pcq.order_id)))
      JOIN basic_product product ON ((product.id = pcq.product_id)))
      LEFT JOIN technologies_technologyoperationcomponent toc ON ((pcq.technologyoperationcomponent_id = toc.id)))
-     LEFT JOIN ordersupplies_productioncountingusedquantity uqh ON (((uqh.order_id = pcq.order_id) AND (uqh.product_id = pcq.product_id))))
      LEFT JOIN ordersupplies_coverageproducttypedto coverageproducttype ON ((coverageproducttype.productid = pcq.product_id)))
   WHERE (((pcq.role)::text = '01used'::text) AND ((pcq.typeofmaterial)::text = ANY (ARRAY[('01component'::character varying)::text])) AND ((o.state)::text = ANY (ARRAY[('01pending'::character varying)::text, ('02accepted'::character varying)::text, ('03inProgress'::character varying)::text, ('06interrupted'::character varying)::text])) AND (o.active = true) AND ((o.typeofproductionrecording)::text = '02cumulated'::text))
 UNION
@@ -22045,15 +22097,14 @@ CREATE VIEW ordersupplies_productioncountingquantityoutput AS
     (toc.operation_id)::integer AS operationid,
     (pcq.technologyoperationcomponent_id)::integer AS technologyoperationcomponentid,
     pcq.plannedquantity,
-    COALESCE(uqh.producedquantity, (0)::numeric) AS producedquantity,
-    GREATEST((pcq.plannedquantity - COALESCE(uqh.producedquantity, (0)::numeric)), (0)::numeric) AS quantity,
+    COALESCE(pcq.producedquantity, (0)::numeric) AS producedquantity,
+    GREATEST((pcq.plannedquantity - COALESCE(pcq.producedquantity, (0)::numeric)), (0)::numeric) AS quantity,
     '05orderOutput'::text AS eventtype,
     pcq.typeofmaterial AS producttype
-   FROM ((((basicproductioncounting_productioncountingquantity pcq
+   FROM (((basicproductioncounting_productioncountingquantity pcq
      JOIN orders_order o ON ((o.id = pcq.order_id)))
      JOIN basic_product product ON ((product.id = pcq.product_id)))
      JOIN technologies_technologyoperationcomponent toc ON ((pcq.technologyoperationcomponent_id = toc.id)))
-     LEFT JOIN ordersupplies_productioncountingproducedquantity uqh ON (((uqh.order_id = pcq.order_id) AND (uqh.product_id = pcq.product_id))))
   WHERE (((pcq.role)::text = '02produced'::text) AND ((pcq.typeofmaterial)::text = '03finalProduct'::text) AND ((o.state)::text = ANY (ARRAY[('01pending'::character varying)::text, ('02accepted'::character varying)::text, ('03inProgress'::character varying)::text, ('06interrupted'::character varying)::text])) AND (o.active = true));
 
 
@@ -22067,6 +22118,22 @@ CREATE SEQUENCE ordersupplies_productioncountingquantityoutput_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+--
+-- Name: ordersupplies_productioncountingusedquantity; Type: VIEW; Schema: public; Owner: -
+--
+
+CREATE VIEW ordersupplies_productioncountingusedquantity AS
+ SELECT sum(topic.usedquantity) AS usedquantity,
+    pt.order_id,
+    topic.product_id,
+    pt.technologyoperationcomponent_id
+   FROM ((productioncounting_trackingoperationproductincomponent topic
+     JOIN productioncounting_productiontracking pt ON ((pt.id = topic.productiontracking_id)))
+     JOIN orders_order o ON ((o.id = pt.order_id)))
+  WHERE (((pt.state)::text = ANY (ARRAY[('02accepted'::character varying)::text])) AND ((o.state)::text = ANY (ARRAY[('03inProgress'::character varying)::text, ('06interrupted'::character varying)::text])))
+  GROUP BY pt.order_id, topic.product_id, pt.technologyoperationcomponent_id;
 
 
 --
@@ -27363,6 +27430,25 @@ ALTER SEQUENCE technologies_productcomponent_id_seq OWNED BY technologies_produc
 
 
 --
+-- Name: technologies_productionlinetechnologygroup_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE technologies_productionlinetechnologygroup_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: technologies_productionlinetechnologygroup_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE technologies_productionlinetechnologygroup_id_seq OWNED BY technologies_productionlinetechnologygroup.id;
+
+
+--
 -- Name: technologies_productstructuretreenode; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -29711,6 +29797,13 @@ ALTER TABLE ONLY basicproductioncounting_productioncountingquantity ALTER COLUMN
 -- Name: id; Type: DEFAULT; Schema: public; Owner: -
 --
 
+ALTER TABLE ONLY cdnrcgoodfood_cancelprotocol ALTER COLUMN id SET DEFAULT nextval('cdnrcgoodfood_cancelprotocol_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
 ALTER TABLE ONLY cdnrcgoodfood_highestmasterordernum ALTER COLUMN id SET DEFAULT nextval('cdnrcgoodfood_highestmasterordernum_id_seq'::regclass);
 
 
@@ -31833,6 +31926,13 @@ ALTER TABLE ONLY technologies_productbysizegroup ALTER COLUMN id SET DEFAULT nex
 --
 
 ALTER TABLE ONLY technologies_productcomponent ALTER COLUMN id SET DEFAULT nextval('technologies_productcomponent_id_seq'::regclass);
+
+
+--
+-- Name: id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_productionlinetechnologygroup ALTER COLUMN id SET DEFAULT nextval('technologies_productionlinetechnologygroup_id_seq'::regclass);
 
 
 --
@@ -35189,6 +35289,21 @@ SELECT pg_catalog.setval('basicproductioncounting_productioncountingquantitylist
 
 
 --
+-- Data for Name: cdnrcgoodfood_cancelprotocol; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY cdnrcgoodfood_cancelprotocol (id, extrusionprotocol_id, confectionprotocol_id, createdate, laststatechangefailcause, iscanceled) FROM stdin;
+\.
+
+
+--
+-- Name: cdnrcgoodfood_cancelprotocol_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('cdnrcgoodfood_cancelprotocol_id_seq', 1, false);
+
+
+--
 -- Data for Name: cdnrcgoodfood_highestmasterordernum; Type: TABLE DATA; Schema: public; Owner: -
 --
 
@@ -37089,7 +37204,6 @@ COPY jointable_group_role (group_id, role_id) FROM stdin;
 4	83
 4	84
 4	85
-4	86
 4	87
 4	88
 4	89
@@ -37208,7 +37322,6 @@ COPY jointable_group_role (group_id, role_id) FROM stdin;
 2	83
 2	84
 2	85
-2	86
 2	87
 2	88
 2	89
@@ -37323,7 +37436,6 @@ COPY jointable_group_role (group_id, role_id) FROM stdin;
 3	83
 3	84
 3	85
-3	86
 3	88
 3	89
 3	90
@@ -37379,6 +37491,30 @@ COPY jointable_group_role (group_id, role_id) FROM stdin;
 3	134
 4	134
 2	135
+2	137
+3	137
+4	137
+2	138
+3	138
+4	138
+2	139
+3	139
+4	139
+2	140
+3	140
+4	140
+2	141
+3	141
+4	141
+2	142
+3	142
+4	142
+2	143
+3	143
+4	143
+2	144
+3	144
+4	144
 \.
 
 
@@ -40774,7 +40910,6 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 83	ROLE_PLANNING	\N	0
 84	ROLE_TECHNOLOGIES_ADVANCED	\N	0
 85	ROLE_TECHNOLOGIES	\N	0
-86	ROLE_BASIC	\N	0
 87	ROLE_PARAMETERS	\N	0
 88	ROLE_COUNTRIES	\N	0
 89	ROLE_MACHINE_PARTS	\N	0
@@ -40825,6 +40960,14 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 134	ROLE_DASHBOARD_KANBAN_PRINT_LABEL	\N	0
 135	ROLE_ORDER_MATERIAL_AVAILABILITY_SHOW_RESOURCES	\N	0
 136	ROLE_MASTER_ORDER_WITH_EXTERNAL_NUMBER_DELETE	\N	0
+137	ROLE_RESOURCES	\N	0
+138	ROLE_PRODUCTS_ADDITIONAL	\N	0
+139	ROLE_ATTACHMENTS	\N	0
+140	ROLE_FORMS	\N	0
+141	ROLE_ORDERS_PROGRESS_GANTT_CHART	\N	0
+142	ROLE_OPERATIONAL_TASKS_GANTT_VIEW	\N	0
+143	ROLE_OPERATIONAL_TASKS_GANTT_EDIT	\N	0
+144	ROLE_DELIVERIES	\N	0
 \.
 
 
@@ -40832,16 +40975,16 @@ COPY qcadoosecurity_role (id, identifier, description, entityversion) FROM stdin
 -- Name: qcadoosecurity_role_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 136, true);
+SELECT pg_catalog.setval('qcadoosecurity_role_id_seq', 144, true);
 
 
 --
 -- Data for Name: qcadoosecurity_user; Type: TABLE DATA; Schema: public; Owner: -
 --
 
-COPY qcadoosecurity_user (id, username, email, firstname, lastname, enabled, description, password, lastactivity, staff_id, group_id, entityversion, factory_id, ipaddress, showonlymyregistrationrecords) FROM stdin;
-1	superadmin	superadmin@qcadoo.com	generated superadmin	generated superadmin	t	\N	186cf774c97b60a1c106ef718d10970a6a06e06bef89553d9ae65d938a886eae	\N	\N	2	0	\N	\N	f
-2	admin	admin@qcadoo.com	generated admin	generated admin	t	\N	8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918	\N	\N	4	0	\N	\N	f
+COPY qcadoosecurity_user (id, username, email, firstname, lastname, enabled, description, password, lastactivity, staff_id, group_id, entityversion, factory_id, ipaddress, showonlymyregistrationrecords, productionline_id) FROM stdin;
+1	superadmin	superadmin@qcadoo.com	generated superadmin	generated superadmin	t	\N	186cf774c97b60a1c106ef718d10970a6a06e06bef89553d9ae65d938a886eae	\N	\N	2	0	\N	\N	f	\N
+2	admin	admin@qcadoo.com	generated admin	generated admin	t	\N	8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918	\N	\N	4	0	\N	\N	f	\N
 \.
 
 
@@ -40942,14 +41085,11 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 71	materialFlowResources	documentPositions	t	6	71	4	ROLE_DOCUMENT_POSITIONS	0
 72	materialFlowResources	warehouseStock	t	6	72	6	ROLE_WAREHOUSE_STATES	0
 68	materialFlowResources	storageLocationsState	t	6	68	7	ROLE_MATERIAL_FLOW	0
-75	materialFlowResources	resources	t	6	75	9	ROLE_MATERIAL_FLOW	0
 74	materialFlowResources	resourceCorrections	t	6	74	11	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
 69	materialFlowResources	reservations	t	6	69	12	ROLE_MATERIAL_FLOW	0
 78	warehouseMinimalState	warehouseMinimumStateList	t	6	78	13	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
 100	orderSupplies	generateMaterialRequirementCoverage	t	9	100	1	ROLE_REQUIREMENTS	0
 49	materialRequirements	materialRequirements	t	9	49	2	ROLE_REQUIREMENTS	0
-62	deliveries	deliveries	t	9	62	6	ROLE_REQUIREMENTS	0
-61	deliveries	supplyItems	t	9	61	7	ROLE_REQUIREMENTS	0
 66	supplyNegotiations	offer	t	9	66	8	ROLE_REQUIREMENTS	0
 65	supplyNegotiations	offersItems	t	9	65	9	ROLE_REQUIREMENTS	0
 67	supplyNegotiations	requestsForQuotation	t	9	67	10	ROLE_REQUIREMENTS	0
@@ -40959,7 +41099,6 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 47	orders	productionOrdersPlanning	t	7	47	4	ROLE_PLANNING	0
 48	orders	productionOrders	t	7	48	5	ROLE_PLANNING	0
 97	workPlans	workPlans	t	7	97	12	ROLE_PLANNING	0
-101	ordersProgressGanttChart	ordersProgressGanttChart	t	7	101	17	ROLE_PLANNING	0
 106	deviationCausesReporting	deviationsReport	t	7	105	18	ROLE_PLANNING	0
 93	productionCounting	productionTrackingForProduct	t	8	93	7	ROLE_PRODUCTION_TRACKING	0
 92	productionCounting	productionTrackingForProductGrouped	t	8	92	8	ROLE_PRODUCTION_TRACKING	0
@@ -40980,7 +41119,6 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 123	deliveries	deliveryByPalletTypeReport	t	\N	122	1	ROLE_REQUIREMENTS	0
 126	productionCounting	anomalyReasonList	t	4	125	19	ROLE_PRODUCTION_TRACKING	0
 133	qcadooView	attachmentViewer	f	1	132	14	\N	0
-134	basic	attachmentsList	t	4	133	21	ROLE_BASIC	0
 135	goodFood	extrusionMixesList	t	\N	134	1	ROLE_TERMINAL_EXTRUSION_USER	0
 136	integrationScales	scales	t	4	135	22	ROLE_COMPANY_STRUCTURE	0
 138	arch	archOrdersGroups	t	16	137	3	ROLE_PLANNING	0
@@ -40991,7 +41129,6 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 144	arch	archDocumentPositionsList	t	16	143	7	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
 145	arch	archDocumentsList	t	16	144	6	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
 146	integrationBarTender	printersList	t	1	145	15	ROLE_PRINTERS	0
-150	basic	attributesList	t	4	149	24	ROLE_PRODUCTS	0
 155	technologies	productsToProductGroupTechnology	t	5	154	7	ROLE_TECHNOLOGIES	0
 156	basic	numberPatternsList	t	1	155	16	ROLE_NUMBER_PATTERN	0
 23	basic	shifts	t	17	23	7	ROLE_SHIFTS	0
@@ -41000,7 +41137,6 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 151	basic	productsAttributes	t	19	150	4	ROLE_PRODUCTS	0
 21	basic	productsFamilies	t	19	21	5	ROLE_PRODUCT_FAMILIES	0
 122	materialFlowResources	palletStorageState	t	6	121	8	ROLE_MATERIAL_FLOW	0
-152	materialFlowResources	resourcesAttributes	t	6	151	10	ROLE_MATERIAL_FLOW	0
 125	materialFlowResources	palletBalances	t	6	124	14	ROLE_MATERIAL_FLOW	0
 130	materialFlowResources	stocktaking	t	6	129	15	ROLE_MATERIAL_FLOW	0
 131	materialFlowResources	warehouseStockReports	t	6	130	16	ROLE_MATERIAL_FLOW	0
@@ -41010,7 +41146,6 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 114	ordersGroups	ordersGroups	t	7	113	6	ROLE_PLANNING	0
 46	orders	operationalTasks	t	7	46	7	ROLE_PLANNING	0
 149	orders	schedulesList	t	7	148	8	ROLE_PLANNING	0
-154	scheduleGantt	operationalTasksGantt	t	7	153	9	ROLE_PLANNING	0
 87	timeGapsPreview	timeGaps	t	7	87	13	ROLE_TIME_GAPS	0
 91	assignmentToShift	assignmentToShift	t	7	91	14	ROLE_ASSIGNMENT_TO_SHIFT	0
 90	assignmentToShift	assignmentToShiftReportList	t	7	90	15	ROLE_ASSIGNMENT_TO_SHIFT	0
@@ -41038,11 +41173,9 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 148	basic	skillsList	t	18	147	23	ROLE_SKILLS	0
 34	wageGroups	wageGroups	t	18	34	14	ROLE_STAFF_WAGES	0
 33	wageGroups	wages	t	18	33	13	ROLE_STAFF_WAGES	0
-161	basic	formsList	t	4	160	27	ROLE_BASIC	0
 157	stoppage	stoppageReasonsList	t	4	156	26	ROLE_STOPPAGE_REASONS	0
 8	qcadooUsers	profile	t	1	8	8	ROLE_HOME_PROFILE	0
 178	configurator	configurator	t	1	177	17	ROLE_ADMIN	0
-179	basic	labelsList	t	4	178	28	ROLE_PRODUCTS	0
 165	basic	generalParameters	t	21	164	1	ROLE_PARAMETERS	0
 166	orders	planningParameters	t	21	165	2	ROLE_PARAMETERS	0
 167	technologies	technologiesParameters	t	21	166	3	ROLE_PARAMETERS	0
@@ -41057,12 +41190,6 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 184	technologies	technologicalProcessListsList	t	5	183	9	ROLE_TECHNOLOGICAL_PROCESSES	0
 186	technologies	technologyInputProductTypesList	t	5	185	10	ROLE_TECHNOLOGIES	0
 12	basic	factories	t	3	12	1	ROLE_COMPANY_STRUCTURE	0
-20	basic	assortments	t	19	20	1	ROLE_PRODUCTS	0
-180	basic	modelsList	t	19	179	2	ROLE_PRODUCTS	0
-35	productCatalogNumbers	productCatalogNumbers	t	19	35	6	ROLE_BASE_FUNCTIONALITY	0
-176	basic	sizesList	t	19	175	7	ROLE_PRODUCTS	0
-177	basic	sizeGroupsList	t	19	176	8	ROLE_PRODUCTS	0
-193	productFlowThruDivision	modelCardsList	t	19	192	9	ROLE_PRODUCTS	0
 73	materialFlowResources	documents	t	6	73	3	ROLE_DOCUMENTS_CORRECTIONS_MIN_STATES	0
 153	materialFlowResources	documentPositionsAttributes	t	6	152	5	ROLE_DOCUMENT_POSITIONS	0
 188	masterOrders	salesPlanMaterialRequirementsList	t	9	187	3	ROLE_PLANNING	0
@@ -41088,6 +41215,23 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 194	orders	orderTechnologicalProcessesAnalysis	t	15	193	10	ROLE_ANALYSIS_VIEWER	0
 163	oee	oeeList	t	15	162	11	ROLE_OEE	0
 116	ordersGantt	ordersGantt	t	7	115	10	ROLE_PLANNING_ON_LINE_VIEW	0
+196	technologies	productionLineTechnologyGroupList	t	5	195	11	ROLE_TECHNOLOGIES	0
+75	materialFlowResources	resources	t	6	75	9	ROLE_RESOURCES	0
+152	materialFlowResources	resourcesAttributes	t	6	151	10	ROLE_RESOURCES	0
+20	basic	assortments	t	19	20	1	ROLE_PRODUCTS_ADDITIONAL	0
+150	basic	attributesList	t	4	149	24	ROLE_PRODUCTS_ADDITIONAL	0
+176	basic	sizesList	t	19	175	7	ROLE_PRODUCTS_ADDITIONAL	0
+177	basic	sizeGroupsList	t	19	176	8	ROLE_PRODUCTS_ADDITIONAL	0
+179	basic	labelsList	t	4	178	28	ROLE_PRODUCTS_ADDITIONAL	0
+180	basic	modelsList	t	19	179	2	ROLE_PRODUCTS_ADDITIONAL	0
+193	productFlowThruDivision	modelCardsList	t	19	192	9	ROLE_PRODUCTS_ADDITIONAL	0
+35	productCatalogNumbers	productCatalogNumbers	t	19	35	6	ROLE_PRODUCTS_ADDITIONAL	0
+134	basic	attachmentsList	t	4	133	21	ROLE_ATTACHMENTS	0
+161	basic	formsList	t	4	160	27	ROLE_FORMS	0
+101	ordersProgressGanttChart	ordersProgressGanttChart	t	7	101	17	ROLE_ORDERS_PROGRESS_GANTT_CHART	0
+154	scheduleGantt	operationalTasksGantt	t	7	153	9	ROLE_OPERATIONAL_TASKS_GANTT_VIEW	0
+62	deliveries	deliveries	t	9	62	6	ROLE_DELIVERIES	0
+61	deliveries	supplyItems	t	9	61	7	ROLE_DELIVERIES	0
 \.
 
 
@@ -41095,7 +41239,7 @@ COPY qcadooview_item (id, pluginidentifier, name, active, category_id, view_id, 
 -- Name: qcadooview_item_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_item_id_seq', 195, true);
+SELECT pg_catalog.setval('qcadooview_item_id_seq', 196, true);
 
 
 --
@@ -41283,6 +41427,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 192	productFlowThruDivision	modelCardsList	modelCardsList	\N	0
 193	orders	orderTechnologicalProcessesAnalysis	\N	/orderTechnologicalProcessesAnalysis.html	0
 194	integrationBarTender	printedPalletLabelsList	printedPalletLabelsList	\N	0
+195	technologies	productionLineTechnologyGroupList	productionLineTechnologyGroupList	\N	0
 \.
 
 
@@ -41290,7 +41435,7 @@ COPY qcadooview_view (id, pluginidentifier, name, view, url, entityversion) FROM
 -- Name: qcadooview_view_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
 --
 
-SELECT pg_catalog.setval('qcadooview_view_id_seq', 194, true);
+SELECT pg_catalog.setval('qcadooview_view_id_seq', 195, true);
 
 
 --
@@ -42221,6 +42366,21 @@ COPY technologies_productcomponent (id, product_id, operationin_id, operationout
 --
 
 SELECT pg_catalog.setval('technologies_productcomponent_id_seq', 1, false);
+
+
+--
+-- Data for Name: technologies_productionlinetechnologygroup; Type: TABLE DATA; Schema: public; Owner: -
+--
+
+COPY technologies_productionlinetechnologygroup (id, technologygroup_id, productionline_id) FROM stdin;
+\.
+
+
+--
+-- Name: technologies_productionlinetechnologygroup_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
+--
+
+SELECT pg_catalog.setval('technologies_productionlinetechnologygroup_id_seq', 1, false);
 
 
 --
@@ -44227,6 +44387,14 @@ ALTER TABLE ONLY basicproductioncounting_productioncountingquantity
 
 ALTER TABLE ONLY advancedgenealogy_batch
     ADD CONSTRAINT batch_externalnumber_unique UNIQUE (externalnumber);
+
+
+--
+-- Name: cdnrcgoodfood_cancelprotocol_fkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY cdnrcgoodfood_cancelprotocol
+    ADD CONSTRAINT cdnrcgoodfood_cancelprotocol_fkey PRIMARY KEY (id);
 
 
 --
@@ -47155,6 +47323,14 @@ ALTER TABLE ONLY technologies_productbysizegroup
 
 ALTER TABLE ONLY technologies_productcomponent
     ADD CONSTRAINT technologies_productcomponent_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: technologies_productionlinetechnologygroup_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_productionlinetechnologygroup
+    ADD CONSTRAINT technologies_productionlinetechnologygroup_pkey PRIMARY KEY (id);
 
 
 --
@@ -52849,6 +53025,14 @@ ALTER TABLE ONLY arch_goodfood_confectionstaff
 
 
 --
+-- Name: goodfood_confectionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY cdnrcgoodfood_cancelprotocol
+    ADD CONSTRAINT goodfood_confectionprotocol_fkey FOREIGN KEY (confectionprotocol_id) REFERENCES goodfood_confectionprotocol(id) DEFERRABLE;
+
+
+--
 -- Name: goodfood_extrusioncontext_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -52942,6 +53126,14 @@ ALTER TABLE ONLY goodfood_extrusionsouse
 
 ALTER TABLE ONLY arch_goodfood_extrusionsouse
     ADD CONSTRAINT goodfood_extrusionprotocol_fkey FOREIGN KEY (extrusionprotocol_id) REFERENCES arch_goodfood_extrusionprotocol(id) DEFERRABLE;
+
+
+--
+-- Name: goodfood_extrusionprotocol_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY cdnrcgoodfood_cancelprotocol
+    ADD CONSTRAINT goodfood_extrusionprotocol_fkey FOREIGN KEY (extrusionprotocol_id) REFERENCES goodfood_extrusionprotocol(id) DEFERRABLE;
 
 
 --
@@ -57249,6 +57441,22 @@ ALTER TABLE ONLY productionlines_workstationtypecomponent
 
 
 --
+-- Name: productionlinetechnologygroup_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_productionlinetechnologygroup
+    ADD CONSTRAINT productionlinetechnologygroup_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES productionlines_productionline(id) DEFERRABLE;
+
+
+--
+-- Name: productionlinetechnologygroup_technologygroup_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY technologies_productionlinetechnologygroup
+    ADD CONSTRAINT productionlinetechnologygroup_technologygroup_fkey FOREIGN KEY (technologygroup_id) REFERENCES technologies_technologygroup(id) DEFERRABLE;
+
+
+--
 -- Name: productionpershift_order_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -60342,6 +60550,14 @@ ALTER TABLE ONLY qcadoosecurity_user
 
 ALTER TABLE ONLY qcadoosecurity_user
     ADD CONSTRAINT user_group_fkey FOREIGN KEY (group_id) REFERENCES qcadoosecurity_group(id) DEFERRABLE;
+
+
+--
+-- Name: user_productionline_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY qcadoosecurity_user
+    ADD CONSTRAINT user_productionline_fkey FOREIGN KEY (productionline_id) REFERENCES productionlines_productionline(id) DEFERRABLE;
 
 
 --
