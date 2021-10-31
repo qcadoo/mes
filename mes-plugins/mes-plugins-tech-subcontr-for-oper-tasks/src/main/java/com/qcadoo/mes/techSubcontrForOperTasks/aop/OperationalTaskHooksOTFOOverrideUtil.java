@@ -49,7 +49,6 @@ public class OperationalTaskHooksOTFOOverrideUtil {
 
             if ((order == null) || (technologyOperationComponent == null) || isSubcontracting(technologyOperationComponent)) {
                 operationalTask.setField(OperationalTaskFields.DESCRIPTION, null);
-                operationalTask.setField(OperationalTaskFields.PRODUCTION_LINE, null);
             }
         }
     }

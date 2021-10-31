@@ -46,7 +46,7 @@ public class OperationalTaskHooks {
 
     public void onSave(final DataDefinition operationalTaskDD, final Entity operationalTask) {
         fillNameAndDescription(operationalTask);
-        fillProductionLine(operationalTask);
+        fillDivision(operationalTask);
         fillWorkstation(operationalTask);
         changeDateInOrder(operationalTask);
 
@@ -148,20 +148,8 @@ public class OperationalTaskHooks {
         }
     }
 
-    private void fillProductionLine(final Entity operationalTask) {
-        String type = operationalTask.getStringField(OperationalTaskFields.TYPE);
+    private void fillDivision(final Entity operationalTask) {
 
-        if (operationalTasksService.isOperationalTaskTypeExecutionOperationInOrder(type)) {
-            Entity order = operationalTask.getBelongsToField(OperationalTaskFields.ORDER);
-
-            if (order == null) {
-                operationalTask.setField(OperationalTaskFields.PRODUCTION_LINE, null);
-            } else {
-                Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
-
-                operationalTask.setField(OperationalTaskFields.PRODUCTION_LINE, productionLine);
-            }
-        }
     }
 
     private void setInitialState(final Entity operationalTask) {

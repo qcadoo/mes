@@ -23,15 +23,6 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.OperationalTasksService;
@@ -54,6 +45,15 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OperationalTasksDetailsHooks {
@@ -84,7 +84,7 @@ public class OperationalTasksDetailsHooks {
 
     public void beforeRender(final ViewDefinitionState view) {
         generateOperationalTasksNumber(view);
-        filterWorkstationLookup(view);
+        filterDivisionLookup(view);
         setTechnology(view);
         setQuantities(view);
 
@@ -137,20 +137,20 @@ public class OperationalTasksDetailsHooks {
                 OrdersConstants.MODEL_OPERATIONAL_TASK, QcadooViewConstants.L_FORM, OperationalTaskFields.NUMBER);
     }
 
-    private void filterWorkstationLookup(final ViewDefinitionState view) {
-        LookupComponent productionLineLookup = (LookupComponent) view
-                .getComponentByReference(OperationalTaskFields.PRODUCTION_LINE);
+    private void filterDivisionLookup(final ViewDefinitionState view) {
+        LookupComponent divisionLookup = (LookupComponent) view
+                .getComponentByReference(OperationalTaskFields.DIVISION);
         LookupComponent workstationLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.WORKSTATION);
 
-        Entity productionLine = productionLineLookup.getEntity();
+        Entity division = divisionLookup.getEntity();
 
         FilterValueHolder filterValueHolder = workstationLookup.getFilterValue();
 
-        if (Objects.isNull(productionLine)) {
-            filterValueHolder.remove(OperationalTaskFields.PRODUCTION_LINE);
+        if (Objects.isNull(division)) {
+            filterValueHolder.remove(OperationalTaskFields.DIVISION);
         } else {
-            Long productionLineId = productionLine.getId();
-            filterValueHolder.put(OperationalTaskFields.PRODUCTION_LINE, productionLineId);
+            Long divisionId = division.getId();
+            filterValueHolder.put(OperationalTaskFields.DIVISION, divisionId);
         }
 
         workstationLookup.setFilterValue(filterValueHolder);
@@ -161,7 +161,7 @@ public class OperationalTasksDetailsHooks {
 
         String type = (String) typeField.getFieldValue();
 
-        List<String> referenceBasicFields = Lists.newArrayList(OperationalTaskFields.NAME, OperationalTaskFields.PRODUCTION_LINE);
+        List<String> referenceBasicFields = Lists.newArrayList(OperationalTaskFields.NAME);
         List<String> extendFields = Lists.newArrayList(OperationalTaskFields.ORDER,
                 OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
 

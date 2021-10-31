@@ -23,6 +23,18 @@
  */
 package com.qcadoo.mes.timeGapsPreview;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
+import com.qcadoo.mes.timeGapsPreview.constants.TimeGapsPreviewConstants;
+import com.qcadoo.mes.timeGapsPreview.provider.OrderAndChangeoverIntervalsProvider;
+import com.qcadoo.mes.timeGapsPreview.provider.ShiftIntervalsProvider;
+import com.qcadoo.mes.timeGapsPreview.util.TimeGapsBuilder;
+import com.qcadoo.mes.timeGapsPreview.util.TimeGapsBuilderImpl;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+
 import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
@@ -33,27 +45,11 @@ import org.joda.time.Interval;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import com.qcadoo.mes.timeGapsPreview.constants.TimeGapsPreviewConstants;
-import com.qcadoo.mes.timeGapsPreview.provider.OperationalTaskIntervalsProvider;
-import com.qcadoo.mes.timeGapsPreview.provider.OrderAndChangeoverIntervalsProvider;
-import com.qcadoo.mes.timeGapsPreview.provider.ShiftIntervalsProvider;
-import com.qcadoo.mes.timeGapsPreview.util.TimeGapsBuilder;
-import com.qcadoo.mes.timeGapsPreview.util.TimeGapsBuilderImpl;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-
 @Service
 public class TimeGapsGenerator {
 
     @Autowired
     private OrderAndChangeoverIntervalsProvider orderAndChangeoverIntervalsProvider;
-
-    @Autowired
-    private OperationalTaskIntervalsProvider operationalTaskIntervalsProvider;
 
     @Autowired
     private ShiftIntervalsProvider shiftIntervalsProvider;
@@ -64,7 +60,6 @@ public class TimeGapsGenerator {
     public TimeGapsSearchResult generate(final TimeGapsContext timeGapsContext) {
         Multimap<Long, Interval> occupiedIntervals = createMultiMapWithKeys(timeGapsContext.getProductionLines());
         occupiedIntervals.putAll(orderAndChangeoverIntervalsProvider.getIntervalsPerProductionLine(timeGapsContext));
-        occupiedIntervals.putAll(operationalTaskIntervalsProvider.getIntervalsPerProductionLine(timeGapsContext));
         occupiedIntervals.putAll(shiftIntervalsProvider.getIntervalsPerProductionLine(timeGapsContext));
 
         Multimap<Long, Interval> timeGaps = HashMultimap.create();
@@ -102,11 +97,6 @@ public class TimeGapsGenerator {
 
     private DataDefinition getTimeGapDataDef() {
         return dataDefinitionService.get(TimeGapsPreviewConstants.PLUGIN_IDENTIFIER, TimeGapsPreviewConstants.MODEL_TIME_GAP);
-    }
-
-    private DataDefinition getTimeGapsContextDataDef() {
-        return dataDefinitionService.get(TimeGapsPreviewConstants.PLUGIN_IDENTIFIER,
-                TimeGapsPreviewConstants.MODEL_TIME_GAPS_CONTEXT);
     }
 
 }

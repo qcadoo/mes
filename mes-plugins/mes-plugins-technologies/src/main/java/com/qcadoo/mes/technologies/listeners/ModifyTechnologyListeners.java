@@ -74,7 +74,6 @@ public class ModifyTechnologyListeners {
 
         FormComponent formComponent = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
         if (!formComponent.isValid()) {
-            formComponent.getEntityId();
             return;
         }
 
