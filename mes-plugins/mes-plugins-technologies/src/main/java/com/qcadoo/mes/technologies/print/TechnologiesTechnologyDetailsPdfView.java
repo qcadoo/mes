@@ -23,9 +23,31 @@
  */
 package com.qcadoo.mes.technologies.print;
 
+import static com.google.common.base.Preconditions.checkState;
+import static com.google.common.collect.Lists.newArrayList;
+import static java.lang.Long.valueOf;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.lowagie.text.*;
+import com.lowagie.text.Document;
+import com.lowagie.text.DocumentException;
+import com.lowagie.text.Element;
+import com.lowagie.text.Image;
+import com.lowagie.text.Phrase;
+import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.PdfCell;
 import com.lowagie.text.pdf.PdfPCell;
 import com.lowagie.text.pdf.PdfPTable;
@@ -33,27 +55,24 @@ import com.lowagie.text.pdf.PdfWriter;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.constants.ProductAttachmentFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.technologies.constants.*;
-import com.qcadoo.model.api.*;
+import com.qcadoo.mes.technologies.constants.OperationFields;
+import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
+import com.qcadoo.mes.technologies.constants.ProductBySizeGroupFields;
+import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyInputProductTypeFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.model.api.utils.EntityTreeUtilsService;
 import com.qcadoo.model.api.utils.TreeNumberingService;
 import com.qcadoo.report.api.FontUtils;
 import com.qcadoo.report.api.pdf.HeaderAlignment;
 import com.qcadoo.report.api.pdf.PdfHelper;
 import com.qcadoo.report.api.pdf.ReportPdfView;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.*;
-
-import static com.google.common.base.Preconditions.checkState;
-import static com.google.common.collect.Lists.newArrayList;
-import static java.lang.Long.valueOf;
 
 @Component(value = "technologiesTechnologyDetailsPdfView")
 public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
@@ -115,11 +134,17 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
                         locale),
                 technology.getBooleanField(TechnologyFields.MASTER) ? translationService.translate("qcadooView.true", locale)
                         : translationService.translate("qcadooView.false", locale));
-        pdfHelper.addTableCellAsOneColumnTable(panelTable,
-                translationService.translate(
-                        TECHNOLOGIES_TECHNOLOGIES_TECHNOLOGY_DETAILS_REPORT_PANEL_TECHNOLOGY + TechnologyFields.DESCRIPTION,
-                        locale),
-                technology.getStringField(ProductFields.DESCRIPTION));
+        if (StringUtils.isEmpty(technology.getStringField(ProductFields.DESCRIPTION))) {
+            panelTable.addCell(StringUtils.EMPTY);
+            panelTable.addCell(StringUtils.EMPTY);
+            panelTable.addCell(StringUtils.EMPTY);
+        } else {
+            pdfHelper.addTableCellAsOneColumnTable(panelTable,
+                    translationService.translate(
+                            TECHNOLOGIES_TECHNOLOGIES_TECHNOLOGY_DETAILS_REPORT_PANEL_TECHNOLOGY + TechnologyFields.DESCRIPTION,
+                            locale),
+                    technology.getStringField(ProductFields.DESCRIPTION));
+        }
         panelTable.addCell(StringUtils.EMPTY);
 
         panelTable.setSpacingAfter(20);
