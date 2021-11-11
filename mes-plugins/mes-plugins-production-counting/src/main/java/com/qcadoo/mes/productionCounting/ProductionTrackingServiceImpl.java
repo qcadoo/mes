@@ -219,6 +219,7 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
         boolean last = productionTracking.getBooleanField(ProductionTrackingFields.LAST_TRACKING);
         productionTracking.setField(ProductionTrackingFields.IS_CORRECTED, true);
         clearLastProductionTracking(productionTracking);
+        productionTracking.setField(ProductionTrackingFields.UNDERGOING_CORRECTION, true);
 
         Entity clearedProductionTracking = productionTracking.getDataDefinition().save(productionTracking);
         Entity correctingProductionTracking = productionTrackingDD.copy(clearedProductionTracking.getId()).get(0);
@@ -226,10 +227,12 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
         copyOtherFields(clearedProductionTracking, correctingProductionTracking);
         clearedProductionTracking.setField(ProductionTrackingFields.CORRECTION, correctingProductionTracking);
         correctingProductionTracking.setField(ProductionTrackingFields.IS_CORRECTION, true);
-        correctingProductionTracking.setField(ProductionTrackingFields.LAST_TRACKING, last);
         correctingProductionTracking.setField(ProductionTrackingFields.IS_CORRECTED, false);
+        correctingProductionTracking.setField(ProductionTrackingFields.LAST_TRACKING, last);
+        correctingProductionTracking.setField(ProductionTrackingFields.UNDERGOING_CORRECTION, true);
 
         productionTrackingDD.save(correctingProductionTracking);
+        clearedProductionTracking.setField(ProductionTrackingFields.UNDERGOING_CORRECTION, false);
 
         changeState(clearedProductionTracking, ProductionTrackingState.CORRECTED);
         return correctingProductionTracking;
@@ -247,6 +250,18 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
         copyStaffWorkTimes(productionTracking, correctingProductionTracking);
         copyTrackingOperationProductInComponents(productionTracking, correctingProductionTracking);
+        copyTrackingOperationProductOutComponents(productionTracking, correctingProductionTracking);
+
+    }
+
+    private void copyTrackingOperationProductOutComponents(Entity productionTracking, Entity correctingProductionTracking) {
+        EntityList trackingOperationProductOutComponents = productionTracking
+                .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
+        List<Entity> copiedTrackingOperationProductOutComponents = Lists.newArrayList();
+        trackingOperationProductOutComponents.forEach(t -> copiedTrackingOperationProductOutComponents.add(t.getDataDefinition()
+                .copy(t.getId()).get(0)));
+        correctingProductionTracking.setField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS,
+                copiedTrackingOperationProductOutComponents);
     }
 
     private void copyStaffWorkTimes(Entity productionTracking, Entity correctingProductionTracking) {
@@ -333,25 +348,24 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
     }
 
     @Override
-    public Either<Boolean,Optional<Date>> findExpirationDate(final Entity productionTracking, final Entity order, final Entity toc, final Entity batch) {
+    public Either<Boolean, Optional<Date>> findExpirationDate(final Entity productionTracking, final Entity order,
+            final Entity toc, final Entity batch) {
         if (TypeOfProductionRecording.CUMULATED.getStringValue().equals(
                 order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
 
             List<Entity> productionTracingsForOrder = dataDefinitionService
                     .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_TRACKING)
-                    .find()
-                    .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
-                    .add(SearchRestrictions.belongsTo(ProductionTrackingFields.BATCH, batch))
-                    .list().getEntities();
+                    .find().add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
+                    .add(SearchRestrictions.belongsTo(ProductionTrackingFields.BATCH, batch)).list().getEntities();
 
             if (Objects.nonNull(productionTracking) && Objects.nonNull(productionTracking.getId())) {
                 productionTracingsForOrder = productionTracingsForOrder.stream()
                         .filter(pt -> !pt.getId().equals(productionTracking.getId())).collect(Collectors.toList());
             }
 
-            boolean nullDate = productionTracingsForOrder.stream()
-                    .anyMatch(pt -> Objects.isNull(pt.getDateField(ProductionTrackingFields.EXPIRATION_DATE)));
-            if(nullDate) {
+            boolean nullDate = productionTracingsForOrder.stream().anyMatch(
+                    pt -> Objects.isNull(pt.getDateField(ProductionTrackingFields.EXPIRATION_DATE)));
+            if (nullDate) {
                 return Either.left(true);
             }
             Optional<Date> maybeDate = productionTracingsForOrder.stream()
@@ -365,28 +379,26 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
                     .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ORDER + L_ID, order.getId()))
                     .add(SearchRestrictions.eq(ProductionCountingQuantityFields.ROLE,
                             ProductionCountingQuantityRole.PRODUCED.getStringValue()))
-                    .add(SearchRestrictions.eq(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT + L_ID, toc.getId()))
-                    .setMaxResults(1).uniqueResult();
+                    .add(SearchRestrictions.eq(ProductionCountingQuantityFields.TECHNOLOGY_OPERATION_COMPONENT + L_ID,
+                            toc.getId())).setMaxResults(1).uniqueResult();
 
-            if (Objects.nonNull(bpcq) && bpcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId()
-                    .equals(order.getBelongsToField(OrderFields.PRODUCT).getId())) {
+            if (Objects.nonNull(bpcq)
+                    && bpcq.getBelongsToField(ProductionCountingQuantityFields.PRODUCT).getId()
+                            .equals(order.getBelongsToField(OrderFields.PRODUCT).getId())) {
                 List<Entity> productionTracingsForOrder = dataDefinitionService
                         .get(ProductionCountingConstants.PLUGIN_IDENTIFIER, ProductionCountingConstants.MODEL_PRODUCTION_TRACKING)
-                        .find()
-                        .add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
+                        .find().add(SearchRestrictions.belongsTo(ProductionTrackingFields.ORDER, order))
                         .add(SearchRestrictions.belongsTo(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT, toc))
-                        .add(SearchRestrictions.belongsTo(ProductionTrackingFields.BATCH, batch))
-                        .list()
-                        .getEntities();
+                        .add(SearchRestrictions.belongsTo(ProductionTrackingFields.BATCH, batch)).list().getEntities();
 
                 if (Objects.nonNull(productionTracking) && Objects.nonNull(productionTracking.getId())) {
                     productionTracingsForOrder = productionTracingsForOrder.stream()
                             .filter(pt -> !pt.getId().equals(productionTracking.getId())).collect(Collectors.toList());
                 }
 
-                boolean nullDate = productionTracingsForOrder.stream()
-                        .anyMatch(pt -> Objects.isNull(pt.getDateField(ProductionTrackingFields.EXPIRATION_DATE)));
-                if(nullDate) {
+                boolean nullDate = productionTracingsForOrder.stream().anyMatch(
+                        pt -> Objects.isNull(pt.getDateField(ProductionTrackingFields.EXPIRATION_DATE)));
+                if (nullDate) {
                     return Either.left(true);
                 }
                 Optional<Date> maybeDate = productionTracingsForOrder.stream()
@@ -427,6 +439,7 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
                 .add(SearchRestrictions.belongsTo("pTracking." + ProductionTrackingFields.ORDER, order))
                 .add(SearchRestrictions.in("pTracking." + ProductionTrackingFields.STATE, Lists.newArrayList(
                         ProductionTrackingStateStringValues.ACCEPTED, ProductionTrackingStateStringValues.DRAFT)))
+                .add(SearchRestrictions.eq("pTracking." + ProductionTrackingFields.IS_CORRECTED, false))
                 .add(SearchRestrictions.belongsTo(TrackingOperationProductOutComponentFields.PRODUCT, product));
 
         if (Objects.nonNull(toc)) {
@@ -435,6 +448,5 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
         return scb.list().getEntities();
     }
-
 
 }
