@@ -439,7 +439,8 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
                 .add(SearchRestrictions.belongsTo("pTracking." + ProductionTrackingFields.ORDER, order))
                 .add(SearchRestrictions.in("pTracking." + ProductionTrackingFields.STATE, Lists.newArrayList(
                         ProductionTrackingStateStringValues.ACCEPTED, ProductionTrackingStateStringValues.DRAFT)))
-                .add(SearchRestrictions.eq("pTracking." + ProductionTrackingFields.IS_CORRECTED, false))
+                .add(SearchRestrictions.or(SearchRestrictions.eq("pTracking." + ProductionTrackingFields.IS_CORRECTED, false),
+                        SearchRestrictions.isNull("pTracking." + ProductionTrackingFields.IS_CORRECTED)))
                 .add(SearchRestrictions.belongsTo(TrackingOperationProductOutComponentFields.PRODUCT, product));
 
         if (Objects.nonNull(toc)) {
@@ -448,5 +449,4 @@ public class ProductionTrackingServiceImpl implements ProductionTrackingService 
 
         return scb.list().getEntities();
     }
-
 }
