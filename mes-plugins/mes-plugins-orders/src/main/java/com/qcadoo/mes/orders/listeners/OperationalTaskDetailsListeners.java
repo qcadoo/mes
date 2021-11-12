@@ -38,6 +38,7 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
 import java.util.Map;
@@ -161,6 +162,11 @@ public class OperationalTaskDetailsListeners {
     public void onDivisionChange(final ViewDefinitionState view, final ComponentState state,
             final String[] args) {
         LookupComponent workstationLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.WORKSTATION);
+        FilterValueHolder filterValueHolder = workstationLookup.getFilterValue();
+        if(filterValueHolder.has(OperationalTaskFields.DIVISION)) {
+            filterValueHolder.remove(OperationalTaskFields.DIVISION);
+            workstationLookup.setFilterValue(filterValueHolder);
+        }
         workstationLookup.setFieldValue(null);
         workstationLookup.requestComponentUpdateState();
     }

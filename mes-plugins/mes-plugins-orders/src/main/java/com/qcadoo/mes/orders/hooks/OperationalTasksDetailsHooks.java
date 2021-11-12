@@ -146,14 +146,11 @@ public class OperationalTasksDetailsHooks {
 
         FilterValueHolder filterValueHolder = workstationLookup.getFilterValue();
 
-        if (Objects.isNull(division)) {
-            filterValueHolder.remove(OperationalTaskFields.DIVISION);
-        } else {
+        if (Objects.nonNull(division)) {
             Long divisionId = division.getId();
             filterValueHolder.put(OperationalTaskFields.DIVISION, divisionId);
+            workstationLookup.setFilterValue(filterValueHolder);
         }
-
-        workstationLookup.setFilterValue(filterValueHolder);
     }
 
     public void disableFieldsWhenOrderTypeIsSelected(final ViewDefinitionState view) {
