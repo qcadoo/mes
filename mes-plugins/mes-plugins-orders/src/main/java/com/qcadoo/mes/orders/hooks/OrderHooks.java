@@ -23,20 +23,6 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.localization.api.utils.DateUtils;
@@ -51,7 +37,6 @@ import com.qcadoo.mes.orders.OrderPackService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.OrderStateChangeReasonService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
-import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrderStartDateBasedOn;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -73,6 +58,20 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.utils.TimeConverterService;
+
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OrderHooks {
@@ -237,36 +236,6 @@ public class OrderHooks {
         technologyServiceO.createOrUpdateTechnology(orderDD, order);
         setRemainingQuantity(order);
         setAdditionalFields(order);
-        changedProductionLineInOperationalTasksWhenChanged(orderDD, order);
-    }
-
-    private void changedProductionLineInOperationalTasksWhenChanged(final DataDefinition orderDD, final Entity order) {
-        Long orderId = order.getId();
-
-        if (Objects.isNull(orderId)) {
-            return;
-        }
-
-        Entity orderFromDB = orderDD.get(orderId);
-
-        Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
-        Entity orderProductionLine = orderFromDB.getBelongsToField(OrderFields.PRODUCTION_LINE);
-
-        if (Objects.nonNull(productionLine) && Objects.nonNull(orderProductionLine)) {
-            if (!orderProductionLine.getId().equals(productionLine.getId())) {
-                changedProductionLineInOperationalTasks(orderFromDB, productionLine);
-            }
-        }
-    }
-
-    private void changedProductionLineInOperationalTasks(final Entity order, final Entity productionLine) {
-        List<Entity> operationalTasks = operationalTasksService.getOperationalTasksForOrder(order);
-
-        for (Entity operationalTask : operationalTasks) {
-            operationalTask.setField(OperationalTaskFields.PRODUCTION_LINE, productionLine);
-
-            operationalTask.getDataDefinition().save(operationalTask);
-        }
     }
 
     private void setAdditionalFields(final Entity order) {

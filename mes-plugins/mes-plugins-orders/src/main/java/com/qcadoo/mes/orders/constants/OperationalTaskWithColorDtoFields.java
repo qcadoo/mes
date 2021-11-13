@@ -53,6 +53,8 @@ public final class OperationalTaskWithColorDtoFields {
 
     public static final String ORDER_NUMBER = "orderNumber";
 
+    public static final String DIVISION_NUMBER = "divisionNumber";
+
     public static final String TOC_ID = "tocId";
 
     public static final String TECHNOLOGY_OPERATION_COMPONENT_NODE_NUMBER = "technologyOperationComponentNodeNumber";

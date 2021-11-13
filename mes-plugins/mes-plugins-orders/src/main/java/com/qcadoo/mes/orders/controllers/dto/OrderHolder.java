@@ -64,6 +64,8 @@ public class OrderHolder {
 
     private String companyName;
 
+    private String addressNumber;
+
     private String dashboardShowForProduct;
 
     private boolean dashboardShowDescription;
@@ -164,44 +166,20 @@ public class OrderHolder {
         this.companyName = companyName;
     }
 
+    public String getAddressNumber() {
+        return addressNumber;
+    }
+
+    public void setAddressNumber(final String addressNumber) {
+        this.addressNumber = addressNumber;
+    }
+
     public BigDecimal getReportedProductionQuantity() {
         return reportedProductionQuantity;
     }
 
     public void setReportedProductionQuantity(BigDecimal reportedProductionQuantity) {
         this.reportedProductionQuantity = reportedProductionQuantity;
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) {
-            return true;
-        }
-
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        OrderHolder that = (OrderHolder) o;
-
-        return new EqualsBuilder().append(id, that.id).append(number, that.number).append(name, that.name)
-                .append(description, that.description).append(state, that.state)
-                .append(typeOfProductionRecording, that.typeOfProductionRecording).append(plannedQuantity, that.plannedQuantity)
-                .append(doneQuantity, that.doneQuantity).append(masterOrderQuantity, that.masterOrderQuantity)
-                .append(masterOrderNumber, that.masterOrderNumber).append(orderCategory, that.orderCategory)
-                .append(productionLineNumber, that.productionLineNumber).append(productNumber, that.productNumber)
-                .append(productName, that.productName).append(productUnit, that.productUnit).append(companyName, that.companyName)
-                .append(dashboardShowForProduct, that.dashboardShowForProduct)
-                .append(dashboardShowDescription, that.dashboardShowDescription).isEquals();
-    }
-
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder().append(id).append(number).append(name).append(description).append(state)
-                .append(typeOfProductionRecording).append(plannedQuantity).append(doneQuantity).append(masterOrderQuantity)
-                .append(masterOrderNumber).append(orderCategory).append(productionLineNumber).append(productNumber)
-                .append(productName).append(productUnit).append(companyName).append(dashboardShowForProduct)
-                .append(dashboardShowDescription).toHashCode();
     }
 
     public String getDescription() {
@@ -251,4 +229,37 @@ public class OrderHolder {
     public void setMasterOrderQuantity(BigDecimal masterOrderQuantity) {
         this.masterOrderQuantity = masterOrderQuantity;
     }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        OrderHolder that = (OrderHolder) o;
+
+        return new EqualsBuilder().append(id, that.id).append(number, that.number).append(name, that.name)
+                .append(description, that.description).append(state, that.state)
+                .append(typeOfProductionRecording, that.typeOfProductionRecording).append(plannedQuantity, that.plannedQuantity)
+                .append(doneQuantity, that.doneQuantity).append(masterOrderQuantity, that.masterOrderQuantity)
+                .append(masterOrderNumber, that.masterOrderNumber).append(orderCategory, that.orderCategory)
+                .append(productionLineNumber, that.productionLineNumber).append(productNumber, that.productNumber)
+                .append(productName, that.productName).append(productUnit, that.productUnit).append(companyName, that.companyName)
+                .append(addressNumber, that.addressNumber).append(dashboardShowForProduct, that.dashboardShowForProduct)
+                .append(dashboardShowDescription, that.dashboardShowDescription).isEquals();
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder().append(id).append(number).append(name).append(description).append(state)
+                .append(typeOfProductionRecording).append(plannedQuantity).append(doneQuantity).append(masterOrderQuantity)
+                .append(masterOrderNumber).append(orderCategory).append(productionLineNumber).append(productNumber)
+                .append(productName).append(productUnit).append(companyName).append(addressNumber).append(dashboardShowForProduct)
+                .append(dashboardShowDescription).toHashCode();
+    }
+
 }

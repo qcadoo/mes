@@ -64,6 +64,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -82,8 +83,6 @@ public class OrderDetailsListeners {
     private static final String L_GRID_OPTIONS = "grid.options";
 
     private static final String L_FILTERS = "filters";
-
-    private static final String IS_SUBCONTRACTING = "isSubcontracting";
 
     @Autowired
     private OrderStateChangeViewClient orderStateChangeViewClient;
@@ -454,9 +453,6 @@ public class OrderDetailsListeners {
         operationalTask.setField(OperationalTaskFields.TYPE, OperationalTaskType.EXECUTION_OPERATION_IN_ORDER.getStringValue());
         operationalTask.setField(OperationalTaskFields.ORDER, order);
 
-        if (!technologyOperationComponent.getBooleanField(IS_SUBCONTRACTING)) {
-            operationalTask.setField(OperationalTaskFields.PRODUCTION_LINE, order.getBelongsToField(OrderFields.PRODUCTION_LINE));
-        }
 
         operationalTask.setField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
 
@@ -468,6 +464,10 @@ public class OrderDetailsListeners {
         }
 
         operationalTask.setField(OperationalTaskFields.PRODUCT, product);
+
+        Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
+        Optional<Entity> maybeDivision = technologyServiceO.extractDivision(technology, technologyOperationComponent);
+        maybeDivision.ifPresent(d -> operationalTask.setField(OperationalTaskFields.DIVISION, d));
 
         operationalTaskDD.save(operationalTask);
     }

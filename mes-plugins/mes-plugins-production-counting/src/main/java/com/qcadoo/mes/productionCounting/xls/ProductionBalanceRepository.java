@@ -1,17 +1,25 @@
 package com.qcadoo.mes.productionCounting.xls;
 
-import com.qcadoo.mes.costCalculation.constants.MaterialCostsUsed;
-import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
-import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
-import com.qcadoo.mes.productionCounting.xls.dto.*;
-import com.qcadoo.model.api.Entity;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import com.qcadoo.mes.costCalculation.constants.MaterialCostsUsed;
+import com.qcadoo.mes.costCalculation.constants.SourceOfOperationCosts;
+import com.qcadoo.mes.productionCounting.constants.ProductionBalanceFields;
+import com.qcadoo.mes.productionCounting.xls.dto.LaborTime;
+import com.qcadoo.mes.productionCounting.xls.dto.LaborTimeDetails;
+import com.qcadoo.mes.productionCounting.xls.dto.MaterialCost;
+import com.qcadoo.mes.productionCounting.xls.dto.OrderBalance;
+import com.qcadoo.mes.productionCounting.xls.dto.PieceworkDetails;
+import com.qcadoo.mes.productionCounting.xls.dto.ProducedQuantity;
+import com.qcadoo.mes.productionCounting.xls.dto.ProductionCost;
+import com.qcadoo.mes.productionCounting.xls.dto.Stoppage;
+import com.qcadoo.model.api.Entity;
 
 @Repository
 class ProductionBalanceRepository {
@@ -1013,15 +1021,15 @@ class ProductionBalanceRepository {
         for (int i = 0; i < ordersBalance.size(); i++) {
             OrderBalance orderBalance = ordersBalance.get(i);
             query.append("(");
-            query.append(orderBalance.getOrderId() + ", ");
-            query.append(orderBalance.getRootId() + "::INTEGER, ");
-            query.append(orderBalance.getMaterialCosts() + ", ");
-            query.append(orderBalance.getProductionCosts() + ", ");
-            query.append(orderBalance.getTechnicalProductionCosts() + ", ");
-            query.append(orderBalance.getMaterialCostMarginValue() + ", ");
-            query.append(orderBalance.getProductionCostMarginValue() + ", ");
-            query.append(orderBalance.getAdditionalOverhead() + ", ");
-            query.append(orderBalance.getDirectAdditionalCost() + ", ");
+            query.append(orderBalance.getOrderId()).append(", ");
+            query.append(orderBalance.getRootId()).append("::INTEGER, ");
+            query.append(orderBalance.getMaterialCosts()).append(", ");
+            query.append(orderBalance.getProductionCosts()).append(", ");
+            query.append(orderBalance.getTechnicalProductionCosts()).append(", ");
+            query.append(orderBalance.getMaterialCostMarginValue()).append(", ");
+            query.append(orderBalance.getProductionCostMarginValue()).append(", ");
+            query.append(orderBalance.getAdditionalOverhead()).append(", ");
+            query.append(orderBalance.getDirectAdditionalCost()).append(", ");
             query.append(orderBalance.getTotalCosts());
             query.append(") ");
             if (i != ordersBalance.size() - 1) {

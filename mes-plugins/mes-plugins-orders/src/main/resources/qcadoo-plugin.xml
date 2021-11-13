@@ -365,9 +365,10 @@
             <model:hasMany name="operationalTasks" plugin="orders" model="operationalTask"
                            joinField="workstation"/>
         </model:model-field>
-        <model:model-field plugin="productionLines" model="productionLine">
+
+        <model:model-field plugin="basic" model="division">
             <model:hasMany name="operationalTasks" plugin="orders" model="operationalTask"
-                           joinField="productionLine"/>
+                           joinField="division"/>
         </model:model-field>
 
         <model:model-field plugin="technologies" model="technologyOperationComponent">

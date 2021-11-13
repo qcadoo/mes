@@ -284,8 +284,8 @@
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="7">
-						<component type="lookup" name="productionLine"
-							reference="productionLine" field="productionLine">
+						<component type="lookup" name="division"
+							reference="division" field="division">
 							<option type="column" name="name" fields="name" link="true"
 								width="300" />
 							<option type="searchable" value="name,number" />
@@ -294,6 +294,9 @@
 							<option type="expression"
 								value="#number + ' - ' + #name" />
 							<option type="fieldCode" value="number" />
+							<listener event="onSelectedEntityChange"
+									  class="com.qcadoo.mes.orders.listeners.OperationalTaskDetailsListeners"
+									  method="onDivisionChange" />
 						</component>
 					</layoutElement>
 					<layoutElement column="2" row="8">
@@ -310,7 +313,7 @@
 
 							<criteriaModifier
 									class="com.qcadoo.mes.productionLines.criteriaModifiers.WorkstationCriteriaModifiers"
-									method="showWorkstationsForCurrentProductionLine"/>
+									method="showWorkstationsForCurrentDivision"/>
 						</component>
 					</layoutElement>
 

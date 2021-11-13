@@ -32,6 +32,7 @@ import com.qcadoo.mes.states.constants.StateChangeStatus;
 import com.qcadoo.mes.technologies.BarcodeOperationComponentService;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.states.aop.TechnologyStateChangeAspect;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateChangeFields;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
@@ -45,6 +46,7 @@ import com.qcadoo.view.api.utils.NumberGeneratorService;
 
 import java.util.Date;
 import java.util.Objects;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,6 +54,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TechnologyServiceO {
+
+    private static final String IS_SUBCONTRACTING = "isSubcontracting";
+
+    private static final String L_RANGE = "range";
+
+    private static final String L_ONE_DIVISION = "01oneDivision";
+
+    private static final String L_MANY_DIVISIONS = "02manyDivisions";
+
+    private static final String L_DIVISION = "division";
+
+    public static final String WITH_PATTERN_TECHNOLOGY = "01patternTechnology";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -71,7 +85,6 @@ public class TechnologyServiceO {
     @Autowired
     private BarcodeOperationComponentService barcodeOperationComponentService;
 
-    public static final String WITH_PATTERN_TECHNOLOGY = "01patternTechnology";
 
     @Transactional
     public void createOrUpdateTechnology(final DataDefinition orderDD, final Entity order) {
@@ -266,4 +279,18 @@ public class TechnologyServiceO {
                 securityService.getCurrentUserName());
         technologyStateChangeDD.fastSave(technologyStateChange);
     }
+
+
+    public Optional<Entity> extractDivision(Entity technology, Entity technologyOperationComponent) {
+        String range = technology.getStringField(L_RANGE);
+
+        if (L_ONE_DIVISION.equals(range)) {
+            return Optional.ofNullable(technology.getBelongsToField(L_DIVISION));
+        } else if (L_MANY_DIVISIONS.equals(range) && Objects.nonNull(technologyOperationComponent)) {
+            return Optional.ofNullable(technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.DIVISION));
+        }
+
+        return Optional.empty();
+    }
+
 }

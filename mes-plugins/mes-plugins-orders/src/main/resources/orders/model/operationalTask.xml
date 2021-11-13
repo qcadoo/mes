@@ -44,8 +44,9 @@
         <datetime name="finishDate" required="true"/>
 
         <belongsTo name="staff" model="staff" plugin="basic"/>
-        <belongsTo name="productionLine" model="productionLine"
-                   plugin="productionLines"/>
+
+        <belongsTo name="division" plugin="basic" model="division"/>
+
         <belongsTo name="workstation" model="workstation"
                    plugin="basic"/>
         <belongsTo name="order" model="order"/>

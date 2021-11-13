@@ -102,6 +102,10 @@ public class TrackingOperationProductOutComponentHooks {
                 useTracking = false;
             }
 
+            if (productionTracking.getBooleanField(ProductionTrackingFields.UNDERGOING_CORRECTION)) {
+                useTracking = false;
+            }
+
             BigDecimal trackedQuantity = productionTrackingService.getTrackedQuantity(trackingOperationProductOutComponent,
                     trackings, useTracking);
 
@@ -138,6 +142,10 @@ public class TrackingOperationProductOutComponentHooks {
                             ProductionTrackingStateStringValues.ACCEPTED);
 
             if (productionTracking.getBooleanField(ProductionTrackingFields.IS_CORRECTED)) {
+                useTracking = false;
+            }
+
+            if (productionTracking.getBooleanField(ProductionTrackingFields.UNDERGOING_CORRECTION)) {
                 useTracking = false;
             }
 

@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.basic.constants.ParameterFields;
 import com.qcadoo.mes.orders.controllers.dto.OperationalTaskHolder;
 import com.qcadoo.mes.orders.controllers.dto.OrderHolder;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
@@ -41,15 +43,19 @@ public class DashboardKanbanDataProvider {
     @Autowired
     private SecurityService securityService;
 
+    @Autowired
+    private ParameterService parameterService;
+
     public List<OrderHolder> getOrdersPending() {
         Map<String, Object> params = Maps.newHashMap();
 
-        params.put(L_STATES, Sets.newHashSet(OrderStateStringValues.ACCEPTED, OrderStateStringValues.INTERRUPTED));
-
         Entity productionLine = getCurrentUserProductionLine();
+
         if (!Objects.isNull(productionLine)) {
             params.put(L_PRODUCTION_LINE_ID, productionLine.getId());
         }
+
+        params.put(L_STATES, Sets.newHashSet(OrderStateStringValues.ACCEPTED, OrderStateStringValues.INTERRUPTED));
 
         return jdbcTemplate.query(getOrdersQuery(productionLine), params, new BeanPropertyRowMapper(OrderHolder.class));
     }
@@ -58,6 +64,7 @@ public class DashboardKanbanDataProvider {
         Map<String, Object> params = Maps.newHashMap();
 
         Entity productionLine = getCurrentUserProductionLine();
+
         if (!Objects.isNull(productionLine)) {
             params.put(L_PRODUCTION_LINE_ID, productionLine.getId());
         }
@@ -71,6 +78,7 @@ public class DashboardKanbanDataProvider {
         Map<String, Object> params = Maps.newHashMap();
 
         Entity productionLine = getCurrentUserProductionLine();
+
         if (!Objects.isNull(productionLine)) {
             params.put(L_PRODUCTION_LINE_ID, productionLine.getId());
         }
@@ -80,7 +88,7 @@ public class DashboardKanbanDataProvider {
         return jdbcTemplate.query(getOrdersQuery(productionLine), params, new BeanPropertyRowMapper(OrderHolder.class));
     }
 
-    public OrderHolder getOrder(Long orderId) {
+    public OrderHolder getOrder(final Long orderId) {
         Map<String, Object> params = Maps.newHashMap();
 
         params.put(L_ID, orderId);
@@ -94,15 +102,16 @@ public class DashboardKanbanDataProvider {
                 + "orderlistdto.plannedquantity, orderlistdto.donequantity, mop.masterorderquantity, "
                 + "orderlistdto.masterordernumber AS masterOrderNumber, orderlistdto.ordercategory AS orderCategory, "
                 + "orderlistdto.productionlinenumber AS productionLineNumber, orderlistdto.productnumber AS productNumber, "
-                + "orderlistdto.unit AS productunit, orderlistdto.companyname AS companyName, orderlistdto.description, "
-                + "orderlistdto.productname AS productName, p.dashboardshowdescription, p.dashboardshowforproduct "
+                + "orderlistdto.unit AS productunit, orderlistdto.companyname AS companyName, orderlistdto.addressNumber AS addressNumber, "
+                + "orderlistdto.description, orderlistdto.productname AS productName, p.dashboardshowdescription, p.dashboardshowforproduct "
                 + "FROM orders_orderlistdto orderlistdto CROSS JOIN basic_parameter p "
                 + "LEFT JOIN masterorders_masterorderproduct mop ON mop.product_id = orderlistdto.productid "
                 + "AND mop.masterorder_id = orderlistdto.masterorderid ";
     }
 
-    private String getOrdersQuery(Entity productionLine) {
+    private String getOrdersQuery(final Entity productionLine) {
         String query = getOrderQueryProjections();
+
         query += "WHERE orderlistdto.state IN (:states) ";
         query += "AND date_trunc('day', orderlistdto.startdate) <= current_date AND current_date <= date_trunc('day', orderlistdto.finishdate) ";
 
@@ -110,13 +119,24 @@ public class DashboardKanbanDataProvider {
             query += "AND orderlistdto.productionlineid = :productionLineId ";
         }
 
-        query += "ORDER BY orderlistdto.productionlinenumber, orderlistdto.startdate";
+        query += "ORDER BY orderlistdto.productionlinenumber, orderlistdto.";
+
+        String dashboardOrderSorting = parameterService.getParameter().getStringField(ParameterFields.DASHBOARD_ORDER_SORTING);
+
+        if (Objects.nonNull(dashboardOrderSorting)) {
+            query += dashboardOrderSorting.replaceAll("[0-9]", "");
+        } else {
+            query += "startdate";
+        }
+
+        query += " DESC";
 
         return query;
     }
 
     private String getOrderQuery() {
         String query = getOrderQueryProjections();
+
         query += "WHERE orderlistdto.id = :id ";
 
         return query;
@@ -126,10 +146,11 @@ public class DashboardKanbanDataProvider {
         Entity currentUser = dataDefinitionService
                 .get(QcadooSecurityConstants.PLUGIN_IDENTIFIER, QcadooSecurityConstants.MODEL_USER)
                 .get(securityService.getCurrentUserId());
+
         return currentUser.getBelongsToField(UserFieldsPL.PRODUCTION_LINE);
     }
 
-    public List<OperationalTaskHolder> getOperationalTasksPendingForOrder(Long orderId) {
+    public List<OperationalTaskHolder> getOperationalTasksPendingForOrder(final Long orderId) {
         String additionalRestrictions = "AND operationaltaskdto.orderid = :orderId AND coalesce(operationaltaskdto.usedquantity, 0) = 0 ";
 
         Map<String, Object> params = Maps.newHashMap();
@@ -190,11 +211,13 @@ public class DashboardKanbanDataProvider {
 
     private String getOperationalTasksQuery(final String additionalRestrictions, final boolean in) {
         String query = getOperationalTaskQueryProjections();
+
         if (in) {
             query += "WHERE operationaltaskdto.state IN (:states) ";
         } else {
             query += "WHERE operationaltaskdto.state NOT IN (:states) ";
         }
+
         query += "AND date_trunc('day', operationaltaskdto.startdate) <= current_date AND current_date <= date_trunc('day', operationaltaskdto.finishdate) ";
         query += additionalRestrictions;
         query += "ORDER BY operationaltaskdto.workstationnumber, operationaltaskdto.startdate";

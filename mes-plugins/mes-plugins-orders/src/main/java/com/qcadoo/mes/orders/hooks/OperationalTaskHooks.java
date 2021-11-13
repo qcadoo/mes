@@ -46,7 +46,7 @@ public class OperationalTaskHooks {
 
     public void onSave(final DataDefinition operationalTaskDD, final Entity operationalTask) {
         fillNameAndDescription(operationalTask);
-        fillProductionLine(operationalTask);
+        fillDivision(operationalTask);
         fillWorkstation(operationalTask);
         changeDateInOrder(operationalTask);
 
@@ -95,11 +95,14 @@ public class OperationalTaskHooks {
                         .max(Date::compareTo).get();
 
                 boolean changed = false;
-                if (!order.getDateField(OrderFields.START_DATE).equals(start)) {
+                if (Objects.isNull(order.getDateField(OrderFields.START_DATE))
+                        || !order.getDateField(OrderFields.START_DATE).equals(start)) {
                     changed = true;
                     order.setField(OrderFields.START_DATE, start);
                 }
-                if (!order.getDateField(OrderFields.FINISH_DATE).equals(finish)) {
+
+                if (Objects.isNull(order.getDateField(OrderFields.FINISH_DATE))
+                        || !order.getDateField(OrderFields.FINISH_DATE).equals(finish)) {
                     changed = true;
                     order.setField(OrderFields.FINISH_DATE, finish);
                 }
@@ -125,12 +128,14 @@ public class OperationalTaskHooks {
                 Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
                 operationalTask.setField(OperationalTaskFields.NAME, operation.getStringField(OperationFields.NAME));
 
-                if(Objects.isNull(operationalTask.getId())) {
-                    boolean copyDescriptionFromProductionOrder = parameterService.getParameter().getBooleanField("otCopyDescriptionFromProductionOrder");
+                if (Objects.isNull(operationalTask.getId())) {
+                    boolean copyDescriptionFromProductionOrder = parameterService.getParameter().getBooleanField(
+                            "otCopyDescriptionFromProductionOrder");
                     if (copyDescriptionFromProductionOrder) {
 
                         StringBuilder descriptionBuilder = new StringBuilder();
-                        descriptionBuilder.append(Strings.nullToEmpty(technologyOperationComponent.getStringField(TechnologyOperationComponentFields.COMMENT)));
+                        descriptionBuilder.append(Strings.nullToEmpty(technologyOperationComponent
+                                .getStringField(TechnologyOperationComponentFields.COMMENT)));
                         if (StringUtils.isNoneBlank(descriptionBuilder.toString())) {
                             descriptionBuilder.append("\n");
                         }
@@ -141,27 +146,16 @@ public class OperationalTaskHooks {
                         operationalTask.setField(OperationalTaskFields.DESCRIPTION, descriptionBuilder.toString());
 
                     } else {
-                        operationalTask.setField(OperationalTaskFields.DESCRIPTION, technologyOperationComponent.getStringField(TechnologyOperationComponentFields.COMMENT));
+                        operationalTask.setField(OperationalTaskFields.DESCRIPTION,
+                                technologyOperationComponent.getStringField(TechnologyOperationComponentFields.COMMENT));
                     }
                 }
             }
         }
     }
 
-    private void fillProductionLine(final Entity operationalTask) {
-        String type = operationalTask.getStringField(OperationalTaskFields.TYPE);
+    private void fillDivision(final Entity operationalTask) {
 
-        if (operationalTasksService.isOperationalTaskTypeExecutionOperationInOrder(type)) {
-            Entity order = operationalTask.getBelongsToField(OperationalTaskFields.ORDER);
-
-            if (order == null) {
-                operationalTask.setField(OperationalTaskFields.PRODUCTION_LINE, null);
-            } else {
-                Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
-
-                operationalTask.setField(OperationalTaskFields.PRODUCTION_LINE, productionLine);
-            }
-        }
     }
 
     private void setInitialState(final Entity operationalTask) {

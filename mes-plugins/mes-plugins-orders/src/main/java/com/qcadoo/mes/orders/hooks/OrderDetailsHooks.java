@@ -657,7 +657,7 @@ public class OrderDetailsHooks {
         FieldComponent amountOfProductProducedField = (FieldComponent) view
                 .getComponentByReference(OrderFields.AMOUNT_OF_PRODUCT_PRODUCED);
 
-        amountOfProductProducedField.setFieldValue(numberService.format(order.getField(OrderFields.DONE_QUANTITY)));
+        amountOfProductProducedField.setFieldValue(numberService.formatWithMinimumFractionDigits(order.getField(OrderFields.DONE_QUANTITY),0));
         amountOfProductProducedField.requestComponentUpdateState();
 
         Entity product = order.getBelongsToField(BasicConstants.MODEL_PRODUCT);

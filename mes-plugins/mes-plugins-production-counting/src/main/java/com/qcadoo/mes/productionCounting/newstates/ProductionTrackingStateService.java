@@ -91,6 +91,7 @@ public class ProductionTrackingStateService extends BasicStateService implements
 
             case ProductionTrackingStateStringValues.CORRECTED:
                 productionTrackingListenerService.onCorrected(entity);
+                productionTrackingListenerService.updateOrderReportedQuantity(entity);
                 break;
         }
 

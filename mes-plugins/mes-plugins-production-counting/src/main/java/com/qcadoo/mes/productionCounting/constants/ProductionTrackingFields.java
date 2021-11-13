@@ -77,6 +77,8 @@ public final class ProductionTrackingFields {
 
     public static final String IS_CORRECTED = "isCorrected";
 
+    public static final String UNDERGOING_CORRECTION = "undergoingCorrection";
+
     public static final String STATE_CHANGES = "stateChanges";
 
     public static final String BATCH = "batch";

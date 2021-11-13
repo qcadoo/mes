@@ -38,12 +38,14 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
+import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 @Service
 public class OperationalTaskDetailsListeners {
@@ -148,28 +150,25 @@ public class OperationalTaskDetailsListeners {
     }
 
     public void onOrderChange(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        LookupComponent orderLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.ORDER);
         LookupComponent technologyOperationComponentLookup = (LookupComponent) view
                 .getComponentByReference(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
-        LookupComponent productionLineLookup = (LookupComponent) view
-                .getComponentByReference(OperationalTaskFields.PRODUCTION_LINE);
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.PRODUCT);
         productLookup.setFieldValue(null);
         FieldComponent plannedQuantityField = (FieldComponent) view.getComponentByReference(OperationalTaskFields.PLANNED_QUANTITY);
         plannedQuantityField.setFieldValue(null);
-        Entity order = orderLookup.getEntity();
-
         technologyOperationComponentLookup.setFieldValue(null);
+    }
 
-        if (Objects.isNull(order)) {
-            productionLineLookup.setFieldValue(null);
-        } else {
-            Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
-
-            productionLineLookup.setFieldValue(productionLine.getId());
+    public void onDivisionChange(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        LookupComponent workstationLookup = (LookupComponent) view.getComponentByReference(OperationalTaskFields.WORKSTATION);
+        FilterValueHolder filterValueHolder = workstationLookup.getFilterValue();
+        if(filterValueHolder.has(OperationalTaskFields.DIVISION)) {
+            filterValueHolder.remove(OperationalTaskFields.DIVISION);
+            workstationLookup.setFilterValue(filterValueHolder);
         }
-
-        productionLineLookup.requestComponentUpdateState();
+        workstationLookup.setFieldValue(null);
+        workstationLookup.requestComponentUpdateState();
     }
 
     public void onTechnologyOperationComponentChange(final ViewDefinitionState view, final ComponentState state,
