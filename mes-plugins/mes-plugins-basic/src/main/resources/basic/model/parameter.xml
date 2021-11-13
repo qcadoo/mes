@@ -44,6 +44,7 @@
 		<boolean name="copyNominalCostFamilyOfProductsSizes" default="false" />
 		<enum name="dashboardShowForProduct" required="true" values="01number,02name,03both" default="01number"/>
 		<enum name="quantityMadeOnTheBasisOfDashboard" required="true" values="01approvedProduction,02reportedProduction" default="01approvedProduction"/>
+		<enum name="dashboardOrderSorting" required="true" values="01startDate,02finishDate" default="01startDate"/>
 
 		<hasMany name="dashboardButtons" model="dashboardButton"
 				 joinField="parameter" cascade="delete" copyable="true" />

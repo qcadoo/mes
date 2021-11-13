@@ -51,6 +51,7 @@
         <string name="masterOrderDefinitionNumber"/>
         <string name="divisionName"/>
         <string name="companyName"/>
+        <string name="addressNumber"/>
         <string name="orderCategory"/>
         <string name="unitForAdditionalUnit"/>
         <string name="ordersGroupNumber"/>

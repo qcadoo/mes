@@ -489,6 +489,7 @@ function createOrderDiv(order) {
         ((order.state == "03inProgress" || order.state == "04completed") ? '<span class="float-right"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.doneQuantity.label") + ':</span> ' + quantityMade + ' ' + order.productUnit + '</span>' : '') +
         (order.plannedQuantity ? '<br/>' : '') +
         (order.companyName ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.companyName.label") + ':</span> ' + order.companyName + '<br/>' : '') +
+        (order.addressNumber ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.addressNumber.label") + ':</span> ' + order.addressNumber + '<br/>' : '') +
         (order.masterOrderNumber ? '<span class="float-left"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.masterOrderNumber.label") + ':</span> ' + order.masterOrderNumber +
         (order.masterOrderQuantity ? '</span><span class="float-right"><span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.masterOrderQuantity.label") + ':</span> ' + order.masterOrderQuantity + ' ' + order.productUnit : '') + '</span><br/>' : '') +
         (order.orderCategory ? '<span class="font-weight-bold">' + QCD.translate("basic.dashboard.orders.orderCategory.label") + ':</span> ' + order.orderCategory + '<br/>' : '') +

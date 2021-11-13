@@ -55,6 +55,8 @@ public final class ParameterFields {
 
     public static final String QUANTITY_MADE_ON_THE_BASIS_OF_DASHBOARD = "quantityMadeOnTheBasisOfDashboard";
 
+    public static final String DASHBOARD_ORDER_SORTING = "dashboardOrderSorting";
+
     public static final String LOGO = "logo";
 
 }
