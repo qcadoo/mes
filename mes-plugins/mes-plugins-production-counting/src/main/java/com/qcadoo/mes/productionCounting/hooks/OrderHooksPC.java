@@ -26,6 +26,7 @@ package com.qcadoo.mes.productionCounting.hooks;
 import java.util.List;
 import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -89,8 +90,14 @@ public class OrderHooksPC {
 
     private void setOrderWithDefaultProductionCountingValues(final DataDefinition orderDD, final Entity order) {
         for (String fieldName : L_ORDER_FIELD_NAMES) {
-            if (Objects.isNull(order.getField(fieldName))) {
-                order.setField(fieldName, parameterService.getParameter().getField(fieldName));
+            if (OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING.equals(fieldName)) {
+                if (StringUtils.isEmpty(order.getStringField(fieldName))) {
+                    order.setField(fieldName, parameterService.getParameter().getField(fieldName));
+                }
+            } else {
+                if (Objects.isNull(order.getField(fieldName))) {
+                    order.setField(fieldName, parameterService.getParameter().getField(fieldName));
+                }
             }
         }
     }
