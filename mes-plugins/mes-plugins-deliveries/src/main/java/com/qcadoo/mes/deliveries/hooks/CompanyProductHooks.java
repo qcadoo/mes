@@ -23,20 +23,17 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.deliveries.CompanyProductService;
-import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-
 import java.util.Objects;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import static com.qcadoo.mes.deliveries.constants.CompanyFieldsD.PRODUCTS;
-import static com.qcadoo.mes.deliveries.constants.CompanyProductFields.COMPANY;
-import static com.qcadoo.mes.deliveries.constants.CompanyProductFields.IS_DEFAULT;
-import static com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields.PRODUCT;
+
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.deliveries.CompanyProductService;
+import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
+import com.qcadoo.mes.deliveries.constants.CompanyProductFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
 
 @Service
 public class CompanyProductHooks {
@@ -45,9 +42,13 @@ public class CompanyProductHooks {
     private CompanyProductService companyProductService;
 
     public boolean checkIfProductIsNotAlreadyUsed(final DataDefinition companyProductDD, final Entity companyProduct) {
-        if (!companyProductService.checkIfProductIsNotUsed(companyProduct, PRODUCT, COMPANY, PRODUCTS)) {
-            companyProduct.addError(companyProductDD.getField(PRODUCT), "basic.company.message.productIsAlreadyUsed");
-            companyProduct.addError(companyProductDD.getField(COMPANY), "basic.company.message.companyIsAlreadyUsed");
+        if (!companyProductService.checkIfProductIsNotUsed(companyProduct, CompanyProductFields.PRODUCT,
+                CompanyProductFields.COMPANY, CompanyFieldsD.PRODUCTS)) {
+            companyProduct.addError(companyProductDD.getField(CompanyProductFields.PRODUCT),
+                    "basic.company.message.productIsAlreadyUsed");
+            companyProduct.addError(companyProductDD.getField(CompanyProductFields.COMPANY),
+                    "basic.company.message.companyIsAlreadyUsed");
+
             return false;
         }
 
@@ -56,33 +57,52 @@ public class CompanyProductHooks {
 
     public boolean checkIfProductHasDefaultSupplier(final DataDefinition companyProductDD, final Entity companyProduct) {
         if (companyProductService.checkIfDefaultAlreadyExists(companyProduct)) {
-            companyProduct
-                    .addError(companyProductDD.getField(IS_DEFAULT), "basic.company.message.defaultAlreadyExistsForProduct");
+            companyProduct.addError(companyProductDD.getField(CompanyProductFields.IS_DEFAULT),
+                    "basic.company.message.defaultAlreadyExistsForProduct");
+
             return false;
         }
 
         return true;
     }
 
-    public void onSave(final DataDefinition dataDefinition, final Entity companyProduct) {
+    public void onSave(final DataDefinition companyProductDD, final Entity companyProduct) {
         Entity product = companyProduct.getBelongsToField(CompanyProductFields.PRODUCT);
-        if(Objects.isNull(companyProduct.getId())) {
-            if (companyProduct.getBooleanField(IS_DEFAULT)) {
-                if (Objects.isNull(product.getBelongsToField(ProductFields.SUPPLIER)) || !product.getBelongsToField(ProductFields.SUPPLIER).getId()
-                        .equals(companyProduct.getBelongsToField(COMPANY).getId())) {
-                    product.setField(ProductFields.SUPPLIER, companyProduct.getBelongsToField(COMPANY));
+        Entity company = companyProduct.getBelongsToField(CompanyProductFields.COMPANY);
+        boolean isDefault = companyProduct.getBooleanField(CompanyProductFields.IS_DEFAULT);
+
+        if (Objects.isNull(companyProduct.getId())) {
+            if (isDefault) {
+                Entity supplier = product.getBelongsToField(ProductFields.SUPPLIER);
+
+                if (Objects.isNull(supplier) || !supplier.getId().equals(company.getId())) {
+                    product.setField(ProductFields.SUPPLIER, company);
+
                     product.getDataDefinition().fastSave(product);
                 }
             }
         } else {
-            Entity companyProductDb = companyProduct.getDataDefinition().get(companyProduct.getId());
-            if(companyProduct.getBooleanField(IS_DEFAULT) != companyProductDb.getBooleanField(IS_DEFAULT)) {
-                product.setField(ProductFields.SUPPLIER, companyProduct.getBelongsToField(COMPANY));
-                if(!companyProduct.getBooleanField(IS_DEFAULT)){
-                    product.setField(ProductFields.SUPPLIER, null);
-                }
+            Entity companyProductFromDb = companyProductDD.get(companyProduct.getId());
+
+            if (isDefault != companyProductFromDb.getBooleanField(CompanyProductFields.IS_DEFAULT)) {
+                product.setField(ProductFields.SUPPLIER, isDefault ? company : null);
+
                 product.getDataDefinition().fastSave(product);
             }
         }
     }
+
+    public boolean onDelete(final DataDefinition companyProductDD, final Entity companyProduct) {
+        Entity product = companyProduct.getBelongsToField(CompanyProductFields.PRODUCT);
+        boolean isDefault = companyProduct.getBooleanField(CompanyProductFields.IS_DEFAULT);
+
+        if (isDefault) {
+            product.setField(ProductFields.SUPPLIER, null);
+
+            product.getDataDefinition().fastSave(product);
+        }
+
+        return true;
+    }
+
 }

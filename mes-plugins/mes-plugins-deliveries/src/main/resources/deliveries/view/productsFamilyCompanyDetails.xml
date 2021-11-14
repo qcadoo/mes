@@ -52,8 +52,10 @@
                                     method="hideOwnerCompany"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="2">
-                        <component type="checkbox" name="isDefault" field="isDefault" reference="isDefault"/>
+                    <layoutElement column="1" row="2" width="3">
+                        <component type="checkbox" name="isDefault" field="isDefault" reference="isDefault">
+                            <option type="labelWidth" value="30"/>
+                        </component>
                     </layoutElement>
                     <layoutElement column="1" row="3"  width="3">
                         <component type="input" name="minimumOrderQuantity"
@@ -85,7 +87,7 @@
                 <option type="expression" value="#product[number] + ' - ' + #product[name]"/>
             </component>
         </windowTab>
-         
+
     </component>
 
     <hooks>
