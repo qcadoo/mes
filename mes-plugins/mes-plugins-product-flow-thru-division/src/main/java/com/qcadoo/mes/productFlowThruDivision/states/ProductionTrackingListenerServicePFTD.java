@@ -90,7 +90,7 @@ public final class ProductionTrackingListenerServicePFTD {
 
     private static final String L_USER = "user";
 
-    public static final String L_QUALITY_RATING = "qualityRating";
+    private static final String L_QUALITY_RATING = "qualityRating";
 
     @Autowired
     private CostNormsForMaterialsService costNormsForMaterialsService;
@@ -137,18 +137,16 @@ public final class ProductionTrackingListenerServicePFTD {
 
     public void createWarehouseDocuments(final Entity productionTracking) {
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
-        Entity toc = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+        Entity technologyOperationComponent = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
 
-        List<Entity> recordOutProducts = productionTracking
+        List<Entity> trackingOperationProductOutComponents = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
         Multimap<Long, Entity> groupedRecordOutProducts = productionTrackingDocumentsHelper
-                .fillFromBPCProductOut(recordOutProducts, order, true);
-
-        List<Entity> recordInProducts = productionTracking
+                .fillFromBPCProductOut(trackingOperationProductOutComponents, order, true);
+        List<Entity> trackingOperationProductInComponents = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
-
-        Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper.fillFromBPCProductIn(recordInProducts,
-                order, toc, true);
+        Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper.fillFromBPCProductIn(trackingOperationProductInComponents,
+                order, technologyOperationComponent, true);
 
         for (Long warehouseId : groupedRecordOutProducts.keySet()) {
             Entity locationTo = getLocationDD().get(warehouseId);
@@ -172,8 +170,8 @@ public final class ProductionTrackingListenerServicePFTD {
         boolean errorsDisplayed = false;
 
         for (Long warehouseId : groupedRecordInProducts.keySet()) {
-            Entity warehouseFrom = getLocationDD().get(warehouseId);
-            Entity outboundDocument = createInternalOutboundDocumentForComponents(warehouseFrom, order,
+            Entity locationFrom = getLocationDD().get(warehouseId);
+            Entity outboundDocument = createInternalOutboundDocumentForComponents(locationFrom, order,
                     groupedRecordInProducts.get(warehouseId), productionTracking.getBelongsToField(L_USER));
 
             if (Objects.nonNull(outboundDocument) && !outboundDocument.isValid()) {
@@ -204,6 +202,7 @@ public final class ProductionTrackingListenerServicePFTD {
     public Entity createInternalOutboundDocumentForComponents(final Entity locationFrom, final Entity order,
             final Collection<Entity> inProductsRecords, final Entity user) {
         DocumentBuilder internalOutboundBuilder = documentManagementService.getDocumentBuilder(user);
+
         internalOutboundBuilder.internalOutbound(locationFrom);
 
         HashSet<Entity> inProductsWithoutDuplicates = Sets.newHashSet();
@@ -211,7 +210,6 @@ public final class ProductionTrackingListenerServicePFTD {
         DataDefinition positionDD = getPositionDD();
 
         for (Entity inProductRecord : inProductsRecords) {
-
             List<Entity> usedBatches = inProductRecord.getHasManyField(TrackingOperationProductInComponentFields.USED_BATCHES);
 
             Entity inProduct = inProductRecord.getBelongsToField(TrackingOperationProductInComponentFields.PRODUCT);
@@ -219,10 +217,12 @@ public final class ProductionTrackingListenerServicePFTD {
             if (!inProductsWithoutDuplicates.contains(inProduct)) {
                 if (usedBatches.isEmpty()) {
                     Entity position = preparePositionForInProduct(positionDD, inProductRecord, inProduct);
+
                     internalOutboundBuilder.addPosition(position);
                 } else {
                     for (Entity usedBatch : usedBatches) {
                         Entity position = preparePositionForUsedBatch(positionDD, inProductRecord, inProduct, usedBatch);
+
                         internalOutboundBuilder.addPosition(position);
                     }
                 }
@@ -236,13 +236,13 @@ public final class ProductionTrackingListenerServicePFTD {
         return internalOutboundBuilder.setAccepted().buildWithEntityRuntimeException();
     }
 
-    private Entity preparePositionForUsedBatch(DataDefinition positionDD, Entity inProductRecord, Entity inProduct,
-            Entity usedBatch) {
+    private Entity preparePositionForUsedBatch(final DataDefinition positionDD, final Entity inProductRecord, final Entity inProduct,
+            final Entity usedBatch) {
         Entity position = positionDD.create();
+
         BigDecimal usedQuantity = usedBatch.getDecimalField(UsedBatchFields.QUANTITY);
         BigDecimal givenQuantity = productionTrackingService.calculateGivenQuantity(inProductRecord, usedQuantity)
                 .orElse(usedQuantity);
-
         BigDecimal conversion = BigDecimal.ONE;
         String unit = inProduct.getStringField(ProductFields.UNIT);
         String givenUnit = inProductRecord.getStringField(TrackingOperationProductOutComponentFields.GIVEN_UNIT);
@@ -264,11 +264,13 @@ public final class ProductionTrackingListenerServicePFTD {
         position.setField(PositionFields.GIVEN_QUANTITY, givenQuantity);
         position.setField(PositionFields.CONVERSION, conversion);
         position.setField(PositionFields.BATCH, usedBatch.getBelongsToField(UsedBatchFields.BATCH).getId());
+
         return position;
     }
 
-    private Entity preparePositionForInProduct(DataDefinition positionDD, Entity inProductRecord, Entity inProduct) {
+    private Entity preparePositionForInProduct(final DataDefinition positionDD, final Entity inProductRecord, final Entity inProduct) {
         Entity position = positionDD.create();
+
         BigDecimal usedQuantity = inProductRecord.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
         BigDecimal givenQuantity = inProductRecord.getDecimalField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY);
         BigDecimal conversion = BigDecimal.ONE;
@@ -291,6 +293,7 @@ public final class ProductionTrackingListenerServicePFTD {
         position.setField(PositionFields.QUANTITY, usedQuantity);
         position.setField(PositionFields.GIVEN_QUANTITY, givenQuantity);
         position.setField(PositionFields.CONVERSION, conversion);
+
         return position;
     }
 
@@ -301,6 +304,7 @@ public final class ProductionTrackingListenerServicePFTD {
                 && priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue());
 
         List<Entity> finalProductRecord = null;
+
         Collection<Entity> intermediateRecords = Lists.newArrayList();
 
         for (Entity outProductRecord : outProductsRecords) {
@@ -342,8 +346,6 @@ public final class ProductionTrackingListenerServicePFTD {
                         return inboundForFinalProduct;
                     }
                 }
-
-                return createInternalInboundDocumentForFinalProducts(locationTo, order, intermediateRecords, user);
             } else {
                 if (Objects.nonNull(finalProductRecord)) {
                     Entity inboundForFinalProduct = createInternalInboundDocumentForFinalProducts(locationTo, order,
@@ -354,15 +356,16 @@ public final class ProductionTrackingListenerServicePFTD {
                         return inboundForFinalProduct;
                     }
                 }
-
-                return createInternalInboundDocumentForFinalProducts(locationTo, order, intermediateRecords, user);
             }
+
+            return createInternalInboundDocumentForFinalProducts(locationTo, order, intermediateRecords, user);
         }
     }
 
-    private Entity updateInternalInboundDocumentForFinalProducts(Entity order, final Entity existingInboundDocument,
+    private Entity updateInternalInboundDocumentForFinalProducts(final Entity order, final Entity existingInboundDocument,
             final Collection<Entity> outProductsRecords) {
         DataDefinition positionDD = getPositionDD();
+
         List<Entity> positions = Lists.newArrayList(existingInboundDocument.getHasManyField(DocumentFields.POSITIONS));
 
         for (Entity outProductRecord : outProductsRecords) {
@@ -374,7 +377,6 @@ public final class ProductionTrackingListenerServicePFTD {
 
             java.util.Optional<BigDecimal> usedQuantity = Optional
                     .ofNullable(outProductRecord.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY));
-
             java.util.Optional<BigDecimal> givenQuantity = Optional
                     .ofNullable(outProductRecord.getDecimalField(TrackingOperationProductInComponentFields.GIVEN_QUANTITY));
             java.util.Optional<String> givenUnit = Optional
@@ -395,16 +397,19 @@ public final class ProductionTrackingListenerServicePFTD {
                     existingPosition.setField(PositionFields.GIVEN_QUANTITY,
                             givenQuantity.orElse(BigDecimal.ZERO).add(givenQuantityFromPosition.orElse(BigDecimal.ZERO)));
                 }
+
                 fillAttributes(outProductRecord, existingPosition);
                 existingPosition.setField(PositionFields.GIVEN_UNIT, givenUnit.get());
             } else {
                 Entity productionTracking = outProductRecord
                         .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
+
                 Entity position = positionDD.create();
+
                 position.setField(PositionFields.PRODUCT, outProduct);
                 position.setField(PositionFields.QUANTITY, usedQuantity.get());
-                BigDecimal conversion = BigDecimal.ONE;
 
+                BigDecimal conversion = BigDecimal.ONE;
                 String unit = outProduct.getStringField(ProductFields.UNIT);
 
                 if (givenQuantity.isPresent()) {
@@ -422,9 +427,10 @@ public final class ProductionTrackingListenerServicePFTD {
 
                 position.setField(PositionFields.GIVEN_UNIT, givenUnit.get());
                 position.setField(PositionFields.CONVERSION, conversion);
-
                 position.setField(PositionFields.PRODUCTION_DATE, new Date());
+
                 Entity batch = productionTracking.getBelongsToField(ProductionTrackingFields.BATCH);
+
                 if (Objects.nonNull(batch) && batch.getBelongsToField(BatchFields.PRODUCT).getId().equals(outProduct.getId())) {
                     position.setField(PositionFields.BATCH,
                             productionTracking.getBelongsToField(ProductionTrackingFields.BATCH).getId());
@@ -445,6 +451,7 @@ public final class ProductionTrackingListenerServicePFTD {
                 }
 
                 fillAttributes(outProductRecord, position);
+
                 positions.add(position);
             }
         }
@@ -454,36 +461,42 @@ public final class ProductionTrackingListenerServicePFTD {
         return existingInboundDocument.getDataDefinition().save(existingInboundDocument);
     }
 
-    private void fillAttributes(Entity outProductRecord, Entity position) {
+    private void fillAttributes(final Entity outProductRecord, final Entity position) {
         List<Entity> attributes = Lists.newArrayList();
+
         outProductRecord.getHasManyField(TrackingOperationProductOutComponentFields.PROD_OUT_RESOURCE_ATTR_VALS).forEach(aVal -> {
             Entity docPositionAtrrVal = dataDefinitionService.get(MaterialFlowResourcesConstants.PLUGIN_IDENTIFIER,
                     MaterialFlowResourcesConstants.MODEL_POSITION_ATTRIBUTE_VALUE).create();
             docPositionAtrrVal.setField(PositionAttributeValueFields.ATTRIBUTE,
                     aVal.getBelongsToField(ProdOutResourceAttrValFields.ATTRIBUTE).getId());
+
             if (Objects.nonNull(aVal.getBelongsToField(PositionAttributeValueFields.ATTRIBUTE_VALUE))) {
                 docPositionAtrrVal.setField(PositionAttributeValueFields.ATTRIBUTE_VALUE,
                         aVal.getBelongsToField(ProdOutResourceAttrValFields.ATTRIBUTE_VALUE).getId());
             }
+
             docPositionAtrrVal.setField(PositionAttributeValueFields.VALUE,
                     aVal.getStringField(ProdOutResourceAttrValFields.VALUE));
+
             attributes.add(docPositionAtrrVal);
         });
+
         position.setField(PositionFields.POSITION_ATTRIBUTE_VALUES, attributes);
     }
 
-    private Entity filterPosition(List<Entity> existingPositions, Entity outProduct, String givenUnit, Entity outBatch,
-            Entity storageLocation) {
+    private Entity filterPosition(final List<Entity> existingPositions, final Entity outProduct, final String givenUnit, final Entity outBatch,
+            final Entity storageLocation) {
         for (Entity position : existingPositions) {
             if (checkPositionConditions(position, outProduct, givenUnit, outBatch, storageLocation)) {
                 return position;
             }
         }
+
         return null;
     }
 
-    private boolean checkPositionConditions(Entity position, Entity outProduct, String givenUnit, Entity outBatch,
-            Entity storageLocation) {
+    private boolean checkPositionConditions(final Entity position, final Entity outProduct, final String givenUnit, final Entity outBatch,
+            final Entity storageLocation) {
         boolean isPosition = true;
 
         if (!position.getBelongsToField(PositionFields.PRODUCT).getId().equals(outProduct.getId())) {
@@ -525,11 +538,13 @@ public final class ProductionTrackingListenerServicePFTD {
     private Entity createInternalInboundDocumentForFinalProducts(final Entity locationTo, final Entity order,
             final Collection<Entity> outProductsRecords, final boolean isBasedOnNominalCost, Entity user) {
         DocumentBuilder internalInboundBuilder = documentManagementService.getDocumentBuilder(user);
+
         internalInboundBuilder.internalInbound(locationTo);
 
         boolean isFinalProduct = false;
 
         Entity productionTracking = null;
+
         for (Entity outProductRecord : outProductsRecords) {
             Entity outProduct = outProductRecord.getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCT);
 
@@ -537,11 +552,13 @@ public final class ProductionTrackingListenerServicePFTD {
                 productionTracking = outProductRecord
                         .getBelongsToField(TrackingOperationProductOutComponentFields.PRODUCTION_TRACKING);
             }
+
             if (isFinalProductForOrder(order, outProduct)) {
                 isFinalProduct = true;
             }
 
             Entity position = getPositionDD().create();
+
             BigDecimal usedQuantity = outProductRecord.getDecimalField(TrackingOperationProductOutComponentFields.USED_QUANTITY);
             BigDecimal givenQuantity = outProductRecord
                     .getDecimalField(TrackingOperationProductOutComponentFields.GIVEN_QUANTITY);
@@ -550,7 +567,6 @@ public final class ProductionTrackingListenerServicePFTD {
             String givenUnit = outProductRecord.getStringField(TrackingOperationProductOutComponentFields.GIVEN_UNIT);
 
             if (Objects.nonNull(usedQuantity) && Objects.nonNull(givenQuantity)) {
-
                 PossibleUnitConversions unitConversions = unitConversionService.getPossibleConversions(unit,
                         searchCriteriaBuilder -> searchCriteriaBuilder
                                 .add(SearchRestrictions.belongsTo(UnitConversionItemFieldsB.PRODUCT, outProduct)));
@@ -565,7 +581,6 @@ public final class ProductionTrackingListenerServicePFTD {
             position.setField(PositionFields.QUANTITY, usedQuantity);
             position.setField(PositionFields.CONVERSION, conversion);
             position.setField(PositionFields.GIVEN_QUANTITY, givenQuantity);
-
             position.setField(PositionFields.GIVEN_UNIT,
                     outProductRecord.getStringField(TrackingOperationProductOutComponentFields.GIVEN_UNIT));
 
@@ -574,7 +589,9 @@ public final class ProductionTrackingListenerServicePFTD {
             }
 
             position.setField(PositionFields.PRODUCTION_DATE, new Date());
+
             Entity batch = productionTracking.getBelongsToField(ProductionTrackingFields.BATCH);
+
             if (Objects.nonNull(batch) && batch.getBelongsToField(BatchFields.PRODUCT).getId().equals(outProduct.getId())) {
                 position.setField(PositionFields.BATCH,
                         productionTracking.getBelongsToField(ProductionTrackingFields.BATCH).getId());
@@ -593,7 +610,9 @@ public final class ProductionTrackingListenerServicePFTD {
                 position.setField(PositionFields.EXPIRATION_DATE,
                         productionTracking.getDateField(ProductionTrackingFields.EXPIRATION_DATE));
             }
+
             fillAttributes(outProductRecord, position);
+
             internalInboundBuilder.addPosition(position);
         }
 
@@ -607,14 +626,16 @@ public final class ProductionTrackingListenerServicePFTD {
         return internalInboundBuilder.buildWithEntityRuntimeException();
     }
 
-    private BigDecimal getNominalCost(Entity outProduct) {
+    private BigDecimal getNominalCost(final Entity outProduct) {
         BigDecimal nominalCost = BigDecimalUtils.convertNullToZero(outProduct.getDecimalField("nominalCost"));
         Entity currency = outProduct.getBelongsToField("nominalCostCurrency");
         String currencyAlphabeticCode = Optional.ofNullable(currency.getStringField(CurrencyFields.ALPHABETIC_CODE)).orElse("");
+
         if (CurrencyService.PLN.equals(currencyService.getCurrencyAlphabeticCode())
                 && !CurrencyService.PLN.equals(currencyAlphabeticCode)) {
             nominalCost = currencyService.getConvertedValue(nominalCost, currency);
         }
+
         return nominalCost;
     }
 
@@ -641,6 +662,7 @@ public final class ProductionTrackingListenerServicePFTD {
             Long product = (Long) costsForProduct.getField(PositionFields.PRODUCT);
             BigDecimal quantity = costsForProduct.getDecimalField(PositionFields.QUANTITY);
             BigDecimal cost = costsForProduct.getDecimalField(PositionFields.PRICE);
+
             productsWithQuantitiesAndCosts.add(new ProductWithQuantityAndCost(product, quantity, cost));
         }
 
@@ -663,4 +685,5 @@ public final class ProductionTrackingListenerServicePFTD {
     private DataDefinition getLocationDD() {
         return dataDefinitionService.get(MaterialFlowConstants.PLUGIN_IDENTIFIER, MaterialFlowConstants.MODEL_LOCATION);
     }
+
 }
