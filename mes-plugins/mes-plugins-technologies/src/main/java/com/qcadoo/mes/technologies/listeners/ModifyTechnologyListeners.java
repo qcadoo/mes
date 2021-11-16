@@ -106,8 +106,12 @@ public class ModifyTechnologyListeners {
                     .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_PRODUCT_BY_SIZE_GROUP).find()
                     .add(SearchRestrictions.in("id", ids)).list().getEntities();
             for (Entity pbs : productsBySizes) {
-                Long technologyId = pbs.getBelongsToField(ProductBySizeGroupFields.OPERATION_PRODUCT_IN_COMPONENT)
-                        .getBelongsToField(OperationProductInComponentFields.TECHNOLOGY).getId();
+
+                Entity opic = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                        TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).get(
+                        pbs.getBelongsToField(ProductBySizeGroupFields.OPERATION_PRODUCT_IN_COMPONENT).getId());
+                Long technologyId = opic.getBelongsToField(OperationProductInComponentFields.OPERATION_COMPONENT)
+                        .getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY).getId();
                 if (entriesByTechnology.containsKey(technologyId)) {
                     entriesByTechnology.get(technologyId).add(pbs);
                 } else {
@@ -227,16 +231,18 @@ public class ModifyTechnologyListeners {
         Entity opic = toc
                 .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS)
                 .stream()
-                .filter(opc -> opc.getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE).getId()
-                        .equals(opicPrev.getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE).getId()))
-                .findFirst().orElseThrow(() -> new IllegalStateException("Product not found"));
+                .filter(opc -> opc
+                        .getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE)
+                        .getId()
+                        .equals(opicPrev.getBelongsToField(OperationProductInComponentFields.TECHNOLOGY_INPUT_PRODUCT_TYPE)
+                                .getId())).findFirst().orElseThrow(() -> new IllegalStateException("Product not found"));
 
         Entity pbsg = opic
                 .getHasManyField(OperationProductInComponentFields.PRODUCT_BY_SIZE_GROUPS)
                 .stream()
                 .filter(pbs -> pbs.getBelongsToField(ProductBySizeGroupFields.PRODUCT).getId()
-                        .equals(entry.getBelongsToField(ProductBySizeGroupFields.PRODUCT).getId()))
-                .findFirst().orElseThrow(() -> new IllegalStateException("Product not found"));
+                        .equals(entry.getBelongsToField(ProductBySizeGroupFields.PRODUCT).getId())).findFirst()
+                .orElseThrow(() -> new IllegalStateException("Product not found"));
 
         if (mt.getBooleanField(ModifyTechnologyHelperFields.ADD_NEW)) {
             addNewProductsPSG(mt, toc, opic, pbsg);
@@ -270,7 +276,8 @@ public class ModifyTechnologyListeners {
     private void addNewProductsPSG(Entity mt, Entity toc, Entity opic, Entity pbsg) {
         mt.getHasManyField(ModifyTechnologyHelperFields.MODIFY_TECHNOLOGY_ADD_PRODUCTS).forEach(
                 pr -> {
-                    Entity newPBSG = createPBSG(toc, opic, pbsg , pr.getBelongsToField(ModifyTechnologyAddProductHelperFields.PRODUCT),
+                    Entity newPBSG = createPBSG(toc, opic, pbsg,
+                            pr.getBelongsToField(ModifyTechnologyAddProductHelperFields.PRODUCT),
                             pr.getDecimalField(ModifyTechnologyAddProductHelperFields.QUANTITY));
                     if (!newPBSG.isValid()) {
                         throw new IllegalStateException("Error while saving product size group");
