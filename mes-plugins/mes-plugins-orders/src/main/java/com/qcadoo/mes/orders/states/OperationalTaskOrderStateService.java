@@ -139,7 +139,7 @@ public class OperationalTaskOrderStateService {
             Entity order = stateChangeContext.getOwner();
 
             if (FOR_EACH.equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING)) && order.getHasManyField(OrderFields.OPERATIONAL_TASKS).isEmpty()) {
-                orderDetailsListeners.createOperationalTasksForOrder(order);
+                orderDetailsListeners.createOperationalTasksForOrder(order, true);
             }
 
         }

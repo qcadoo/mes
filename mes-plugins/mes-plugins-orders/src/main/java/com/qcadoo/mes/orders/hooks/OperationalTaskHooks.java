@@ -3,7 +3,6 @@ package com.qcadoo.mes.orders.hooks;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.WorkstationFields;
 import com.qcadoo.mes.newstates.StateExecutorService;
 import com.qcadoo.mes.orders.OperationalTasksService;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
@@ -47,31 +46,7 @@ public class OperationalTaskHooks {
     public void onSave(final DataDefinition operationalTaskDD, final Entity operationalTask) {
         fillNameAndDescription(operationalTask);
         fillDivision(operationalTask);
-        fillWorkstation(operationalTask);
         changeDateInOrder(operationalTask);
-
-    }
-
-    private void fillWorkstation(Entity operationalTask) {
-        if (Objects.nonNull(operationalTask.getId())) {
-            return;
-        }
-
-        String type = operationalTask.getStringField(OperationalTaskFields.TYPE);
-
-        if (operationalTasksService.isOperationalTaskTypeExecutionOperationInOrder(type)) {
-            Entity technologyOperationComponent = operationalTask
-                    .getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
-            List<Entity> workstations = technologyOperationComponent
-                    .getHasManyField(TechnologyOperationComponentFields.WORKSTATIONS);
-            if (workstations.size() == 1) {
-                Entity workstation = workstations.get(0);
-                operationalTask.setField(OperationalTaskFields.WORKSTATION, workstation);
-                if (Objects.nonNull(workstation.getBelongsToField(WorkstationFields.STAFF))) {
-                    operationalTask.setField(OperationalTaskFields.STAFF, workstation.getBelongsToField(WorkstationFields.STAFF));
-                }
-            }
-        }
 
     }
 

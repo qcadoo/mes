@@ -399,6 +399,10 @@
         </model:model-field>
 
         <model:model-field plugin="basic"  model="parameter">
+            <model:boolean name="completeStationAndEmployeeInGeneratedTasks" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic"  model="parameter">
             <model:boolean name="automaticallyGenerateProcessesForOrder" default="false"/>
         </model:model-field>
 
@@ -535,6 +539,11 @@
                         type="beforeRender"
                         class="com.qcadoo.mes.orders.hooks.ParametersHooksO"
                         method="onOrdersParameterBeforeRender"/>
+
+        <view:view-hook plugin="orders" view="planningParameters"
+                        type="beforeRender"
+                        class="com.qcadoo.mes.orders.hooks.ParametersHooksO"
+                        method="onPlanningParametersBeforeRender"/>
 
         <view:resource uri="public/**/*"/>
 

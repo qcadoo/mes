@@ -56,7 +56,7 @@
         <windowTab name="operationalTasksTab" reference="operationalTasksTab">
             <component type="form" name="planningParameters" reference="form">
                 <component type="gridLayout" name="mainTabGridLayout"
-                           columns="3" rows="4">
+                           columns="3" rows="5">
                     <layoutElement column="1" row="1">
                         <component type="checkbox" name="operTaskFlagPercentExecutionWithColor"
                                    field="#{form}.operTaskFlagPercentExecutionWithColor"
@@ -82,6 +82,16 @@
                         <component type="checkbox" name="automaticallyGenerateTasksForOrder"
                                    field="#{form}.automaticallyGenerateTasksForOrder"
                                    reference="automaticallyGenerateTasksForOrder" hasDescription="true">
+                            <option type="labelWidth" value="40"/>
+                            <listener event="onChange"
+                                      class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
+                                      method="onAutomaticallyGenerateTasksForOrder"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="1" row="5">
+                        <component type="checkbox" name="completeStationAndEmployeeInGeneratedTasks"
+                                   field="#{form}.completeStationAndEmployeeInGeneratedTasks"
+                                   reference="completeStationAndEmployeeInGeneratedTasks" hasDescription="true">
                             <option type="labelWidth" value="40"/>
                         </component>
                     </layoutElement>

@@ -244,7 +244,7 @@ public class OrderCreationService {
     }
 
     private void createOperationalTasks(Entity order, OrderCreationRequest orderCreationRequest) {
-        orderDetailsListeners.createOperationalTasksForOrder(order);
+        orderDetailsListeners.createOperationalTasksForOrder(order, false);
         Map<Long, TechnologyOperationDto> operationsById = orderCreationRequest.getTechnologyOperations().stream()
                 .collect(Collectors.toMap(TechnologyOperationDto::getId, x -> x));
         List<Entity> operationalTasks = order.getHasManyField(OrderFields.OPERATIONAL_TASKS);

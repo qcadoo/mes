@@ -28,6 +28,8 @@ import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.WorkstationFields;
+import com.qcadoo.mes.orders.OperationalTasksService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
@@ -44,6 +46,7 @@ import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.states.TechnologyStateChangeViewClient;
 import com.qcadoo.mes.technologies.states.constants.TechnologyStateStringValues;
 import com.qcadoo.model.api.DataDefinition;
@@ -84,6 +87,8 @@ public class OrderDetailsListeners {
 
     private static final String L_FILTERS = "filters";
 
+    private static final String L_COMPLETE_STATION_AND_EMPLOYEE_IN_GENERATED_TASKS = "completeStationAndEmployeeInGeneratedTasks";
+
     @Autowired
     private OrderStateChangeViewClient orderStateChangeViewClient;
 
@@ -116,6 +121,9 @@ public class OrderDetailsListeners {
 
     @Autowired
     private TechnologyService technologyService;
+
+    @Autowired
+    private OperationalTasksService operationalTasksService;
 
     public void clearAddress(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         LookupComponent addressLookup = (LookupComponent) view.getComponentByReference(OrderFields.ADDRESS);
@@ -303,7 +311,8 @@ public class OrderDetailsListeners {
         if (OrderState.PENDING.getStringValue().equals(orderState)) {
             copyDate(view, OrderFields.DATE_FROM, L_PLANNED_DATE_FROM);
         }
-        if (OrderState.IN_PROGRESS.getStringValue().equals(orderState) || OrderState.ABANDONED.getStringValue().equals(orderState)
+        if (OrderState.IN_PROGRESS.getStringValue().equals(orderState)
+                || OrderState.ABANDONED.getStringValue().equals(orderState)
                 || OrderState.COMPLETED.getStringValue().equals(orderState)) {
             copyDate(view, OrderFields.DATE_FROM, L_EFFECTIVE_DATE_FROM);
         }
@@ -330,12 +339,10 @@ public class OrderDetailsListeners {
         if (OrderState.PENDING.getStringValue().equals(orderState)) {
             copyDate(view, OrderFields.DATE_TO, L_PLANNED_DATE_TO);
         }
-        if (OrderState.COMPLETED.getStringValue().equals(orderState)
-                || OrderState.ABANDONED.getStringValue().equals(orderState)) {
+        if (OrderState.COMPLETED.getStringValue().equals(orderState) || OrderState.ABANDONED.getStringValue().equals(orderState)) {
             copyDate(view, OrderFields.DATE_TO, L_EFFECTIVE_DATE_TO);
         }
-        if (OrderState.ACCEPTED.getStringValue().equals(orderState)
-                || OrderState.IN_PROGRESS.getStringValue().equals(orderState)) {
+        if (OrderState.ACCEPTED.getStringValue().equals(orderState) || OrderState.IN_PROGRESS.getStringValue().equals(orderState)) {
             copyDate(view, OrderFields.DATE_TO, OrderFields.CORRECTED_DATE_TO);
         }
     }
@@ -425,22 +432,22 @@ public class OrderDetailsListeners {
 
         Entity order = orderForm.getEntity().getDataDefinition().get(orderForm.getEntityId());
 
-        createOperationalTasksForOrder(order);
+        createOperationalTasksForOrder(order, false);
 
         orderForm.addMessage("orders.ordersDetails.info.operationalTasksCreated", MessageType.SUCCESS);
     }
 
-    public void createOperationalTasksForOrder(final Entity order) {
+    public void createOperationalTasksForOrder(final Entity order, boolean onAccept) {
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
 
         List<Entity> technologyOperationComponents = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
 
         for (Entity technologyOperationComponent : technologyOperationComponents) {
-            createOperationalTasks(order, technologyOperationComponent);
+            createOperationalTasks(order, technologyOperationComponent, onAccept);
         }
     }
 
-    private void createOperationalTasks(final Entity order, final Entity technologyOperationComponent) {
+    private void createOperationalTasks(final Entity order, final Entity technologyOperationComponent, boolean onAccept) {
         DataDefinition operationalTaskDD = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
                 OrdersConstants.MODEL_OPERATIONAL_TASK);
 
@@ -452,7 +459,6 @@ public class OrderDetailsListeners {
         operationalTask.setField(OperationalTaskFields.FINISH_DATE, order.getField(OrderFields.FINISH_DATE));
         operationalTask.setField(OperationalTaskFields.TYPE, OperationalTaskType.EXECUTION_OPERATION_IN_ORDER.getStringValue());
         operationalTask.setField(OperationalTaskFields.ORDER, order);
-
 
         operationalTask.setField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
 
@@ -468,8 +474,29 @@ public class OrderDetailsListeners {
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         Optional<Entity> maybeDivision = technologyServiceO.extractDivision(technology, technologyOperationComponent);
         maybeDivision.ifPresent(d -> operationalTask.setField(OperationalTaskFields.DIVISION, d));
+        if (onAccept && parameterService.getParameter().getBooleanField(L_COMPLETE_STATION_AND_EMPLOYEE_IN_GENERATED_TASKS)) {
+            fillWorkstation(operationalTask);
+        }
 
         operationalTaskDD.save(operationalTask);
+    }
+
+    private void fillWorkstation(Entity operationalTask) {
+        if (Objects.nonNull(operationalTask.getId())) {
+            return;
+        }
+
+        Entity technologyOperationComponent = operationalTask
+                .getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT);
+        List<Entity> workstations = technologyOperationComponent.getHasManyField(TechnologyOperationComponentFields.WORKSTATIONS);
+        if (workstations.size() == 1) {
+            Entity workstation = workstations.get(0);
+            operationalTask.setField(OperationalTaskFields.WORKSTATION, workstation);
+            if (Objects.nonNull(workstation.getBelongsToField(WorkstationFields.STAFF))) {
+                operationalTask.setField(OperationalTaskFields.STAFF, workstation.getBelongsToField(WorkstationFields.STAFF));
+            }
+        }
+
     }
 
     public void showOperationalTasks(final ViewDefinitionState view, final ComponentState state, final String[] args) {
