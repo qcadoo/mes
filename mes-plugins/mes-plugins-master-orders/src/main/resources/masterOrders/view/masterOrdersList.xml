@@ -103,13 +103,11 @@
             <script>
                 function testf(cellvalue, options, rowObject)
                 {
-                console.log("ddd");
                 return cellvalue + "lol";
                 }
                 <![CDATA[
                                 function testf(cellvalue, options, rowObject)
                 {
-                console.log("ddd");
                 return cellvalue + "lol";
                 }
 

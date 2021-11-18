@@ -77,7 +77,6 @@ thatObject.addPositionsToOrder = function (eventPerformer, ribbonItemName, entit
 	var request = {};
 	request.entityId = formId;
 	request.positions = positions;
-	console.log(request);
 
 	$.ajax({
 		url: "../../rest/masterOrders/productsBySize",
