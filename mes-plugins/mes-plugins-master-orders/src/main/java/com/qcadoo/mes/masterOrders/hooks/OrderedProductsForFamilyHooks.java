@@ -60,22 +60,27 @@ public class OrderedProductsForFamilyHooks {
                 .collect(Collectors.toList())) {
             Entity salesPlanProductChild = salesPlanProductDD.create();
             salesPlanProductChild.setField(SalesPlanProductFields.PRODUCT, child);
-            BigDecimal orderedQuantity = BigDecimal.ZERO;
-            for (Entity masterOrder : masterOrders) {
-                List<Entity> masterOrderProducts = masterOrder.getHasManyField(MasterOrderFields.MASTER_ORDER_PRODUCTS);
-                for (Entity masterOrderProduct : masterOrderProducts) {
-                    if (child.getId().equals(masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT).getId())) {
-                        orderedQuantity = orderedQuantity
-                                .add(masterOrderProduct.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY));
-                        break;
-                    }
-                }
-            }
+            BigDecimal orderedQuantity = getSalesPlanProductChildOrderedQuantity(masterOrders, child);
             salesPlanProductChild.setField(SalesPlanProductFields.ORDERED_QUANTITY, orderedQuantity);
             salesPlanProducts.add(salesPlanProductChild);
         }
         GridComponent gridComponent = (GridComponent) view.getComponentByReference(SalesPlanFields.PRODUCTS);
         gridComponent.setEntities(salesPlanProducts);
+    }
+
+    private BigDecimal getSalesPlanProductChildOrderedQuantity(List<Entity> masterOrders, Entity child) {
+        BigDecimal orderedQuantity = BigDecimal.ZERO;
+        for (Entity masterOrder : masterOrders) {
+            List<Entity> masterOrderProducts = masterOrder.getHasManyField(MasterOrderFields.MASTER_ORDER_PRODUCTS);
+            for (Entity masterOrderProduct : masterOrderProducts) {
+                if (child.getId().equals(masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT).getId())) {
+                    orderedQuantity = orderedQuantity
+                            .add(masterOrderProduct.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY));
+                    break;
+                }
+            }
+        }
+        return orderedQuantity;
     }
 
     private DataDefinition getSalesPlanProductDD() {
