@@ -49,6 +49,10 @@
         <string name="technologyType"/>
 
         <enum name="technologyState" values="01draft,02accepted,03declined,04outdated,05checked"/>
+        <string name="productNumber"/>
+        <string name="modelName"/>
+        <string name="assortmentName"/>
+
 
     </fields>
 
