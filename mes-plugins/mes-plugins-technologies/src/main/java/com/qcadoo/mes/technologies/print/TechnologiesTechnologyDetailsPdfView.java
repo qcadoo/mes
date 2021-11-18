@@ -136,8 +136,6 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
                         : translationService.translate("qcadooView.false", locale));
         if (StringUtils.isEmpty(technology.getStringField(ProductFields.DESCRIPTION))) {
             panelTable.addCell(StringUtils.EMPTY);
-            panelTable.addCell(StringUtils.EMPTY);
-            panelTable.addCell(StringUtils.EMPTY);
         } else {
             pdfHelper.addTableCellAsOneColumnTable(panelTable,
                     translationService.translate(
@@ -325,7 +323,7 @@ public class TechnologiesTechnologyDetailsPdfView extends ReportPdfView {
         cell.setBorder(Rectangle.NO_BORDER);
         cell.setVerticalAlignment(Element.ALIGN_TOP);
         cell.setPadding(4.0f);
-        cell.setRowspan(6);
+        cell.setRowspan(3);
         return cell;
     }
 
