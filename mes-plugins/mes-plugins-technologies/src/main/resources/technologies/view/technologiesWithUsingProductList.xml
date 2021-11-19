@@ -112,7 +112,7 @@
                 <option type="column" name="nodeNumber" fields="nodeNumber"/>
 
                 <option type="column" name="operationName" fields="operationName"/>
-                <option type="column" name="productNumber" fields="productNumber"/>
+                <option type="column" name="technologyProductNumber" fields="technologyProductNumber"/>
                 <option type="column" name="modelName" fields="modelName"/>
                 <option type="column" name="assortmentName" fields="assortmentName"/>
 
@@ -122,8 +122,8 @@
                 <option type="column" name="sizeProduct" fields="sizeProduct"/>
 
                 <option type="order" column="technologyNumber" direction="asc"/>
-                <option type="orderable" value="technologyName,technologyNumber,nodeNumber,operationName,quantity,technologyState,masterTechnology,sizeProduct,productNumber,modelName,assortmentName"/>
-                <option type="searchable" value="technologyName,technologyNumber,nodeNumber,operationName,quantity,technologyState,masterTechnology,sizeProduct,productNumber,modelName,assortmentName"/>
+                <option type="orderable" value="technologyName,technologyNumber,nodeNumber,operationName,quantity,technologyState,masterTechnology,sizeProduct,technologyProductNumber,modelName,assortmentName"/>
+                <option type="searchable" value="technologyName,technologyNumber,nodeNumber,operationName,quantity,technologyState,masterTechnology,sizeProduct,technologyProductNumber,modelName,assortmentName"/>
 
                 <option type="fullscreen" value="true"/>
                 <option type="multiselect" value="true"/>

@@ -52,6 +52,7 @@
         <string name="productNumber"/>
         <string name="modelName"/>
         <string name="assortmentName"/>
+        <string name="technologyProductNumber"/>
 
 
     </fields>
