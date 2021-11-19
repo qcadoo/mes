@@ -23,34 +23,20 @@
  */
 package com.qcadoo.mes.timeNormsForOperations.constants;
 
-public final class TechnologyOperationComponentFieldsTNFO {
+public final class TechOperCompWorkstationTimeFields {
 
-    private TechnologyOperationComponentFieldsTNFO() {
+    private TechOperCompWorkstationTimeFields() {
 
     }
+
+    public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
+
+    public static final String WORKSTATION = "workstation";
 
     public static final String TPZ = "tpz";
 
     public static final String TJ = "tj";
 
-    public static final String PRODUCTION_IN_ONE_CYCLE = "productionInOneCycle";
-
-    public static final String NEXT_OPERATION_AFTER_PRODUCED_TYPE = "nextOperationAfterProducedType";
-
-    public static final String NEXT_OPERATION_AFTER_PRODUCED_QUANTITY = "nextOperationAfterProducedQuantity";
-
-    public static final String NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT = "nextOperationAfterProducedQuantityUNIT";
-
     public static final String TIME_NEXT_OPERATION = "timeNextOperation";
-
-    public static final String ARE_PRODUCT_QUANTITIES_DIVISIBLE = "areProductQuantitiesDivisible";
-
-    public static final String IS_TJ_DIVISIBLE = "isTjDivisible";
-
-    public static final String PRODUCTION_IN_ONE_CYCLE_UNIT = "productionInOneCycleUNIT";
-
-    public static final String TECH_OPER_COMP_TIME_CALCULATION = "techOperCompTimeCalculation";
-
-    public static final String TECH_OPER_COMP_WORKSTATION_TIMES = "techOperCompWorkstationTimes";
 
 }

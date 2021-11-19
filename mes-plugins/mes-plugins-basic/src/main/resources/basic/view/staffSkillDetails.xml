@@ -54,9 +54,9 @@
 									class="com.qcadoo.mes.basic.criteriaModifiers.SkillCriteriaModifiers"
 									method="filterByStaff"/>
 
-                            <listener event="onSelectedEntityChange"
-                                      class="com.qcadoo.mes.basic.listeners.SkillListeners"
-                                      method="onOnSkillChange" />
+	                        <listener event="onSelectedEntityChange"
+	                                  class="com.qcadoo.view.api.listeners.RerenderListener"
+	                                  method="onChangeRerender"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2" width="2">
@@ -72,7 +72,6 @@
                 <option type="expression" value="#skill['name']"/>
             </component>
         </windowTab>
-         
     </component>
 
 	<hooks>

@@ -31,8 +31,11 @@ import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.OperationFieldsTFNO;
 import com.qcadoo.mes.timeNormsForOperations.constants.OperationWorkstationTimeFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechOperCompWorkstationTimeFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -55,6 +58,8 @@ public class WorkstationCriteriaModifiersTNFO {
 
     public static final String L_OPERATION_ID = "operationId";
 
+    public static final String TECHNOLOGY_OPERATION_COMPONENT_ID = "technologyOperationComponentId";
+
     public static final String L_WORKSTATION_ID = "workstationId";
 
     @Autowired
@@ -67,7 +72,7 @@ public class WorkstationCriteriaModifiersTNFO {
             Set<Long> workstationIds = workstations.stream().map(Entity::getId).collect(Collectors.toSet());
             scb.add(SearchRestrictions.in("id", workstationIds));
             SearchCriteriaBuilder subCriteria = getOperationDD().findWithAlias(TechnologiesConstants.MODEL_OPERATION)
-                    .add(SearchRestrictions.idEq(filterValueHolder.getLong(L_OPERATION_ID)))
+                    .add(SearchRestrictions.idEq(operationId))
                     .createAlias(OperationFieldsTFNO.OPERATION_WORKSTATION_TIMES, OperationFieldsTFNO.OPERATION_WORKSTATION_TIMES,
                             JoinType.INNER)
                     .createAlias(
@@ -87,8 +92,42 @@ public class WorkstationCriteriaModifiersTNFO {
         }
     }
 
+    public void filterByTOC(final SearchCriteriaBuilder scb, final FilterValueHolder filterValueHolder) {
+        Long technologyOperationComponentId = filterValueHolder.getLong(TECHNOLOGY_OPERATION_COMPONENT_ID);
+        EntityList workstations = getTOCDD().get(technologyOperationComponentId)
+                .getHasManyField(TechnologyOperationComponentFields.WORKSTATIONS);
+        if (!workstations.isEmpty()) {
+            Set<Long> workstationIds = workstations.stream().map(Entity::getId).collect(Collectors.toSet());
+            scb.add(SearchRestrictions.in("id", workstationIds));
+            SearchCriteriaBuilder subCriteria = getTOCDD()
+                    .findWithAlias(TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
+                    .add(SearchRestrictions.idEq(technologyOperationComponentId))
+                    .createAlias(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_WORKSTATION_TIMES,
+                            TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_WORKSTATION_TIMES, JoinType.INNER)
+                    .createAlias(
+                            TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_WORKSTATION_TIMES + L_DOT
+                                    + TechOperCompWorkstationTimeFields.WORKSTATION,
+                            TechOperCompWorkstationTimeFields.WORKSTATION, JoinType.INNER)
+                    .add(SearchRestrictions.eqField(TechOperCompWorkstationTimeFields.WORKSTATION + L_DOT + L_ID, L_THIS_ID))
+                    .setProjection(SearchProjections.id());
+
+            if (filterValueHolder.has(L_WORKSTATION_ID)) {
+                scb.add(SearchRestrictions.or(SearchSubqueries.notExists(subCriteria),
+                        SearchRestrictions.idEq(filterValueHolder.getLong(L_WORKSTATION_ID))));
+            } else {
+                scb.add(SearchSubqueries.notExists(subCriteria));
+            }
+        } else {
+            scb.add(SearchRestrictions.idEq(-1));
+        }
+    }
+
     private DataDefinition getOperationDD() {
         return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION);
     }
 
+    private DataDefinition getTOCDD() {
+        return dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
+                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT);
+    }
 }
