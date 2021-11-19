@@ -23,6 +23,10 @@
  */
 package com.qcadoo.mes.technologies.hooks;
 
+import java.util.Objects;
+
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.basic.constants.SkillFields;
 import com.qcadoo.mes.technologies.constants.OperationSkillFields;
 import com.qcadoo.model.api.Entity;
@@ -32,14 +36,9 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.stereotype.Service;
-
-import java.util.Objects;
 
 @Service
 public class OperationSkillDetailsHooks {
-
-
 
     private static final String L_OPERATION_ID = "operationId";
 

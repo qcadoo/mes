@@ -23,29 +23,12 @@
  */
 package com.qcadoo.mes.timeNormsForOperations.constants;
 
-public final class OperCompTimeCalculationsFields {
+public final class OperationFieldsTFNO {
 
-    private OperCompTimeCalculationsFields() {
+    private OperationFieldsTFNO() {
 
     }
 
-    public static final String EFFECTIVE_DATE_FROM = "effectiveDateFrom";
-
-    public static final String EFFECTIVE_DATE_TO = "effectiveDateTo";
-
-    public static final String EFFECTIVE_OPERATION_REALIZATION_TIME = "effectiveOperationRealizationTime";
-
-    public static final String OPERATION_OFF_SET = "operationOffSet";
-
-    public static final String DURATION = "duration";
-
-    public static final String MACHINE_WORK_TIME = "machineWorkTime";
-
-    public static final String LABOR_WORK_TIME = "laborWorkTime";
-
-    public static final String ORDER_TIME_CALCULATION = "orderTimeCalculation";
-
-    public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";
-
+    public static final String OPERATION_WORKSTATION_TIMES = "operationWorkstationTimes";
 
 }

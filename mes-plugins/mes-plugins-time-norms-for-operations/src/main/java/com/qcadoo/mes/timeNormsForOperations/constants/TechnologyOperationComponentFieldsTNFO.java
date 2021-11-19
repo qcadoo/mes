@@ -43,10 +43,6 @@ public final class TechnologyOperationComponentFieldsTNFO {
 
     public static final String TIME_NEXT_OPERATION = "timeNextOperation";
 
-    public static final String MACHINE_UTILIZATION = "machineUtilization";
-
-    public static final String LABOR_UTILIZATION = "laborUtilization";
-
     public static final String ARE_PRODUCT_QUANTITIES_DIVISIBLE = "areProductQuantitiesDivisible";
 
     public static final String IS_TJ_DIVISIBLE = "isTjDivisible";
