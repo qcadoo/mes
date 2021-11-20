@@ -23,17 +23,6 @@
  */
 package com.qcadoo.mes.technologies.listeners;
 
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT_STRUCTURE_TREE;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.ProductFields;
@@ -41,6 +30,7 @@ import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationProductInComponentFields;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
+import com.qcadoo.mes.technologies.constants.QualityCardFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
@@ -51,6 +41,8 @@ import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.search.JoinType;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -61,6 +53,16 @@ import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.TreeComponent;
 import com.qcadoo.view.api.components.WindowComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT_STRUCTURE_TREE;
 
 @Service
 public class TechnologyDetailsListeners {
@@ -218,10 +220,23 @@ public class TechnologyDetailsListeners {
         }
     }
 
-    public void clearQualityCard(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        LookupComponent qualityCardLookup = (LookupComponent) view.getComponentByReference(TechnologyFields.QUALITY_CARD);
-        qualityCardLookup.setFieldValue(null);
-        qualityCardLookup.requestComponentUpdateState();
+    public void fillQualityCard(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(TechnologyFields.PRODUCT);
+        Entity product = productLookup.getEntity();
+
+        if (Objects.nonNull(product)) {
+            LookupComponent qualityCardLookup = (LookupComponent) view.getComponentByReference(TechnologyFields.QUALITY_CARD);
+            List<Entity> entities = dataDefinitionService
+                    .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_QUALITY_CARD).find()
+                    .add(SearchRestrictions.eq(QualityCardFields.STATE, "02accepted"))
+                    .createAlias(QualityCardFields.PRODUCTS, QualityCardFields.PRODUCTS, JoinType.INNER)
+                    .add(SearchRestrictions.eq(QualityCardFields.PRODUCTS + ".id", product.getId())).list().getEntities();
+            if(entities.size() == 1) {
+                qualityCardLookup.setFieldValue(entities.get(0).getId());
+            } else {
+                qualityCardLookup.setFieldValue(null);
+            }
+        }
     }
 
     public void acceptTemplate(final ViewDefinitionState view, final ComponentState state, final String[] args) {
