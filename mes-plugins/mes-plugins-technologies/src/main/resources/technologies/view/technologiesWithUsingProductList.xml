@@ -113,8 +113,8 @@
 
                 <option type="column" name="operationName" fields="operationName"/>
                 <option type="column" name="technologyProductNumber" fields="technologyProductNumber"/>
-                <option type="column" name="modelName" fields="modelName"/>
                 <option type="column" name="assortmentName" fields="assortmentName"/>
+                <option type="column" name="modelName" fields="modelName"/>
 
                 <option type="column" name="quantity" fields="quantity"/>
                 <option type="column" name="technologyState" fields="technologyState"/>
