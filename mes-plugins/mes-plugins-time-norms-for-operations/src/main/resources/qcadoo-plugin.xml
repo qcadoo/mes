@@ -229,12 +229,6 @@
 				method="setProductionInOneCycleUNIT" />
 		</model:model-hook>
 
-		<model:model-hook plugin="technologies" model="technology">
-			<model:onSave
-				class="com.qcadoo.mes.timeNormsForOperations.hooks.TechnologyModelHooksTNFO"
-				method="setDefaultValuesIfEmpty" />
-		</model:model-hook>
-	
 		<model:model-hook plugin="technologies"
 			model="technologyOperationComponent">
 			<model:onCreate
