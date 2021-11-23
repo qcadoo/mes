@@ -31,7 +31,6 @@ import com.qcadoo.mes.basic.ProductService;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.basic.shift.Shift;
 import com.qcadoo.mes.orders.OperationalTasksService;
 import com.qcadoo.mes.orders.OrderPackService;
 import com.qcadoo.mes.orders.OrderService;
@@ -200,11 +199,7 @@ public class OrderHooks {
                 if (Objects.nonNull(order.getBelongsToField(OrderFields.PRODUCTION_LINE))) {
                     DateTime nextDate = DateTime.now().plusDays(1);
 
-                    List<Entity> shifts = shiftsService.getShiftsWorkingAtDate(nextDate.toDate());
-
-                    Shift shift = new Shift(shifts.get(0), nextDate, false);
-
-                    Optional<DateTime> maybeDate = shiftsService.getNearestWorkingDate(new DateTime(shift.getShiftStartDate()),
+                    Optional<DateTime> maybeDate = shiftsService.getNearestWorkingDate(nextDate.withTimeAtStartOfDay(),
                             order.getBelongsToField(OrderFields.PRODUCTION_LINE));
 
                     maybeDate.ifPresent(dateTime -> order.setField(OrderFields.START_DATE, dateTime.toDate()));
