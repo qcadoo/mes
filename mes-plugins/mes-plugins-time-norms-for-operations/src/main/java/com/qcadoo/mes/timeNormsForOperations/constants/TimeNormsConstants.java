@@ -23,9 +23,9 @@
  */
 package com.qcadoo.mes.timeNormsForOperations.constants;
 
-import com.google.common.collect.Sets;
-
 import java.util.Set;
+
+import com.google.common.collect.Sets;
 
 public final class TimeNormsConstants {
 
@@ -44,12 +44,9 @@ public final class TimeNormsConstants {
     // MODEL
     public static final String MODEL_TECH_OPER_COMP_TIME_CALCULATION = "techOperCompTimeCalculation";
 
-    public static final Set<String> FIELDS_OPERATION = Sets.newHashSet("tpz", "tj", "productionInOneCycle",
-            "nextOperationAfterProducedType", "nextOperationAfterProducedQuantity", "nextOperationAfterProducedQuantityUNIT",
-            "timeNextOperation", "machineUtilization", "laborUtilization", "productionInOneCycleUNIT",
-            "areProductQuantitiesDivisible", "isTjDivisible");
+    public static final String TECH_OPER_COMP_WORKSTATION_TIME = "techOperCompWorkstationTime";
 
-    public static final Set<String> FIELDS_TECHNOLOGY = Sets.newHashSet("tpz", "tj", "productionInOneCycle",
+    public static final Set<String> FIELDS_OPERATION = Sets.newHashSet("tpz", "tj", "productionInOneCycle",
             "nextOperationAfterProducedType", "nextOperationAfterProducedQuantity", "nextOperationAfterProducedQuantityUNIT",
             "timeNextOperation", "machineUtilization", "laborUtilization", "productionInOneCycleUNIT",
             "areProductQuantitiesDivisible", "isTjDivisible");
