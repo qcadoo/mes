@@ -23,20 +23,6 @@
  */
 package com.qcadoo.mes.technologies.states.listener;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.OPERATION_COMPONENTS;
-import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.qcadoo.localization.api.TranslationService;
@@ -61,6 +47,19 @@ import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.view.api.ComponentState.MessageType;
 import com.qcadoo.view.api.components.FormComponent;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.OPERATION_COMPONENTS;
+import static com.qcadoo.mes.technologies.constants.TechnologyFields.PRODUCT;
 
 @Service
 public class TechnologyValidationService {
@@ -87,6 +86,36 @@ public class TechnologyValidationService {
 
     @Autowired
     private ProductStructureTreeService productStructureTreeService;
+
+    public boolean checkIfEveryInComponentsHasQuantities(final StateChangeContext stateChangeContext) {
+        Entity technology = stateChangeContext.getOwner();
+
+        final Entity savedTechnology = technology.getDataDefinition().get(technology.getId());
+        final EntityTree operationComponents = savedTechnology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
+        boolean isValid = true;
+
+        for (Entity operationComponent : operationComponents) {
+            List<Entity> operationProductInComponents = operationComponent
+                    .getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS);
+            for (Entity operationProductInComponent : operationProductInComponents) {
+                boolean differentProductsInDifferentSizes = operationProductInComponent
+                        .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES);
+
+                if (!differentProductsInDifferentSizes
+                        && Objects
+                                .isNull(operationProductInComponent.getDecimalField(OperationProductInComponentFields.QUANTITY))) {
+                    stateChangeContext.addValidationError(
+                            "technologies.technology.validate.global.error.inComponentsQuantitiesNotFilled",
+                            operationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION).getStringField(
+                                    OperationFields.NUMBER),
+                            operationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
+                    return false;
+
+                }
+            }
+        }
+        return true;
+    }
 
     public void checkIfEveryOperationHasInComponents(final StateChangeContext stateChangeContext) {
         Entity technology = stateChangeContext.getOwner();
@@ -121,9 +150,10 @@ public class TechnologyValidationService {
             }
 
             if (!isValid) {
-                stateChangeContext.addValidationError("technologies.technology.validate.global.error.noInputComponents",
-                        operationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION)
-                                .getStringField(OperationFields.NUMBER),
+                stateChangeContext.addValidationError(
+                        "technologies.technology.validate.global.error.noInputComponents",
+                        operationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION).getStringField(
+                                OperationFields.NUMBER),
                         operationComponent.getStringField(TechnologyOperationComponentFields.NODE_NUMBER));
 
                 return;
@@ -255,15 +285,17 @@ public class TechnologyValidationService {
                 if (Objects.nonNull(technologyForm)) {
                     technologyForm.addMessage(L_TECHNOLOGIES_TECHNOLOGY_VALIDATE_GLOBAL_ERROR_TREE_IS_NOT_VALID,
                             MessageType.FAILURE);
-                    technologyForm.addMessage(
-                            L_TECHNOLOGIES_TECHNOLOGY_VALIDATE_GLOBAL_ERROR_OPERATION_DONT_CONSUME_SUB_OPERATIONS_PRODUCTS_PLURAL,
-                            MessageType.FAILURE, false, levels.toString());
+                    technologyForm
+                            .addMessage(
+                                    L_TECHNOLOGIES_TECHNOLOGY_VALIDATE_GLOBAL_ERROR_OPERATION_DONT_CONSUME_SUB_OPERATIONS_PRODUCTS_PLURAL,
+                                    MessageType.FAILURE, false, levels.toString());
                 } else {
                     stateChangeContext.addFieldValidationError(TechnologyFields.OPERATION_COMPONENTS,
                             L_TECHNOLOGIES_TECHNOLOGY_VALIDATE_GLOBAL_ERROR_TREE_IS_NOT_VALID);
-                    stateChangeContext.addMessage(
-                            L_TECHNOLOGIES_TECHNOLOGY_VALIDATE_GLOBAL_ERROR_OPERATION_DONT_CONSUME_SUB_OPERATIONS_PRODUCTS_PLURAL,
-                            StateMessageType.FAILURE, false, levels.toString());
+                    stateChangeContext
+                            .addMessage(
+                                    L_TECHNOLOGIES_TECHNOLOGY_VALIDATE_GLOBAL_ERROR_OPERATION_DONT_CONSUME_SUB_OPERATIONS_PRODUCTS_PLURAL,
+                                    StateMessageType.FAILURE, false, levels.toString());
                 }
             }
 
@@ -326,8 +358,10 @@ public class TechnologyValidationService {
             for (Entity operationProductInComponent : operationProductInComponents) {
                 Entity product = operationProductInComponent.getBelongsToField(OperationProductInComponentFields.PRODUCT);
 
-                if (Objects.nonNull(product) && product.getId().equals(
-                        operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT).getId())) {
+                if (Objects.nonNull(product)
+                        && product.getId().equals(
+                                operationProductOutComponent.getBelongsToField(OperationProductOutComponentFields.PRODUCT)
+                                        .getId())) {
                     return true;
                 }
             }
@@ -527,9 +561,11 @@ public class TechnologyValidationService {
 
             if (Objects.nonNull(subTechnology)) {
                 if (copyUsedTechnologies.contains(subTechnology.getId())) {
-                    stateChangeContext.addValidationError(
-                            "technologies.technologyDetails.window.productStructure.productStructureForm.duplicateProductForTechnology",
-                            product.getStringField(ProductFields.NUMBER) + " " + product.getStringField(ProductFields.NAME));
+                    stateChangeContext
+                            .addValidationError(
+                                    "technologies.technologyDetails.window.productStructure.productStructureForm.duplicateProductForTechnology",
+                                    product.getStringField(ProductFields.NUMBER) + " "
+                                            + product.getStringField(ProductFields.NAME));
 
                     return false;
                 } else {
@@ -593,8 +629,8 @@ public class TechnologyValidationService {
                             .getBooleanField(OperationProductInComponentFields.DIFFERENT_PRODUCTS_IN_DIFFERENT_SIZES);
 
                     if (differentProductsInDifferentSizes) {
-                        stateChangeContext.addValidationError(
-                                "technologies.technology.validate.global.error.differentProductsInDifferentSizes");
+                        stateChangeContext
+                                .addValidationError("technologies.technology.validate.global.error.differentProductsInDifferentSizes");
 
                         return false;
                     }
