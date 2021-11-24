@@ -69,8 +69,6 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 @Service
 public class OrderTimePredictionListeners {
 
-
-
     private static final String L_PRODUCTION_SCHEDULING_ERROR_FIELD_REQUIRED = "productionScheduling.error.fieldRequired";
 
     private static final Integer MAX = 7;
@@ -240,7 +238,7 @@ public class OrderTimePredictionListeners {
         productQuantitiesService.getProductComponentQuantities(technology, quantity, operationRuns);
 
         OperationWorkTime workTime = operationWorkTimeService.estimateTotalWorkTimeForTechnology(technology, operationRuns,
-                includeTpz, includeAdditionalTime, productionLine, true);
+                includeTpz, includeAdditionalTime, true);
 
         laborWorkTimeField.setFieldValue(workTime.getLaborWorkTime());
         machineWorkTimeField.setFieldValue(workTime.getMachineWorkTime());

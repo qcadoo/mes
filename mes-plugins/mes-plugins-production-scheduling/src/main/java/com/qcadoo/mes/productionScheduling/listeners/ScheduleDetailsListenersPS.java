@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,20 +13,17 @@ import com.google.common.collect.Maps;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTimeService;
-import com.qcadoo.mes.operationTimeCalculations.OrderRealizationTimeService;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ScheduleFields;
 import com.qcadoo.mes.orders.constants.SchedulePositionFields;
 import com.qcadoo.mes.orders.listeners.ScheduleDetailsListeners;
-import com.qcadoo.mes.productionLines.constants.ProductionLinesConstants;
 import com.qcadoo.mes.productionScheduling.constants.OperCompTimeCalculation;
 import com.qcadoo.mes.productionScheduling.constants.OrderFieldsPS;
 import com.qcadoo.mes.productionScheduling.constants.OrderTimeCalculationFields;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
 import com.qcadoo.mes.technologies.constants.OperationProductOutComponentFields;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.model.api.DataDefinition;
@@ -48,9 +44,6 @@ public class ScheduleDetailsListenersPS {
 
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
-
-    @Autowired
-    private OrderRealizationTimeService orderRealizationTimeService;
 
     @Autowired
     private OperationWorkTimeService operationWorkTimeService;
@@ -76,23 +69,20 @@ public class ScheduleDetailsListenersPS {
         FormComponent formComponent = (FormComponent) state;
         Entity schedule = formComponent.getEntity();
         boolean includeTpz = schedule.getBooleanField(ScheduleFields.INCLUDE_TPZ);
-        for (Entity order : orders) {
-            OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = generateRealizationTime(
-                    order, includeTpz);
-            ordersOperationsQuantity.put(order.getId(), operationProductComponentWithQuantityContainer);
-        }
-
         DataDefinition schedulePositionDD = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER,
                 OrdersConstants.MODEL_SCHEDULE_POSITION);
         List<Entity> positions = Lists.newArrayList();
         for (Entity order : orders) {
+            final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
+            OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = generateRealizationTime(
+                    order, includeTpz, operationRuns);
             List<Entity> orderTimeCalculations = order.getHasManyField(OrderFieldsPS.ORDER_TIME_CALCULATIONS);
             if (!orderTimeCalculations.isEmpty()) {
                 List<Entity> operCompTimeCalculations = orderTimeCalculations.get(0)
                         .getHasManyField(OrderTimeCalculationFields.OPER_COMP_TIME_CALCULATIONS);
                 for (Entity operCompTimeCalculation : operCompTimeCalculations) {
                     Entity schedulePosition = createSchedulePosition(schedule, schedulePositionDD, order, operCompTimeCalculation,
-                            ordersOperationsQuantity);
+                            operationProductComponentWithQuantityContainer);
                     positions.add(schedulePosition);
                 }
             }
@@ -105,7 +95,7 @@ public class ScheduleDetailsListenersPS {
     }
 
     private Entity createSchedulePosition(Entity schedule, DataDefinition schedulePositionDD, Entity order,
-            Entity operCompTimeCalculation, Map<Long, OperationProductComponentWithQuantityContainer> ordersOperationsQuantity) {
+            Entity operCompTimeCalculation, OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer) {
         Entity technologyOperationComponent = operCompTimeCalculation
                 .getBelongsToField(OperCompTimeCalculation.TECHNOLOGY_OPERATION_COMPONENT);
         Entity schedulePosition = schedulePositionDD.create();
@@ -118,10 +108,7 @@ public class ScheduleDetailsListenersPS {
             product = order.getBelongsToField(OrderFields.PRODUCT);
         }
         schedulePosition.setField(SchedulePositionFields.PRODUCT, product);
-        OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = ordersOperationsQuantity
-                .get(order.getId());
-        BigDecimal productComponentQuantity = operationProductComponentWithQuantityContainer.get(mainOutputProductComponent);
-        schedulePosition.setField(SchedulePositionFields.QUANTITY, productComponentQuantity);
+        schedulePosition.setField(SchedulePositionFields.QUANTITY, operationProductComponentWithQuantityContainer.get(mainOutputProductComponent));
         schedulePosition.setField(SchedulePositionFields.ADDITIONAL_TIME,
                 technologyOperationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.TIME_NEXT_OPERATION));
         schedulePosition.setField(OperCompTimeCalculation.LABOR_WORK_TIME,
@@ -132,30 +119,19 @@ public class ScheduleDetailsListenersPS {
     }
 
     @Transactional
-    public OperationProductComponentWithQuantityContainer generateRealizationTime(final Entity order, final boolean includeTpz) {
-        Entity productionLine = dataDefinitionService
-                .get(ProductionLinesConstants.PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_PRODUCTION_LINE)
-                .get(order.getBelongsToField(OrderFields.PRODUCTION_LINE).getId());
-
-        BigDecimal quantity = orderRealizationTimeService
-                .getBigDecimalFromField(order.getDecimalField(OrderFields.PLANNED_QUANTITY), LocaleContextHolder.getLocale());
-
-        final Map<Long, BigDecimal> operationRuns = Maps.newHashMap();
+    public OperationProductComponentWithQuantityContainer generateRealizationTime(final Entity order, final boolean includeTpz, Map<Long, BigDecimal> operationRuns) {
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
         if (technology == null) {
             return null;
         }
 
         OperationProductComponentWithQuantityContainer operationProductComponentWithQuantityContainer = productQuantitiesService
-                .getProductComponentQuantities(technology, quantity, operationRuns);
+                .getProductComponentQuantities(technology, order.getDecimalField(OrderFields.PLANNED_QUANTITY), operationRuns);
 
         operationWorkTimeService.deleteOperCompTimeCalculations(order);
 
-        operationWorkTimeService.estimateTotalWorkTimeForOrder(order, operationRuns, includeTpz, false, productionLine, true);
+        operationWorkTimeService.estimateTotalWorkTimeForOrder(order, operationRuns, includeTpz, false, true);
 
-        orderRealizationTimeService.estimateMaxOperationTimeConsumptionForWorkstation(order,
-                technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(), quantity, includeTpz, false,
-                productionLine);
         return operationProductComponentWithQuantityContainer;
     }
 }
