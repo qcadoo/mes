@@ -35,6 +35,10 @@ public interface OperationWorkTimeService {
     BigDecimal estimateAbstractOperationWorkTime(final Entity operationComponent, final BigDecimal neededNumberOfCycles,
             final boolean includeTpz, final boolean includeAdditionalTime);
 
+    OperationWorkTime estimateTechOperationWorkTimeForWorkstation(final Entity operationComponent,
+            final BigDecimal neededNumberOfCycles, final boolean includeTpz, final boolean includeAdditionalTime,
+            Entity techOperCompWorkstationTime);
+
     OperationWorkTime estimateTechOperationWorkTime(final Entity operationComponent, final BigDecimal neededNumberOfCycles,
             final boolean includeTpz, final boolean includeAdditionalTime, final boolean saved);
 

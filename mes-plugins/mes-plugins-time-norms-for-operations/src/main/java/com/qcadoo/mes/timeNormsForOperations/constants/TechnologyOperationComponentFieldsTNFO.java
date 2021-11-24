@@ -33,6 +33,10 @@ public final class TechnologyOperationComponentFieldsTNFO {
 
     public static final String TJ = "tj";
 
+    public static final String LABOR_UTILIZATION = "laborUtilization";
+
+    public static final String MACHINE_UTILIZATION = "machineUtilization";
+
     public static final String PRODUCTION_IN_ONE_CYCLE = "productionInOneCycle";
 
     public static final String NEXT_OPERATION_AFTER_PRODUCED_TYPE = "nextOperationAfterProducedType";
