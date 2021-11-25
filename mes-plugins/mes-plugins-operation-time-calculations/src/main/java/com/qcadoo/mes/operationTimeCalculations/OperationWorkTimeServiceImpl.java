@@ -35,6 +35,8 @@ import org.springframework.stereotype.Service;
 import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.OperCompTimeCalculationsFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechOperCompWorkstationTimeFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants;
 import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinitionService;
@@ -61,17 +63,55 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     public BigDecimal estimateAbstractOperationWorkTime(final Entity operationComponent, final BigDecimal neededNumberOfCycles,
             final boolean includeTpz, final boolean includeAdditionalTime) {
         MathContext mc = numberService.getMathContext();
-        BigDecimal tj = BigDecimal.valueOf(getIntegerValue(operationComponent.getField("tj")));
+        BigDecimal tj = BigDecimalUtils.convertNullToZero(operationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.TJ));
         BigDecimal abstractOperationWorkTime = tj.multiply(neededNumberOfCycles, mc);
         if (includeTpz) {
-            BigDecimal tpz = new BigDecimal(getIntegerValue(operationComponent.getField("tpz")));
+            BigDecimal tpz = BigDecimalUtils
+                    .convertNullToZero(operationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.TPZ));
             abstractOperationWorkTime = abstractOperationWorkTime.add(tpz, mc);
         }
         if (includeAdditionalTime) {
-            BigDecimal additionalTime = new BigDecimal(getIntegerValue(operationComponent.getField("timeNextOperation")));
+            BigDecimal additionalTime = BigDecimalUtils
+                    .convertNullToZero(operationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.TIME_NEXT_OPERATION));
             abstractOperationWorkTime = abstractOperationWorkTime.add(additionalTime, mc);
         }
         return numberService.setScaleWithDefaultMathContext(abstractOperationWorkTime);
+    }
+
+    @Override
+    public OperationWorkTime estimateTechOperationWorkTimeForWorkstation(final Entity operationComponent,
+            final BigDecimal neededNumberOfCycles, final boolean includeTpz, final boolean includeAdditionalTime,
+            Entity techOperCompWorkstationTime) {
+        MathContext mc = numberService.getMathContext();
+        BigDecimal laborUtilization = BigDecimalUtils
+                .convertNullToZero(operationComponent.getDecimalField(TechnologyOperationComponentFieldsTNFO.LABOR_UTILIZATION));
+        BigDecimal machineUtilization = BigDecimalUtils.convertNullToZero(
+                operationComponent.getDecimalField(TechnologyOperationComponentFieldsTNFO.MACHINE_UTILIZATION));
+
+        BigDecimal abstractOperationWorkTime = BigDecimal
+                .valueOf(techOperCompWorkstationTime.getIntegerField(TechOperCompWorkstationTimeFields.TJ))
+                .multiply(neededNumberOfCycles, mc);
+        if (includeTpz) {
+            abstractOperationWorkTime = abstractOperationWorkTime
+                    .add(new BigDecimal(techOperCompWorkstationTime.getIntegerField(TechOperCompWorkstationTimeFields.TPZ)), mc);
+        }
+        if (includeAdditionalTime) {
+            abstractOperationWorkTime = abstractOperationWorkTime.add(
+                    new BigDecimal(
+                            techOperCompWorkstationTime.getIntegerField(TechOperCompWorkstationTimeFields.TIME_NEXT_OPERATION)),
+                    mc);
+        }
+        abstractOperationWorkTime = numberService.setScaleWithDefaultMathContext(abstractOperationWorkTime);
+
+        Integer laborWorkTime = abstractOperationWorkTime.multiply(laborUtilization, mc).intValue();
+        Integer machineWorkTime = abstractOperationWorkTime.multiply(machineUtilization, mc).intValue();
+        Integer duration = abstractOperationWorkTime.intValue();
+        OperationWorkTime operationWorkTime = new OperationWorkTime();
+        operationWorkTime.setDuration(duration);
+        operationWorkTime.setLaborWorkTime(laborWorkTime);
+        operationWorkTime.setMachineWorkTime(machineWorkTime);
+
+        return operationWorkTime;
     }
 
     @Override
@@ -86,9 +126,10 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
             final BigDecimal neededNumberOfCycles, final boolean includeTpz, final boolean includeAdditionalTime,
             final boolean saved) {
         MathContext mc = numberService.getMathContext();
-        BigDecimal laborUtilization = BigDecimalUtils.convertNullToZero(operationComponent.getDecimalField("laborUtilization"));
-        BigDecimal machineUtilization = BigDecimalUtils
-                .convertNullToZero(operationComponent.getDecimalField("machineUtilization"));
+        BigDecimal laborUtilization = BigDecimalUtils
+                .convertNullToZero(operationComponent.getDecimalField(TechnologyOperationComponentFieldsTNFO.LABOR_UTILIZATION));
+        BigDecimal machineUtilization = BigDecimalUtils.convertNullToZero(
+                operationComponent.getDecimalField(TechnologyOperationComponentFieldsTNFO.MACHINE_UTILIZATION));
 
         BigDecimal abstractOperationWorkTime = estimateAbstractOperationWorkTime(operationComponent, neededNumberOfCycles,
                 includeTpz, includeAdditionalTime);
@@ -105,7 +146,6 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
             savedWorkTime(order, operationComponent, machineWorkTime, laborWorkTime, duration);
         }
         return operationWorkTime;
-
     }
 
     @Override
@@ -259,10 +299,6 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
             final boolean saved) {
         List<Entity> operationComponents = technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS);
         return estimateTotalWorkTime(operationComponents, operationRuns, includeTpz, includeAdditionalTime, saved);
-    }
-
-    private Integer getIntegerValue(final Object value) {
-        return value == null ? Integer.valueOf(0) : (Integer) value;
     }
 
 }
