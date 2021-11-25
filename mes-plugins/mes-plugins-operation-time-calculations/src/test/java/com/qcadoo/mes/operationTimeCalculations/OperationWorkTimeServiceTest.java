@@ -123,17 +123,17 @@ public class OperationWorkTimeServiceTest {
         neededNumberOfCycles2 = new BigDecimal(2);
         neededNumberOfCycles3 = new BigDecimal("2.3");
 
-        when(operComp1.getField("tj")).thenReturn(600);
-        when(operComp2.getField("tj")).thenReturn(300);
-        when(operComp3.getField("tj")).thenReturn(150);
+        when(operComp1.getIntegerField("tj")).thenReturn(600);
+        when(operComp2.getIntegerField("tj")).thenReturn(300);
+        when(operComp3.getIntegerField("tj")).thenReturn(150);
 
-        when(operComp1.getField("tpz")).thenReturn(600);
-        when(operComp2.getField("tpz")).thenReturn(900);
-        when(operComp3.getField("tpz")).thenReturn(1200);
+        when(operComp1.getIntegerField("tpz")).thenReturn(600);
+        when(operComp2.getIntegerField("tpz")).thenReturn(900);
+        when(operComp3.getIntegerField("tpz")).thenReturn(1200);
 
-        when(operComp1.getField("timeNextOperation")).thenReturn(600);
-        when(operComp2.getField("timeNextOperation")).thenReturn(300);
-        when(operComp3.getField("timeNextOperation")).thenReturn(450);
+        when(operComp1.getIntegerField("timeNextOperation")).thenReturn(600);
+        when(operComp2.getIntegerField("timeNextOperation")).thenReturn(300);
+        when(operComp3.getIntegerField("timeNextOperation")).thenReturn(450);
 
         lu1 = new BigDecimal("2.2");
         lu2 = new BigDecimal("0.6");

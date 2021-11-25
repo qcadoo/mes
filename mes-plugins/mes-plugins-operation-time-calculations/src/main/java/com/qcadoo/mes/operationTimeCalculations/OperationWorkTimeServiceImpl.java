@@ -63,7 +63,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
     public BigDecimal estimateAbstractOperationWorkTime(final Entity operationComponent, final BigDecimal neededNumberOfCycles,
             final boolean includeTpz, final boolean includeAdditionalTime) {
         MathContext mc = numberService.getMathContext();
-        BigDecimal tj = BigDecimalUtils.convertNullToZero(operationComponent.getField(TechnologyOperationComponentFieldsTNFO.TJ));
+        BigDecimal tj = BigDecimalUtils.convertNullToZero(operationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.TJ));
         BigDecimal abstractOperationWorkTime = tj.multiply(neededNumberOfCycles, mc);
         if (includeTpz) {
             BigDecimal tpz = BigDecimalUtils
@@ -72,7 +72,7 @@ public class OperationWorkTimeServiceImpl implements OperationWorkTimeService {
         }
         if (includeAdditionalTime) {
             BigDecimal additionalTime = BigDecimalUtils
-                    .convertNullToZero(operationComponent.getField(TechnologyOperationComponentFieldsTNFO.TIME_NEXT_OPERATION));
+                    .convertNullToZero(operationComponent.getIntegerField(TechnologyOperationComponentFieldsTNFO.TIME_NEXT_OPERATION));
             abstractOperationWorkTime = abstractOperationWorkTime.add(additionalTime, mc);
         }
         return numberService.setScaleWithDefaultMathContext(abstractOperationWorkTime);
