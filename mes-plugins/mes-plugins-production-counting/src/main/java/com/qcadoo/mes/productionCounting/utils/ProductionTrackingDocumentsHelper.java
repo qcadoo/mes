@@ -19,9 +19,7 @@ import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuanti
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
 import com.qcadoo.mes.materialFlow.constants.MaterialFlowConstants;
 import com.qcadoo.mes.materialFlowResources.constants.MaterialFlowResourcesConstants;
-import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
-import com.qcadoo.mes.productionCounting.constants.TypeOfProductionRecording;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -76,12 +74,7 @@ public class ProductionTrackingDocumentsHelper {
                     product);
 
             if (Objects.nonNull(trackingOperationProductInComponent)) {
-                if (TypeOfProductionRecording.CUMULATED.getStringValue()
-                        .equals(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING))) {
-                    if (!checkIfProductExists(groupedRecordInProducts, warehouse, product)) {
-                        groupedRecordInProducts.put(warehouse.getId(), trackingOperationProductInComponent);
-                    }
-                } else {
+                if (!checkIfProductExists(groupedRecordInProducts, warehouse, product)) {
                     groupedRecordInProducts.put(warehouse.getId(), trackingOperationProductInComponent);
                 }
             }
