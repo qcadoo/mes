@@ -453,16 +453,18 @@ public class TechnologyDetailsHooksPFTD {
 
         RibbonGroup modelCard = window.getRibbon().getGroupByName("modelCard");
 
-        RibbonActionItem createModelCard = modelCard.getItemByName("createModelCard");
-
         String state = technology.getStringField(TechnologyFields.STATE);
         boolean isTemplateAccepted = technology.getBooleanField(TechnologyFields.IS_TEMPLATE_ACCEPTED);
 
         fillLocationsInComponents.setEnabled(!isTemplateAccepted && TechnologyState.DRAFT.getStringValue().equals(state));
         fillLocationsInComponents.requestUpdate(true);
-        createModelCard.setEnabled(TechnologyState.CHECKED.getStringValue().equals(state)
-                || TechnologyState.ACCEPTED.getStringValue().equals(state));
-        createModelCard.requestUpdate(true);
+
+        if(Objects.nonNull(modelCard)) {
+            RibbonActionItem createModelCard = modelCard.getItemByName("createModelCard");
+            createModelCard.setEnabled(TechnologyState.CHECKED.getStringValue().equals(state)
+                    || TechnologyState.ACCEPTED.getStringValue().equals(state));
+            createModelCard.requestUpdate(true);
+        }
 
         window.requestRibbonRender();
     }
