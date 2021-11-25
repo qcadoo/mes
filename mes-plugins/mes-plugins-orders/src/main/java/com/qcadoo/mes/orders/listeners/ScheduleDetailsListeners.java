@@ -6,6 +6,7 @@ import static com.qcadoo.model.api.search.SearchProjections.list;
 import static com.qcadoo.model.api.search.SearchProjections.rowCount;
 import static java.util.Map.Entry.comparingByValue;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -118,6 +119,9 @@ public class ScheduleDetailsListeners {
         List<Entity> operationSkills = position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT)
                 .getBelongsToField(TechnologyOperationComponentFields.OPERATION)
                 .getManyToManyField(OperationFields.OPERATION_SKILLS);
+        if (operationSkills.isEmpty()) {
+            return Collections.emptyList();
+        }
         SearchCriteriaBuilder staffScb = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_STAFF)
                 .find();
         for (Entity operationSkill : operationSkills) {
