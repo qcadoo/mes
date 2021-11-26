@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.timeNormsForOperations.hooks;
 
+import java.util.Objects;
+
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.timeNormsForOperations.constants.OperationWorkstationTimeFields;
@@ -56,7 +58,9 @@ public class OperationWorkstationTimeDetailsHooks {
 
         filterValueHolder.put(WorkstationCriteriaModifiersTNFO.L_OPERATION_ID, operationId);
 
-        if (workstation != null) {
+        if (Objects.isNull(workstation)) {
+            filterValueHolder.remove(WorkstationCriteriaModifiersTNFO.L_WORKSTATION_ID);
+        } else {
             filterValueHolder.put(WorkstationCriteriaModifiersTNFO.L_WORKSTATION_ID, workstation.getId());
         }
 
