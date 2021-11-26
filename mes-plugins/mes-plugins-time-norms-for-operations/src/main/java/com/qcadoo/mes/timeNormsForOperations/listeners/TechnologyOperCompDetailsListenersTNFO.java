@@ -33,26 +33,20 @@ import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperatio
 import static com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants.FIELDS_OPERATION;
 import static com.qcadoo.view.api.ComponentState.MessageType.INFO;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.beust.jcommander.internal.Lists;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.timeNormsForOperations.constants.OperationFieldsTFNO;
 import com.qcadoo.mes.timeNormsForOperations.constants.OperationWorkstationTimeFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechOperCompWorkstationTimeFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
-import com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants;
-import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
-import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
@@ -78,33 +72,30 @@ public class TechnologyOperCompDetailsListenersTNFO {
                 .get((Long) operationLookup.getFieldValue());
 
         FormComponent formComponent = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Entity toc = formComponent.getEntity();
-        GridComponent techOperCompWorkstationTimesGrid = (GridComponent) view
-                .getComponentByReference(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_WORKSTATION_TIMES);
+        Entity toc = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
+                .get(formComponent.getEntityId());
 
-        toc.setField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_WORKSTATION_TIMES, null);
-        techOperCompWorkstationTimesGrid.setEntities(copyOperationWorkstationTimes(operation));
-        formComponent.setEntity(toc);
+        copyOperationWorkstationTimes(toc, operation);
         applyTimeNormsFromGivenSource(view, operation, FIELDS_OPERATION);
     }
 
-    private List<Entity> copyOperationWorkstationTimes(Entity operation) {
-        DataDefinition techOperCompWorkstationTimeDD = dataDefinitionService.get(TimeNormsConstants.PLUGIN_IDENTIFIER,
-                TimeNormsConstants.TECH_OPER_COMP_WORKSTATION_TIME);
-        List<Entity> techOperCompWorkstationTimes = Lists.newArrayList();
+    private void copyOperationWorkstationTimes(Entity toc, Entity operation) {
         for (Entity operationWorkstationTime : operation.getHasManyField(OperationFieldsTFNO.OPERATION_WORKSTATION_TIMES)) {
-            Entity techOperCompWorkstationTime = techOperCompWorkstationTimeDD.create();
-            techOperCompWorkstationTime.setField(TechOperCompWorkstationTimeFields.WORKSTATION,
-                    operationWorkstationTime.getField(OperationWorkstationTimeFields.WORKSTATION));
-            techOperCompWorkstationTime.setField(TechOperCompWorkstationTimeFields.TPZ,
-                    operationWorkstationTime.getField(OperationWorkstationTimeFields.TPZ));
-            techOperCompWorkstationTime.setField(TechOperCompWorkstationTimeFields.TJ,
-                    operationWorkstationTime.getField(OperationWorkstationTimeFields.TJ));
-            techOperCompWorkstationTime.setField(TechOperCompWorkstationTimeFields.TIME_NEXT_OPERATION,
-                    operationWorkstationTime.getField(OperationWorkstationTimeFields.TIME_NEXT_OPERATION));
-            techOperCompWorkstationTimes.add(techOperCompWorkstationTime);
+            for (Entity techOperCompWorkstationTime : toc
+                    .getHasManyField(TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_WORKSTATION_TIMES)) {
+                if (techOperCompWorkstationTime.getBelongsToField(TechOperCompWorkstationTimeFields.WORKSTATION).getId()
+                        .equals(operationWorkstationTime.getBelongsToField(OperationWorkstationTimeFields.WORKSTATION).getId())) {
+                    techOperCompWorkstationTime.setField(TechOperCompWorkstationTimeFields.TPZ,
+                            operationWorkstationTime.getField(OperationWorkstationTimeFields.TPZ));
+                    techOperCompWorkstationTime.setField(TechOperCompWorkstationTimeFields.TJ,
+                            operationWorkstationTime.getField(OperationWorkstationTimeFields.TJ));
+                    techOperCompWorkstationTime.setField(TechOperCompWorkstationTimeFields.TIME_NEXT_OPERATION,
+                            operationWorkstationTime.getField(OperationWorkstationTimeFields.TIME_NEXT_OPERATION));
+                    techOperCompWorkstationTime.getDataDefinition().save(techOperCompWorkstationTime);
+                }
+            }
         }
-        return techOperCompWorkstationTimes;
     }
 
     void applyTimeNormsFromGivenSource(final ViewDefinitionState view, final Entity source, final Iterable<String> fields) {
@@ -144,7 +135,7 @@ public class TechnologyOperCompDetailsListenersTNFO {
         FieldComponent nextOperationAfterProducedQuantityUNIT = (FieldComponent) viewDefinitionState
                 .getComponentByReference(TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT);
 
-        Boolean visibilityValue = "02specified".equals(nextOperationAfterProducedType.getFieldValue());
+        boolean visibilityValue = "02specified".equals(nextOperationAfterProducedType.getFieldValue());
         nextOperationAfterProducedQuantity.setVisible(visibilityValue);
         nextOperationAfterProducedQuantity.setEnabled(visibilityValue);
         nextOperationAfterProducedQuantityUNIT.setVisible(visibilityValue);
@@ -160,7 +151,7 @@ public class TechnologyOperCompDetailsListenersTNFO {
         FieldComponent nextOperationAfterProducedQuantityUNIT = (FieldComponent) viewDefinitionState
                 .getComponentByReference(TechnologyOperationComponentFieldsTNFO.NEXT_OPERATION_AFTER_PRODUCED_QUANTITY_UNIT);
 
-        Boolean visibilityValue = "02specified".equals(nextOperationAfterProducedType.getFieldValue());
+        boolean visibilityValue = "02specified".equals(nextOperationAfterProducedType.getFieldValue());
         nextOperationAfterProducedQuantity.setVisible(visibilityValue);
         nextOperationAfterProducedQuantity.setEnabled(visibilityValue);
         nextOperationAfterProducedQuantityUNIT.setVisible(visibilityValue);
