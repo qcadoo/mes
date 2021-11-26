@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.qcadoo.mes</groupId>
         <artifactId>mes-plugins</artifactId>
-        <version>1.5-SNAPSHOT</version>
+        <version>1.5-SNAPSHOT-DEV</version>
     </parent>
 
     <artifactId>mes-plugins-minimal-affordable-quantity</artifactId>
@@ -19,7 +19,7 @@
         <dependency>
             <groupId>com.qcadoo.mes</groupId>
             <artifactId>mes-plugins-technologies</artifactId>
-            <version>1.5-SNAPSHOT</version>
+            <version>1.5-SNAPSHOT-DEV</version>
         </dependency>
     </dependencies>
 
