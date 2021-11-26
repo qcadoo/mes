@@ -23,21 +23,18 @@
  */
 package com.qcadoo.mes.deliveries.hooks;
 
-import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.deliveries.CompanyProductService;
-import com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import static com.qcadoo.mes.deliveries.constants.CompanyFieldsD.PRODUCTS_FAMILIES;
-import static com.qcadoo.mes.deliveries.constants.CompanyProductFields.IS_DEFAULT;
-import static com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields.COMPANY;
-import static com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields.PRODUCT;
+
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.deliveries.CompanyProductService;
+import com.qcadoo.mes.deliveries.constants.CompanyFieldsD;
+import com.qcadoo.mes.deliveries.constants.CompanyProductsFamilyFields;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
 
 @Service
 public class CompanyProductsFamilyHooks {
@@ -47,48 +44,63 @@ public class CompanyProductsFamilyHooks {
 
     public boolean checkIfProductsFamilyIsNotAlreadyUsed(final DataDefinition companyProductsFamilyDD,
             final Entity companyProductsFamily) {
-        if (!companyProductService.checkIfProductIsNotUsed(companyProductsFamily, PRODUCT, COMPANY, PRODUCTS_FAMILIES)) {
-            companyProductsFamily.addError(companyProductsFamilyDD.getField(PRODUCT),
+        if (!companyProductService.checkIfProductIsNotUsed(companyProductsFamily, CompanyProductsFamilyFields.PRODUCT,
+                CompanyProductsFamilyFields.COMPANY, CompanyFieldsD.PRODUCTS_FAMILIES)) {
+            companyProductsFamily.addError(companyProductsFamilyDD.getField(CompanyProductsFamilyFields.PRODUCT),
                     "basic.company.message.productsFamilyIsAlreadyUsed");
-            companyProductsFamily.addError(companyProductsFamilyDD.getField(COMPANY),
+            companyProductsFamily.addError(companyProductsFamilyDD.getField(CompanyProductsFamilyFields.COMPANY),
                     "basic.company.message.companyIsAlreadyUsed");
+
             return false;
         }
 
         return true;
     }
 
-    public boolean checkIfProductHasDefaultSupplier(final DataDefinition companyProductDD, final Entity companyProduct) {
-        if (companyProductService.checkIfDefaultExistsForFamily(companyProduct)) {
-            companyProduct.addError(companyProductDD.getField(IS_DEFAULT),
+    public boolean checkIfProductHasDefaultSupplier(final DataDefinition companyProductsFamilyDD,
+            final Entity companyProductsFamily) {
+        if (companyProductService.checkIfDefaultExistsForFamily(companyProductsFamily)) {
+            companyProductsFamily.addError(companyProductsFamilyDD.getField(CompanyProductsFamilyFields.IS_DEFAULT),
                     "basic.company.message.defaultAlreadyExistsForProductFamily");
+
             return false;
         }
-        String productsWithDefault = companyProductService.checkIfDefaultExistsForProductsInFamily(companyProduct);
+
+        String productsWithDefault = companyProductService.checkIfDefaultExistsForProductsInFamily(companyProductsFamily);
+
         if (!StringUtils.isEmpty(productsWithDefault)) {
-            companyProduct.addGlobalError("basic.company.message.defaultAlreadyExistsForChildren", productsWithDefault);
+            companyProductsFamily.addGlobalError("basic.company.message.defaultAlreadyExistsForChildren", productsWithDefault);
+
             return false;
         }
 
         return true;
     }
 
-    public void onSave(final DataDefinition dataDefinition, final Entity companyProduct) {
-        Entity product = companyProduct.getBelongsToField(CompanyProductsFamilyFields.PRODUCT);
-        if(Objects.isNull(companyProduct.getId())) {
-            if (companyProduct.getBooleanField(IS_DEFAULT)) {
-                if (Objects.isNull(product.getBelongsToField(ProductFields.SUPPLIER)) || !product.getBelongsToField(ProductFields.SUPPLIER).getId()
-                        .equals(companyProduct.getBelongsToField(CompanyProductsFamilyFields.COMPANY).getId())) {
-                    product.setField(ProductFields.SUPPLIER, companyProduct.getBelongsToField(CompanyProductsFamilyFields.COMPANY));
+    public void onSave(final DataDefinition companyProductsFamilyDD, final Entity companyProductsFamily) {
+        Entity product = companyProductsFamily.getBelongsToField(CompanyProductsFamilyFields.PRODUCT);
+        Entity company = companyProductsFamily.getBelongsToField(CompanyProductsFamilyFields.COMPANY);
+        boolean isDefault = companyProductsFamily.getBooleanField(CompanyProductsFamilyFields.IS_DEFAULT);
+
+        if (Objects.isNull(companyProductsFamily.getId())) {
+            if (isDefault) {
+                Entity supplier = product.getBelongsToField(ProductFields.SUPPLIER);
+
+                if (Objects.isNull(supplier) || !supplier.getId().equals(company.getId())) {
+                    product.setField(ProductFields.SUPPLIER, company);
+
                     product.getDataDefinition().fastSave(product);
                 }
             }
         } else {
-            Entity companyProductDb = companyProduct.getDataDefinition().get(companyProduct.getId());
-            if(companyProduct.getBooleanField(IS_DEFAULT) != companyProductDb.getBooleanField(IS_DEFAULT)) {
-                product.setField(ProductFields.SUPPLIER, companyProduct.getBelongsToField(CompanyProductsFamilyFields.COMPANY));
+            Entity companyProductFromDb = companyProductsFamily.getDataDefinition().get(companyProductsFamily.getId());
+
+            if (isDefault != companyProductFromDb.getBooleanField(CompanyProductsFamilyFields.IS_DEFAULT)) {
+                product.setField(ProductFields.SUPPLIER, isDefault ? company : null);
+
                 product.getDataDefinition().fastSave(product);
             }
         }
     }
+
 }

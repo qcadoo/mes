@@ -173,7 +173,6 @@ public class OperationProductInComponentHooks {
     public boolean validatesWith(final DataDefinition operationProductInComponentDD, final Entity operationProductInComponent) {
         boolean isValid = true;
 
-        isValid = isValid && checkIfQuantitySet(operationProductInComponentDD, operationProductInComponent);
         isValid = isValid
                 && checkIfTechnologyInputProductTypeOrProductIsSelected(operationProductInComponentDD,
                         operationProductInComponent);
@@ -224,21 +223,6 @@ public class OperationProductInComponentHooks {
 
                 }
             }
-
-        }
-        return true;
-    }
-
-    private boolean checkIfQuantitySet(final DataDefinition operationProductInComponentDD,
-            final Entity operationProductInComponent) {
-
-        if (!operationProductInComponent
-                .getBooleanField(OperationProductInComponentFields.VARIOUS_QUANTITIES_IN_PRODUCTS_BY_SIZE)
-                && Objects.isNull(operationProductInComponent.getDecimalField(OperationProductInComponentFields.QUANTITY))) {
-            operationProductInComponent.addError(
-                    operationProductInComponentDD.getField(OperationProductInComponentFields.QUANTITY),
-                    "qcadooView.validate.field.error.missing");
-            return false;
 
         }
         return true;

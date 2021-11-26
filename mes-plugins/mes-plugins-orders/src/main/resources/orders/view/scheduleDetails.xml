@@ -206,9 +206,6 @@
                 <option type="expression"
                         value="#number + ', ' + '@orders.schedule.state.value.' + #state"/>
 
-                <listener event="assignOperationsToWorkstations"
-                          class="com.qcadoo.mes.orders.listeners.ScheduleDetailsListeners"
-                          method="assignOperationsToWorkstations"/>
                 <listener event="assignWorkersToOperations"
                           class="com.qcadoo.mes.orders.listeners.ScheduleDetailsListeners"
                           method="assignWorkersToOperations"/>

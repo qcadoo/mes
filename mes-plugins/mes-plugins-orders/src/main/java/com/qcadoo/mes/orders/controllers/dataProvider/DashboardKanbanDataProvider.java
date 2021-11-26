@@ -30,9 +30,11 @@ public class DashboardKanbanDataProvider {
 
     private static final String L_STATES = "states";
 
-    public static final String L_ORDER_ID = "orderId";
+    private static final String L_ORDER_ID = "orderId";
 
-    public static final String L_PRODUCTION_LINE_ID = "productionLineId";
+    private static final String L_PRODUCTION_LINE_ID = "productionLineId";
+
+    private static final String L_START_DATE = "startDate";
 
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -124,12 +126,18 @@ public class DashboardKanbanDataProvider {
         String dashboardOrderSorting = parameterService.getParameter().getStringField(ParameterFields.DASHBOARD_ORDER_SORTING);
 
         if (Objects.nonNull(dashboardOrderSorting)) {
-            query += dashboardOrderSorting.replaceAll("[0-9]", "");
+            dashboardOrderSorting = dashboardOrderSorting.replaceAll("[0-9]", "");
         } else {
-            query += "startdate";
+            dashboardOrderSorting = L_START_DATE;
         }
 
-        query += " DESC";
+        query += dashboardOrderSorting;
+
+        if (L_START_DATE.equals(dashboardOrderSorting)) {
+            query += " DESC";
+        } else {
+            query += " ASC";
+        }
 
         return query;
     }

@@ -32,7 +32,6 @@ import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -48,7 +47,6 @@ import com.qcadoo.localization.api.utils.DateUtils;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.ProductionLinesService;
-import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.mes.technologies.constants.TechnologyFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.OperationProductComponentWithQuantityContainer;
@@ -60,8 +58,6 @@ import com.qcadoo.model.api.NumberService;
 
 @Service
 public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeService {
-
-    private static final String L_ORDER = "order";
 
     @Autowired
     private ProductQuantitiesService productQuantitiesService;
@@ -114,65 +110,6 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                 operationRunsFromProductionQuantities, productionLine, true, productComponentQuantities);
     }
 
-    @Override
-    public Map<Entity, Integer> estimateOperationTimeConsumptions(final Entity entity, final BigDecimal plannedQuantity,
-            final boolean includeTpz, final boolean includeAdditionalTime, final Entity productionLine) {
-        return estimateOperationTimeConsumptions(entity, plannedQuantity, includeTpz, includeAdditionalTime, productionLine,
-                false);
-    }
-
-    @Override
-    public Map<Entity, Integer> estimateMaxOperationTimeConsumptionsForWorkstations(final Entity entity,
-            final BigDecimal plannedQuantity, final boolean includeTpz, final boolean includeAdditionalTime,
-            final Entity productionLine) {
-        return estimateOperationTimeConsumptions(entity, plannedQuantity, includeTpz, includeAdditionalTime, productionLine, true);
-    }
-
-    private Map<Entity, Integer> estimateOperationTimeConsumptions(final Entity entity, final BigDecimal plannedQuantity,
-            final boolean includeTpz, final boolean includeAdditionalTime, final Entity productionLine,
-            final boolean maxForWorkstation) {
-        Map<Entity, Integer> operationDurations = new HashMap<Entity, Integer>();
-
-        String entityType = entity.getDataDefinition().getName();
-        Entity technology;
-        List<Entity> operationComponents;
-
-        if (TechnologiesConstants.MODEL_TECHNOLOGY.equals(entityType)) {
-            technology = entity;
-
-            operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
-        } else if (L_ORDER.equals(entityType)) {
-            technology = entity.getBelongsToField(TECHNOLOGY);
-
-            operationComponents = technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS);
-        } else {
-            throw new IllegalStateException("Entity has to be either order or technology");
-        }
-
-        Map<Long, BigDecimal> operationRunsFromProductionQuantities = Maps.newHashMap();
-
-        productQuantitiesService
-                .getProductComponentQuantities(technology, plannedQuantity, operationRunsFromProductionQuantities);
-
-        for (Entity operationComponent : operationComponents) {
-            evaluateTimes(operationDurations, operationComponent, includeTpz,
-                    includeAdditionalTime, operationRunsFromProductionQuantities, productionLine, maxForWorkstation);
-        }
-
-        return operationDurations;
-    }
-
-    private void evaluateTimes(final Map<Entity, Integer> operationDurations,
-            final Entity operationComponent, final boolean includeTpz, final boolean includeAdditionalTime,
-            final Map<Long, BigDecimal> operationRuns, final Entity productionLine, final boolean maxForWorkstation) {
-
-            int duration = evaluateSingleOperationTime(operationComponent, includeTpz, includeAdditionalTime, operationRuns,
-                    productionLine, maxForWorkstation);
-
-            operationDurations.put(operationComponent, duration);
-
-    }
-
     private int evaluateOperationTime(final Entity order, final Entity operationComponent, final boolean includeTpz,
             final boolean includeAdditionalTime, final Map<Long, BigDecimal> operationRuns, final Entity productionLine,
             final boolean maxForWorkstation, final OperationProductComponentWithQuantityContainer productComponentQuantities) {
@@ -191,7 +128,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
                 int childTimeTotal = evaluateSingleOperationTime(child, includeTpz, includeAdditionalTime, operationRuns,
                         productionLine, true);
                 int childTimeForQuantity = evaluateSingleOperationTimeIncludedNextOperationAfterProducedQuantity(child,
-                        includeTpz, false, operationRuns, productionLine, true, productComponentQuantities);
+                        includeTpz, operationRuns, productionLine, productComponentQuantities);
 
                 int difference = childTimeTotal - childTimeForQuantity;
                 childTime -= difference;
@@ -219,19 +156,18 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
             if (parameterService.getParameter().getBooleanField("workstationsQuantityFromProductionLine")) {
                 return productionLinesService.getWorkstationTypesCount(operationComponent, productionLine);
             } else {
-                return getIntegerValue(operationComponent
-                        .getIntegerField(TechnologyOperationComponentFields.QUANTITY_OF_WORKSTATIONS));
+                return getIntegerValue(
+                        operationComponent.getIntegerField(TechnologyOperationComponentFields.QUANTITY_OF_WORKSTATIONS));
 
             }
         } else {
-            return getIntegerValue(operationComponent
-                    .getIntegerField(TechnologyOperationComponentFields.QUANTITY_OF_WORKSTATIONS));
+            return getIntegerValue(
+                    operationComponent.getIntegerField(TechnologyOperationComponentFields.QUANTITY_OF_WORKSTATIONS));
         }
 
     }
 
-    @Override
-    public int evaluateSingleOperationTime(Entity operationComponent, final boolean includeTpz,
+    private int evaluateSingleOperationTime(Entity operationComponent, final boolean includeTpz,
             final boolean includeAdditionalTime, final Map<Long, BigDecimal> operationRuns, final Entity productionLine,
             final boolean maxForWorkstation) {
         operationComponent = operationComponent.getDataDefinition().get(operationComponent.getId());
@@ -240,36 +176,32 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         if (cycles == null) {
             Map<Long, BigDecimal> operationRunsFromProductionQuantities = Maps.newHashMap();
 
-            OperationProductComponentWithQuantityContainer productComponentQuantities = productQuantitiesService
-                    .getProductComponentQuantities(operationComponent
-                            .getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY),
-                            new BigDecimal("56", numberService.getMathContext()), operationRunsFromProductionQuantities);
+            productQuantitiesService.getProductComponentQuantities(
+                    operationComponent.getBelongsToField(TechnologyOperationComponentFields.TECHNOLOGY),
+                    new BigDecimal("56", numberService.getMathContext()), operationRunsFromProductionQuantities);
             cycles = operationRunsFromProductionQuantities.get(operationComponent.getId());
         }
         return evaluateOperationDurationOutOfCycles(cycles, operationComponent, productionLine, maxForWorkstation, includeTpz,
                 includeAdditionalTime);
     }
 
-    @Override
-    public int evaluateSingleOperationTimeIncludedNextOperationAfterProducedQuantity(Entity operationComponent,
-            final boolean includeTpz, final boolean includeAdditionalTime, final Map<Long, BigDecimal> operationRuns,
-            final Entity productionLine, final boolean maxForWorkstation,
+    private int evaluateSingleOperationTimeIncludedNextOperationAfterProducedQuantity(Entity operationComponent,
+            final boolean includeTpz, final Map<Long, BigDecimal> operationRuns, final Entity productionLine,
             final OperationProductComponentWithQuantityContainer productComponentQuantities) {
         operationComponent = operationComponent.getDataDefinition().get(operationComponent.getId());
-        BigDecimal cycles = BigDecimal.ONE;
-        BigDecimal nextOperationAfterProducedQuantity = BigDecimalUtils.convertNullToZero(operationComponent
-                .getDecimalField("nextOperationAfterProducedQuantity"));
+        BigDecimal nextOperationAfterProducedQuantity = BigDecimalUtils
+                .convertNullToZero(operationComponent.getDecimalField("nextOperationAfterProducedQuantity"));
         BigDecimal productComponentQuantity = productComponentQuantities.get(getOutputProduct(operationComponent));
         Entity technologyOperationComponent = getTechnologyOperationComponent(operationComponent);
+        BigDecimal cycles;
 
-        if (nextOperationAfterProducedQuantity.compareTo(productComponentQuantity) != 1) {
+        if (nextOperationAfterProducedQuantity.compareTo(productComponentQuantity) <= 0) {
             cycles = getQuantityCyclesNeededToProducedNextOperationAfterProducedQuantity(technologyOperationComponent,
                     nextOperationAfterProducedQuantity);
         } else {
             cycles = operationRuns.get(technologyOperationComponent.getId());
         }
-        return evaluateOperationDurationOutOfCycles(cycles, operationComponent, productionLine, maxForWorkstation, includeTpz,
-                includeAdditionalTime);
+        return evaluateOperationDurationOutOfCycles(cycles, operationComponent, productionLine, true, includeTpz, false);
     }
 
     private Entity getTechnologyOperationComponent(final Entity operationComponent) {
@@ -292,14 +224,13 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
 
         BigDecimal operationsRunsForOneMainProduct = operationRunsFromProductionQuantities.get(operationComponent.getId());
         BigDecimal quantityOutputProductProduced = productQuantities.get(getOutputProduct(operationComponent));
-        BigDecimal cycles = operationsRunsForOneMainProduct.multiply(nextOperationAfterProducedQuantity, mc).divide(
-                quantityOutputProductProduced, mc);
+        BigDecimal cycles = operationsRunsForOneMainProduct.multiply(nextOperationAfterProducedQuantity, mc)
+                .divide(quantityOutputProductProduced, mc);
 
         return numberService.setScaleWithDefaultMathContext(cycles);
     }
 
-    @Override
-    public int evaluateOperationDurationOutOfCycles(final BigDecimal cycles, final Entity operationComponent,
+    private int evaluateOperationDurationOutOfCycles(final BigDecimal cycles, final Entity operationComponent,
             final Entity productionLine, final boolean maxForWorkstation, final boolean includeTpz,
             final boolean includeAdditionalTime) {
         boolean isTjDivisable = operationComponent.getBooleanField("isTjDivisible");
@@ -336,7 +267,7 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         try {
             DecimalFormat format = (DecimalFormat) DecimalFormat.getInstance(locale);
             format.setParseBigDecimal(true);
-            return new BigDecimal(format.parse(value.toString()).doubleValue());
+            return BigDecimal.valueOf(format.parse(value.toString()).doubleValue());
         } catch (ParseException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
@@ -346,9 +277,4 @@ public class OrderRealizationTimeServiceImpl implements OrderRealizationTimeServ
         return value == null ? Integer.valueOf(0) : (Integer) value;
     }
 
-    @Override
-    public int estimateOperationTimeConsumption(EntityTreeNode operationComponent, BigDecimal plannedQuantity,
-            Entity productionLine) {
-        return estimateOperationTimeConsumption(operationComponent, plannedQuantity, true, true, productionLine);
-    }
 }

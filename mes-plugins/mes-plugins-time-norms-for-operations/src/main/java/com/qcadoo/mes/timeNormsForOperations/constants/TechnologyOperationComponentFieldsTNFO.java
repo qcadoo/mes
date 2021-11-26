@@ -33,6 +33,10 @@ public final class TechnologyOperationComponentFieldsTNFO {
 
     public static final String TJ = "tj";
 
+    public static final String LABOR_UTILIZATION = "laborUtilization";
+
+    public static final String MACHINE_UTILIZATION = "machineUtilization";
+
     public static final String PRODUCTION_IN_ONE_CYCLE = "productionInOneCycle";
 
     public static final String NEXT_OPERATION_AFTER_PRODUCED_TYPE = "nextOperationAfterProducedType";
@@ -43,10 +47,6 @@ public final class TechnologyOperationComponentFieldsTNFO {
 
     public static final String TIME_NEXT_OPERATION = "timeNextOperation";
 
-    public static final String MACHINE_UTILIZATION = "machineUtilization";
-
-    public static final String LABOR_UTILIZATION = "laborUtilization";
-
     public static final String ARE_PRODUCT_QUANTITIES_DIVISIBLE = "areProductQuantitiesDivisible";
 
     public static final String IS_TJ_DIVISIBLE = "isTjDivisible";
@@ -54,5 +54,7 @@ public final class TechnologyOperationComponentFieldsTNFO {
     public static final String PRODUCTION_IN_ONE_CYCLE_UNIT = "productionInOneCycleUNIT";
 
     public static final String TECH_OPER_COMP_TIME_CALCULATION = "techOperCompTimeCalculation";
+
+    public static final String TECH_OPER_COMP_WORKSTATION_TIMES = "techOperCompWorkstationTimes";
 
 }

@@ -141,9 +141,11 @@ public class OrderServiceImpl implements OrderService {
         }
         if (Objects.isNull(division)) {
             Entity defaultProductionLine = getDefaultProductionLine();
-            List<Entity> divisions = defaultProductionLine.getManyToManyField(ProductionLineFields.DIVISIONS);
-            if (divisions.size() == 1) {
-                division = divisions.get(0);
+            if(Objects.nonNull(defaultProductionLine)) {
+                List<Entity> divisions = defaultProductionLine.getManyToManyField(ProductionLineFields.DIVISIONS);
+                if (divisions.size() == 1) {
+                    division = divisions.get(0);
+                }
             }
         }
         return division;

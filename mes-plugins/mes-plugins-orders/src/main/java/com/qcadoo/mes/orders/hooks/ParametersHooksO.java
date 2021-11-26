@@ -49,6 +49,10 @@ public class ParametersHooksO {
 
     private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_MISSING = "qcadooView.validate.field.error.missing";
 
+    private static final String L_AUTOMATICALLY_GENERATE_TASKS_FOR_ORDER = "automaticallyGenerateTasksForOrder";
+
+    private static final String L_COMPLETE_STATION_AND_EMPLOYEE_IN_GENERATED_TASKS = "completeStationAndEmployeeInGeneratedTasks";
+
     @Autowired
     private OrderService orderService;
 
@@ -112,6 +116,18 @@ public class ParametersHooksO {
         }
 
         alwaysOrderItemsWithPersonalizationComponent.requestComponentUpdateState();
+    }
+
+    public void onPlanningParametersBeforeRender(final ViewDefinitionState view) {
+        CheckBoxComponent automaticallyGenerateTasksForOrder = (CheckBoxComponent) view.getComponentByReference(
+                L_AUTOMATICALLY_GENERATE_TASKS_FOR_ORDER);
+        CheckBoxComponent completeStationAndEmployeeInGeneratedTasks = (CheckBoxComponent) view.getComponentByReference(
+                L_COMPLETE_STATION_AND_EMPLOYEE_IN_GENERATED_TASKS);
+        if(automaticallyGenerateTasksForOrder.isChecked()) {
+            completeStationAndEmployeeInGeneratedTasks.setEnabled(true);
+        } else {
+            completeStationAndEmployeeInGeneratedTasks.setEnabled(false);
+        }
     }
 
     public void onBeforeRender(final ViewDefinitionState view) {

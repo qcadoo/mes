@@ -23,7 +23,6 @@
  */
 package com.qcadoo.mes.operationTimeCalculations;
 
-import static java.util.Arrays.asList;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -31,6 +30,7 @@ import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -48,7 +48,6 @@ import com.qcadoo.mes.technologies.ProductionLinesService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.EntityTree;
 import com.qcadoo.model.api.EntityTreeNode;
 import com.qcadoo.model.api.NumberService;
 
@@ -84,12 +83,6 @@ public class OrderRealizationTimeServiceImplTest {
         return entityList;
     }
 
-    private static EntityTree mockEntityTreeIterator(List<Entity> list) {
-        EntityTree entityTree = mock(EntityTree.class);
-        when(entityTree.iterator()).thenReturn(list.iterator());
-        return entityTree;
-    }
-
     @Before
     public void init() {
         MockitoAnnotations.initMocks(this);
@@ -99,26 +92,26 @@ public class OrderRealizationTimeServiceImplTest {
         when(opComp1.getStringField("nextOperationAfterProducedType")).thenReturn("01all");
         when(opComp2.getStringField("nextOperationAfterProducedType")).thenReturn("01all");
 
-        when(opComp1.getField("tj")).thenReturn(new Integer(1));
-        when(opComp2.getField("tj")).thenReturn(new Integer(1));
+        when(opComp1.getField("tj")).thenReturn(1);
+        when(opComp2.getField("tj")).thenReturn(1);
 
         when(opComp1.getField("nextOperationAfterProducedQuantity")).thenReturn(new BigDecimal(1));
         when(opComp2.getField("nextOperationAfterProducedQuantity")).thenReturn(new BigDecimal(1));
 
-        when(opComp1.getField("tpz")).thenReturn(new Integer(1));
-        when(opComp2.getField("tpz")).thenReturn(new Integer(1));
+        when(opComp1.getField("tpz")).thenReturn(1);
+        when(opComp2.getField("tpz")).thenReturn(1);
 
-        when(opComp1.getField("timeNextOperation")).thenReturn(new Integer(1));
-        when(opComp2.getField("timeNextOperation")).thenReturn(new Integer(1));
+        when(opComp1.getField("timeNextOperation")).thenReturn(1);
+        when(opComp2.getField("timeNextOperation")).thenReturn(1);
 
         when(opComp2.getBelongsToField("parent")).thenReturn(opComp1);
 
-        EntityList opComp1Children = mockEntityListIterator(asList((Entity) opComp2));
+        EntityList opComp1Children = mockEntityListIterator(Collections.singletonList(opComp2));
         when(opComp1.getHasManyField("children")).thenReturn(opComp1Children);
-        EntityList opComp2Children = mockEntityListIterator(new LinkedList<Entity>());
+        EntityList opComp2Children = mockEntityListIterator(new LinkedList<>());
         when(opComp2.getHasManyField("children")).thenReturn(opComp2Children);
 
-        Map<Entity, BigDecimal> operationRuns = new HashMap<Entity, BigDecimal>();
+        Map<Entity, BigDecimal> operationRuns = new HashMap<>();
         operationRuns.put(opComp1, new BigDecimal(2));
         operationRuns.put(opComp2, new BigDecimal(4));
 
@@ -191,8 +184,8 @@ public class OrderRealizationTimeServiceImplTest {
         when(productionLinesService.getWorkstationTypesCount(opComp2, productionLine)).thenReturn(2);
 
         // when
-        int time = orderRealizationTimeServiceImpl.estimateMaxOperationTimeConsumptionForWorkstation(order, opComp1, plannedQuantity,
-                includeTpz, includeAdditionalTime, productionLine);
+        int time = orderRealizationTimeServiceImpl.estimateMaxOperationTimeConsumptionForWorkstation(order, opComp1,
+                plannedQuantity, includeTpz, includeAdditionalTime, productionLine);
 
         // then
         assertEquals(7, time);

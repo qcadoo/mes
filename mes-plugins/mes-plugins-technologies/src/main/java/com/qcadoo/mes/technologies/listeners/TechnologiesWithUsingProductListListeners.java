@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -31,7 +32,8 @@ public class TechnologiesWithUsingProductListListeners {
         List<Integer> entitiesId = Lists.newArrayList();
 
         Set<Long> selected = grid.getSelectedEntitiesIds();
-        List<Entity> entities = grid.getSelectedEntities();
+        List<Entity> entities = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, "operationProductInProductDto").find().add(
+                SearchRestrictions.in("id", selected)).list().getEntities();
 
         boolean isProductBySize = entities.stream().anyMatch(entry -> selected.contains(entry.getId()) && entry.getBooleanField("sizeProduct"));
 

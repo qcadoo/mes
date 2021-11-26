@@ -306,7 +306,7 @@
                                       method="generateTechnologyName"/>
                             <listener event="onSelectedEntityChange"
                                       class="com.qcadoo.mes.technologies.listeners.TechnologyDetailsListeners"
-                                      method="clearQualityCard"/>
+                                      method="fillQualityCard"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="2" row="2" height="2">

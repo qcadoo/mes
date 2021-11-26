@@ -43,8 +43,6 @@ public final class OperCompTimeCalculationsFields {
 
     public static final String LABOR_WORK_TIME = "laborWorkTime";
 
-    public static final String TECHNOLOGY_OPERATION_COMPONENTS = "technologyOperationComponents";
-
     public static final String ORDER_TIME_CALCULATION = "orderTimeCalculation";
 
     public static final String TECHNOLOGY_OPERATION_COMPONENT = "technologyOperationComponent";

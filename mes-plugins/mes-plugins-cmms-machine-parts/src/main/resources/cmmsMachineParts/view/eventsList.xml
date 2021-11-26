@@ -397,15 +397,11 @@
 					}
 
 					function canEnableNotification(selectedEntitiesArray) {
-											console.log(selectedEntitiesArray.length);
-
 						if (selectedEntitiesArray.length == 0) {
 							return false;
 						}
 						var canEnable = true;
 						for (var i = 0; i < selectedEntitiesArray.length; i++) {
-						console.log(selectedEntitiesArray[i].fields.state);
-							console.log(selectedEntitiesArray[i].fields.type);
 							if (selectedEntitiesArray[i].fields.state !=  "01new" || selectedEntitiesArray[i].fields.type == "03proposal" ) {
 
 

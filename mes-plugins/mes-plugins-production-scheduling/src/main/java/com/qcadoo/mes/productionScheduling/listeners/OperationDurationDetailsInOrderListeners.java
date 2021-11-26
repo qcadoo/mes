@@ -23,6 +23,19 @@
  */
 package com.qcadoo.mes.productionScheduling.listeners;
 
+import java.math.BigDecimal;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import org.apache.commons.lang3.Validate;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.qcadoo.mes.operationTimeCalculations.OperationWorkTime;
@@ -55,19 +68,6 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
-
-import java.math.BigDecimal;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
-import org.apache.commons.lang3.Validate;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 @Service
 public class OperationDurationDetailsInOrderListeners {
@@ -105,7 +105,7 @@ public class OperationDurationDetailsInOrderListeners {
         if (orderId != null) {
             Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(orderId);
 
-                Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
+            Entity technologyPrototype = order.getBelongsToField(OrderFields.TECHNOLOGY_PROTOTYPE);
             if (technologyPrototype == null) {
                 state.addMessage("order.technology.patternTechnology.not.set", MessageType.INFO);
                 return;
@@ -153,11 +153,12 @@ public class OperationDurationDetailsInOrderListeners {
 
         boolean isGenerated = false;
 
-        Entity productionLine = dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
-                ProductionLinesConstants.MODEL_PRODUCTION_LINE).get((Long) productionLineLookup.getFieldValue());
+        Entity productionLine = dataDefinitionService
+                .get(ProductionLinesConstants.PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_PRODUCTION_LINE)
+                .get((Long) productionLineLookup.getFieldValue());
 
-        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).get(
-                orderForm.getEntity().getId());
+        Entity order = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER)
+                .get(orderForm.getEntity().getId());
 
         // copy of technology from order
         Entity technology = order.getBelongsToField(OrderFields.TECHNOLOGY);
@@ -176,15 +177,15 @@ public class OperationDurationDetailsInOrderListeners {
         operationWorkTimeService.deleteOperCompTimeCalculations(order);
 
         OperationWorkTime workTime = operationWorkTimeService.estimateTotalWorkTimeForOrder(order, operationRuns, includeTpz,
-                includeAdditionalTime, productionLine, true);
+                includeAdditionalTime, true);
 
         fillWorkTimeFields(viewDefinitionState, workTime);
 
         order = getActualOrderWithChanges(order);
 
-        int maxPathTime = orderRealizationTimeService.estimateMaxOperationTimeConsumptionForWorkstation(order, technology
-                .getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(), quantity, includeTpz, includeAdditionalTime,
-                productionLine);
+        int maxPathTime = orderRealizationTimeService.estimateMaxOperationTimeConsumptionForWorkstation(order,
+                technology.getTreeField(TechnologyFields.OPERATION_COMPONENTS).getRoot(), quantity, includeTpz,
+                includeAdditionalTime, productionLine);
 
         if (maxPathTime > OrderRealizationTimeService.MAX_REALIZATION_TIME) {
             state.addMessage("orders.validate.global.error.RealizationTimeIsToLong", MessageType.FAILURE);
@@ -216,11 +217,14 @@ public class OperationDurationDetailsInOrderListeners {
 
         if (isGenerated) {
             order = getActualOrderWithChanges(order);
-            Entity orderTimeCalculation = dataDefinitionService.get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
-                    TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION).find()
-                    .add(SearchRestrictions.belongsTo("order", order)).setMaxResults(1).uniqueResult();
-            order.setField(OrderFields.START_DATE, orderRealizationTimeService.setDateToField(orderTimeCalculation.getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_FROM)));
-            order.setField(OrderFieldsPS.GENERATED_END_DATE, orderRealizationTimeService.setDateToField(orderTimeCalculation.getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_TO)));
+            Entity orderTimeCalculation = dataDefinitionService
+                    .get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER,
+                            TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION)
+                    .find().add(SearchRestrictions.belongsTo("order", order)).setMaxResults(1).uniqueResult();
+            order.setField(OrderFields.START_DATE, orderRealizationTimeService
+                    .setDateToField(orderTimeCalculation.getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_FROM)));
+            order.setField(OrderFieldsPS.GENERATED_END_DATE, orderRealizationTimeService
+                    .setDateToField(orderTimeCalculation.getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_TO)));
             order = order.getDataDefinition().save(order);
             orderForm.setEntity(order);
             orderForm.addMessage("productionScheduling.info.calculationGenerated", MessageType.SUCCESS);
@@ -304,15 +308,16 @@ public class OperationDurationDetailsInOrderListeners {
             operationEndDates.add(dateTo);
             operCompTimeCalculation.getDataDefinition().save(operCompTimeCalculation);
         }
-        Entity orderTimeCalculation = dataDefinitionService.get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION).find()
-                .add(SearchRestrictions.belongsTo("order", order)).setMaxResults(1).uniqueResult();
+        Entity orderTimeCalculation = dataDefinitionService
+                .get(TimeNormsConstants.PLUGIN_PRODUCTION_SCHEDULING_IDENTIFIER, TimeNormsConstants.MODEL_ORDER_TIME_CALCULATION)
+                .find().add(SearchRestrictions.belongsTo("order", order)).setMaxResults(1).uniqueResult();
         orderTimeCalculation.setField(OrderTimeCalculationFields.EFFECTIVE_DATE_FROM,
-                operationStartDates.stream().min(Comparator.<Date>naturalOrder()).get());
+                operationStartDates.stream().min(Comparator.naturalOrder()).get());
         orderTimeCalculation.setField(OrderTimeCalculationFields.EFFECTIVE_DATE_TO,
-                operationEndDates.stream().max(Comparator.<Date>naturalOrder()).get());
+                operationEndDates.stream().max(Comparator.naturalOrder()).get());
         orderTimeCalculation.getDataDefinition().save(orderTimeCalculation);
-        order.setField(OrderFieldsPS.GENERATED_END_DATE, orderRealizationTimeService.setDateToField(orderTimeCalculation
-                .getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_TO)));
+        order.setField(OrderFieldsPS.GENERATED_END_DATE, orderRealizationTimeService
+                .setDateToField(orderTimeCalculation.getDateField(OrderTimeCalculationFields.EFFECTIVE_DATE_TO)));
     }
 
     public void copyRealizationTime(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -321,7 +326,7 @@ public class OperationDurationDetailsInOrderListeners {
 
         stopTimeField.setFieldValue(generatedEndDateField.getFieldValue());
 
-        state.performEvent(view, "save", new String[0]);
+        state.performEvent(view, "save");
     }
 
     public void createOperationalTasks(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -358,8 +363,8 @@ public class OperationDurationDetailsInOrderListeners {
 
         Entity operationalTask = operationTaskDD.create();
 
-        operationalTask.setField(OperationalTaskFields.NUMBER, numberGeneratorService
-                .generateNumber(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK));
+        operationalTask.setField(OperationalTaskFields.NUMBER,
+                numberGeneratorService.generateNumber(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK));
 
         if (techOperCompTimeCalculation != null) {
             operationalTask.setField(OperationalTaskFields.START_DATE,
@@ -368,8 +373,7 @@ public class OperationDurationDetailsInOrderListeners {
                     techOperCompTimeCalculation.getField(OperCompTimeCalculationsFields.EFFECTIVE_DATE_TO));
         }
 
-        operationalTask.setField(OperationalTaskFields.TYPE,
-                OperationalTaskType.EXECUTION_OPERATION_IN_ORDER.getStringValue());
+        operationalTask.setField(OperationalTaskFields.TYPE, OperationalTaskType.EXECUTION_OPERATION_IN_ORDER.getStringValue());
         operationalTask.setField(OperationalTaskFields.ORDER, order);
         operationalTask.setField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT, technologyOperationComponent);
 

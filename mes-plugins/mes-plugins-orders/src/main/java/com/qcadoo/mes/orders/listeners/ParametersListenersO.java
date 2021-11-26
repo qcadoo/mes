@@ -53,6 +53,11 @@ public class ParametersListenersO {
 
     private static final String L_REALIZATION_LOCATIONS = "realizationLocations";
 
+    private static final String L_AUTOMATICALLY_GENERATE_TASKS_FOR_ORDER = "automaticallyGenerateTasksForOrder";
+
+    private static final String L_COMPLETE_STATION_AND_EMPLOYEE_IN_GENERATED_TASKS = "completeStationAndEmployeeInGeneratedTasks";
+
+
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
@@ -111,6 +116,22 @@ public class ParametersListenersO {
 
     public void onAlwaysOrderItemsWithPersonalization(final ViewDefinitionState view, final ComponentState componentState,
             final String[] args) {
+
+
+    }
+
+    public void onAutomaticallyGenerateTasksForOrder(final ViewDefinitionState view, final ComponentState componentState,
+            final String[] args) {
+        CheckBoxComponent automaticallyGenerateTasksForOrder = (CheckBoxComponent) view.getComponentByReference(
+                L_AUTOMATICALLY_GENERATE_TASKS_FOR_ORDER);
+        CheckBoxComponent completeStationAndEmployeeInGeneratedTasks = (CheckBoxComponent) view.getComponentByReference(
+                L_COMPLETE_STATION_AND_EMPLOYEE_IN_GENERATED_TASKS);
+        if(automaticallyGenerateTasksForOrder.isChecked()) {
+            completeStationAndEmployeeInGeneratedTasks.setEnabled(true);
+        } else {
+            completeStationAndEmployeeInGeneratedTasks.setEnabled(false);
+            completeStationAndEmployeeInGeneratedTasks.setChecked(false);
+        }
 
 
     }

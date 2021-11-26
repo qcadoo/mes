@@ -31,7 +31,7 @@
 
     <windowTab name="norm" reference="norm">
         <component type="gridLayout" name="gridsLayout" columns="3"
-                   rows="4" hasBorders="false">
+                   rows="9" hasBorders="false">
             <layoutElement column="1" row="1">
                 <component type="time" name="tpz" field="#{form}.tpz"
                            reference="tpz"/>
@@ -69,6 +69,33 @@
                 <component type="time" name="timeNextOperation" field="#{form}.timeNextOperation"
                            reference="timeNextOperation" hasDescription="true">
                     <option type="noHours" value="4"/>
+                </component>
+            </layoutElement>
+            <layoutElement column="1" row="5" width="2" height="5">
+                <component type="grid" name="techOperCompWorkstationTimes" reference="techOperCompWorkstationTimes"
+                           source="#{form}.techOperCompWorkstationTimes">
+                    <option type="column" name="workstation" fields="workstation"
+                            expression="#workstation['number']" link="true" width="50"/>
+                    <option type="column" name="tpz" fields="tpz" width="40"
+                            expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#tpz)"/>
+                    <option type="column" name="tj" fields="tj" width="40"
+                            expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#tj)"/>
+                    <option type="column" name="timeNextOperation" fields="timeNextOperation" width="40"
+                            expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#timeNextOperation)"/>
+
+                    <option type="order" column="workstation" direction="asc"/>
+
+                    <option type="searchable" value="workstation"/>
+                    <option type="orderable" value="workstation"/>
+
+                    <option type="correspondingView" value="timeNormsForOperations/techOperCompWorkstationTimeDetails" />
+                    <option type="correspondingComponent" value="form" />
+                    <option type="correspondingViewInModal" value="true" />
+
+                    <option type="creatable" value="true"/>
+                    <option type="deletable" value="true"/>
+                    <option type="fullscreen" value="true"/>
+                    <option type="multiselect" value="true"/>
                 </component>
             </layoutElement>
             <layoutElement column="2" row="1" height="3">

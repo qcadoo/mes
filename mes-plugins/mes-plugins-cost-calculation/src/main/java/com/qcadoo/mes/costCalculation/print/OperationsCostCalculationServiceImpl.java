@@ -23,6 +23,18 @@
  */
 package com.qcadoo.mes.costCalculation.print;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.costCalculation.constants.CostCalculationFields;
@@ -36,22 +48,14 @@ import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimes;
 import com.qcadoo.mes.operationTimeCalculations.dto.OperationTimesContainer;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.ProductQuantitiesWithComponentsService;
-import com.qcadoo.mes.technologies.constants.TechnologyFields;
-import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.technologies.dto.ProductQuantitiesHolder;
-import com.qcadoo.model.api.*;
+import com.qcadoo.model.api.BigDecimalUtils;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityTree;
+import com.qcadoo.model.api.EntityTreeNode;
+import com.qcadoo.model.api.NumberService;
 import com.qcadoo.plugin.api.PluginManager;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static com.google.common.base.Preconditions.checkArgument;
 
 @Service
 public class OperationsCostCalculationServiceImpl implements OperationsCostCalculationService {
@@ -98,21 +102,16 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
 
         checkArgument(calculationOperationComponents != null, "given operation components is null");
 
-        Map<Long, Integer> workstations = getWorkstationsFromTechnology(technology);
-
         List<Entity> tocs = calculationOperationComponents.stream()
                 .map(e -> e.getBelongsToField(CalculationOperationComponentFields.TECHNOLOGY_OPERATION_COMPONENT))
                 .collect(Collectors.toList());
         OperationTimesContainer operationTimes = operationWorkTimeService.estimateOperationsWorkTimes(tocs,
                 productQuantitiesAndOperationRuns.getOperationRuns(),
                 costCalculation.getBooleanField(CostCalculationFields.INCLUDE_TPZ),
-                costCalculation.getBooleanField(CostCalculationFields.INCLUDE_ADDITIONAL_TIME), workstations, true);
+                costCalculation.getBooleanField(CostCalculationFields.INCLUDE_ADDITIONAL_TIME), true);
 
-        boolean hourlyCostFromOperation = true;
-        if (SourceOfOperationCosts.PARAMETERS.getStringValue()
-                .equals(costCalculation.getStringField(CostCalculationFields.SOURCE_OF_OPERATION_COSTS))) {
-            hourlyCostFromOperation = false;
-        }
+        boolean hourlyCostFromOperation = !SourceOfOperationCosts.PARAMETERS.getStringValue()
+                .equals(costCalculation.getStringField(CostCalculationFields.SOURCE_OF_OPERATION_COSTS));
         Map<String, BigDecimal> resultsMap = estimateCostCalculationForHourly(calculationOperationComponents.getRoot(),
                 operationTimes, hourlyCostFromOperation, costCalculation);
 
@@ -241,15 +240,6 @@ public class OperationsCostCalculationServiceImpl implements OperationsCostCalcu
         calculationOperationComponent.setField(CalculationOperationComponentFields.OPERATION_COST,
                 numberService.setScaleWithDefaultMathContext(costs.get(CalculationOperationComponentFields.OPERATION_COST)));
 
-    }
-
-    private Map<Long, Integer> getWorkstationsFromTechnology(final Entity technology) {
-        Map<Long, Integer> workstations = Maps.newHashMap();
-        for (Entity operComp : technology.getHasManyField(TechnologyFields.OPERATION_COMPONENTS)) {
-            workstations.put(operComp.getId(), IntegerUtils
-                    .convertNullToZero(operComp.getIntegerField(TechnologyOperationComponentFields.QUANTITY_OF_WORKSTATIONS)));
-        }
-        return workstations;
     }
 
 }

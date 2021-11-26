@@ -1,5 +1,6 @@
 package com.qcadoo.mes.orders.listeners;
 
+import static com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues.REJECTED;
 import static com.qcadoo.model.api.search.SearchProjections.alias;
 import static com.qcadoo.model.api.search.SearchProjections.list;
 import static com.qcadoo.model.api.search.SearchProjections.rowCount;
@@ -11,32 +12,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.StaffSkillsFields;
 import com.qcadoo.mes.basic.constants.WorkstationFields;
-import com.qcadoo.mes.basic.constants.WorkstationTypeFields;
 import com.qcadoo.mes.newstates.StateExecutorService;
+import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ScheduleFields;
 import com.qcadoo.mes.orders.constants.SchedulePositionFields;
-import com.qcadoo.mes.orders.constants.ScheduleSortOrder;
 import com.qcadoo.mes.orders.constants.ScheduleWorkerAssignCriterion;
-import com.qcadoo.mes.orders.constants.ScheduleWorkstationAssignCriterion;
 import com.qcadoo.mes.orders.states.ScheduleServiceMarker;
-import com.qcadoo.mes.productionLines.constants.WorkstationFieldsPL;
-import com.qcadoo.mes.technologies.constants.AssignedToOperation;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.OperationSkillFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
@@ -48,7 +39,6 @@ import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.model.api.search.SearchSubqueries;
-import com.qcadoo.plugin.api.PluginManager;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
@@ -56,218 +46,11 @@ import com.qcadoo.view.api.components.FormComponent;
 @Service
 public class ScheduleDetailsListeners {
 
-    private static final String FINISH_DATE = "finishDate";
-
-    private static final String REJECTED = "04rejected";
-
-    private static final String STATE = "state";
-
-    private static final String SCHEDULE_ID = "scheduleId";
-
-    private static final String ORDERS_FOR_SUBPRODUCTS_GENERATION = "ordersForSubproductsGeneration";
-
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
     @Autowired
     private StateExecutorService stateExecutorService;
-
-    @Autowired
-    private ShiftsService shiftsService;
-
-    @Autowired
-    private NamedParameterJdbcTemplate jdbcTemplate;
-
-    @Autowired
-    private PluginManager pluginManager;
-
-    @Transactional
-    public void assignOperationsToWorkstations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        Entity schedule = ((FormComponent) state).getEntity();
-        Map<Long, Date> workstationsFinishDates = Maps.newHashMap();
-        Set<Long> ordersToAvoid = Sets.newHashSet();
-        List<Long> positionsIds = sortPositionsForWorkstations(schedule.getId());
-        Date scheduleStartTime = schedule.getDateField(ScheduleFields.START_TIME);
-        for (Long positionId : positionsIds) {
-            Entity position = dataDefinitionService
-                    .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).get(positionId);
-            if (ordersToAvoid.contains(position.getBelongsToField(SchedulePositionFields.ORDER).getId())) {
-                continue;
-            }
-            List<Entity> workstations = getWorkstationsFromTOC(position);
-            if (workstations.isEmpty() || position.getIntegerField(SchedulePositionFields.MACHINE_WORK_TIME) == 0) {
-                ordersToAvoid.add(position.getBelongsToField(SchedulePositionFields.ORDER).getId());
-                continue;
-            }
-            Map<Long, Date> operationWorkstationsFinishDates = Maps.newHashMap();
-            Map<Long, Date> operationWorkstationsStartDates = Maps.newHashMap();
-
-            getWorkstationsNewFinishDate(workstationsFinishDates, scheduleStartTime, position, workstations,
-                    operationWorkstationsFinishDates, operationWorkstationsStartDates);
-
-            if (ScheduleWorkstationAssignCriterion.SHORTEST_TIME.getStringValue()
-                    .equals(schedule.getStringField(ScheduleFields.WORKSTATION_ASSIGN_CRITERION))) {
-                operationWorkstationsFinishDates.entrySet().stream().min(comparingByValue())
-                        .ifPresent(entry -> updatePositionWorkstationAndDates(entry, workstationsFinishDates, position,
-                                operationWorkstationsStartDates.get(entry.getKey())));
-            } else {
-                Entry<Long, Date> firstEntry;
-                if (workstationsFinishDates.isEmpty()) {
-                    firstEntry = operationWorkstationsFinishDates.entrySet().iterator().next();
-                } else {
-                    firstEntry = operationWorkstationsFinishDates.entrySet().stream()
-                            .filter(entry -> workstationsFinishDates.containsKey(entry.getKey())).findFirst()
-                            .orElse(operationWorkstationsFinishDates.entrySet().iterator().next());
-                }
-                updatePositionWorkstationAndDates(firstEntry, workstationsFinishDates, position,
-                        operationWorkstationsStartDates.get(firstEntry.getKey()));
-            }
-        }
-    }
-
-    private List<Entity> getWorkstationsFromTOC(Entity position) {
-        Entity technologyOperationComponent = position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT);
-        List<Entity> workstations;
-        if (AssignedToOperation.WORKSTATIONS.getStringValue()
-                .equals(technologyOperationComponent.getStringField(TechnologyOperationComponentFields.ASSIGNED_TO_OPERATION))) {
-            workstations = technologyOperationComponent.getManyToManyField(TechnologyOperationComponentFields.WORKSTATIONS);
-        } else {
-            Entity workstationType = technologyOperationComponent
-                    .getBelongsToField(TechnologyOperationComponentFields.WORKSTATION_TYPE);
-            if (workstationType == null) {
-                workstations = Collections.emptyList();
-            } else {
-                workstations = workstationType.getHasManyField(WorkstationTypeFields.WORKSTATIONS);
-            }
-        }
-        if (position.getBelongsToField(SchedulePositionFields.SCHEDULE).getBooleanField(ScheduleFields.SCHEDULE_FOR_BUFFER)) {
-            List<Entity> bufferWorkstations = workstations.stream().filter(e -> e.getBooleanField(WorkstationFields.BUFFER))
-                    .collect(Collectors.toList());
-            if (!bufferWorkstations.isEmpty()) {
-                return bufferWorkstations;
-            }
-        }
-        return workstations;
-    }
-
-    private void getWorkstationsNewFinishDate(Map<Long, Date> workstationsFinishDates, Date scheduleStartTime, Entity position,
-            List<Entity> workstations, Map<Long, Date> operationWorkstationsFinishDates,
-            Map<Long, Date> operationWorkstationsStartDates) {
-        Entity schedule = position.getBelongsToField(SchedulePositionFields.SCHEDULE);
-        for (Entity workstation : workstations) {
-            Date finishDate = getFinishDate(workstationsFinishDates, scheduleStartTime, schedule, workstation);
-            List<Entity> children = getChildren(position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT),
-                    position.getBelongsToField(SchedulePositionFields.ORDER), schedule);
-            if (pluginManager.isPluginEnabled(ORDERS_FOR_SUBPRODUCTS_GENERATION)) {
-                children.addAll(getOrderChildren(position.getBelongsToField(SchedulePositionFields.ORDER), schedule));
-            }
-            for (Entity child : children) {
-                Date childEndTime = child.getDateField(SchedulePositionFields.END_TIME);
-                if (!schedule.getBooleanField(ScheduleFields.ADDITIONAL_TIME_EXTENDS_OPERATION)) {
-                    childEndTime = Date.from(
-                            childEndTime.toInstant().plusSeconds(child.getIntegerField(SchedulePositionFields.ADDITIONAL_TIME)));
-                }
-                if (childEndTime.after(finishDate)) {
-                    finishDate = childEndTime;
-                }
-            }
-            DateTime finishDateTime = new DateTime(finishDate);
-            Date newStartDate = shiftsService
-                    .getNearestWorkingDate(finishDateTime, workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE))
-                    .orElse(finishDateTime).toDate();
-
-            Integer machineWorkTime = position.getIntegerField(SchedulePositionFields.MACHINE_WORK_TIME);
-            Date newFinishDate = shiftsService.findDateToForProductionLine(newStartDate, machineWorkTime,
-                    workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE));
-            if (schedule.getBooleanField(ScheduleFields.ADDITIONAL_TIME_EXTENDS_OPERATION)) {
-                newFinishDate = Date.from(
-                        newFinishDate.toInstant().plusSeconds(position.getIntegerField(SchedulePositionFields.ADDITIONAL_TIME)));
-            }
-            operationWorkstationsStartDates.put(workstation.getId(), newStartDate);
-            operationWorkstationsFinishDates.put(workstation.getId(), newFinishDate);
-        }
-    }
-
-    private Date getFinishDate(Map<Long, Date> workstationsFinishDates, Date scheduleStartTime, Entity schedule,
-            Entity workstation) {
-        Date finishDate;
-        if (schedule.getBooleanField(ScheduleFields.SCHEDULE_FOR_BUFFER)
-                && workstation.getBooleanField(WorkstationFields.BUFFER)) {
-            finishDate = scheduleStartTime;
-        } else {
-            finishDate = workstationsFinishDates.get(workstation.getId());
-            if (finishDate == null) {
-                Date operationalTasksMaxFinishDate = getOperationalTasksMaxFinishDateForWorkstation(scheduleStartTime,
-                        workstation);
-                if (operationalTasksMaxFinishDate != null) {
-                    finishDate = operationalTasksMaxFinishDate;
-                    workstationsFinishDates.put(workstation.getId(), finishDate);
-                }
-            }
-            if (finishDate == null) {
-                finishDate = scheduleStartTime;
-            }
-        }
-        return finishDate;
-    }
-
-    private List<Entity> getChildren(Entity technologyOperationComponent, Entity order, Entity schedule) {
-        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).find()
-                .createAlias(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT, "toc", JoinType.INNER)
-                .add(SearchRestrictions.belongsTo("toc." + TechnologyOperationComponentFields.PARENT,
-                        technologyOperationComponent))
-                .add(SearchRestrictions.belongsTo(SchedulePositionFields.ORDER, order))
-                .add(SearchRestrictions.belongsTo(SchedulePositionFields.SCHEDULE, schedule)).list().getEntities();
-    }
-
-    private List<Entity> getOrderChildren(Entity order, Entity schedule) {
-        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).find()
-                .createAlias(SchedulePositionFields.ORDER, "o", JoinType.INNER)
-                .add(SearchRestrictions.belongsTo("o.parent", order))
-                .createAlias(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT, "toc", JoinType.INNER)
-                .add(SearchRestrictions.isNull("toc." + TechnologyOperationComponentFields.PARENT))
-                .add(SearchRestrictions.isNotNull(SchedulePositionFields.END_TIME))
-                .add(SearchRestrictions.belongsTo(SchedulePositionFields.SCHEDULE, schedule)).list().getEntities();
-    }
-
-    private Date getOperationalTasksMaxFinishDateForWorkstation(Date scheduleStartTime, Entity workstation) {
-        Entity operationalTasksMaxFinishDateEntity = dataDefinitionService
-                .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK).find()
-                .add(SearchRestrictions.belongsTo(SchedulePositionFields.WORKSTATION, workstation))
-                .add(SearchRestrictions.ne(STATE, REJECTED)).add(SearchRestrictions.gt(FINISH_DATE, scheduleStartTime))
-                .setProjection(list().add(alias(SearchProjections.max(FINISH_DATE), FINISH_DATE)).add(rowCount()))
-                .addOrder(SearchOrders.desc(FINISH_DATE)).setMaxResults(1).uniqueResult();
-        return operationalTasksMaxFinishDateEntity.getDateField(FINISH_DATE);
-    }
-
-    private void updatePositionWorkstationAndDates(Entry<Long, Date> entry, Map<Long, Date> workstationsFinishDates,
-            Entity position, Date startTime) {
-        workstationsFinishDates.put(entry.getKey(), entry.getValue());
-        position.setField(SchedulePositionFields.WORKSTATION, entry.getKey());
-        position.setField(SchedulePositionFields.START_TIME, startTime);
-        position.setField(SchedulePositionFields.END_TIME, entry.getValue());
-        position.setField(SchedulePositionFields.STAFF, null);
-        position.getDataDefinition().save(position);
-    }
-
-    private List<Long> sortPositionsForWorkstations(Long scheduleId) {
-        Entity schedule = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE)
-                .get(scheduleId);
-        Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put(SCHEDULE_ID, scheduleId);
-        StringBuilder query = new StringBuilder();
-        query.append("SELECT sp.id FROM orders_scheduleposition sp JOIN technologies_technologyoperationcomponent toc ");
-        query.append("ON sp.technologyoperationcomponent_id = toc.id JOIN orders_order o ON sp.order_id = o.id ");
-        query.append("WHERE sp.schedule_id = :scheduleId ORDER BY ");
-        query.append("string_to_array(regexp_replace(SPLIT_PART(o.number, '-', 2), '[^0-9.]', '0', 'g'), '.')::int[] desc, ");
-        query.append("string_to_array(regexp_replace(rtrim(toc.nodenumber, '.'), '[^0-9.]', '0', 'g'), '.')::int[] desc, ");
-        if (ScheduleSortOrder.DESCENDING.getStringValue().equals(schedule.getStringField(ScheduleFields.SORT_ORDER))) {
-            query.append("sp.machineworktime desc");
-        } else {
-            query.append("sp.machineworktime asc");
-        }
-        return jdbcTemplate.queryForList(query.toString(), parameters, Long.class);
-    }
 
     @Transactional
     public void assignWorkersToOperations(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -322,8 +105,9 @@ public class ScheduleDetailsListeners {
     private Long getOperationalTasksLastWorkerForWorkstation(Entity workstation) {
         Entity entity = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK)
                 .find().add(SearchRestrictions.belongsTo(SchedulePositionFields.WORKSTATION, workstation))
-                .add(SearchRestrictions.isNotNull(SchedulePositionFields.STAFF)).add(SearchRestrictions.ne(STATE, REJECTED))
-                .addOrder(SearchOrders.desc(FINISH_DATE)).setMaxResults(1).uniqueResult();
+                .add(SearchRestrictions.isNotNull(SchedulePositionFields.STAFF))
+                .add(SearchRestrictions.ne(OperationalTaskFields.STATE, REJECTED))
+                .addOrder(SearchOrders.desc(OperationalTaskFields.FINISH_DATE)).setMaxResults(1).uniqueResult();
         if (entity != null) {
             return entity.getBelongsToField(SchedulePositionFields.STAFF).getId();
         } else {
@@ -335,6 +119,9 @@ public class ScheduleDetailsListeners {
         List<Entity> operationSkills = position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT)
                 .getBelongsToField(TechnologyOperationComponentFields.OPERATION)
                 .getManyToManyField(OperationFields.OPERATION_SKILLS);
+        if (operationSkills.isEmpty()) {
+            return Collections.emptyList();
+        }
         SearchCriteriaBuilder staffScb = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_STAFF)
                 .find();
         for (Entity operationSkill : operationSkills) {
@@ -392,10 +179,12 @@ public class ScheduleDetailsListeners {
         Entity operationalTasksMaxFinishDateEntity = dataDefinitionService
                 .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK).find()
                 .add(SearchRestrictions.belongsTo(SchedulePositionFields.STAFF, worker))
-                .add(SearchRestrictions.ne(STATE, REJECTED))
-                .setProjection(list().add(alias(SearchProjections.max(FINISH_DATE), FINISH_DATE)).add(rowCount()))
-                .addOrder(SearchOrders.desc(FINISH_DATE)).setMaxResults(1).uniqueResult();
-        return operationalTasksMaxFinishDateEntity.getDateField(FINISH_DATE);
+                .add(SearchRestrictions.ne(OperationalTaskFields.STATE, REJECTED))
+                .setProjection(list()
+                        .add(alias(SearchProjections.max(OperationalTaskFields.FINISH_DATE), OperationalTaskFields.FINISH_DATE))
+                        .add(rowCount()))
+                .addOrder(SearchOrders.desc(OperationalTaskFields.FINISH_DATE)).setMaxResults(1).uniqueResult();
+        return operationalTasksMaxFinishDateEntity.getDateField(OperationalTaskFields.FINISH_DATE);
     }
 
     public void changeState(final ViewDefinitionState view, final ComponentState state, final String[] args) {

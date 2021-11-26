@@ -23,21 +23,10 @@
  */
 package com.qcadoo.mes.operationTimeCalculations;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.EntityList;
-import com.qcadoo.model.api.NumberService;
-import junit.framework.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.springframework.test.util.ReflectionTestUtils;
+import static junit.framework.Assert.assertEquals;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -47,10 +36,21 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static junit.framework.Assert.assertEquals;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.mockito.stubbing.Answer;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.EntityList;
+import com.qcadoo.model.api.NumberService;
+import junit.framework.Assert;
 
 public class OperationWorkTimeServiceTest {
 
@@ -94,15 +94,12 @@ public class OperationWorkTimeServiceTest {
 
         when(numberService.getMathContext()).thenReturn(mc);
 
-        given(numberService.setScaleWithDefaultMathContext(Mockito.any(BigDecimal.class))).willAnswer(new Answer<BigDecimal>() {
-
-            @Override
-            public BigDecimal answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                BigDecimal number = (BigDecimal) args[0];
-                return number.setScale(5, RoundingMode.HALF_EVEN);
-            }
-        });
+        given(numberService.setScaleWithDefaultMathContext(Mockito.any(BigDecimal.class)))
+                .willAnswer((Answer<BigDecimal>) invocation -> {
+                    Object[] args = invocation.getArguments();
+                    BigDecimal number = (BigDecimal) args[0];
+                    return number.setScale(5, RoundingMode.HALF_EVEN);
+                });
 
         when(operComp1.getDataDefinition()).thenReturn(dataDefinition);
         when(operComp2.getDataDefinition()).thenReturn(dataDefinition);
@@ -124,39 +121,39 @@ public class OperationWorkTimeServiceTest {
 
         neededNumberOfCycles1 = BigDecimal.ONE;
         neededNumberOfCycles2 = new BigDecimal(2);
-        neededNumberOfCycles3 = new BigDecimal(2.3);
+        neededNumberOfCycles3 = new BigDecimal("2.3");
 
-        when(operComp1.getField("tj")).thenReturn(new Integer(600));
-        when(operComp2.getField("tj")).thenReturn(new Integer(300));
-        when(operComp3.getField("tj")).thenReturn(new Integer(150));
+        when(operComp1.getIntegerField("tj")).thenReturn(600);
+        when(operComp2.getIntegerField("tj")).thenReturn(300);
+        when(operComp3.getIntegerField("tj")).thenReturn(150);
 
-        when(operComp1.getField("tpz")).thenReturn(new Integer(600));
-        when(operComp2.getField("tpz")).thenReturn(new Integer(900));
-        when(operComp3.getField("tpz")).thenReturn(new Integer(1200));
+        when(operComp1.getIntegerField("tpz")).thenReturn(600);
+        when(operComp2.getIntegerField("tpz")).thenReturn(900);
+        when(operComp3.getIntegerField("tpz")).thenReturn(1200);
 
-        when(operComp1.getField("timeNextOperation")).thenReturn(new Integer(600));
-        when(operComp2.getField("timeNextOperation")).thenReturn(new Integer(300));
-        when(operComp3.getField("timeNextOperation")).thenReturn(new Integer(450));
+        when(operComp1.getIntegerField("timeNextOperation")).thenReturn(600);
+        when(operComp2.getIntegerField("timeNextOperation")).thenReturn(300);
+        when(operComp3.getIntegerField("timeNextOperation")).thenReturn(450);
 
-        lu1 = new BigDecimal(2.2);
-        lu2 = new BigDecimal(0.6);
-        lu3 = new BigDecimal(0.8);
+        lu1 = new BigDecimal("2.2");
+        lu2 = new BigDecimal("0.6");
+        lu3 = new BigDecimal("0.8");
 
         when(operComp1.getDecimalField("laborUtilization")).thenReturn(lu1);
         when(operComp2.getDecimalField("laborUtilization")).thenReturn(lu2);
         when(operComp3.getDecimalField("laborUtilization")).thenReturn(lu3);
 
-        mu1 = new BigDecimal(0.2);
-        mu2 = new BigDecimal(1.6);
-        mu3 = new BigDecimal(0.7);
+        mu1 = new BigDecimal("0.2");
+        mu2 = new BigDecimal("1.6");
+        mu3 = new BigDecimal("0.7");
 
         when(operComp1.getDecimalField("machineUtilization")).thenReturn(mu1);
         when(operComp2.getDecimalField("machineUtilization")).thenReturn(mu2);
         when(operComp3.getDecimalField("machineUtilization")).thenReturn(mu3);
 
-        workstations1 = Integer.valueOf(1);
-        workstations2 = Integer.valueOf(2);
-        workstations3 = Integer.valueOf(1);
+        workstations1 = 1;
+        workstations2 = 2;
+        workstations3 = 1;
         workstations.put(operComp1, workstations1);
         workstations.put(operComp2, workstations2);
         workstations.put(operComp3, workstations3);
@@ -166,23 +163,18 @@ public class OperationWorkTimeServiceTest {
         workstationsMap.put(operComp3.getId(), workstations3);
 
         operationsRuns.put(operComp1, new BigDecimal(3));
-        operationsRuns.put(operComp2, new BigDecimal(1.5));
+        operationsRuns.put(operComp2, new BigDecimal("1.5"));
         operationsRuns.put(operComp3, new BigDecimal(7));
 
         operationRuns.put(operComp1.getId(), new BigDecimal(3));
-        operationRuns.put(operComp2.getId(), new BigDecimal(1.5));
+        operationRuns.put(operComp2.getId(), new BigDecimal("1.5"));
         operationRuns.put(operComp3.getId(), new BigDecimal(7));
     }
 
     private static EntityList mockEntityList(final List<Entity> entities) {
         final EntityList entityList = mock(EntityList.class);
-        given(entityList.iterator()).willAnswer(new Answer<Iterator<Entity>>() {
-
-            @Override
-            public Iterator<Entity> answer(final InvocationOnMock invocation) throws Throwable {
-                return ImmutableList.copyOf(entities).iterator();
-            }
-        });
+        given(entityList.iterator())
+                .willAnswer((Answer<Iterator<Entity>>) invocation -> ImmutableList.copyOf(entities).iterator());
         given(entityList.isEmpty()).willReturn(entities.isEmpty());
         return entityList;
     }
@@ -206,7 +198,7 @@ public class OperationWorkTimeServiceTest {
         when(numberService.setScaleWithDefaultMathContext(abstractOperationWorkTime)).thenReturn(abstractOperationWorkTime);
 
         abstractOperationWorkTime = operationWorkTimeService.estimateAbstractOperationWorkTime(operComp1, neededNumberOfCycles1,
-                false, false, workstations1);
+                false, false);
         // then
         Assert.assertNotNull(abstractOperationWorkTime);
         assertBigDecimalEquals(new BigDecimal(600), abstractOperationWorkTime);
@@ -219,7 +211,7 @@ public class OperationWorkTimeServiceTest {
         when(numberService.setScaleWithDefaultMathContext(abstractOperationWorkTime)).thenReturn(abstractOperationWorkTime);
         // when
         abstractOperationWorkTime = operationWorkTimeService.estimateAbstractOperationWorkTime(operComp2, neededNumberOfCycles2,
-                false, false, workstations2);
+                false, false);
         // then
         Assert.assertNotNull(abstractOperationWorkTime);
         assertBigDecimalEquals(new BigDecimal(600), abstractOperationWorkTime);
@@ -230,7 +222,7 @@ public class OperationWorkTimeServiceTest {
         // given
         // when
         BigDecimal abstractOperationWorkTime = operationWorkTimeService.estimateAbstractOperationWorkTime(operComp3,
-                neededNumberOfCycles3, false, false, workstations3);
+                neededNumberOfCycles3, false, false);
         // then
         Assert.assertNotNull(abstractOperationWorkTime);
         assertBigDecimalEquals(new BigDecimal(345), abstractOperationWorkTime);
@@ -240,7 +232,7 @@ public class OperationWorkTimeServiceTest {
     public void shouldEstimateAbstractOperationWorkTimeWithTpzAndAdditionalTimeForOperComp1() throws Exception {
         // when
         BigDecimal abstractOperationWorkTime = operationWorkTimeService.estimateAbstractOperationWorkTime(operComp1,
-                neededNumberOfCycles1, true, true, workstations1);
+                neededNumberOfCycles1, true, true);
         // then
         Assert.assertNotNull(abstractOperationWorkTime);
         assertBigDecimalEquals(new BigDecimal(1800), abstractOperationWorkTime);
@@ -250,7 +242,7 @@ public class OperationWorkTimeServiceTest {
     public void shouldEstimateAbstractOperationWorkTimeWithTpzAndAdditionalTimeForOperComp2() throws Exception {
         // when
         BigDecimal abstractOperationWorkTime = operationWorkTimeService.estimateAbstractOperationWorkTime(operComp2,
-                neededNumberOfCycles2, true, true, workstations2);
+                neededNumberOfCycles2, true, true);
         // then
         Assert.assertNotNull(abstractOperationWorkTime);
         assertBigDecimalEquals(new BigDecimal(1800), abstractOperationWorkTime);
@@ -260,7 +252,7 @@ public class OperationWorkTimeServiceTest {
     public void shouldEstimateAbstractOperationWorkTimeWithTpzAndAdditionalTimeForOperComp3() throws Exception {
         // when
         BigDecimal abstractOperationWorkTime = operationWorkTimeService.estimateAbstractOperationWorkTime(operComp3,
-                neededNumberOfCycles3, true, true, workstations3);
+                neededNumberOfCycles3, true, true);
         // then
         Assert.assertNotNull(abstractOperationWorkTime);
         assertBigDecimalEquals(new BigDecimal(1995), abstractOperationWorkTime);
@@ -270,7 +262,7 @@ public class OperationWorkTimeServiceTest {
     public void shouldEstimateAbstractOperationWorkTimeWithTpzAndWithoutAdditionalTimeForOperComp1() throws Exception {
         // when
         BigDecimal abstractOperationWorkTime = operationWorkTimeService.estimateAbstractOperationWorkTime(operComp1,
-                neededNumberOfCycles1, true, false, workstations1);
+                neededNumberOfCycles1, true, false);
         // then
         Assert.assertNotNull(abstractOperationWorkTime);
         assertBigDecimalEquals(new BigDecimal(1200), abstractOperationWorkTime);
@@ -280,7 +272,7 @@ public class OperationWorkTimeServiceTest {
     public void shouldEstimateAbstractOperationWorkTimeWithTpzAndWithoutAdditionalTimeForOperComp2() throws Exception {
         // when
         BigDecimal abstractOperationWorkTime = operationWorkTimeService.estimateAbstractOperationWorkTime(operComp2,
-                neededNumberOfCycles2, true, false, workstations2);
+                neededNumberOfCycles2, true, false);
         // then
         Assert.assertNotNull(abstractOperationWorkTime);
         assertBigDecimalEquals(new BigDecimal(1500), abstractOperationWorkTime);
@@ -290,7 +282,7 @@ public class OperationWorkTimeServiceTest {
     public void shouldEstimateAbstractOperationWorkTimeWithTpzAndWithoutAdditionalTimeForOperComp3() throws Exception {
         // when
         BigDecimal abstractOperationWorkTime = operationWorkTimeService.estimateAbstractOperationWorkTime(operComp3,
-                neededNumberOfCycles3, true, false, workstations3);
+                neededNumberOfCycles3, true, false);
         // then
         Assert.assertNotNull(abstractOperationWorkTime);
         assertBigDecimalEquals(new BigDecimal(1545), abstractOperationWorkTime);
@@ -301,30 +293,30 @@ public class OperationWorkTimeServiceTest {
         // when
 
         operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTime(operComp1, neededNumberOfCycles1, true, true,
-                workstations1, false);
+                false);
         // then
-        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(3960));
-        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new Integer(360));
+        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), 3960);
+        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), 360);
     }
 
     @Test
     public void shouldReturnEstimatesOperationWorkTimeForOper2() throws Exception {
         // when
         operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTime(operComp2, neededNumberOfCycles2, true, true,
-                workstations2, false);
+                false);
         // then
-        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(1080));
-        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new Integer(2880));
+        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), 1080);
+        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), 2880);
     }
 
     @Test
     public void shouldReturnEstimatesOperationWorkTimeForOper3() throws Exception {
         // when
         operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTime(operComp3, neededNumberOfCycles3, true, true,
-                workstations3, false);
+                false);
         // then
-        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(1596));
-        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new BigDecimal(1396.5).intValue());
+        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), 1596);
+        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new BigDecimal("1396.5").intValue());
     }
 
     @Test
@@ -332,30 +324,30 @@ public class OperationWorkTimeServiceTest {
         // when
 
         operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTime(operComp1, neededNumberOfCycles1, false, true,
-                workstations1, false);
+                false);
         // then
-        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(2640));
-        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new Integer(240));
+        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), 2640);
+        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), 240);
     }
 
     @Test
     public void shouldReturnEstimatesOperationWorkTimeWithoutTpzForOper2() throws Exception {
         // when
         operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTime(operComp2, neededNumberOfCycles2, false, true,
-                workstations2, false);
+                false);
         // then
-        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(540));
-        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new Integer(1440));
+        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), 540);
+        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), 1440);
     }
 
     @Test
     public void shouldReturnEstimatesOperationWorkTimeWithoutTpzForOper3() throws Exception {
         // when
         operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTime(operComp3, neededNumberOfCycles3, false, true,
-                workstations3, false);
+                false);
         // then
-        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(636));
-        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new BigDecimal(556.5).intValue());
+        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), 636);
+        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new BigDecimal("556.5").intValue());
     }
 
     @Test
@@ -363,29 +355,29 @@ public class OperationWorkTimeServiceTest {
         // when
 
         operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTime(operComp1, neededNumberOfCycles1, true, false,
-                workstations1, false);
+                false);
         // then
-        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(2640));
-        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new Integer(240));
+        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), 2640);
+        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), 240);
     }
 
     @Test
     public void shouldReturnEstimatesOperationWorkTimeWithoutAddTimeForOper2() throws Exception {
         // when
         operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTime(operComp2, neededNumberOfCycles2, true, false,
-                workstations2, false);
+                false);
         // then
-        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(900));
-        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new Integer(2400));
+        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), 900);
+        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), 2400);
     }
 
     @Test
     public void shouldReturnEstimatesOperationWorkTimeWithoutAddTimeForOper3() throws Exception {
         // when
         operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTime(operComp3, neededNumberOfCycles3, true, false,
-                workstations3, false);
+                false);
         // then
-        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(1236));
+        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), 1236);
         assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new BigDecimal(1081).intValue());
     }
 
@@ -394,87 +386,30 @@ public class OperationWorkTimeServiceTest {
         // when
 
         operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTime(operComp1, neededNumberOfCycles1, false, false,
-                workstations1, false);
+                false);
         // then
-        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(1320));
-        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new Integer(120));
+        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), 1320);
+        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), 120);
     }
 
     @Test
     public void shouldReturnEstimatesOperationWorkTimeWithoutTpzAndAddTimeForOper2() throws Exception {
         // when
         operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTime(operComp2, neededNumberOfCycles2, false, false,
-                workstations2, false);
+                false);
         // then
-        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(360));
-        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new Integer(960));
+        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), 360);
+        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), 960);
     }
 
     @Test
     public void shouldReturnEstimatesOperationWorkTimeWithoutTpzAndAddTimeForOper3() throws Exception {
         // when
         operationWorkTime = operationWorkTimeService.estimateTechOperationWorkTime(operComp3, neededNumberOfCycles3, false, false,
-                workstations3, false);
+                false);
         // then
-        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), new Integer(276));
-        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new BigDecimal(241.5).intValue());
-    }
-
-    @Test
-    public void shouldReturnEstimateOperationsMapIncludedTpzAndAdditionalTime() throws Exception {
-        // given
-        EntityList operationComponents = mockEntityList(Arrays.asList(operComp1, operComp2, operComp3));
-        // when
-        Map<Entity, OperationWorkTime> operationDurations = operationWorkTimeService.estimateOperationsWorkTime(
-                operationComponents, operationsRuns, true, true, workstations, false);
-        // then
-        assertEquals(3, operationDurations.values().size());
-        assertEquals(new Integer(6600), operationDurations.get(operComp1).getLaborWorkTime());
-        assertEquals(new Integer(600), operationDurations.get(operComp1).getMachineWorkTime());
-
-        assertEquals(new Integer(990), operationDurations.get(operComp2).getLaborWorkTime());
-        assertEquals(new Integer(2640), operationDurations.get(operComp2).getMachineWorkTime());
-
-        assertEquals(new Integer(2160), operationDurations.get(operComp3).getLaborWorkTime());
-        assertEquals(new Integer(1890), operationDurations.get(operComp3).getMachineWorkTime());
-    }
-
-    @Test
-    public void shouldReturnEstimateOperationsMapIncludedTpz() throws Exception {
-        // given
-        EntityList operationComponents = mockEntityList(Arrays.asList(operComp1, operComp2, operComp3));
-        // when
-        Map<Entity, OperationWorkTime> operationDurations = operationWorkTimeService.estimateOperationsWorkTime(
-                operationComponents, operationsRuns, true, false, workstations, false);
-        // then
-        assertEquals(3, operationDurations.values().size());
-        assertEquals(new Integer(5280), operationDurations.get(operComp1).getLaborWorkTime());
-        assertEquals(new Integer(480), operationDurations.get(operComp1).getMachineWorkTime());
-
-        assertEquals(new Integer(810), operationDurations.get(operComp2).getLaborWorkTime());
-        assertEquals(new Integer(2160), operationDurations.get(operComp2).getMachineWorkTime());
-
-        assertEquals(new Integer(1800), operationDurations.get(operComp3).getLaborWorkTime());
-        assertEquals(new Integer(1575), operationDurations.get(operComp3).getMachineWorkTime());
-    }
-
-    @Test
-    public void shouldReturnEstimateOperationsMapIncludedAdditionalTime() throws Exception {
-        // given
-        EntityList operationComponents = mockEntityList(Arrays.asList(operComp1, operComp2, operComp3));
-        // when
-        Map<Entity, OperationWorkTime> operationDurations = operationWorkTimeService.estimateOperationsWorkTime(
-                operationComponents, operationsRuns, false, true, workstations, false);
-        // then
-        assertEquals(3, operationDurations.values().size());
-        assertEquals(new Integer(5280), operationDurations.get(operComp1).getLaborWorkTime());
-        assertEquals(new Integer(480), operationDurations.get(operComp1).getMachineWorkTime());
-
-        assertEquals(new Integer(450), operationDurations.get(operComp2).getLaborWorkTime());
-        assertEquals(new Integer(1200), operationDurations.get(operComp2).getMachineWorkTime());
-
-        assertEquals(new Integer(1200), operationDurations.get(operComp3).getLaborWorkTime());
-        assertEquals(new Integer(1050), operationDurations.get(operComp3).getMachineWorkTime());
+        assertIntegerEquals(operationWorkTime.getLaborWorkTime(), 276);
+        assertIntegerEquals(operationWorkTime.getMachineWorkTime(), new BigDecimal("241.5").intValue());
     }
 
     @Test
@@ -483,8 +418,7 @@ public class OperationWorkTimeServiceTest {
 
         EntityList operationComponents = mockEntityList(Arrays.asList(operComp1, operComp2, operComp3));
         // when
-        operationWorkTime = operationWorkTimeService.estimateTotalWorkTime(operationComponents, operationRuns, true, true,
-                workstationsMap, false);
+        operationWorkTime = operationWorkTimeService.estimateTotalWorkTime(operationComponents, operationRuns, true, true, false);
         // then
         assertEquals(operationWorkTime.getLaborWorkTime(), new Integer(9750));
         assertEquals(operationWorkTime.getMachineWorkTime(), new Integer(5130));
@@ -497,7 +431,7 @@ public class OperationWorkTimeServiceTest {
         EntityList operationComponents = mockEntityList(Arrays.asList(operComp1, operComp2, operComp3));
         // // when
         operationWorkTime = operationWorkTimeService.estimateTotalWorkTime(operationComponents, operationRuns, true, false,
-                workstationsMap, false);
+                false);
         // then
         assertEquals(operationWorkTime.getLaborWorkTime(), new Integer(7890));
         assertEquals(operationWorkTime.getMachineWorkTime(), new Integer(4215));
@@ -510,7 +444,7 @@ public class OperationWorkTimeServiceTest {
         EntityList operationComponents = mockEntityList(Arrays.asList(operComp1, operComp2, operComp3));
         // when
         operationWorkTime = operationWorkTimeService.estimateTotalWorkTime(operationComponents, operationRuns, false, true,
-                workstationsMap, false);
+                false);
         // // then
         assertEquals(operationWorkTime.getLaborWorkTime(), new Integer(6930));
         assertEquals(operationWorkTime.getMachineWorkTime(), new Integer(2730));

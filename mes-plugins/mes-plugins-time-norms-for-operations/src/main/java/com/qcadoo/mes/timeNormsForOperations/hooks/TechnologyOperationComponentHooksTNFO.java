@@ -25,13 +25,20 @@ package com.qcadoo.mes.timeNormsForOperations.hooks;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields.OPERATION;
+import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO.TECH_OPER_COMP_WORKSTATION_TIMES;
 import static com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants.FIELDS_OPERATION;
+
+import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.beust.jcommander.internal.Lists;
 import com.qcadoo.mes.basic.util.UnitService;
+import com.qcadoo.mes.timeNormsForOperations.constants.OperationFieldsTFNO;
+import com.qcadoo.mes.timeNormsForOperations.constants.OperationWorkstationTimeFields;
+import com.qcadoo.mes.timeNormsForOperations.constants.TechOperCompWorkstationTimeFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperationComponentFieldsTNFO;
 import com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants;
 import com.qcadoo.model.api.DataDefinition;
@@ -80,6 +87,7 @@ public class TechnologyOperationComponentHooksTNFO {
         checkArgument(target != null, "given target is null");
         checkArgument(source != null, "given source is null");
 
+        copyOperationWorkstationTimes(target, source);
         if (!shouldPropagateValuesFromLowerInstance(target)) {
             return;
         }
@@ -89,6 +97,27 @@ public class TechnologyOperationComponentHooksTNFO {
                 continue;
             }
             target.setField(fieldName, source.getField(fieldName));
+        }
+    }
+
+    private void copyOperationWorkstationTimes(Entity target, Entity source) {
+        if (target.getHasManyField(TECH_OPER_COMP_WORKSTATION_TIMES).isEmpty()) {
+            DataDefinition techOperCompWorkstationTimeDD = dataDefinitionService.get(TimeNormsConstants.PLUGIN_IDENTIFIER,
+                    TimeNormsConstants.TECH_OPER_COMP_WORKSTATION_TIME);
+            List<Entity> techOperCompWorkstationTimes = Lists.newArrayList();
+            for (Entity operationWorkstationTime : source.getHasManyField(OperationFieldsTFNO.OPERATION_WORKSTATION_TIMES)) {
+                Entity techOperCompWorkstationTime = techOperCompWorkstationTimeDD.create();
+                techOperCompWorkstationTime.setField(TechOperCompWorkstationTimeFields.WORKSTATION,
+                        operationWorkstationTime.getField(OperationWorkstationTimeFields.WORKSTATION));
+                techOperCompWorkstationTime.setField(TechOperCompWorkstationTimeFields.TPZ,
+                        operationWorkstationTime.getField(OperationWorkstationTimeFields.TPZ));
+                techOperCompWorkstationTime.setField(TechOperCompWorkstationTimeFields.TJ,
+                        operationWorkstationTime.getField(OperationWorkstationTimeFields.TJ));
+                techOperCompWorkstationTime.setField(TechOperCompWorkstationTimeFields.TIME_NEXT_OPERATION,
+                        operationWorkstationTime.getField(OperationWorkstationTimeFields.TIME_NEXT_OPERATION));
+                techOperCompWorkstationTimes.add(techOperCompWorkstationTime);
+            }
+            target.setField(TECH_OPER_COMP_WORKSTATION_TIMES, techOperCompWorkstationTimes);
         }
     }
 
