@@ -1,5 +1,19 @@
 package com.qcadoo.mes.technologies.listeners;
 
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.google.common.collect.Sets;
 import com.qcadoo.mes.states.service.client.util.ViewContextHolder;
 import com.qcadoo.mes.technologies.TechnologyNameAndNumberGenerator;
@@ -17,20 +31,6 @@ import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ChangeTechnologyParametersListeners {
@@ -82,8 +82,9 @@ public class ChangeTechnologyParametersListeners {
         Entity entity = form.getPersistedEntityWithIncludedFormValues();
 
         if (entity.getBooleanField(L_CHANGE_GROUP) && Objects.nonNull(entity.getLongField(L_TECHNOLOGY_GROUP))) {
-            group = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_TECHNOLOGY_GROUP).get(entity.getLongField(L_TECHNOLOGY_GROUP));
+            group = dataDefinitionService
+                    .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_GROUP)
+                    .get(entity.getLongField(L_TECHNOLOGY_GROUP));
             entity.setField(L_TECHNOLOGY_GROUP, group);
         }
 
@@ -94,15 +95,15 @@ public class ChangeTechnologyParametersListeners {
                 return;
             }
         } catch (IllegalArgumentException e) {
-            form.findFieldComponentByName(L_STANDARD_PERFORMANCE_TECHNOLOGY).addMessage(
-                    "qcadooView.validate.field.error.invalidNumericFormat", ComponentState.MessageType.FAILURE);
+            form.findFieldComponentByName(L_STANDARD_PERFORMANCE_TECHNOLOGY)
+                    .addMessage("qcadooView.validate.field.error.invalidNumericFormat", ComponentState.MessageType.FAILURE);
             generated.setChecked(false);
             return;
         }
         JSONObject context = view.getJsonContext();
-        Set<Long> ids = Arrays
-                .stream(context.getString("window.mainTab.form.gridLayout.selectedEntities").replaceAll("[\\[\\]]", "")
-                        .split(",")).map(Long::valueOf).collect(Collectors.toSet());
+        Set<Long> ids = Arrays.stream(
+                context.getString("window.mainTab.form.gridLayout.selectedEntities").replaceAll("[\\[\\]]", "").split(","))
+                .map(Long::valueOf).collect(Collectors.toSet());
 
         BigDecimal standardPerformanceTechnology = null;
         if (entity.getBooleanField(L_CHANGE_PERFORMANCE_NORM)) {
@@ -123,8 +124,8 @@ public class ChangeTechnologyParametersListeners {
             Entity finalGroup, BigDecimal finalStandardPerformanceTechnology) {
         boolean updateOperationTimeNorms = entity.getBooleanField(L_UPDATE_OPERATION_TIME_NORMS);
         ids.forEach(techId -> {
-            Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_TECHNOLOGY).get(techId);
+            Entity technology = dataDefinitionService
+                    .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).get(techId);
 
             technology.setField(TechnologyFields.MASTER, Boolean.FALSE);
             technology = technology.getDataDefinition().save(technology);
@@ -161,6 +162,7 @@ public class ChangeTechnologyParametersListeners {
                         if (operation.getField(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY) == null) {
                             toc.setField(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY, "0");
                         }
+                        copyOperationWorkstationTimes(toc, operation);
                         toc.getDataDefinition().save(toc);
                     });
 
@@ -181,6 +183,21 @@ public class ChangeTechnologyParametersListeners {
                 throw new IllegalStateException("There was a problem creating the technology");
             }
         });
+    }
+
+    private void copyOperationWorkstationTimes(Entity toc, Entity operation) {
+        for (Entity operationWorkstationTime : operation.getHasManyField("operationWorkstationTimes")) {
+            for (Entity techOperCompWorkstationTime : toc.getHasManyField("techOperCompWorkstationTimes")) {
+                if (techOperCompWorkstationTime.getBelongsToField("workstation").getId()
+                        .equals(operationWorkstationTime.getBelongsToField("workstation").getId())) {
+                    techOperCompWorkstationTime.setField("tpz", operationWorkstationTime.getField("tpz"));
+                    techOperCompWorkstationTime.setField("tj", operationWorkstationTime.getField("tj"));
+                    techOperCompWorkstationTime.setField("timeNextOperation",
+                            operationWorkstationTime.getField("timeNextOperation"));
+                    techOperCompWorkstationTime.getDataDefinition().save(techOperCompWorkstationTime);
+                }
+            }
+        }
     }
 
     public void onChangePerformanceNorm(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -207,7 +224,8 @@ public class ChangeTechnologyParametersListeners {
         }
     }
 
-    public void onChangeUpdateOperationTimeNorms(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+    public void onChangeUpdateOperationTimeNorms(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
 
     }
 
