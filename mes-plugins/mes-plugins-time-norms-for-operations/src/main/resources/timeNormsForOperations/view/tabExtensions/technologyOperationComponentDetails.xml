@@ -76,10 +76,10 @@
                            source="#{form}.techOperCompWorkstationTimes">
                     <option type="column" name="workstation" fields="workstation"
                             expression="#workstation['number']" link="true" width="50"/>
-                    <option type="column" name="tj" fields="tj" width="40"
-                            expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#tj)"/>
                     <option type="column" name="tpz" fields="tpz" width="40"
                             expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#tpz)"/>
+                    <option type="column" name="tj" fields="tj" width="40"
+                            expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#tj)"/>
                     <option type="column" name="timeNextOperation" fields="timeNextOperation" width="40"
                             expression="T(com.qcadoo.view.api.utils.TimeConverterService).convertTimeToString(#timeNextOperation)"/>
 
