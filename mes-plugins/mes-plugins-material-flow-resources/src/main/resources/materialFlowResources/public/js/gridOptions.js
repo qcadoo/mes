@@ -1475,6 +1475,7 @@ myApp.controller('GridController', ['$scope', '$window', '$http', function ($sco
                 {
                     name: 'product',
                     index: 'product',
+                    width: 250,
                     editable: true,
                     required: true,
                     edittype: 'custom',
