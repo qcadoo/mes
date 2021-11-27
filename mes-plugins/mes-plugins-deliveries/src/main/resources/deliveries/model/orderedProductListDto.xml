@@ -37,6 +37,7 @@
         <string name="productNumber"/>
         <string name="productUnit"/>
         <decimal name="orderedQuantity"/>
+        <decimal name="deliveredQuantity"/>
         <decimal name="conversion"/>
         <decimal name="pricePerUnit"/>
         <string name="description"/>
