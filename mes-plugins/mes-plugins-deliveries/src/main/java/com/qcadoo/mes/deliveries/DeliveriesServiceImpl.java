@@ -1061,6 +1061,13 @@ public class DeliveriesServiceImpl implements DeliveriesService {
             }
         }
 
+        if (Objects.nonNull(deliveredProduct.getField(DeliveredProductFields.PRICE_PER_UNIT))) {
+            searchCriteriaBuilder
+                    .add(SearchRestrictions.eq(DeliveredProductFields.PRICE_PER_UNIT, deliveredProduct.getField(DeliveredProductFields.PRICE_PER_UNIT)));
+        } else {
+            searchCriteriaBuilder.add(SearchRestrictions.isNull(DeliveredProductFields.PRICE_PER_UNIT));
+        }
+
         if (checkOther) {
             if (PluginUtils.isEnabled("deliveriesToMaterialFlow")) {
                 Entity palletNumber = deliveredProduct.getBelongsToField(DeliveredProductFields.PALLET_NUMBER);
