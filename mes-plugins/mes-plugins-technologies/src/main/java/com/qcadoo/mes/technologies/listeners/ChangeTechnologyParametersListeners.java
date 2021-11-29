@@ -195,6 +195,7 @@ public class ChangeTechnologyParametersListeners {
                     techOperCompWorkstationTime.setField("timeNextOperation",
                             operationWorkstationTime.getField("timeNextOperation"));
                     techOperCompWorkstationTime.getDataDefinition().save(techOperCompWorkstationTime);
+                    break;
                 }
             }
         }
