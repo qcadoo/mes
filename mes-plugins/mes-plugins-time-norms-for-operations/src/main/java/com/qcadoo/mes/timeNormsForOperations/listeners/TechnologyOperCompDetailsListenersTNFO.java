@@ -72,11 +72,13 @@ public class TechnologyOperCompDetailsListenersTNFO {
                 .get((Long) operationLookup.getFieldValue());
 
         FormComponent formComponent = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
-        Entity toc = dataDefinitionService
-                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
-                .get(formComponent.getEntityId());
+        if (formComponent.getEntityId() != null) {
+            Entity toc = dataDefinitionService
+                    .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
+                    .get(formComponent.getEntityId());
 
-        copyOperationWorkstationTimes(toc, operation);
+            copyOperationWorkstationTimes(toc, operation);
+        }
         applyTimeNormsFromGivenSource(view, operation, FIELDS_OPERATION);
     }
 
