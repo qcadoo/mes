@@ -142,8 +142,8 @@
                                    field="#{form}.updateOperationTimeNorms" hasDescription="true">
                             <option type="labelWidth" value="35" />
                             <listener event="onChange"
-                                      class="com.qcadoo.mes.technologies.listeners.ChangeTechnologyParametersListeners"
-                                      method="onChangeUpdateOperationTimeNorms"/>
+                                      class="com.qcadoo.view.api.listeners.RerenderListener"
+                                      method="onChangeRerender"/>
                         </component>
                     </layoutElement>
                 </component>
