@@ -46,8 +46,6 @@ public final class BasicConstants {
 
     public static final String MODEL_STAFF = "staff";
 
-    public static final String MODEL_SUBSTITUTE = "substitute";
-
     public static final String MODEL_SUBSTITUTE_COMPONENT = "substituteComponent";
 
     public static final String MODEL_COMPANY = "company";
