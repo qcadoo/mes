@@ -23,23 +23,25 @@
  */
 package com.qcadoo.mes.basic.hooks;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.basic.CompanyService;
 import com.qcadoo.mes.basic.ParameterService;
 import com.qcadoo.mes.basic.constants.BasicConstants;
 import com.qcadoo.mes.basic.constants.CompanyFields;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ViewDefinitionState;
+import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
-import java.util.List;
 
 @Service
 public class CompanyDetailsHooks {
@@ -112,23 +114,25 @@ public class CompanyDetailsHooks {
             return;
         }
 
+        CheckBoxComponent isSetFieldsFromParameter = (CheckBoxComponent) view
+                .getComponentByReference(CompanyFields.IS_SET_FIELDS_FROM_PARAMETER);
+        if (isSetFieldsFromParameter.isChecked()) {
+            return;
+        }
+
         LookupComponent countryField = (LookupComponent) view.getComponentByReference(CompanyFields.COUNTRY);
         LookupComponent taxCountryField = (LookupComponent) view.getComponentByReference(CompanyFields.TAX_COUNTRY_CODE);
 
-        Entity country = countryField.getEntity();
+        Entity defaultCountry = parameterService.getParameter().getBelongsToField(CompanyFields.COUNTRY);
 
-        if (country == null) {
-            Entity defaultCountry = parameterService.getParameter().getBelongsToField(CompanyFields.COUNTRY);
-
-            if (defaultCountry == null) {
-                countryField.setFieldValue(null);
-            } else {
-                countryField.setFieldValue(defaultCountry.getId());
-                taxCountryField.setFieldValue(defaultCountry.getId());
-            }
+        if (defaultCountry != null) {
+            countryField.setFieldValue(defaultCountry.getId());
+            taxCountryField.setFieldValue(defaultCountry.getId());
             taxCountryField.requestComponentUpdateState();
             countryField.requestComponentUpdateState();
         }
+        isSetFieldsFromParameter.setFieldValue(true);
+        isSetFieldsFromParameter.requestComponentUpdateState();
     }
 
     public void disabledFieldsForExternalCompany(final ViewDefinitionState view) {

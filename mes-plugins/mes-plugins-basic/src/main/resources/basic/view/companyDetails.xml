@@ -88,6 +88,10 @@
                                    reference="number">
                             <option type="alignment" value="right"/>
                         </component>
+                        <component type="checkbox" name="isSetFieldsFromParameter"
+                                   defaultVisible="false" field="isSetFieldsFromParameter"
+                                   reference="isSetFieldsFromParameter">
+                        </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
                         <component type="input" name="name" field="name"
