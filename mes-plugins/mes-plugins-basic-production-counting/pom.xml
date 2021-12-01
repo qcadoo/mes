@@ -20,6 +20,13 @@
 			<artifactId>mes-plugins-orders</artifactId>
 			<version>1.5-SNAPSHOT-DEV</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.qcadoo.mes</groupId>
+			<artifactId>mes-plugins-advanced-genealogy</artifactId>
+			<version>1.5-SNAPSHOT-DEV</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

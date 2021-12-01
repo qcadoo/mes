@@ -24,19 +24,21 @@
     ***************************************************************************
 
 -->
-<view defaultAuthorizationRole="ROLE_ORDER_MATERIAL_AVAILABILITY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/view"
-	xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
-	name="orderWithMaterialAvailabilityList" modelName="order"
-	modelPlugin="orders" menuAccessible="true">
+<view defaultAuthorizationRole="ROLE_ORDER_MATERIAL_AVAILABILITY" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xmlns="http://schema.qcadoo.org/view"
+      xsi:schemaLocation="http://schema.qcadoo.org/view http://schema.qcadoo.org/view.xsd"
+      name="orderWithMaterialAvailabilityList" modelName="order"
+      modelPlugin="orders" menuAccessible="true">
 
-	<component type="window" name="window" reference="window">
-	
-		<ribbon>
-			<template name="standardGridTemplate" excludeItems="actions.new,actions.copy,actions.delete,actions.refresh" />
-			<group name="materialAvailability">
-				<bigButton name="showAvailability" icon="generateIcon24.png">
-					<script>
-						<![CDATA[
+    <component type="window" name="window" reference="window">
+
+        <ribbon>
+            <template name="standardGridTemplate"
+                      excludeItems="actions.new,actions.copy,actions.delete,actions.refresh"/>
+            <group name="materialAvailability">
+                <bigButton name="showAvailability" icon="generateIcon24.png">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if(window.canClose()) {
@@ -45,11 +47,11 @@
 								}
 							});
 						]]>
-					</script>
-				</bigButton>
-				<bigButton name="showReplacementsAvailability" icon="generateIcon24.png">
-					<script>
-						<![CDATA[
+                    </script>
+                </bigButton>
+                <bigButton name="showReplacementsAvailability" icon="generateIcon24.png">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if(window.canClose()) {
@@ -58,13 +60,13 @@
 								}
 							});
 						]]>
-					</script>
-				</bigButton>
-			</group>
-			<group name="resources" defaultAuthorizationRole="ROLE_ORDER_MATERIAL_AVAILABILITY_SHOW_RESOURCES">
-				<bigButton name="showWarehouseResources" icon="generateIcon24.png">
-					<script>
-						<![CDATA[
+                    </script>
+                </bigButton>
+            </group>
+            <group name="resources" defaultAuthorizationRole="ROLE_ORDER_MATERIAL_AVAILABILITY_SHOW_RESOURCES">
+                <bigButton name="showWarehouseResources" icon="generateIcon24.png">
+                    <script>
+                        <![CDATA[
 							this.addOnChangeListener({
 								onClick: function() {
 									if(window.canClose()) {
@@ -73,64 +75,69 @@
 								}
 							});
 						]]>
-					</script>
-				</bigButton>
-			</group>
-		</ribbon>
-		
-		<component type="form" name="order" reference="order">
-            <option type="header" value="true" />
-            <option type="expression" value="#name + ' - ' + #number" />
-		</component>
-		<component type="form" name="availabilityComponentForm"
-			reference="availabilityComponentForm">
-			<component type="gridLayout" name="gridLayout" columns="1" rows="1">
-				<layoutElement column="1" row="1" >
-					<component type="input" name="terminal" reference="terminal"
-							   defaultVisible="false" defaultEnabled="false"/>
-					<component type="grid" name="availabilityComponentList"
-						reference="grid" source="#{order}.materialAvailability">
-						<option type="column" name="productNumber" fields="product"
-							expression="#product.get('number')" width="150" />
-						<option type="column" name="productName" fields="product"
-							expression="#product.get('name')" width="300" />
-						<option type="column" name="availability" fields="availability" />
-						<option type="column" name="availableQuantity" fields="availableQuantity" />
-						<option type="column" name="requiredQuantity" fields="requiredQuantity" />
-                        <option type="column" name="unit" fields="product" expression="#product['unit']"/>
-                        <option type="column" name="warehouse" fields="location" expression="#location['number']"/>
-						<option type="column" name="replacement" fields="replacement" />
+                    </script>
+                </bigButton>
+            </group>
+        </ribbon>
 
-						<option type="order" column="productNumber" direction="asc" />
-						
-						<option type="searchable" value="productName,productNumber,warehouse,availability,availableQuantity,requiredQuantity,replacement" />
-						<option type="orderable" value="productName,productNumber,availability,availableQuantity,requiredQuantity,replacement" />
-						
-						<option type="fullscreen" value="true" />
-						<option type="multiselect" value="true" />
-						<option type="fixedHeight" value="true" />
+        <component type="form" name="order" reference="order">
+            <option type="header" value="true"/>
+            <option type="expression" value="#name + ' - ' + #number"/>
+        </component>
+        <component type="form" name="availabilityComponentForm"
+                   reference="availabilityComponentForm">
+            <component type="gridLayout" name="gridLayout" columns="1" rows="1">
+                <layoutElement column="1" row="1">
+                    <component type="input" name="terminal" reference="terminal"
+                               defaultVisible="false" defaultEnabled="false"/>
+                    <component type="grid" name="availabilityComponentList" useDto="true"
+                               model="materialAvailabilityDto"
+                               reference="grid" source="#{order}.materialAvailabilityDto">
+                        <option type="column" name="productNumber" fields="productNumber" width="150"/>
+                        <option type="column" name="productName" fields="productName" width="300"/>
+                        <option type="column" name="availability" fields="availability"/>
+                        <option type="column" name="availableQuantity" fields="availableQuantity"/>
+                        <option type="column" name="requiredQuantity" fields="requiredQuantity"/>
+                        <option type="column" name="productUnit" fields="productUnit"/>
+                        <option type="column" name="locationNumber" fields="locationNumber"/>
+                        <option type="column" name="replacement" fields="replacement"/>
+                        <option type="column" name="batches" fields="batches"/>
+                        <option type="column" name="batchesQuantity" fields="batchesQuantity"
+                                classesCondition="rowObject['requiredQuantity'] > rowObject['batchesQuantity']"
+                                classesNames="red-cell" />
 
-						<listener event="showAvailability"
-								  class="com.qcadoo.mes.productFlowThruDivision.listeners.OrderWithMaterialAvailabilityListListeners"
-								  method="showAvailability"/>
-						<listener event="showReplacementsAvailability"
-								  class="com.qcadoo.mes.productFlowThruDivision.listeners.OrderWithMaterialAvailabilityListListeners"
-								  method="showReplacementsAvailability"/>
-						<listener event="showWarehouseResources"
-								  class="com.qcadoo.mes.productFlowThruDivision.listeners.OrderWithMaterialAvailabilityListListeners"
-								  method="showWarehouseResources"/>
-					</component>
-				</layoutElement>
-			</component>
+                        <option type="order" column="productNumber" direction="asc"/>
 
-		</component>
-		<option type="fixedHeight" value="true" />
-	</component>
-	
-	<hooks>
-		<beforeRender
-				class="com.qcadoo.mes.productFlowThruDivision.hooks.OrderWithMaterialAvailabilityListHooks"
-				method="toggleShowAvailabilityButton"/>
-	</hooks>
-	
+                        <option type="searchable"
+                                value="batchesQuantity,batches,productName,productNumber,locationNumber,availability,availableQuantity,requiredQuantity,replacement"/>
+                        <option type="orderable"
+                                value="batchesQuantity,batches,productName,productNumber,availability,availableQuantity,requiredQuantity,replacement"/>
+
+                        <option type="fullscreen" value="true"/>
+                        <option type="multiselect" value="true"/>
+                        <option type="fixedHeight" value="true"/>
+
+                        <listener event="showAvailability"
+                                  class="com.qcadoo.mes.productFlowThruDivision.listeners.OrderWithMaterialAvailabilityListListeners"
+                                  method="showAvailability"/>
+                        <listener event="showReplacementsAvailability"
+                                  class="com.qcadoo.mes.productFlowThruDivision.listeners.OrderWithMaterialAvailabilityListListeners"
+                                  method="showReplacementsAvailability"/>
+                        <listener event="showWarehouseResources"
+                                  class="com.qcadoo.mes.productFlowThruDivision.listeners.OrderWithMaterialAvailabilityListListeners"
+                                  method="showWarehouseResources"/>
+                    </component>
+                </layoutElement>
+            </component>
+
+        </component>
+        <option type="fixedHeight" value="true"/>
+    </component>
+
+    <hooks>
+        <beforeRender
+                class="com.qcadoo.mes.productFlowThruDivision.hooks.OrderWithMaterialAvailabilityListHooks"
+                method="toggleShowAvailabilityButton"/>
+    </hooks>
+
 </view>

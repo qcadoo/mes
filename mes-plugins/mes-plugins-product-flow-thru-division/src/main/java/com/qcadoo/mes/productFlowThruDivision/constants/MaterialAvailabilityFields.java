@@ -44,4 +44,10 @@ public final class MaterialAvailabilityFields {
     public static final String LOCATION = "location";
 
     public static final String REPLACEMENT = "replacement";
+
+    public static final String BATCHES = "batches";
+
+    public static final String BATCHES_ID = "batchesId";
+
+    public static final String BATCHES_QUANTITY = "batchesQuantity";
 }

@@ -71,4 +71,6 @@ public final class ProductionCountingQuantityFields {
 
     public static final String PRODUCTION_COUNTING_ATTRIBUTE_VALUES = "productionCountingAttributeValues";
 
+    public static final String BATCHES = "batches";
+
 }

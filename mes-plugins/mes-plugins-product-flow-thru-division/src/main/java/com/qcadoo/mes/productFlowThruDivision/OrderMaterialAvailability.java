@@ -3,6 +3,7 @@ package com.qcadoo.mes.productFlowThruDivision;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.qcadoo.mes.advancedGenealogy.constants.BatchFields;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
@@ -213,8 +214,9 @@ public class OrderMaterialAvailability {
                     Entity location = baseUsedMaterial
                             .getBelongsToField(ProductionCountingQuantityFieldsPFTD.COMPONENTS_LOCATION);
 
+
                     newOrderMaterialAvailability.add(createMaterialAvailabilityEntity(orderMaterialAvailabilityDD, product,
-                            order, totalQuantity, location));
+                            order, totalQuantity, location, baseUsedMaterial.getHasManyField(ProductionCountingQuantityFields.BATCHES)));
                 }
             }
         }
@@ -223,7 +225,7 @@ public class OrderMaterialAvailability {
     }
 
     private Entity createMaterialAvailabilityEntity(final DataDefinition orderMaterialAvailabilityDD, final Entity product,
-            final Entity order, final BigDecimal value, final Entity location) {
+                                                    final Entity order, final BigDecimal value, final Entity location, EntityList batchesList) {
         Entity materialAvailability = orderMaterialAvailabilityDD.create();
 
         List<Entity> replacements = product.getDataDefinition().get(product.getId())
@@ -237,6 +239,15 @@ public class OrderMaterialAvailability {
         materialAvailability.setField(MaterialAvailabilityFields.REQUIRED_QUANTITY,
                 numberService.setScaleWithDefaultMathContext(value, REQUIRED_QUANTITY_SCALE));
         materialAvailability.setField(MaterialAvailabilityFields.LOCATION, location);
+        String batches = batchesList.stream()
+                .map(n -> n.getStringField(BatchFields.NUMBER))
+                .collect(Collectors.joining( "," ));
+        String batchesId = batchesList.stream()
+                .map(n -> n.getId().toString())
+                .collect(Collectors.joining( "," ));
+        materialAvailability.setField(MaterialAvailabilityFields.BATCHES, batches);
+        materialAvailability.setField(MaterialAvailabilityFields.BATCHES_ID, batchesId);
+        materialAvailability.setField("", order);
 
         return materialAvailability;
     }
