@@ -62,7 +62,10 @@
         <boolean name="production" default="true"/>
 
         <tree name="factoryStructure" model="factoryStructureElement"
-              joinField="productionLine" cascade="delete" plugin="productionLines"/>
+            joinField="productionLine" cascade="delete" plugin="productionLines"/>
+
+        <hasMany plugin="qcadooSecurity" model="user"
+            joinField="productionLine" name="users" cascade="nullify"/>
     </fields>
 
     <hooks>

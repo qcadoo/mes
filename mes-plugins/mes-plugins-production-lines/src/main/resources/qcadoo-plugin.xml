@@ -95,10 +95,6 @@
         <model:model-field plugin="qcadooSecurity" model="user">
             <model:belongsTo model="productionLine" plugin="productionLines" name="productionLine"/>
         </model:model-field>
-        <model:model-field plugin="productionLines" model="productionLine">
-            <model:hasMany plugin="qcadooSecurity" model="user"
-                           joinField="productionLine" name="users" cascade="nullify"/>
-        </model:model-field>
 
         <model:model-hook model="parameter" plugin="basic">
             <model:onCreate
