@@ -73,7 +73,9 @@
 				]]>
 			</script>
 			<option type="column" name="orderNumber" fields="orderNumber"
-					width="200"/>
+					width="100"/>
+			<option type="column" name="orderStartDate" fields="orderStartDate"
+					width="100"/>
 			<option type="column" name="technologyOperationComponentNumber"
 					fields="technologyOperationComponentNumber" width="120"/>
 			<option type="column" name="productNumber" fields="productNumber"
@@ -84,6 +86,8 @@
 					width="80"/>
 			<option type="column" name="usedQuantity" fields="usedQuantity"
 					width="80"/>
+			<option type="column" name="quantityDeviation" fields="quantityDeviation"
+					width="80"/>
 			<option type="column" name="productUnit" fields="productUnit"
 					width="60"/>
 			<option type="column" name="typeOfRecord" fields="typeOfRecord"
@@ -92,9 +96,13 @@
 			<option type="order" column="orderNumber" direction="asc"/>
 
 			<option type="searchable"
-					value="orderNumber,technologyOperationComponentNumber,productNumber,productName,plannedQuantity,usedQuantity,productUnit,typeOfRecord"/>
+					value="orderNumber,orderStartDate,technologyOperationComponentNumber,productNumber,productName,plannedQuantity,usedQuantity,quantityDeviation,productUnit,typeOfRecord"/>
 			<option type="orderable"
-					value="orderNumber,technologyOperationComponentNumber,productNumber,productName,plannedQuantity,usedQuantity,productUnit,typeOfRecord"/>
+					value="orderNumber,orderStartDate,technologyOperationComponentNumber,productNumber,productName,plannedQuantity,usedQuantity,quantityDeviation,productUnit,typeOfRecord"/>
+
+			<option type="footerRow" value="true"/>
+			<option type="columnsToSummary"
+					value="plannedQuantity,usedQuantity,quantityDeviation"/>
 
 			<option type="fullscreen" value="true"/>
 			<option type="multiselect" value="false"/>

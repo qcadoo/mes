@@ -116,6 +116,10 @@
 			<option type="orderable"
 					value="number,orderNumber,producedBatchNumber,technologyOperationComponentNumber,shiftName,staffName,divisionNumber,productNumber,plannedQuantity,usedQuantity,productUnit,state,createDate,lastTracking,timeRangeFrom,timeRangeTo,batchNumber,typeOfRecord"/>
 
+			<option type="footerRow" value="true"/>
+			<option type="columnsToSummary"
+					value="plannedQuantity,usedQuantity"/>
+
 			<option type="fullscreen" value="true"/>
 			<option type="multiselect" value="false"/>
 
