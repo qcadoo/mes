@@ -6,11 +6,13 @@ import static com.qcadoo.model.api.search.SearchProjections.list;
 import static com.qcadoo.model.api.search.SearchProjections.rowCount;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -53,7 +55,6 @@ import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.JoinType;
 import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
@@ -281,18 +282,38 @@ public class ScheduleDetailsListenersPS {
     }
 
     private Date getFinishDateWithChildren(Entity position, Entity schedule, Date finishDate) {
-        List<Entity> children = getChildren(position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT),
-                position.getBelongsToField(SchedulePositionFields.ORDER), schedule);
-        if (pluginManager.isPluginEnabled(ORDERS_FOR_SUBPRODUCTS_GENERATION)) {
-            children.addAll(getOrderChildren(position.getBelongsToField(SchedulePositionFields.ORDER), schedule));
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put(SCHEDULE_ID, schedule.getId());
+        parameters.put("orderId", position.getBelongsToField(SchedulePositionFields.ORDER).getId());
+        parameters.put("tocId", position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT).getId());
+        StringBuilder query = new StringBuilder();
+        if (!schedule.getBooleanField(ScheduleFields.ADDITIONAL_TIME_EXTENDS_OPERATION)) {
+            query.append("SELECT MAX(sp.endtime + (interval '1 second' * sp.additionaltime)) ");
+        } else {
+            query.append("SELECT MAX(sp.endtime) ");
         }
-        for (Entity child : children) {
-            Date childEndTime = child.getDateField(SchedulePositionFields.END_TIME);
+        query.append("FROM orders_scheduleposition sp JOIN technologies_technologyoperationcomponent toc ");
+        query.append("ON sp.technologyoperationcomponent_id = toc.id WHERE sp.schedule_id = :scheduleId ");
+        query.append("AND sp.order_id = :orderId AND toc.parent_id = :tocId ");
+
+        Date childEndTime = jdbcTemplate.queryForObject(query.toString(), parameters, Timestamp.class);
+        if (!Objects.isNull(childEndTime) && childEndTime.after(finishDate)) {
+            finishDate = childEndTime;
+        }
+        if (pluginManager.isPluginEnabled(ORDERS_FOR_SUBPRODUCTS_GENERATION)) {
+            query = new StringBuilder();
             if (!schedule.getBooleanField(ScheduleFields.ADDITIONAL_TIME_EXTENDS_OPERATION)) {
-                childEndTime = Date.from(
-                        childEndTime.toInstant().plusSeconds(child.getIntegerField(SchedulePositionFields.ADDITIONAL_TIME)));
+                query.append("SELECT MAX(sp.endtime + (interval '1 second' * sp.additionaltime)) ");
+            } else {
+                query.append("SELECT MAX(sp.endtime) ");
             }
-            if (childEndTime.after(finishDate)) {
+            query.append("FROM orders_scheduleposition sp JOIN technologies_technologyoperationcomponent toc ");
+            query.append("ON sp.technologyoperationcomponent_id = toc.id JOIN orders_order o ON sp.order_id = o.id ");
+            query.append("WHERE sp.schedule_id = :scheduleId AND o.parent_id = :orderId AND toc.parent_id IS NULL ");
+            query.append("AND sp.endtime IS NOT NULL ");
+
+            childEndTime = jdbcTemplate.queryForObject(query.toString(), parameters, Timestamp.class);
+            if (!Objects.isNull(childEndTime) && childEndTime.after(finishDate)) {
                 finishDate = childEndTime;
             }
         }
@@ -335,25 +356,6 @@ public class ScheduleDetailsListenersPS {
         return finishDate;
     }
 
-    private List<Entity> getChildren(Entity technologyOperationComponent, Entity order, Entity schedule) {
-        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).find()
-                .createAlias(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT, "toc", JoinType.INNER)
-                .add(SearchRestrictions.belongsTo("toc." + TechnologyOperationComponentFields.PARENT,
-                        technologyOperationComponent))
-                .add(SearchRestrictions.belongsTo(SchedulePositionFields.ORDER, order))
-                .add(SearchRestrictions.belongsTo(SchedulePositionFields.SCHEDULE, schedule)).list().getEntities();
-    }
-
-    private List<Entity> getOrderChildren(Entity order, Entity schedule) {
-        return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).find()
-                .createAlias(SchedulePositionFields.ORDER, "o", JoinType.INNER)
-                .add(SearchRestrictions.belongsTo("o.parent", order))
-                .createAlias(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT, "toc", JoinType.INNER)
-                .add(SearchRestrictions.isNull("toc." + TechnologyOperationComponentFields.PARENT))
-                .add(SearchRestrictions.isNotNull(SchedulePositionFields.END_TIME))
-                .add(SearchRestrictions.belongsTo(SchedulePositionFields.SCHEDULE, schedule)).list().getEntities();
-    }
-
     private Date getOperationalTasksMaxFinishDateForWorkstation(Date scheduleStartTime, Entity workstation) {
         Entity operationalTasksMaxFinishDateEntity = dataDefinitionService
                 .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK).find()
@@ -378,7 +380,7 @@ public class ScheduleDetailsListenersPS {
         position.setField(SchedulePositionFields.LABOR_WORK_TIME, positionNewData.getLaborWorkTime());
         position.setField(SchedulePositionFields.MACHINE_WORK_TIME, positionNewData.getMachineWorkTime());
         position.setField(SchedulePositionFields.ADDITIONAL_TIME, positionNewData.getAdditionalTime());
-        position.getDataDefinition().save(position);
+        position.getDataDefinition().fastSave(position);
     }
 
     private List<Long> sortPositionsForWorkstations(Long scheduleId) {
