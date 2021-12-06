@@ -23,32 +23,47 @@
  */
 package com.qcadoo.mes.basic.imports.parsers;
 
+import java.util.Objects;
+import java.util.function.Consumer;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.LabelFields;
+import com.qcadoo.mes.basic.imports.helpers.CellErrorsAccessor;
 import com.qcadoo.mes.basic.imports.helpers.CellParser;
+import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 
 @Component
-public class DictionaryCellParsers {
+public class LabelCellParser implements CellParser {
+
+    private static final String L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_LOOKUP_CODE_NOT_FOUND = "qcadooView.validate.field.error.lookupCodeNotFound";
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
 
-    public CellParser productCategory() {
-        return new DictionaryCellParser(dataDefinitionService, "categories");
+    @Override
+    public void parse(final String cellValue, final String dependentCellValue, final CellErrorsAccessor errorsAccessor, final Consumer<Object> valueConsumer) {
+        Entity label = getLabelByName(cellValue);
+
+        if (Objects.isNull(label)) {
+            errorsAccessor.addError(L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_LOOKUP_CODE_NOT_FOUND);
+        } else {
+            valueConsumer.accept(label);
+        }
     }
 
-    public CellParser units() {
-        return new DictionaryCellParser(dataDefinitionService, "units");
+    private Entity getLabelByName(final String name) {
+        return getLabelDD().find().add(SearchRestrictions.eq(LabelFields.NAME, name)).setMaxResults(1)
+                .uniqueResult();
     }
 
-    public CellParser typeOfPallet() {
-        return new DictionaryCellParser(dataDefinitionService, "typeOfPallet");
-    }
-
-    public CellParser typeOfProducts() {
-        return new DictionaryCellParser(dataDefinitionService, "typeOfProducts");
+    private DataDefinition getLabelDD() {
+        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_LABEL);
     }
 
 }

@@ -106,6 +106,8 @@ public final class BasicConstants {
 
     public static final String MODEL_LABEL = "label";
 
+    public static final String MODEL_FORMS = "forms";
+
     public static final String MODEL_ATTRIBUTE = "attribute";
 
     public static final String PRODUCT_ATTRIBUTE_VALUE = "productAttributeValue";

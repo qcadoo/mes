@@ -539,6 +539,8 @@
 
         <view:view resource="view/modelsList.xml"/>
         <view:view resource="view/modelDetails.xml"/>
+        <view:view resource="view/modelsImport.xml"/>
+
         <view:view resource="view/productFamilySizes.xml"/>
         <view:view resource="view/addProductFamilySizes.xml"/>
         <view:view resource="view/technologicalProcessRateList.xml"/>

@@ -34,6 +34,10 @@
 
         <ribbon>
             <template name="standardGridTemplate"/>
+            <group name="import">
+                <bigButton name="openModelsImportPage" state="enabled" icon="xlsIcon24.png"
+                           action="#{window}.fireEvent(openModelsImportPage);"/>
+            </group>
         </ribbon>
 
         <component type="grid" name="models" reference="grid">
@@ -56,6 +60,10 @@
             <option type="multiselect" value="true"/>
 
         </component>
+
+        <listener event="openModelsImportPage"
+                  class="com.qcadoo.mes.basic.listeners.ModelsListListeners"
+                  method="openModelsImportPage"/>
 
         <option type="fixedHeight" value="true"/>
         <option type="header" value="false"/>
