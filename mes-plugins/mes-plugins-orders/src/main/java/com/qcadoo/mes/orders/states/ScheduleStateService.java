@@ -1,5 +1,18 @@
 package com.qcadoo.mes.orders.states;
 
+import static com.qcadoo.model.api.search.SearchOrders.desc;
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.list;
+import static com.qcadoo.model.api.search.SearchProjections.rowCount;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.newstates.BasicStateService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
@@ -9,6 +22,7 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ScheduleFields;
 import com.qcadoo.mes.orders.constants.SchedulePositionFields;
 import com.qcadoo.mes.orders.constants.ScheduleStateChangeFields;
+import com.qcadoo.mes.orders.hooks.OperationalTaskHooks;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
@@ -22,18 +36,6 @@ import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import static com.qcadoo.model.api.search.SearchOrders.desc;
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.list;
-import static com.qcadoo.model.api.search.SearchProjections.rowCount;
 
 @Service
 public class ScheduleStateService extends BasicStateService implements ScheduleServiceMarker {
@@ -56,6 +58,9 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
 
     @Autowired
     private TechnologyServiceO technologyServiceO;
+
+    @Autowired
+    private OperationalTaskHooks operationalTaskHooks;
 
     @Override
     public StateChangeEntityDescriber getChangeEntityDescriber() {
@@ -264,8 +269,9 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
 
             Optional<Entity> maybeDivision = technologyServiceO.extractDivision(technology, technologyOperationComponent);
             maybeDivision.ifPresent(d -> operationalTask.setField(OperationalTaskFields.DIVISION, d));
-            operationalTaskDD.save(operationalTask);
-
+            operationalTaskHooks.setInitialState(operationalTask);
+            operationalTaskHooks.fillNameAndDescription(operationalTask);
+            operationalTaskDD.fastSave(operationalTask);
         }
         schedule.addGlobalMessage("productionScheduling.operationDurationDetailsInOrder.info.operationalTasksCreated");
     }

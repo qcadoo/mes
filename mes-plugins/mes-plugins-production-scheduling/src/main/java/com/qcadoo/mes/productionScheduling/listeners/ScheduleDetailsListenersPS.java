@@ -6,7 +6,6 @@ import static com.qcadoo.model.api.search.SearchProjections.list;
 import static com.qcadoo.model.api.search.SearchProjections.rowCount;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
@@ -41,6 +40,7 @@ import com.qcadoo.mes.orders.constants.SchedulePositionFields;
 import com.qcadoo.mes.orders.constants.ScheduleSortOrder;
 import com.qcadoo.mes.orders.constants.ScheduleWorkstationAssignCriterion;
 import com.qcadoo.mes.orders.listeners.ScheduleDetailsListeners;
+import com.qcadoo.mes.orders.validators.SchedulePositionValidators;
 import com.qcadoo.mes.productionLines.constants.WorkstationFieldsPL;
 import com.qcadoo.mes.technologies.ProductQuantitiesService;
 import com.qcadoo.mes.technologies.TechnologyService;
@@ -69,8 +69,6 @@ public class ScheduleDetailsListenersPS {
 
     private static final String L_ORDERS = "orders";
 
-    private static final String SCHEDULE_ID = "scheduleId";
-
     private static final String ORDERS_FOR_SUBPRODUCTS_GENERATION = "ordersForSubproductsGeneration";
 
     @Autowired
@@ -96,6 +94,9 @@ public class ScheduleDetailsListenersPS {
 
     @Autowired
     private PluginManager pluginManager;
+
+    @Autowired
+    private SchedulePositionValidators schedulePositionValidators;
 
     @Transactional
     public void generatePlan(final ViewDefinitionState view, final ComponentState state, final String[] args) {
@@ -263,7 +264,7 @@ public class ScheduleDetailsListenersPS {
                 allMachineWorkTimesEqualsZero = false;
             }
             Date finishDate = getFinishDate(workstationsFinishDates, scheduleStartTime, schedule, workstation);
-            finishDate = getFinishDateWithChildren(position, schedule, finishDate);
+            finishDate = getFinishDateWithChildren(position, finishDate);
             DateTime finishDateTime = new DateTime(finishDate);
             Date newStartDate = shiftsService
                     .getNearestWorkingDate(finishDateTime, workstation.getBelongsToField(WorkstationFieldsPL.PRODUCTION_LINE))
@@ -281,38 +282,13 @@ public class ScheduleDetailsListenersPS {
         return allMachineWorkTimesEqualsZero;
     }
 
-    private Date getFinishDateWithChildren(Entity position, Entity schedule, Date finishDate) {
-        Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put(SCHEDULE_ID, schedule.getId());
-        parameters.put("orderId", position.getBelongsToField(SchedulePositionFields.ORDER).getId());
-        parameters.put("tocId", position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT).getId());
-        StringBuilder query = new StringBuilder();
-        if (!schedule.getBooleanField(ScheduleFields.ADDITIONAL_TIME_EXTENDS_OPERATION)) {
-            query.append("SELECT MAX(sp.endtime + (interval '1 second' * sp.additionaltime)) ");
-        } else {
-            query.append("SELECT MAX(sp.endtime) ");
-        }
-        query.append("FROM orders_scheduleposition sp JOIN technologies_technologyoperationcomponent toc ");
-        query.append("ON sp.technologyoperationcomponent_id = toc.id WHERE sp.schedule_id = :scheduleId ");
-        query.append("AND sp.order_id = :orderId AND toc.parent_id = :tocId ");
-
-        Date childEndTime = jdbcTemplate.queryForObject(query.toString(), parameters, Timestamp.class);
+    private Date getFinishDateWithChildren(Entity position, Date finishDate) {
+        Date childEndTime = schedulePositionValidators.getChildrenMaxEndTime(position);
         if (!Objects.isNull(childEndTime) && childEndTime.after(finishDate)) {
             finishDate = childEndTime;
         }
         if (pluginManager.isPluginEnabled(ORDERS_FOR_SUBPRODUCTS_GENERATION)) {
-            query = new StringBuilder();
-            if (!schedule.getBooleanField(ScheduleFields.ADDITIONAL_TIME_EXTENDS_OPERATION)) {
-                query.append("SELECT MAX(sp.endtime + (interval '1 second' * sp.additionaltime)) ");
-            } else {
-                query.append("SELECT MAX(sp.endtime) ");
-            }
-            query.append("FROM orders_scheduleposition sp JOIN technologies_technologyoperationcomponent toc ");
-            query.append("ON sp.technologyoperationcomponent_id = toc.id JOIN orders_order o ON sp.order_id = o.id ");
-            query.append("WHERE sp.schedule_id = :scheduleId AND o.parent_id = :orderId AND toc.parent_id IS NULL ");
-            query.append("AND sp.endtime IS NOT NULL ");
-
-            childEndTime = jdbcTemplate.queryForObject(query.toString(), parameters, Timestamp.class);
+            childEndTime = schedulePositionValidators.getOrdersChildrenMaxEndTime(position);
             if (!Objects.isNull(childEndTime) && childEndTime.after(finishDate)) {
                 finishDate = childEndTime;
             }
@@ -387,7 +363,7 @@ public class ScheduleDetailsListenersPS {
         Entity schedule = dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE)
                 .get(scheduleId);
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put(SCHEDULE_ID, scheduleId);
+        parameters.put("scheduleId", scheduleId);
         StringBuilder query = new StringBuilder();
         query.append("SELECT sp.id FROM orders_scheduleposition sp JOIN technologies_technologyoperationcomponent toc ");
         query.append("ON sp.technologyoperationcomponent_id = toc.id JOIN orders_order o ON sp.order_id = o.id ");
