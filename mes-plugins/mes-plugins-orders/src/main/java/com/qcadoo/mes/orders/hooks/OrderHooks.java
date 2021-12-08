@@ -23,6 +23,20 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
+
+import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.commons.dateTime.DateRange;
 import com.qcadoo.localization.api.utils.DateUtils;
@@ -31,7 +45,6 @@ import com.qcadoo.mes.basic.ProductService;
 import com.qcadoo.mes.basic.ShiftsService;
 import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
 import com.qcadoo.mes.basic.constants.ProductFields;
-import com.qcadoo.mes.orders.OperationalTasksService;
 import com.qcadoo.mes.orders.OrderPackService;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.OrderStateChangeReasonService;
@@ -57,20 +70,6 @@ import com.qcadoo.model.api.NumberService;
 import com.qcadoo.security.api.UserService;
 import com.qcadoo.security.constants.UserFields;
 import com.qcadoo.view.api.utils.TimeConverterService;
-
-import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
-
-import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.stereotype.Service;
 
 @Service
 public class OrderHooks {
@@ -114,9 +113,6 @@ public class OrderHooks {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private OperationalTasksService operationalTasksService;
 
     @Autowired
     private ShiftsService shiftsService;

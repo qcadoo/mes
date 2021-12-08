@@ -23,8 +23,8 @@ import com.qcadoo.mes.orders.constants.ScheduleFields;
 import com.qcadoo.mes.orders.constants.SchedulePositionFields;
 import com.qcadoo.mes.orders.constants.ScheduleStateChangeFields;
 import com.qcadoo.mes.orders.hooks.OperationalTaskHooks;
+import com.qcadoo.mes.orders.hooks.OrderHooks;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
-import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.orders.states.constants.ScheduleStateStringValues;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
@@ -61,6 +61,9 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
 
     @Autowired
     private OperationalTaskHooks operationalTaskHooks;
+
+    @Autowired
+    private OrderHooks orderHooks;
 
     @Override
     public StateChangeEntityDescriber getChangeEntityDescriber() {
@@ -181,11 +184,10 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
             Date startTime = getOrderStartTime(entity, order);
             Date endTime = getOrderEndTime(entity, order);
             if (startTime != null || endTime != null) {
-                String orderState = order.getStringField(OrderFields.STATE);
                 Entity orderFromDB = order.getDataDefinition().get(order.getId());
-                setOrderDateFrom(order, startTime, orderState, orderFromDB);
-                setOrderDateTo(order, endTime, orderState, orderFromDB);
-                order.getDataDefinition().save(order);
+                setOrderDateFrom(order, startTime, orderFromDB);
+                setOrderDateTo(order, endTime, orderFromDB);
+                order.getDataDefinition().fastSave(order);
             }
         }
     }
@@ -214,30 +216,28 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
         return schedulePositionMinStartTimeEntity.getDateField(SchedulePositionFields.START_TIME);
     }
 
-    private void setOrderDateTo(Entity order, Date endTime, String orderState, Entity orderFromDB) {
-        Date finishDateDB = new Date();
-        if (orderFromDB.getDateField(OrderFields.FINISH_DATE) != null) {
-            finishDateDB = orderFromDB.getDateField(OrderFields.FINISH_DATE);
-        }
-        if (endTime != null && !finishDateDB.equals(endTime)) {
-            if (OrderState.PENDING.getStringValue().equals(orderState)) {
-                order.setField(OrderFields.DATE_TO, endTime);
-            } else if ((OrderState.ACCEPTED.getStringValue().equals(orderState))) {
-                order.setField(OrderFields.CORRECTED_DATE_TO, endTime);
+    private void setOrderDateTo(Entity order, Date endTime, Entity orderFromDB) {
+        if (endTime != null) {
+            Date finishDateDB = new Date();
+            if (orderFromDB.getDateField(OrderFields.FINISH_DATE) != null) {
+                finishDateDB = orderFromDB.getDateField(OrderFields.FINISH_DATE);
+            }
+            if (!finishDateDB.equals(endTime)) {
+                order.setField(OrderFields.FINISH_DATE, endTime);
+                orderHooks.copyEndDate(order.getDataDefinition(), order);
             }
         }
     }
 
-    private void setOrderDateFrom(Entity order, Date startTime, String orderState, Entity orderFromDB) {
-        Date startDateDB = new Date();
-        if (orderFromDB.getDateField(OrderFields.START_DATE) != null) {
-            startDateDB = orderFromDB.getDateField(OrderFields.START_DATE);
-        }
-        if (startTime != null && !startDateDB.equals(startTime)) {
-            if (OrderState.PENDING.getStringValue().equals(orderState)) {
-                order.setField(OrderFields.DATE_FROM, startTime);
-            } else if ((OrderState.ACCEPTED.getStringValue().equals(orderState))) {
-                order.setField(OrderFields.CORRECTED_DATE_FROM, startTime);
+    private void setOrderDateFrom(Entity order, Date startTime, Entity orderFromDB) {
+        if (startTime != null) {
+            Date startDateDB = new Date();
+            if (orderFromDB.getDateField(OrderFields.START_DATE) != null) {
+                startDateDB = orderFromDB.getDateField(OrderFields.START_DATE);
+            }
+            if (!startDateDB.equals(startTime)) {
+                order.setField(OrderFields.START_DATE, startTime);
+                orderHooks.copyStartDate(order.getDataDefinition(), order);
             }
         }
     }
