@@ -48,7 +48,7 @@ public class OperationalTaskHooks {
         changeDateInOrder(operationalTask);
     }
 
-    private void changeDateInOrder(Entity operationalTask) {
+    public void changeDateInOrder(Entity operationalTask) {
         String type = operationalTask.getStringField(OperationalTaskFields.TYPE);
 
         if (operationalTasksService.isOperationalTaskTypeExecutionOperationInOrder(type)) {
