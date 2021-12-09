@@ -256,7 +256,7 @@ public class StateExecutorService {
         return savedStateChangeEntity;
     }
 
-    private Entity buildStateChangeEntity(final StateChangeEntityDescriber describer, final Entity owner, String userName,
+    public Entity buildStateChangeEntity(final StateChangeEntityDescriber describer, final Entity owner, String userName,
             final String sourceState, final String targetState) {
         final Entity stateChangeEntity = describer.getDataDefinition().create();
         final Entity shift = shiftsService.getShiftFromDateWithTime(new Date());
