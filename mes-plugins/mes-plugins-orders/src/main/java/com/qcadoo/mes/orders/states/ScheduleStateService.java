@@ -28,6 +28,7 @@ import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.orders.states.constants.ScheduleStateStringValues;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -79,6 +80,8 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
                 checkOrderTypeOfProductionRecording(entity);
                 checkOrderStatesForApproved(entity);
                 checkExistingOperationalTasksState(entity);
+                checkSchedulePositionsDatesIsNotEmpty(entity);
+                checkOrdersTechnologiesChanged(entity);
                 break;
 
             case ScheduleStateStringValues.REJECTED:
@@ -88,8 +91,34 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
         return entity;
     }
 
+    private void checkOrdersTechnologiesChanged(Entity entity) {
+        List<Entity> orders = dataDefinitionService
+                .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).find()
+                .add(SearchRestrictions.belongsTo(SchedulePositionFields.SCHEDULE, entity))
+                .createAlias(SchedulePositionFields.ORDER, SchedulePositionFields.ORDER, JoinType.INNER)
+                .createAlias(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT,
+                        SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT, JoinType.INNER)
+                .add(SearchRestrictions.or(SearchRestrictions.isNull(SchedulePositionFields.ORDER + "." + OrderFields.TECHNOLOGY),
+                        SearchRestrictions.neField(SchedulePositionFields.ORDER + "." + OrderFields.TECHNOLOGY,
+                                SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT + "."
+                                        + TechnologyOperationComponentFields.TECHNOLOGY)))
+                .setProjection(
+                        list().add(alias(SearchProjections.groupField(SchedulePositionFields.ORDER + "." + OrderFields.NUMBER),
+                                OrderFields.NUMBER)))
+                .addOrder(desc(SchedulePositionFields.ORDER + "." + OrderFields.NUMBER)).list().getEntities();
+        if (!orders.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (Entity order : orders) {
+                sb.append(order.getStringField(OrderFields.NUMBER));
+                sb.append(", ");
+            }
+            entity.addGlobalError("orders.schedule.orders.technologyChanged", false, true, sb.toString());
+        }
+    }
+
     private void checkOrderTypeOfProductionRecording(Entity entity) {
-        List<Entity> orders = entity.getManyToManyField(ScheduleFields.ORDERS);
+        List<Entity> orders = entity.getHasManyField(ScheduleFields.POSITIONS).stream()
+                .map(e -> e.getBelongsToField(SchedulePositionFields.ORDER)).distinct().collect(Collectors.toList());
         for (Entity order : orders) {
             if (!L_FOR_EACH.equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
                 entity.addGlobalError("orders.schedule.orders.wrongTypeOfProductionRecording");
@@ -99,7 +128,8 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
     }
 
     private void checkOrderStatesForRejected(Entity entity) {
-        List<Entity> orders = entity.getManyToManyField(ScheduleFields.ORDERS);
+        List<Entity> orders = entity.getHasManyField(ScheduleFields.POSITIONS).stream()
+                .map(e -> e.getBelongsToField(SchedulePositionFields.ORDER)).distinct().collect(Collectors.toList());
         for (Entity order : orders) {
             if (OrderStateStringValues.COMPLETED.equals(order.getStringField(OrderFields.STATE))
                     || OrderStateStringValues.IN_PROGRESS.equals(order.getStringField(OrderFields.STATE))) {
@@ -110,7 +140,8 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
     }
 
     private void checkOrderStatesForApproved(Entity entity) {
-        List<Entity> orders = entity.getManyToManyField(ScheduleFields.ORDERS);
+        List<Entity> orders = entity.getHasManyField(ScheduleFields.POSITIONS).stream()
+                .map(e -> e.getBelongsToField(SchedulePositionFields.ORDER)).distinct().collect(Collectors.toList());
         for (Entity order : orders) {
             if (!OrderStateStringValues.PENDING.equals(order.getStringField(OrderFields.STATE))
                     && !OrderStateStringValues.ACCEPTED.equals(order.getStringField(OrderFields.STATE))) {
@@ -127,7 +158,8 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
     }
 
     private void checkExistingOperationalTasksState(Entity entity) {
-        List<Entity> scheduleOrders = entity.getManyToManyField(ScheduleFields.ORDERS);
+        List<Entity> scheduleOrders = entity.getHasManyField(ScheduleFields.POSITIONS).stream()
+                .map(e -> e.getBelongsToField(SchedulePositionFields.ORDER)).distinct().collect(Collectors.toList());
         if (!scheduleOrders.isEmpty()) {
             List<Entity> orders = dataDefinitionService
                     .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK).find()
@@ -146,6 +178,16 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
                     sb.append(", ");
                 }
                 entity.addGlobalError("orders.schedule.operationalTasks.wrongState", false, true, sb.toString());
+            }
+        }
+    }
+
+    private void checkSchedulePositionsDatesIsNotEmpty(Entity entity) {
+        for (Entity position : entity.getHasManyField(ScheduleFields.POSITIONS)) {
+            if (position.getField(SchedulePositionFields.START_TIME) == null
+                    || position.getField(SchedulePositionFields.END_TIME) == null) {
+                entity.addGlobalError("orders.schedule.positions.datesIsEmpty");
+                break;
             }
         }
     }
@@ -179,16 +221,15 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
     }
 
     private void updateOrderDates(Entity entity) {
-        List<Entity> orders = entity.getManyToManyField(ScheduleFields.ORDERS);
+        List<Entity> orders = entity.getHasManyField(ScheduleFields.POSITIONS).stream()
+                .map(e -> e.getBelongsToField(SchedulePositionFields.ORDER)).distinct().collect(Collectors.toList());
         for (Entity order : orders) {
             Date startTime = getOrderStartTime(entity, order);
             Date endTime = getOrderEndTime(entity, order);
-            if (startTime != null || endTime != null) {
-                Entity orderFromDB = order.getDataDefinition().get(order.getId());
-                setOrderDateFrom(order, startTime, orderFromDB);
-                setOrderDateTo(order, endTime, orderFromDB);
-                order.getDataDefinition().fastSave(order);
-            }
+            Entity orderFromDB = order.getDataDefinition().get(order.getId());
+            setOrderDateFrom(order, startTime, orderFromDB);
+            setOrderDateTo(order, endTime, orderFromDB);
+            order.getDataDefinition().fastSave(order);
         }
     }
 
@@ -217,28 +258,24 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
     }
 
     private void setOrderDateTo(Entity order, Date endTime, Entity orderFromDB) {
-        if (endTime != null) {
-            Date finishDateDB = new Date();
-            if (orderFromDB.getDateField(OrderFields.FINISH_DATE) != null) {
-                finishDateDB = orderFromDB.getDateField(OrderFields.FINISH_DATE);
-            }
-            if (!finishDateDB.equals(endTime)) {
-                order.setField(OrderFields.FINISH_DATE, endTime);
-                orderHooks.copyEndDate(order.getDataDefinition(), order);
-            }
+        Date finishDateDB = new Date();
+        if (orderFromDB.getDateField(OrderFields.FINISH_DATE) != null) {
+            finishDateDB = orderFromDB.getDateField(OrderFields.FINISH_DATE);
+        }
+        if (!finishDateDB.equals(endTime)) {
+            order.setField(OrderFields.FINISH_DATE, endTime);
+            orderHooks.copyEndDate(order.getDataDefinition(), order);
         }
     }
 
     private void setOrderDateFrom(Entity order, Date startTime, Entity orderFromDB) {
-        if (startTime != null) {
-            Date startDateDB = new Date();
-            if (orderFromDB.getDateField(OrderFields.START_DATE) != null) {
-                startDateDB = orderFromDB.getDateField(OrderFields.START_DATE);
-            }
-            if (!startDateDB.equals(startTime)) {
-                order.setField(OrderFields.START_DATE, startTime);
-                orderHooks.copyStartDate(order.getDataDefinition(), order);
-            }
+        Date startDateDB = new Date();
+        if (orderFromDB.getDateField(OrderFields.START_DATE) != null) {
+            startDateDB = orderFromDB.getDateField(OrderFields.START_DATE);
+        }
+        if (!startDateDB.equals(startTime)) {
+            order.setField(OrderFields.START_DATE, startTime);
+            orderHooks.copyStartDate(order.getDataDefinition(), order);
         }
     }
 
