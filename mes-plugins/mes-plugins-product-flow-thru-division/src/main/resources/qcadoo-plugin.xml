@@ -450,6 +450,11 @@
                            model="materialAvailability" joinField="order" cascade="delete"/>
         </model:model-field>
 
+        <model:model-field plugin="orders" model="order">
+            <model:hasMany name="materialAvailabilityDto" plugin="productFlowThruDivision"
+                           model="materialAvailabilityDto" joinField="order" cascade="nullify" copyable="false" persistent="false"/>
+        </model:model-field>
+
         <model:model-field plugin="basic" model="product">
             <model:hasMany name="materialAvailability" plugin="productFlowThruDivision"
                            model="materialAvailability" joinField="product" cascade="delete"/>
@@ -708,6 +713,7 @@
         <model:model model="productToIssueCorrection" resource="model/productToIssueCorrection.xml"/>
         <model:model model="productToIssueCorrectionHelper" resource="model/productToIssueCorrectionHelper.xml"/>
         <model:model model="productAndQuantityHelper" resource="model/productAndQuantityHelper.xml"/>
+        <model:model model="materialAvailabilityDto" resource="model/materialAvailabilityDto.xml"/>
 
         <menu:menu-category name="requirements"/>
 

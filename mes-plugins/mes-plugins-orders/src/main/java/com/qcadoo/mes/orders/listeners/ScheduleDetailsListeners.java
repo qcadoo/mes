@@ -81,7 +81,7 @@ public class ScheduleDetailsListeners {
                 firstEntryOptional.ifPresent(firstEntry -> updatePositionWorker(workersFinishDates, workstationLastWorkers,
                         position, workstation, firstEntry));
             }
-            position.getDataDefinition().save(position);
+            position.getDataDefinition().fastSave(position);
         }
     }
 

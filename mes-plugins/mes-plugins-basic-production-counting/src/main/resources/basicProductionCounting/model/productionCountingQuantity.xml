@@ -67,6 +67,9 @@
         <boolean name="showMaterialComponentInWorkPlan" default="false"/>
         <hasMany name="productionCountingAttributeValues" joinField="productionCountingQuantity"
                  model="productionCountingAttributeValue" cascade="delete"/>
+
+        <manyToMany name="batches" model="batch" plugin="advancedGenealogy"
+                    joinField="productionCountingQuantities" cascade="nullify" copyable="true"/>
     </fields>
 
     <hooks>

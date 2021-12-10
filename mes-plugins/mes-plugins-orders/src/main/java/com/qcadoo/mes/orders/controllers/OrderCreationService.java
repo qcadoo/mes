@@ -5,11 +5,7 @@ import com.google.common.collect.Sets;
 import com.qcadoo.commons.functional.Either;
 import com.qcadoo.localization.api.TranslationService;
 import com.qcadoo.mes.basic.ParameterService;
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.GlobalTypeOfMaterial;
-import com.qcadoo.mes.basic.constants.ParameterFields;
-import com.qcadoo.mes.basic.constants.ProductFamilyElementType;
-import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.*;
 import com.qcadoo.mes.orders.OrderService;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
@@ -212,14 +208,14 @@ public class OrderCreationService {
                             LocaleContextHolder.getLocale(), m.getVars()[0], m.getVars()[1]));
                 });
             }
-            final StateChangeContext orderStateChangeContext = stateChangeContextBuilder.build(
-                    orderStateChangeAspect.getChangeEntityDescriber(), order, OrderState.ACCEPTED.getStringValue());
+            final StateChangeContext orderStateChangeContext = stateChangeContextBuilder
+                    .build(orderStateChangeAspect.getChangeEntityDescriber(), order, OrderState.ACCEPTED.getStringValue());
             orderStateChangeAspect.changeState(orderStateChangeContext);
             order = order.getDataDefinition().get(order.getId());
             if (!order.getStringField(OrderFields.STATE).equals(OrderStateStringValues.ACCEPTED)) {
-                return new OrderCreationResponse(translationService.translate(
-                        "basic.dashboard.orderDefinitionWizard.createOrder.acceptError", LocaleContextHolder.getLocale(),
-                        order.getStringField(OrderFields.NUMBER)));
+                return new OrderCreationResponse(
+                        translationService.translate("basic.dashboard.orderDefinitionWizard.createOrder.acceptError",
+                                LocaleContextHolder.getLocale(), order.getStringField(OrderFields.NUMBER)));
             }
         } else {
             return new OrderCreationResponse(translationService.translate(
@@ -247,16 +243,21 @@ public class OrderCreationService {
         orderDetailsListeners.createOperationalTasksForOrder(order, false);
         Map<Long, TechnologyOperationDto> operationsById = orderCreationRequest.getTechnologyOperations().stream()
                 .collect(Collectors.toMap(TechnologyOperationDto::getId, x -> x));
+        order = order.getDataDefinition().get(order.getId());
         List<Entity> operationalTasks = order.getHasManyField(OrderFields.OPERATIONAL_TASKS);
         for (Entity operationalTask : operationalTasks) {
-            Long workstation = operationsById.get(
-                    operationalTask.getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT).getId())
+            Long workstation = operationsById
+                    .get(operationalTask.getBelongsToField(OperationalTaskFields.TECHNOLOGY_OPERATION_COMPONENT).getId())
                     .getWorkstationId();
             if (Objects.nonNull(workstation)) {
                 operationalTask.setField(OperationalTaskFields.WORKSTATION, workstation);
+                Entity workstationEntity = dataDefinitionService
+                        .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION).get(workstation);
+                if (Objects.nonNull(workstationEntity.getBelongsToField(WorkstationFields.STAFF))) {
+                    operationalTask.setField(OperationalTaskFields.STAFF, workstationEntity.getBelongsToField(WorkstationFields.STAFF));
+                }
                 operationalTask.getDataDefinition().save(operationalTask);
             }
-
         }
     }
 
@@ -264,16 +265,17 @@ public class OrderCreationService {
         Entity parameter = parameterService.getParameter();
 
         for (TechnologyOperationDto technologyOperation : technologyOperations) {
-            Entity toc = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).get(technologyOperation.getId());
+            Entity toc = dataDefinitionService
+                    .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
+                    .get(technologyOperation.getId());
             List<Entity> materialsFromOrderPCQ = getMaterialsFromOrder(order, toc);
             List<MaterialDto> materials = technologyOperation.getMaterials();
             List<MaterialDto> addedMaterials = materials.stream().filter(m -> Objects.isNull(m.getProductInId()))
                     .collect(Collectors.toList());
             List<Long> technologyMaterials = materials.stream().filter(m -> Objects.nonNull(m.getProductInId()))
                     .map(m -> m.getProductId()).collect(Collectors.toList());
-            Map<Long, Entity> pacqByProductId = materialsFromOrderPCQ.stream().collect(
-                    Collectors.toMap(pcq -> pcq.getBelongsToField(L_PRODUCT).getId(), pcq -> pcq));
+            Map<Long, Entity> pacqByProductId = materialsFromOrderPCQ.stream()
+                    .collect(Collectors.toMap(pcq -> pcq.getBelongsToField(L_PRODUCT).getId(), pcq -> pcq));
             for (Map.Entry<Long, Entity> entry : pacqByProductId.entrySet()) {
                 if (!technologyMaterials.contains(entry.getKey())) {
                     Entity pcq = entry.getValue();
@@ -300,8 +302,8 @@ public class OrderCreationService {
                 .map(m -> m.getProductId()).collect(Collectors.toList());
         List<Entity> materialsFromOrderPCQ = getMaterialsFromOrder(order, null);
 
-        Map<Long, Entity> pacqByProductId = materialsFromOrderPCQ.stream().collect(
-                Collectors.toMap(pcq -> pcq.getBelongsToField(L_PRODUCT).getId(), pcq -> pcq));
+        Map<Long, Entity> pacqByProductId = materialsFromOrderPCQ.stream()
+                .collect(Collectors.toMap(pcq -> pcq.getBelongsToField(L_PRODUCT).getId(), pcq -> pcq));
 
         for (Map.Entry<Long, Entity> entry : pacqByProductId.entrySet()) {
             if (!technologyMaterials.contains(entry.getKey())) {
@@ -322,15 +324,14 @@ public class OrderCreationService {
         pcqs.forEach(p -> p.getDataDefinition().save(p));
     }
 
-    //override be aspect
+    // override be aspect
     public void fillFlow(final List<Entity> productionCountingQuantities, final Entity order) {
-
 
     }
 
     private Entity createProductionCoutingQuantity(Entity order, MaterialDto material, Entity toc) {
-        Entity productionCountingQuantity = dataDefinitionService
-                .get(L_BASIC_PRODUCTION_COUNTING, L_PRODUCTION_COUNTING_QUANTITY).create();
+        Entity productionCountingQuantity = dataDefinitionService.get(L_BASIC_PRODUCTION_COUNTING, L_PRODUCTION_COUNTING_QUANTITY)
+                .create();
         productionCountingQuantity.setField(L_ORDER, order.getId());
         productionCountingQuantity.setField(L_TECHNOLOGY_OPERATION_COMPONENT, toc.getId());
 
@@ -399,8 +400,9 @@ public class OrderCreationService {
                 return createTechnologyForEachOperation(orderCreationRequest);
             }
         } else {
-            return Either.right(dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_TECHNOLOGY).get(orderCreationRequest.getTechnologyId()));
+            return Either.right(
+                    dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY)
+                            .get(orderCreationRequest.getTechnologyId()));
         }
     }
 
@@ -413,8 +415,8 @@ public class OrderCreationService {
         orderCreationRequest.getTechnologyOperations().sort(Comparator.comparing(TechnologyOperationDto::getNode));
 
         String range = parameter.getStringField(L_RANGE);
-        Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY).create();
+        Entity technology = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).create();
         technology.setField(TechnologyFields.NUMBER, technologyNameAndNumberGenerator.generateNumber(product));
         technology.setField(TechnologyFields.NAME, technologyNameAndNumberGenerator.generateName(product));
         technology.setField(TechnologyFields.PRODUCT, product);
@@ -431,11 +433,13 @@ public class OrderCreationService {
 
         Entity parent = null;
         for (TechnologyOperationDto technologyOperation : orderCreationRequest.getTechnologyOperations()) {
-            Entity operation = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_OPERATION).get(technologyOperation.getOperationId());
+            Entity operation = dataDefinitionService
+                    .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION)
+                    .get(technologyOperation.getOperationId());
 
-            Entity toc = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).create();
+            Entity toc = dataDefinitionService
+                    .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
+                    .create();
             toc.setField(TechnologyOperationComponentFields.OPERATION, operation);
             toc.setField(TechnologyOperationComponentFields.ENTITY_TYPE, L_OPERATION);
             for (String fieldName : FIELDS_OPERATION) {
@@ -454,8 +458,9 @@ public class OrderCreationService {
             }
 
             if (Objects.isNull(parent)) {
-                Entity topoc = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                        TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT).create();
+                Entity topoc = dataDefinitionService
+                        .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT)
+                        .create();
                 topoc.setField(OperationProductOutComponentFields.QUANTITY, BigDecimal.ONE);
                 topoc.setField(OperationProductOutComponentFields.PRODUCT, product);
                 toc.setField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS, Lists.newArrayList(topoc));
@@ -465,8 +470,9 @@ public class OrderCreationService {
             for (MaterialDto material : technologyOperation.getMaterials()) {
                 Entity inProduct = getProduct(material.getProductId());
 
-                Entity topic = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                        TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).create();
+                Entity topic = dataDefinitionService
+                        .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
+                        .create();
                 topic.setField(OperationProductInComponentFields.PRODUCT, inProduct);
                 topic.setField(OperationProductInComponentFields.QUANTITY, material.getQuantityPerUnit());
                 topics.add(topic);
@@ -478,20 +484,20 @@ public class OrderCreationService {
             toc.setField(TechnologyOperationComponentFields.TECHNOLOGY, technology.getId());
             toc = toc.getDataDefinition().save(toc);
             if (Objects.nonNull(technologyOperation.getWorkstationId())) {
-                List<Entity> workstations = Lists.newArrayList(toc
-                        .getHasManyField(TechnologyOperationComponentFields.WORKSTATIONS));
+                List<Entity> workstations = Lists
+                        .newArrayList(toc.getHasManyField(TechnologyOperationComponentFields.WORKSTATIONS));
 
-                Entity workstation = dataDefinitionService
-                        .get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION).get(
-                                technologyOperation.getWorkstationId());
+                Entity workstation = dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_WORKSTATION)
+                        .get(technologyOperation.getWorkstationId());
                 workstations.add(workstation);
                 toc.setField(TechnologyOperationComponentFields.WORKSTATIONS, workstations);
             }
             toc = toc.getDataDefinition().save(toc);
             technologyOperation.setId(toc.getId());
             if (toc.getHasManyField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS).isEmpty()) {
-                Entity topoc = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                        TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT).create();
+                Entity topoc = dataDefinitionService
+                        .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT)
+                        .create();
                 topoc.setField(OperationProductOutComponentFields.QUANTITY, BigDecimal.ONE);
                 topoc.setField(OperationProductOutComponentFields.PRODUCT, getOrCreateProduct(operation));
                 topoc.setField(OperationProductOutComponentFields.OPERATION_COMPONENT, toc);
@@ -502,9 +508,9 @@ public class OrderCreationService {
         }
 
         if (technology.isValid()) {
-            final StateChangeContext technologyStateChangeContext = stateChangeContextBuilder
-                    .build(technologyStateChangeAspect.getChangeEntityDescriber(), technology,
-                            TechnologyState.ACCEPTED.getStringValue());
+            final StateChangeContext technologyStateChangeContext = stateChangeContextBuilder.build(
+                    technologyStateChangeAspect.getChangeEntityDescriber(), technology,
+                    TechnologyState.ACCEPTED.getStringValue());
             technologyStateChangeAspect.changeState(technologyStateChangeContext);
             technology = technology.getDataDefinition().get(technology.getId());
             if (!technology.getStringField(TechnologyFields.STATE).equals(TechnologyStateStringValues.ACCEPTED)) {
@@ -528,8 +534,9 @@ public class OrderCreationService {
         Entity dashboardProductsInputLocation = parameter
                 .getBelongsToField(OrderCreationService.L_DASHBOARD_PRODUCTS_INPUT_LOCATION);
 
-        Entity toc = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT).create();
+        Entity toc = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY_OPERATION_COMPONENT)
+                .create();
         toc.setField(TechnologyOperationComponentFields.OPERATION, operation);
         toc.setField(TechnologyOperationComponentFields.ENTITY_TYPE, L_OPERATION);
         for (String fieldName : FIELDS_OPERATION) {
@@ -546,8 +553,9 @@ public class OrderCreationService {
         if (operation.getField(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY) == null) {
             toc.setField(NEXT_OPERATION_AFTER_PRODUCED_QUANTITY, "0");
         }
-        Entity topoc = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT).create();
+        Entity topoc = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_OUT_COMPONENT)
+                .create();
         topoc.setField(OperationProductOutComponentFields.PRODUCT, product);
         topoc.setField(OperationProductOutComponentFields.QUANTITY, BigDecimal.ONE);
         toc.setField(TechnologyOperationComponentFields.OPERATION_PRODUCT_OUT_COMPONENTS, Lists.newArrayList(topoc));
@@ -556,8 +564,9 @@ public class OrderCreationService {
         for (MaterialDto material : orderCreationRequest.getMaterials()) {
             Entity inProduct = getProduct(material.getProductId());
 
-            Entity topic = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                    TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT).create();
+            Entity topic = dataDefinitionService
+                    .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_OPERATION_PRODUCT_IN_COMPONENT)
+                    .create();
             topic.setField(OperationProductInComponentFields.PRODUCT, inProduct);
             topic.setField(OperationProductInComponentFields.QUANTITY, material.getQuantityPerUnit());
             topics.add(topic);
@@ -565,8 +574,8 @@ public class OrderCreationService {
         toc.setField(TechnologyOperationComponentFields.OPERATION_PRODUCT_IN_COMPONENTS, topics);
 
         String range = parameter.getStringField(L_RANGE);
-        Entity technology = dataDefinitionService.get(TechnologiesConstants.PLUGIN_IDENTIFIER,
-                TechnologiesConstants.MODEL_TECHNOLOGY).create();
+        Entity technology = dataDefinitionService
+                .get(TechnologiesConstants.PLUGIN_IDENTIFIER, TechnologiesConstants.MODEL_TECHNOLOGY).create();
         technology.setField(TechnologyFields.NUMBER, technologyNameAndNumberGenerator.generateNumber(product));
         technology.setField(TechnologyFields.NAME, technologyNameAndNumberGenerator.generateName(product));
         technology.setField(TechnologyFields.PRODUCT, product);
@@ -578,9 +587,9 @@ public class OrderCreationService {
         technology.setField("typeOfProductionRecording", "02cumulated");
         technology = technology.getDataDefinition().save(technology);
         if (technology.isValid()) {
-            final StateChangeContext technologyStateChangeContext = stateChangeContextBuilder
-                    .build(technologyStateChangeAspect.getChangeEntityDescriber(), technology,
-                            TechnologyState.ACCEPTED.getStringValue());
+            final StateChangeContext technologyStateChangeContext = stateChangeContextBuilder.build(
+                    technologyStateChangeAspect.getChangeEntityDescriber(), technology,
+                    TechnologyState.ACCEPTED.getStringValue());
             technologyStateChangeAspect.changeState(technologyStateChangeContext);
             technology = technology.getDataDefinition().get(technology.getId());
             if (!technology.getStringField(TechnologyFields.STATE).equals(TechnologyStateStringValues.ACCEPTED)) {
@@ -598,8 +607,9 @@ public class OrderCreationService {
 
     private Entity getProductionLine(Long productionLineId) {
         if (Objects.nonNull(productionLineId)) {
-            return dataDefinitionService.get(ProductionLinesConstants.PLUGIN_IDENTIFIER,
-                    ProductionLinesConstants.MODEL_PRODUCTION_LINE).get(productionLineId);
+            return dataDefinitionService
+                    .get(ProductionLinesConstants.PLUGIN_IDENTIFIER, ProductionLinesConstants.MODEL_PRODUCTION_LINE)
+                    .get(productionLineId);
         } else {
             return parameterService.getParameter().getBelongsToField(ParameterFieldsPL.DEFAULT_PRODUCTION_LINE);
         }

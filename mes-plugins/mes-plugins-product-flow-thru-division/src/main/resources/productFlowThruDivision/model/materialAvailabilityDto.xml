@@ -24,17 +24,27 @@
     ***************************************************************************
 
 -->
-<model name="materialAvailability"
+<model name="materialAvailabilityDto" auditable="false" deletable="false" insertable="false" updatable="false"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/model"
 	xsi:schemaLocation="http://schema.qcadoo.org/model http://schema.qcadoo.org/model.xsd">
 
 	<fields>
 		<belongsTo name="order" plugin="orders" model="order"
-			required="true" />
-		<belongsTo name="product" plugin="basic" model="product"
-			required="true" />
+				   persistent="false" />
+		<integer name="orderId"/>
 
-		<belongsTo name="location" plugin="materialFlow" model="location"/>
+		<belongsTo name="product" plugin="basic" model="product"
+				   persistent="false" />
+		<integer name="productId"/>
+
+		<string name="productNumber"/>
+		<string name="productName"/>
+		<string name="productUnit"/>
+		<string name="locationNumber"/>
+
+		<belongsTo name="location" plugin="materialFlow" model="location" persistent="false"/>
+		<integer name="locationId"/>
+
 		<decimal name="availableQuantity">
 			<validatesUnscaledValue max="14"/>
 			<validatesScale max="5"/>
@@ -56,6 +66,6 @@
 	</fields>
 
 	<hooks />
+	<masterModel plugin="productFlowThruDivision" model="materialAvailability"/>
 
-	<identifier expression="#order['number'] + ' - ' + #product['number']" />
 </model>

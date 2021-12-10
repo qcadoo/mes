@@ -32,6 +32,7 @@
     <fields>
         <integer name="order_id"/>
         <string name="orderNumber"/>
+        <date name="orderStartDate"/>
 
         <integer name="technologyOperationComponent_id"/>
         <string name="technologyOperationComponentNumber"/>
@@ -45,9 +46,9 @@
 
         <decimal name="usedQuantity"/>
         <decimal name="plannedQuantity"/>
+        <decimal name="quantityDeviation"/>
 
         <enum name="typeOfRecord" values="01in,02out"/>
-
     </fields>
 
 </model>

@@ -29,13 +29,17 @@ import static com.qcadoo.mes.timeNormsForOperations.constants.TechnologyOperatio
 import static com.qcadoo.mes.timeNormsForOperations.constants.TimeNormsConstants.FIELDS_OPERATION;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.beust.jcommander.internal.Lists;
+import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.util.UnitService;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.OperationFieldsTFNO;
 import com.qcadoo.mes.timeNormsForOperations.constants.OperationWorkstationTimeFields;
 import com.qcadoo.mes.timeNormsForOperations.constants.TechOperCompWorkstationTimeFields;
@@ -142,6 +146,38 @@ public class TechnologyOperationComponentHooksTNFO {
         }
 
         return isDeleted;
+    }
+
+    public void onSave(final DataDefinition technologyOperationComponentDD, final Entity technologyOperationComponent) {
+        if (technologyOperationComponent.getId() != null) {
+            Set<Long> tocWorkstationsIds = technologyOperationComponent
+                    .getManyToManyField(TechnologyOperationComponentFields.WORKSTATIONS).stream().map(Entity::getId)
+                    .collect(Collectors.toSet());
+            Set<Long> oldTocWorkstationsIds = technologyOperationComponentDD.get(technologyOperationComponent.getId())
+                    .getManyToManyField(TechnologyOperationComponentFields.WORKSTATIONS).stream().map(Entity::getId)
+                    .collect(Collectors.toSet());
+
+            Set<Long> removedWorkstationsIds = Sets.difference(oldTocWorkstationsIds, tocWorkstationsIds);
+            List<Long> techOperCompWorkstationTimesIdsToRemove = Lists.newArrayList();
+            for (Long id : removedWorkstationsIds) {
+                for (Entity techOperCompWorkstationTime : technologyOperationComponent
+                        .getHasManyField(TECH_OPER_COMP_WORKSTATION_TIMES)) {
+                    if (techOperCompWorkstationTime.getBelongsToField(TechOperCompWorkstationTimeFields.WORKSTATION).getId()
+                            .equals(id)) {
+                        techOperCompWorkstationTimesIdsToRemove.add(techOperCompWorkstationTime.getId());
+                        break;
+                    }
+                }
+            }
+
+            if (!techOperCompWorkstationTimesIdsToRemove.isEmpty()) {
+                DataDefinition techOperCompWorkstationTimeDD = dataDefinitionService.get(TimeNormsConstants.PLUGIN_IDENTIFIER,
+                        TimeNormsConstants.TECH_OPER_COMP_WORKSTATION_TIME);
+                techOperCompWorkstationTimeDD.delete(techOperCompWorkstationTimesIdsToRemove.toArray(new Long[0]));
+                technologyOperationComponent
+                        .addGlobalMessage("productionTimeNorms.messages.removeWorkstationsForTOC.removeWorkstationsTimesForTOC");
+            }
+        }
     }
 
 }

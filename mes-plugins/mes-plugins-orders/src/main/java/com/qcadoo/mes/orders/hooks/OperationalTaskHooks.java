@@ -1,5 +1,14 @@
 package com.qcadoo.mes.orders.hooks;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.ParameterService;
@@ -13,15 +22,6 @@ import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.Entity;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class OperationalTaskHooks {
@@ -45,12 +45,10 @@ public class OperationalTaskHooks {
 
     public void onSave(final DataDefinition operationalTaskDD, final Entity operationalTask) {
         fillNameAndDescription(operationalTask);
-        fillDivision(operationalTask);
         changeDateInOrder(operationalTask);
-
     }
 
-    private void changeDateInOrder(Entity operationalTask) {
+    public void changeDateInOrder(Entity operationalTask) {
         String type = operationalTask.getStringField(OperationalTaskFields.TYPE);
 
         if (operationalTasksService.isOperationalTaskTypeExecutionOperationInOrder(type)) {
@@ -88,7 +86,7 @@ public class OperationalTaskHooks {
         }
     }
 
-    private void fillNameAndDescription(final Entity operationalTask) {
+    public void fillNameAndDescription(final Entity operationalTask) {
         String type = operationalTask.getStringField(OperationalTaskFields.TYPE);
 
         if (operationalTasksService.isOperationalTaskTypeExecutionOperationInOrder(type)) {
@@ -99,7 +97,6 @@ public class OperationalTaskHooks {
                 operationalTask.setField(OperationalTaskFields.NAME, null);
                 operationalTask.setField(OperationalTaskFields.DESCRIPTION, null);
             } else {
-
                 Entity operation = technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.OPERATION);
                 operationalTask.setField(OperationalTaskFields.NAME, operation.getStringField(OperationFields.NAME));
 
@@ -107,7 +104,6 @@ public class OperationalTaskHooks {
                     boolean copyDescriptionFromProductionOrder = parameterService.getParameter().getBooleanField(
                             "otCopyDescriptionFromProductionOrder");
                     if (copyDescriptionFromProductionOrder) {
-
                         StringBuilder descriptionBuilder = new StringBuilder();
                         descriptionBuilder.append(Strings.nullToEmpty(technologyOperationComponent
                                 .getStringField(TechnologyOperationComponentFields.COMMENT)));
@@ -119,7 +115,6 @@ public class OperationalTaskHooks {
                             descriptionBuilder.append(Strings.nullToEmpty(order.getStringField(OrderFields.DESCRIPTION)));
                         }
                         operationalTask.setField(OperationalTaskFields.DESCRIPTION, descriptionBuilder.toString());
-
                     } else {
                         operationalTask.setField(OperationalTaskFields.DESCRIPTION,
                                 technologyOperationComponent.getStringField(TechnologyOperationComponentFields.COMMENT));
@@ -129,11 +124,7 @@ public class OperationalTaskHooks {
         }
     }
 
-    private void fillDivision(final Entity operationalTask) {
-
-    }
-
-    private void setInitialState(final Entity operationalTask) {
+    public void setInitialState(final Entity operationalTask) {
         stateExecutorService.buildInitial(OperationalTasksServiceMarker.class, operationalTask,
                 OperationalTaskStateStringValues.PENDING);
     }

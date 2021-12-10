@@ -23,6 +23,18 @@
  */
 package com.qcadoo.mes.orders.validators;
 
+import static com.qcadoo.model.api.search.SearchOrders.asc;
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.rowCount;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.orders.OperationalTasksService;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
@@ -36,17 +48,6 @@ import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchCriteriaBuilder;
 import com.qcadoo.model.api.search.SearchRestrictions;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-
-import static com.qcadoo.model.api.search.SearchOrders.asc;
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.rowCount;
 
 @Service
 public class OperationalTaskValidators {
@@ -125,7 +126,7 @@ public class OperationalTaskValidators {
         return StringUtils.isBlank(operationalTask.getStringField(OperationalTaskFields.NAME));
     }
 
-    private boolean datesAreInCorrectOrder(final DataDefinition operationalTaskDD, final Entity operationalTask) {
+    public boolean datesAreInCorrectOrder(final DataDefinition operationalTaskDD, final Entity operationalTask) {
         Date startDate = operationalTask.getDateField(OperationalTaskFields.START_DATE);
         Date finishDate = operationalTask.getDateField(OperationalTaskFields.FINISH_DATE);
 

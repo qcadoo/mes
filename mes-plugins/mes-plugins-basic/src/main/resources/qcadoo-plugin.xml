@@ -275,7 +275,6 @@
         <model:model model="shift" resource="model/shift.xml"/>
         <model:model model="shiftTimetableException" resource="model/shiftTimetableException.xml"/>
         <model:model model="product" resource="model/product.xml"/>
-        <model:model model="substitute" resource="model/substitute.xml"/>
         <model:model model="substituteComponent" resource="model/substituteComponent.xml"/>
         <model:model model="workstationType" resource="model/workstationType.xml"/>
         <model:model model="division" resource="model/division.xml"/>
@@ -540,6 +539,8 @@
 
         <view:view resource="view/modelsList.xml"/>
         <view:view resource="view/modelDetails.xml"/>
+        <view:view resource="view/modelsImport.xml"/>
+
         <view:view resource="view/productFamilySizes.xml"/>
         <view:view resource="view/addProductFamilySizes.xml"/>
         <view:view resource="view/technologicalProcessRateList.xml"/>

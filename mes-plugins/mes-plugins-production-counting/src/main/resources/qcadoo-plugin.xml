@@ -209,6 +209,10 @@
         </model:model-field>
 
         <model:model-field model="parameter" plugin="basic">
+            <model:boolean name="productionOrderedQuantityClosesTheOrder" default="false"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
             <model:enum name="materialCostsUsedPB"
                         values="01nominal,02average,03lastPurchase,04averageOfferCost,05lastOfferCost,06costForOrder"
                         required="true" default="01nominal"/>

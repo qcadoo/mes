@@ -2,8 +2,11 @@ package com.qcadoo.mes.productFlowThruDivision.listeners;
 
 import java.util.Map;
 
+import com.qcadoo.mes.productFlowThruDivision.constants.ProductFlowThruDivisionConstants;
+import com.qcadoo.model.api.DataDefinitionService;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
@@ -25,12 +28,15 @@ public class OrderWithMaterialAvailabilityListListeners {
 
     private static final String L_FILTERS = "filters";
 
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
+
     public void showReplacementsAvailability(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
         Entity record = grid.getSelectedEntities().get(0);
-
-        Long productId = record.getBelongsToField(MaterialAvailabilityFields.PRODUCT).getId();
+        Entity oma = dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER, ProductFlowThruDivisionConstants.MODEL_MATERIAL_AVAILABILITY).get(record.getId());
+        Long productId = oma.getBelongsToField(MaterialAvailabilityFields.PRODUCT).getId();
 
         JSONObject json = new JSONObject();
 
@@ -48,8 +54,8 @@ public class OrderWithMaterialAvailabilityListListeners {
         GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
 
         Entity record = grid.getSelectedEntities().get(0);
-
-        Long productId = record.getBelongsToField(MaterialAvailabilityFields.PRODUCT).getId();
+        Entity oma = dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER, ProductFlowThruDivisionConstants.MODEL_MATERIAL_AVAILABILITY).get(record.getId());
+        Long productId = oma.getBelongsToField(MaterialAvailabilityFields.PRODUCT).getId();
 
         JSONObject json = new JSONObject();
 
@@ -65,11 +71,11 @@ public class OrderWithMaterialAvailabilityListListeners {
 
     public final void showWarehouseResources(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
-
         Entity entity = grid.getSelectedEntities().get(0);
+        Entity oma = dataDefinitionService.get(ProductFlowThruDivisionConstants.PLUGIN_IDENTIFIER, ProductFlowThruDivisionConstants.MODEL_MATERIAL_AVAILABILITY).get(entity.getId());
 
-        String productNumber = entity.getBelongsToField(MaterialAvailabilityFields.PRODUCT).getStringField(ProductFields.NUMBER);
-        String locationNumber = entity.getBelongsToField(MaterialAvailabilityFields.LOCATION)
+        String productNumber = oma.getBelongsToField(MaterialAvailabilityFields.PRODUCT).getStringField(ProductFields.NUMBER);
+        String locationNumber = oma.getBelongsToField(MaterialAvailabilityFields.LOCATION)
                 .getStringField(LocationFields.NUMBER);
 
         Map<String, String> filters = Maps.newHashMap();

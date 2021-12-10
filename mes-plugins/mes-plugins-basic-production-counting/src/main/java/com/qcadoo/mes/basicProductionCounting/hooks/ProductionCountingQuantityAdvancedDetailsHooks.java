@@ -24,18 +24,15 @@
 package com.qcadoo.mes.basicProductionCounting.hooks;
 
 import java.util.List;
+import java.util.Objects;
 
+import com.qcadoo.mes.basicProductionCounting.constants.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basicProductionCounting.BasicProductionCountingService;
-import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingConstants;
-import com.qcadoo.mes.basicProductionCounting.constants.BasicProductionCountingFields;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityDtoFields;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
-import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -62,6 +59,12 @@ public class ProductionCountingQuantityAdvancedDetailsHooks {
 
     public static final String ATTRIBUTES = "attributes";
 
+    public static final String L_BATCH_LOOKUP = "batchLookup";
+
+    public static final String L_PRODUCT_ID = "productId";
+
+    public static final String L_BATCHES_TAB = "batchesTab";
+
     @Autowired
     private BasicProductionCountingService basicProductionCountingService;
 
@@ -75,6 +78,7 @@ public class ProductionCountingQuantityAdvancedDetailsHooks {
         fillProductField(view);
         fillUnitFields(view);
         setTechnologyOperationComponentFieldRequired(view);
+        fillBatchLookupFilter(view);
         hideTab(view);
 
         FormComponent productionCountingQuantityForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
@@ -94,11 +98,34 @@ public class ProductionCountingQuantityAdvancedDetailsHooks {
         }
     }
 
+    private void fillBatchLookupFilter(final ViewDefinitionState view) {
+        LookupComponent productLookup = (LookupComponent) view.getComponentByReference(ProductionCountingQuantityFields.PRODUCT);
+        LookupComponent batchLookup = (LookupComponent) view.getComponentByReference(L_BATCH_LOOKUP);
+        Entity product = productLookup.getEntity();
+        FilterValueHolder batchFilterValueHolder = batchLookup.getFilterValue();
+
+        if (Objects.nonNull(product)) {
+            batchFilterValueHolder.put(L_PRODUCT_ID, product.getId());
+            batchLookup.setFilterValue(batchFilterValueHolder);
+        } else {
+            if (batchFilterValueHolder.has(L_PRODUCT_ID)) {
+                batchFilterValueHolder.remove(L_PRODUCT_ID);
+                batchLookup.setFilterValue(batchFilterValueHolder);
+            }
+        }
+    }
+
     private void hideTab(ViewDefinitionState view) {
         ComponentState attributesTab = view.getComponentByReference(ATTRIBUTES);
+        ComponentState batchesTab = view.getComponentByReference(L_BATCHES_TAB);
         FieldComponent roleField = (FieldComponent) view.getComponentByReference(ProductionCountingQuantityFields.ROLE);
+        FieldComponent materialField = (FieldComponent) view
+                .getComponentByReference(ProductionCountingQuantityFields.TYPE_OF_MATERIAL);
         boolean isProduced = checkIfIsProduced((String) roleField.getFieldValue());
+        boolean isUsedMaterial = checkIfIsUsed((String) roleField.getFieldValue())
+                && checkIfIsComponent((String) materialField.getFieldValue());
         attributesTab.setVisible(isProduced);
+        batchesTab.setVisible(isUsedMaterial);
     }
 
     private void setCriteriaModifierParameters(final ViewDefinitionState view) {
@@ -183,6 +210,11 @@ public class ProductionCountingQuantityAdvancedDetailsHooks {
 
     private boolean checkIfIsUsed(final String role) {
         return (StringUtils.isNotEmpty(role) && ProductionCountingQuantityRole.USED.getStringValue().equals(role));
+    }
+
+    private boolean checkIfIsComponent(final String material) {
+        return (StringUtils.isNotEmpty(material)
+                && ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue().equals(material));
     }
 
     private boolean checkIfIsProduced(final String role) {

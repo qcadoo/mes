@@ -23,9 +23,19 @@
  */
 package com.qcadoo.mes.orders.hooks;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
+import java.util.List;
+import java.util.Objects;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.orders.OperationalTasksService;
+import com.qcadoo.mes.orders.constants.OperationalTaskDtoFields;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
 import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.constants.OrdersConstants;
@@ -45,15 +55,6 @@ import com.qcadoo.view.api.ribbon.RibbonActionItem;
 import com.qcadoo.view.api.ribbon.RibbonGroup;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
 import com.qcadoo.view.constants.QcadooViewConstants;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
-import java.util.List;
-import java.util.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class OperationalTasksDetailsHooks {
@@ -110,15 +111,15 @@ public class OperationalTasksDetailsHooks {
                 plannedQuantityUnit.setFieldValue(product.getStringField(ProductFields.UNIT));
 
                 plannedQuantity.setFieldValue(numberService
-                        .formatWithMinimumFractionDigits(otDto.getDecimalField(OperationalTaskFields.PLANNED_QUANTITY), 0));
+                        .formatWithMinimumFractionDigits(otDto.getDecimalField(OperationalTaskDtoFields.PLANNED_QUANTITY), 0));
                 usedQuantity.setFieldValue(numberService
-                        .formatWithMinimumFractionDigits(otDto.getDecimalField(OperationalTaskFields.USED_QUANTITY), 0));
-                if (Objects.nonNull(otDto.getDecimalField(OperationalTaskFields.PLANNED_QUANTITY))
-                        && otDto.getDecimalField(OperationalTaskFields.PLANNED_QUANTITY).compareTo(BigDecimal.ZERO) > 0) {
+                        .formatWithMinimumFractionDigits(otDto.getDecimalField(OperationalTaskDtoFields.USED_QUANTITY), 0));
+                if (Objects.nonNull(otDto.getDecimalField(OperationalTaskDtoFields.PLANNED_QUANTITY))
+                        && otDto.getDecimalField(OperationalTaskDtoFields.PLANNED_QUANTITY).compareTo(BigDecimal.ZERO) > 0) {
                     BigDecimal doneInPercentageQuantity = BigDecimalUtils.convertNullToZero(otDto.getDecimalField("usedQuantity"))
                             .multiply(new BigDecimal(100));
                     doneInPercentageQuantity = doneInPercentageQuantity
-                            .divide(otDto.getDecimalField(OperationalTaskFields.PLANNED_QUANTITY), MathContext.DECIMAL64);
+                            .divide(otDto.getDecimalField(OperationalTaskDtoFields.PLANNED_QUANTITY), MathContext.DECIMAL64);
                     doneInPercentage.setFieldValue(numberService
                             .formatWithMinimumFractionDigits(doneInPercentageQuantity.setScale(0, RoundingMode.CEILING), 0));
                     doneInPercentage.setEnabled(false);

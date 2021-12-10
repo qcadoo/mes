@@ -21,23 +21,13 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.basic.constants;
+package com.qcadoo.mes.basic.imports.model;
 
-public final class SubstituteFields {
+import org.springframework.stereotype.Service;
 
-    private SubstituteFields() {
-    }
+import com.qcadoo.mes.basic.imports.services.XlsxImportService;
 
-    public static final String BASE_PRODUCT = "baseProduct";
-
-    public static final String NUMBER = "number";
-
-    public static final String NAME = "name";
-
-    public static final String PRODUCT = "product";
-
-    public static final String COMPONENTS = "components";
-
-    public static final String PRIORITY = "priority";
+@Service
+public class ModelXlsxImportService extends XlsxImportService {
 
 }

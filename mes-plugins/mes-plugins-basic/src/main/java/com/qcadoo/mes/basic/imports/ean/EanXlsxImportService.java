@@ -54,7 +54,7 @@ public class EanXlsxImportService extends XlsxImportService {
         validateProduct(product, productDD);
     }
 
-    private void validateProduct(final Entity product, DataDefinition productDD) {
+    private void validateProduct(final Entity product, final DataDefinition productDD) {
         if (Objects.isNull(product.getId())) {
             product.addError(productDD.getField(ProductFields.NUMBER), L_QCADOO_VIEW_VALIDATE_FIELD_ERROR_LOOKUP_CODE_NOT_FOUND);
         }

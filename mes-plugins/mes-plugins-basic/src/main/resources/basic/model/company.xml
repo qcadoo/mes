@@ -75,7 +75,8 @@
                  cascade="delete"/>
 
         <dictionary name="contractorCategory" dictionary="contractorCategory"/>
-
+        <boolean name="isSetFieldsFromParameter"
+                 persistent="false"/>
     </fields>
 
     <hooks>

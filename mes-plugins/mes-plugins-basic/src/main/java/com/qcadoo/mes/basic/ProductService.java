@@ -23,13 +23,31 @@
  */
 package com.qcadoo.mes.basic;
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Maps;
-import com.qcadoo.mes.basic.constants.*;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.constants.ProductFields;
+import com.qcadoo.mes.basic.constants.SubstituteComponentFields;
+import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.basic.util.UnitService;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.search.*;
+import com.qcadoo.model.api.search.CustomRestriction;
+import com.qcadoo.model.api.search.SearchCriteriaBuilder;
+import com.qcadoo.model.api.search.SearchCriterion;
+import com.qcadoo.model.api.search.SearchOrder;
+import com.qcadoo.model.api.search.SearchProjection;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.search.SearchResult;
 import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.units.UnitConversionService;
 import com.qcadoo.view.api.ComponentState;
@@ -38,14 +56,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.GridComponent;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 @Service
 public class ProductService {
@@ -99,9 +109,7 @@ public class ProductService {
         String unit = product.getStringField(ProductFields.UNIT);
         PossibleUnitConversions possibleUnitConversions = findPossibleUnitConversions(targetUnit, product);
 
-        BigDecimal convertedQuantity = possibleUnitConversions.convertTo(quantity, unit);
-
-        return convertedQuantity;
+        return possibleUnitConversions.convertTo(quantity, unit);
     }
 
     private PossibleUnitConversions findPossibleUnitConversions(final String unitName, final Entity productEntity) {
@@ -200,7 +208,7 @@ public class ProductService {
         if (product.isValid()) {
             productForm.addMessage("basic.productDetails.message.getDefaultConversionsForProductSuccess", MessageType.SUCCESS);
 
-            state.performEvent(view, "reset", new String[0]);
+            state.performEvent(view, "reset");
         } else {
             productForm.setEntity(product);
         }
@@ -222,25 +230,6 @@ public class ProductService {
         }
 
         productsGrid.addMessage("basic.productsList.message.getDefaultConversionsForProductsSuccess", MessageType.SUCCESS);
-    }
-
-    public boolean checkIfSubstituteIsNotRemoved(final DataDefinition substituteComponentDD, final Entity substituteComponent) {
-        Entity substitute = substituteComponent.getBelongsToField(SubstituteComponentFields.SUBSTITUTE);
-
-        if (Objects.isNull(substitute) || Objects.isNull(substitute.getId())) {
-            return true;
-        }
-
-        Entity substituteEntity = getSubstituteDD().get(substitute.getId());
-
-        if (Objects.isNull(substituteEntity)) {
-            substituteComponent.addGlobalError("qcadooView.message.belongsToNotFound");
-            substituteComponent.setField(SubstituteComponentFields.SUBSTITUTE, null);
-
-            return false;
-        } else {
-            return true;
-        }
     }
 
     public boolean checkSubstituteComponentUniqueness(final DataDefinition substituteComponentDD,
@@ -267,8 +256,8 @@ public class ProductService {
         }
     }
 
-    public boolean checkIfProductIsNotRemoved(final DataDefinition substituteDD, final Entity substitute) {
-        Entity product = substitute.getBelongsToField(SubstituteFields.PRODUCT);
+    public boolean checkIfProductIsNotRemoved(final DataDefinition dataDefinition, final Entity entity) {
+        Entity product = entity.getBelongsToField(BasicConstants.MODEL_PRODUCT);
 
         if (Objects.isNull(product) || Objects.isNull(product.getId())) {
             return true;
@@ -277,9 +266,9 @@ public class ProductService {
         Entity productEntity = getProductDD().get(product.getId());
 
         if (Objects.isNull(productEntity)) {
-            substitute.addGlobalError("qcadooView.message.belongsToNotFound");
+            entity.addGlobalError("qcadooView.message.belongsToNotFound");
 
-            substitute.setField(SubstituteFields.PRODUCT, null);
+            entity.setField(BasicConstants.MODEL_PRODUCT, null);
 
             return false;
         }
@@ -295,10 +284,6 @@ public class ProductService {
 
     private DataDefinition getProductDD() {
         return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT);
-    }
-
-    private DataDefinition getSubstituteDD() {
-        return dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SUBSTITUTE);
     }
 
 }

@@ -195,6 +195,45 @@
                 <option type="multiselect" value="true"/>
             </component>
         </windowTab>
+        <windowTab name="batchesTab" reference="batchesTab">
+            <component type="lookup" name="batchLookup" reference="batchLookup"
+                       field="#{form}.batches" defaultVisible="false" persistent="false"
+                       hasLabel="false">
+                <option type="column" name="supplierName" fields="supplier"
+                        expression="#supplier['name']"/>
+
+                <option type="searchable" value="number,supplierName"/>
+                <option type="orderable" value="number,supplierName"/>
+
+                <option type="expression" value="#number"/>
+                <option type="fieldCode" value="number"/>
+                <option type="multiselect" value="true"/>
+                <criteriaModifier
+                        class="com.qcadoo.mes.advancedGenealogy.criteriaModifier.BatchCriteriaModifier"
+                        method="filterByProductAndActive"/>
+            </component>
+
+            <component type="grid" name="batches" reference="batches"
+                       source="#{form}.batches">
+                <option type="column" name="number" fields="number"/>
+
+                <option type="order" column="number" direction="asc"/>
+
+                <option type="searchable" value="number"/>
+                <option type="orderable" value="number"/>
+
+                <option type="correspondingLookup" value="batchLookup"/>
+
+                <option type="weakRelation" value="true"/>
+
+                <option type="fullscreen" value="true"/>
+                <option type="multiselect" value="true"/>
+                <option type="deletable" value="true"/>
+                <option type="creatable" value="true"/>
+                <option type="paginable" value="true"/>
+                <option type="prioritizable" value="false"/>
+            </component>
+        </windowTab>
     </component>
 
     <hooks>

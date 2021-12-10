@@ -23,13 +23,14 @@
  */
 package com.qcadoo.mes.basic;
 
-import com.qcadoo.mes.basic.constants.BasicConstants;
-import com.qcadoo.mes.basic.constants.SubstituteComponentFields;
-import com.qcadoo.mes.basic.constants.SubstituteFields;
-import com.qcadoo.mes.basic.util.UnitService;
-import com.qcadoo.model.api.DataDefinition;
-import com.qcadoo.model.api.DataDefinitionService;
-import com.qcadoo.model.api.Entity;
+import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
+import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -37,11 +38,11 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import static com.qcadoo.mes.basic.constants.ProductFields.UNIT;
-import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import com.qcadoo.mes.basic.constants.BasicConstants;
+import com.qcadoo.mes.basic.util.UnitService;
+import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
+import com.qcadoo.model.api.Entity;
 
 public class ProductServiceTest {
 
@@ -56,10 +57,10 @@ public class ProductServiceTest {
     private UnitService unitService;
 
     @Mock
-    private DataDefinition productDD, substituteDD, substituteComponentDD;
+    private DataDefinition productDD, dataDefinition;
 
     @Mock
-    private Entity product, substitute, substituteComponent;
+    private Entity product, entity;
 
     @Before
     public final void init() {
@@ -86,7 +87,7 @@ public class ProductServiceTest {
         DataDefinition productDD = Mockito.mock(DataDefinition.class);
         Long productId = 1L;
 
-        given(substitute.getBelongsToField(SubstituteFields.PRODUCT)).willReturn(product);
+        given(entity.getBelongsToField(BasicConstants.MODEL_PRODUCT)).willReturn(product);
 
         given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT)).willReturn(productDD);
         given(product.getId()).willReturn(productId);
@@ -94,7 +95,7 @@ public class ProductServiceTest {
         given(productDD.get(productId)).willReturn(null);
 
         // when
-        boolean result = productService.checkIfProductIsNotRemoved(substituteDD, substitute);
+        boolean result = productService.checkIfProductIsNotRemoved(dataDefinition, entity);
 
         // then
         assertFalse(result);
@@ -106,7 +107,7 @@ public class ProductServiceTest {
         DataDefinition productDD = Mockito.mock(DataDefinition.class);
         Long productId = 1L;
 
-        given(substitute.getBelongsToField(SubstituteFields.PRODUCT)).willReturn(product);
+        given(entity.getBelongsToField(BasicConstants.MODEL_PRODUCT)).willReturn(product);
 
         given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_PRODUCT)).willReturn(productDD);
         given(product.getId()).willReturn(productId);
@@ -114,57 +115,7 @@ public class ProductServiceTest {
         given(productDD.get(productId)).willReturn(product);
 
         // when
-        boolean result = productService.checkIfProductIsNotRemoved(substituteDD, substitute);
-
-        // then
-        assertTrue(result);
-    }
-
-    @Test
-    public void shouldReturnFalseWhenSubstituteDoesnotExists() throws Exception {
-        // given
-        DataDefinition substituteDD = Mockito.mock(DataDefinition.class);
-        Long substituteId = 1L;
-
-        given(substituteComponent.getBelongsToField(SubstituteComponentFields.SUBSTITUTE)).willReturn(substitute);
-
-        given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SUBSTITUTE)).willReturn(
-                substituteDD);
-        given(substitute.getId()).willReturn(substituteId);
-        given(substituteDD.get(substituteId)).willReturn(null);
-
-        // when
-        boolean result = productService.checkIfSubstituteIsNotRemoved(substituteComponentDD, substituteComponent);
-
-        // then
-        assertFalse(result);
-    }
-
-    @Test
-    public void shouldReturnTrueWhenEntityDoesnotHaveBTSubstitute() throws Exception {
-        // when
-        boolean result = productService.checkIfSubstituteIsNotRemoved(substituteComponentDD, substituteComponent);
-
-        // then
-        assertTrue(result);
-    }
-
-    @Test
-    public void shouldReturnTrueWhenSubstitueExists() throws Exception {
-        // given
-        DataDefinition substituteDD = Mockito.mock(DataDefinition.class);
-        Long substituteId = 1L;
-
-        given(substituteComponent.getBelongsToField(SubstituteComponentFields.SUBSTITUTE)).willReturn(substitute);
-
-        given(dataDefinitionService.get(BasicConstants.PLUGIN_IDENTIFIER, BasicConstants.MODEL_SUBSTITUTE)).willReturn(
-                substituteDD);
-        given(substitute.getId()).willReturn(substituteId);
-
-        given(substituteDD.get(substituteId)).willReturn(substitute);
-
-        // when
-        boolean result = productService.checkIfSubstituteIsNotRemoved(substituteComponentDD, substituteComponent);
+        boolean result = productService.checkIfProductIsNotRemoved(dataDefinition, entity);
 
         // then
         assertTrue(result);

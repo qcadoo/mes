@@ -48,6 +48,9 @@ public class OperationalTaskOrderStateService {
     @Autowired
     private OrderDetailsListeners orderDetailsListeners;
 
+    @Autowired
+    private OperationalTaskStateChangeDescriber operationalTaskStateChangeDescriber;
+
     public void startOperationalTask(StateChangeContext stateChangeContext) {
         try {
             Entity order = stateChangeContext.getOwner();
@@ -57,12 +60,11 @@ public class OperationalTaskOrderStateService {
 
             String userLogin = securityService.getCurrentUserName();
             for (Entity ot : tasksForOrder) {
-                stateExecutorService.changeState(OperationalTasksServiceMarker.class, ot, userLogin,
+                changeOperationalTaskState(userLogin, ot, ot.getStringField(OperationalTaskFields.STATE),
                         OperationalTaskStateStringValues.STARTED);
             }
         } catch (Exception exc) {
-            stateChangeContext.addMessage("orders.operationalTask.error.startOperationalTask",
-                    StateMessageType.FAILURE);
+            stateChangeContext.addMessage("orders.operationalTask.error.startOperationalTask", StateMessageType.FAILURE);
             stateChangeContext.setStatus(StateChangeStatus.FAILURE);
             LOG.error("Error when start operational task.", exc);
         }
@@ -78,7 +80,7 @@ public class OperationalTaskOrderStateService {
                         .add(SearchRestrictions.belongsTo(OperationalTaskFields.SCHEDULE_POSITION, pos)).setMaxResults(1)
                         .uniqueResult();
                 if (Objects.nonNull(operationalTask)) {
-                    stateExecutorService.changeState(OperationalTasksServiceMarker.class, operationalTask, userLogin,
+                    changeOperationalTaskState(userLogin, operationalTask, operationalTask.getStringField(OperationalTaskFields.STATE),
                             OperationalTaskStateStringValues.REJECTED);
                 }
             }
@@ -98,16 +100,24 @@ public class OperationalTaskOrderStateService {
 
             String userLogin = securityService.getCurrentUserName();
             for (Entity ot : tasksForOrder) {
-                stateExecutorService.changeState(OperationalTasksServiceMarker.class, ot, userLogin,
+                changeOperationalTaskState(userLogin, ot, ot.getStringField(OperationalTaskFields.STATE),
                         OperationalTaskStateStringValues.REJECTED);
             }
         } catch (Exception exc) {
-            stateChangeContext.addMessage("orders.operationalTask.error.rejectOperationalTask",
-                    StateMessageType.FAILURE);
+            stateChangeContext.addMessage("orders.operationalTask.error.rejectOperationalTask", StateMessageType.FAILURE);
             stateChangeContext.setStatus(StateChangeStatus.FAILURE);
             LOG.error("Error when reject operational task.", exc);
 
         }
+    }
+
+    private void changeOperationalTaskState(String userLogin, Entity ot, String sourceState, String targetState) {
+        Entity context = stateExecutorService.buildStateChangeEntity(operationalTaskStateChangeDescriber, ot, userLogin,
+                sourceState, targetState);
+        context.setField("status", StateChangeStatus.SUCCESSFUL.getStringValue());
+        context.getDataDefinition().fastSave(context);
+        ot.setField(OperationalTaskFields.STATE, targetState);
+        ot.getDataDefinition().fastSave(ot);
     }
 
     public void finishOperationalTask(StateChangeContext stateChangeContext) {
@@ -121,12 +131,11 @@ public class OperationalTaskOrderStateService {
 
             String userLogin = securityService.getCurrentUserName();
             for (Entity ot : tasksForOrder) {
-                stateExecutorService.changeState(OperationalTasksServiceMarker.class, ot, userLogin,
+                changeOperationalTaskState(userLogin, ot, ot.getStringField(OperationalTaskFields.STATE),
                         OperationalTaskStateStringValues.FINISHED);
             }
         } catch (Exception exc) {
-            stateChangeContext.addMessage("orders.operationalTask.error.finishOperationalTask",
-                    StateMessageType.FAILURE);
+            stateChangeContext.addMessage("orders.operationalTask.error.finishOperationalTask", StateMessageType.FAILURE);
             stateChangeContext.setStatus(StateChangeStatus.FAILURE);
             LOG.error("Error when finish operational task.", exc);
 
@@ -135,10 +144,11 @@ public class OperationalTaskOrderStateService {
 
     public void generateOperationalTasks(StateChangeContext stateChangeContext) {
 
-        if(parameterService.getParameter().getBooleanField("automaticallyGenerateTasksForOrder")) {
+        if (parameterService.getParameter().getBooleanField("automaticallyGenerateTasksForOrder")) {
             Entity order = stateChangeContext.getOwner();
 
-            if (FOR_EACH.equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING)) && order.getHasManyField(OrderFields.OPERATIONAL_TASKS).isEmpty()) {
+            if (FOR_EACH.equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))
+                    && order.getHasManyField(OrderFields.OPERATIONAL_TASKS).isEmpty()) {
                 orderDetailsListeners.createOperationalTasksForOrder(order, true);
             }
 

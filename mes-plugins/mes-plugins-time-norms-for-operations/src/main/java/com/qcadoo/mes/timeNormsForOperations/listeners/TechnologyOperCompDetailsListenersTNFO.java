@@ -95,6 +95,7 @@ public class TechnologyOperCompDetailsListenersTNFO {
                     techOperCompWorkstationTime.setField(TechOperCompWorkstationTimeFields.TIME_NEXT_OPERATION,
                             operationWorkstationTime.getField(OperationWorkstationTimeFields.TIME_NEXT_OPERATION));
                     techOperCompWorkstationTime.getDataDefinition().save(techOperCompWorkstationTime);
+                    break;
                 }
             }
         }

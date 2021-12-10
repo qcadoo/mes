@@ -21,35 +21,20 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  * ***************************************************************************
  */
-package com.qcadoo.mes.deliveries.listeners;
+package com.qcadoo.mes.basic.listeners;
 
-import com.google.common.collect.Maps;
-import com.qcadoo.model.api.Entity;
-import com.qcadoo.view.api.ComponentState;
-import com.qcadoo.view.api.ViewDefinitionState;
-import com.qcadoo.view.api.components.GridComponent;
-import com.qcadoo.view.constants.QcadooViewConstants;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
+import com.qcadoo.view.api.ComponentState;
+import com.qcadoo.view.api.ViewDefinitionState;
 
 @Service
-public class SupplyItemsListeners {
+public class ModelsListListeners {
 
-    public void redirectToDeliveryDetails(final ViewDefinitionState view, final ComponentState state, final String[] args) {
-        GridComponent grid = (GridComponent) view.getComponentByReference(QcadooViewConstants.L_GRID);
+    public void openModelsImportPage(final ViewDefinitionState view, final ComponentState state, final String[] args) {
+        StringBuilder url = new StringBuilder("../page/basic/modelsImport.html");
 
-        if (grid.getSelectedEntities().isEmpty()) {
-            return;
-        }
-
-        Entity orderedProduct = grid.getSelectedEntities().get(0);
-
-        Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("form.id", orderedProduct.getIntegerField("deliveryId"));
-
-        String url = "../page/deliveries/deliveryDetails.html";
-        view.redirectTo(url, false, true, parameters);
+        view.openModal(url.toString());
     }
 
 }

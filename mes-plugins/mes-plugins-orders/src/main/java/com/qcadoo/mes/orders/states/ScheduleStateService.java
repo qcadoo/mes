@@ -1,5 +1,18 @@
 package com.qcadoo.mes.orders.states;
 
+import static com.qcadoo.model.api.search.SearchOrders.desc;
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.list;
+import static com.qcadoo.model.api.search.SearchProjections.rowCount;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.qcadoo.mes.newstates.BasicStateService;
 import com.qcadoo.mes.orders.TechnologyServiceO;
 import com.qcadoo.mes.orders.constants.OperationalTaskFields;
@@ -9,11 +22,13 @@ import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ScheduleFields;
 import com.qcadoo.mes.orders.constants.SchedulePositionFields;
 import com.qcadoo.mes.orders.constants.ScheduleStateChangeFields;
+import com.qcadoo.mes.orders.hooks.OperationalTaskHooks;
+import com.qcadoo.mes.orders.hooks.OrderHooks;
 import com.qcadoo.mes.orders.states.constants.OperationalTaskStateStringValues;
-import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.orders.states.constants.ScheduleStateStringValues;
 import com.qcadoo.mes.states.StateChangeEntityDescriber;
+import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
@@ -22,18 +37,6 @@ import com.qcadoo.model.api.search.SearchOrders;
 import com.qcadoo.model.api.search.SearchProjections;
 import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.view.api.utils.NumberGeneratorService;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import static com.qcadoo.model.api.search.SearchOrders.desc;
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.list;
-import static com.qcadoo.model.api.search.SearchProjections.rowCount;
 
 @Service
 public class ScheduleStateService extends BasicStateService implements ScheduleServiceMarker {
@@ -57,6 +60,12 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
     @Autowired
     private TechnologyServiceO technologyServiceO;
 
+    @Autowired
+    private OperationalTaskHooks operationalTaskHooks;
+
+    @Autowired
+    private OrderHooks orderHooks;
+
     @Override
     public StateChangeEntityDescriber getChangeEntityDescriber() {
         return scheduleStateChangeDescriber;
@@ -71,6 +80,8 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
                 checkOrderTypeOfProductionRecording(entity);
                 checkOrderStatesForApproved(entity);
                 checkExistingOperationalTasksState(entity);
+                checkSchedulePositionsDatesIsNotEmpty(entity);
+                checkOrdersTechnologiesChanged(entity);
                 break;
 
             case ScheduleStateStringValues.REJECTED:
@@ -80,8 +91,34 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
         return entity;
     }
 
+    private void checkOrdersTechnologiesChanged(Entity entity) {
+        List<Entity> orders = dataDefinitionService
+                .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).find()
+                .add(SearchRestrictions.belongsTo(SchedulePositionFields.SCHEDULE, entity))
+                .createAlias(SchedulePositionFields.ORDER, SchedulePositionFields.ORDER, JoinType.INNER)
+                .createAlias(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT,
+                        SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT, JoinType.INNER)
+                .add(SearchRestrictions.or(SearchRestrictions.isNull(SchedulePositionFields.ORDER + "." + OrderFields.TECHNOLOGY),
+                        SearchRestrictions.neField(SchedulePositionFields.ORDER + "." + OrderFields.TECHNOLOGY,
+                                SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT + "."
+                                        + TechnologyOperationComponentFields.TECHNOLOGY)))
+                .setProjection(
+                        list().add(alias(SearchProjections.groupField(SchedulePositionFields.ORDER + "." + OrderFields.NUMBER),
+                                OrderFields.NUMBER)))
+                .addOrder(desc(SchedulePositionFields.ORDER + "." + OrderFields.NUMBER)).list().getEntities();
+        if (!orders.isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (Entity order : orders) {
+                sb.append(order.getStringField(OrderFields.NUMBER));
+                sb.append(", ");
+            }
+            entity.addGlobalError("orders.schedule.orders.technologyChanged", false, true, sb.toString());
+        }
+    }
+
     private void checkOrderTypeOfProductionRecording(Entity entity) {
-        List<Entity> orders = entity.getManyToManyField(ScheduleFields.ORDERS);
+        List<Entity> orders = entity.getHasManyField(ScheduleFields.POSITIONS).stream()
+                .map(e -> e.getBelongsToField(SchedulePositionFields.ORDER)).distinct().collect(Collectors.toList());
         for (Entity order : orders) {
             if (!L_FOR_EACH.equals(order.getStringField(L_TYPE_OF_PRODUCTION_RECORDING))) {
                 entity.addGlobalError("orders.schedule.orders.wrongTypeOfProductionRecording");
@@ -91,7 +128,8 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
     }
 
     private void checkOrderStatesForRejected(Entity entity) {
-        List<Entity> orders = entity.getManyToManyField(ScheduleFields.ORDERS);
+        List<Entity> orders = entity.getHasManyField(ScheduleFields.POSITIONS).stream()
+                .map(e -> e.getBelongsToField(SchedulePositionFields.ORDER)).distinct().collect(Collectors.toList());
         for (Entity order : orders) {
             if (OrderStateStringValues.COMPLETED.equals(order.getStringField(OrderFields.STATE))
                     || OrderStateStringValues.IN_PROGRESS.equals(order.getStringField(OrderFields.STATE))) {
@@ -102,7 +140,8 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
     }
 
     private void checkOrderStatesForApproved(Entity entity) {
-        List<Entity> orders = entity.getManyToManyField(ScheduleFields.ORDERS);
+        List<Entity> orders = entity.getHasManyField(ScheduleFields.POSITIONS).stream()
+                .map(e -> e.getBelongsToField(SchedulePositionFields.ORDER)).distinct().collect(Collectors.toList());
         for (Entity order : orders) {
             if (!OrderStateStringValues.PENDING.equals(order.getStringField(OrderFields.STATE))
                     && !OrderStateStringValues.ACCEPTED.equals(order.getStringField(OrderFields.STATE))) {
@@ -119,7 +158,8 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
     }
 
     private void checkExistingOperationalTasksState(Entity entity) {
-        List<Entity> scheduleOrders = entity.getManyToManyField(ScheduleFields.ORDERS);
+        List<Entity> scheduleOrders = entity.getHasManyField(ScheduleFields.POSITIONS).stream()
+                .map(e -> e.getBelongsToField(SchedulePositionFields.ORDER)).distinct().collect(Collectors.toList());
         if (!scheduleOrders.isEmpty()) {
             List<Entity> orders = dataDefinitionService
                     .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_OPERATIONAL_TASK).find()
@@ -138,6 +178,16 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
                     sb.append(", ");
                 }
                 entity.addGlobalError("orders.schedule.operationalTasks.wrongState", false, true, sb.toString());
+            }
+        }
+    }
+
+    private void checkSchedulePositionsDatesIsNotEmpty(Entity entity) {
+        for (Entity position : entity.getHasManyField(ScheduleFields.POSITIONS)) {
+            if (position.getField(SchedulePositionFields.START_TIME) == null
+                    || position.getField(SchedulePositionFields.END_TIME) == null) {
+                entity.addGlobalError("orders.schedule.positions.datesIsEmpty");
+                break;
             }
         }
     }
@@ -171,17 +221,15 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
     }
 
     private void updateOrderDates(Entity entity) {
-        List<Entity> orders = entity.getManyToManyField(ScheduleFields.ORDERS);
+        List<Entity> orders = entity.getHasManyField(ScheduleFields.POSITIONS).stream()
+                .map(e -> e.getBelongsToField(SchedulePositionFields.ORDER)).distinct().collect(Collectors.toList());
         for (Entity order : orders) {
             Date startTime = getOrderStartTime(entity, order);
             Date endTime = getOrderEndTime(entity, order);
-            if (startTime != null || endTime != null) {
-                String orderState = order.getStringField(OrderFields.STATE);
-                Entity orderFromDB = order.getDataDefinition().get(order.getId());
-                setOrderDateFrom(order, startTime, orderState, orderFromDB);
-                setOrderDateTo(order, endTime, orderState, orderFromDB);
-                order.getDataDefinition().save(order);
-            }
+            Entity orderFromDB = order.getDataDefinition().get(order.getId());
+            setOrderDateFrom(order, startTime, orderFromDB);
+            setOrderDateTo(order, endTime, orderFromDB);
+            order.getDataDefinition().fastSave(order);
         }
     }
 
@@ -209,31 +257,25 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
         return schedulePositionMinStartTimeEntity.getDateField(SchedulePositionFields.START_TIME);
     }
 
-    private void setOrderDateTo(Entity order, Date endTime, String orderState, Entity orderFromDB) {
+    private void setOrderDateTo(Entity order, Date endTime, Entity orderFromDB) {
         Date finishDateDB = new Date();
         if (orderFromDB.getDateField(OrderFields.FINISH_DATE) != null) {
             finishDateDB = orderFromDB.getDateField(OrderFields.FINISH_DATE);
         }
-        if (endTime != null && !finishDateDB.equals(endTime)) {
-            if (OrderState.PENDING.getStringValue().equals(orderState)) {
-                order.setField(OrderFields.DATE_TO, endTime);
-            } else if ((OrderState.ACCEPTED.getStringValue().equals(orderState))) {
-                order.setField(OrderFields.CORRECTED_DATE_TO, endTime);
-            }
+        if (!finishDateDB.equals(endTime)) {
+            order.setField(OrderFields.FINISH_DATE, endTime);
+            orderHooks.copyEndDate(order.getDataDefinition(), order);
         }
     }
 
-    private void setOrderDateFrom(Entity order, Date startTime, String orderState, Entity orderFromDB) {
+    private void setOrderDateFrom(Entity order, Date startTime, Entity orderFromDB) {
         Date startDateDB = new Date();
         if (orderFromDB.getDateField(OrderFields.START_DATE) != null) {
             startDateDB = orderFromDB.getDateField(OrderFields.START_DATE);
         }
-        if (startTime != null && !startDateDB.equals(startTime)) {
-            if (OrderState.PENDING.getStringValue().equals(orderState)) {
-                order.setField(OrderFields.DATE_FROM, startTime);
-            } else if ((OrderState.ACCEPTED.getStringValue().equals(orderState))) {
-                order.setField(OrderFields.CORRECTED_DATE_FROM, startTime);
-            }
+        if (!startDateDB.equals(startTime)) {
+            order.setField(OrderFields.START_DATE, startTime);
+            orderHooks.copyStartDate(order.getDataDefinition(), order);
         }
     }
 
@@ -264,8 +306,9 @@ public class ScheduleStateService extends BasicStateService implements ScheduleS
 
             Optional<Entity> maybeDivision = technologyServiceO.extractDivision(technology, technologyOperationComponent);
             maybeDivision.ifPresent(d -> operationalTask.setField(OperationalTaskFields.DIVISION, d));
-            operationalTaskDD.save(operationalTask);
-
+            operationalTaskHooks.setInitialState(operationalTask);
+            operationalTaskHooks.fillNameAndDescription(operationalTask);
+            operationalTaskDD.fastSave(operationalTask);
         }
         schedule.addGlobalMessage("productionScheduling.operationDurationDetailsInOrder.info.operationalTasksCreated");
     }

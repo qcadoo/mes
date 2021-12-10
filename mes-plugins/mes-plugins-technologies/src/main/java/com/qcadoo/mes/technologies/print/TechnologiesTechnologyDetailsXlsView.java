@@ -32,6 +32,7 @@ import static java.lang.Long.valueOf;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -139,7 +140,8 @@ public class TechnologiesTechnologyDetailsXlsView extends ReportXlsView {
         sheet.autoSizeColumn((short) 7);
     }
 
-    private int addProducts(HSSFSheet sheet, Locale locale, int rowNum, String nodeNumber, String operationName, List<Entity> operationProductComponents) {
+    private int addProducts(HSSFSheet sheet, Locale locale, int rowNum, String nodeNumber, String operationName,
+            List<Entity> operationProductComponents) {
         for (Entity operationProductComponent : operationProductComponents) {
             HSSFRow row = sheet.createRow(rowNum++);
 
@@ -181,8 +183,12 @@ public class TechnologiesTechnologyDetailsXlsView extends ReportXlsView {
             row.createCell(3).setCellValue(technologyInputProductTypeName);
             row.createCell(4).setCellValue(productNumber);
             row.createCell(5).setCellValue(productName);
-            row.createCell(6)
-                    .setCellValue(operationProductComponent.getField(OperationProductInComponentFields.QUANTITY).toString());
+            if (Objects.isNull(operationProductComponent.getField(OperationProductInComponentFields.QUANTITY))) {
+                row.createCell(6).setCellValue("");
+            } else {
+                row.createCell(6)
+                        .setCellValue(operationProductComponent.getField(OperationProductInComponentFields.QUANTITY).toString());
+            }
             row.createCell(7).setCellValue(productUnit);
             rowNum = addProductsBySize(sheet, rowNum, productBySizeGroups);
         }

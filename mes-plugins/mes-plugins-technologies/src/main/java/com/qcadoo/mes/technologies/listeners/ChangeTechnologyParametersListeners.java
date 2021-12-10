@@ -43,18 +43,24 @@ public class ChangeTechnologyParametersListeners {
 
     private static final String L_TECHNOLOGY_GROUP = "technologyGroup";
 
-    private static final Set<String> FIELDS_OPERATION = Sets.newHashSet("tpz", "tj", "productionInOneCycle",
-            "nextOperationAfterProducedType", "nextOperationAfterProducedQuantity", "nextOperationAfterProducedQuantityUNIT",
-            "timeNextOperation", "machineUtilization", "laborUtilization", "productionInOneCycleUNIT",
-            "areProductQuantitiesDivisible", "isTjDivisible");
+    public static final String TIME_NEXT_OPERATION = "timeNextOperation";
 
-    private static final String L_UPDATE_OPERATION_TIME_NORMS = "updateOperationTimeNorms";
+    public static final String TPZ = "tpz";
+
+    public static final String TJ = "tj";
 
     private static final String NEXT_OPERATION_AFTER_PRODUCED_TYPE = "nextOperationAfterProducedType";
 
+    private static final String NEXT_OPERATION_AFTER_PRODUCED_QUANTITY = "nextOperationAfterProducedQuantity";
+
     private static final String PRODUCTION_IN_ONE_CYCLE = "productionInOneCycle";
 
-    private static final String NEXT_OPERATION_AFTER_PRODUCED_QUANTITY = "nextOperationAfterProducedQuantity";
+    private static final String L_UPDATE_OPERATION_TIME_NORMS = "updateOperationTimeNorms";
+
+    private static final Set<String> FIELDS_OPERATION = Sets.newHashSet(TPZ, TJ, PRODUCTION_IN_ONE_CYCLE,
+            NEXT_OPERATION_AFTER_PRODUCED_TYPE, NEXT_OPERATION_AFTER_PRODUCED_QUANTITY, "nextOperationAfterProducedQuantityUNIT",
+            TIME_NEXT_OPERATION, "machineUtilization", "laborUtilization", "productionInOneCycleUNIT",
+            "areProductQuantitiesDivisible", "isTjDivisible");
 
     @Autowired
     private DataDefinitionService dataDefinitionService;
@@ -190,11 +196,12 @@ public class ChangeTechnologyParametersListeners {
             for (Entity techOperCompWorkstationTime : toc.getHasManyField("techOperCompWorkstationTimes")) {
                 if (techOperCompWorkstationTime.getBelongsToField("workstation").getId()
                         .equals(operationWorkstationTime.getBelongsToField("workstation").getId())) {
-                    techOperCompWorkstationTime.setField("tpz", operationWorkstationTime.getField("tpz"));
-                    techOperCompWorkstationTime.setField("tj", operationWorkstationTime.getField("tj"));
-                    techOperCompWorkstationTime.setField("timeNextOperation",
-                            operationWorkstationTime.getField("timeNextOperation"));
+                    techOperCompWorkstationTime.setField(TPZ, operationWorkstationTime.getField(TPZ));
+                    techOperCompWorkstationTime.setField(TJ, operationWorkstationTime.getField(TJ));
+                    techOperCompWorkstationTime.setField(TIME_NEXT_OPERATION,
+                            operationWorkstationTime.getField(TIME_NEXT_OPERATION));
                     techOperCompWorkstationTime.getDataDefinition().save(techOperCompWorkstationTime);
+                    break;
                 }
             }
         }
@@ -203,7 +210,7 @@ public class ChangeTechnologyParametersListeners {
     public void onChangePerformanceNorm(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         CheckBoxComponent changePerformanceNorm = (CheckBoxComponent) state;
         FieldComponent standardPerformanceTechnology = (FieldComponent) view
-                .getComponentByReference("standardPerformanceTechnology");
+                .getComponentByReference(L_STANDARD_PERFORMANCE_TECHNOLOGY);
         if (changePerformanceNorm.isChecked()) {
             standardPerformanceTechnology.setEnabled(true);
         } else {
@@ -215,18 +222,13 @@ public class ChangeTechnologyParametersListeners {
 
     public void onChangeChangeGroup(final ViewDefinitionState view, final ComponentState state, final String[] args) {
         CheckBoxComponent changeGroup = (CheckBoxComponent) state;
-        FieldComponent technologyGroup = (FieldComponent) view.getComponentByReference("technologyGroup");
+        FieldComponent technologyGroup = (FieldComponent) view.getComponentByReference(L_TECHNOLOGY_GROUP);
         if (changeGroup.isChecked()) {
             technologyGroup.setEnabled(true);
         } else {
             technologyGroup.setEnabled(false);
             technologyGroup.setFieldValue(null);
         }
-    }
-
-    public void onChangeUpdateOperationTimeNorms(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
-
     }
 
 }

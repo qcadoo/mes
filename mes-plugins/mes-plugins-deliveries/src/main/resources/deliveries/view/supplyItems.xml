@@ -37,22 +37,31 @@
 		<component type="grid" name="supplyItems" reference="grid">
 			<option type="column" name="deliveryDate" fields="deliveryDate"/>
 			<option type="column" name="deliveryState" fields="deliveryState"/>
-			<option type="column" name="deliveryNumber" fields="deliveryNumber"/>
-			<option type="column" name="deliveryName" fields="deliveryName"/>
+			<option type="column" name="deliveryNumber" fields="deliveryNumber" link="true"
+					correspondingView="deliveries/deliveryDetails" correspondingField="deliveryId"/>
+			<option type="column" name="deliveryName" fields="deliveryName" link="true"
+					correspondingView="deliveries/deliveryDetails" correspondingField="deliveryId"/>
+			<option type="column" name="deliveryId" fields="deliveryId" hidden="true"/>
+
 			<option type="column" name="productNumber" fields="productNumber"/>
 			<option type="column" name="productName" fields="productName"/>
 			<option type="column" name="orderedQuantity" fields="orderedQuantity" />
+			<option type="column" name="deliveredQuantity" fields="deliveredQuantity" />
 			<option type="column" name="productUnit" fields="productUnit"/>
 			<option type="column" name="pricePerUnit" fields="pricePerUnit" />
             <option type="column" name="deliveryCurrency" fields="deliveryCurrency"/>
             <option type="column" name="supplierName" fields="supplierName"/>
 
-			<option type="order" column="deliveryDate" direction="asc" />
+			<option type="order" column="deliveryDate" direction="desc" />
 
 			<option type="searchable"
-				value="deliveryDate,deliveryState,deliveryNumber,deliveryName,productNumber,productName,orderedQuantity,productUnit,pricePerUnit,deliveryCurrency,supplierName" />
+				value="deliveryDate,deliveryState,deliveryNumber,deliveryName,productNumber,productName,orderedQuantity,deliveredQuantity,productUnit,pricePerUnit,deliveryCurrency,supplierName" />
 			<option type="orderable"
-				value="deliveryDate,deliveryState,deliveryNumber,deliveryName,productNumber,productName,orderedQuantity,productUnit,pricePerUnit,deliveryCurrency,supplierName" />
+				value="deliveryDate,deliveryState,deliveryNumber,deliveryName,productNumber,productName,orderedQuantity,deliveredQuantity,productUnit,pricePerUnit,deliveryCurrency,supplierName" />
+
+			<option type="footerRow" value="true"/>
+			<option type="columnsToSummary"
+					value="orderedQuantity,deliveredQuantity"/>
 
 			<option type="fullscreen" value="true" />
 			<option type="multiselect" value="true" />
@@ -60,10 +69,6 @@
 			<criteriaModifier
 				class="com.qcadoo.mes.deliveries.criteriaModifiers.DeliveryCriteriaModifiers"
 				method="showActiveSupplyItems" />
-				
-			<listener event="select"
-				class="com.qcadoo.mes.deliveries.listeners.SupplyItemsListeners"
-				method="redirectToDeliveryDetails" />
 		</component>
 
 		<option type="fixedHeight" value="true" />

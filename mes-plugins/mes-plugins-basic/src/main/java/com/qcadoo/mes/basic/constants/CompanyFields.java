@@ -69,5 +69,5 @@ public final class CompanyFields {
 
     public static final String CONTRACTOR_CATEGORY = "contractorCategory";
 
-
+    public static final String IS_SET_FIELDS_FROM_PARAMETER = "isSetFieldsFromParameter";
 }

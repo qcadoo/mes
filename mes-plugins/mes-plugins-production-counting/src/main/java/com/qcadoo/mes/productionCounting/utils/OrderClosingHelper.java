@@ -23,6 +23,7 @@
  */
 package com.qcadoo.mes.productionCounting.utils;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -70,8 +71,24 @@ public class OrderClosingHelper {
         TypeOfProductionRecording recType = TypeOfProductionRecording
                 .parseString(order.getStringField(OrderFieldsPC.TYPE_OF_PRODUCTION_RECORDING));
 
-        return isLastRecord && autoCloseOrder && (!(TypeOfProductionRecording.FOR_EACH.equals(recType))
-                || eachOperationHasLastRecords(order, productionTracking));
+        return isLastRecord && autoCloseOrder
+                && (!(TypeOfProductionRecording.FOR_EACH.equals(recType))
+                        || eachOperationHasLastRecords(order, productionTracking))
+                || isProductionOrderedQuantityClosesTheOrder(productionTracking);
+    }
+
+    private boolean isProductionOrderedQuantityClosesTheOrder(final Entity productionTracking) {
+        boolean productionOrderedQuantityClosesTheOrder = parameterService.getParameter()
+                .getBooleanField(ParameterFieldsPC.PRODUCTION_ORDERED_QUANTITY_CLOSES_THE_ORDER);
+        if(productionOrderedQuantityClosesTheOrder) {
+            Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
+            Entity orderDb = order.getDataDefinition().get(order.getId());
+            BigDecimal planned = orderDb.getDecimalField(OrderFields.PLANNED_QUANTITY);
+            BigDecimal done = orderDb.getDecimalField(OrderFields.DONE_QUANTITY);
+            return done.compareTo(planned) >= 0;
+        } else {
+            return false;
+        }
     }
 
     private boolean eachOperationHasLastRecords(final Entity order, final Entity productionTracking) {
