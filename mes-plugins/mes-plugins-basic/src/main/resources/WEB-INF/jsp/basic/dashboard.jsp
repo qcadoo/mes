@@ -115,6 +115,17 @@
         </c:if>
         <div class="clear"></div>
         <c:if test="${showKanbanOnDashboard && whatToShowOnDashboard != null}">
+            <div id="dashboardSearch">
+                <div class="input-group">
+                   <div class="input-group-prepend">
+                        <button class="btn btn-outline-secondary bg-primary text-white">
+                            <span class="glyphicon glyphicon-search"></span>
+                        </button>
+                   </div>
+                   <input type="text" class="form-control" id="search"
+                      placeholder="${translationsMap['basic.dashboard.search.label.focus']}" onChange="filterKanban(this.value)"/>
+                </div>
+            </div>
             <c:choose>
                 <c:when test="${whatToShowOnDashboard == '01orders'}">
                     <div id="dashboardKanban">
