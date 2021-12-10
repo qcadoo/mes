@@ -11,11 +11,14 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import com.google.common.collect.Maps;
+import com.qcadoo.mes.orders.constants.OrdersConstants;
 import com.qcadoo.mes.orders.constants.ScheduleFields;
 import com.qcadoo.mes.orders.constants.SchedulePositionFields;
 import com.qcadoo.mes.technologies.constants.TechnologyOperationComponentFields;
 import com.qcadoo.model.api.DataDefinition;
+import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
+import com.qcadoo.model.api.search.SearchRestrictions;
 import com.qcadoo.plugin.api.PluginManager;
 
 @Service
@@ -28,6 +31,9 @@ public class SchedulePositionValidators {
 
     @Autowired
     private PluginManager pluginManager;
+
+    @Autowired
+    private DataDefinitionService dataDefinitionService;
 
     public boolean onValidate(final DataDefinition dataDefinition, final Entity schedulePosition) {
         boolean isValid = true;
@@ -55,20 +61,24 @@ public class SchedulePositionValidators {
     }
 
     private boolean validateDates(DataDefinition dataDefinition, Entity schedulePosition) {
-        boolean isValid = true;
+        boolean isValid;
         Date startTime = schedulePosition.getDateField(SchedulePositionFields.START_TIME);
         Date endTime = schedulePosition.getDateField(SchedulePositionFields.END_TIME);
-        if (endTime == null) {
-            schedulePosition.addError(dataDefinition.getField(SchedulePositionFields.END_TIME),
-                    "qcadooView.validate.field.error.missing");
-            isValid = false;
-        }
         if (startTime == null) {
             schedulePosition.addError(dataDefinition.getField(SchedulePositionFields.START_TIME),
                     "qcadooView.validate.field.error.missing");
             isValid = false;
         } else {
-            isValid = validateChildrenDates(dataDefinition, schedulePosition) && isValid;
+            isValid = validateParentsStartDates(dataDefinition, schedulePosition);
+            isValid = validateChildrenStartDates(dataDefinition, schedulePosition) && isValid;
+        }
+        if (endTime == null) {
+            schedulePosition.addError(dataDefinition.getField(SchedulePositionFields.END_TIME),
+                    "qcadooView.validate.field.error.missing");
+            isValid = false;
+        } else {
+            isValid = validateParentsEndDates(dataDefinition, schedulePosition) && isValid;
+            isValid = validateChildrenEndDates(dataDefinition, schedulePosition) && isValid;
         }
         if ((startTime != null) && (endTime != null) && endTime.before(startTime)) {
             schedulePosition.addError(dataDefinition.getField(SchedulePositionFields.END_TIME),
@@ -78,20 +88,105 @@ public class SchedulePositionValidators {
         return isValid;
     }
 
-    private boolean validateChildrenDates(DataDefinition dataDefinition, Entity schedulePosition) {
-        Date childEndTime = getChildrenMaxEndTime(schedulePosition);
-        if (!Objects.isNull(childEndTime)
-                && childEndTime.after(schedulePosition.getDateField(SchedulePositionFields.START_TIME))) {
+    private boolean validateParentsStartDates(DataDefinition dataDefinition, Entity schedulePosition) {
+        Entity parent = getParent(schedulePosition);
+        if (parent != null && !Objects.isNull(parent.getDateField(SchedulePositionFields.START_TIME))
+                && parent.getDateField(SchedulePositionFields.START_TIME)
+                        .before(schedulePosition.getDateField(SchedulePositionFields.START_TIME))) {
             schedulePosition.addError(dataDefinition.getField(SchedulePositionFields.START_TIME),
-                    "orders.schedulePosition.message.linkedOperationStartTimeIncorrect");
+                    "orders.schedulePosition.error.inappropriateStartDateNext");
+            return false;
+        }
+        if (pluginManager.isPluginEnabled(ORDERS_FOR_SUBPRODUCTS_GENERATION)
+                && schedulePosition.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT)
+                        .getBelongsToField(TechnologyOperationComponentFields.PARENT) == null
+                && schedulePosition.getBelongsToField(SchedulePositionFields.ORDER)
+                        .getBelongsToField(TechnologyOperationComponentFields.PARENT) != null) {
+            Date parentStartTime = getOrdersParentsMinStartTime(schedulePosition);
+            if (!Objects.isNull(parentStartTime)
+                    && parentStartTime.before(schedulePosition.getDateField(SchedulePositionFields.START_TIME))) {
+                schedulePosition.addError(dataDefinition.getField(SchedulePositionFields.START_TIME),
+                        "orders.schedulePosition.error.inappropriateStartDateNext");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean validateParentsEndDates(DataDefinition dataDefinition, Entity schedulePosition) {
+        Entity parent = getParent(schedulePosition);
+        if (parent != null && !Objects.isNull(parent.getDateField(SchedulePositionFields.END_TIME))
+                && parent.getDateField(SchedulePositionFields.END_TIME)
+                        .before(schedulePosition.getDateField(SchedulePositionFields.END_TIME))) {
+            schedulePosition.addError(dataDefinition.getField(SchedulePositionFields.END_TIME),
+                    "orders.schedulePosition.error.inappropriateFinishDateNext");
+            return false;
+        }
+        if (pluginManager.isPluginEnabled(ORDERS_FOR_SUBPRODUCTS_GENERATION)
+                && schedulePosition.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT)
+                        .getBelongsToField(TechnologyOperationComponentFields.PARENT) == null
+                && schedulePosition.getBelongsToField(SchedulePositionFields.ORDER)
+                        .getBelongsToField(TechnologyOperationComponentFields.PARENT) != null) {
+            Date parentEndTime = getOrdersParentsMinEndTime(schedulePosition);
+            if (!Objects.isNull(parentEndTime)
+                    && parentEndTime.before(schedulePosition.getDateField(SchedulePositionFields.END_TIME))) {
+                schedulePosition.addError(dataDefinition.getField(SchedulePositionFields.END_TIME),
+                        "orders.schedulePosition.error.inappropriateFinishDateNext");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private Entity getParent(Entity position) {
+        if (position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT)
+                .getBelongsToField(TechnologyOperationComponentFields.PARENT) != null) {
+            return dataDefinitionService.get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_SCHEDULE_POSITION).find()
+                    .add(SearchRestrictions.belongsTo(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT,
+                            position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT)
+                                    .getBelongsToField(TechnologyOperationComponentFields.PARENT)))
+                    .add(SearchRestrictions.belongsTo(SchedulePositionFields.ORDER,
+                            position.getBelongsToField(SchedulePositionFields.ORDER)))
+                    .add(SearchRestrictions.belongsTo(SchedulePositionFields.SCHEDULE,
+                            position.getBelongsToField(SchedulePositionFields.SCHEDULE)))
+                    .uniqueResult();
+        }
+        return null;
+    }
+
+    private boolean validateChildrenStartDates(DataDefinition dataDefinition, Entity schedulePosition) {
+        Date childStartTime = getChildrenMaxStartTime(schedulePosition);
+        if (!Objects.isNull(childStartTime)
+                && childStartTime.after(schedulePosition.getDateField(SchedulePositionFields.START_TIME))) {
+            schedulePosition.addError(dataDefinition.getField(SchedulePositionFields.START_TIME),
+                    "orders.schedulePosition.error.inappropriateStartDatePrevious");
+            return false;
+        }
+        if (pluginManager.isPluginEnabled(ORDERS_FOR_SUBPRODUCTS_GENERATION)) {
+            childStartTime = getOrdersChildrenMaxStartTime(schedulePosition);
+            if (!Objects.isNull(childStartTime)
+                    && childStartTime.after(schedulePosition.getDateField(SchedulePositionFields.START_TIME))) {
+                schedulePosition.addError(dataDefinition.getField(SchedulePositionFields.START_TIME),
+                        "orders.schedulePosition.error.inappropriateStartDatePrevious");
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean validateChildrenEndDates(DataDefinition dataDefinition, Entity schedulePosition) {
+        Date childEndTime = getChildrenMaxEndTime(schedulePosition);
+        if (!Objects.isNull(childEndTime) && childEndTime.after(schedulePosition.getDateField(SchedulePositionFields.END_TIME))) {
+            schedulePosition.addError(dataDefinition.getField(SchedulePositionFields.END_TIME),
+                    "orders.schedulePosition.error.inappropriateFinishDatePrevious");
             return false;
         }
         if (pluginManager.isPluginEnabled(ORDERS_FOR_SUBPRODUCTS_GENERATION)) {
             childEndTime = getOrdersChildrenMaxEndTime(schedulePosition);
             if (!Objects.isNull(childEndTime)
-                    && childEndTime.after(schedulePosition.getDateField(SchedulePositionFields.START_TIME))) {
-                schedulePosition.addError(dataDefinition.getField(SchedulePositionFields.START_TIME),
-                        "orders.schedulePosition.message.linkedOperationStartTimeIncorrect");
+                    && childEndTime.after(schedulePosition.getDateField(SchedulePositionFields.END_TIME))) {
+                schedulePosition.addError(dataDefinition.getField(SchedulePositionFields.END_TIME),
+                        "orders.schedulePosition.error.inappropriateFinishDatePrevious");
                 return false;
             }
         }
@@ -117,6 +212,18 @@ public class SchedulePositionValidators {
         return jdbcTemplate.queryForObject(query.toString(), parameters, Timestamp.class);
     }
 
+    private Date getChildrenMaxStartTime(Entity position) {
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("scheduleId", position.getBelongsToField(SchedulePositionFields.SCHEDULE).getId());
+        parameters.put("orderId", position.getBelongsToField(SchedulePositionFields.ORDER).getId());
+        parameters.put("tocId", position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT).getId());
+        String query = "SELECT MAX(sp.starttime) FROM orders_scheduleposition sp "
+                + "JOIN technologies_technologyoperationcomponent toc ON sp.technologyoperationcomponent_id = toc.id "
+                + "WHERE sp.schedule_id = :scheduleId AND sp.order_id = :orderId AND toc.parent_id = :tocId ";
+
+        return jdbcTemplate.queryForObject(query, parameters, Timestamp.class);
+    }
+
     public Date getOrdersChildrenMaxEndTime(Entity position) {
         Entity schedule = position.getBelongsToField(SchedulePositionFields.SCHEDULE);
         Map<String, Object> parameters = Maps.newHashMap();
@@ -134,5 +241,48 @@ public class SchedulePositionValidators {
         query.append("AND sp.endtime IS NOT NULL ");
 
         return jdbcTemplate.queryForObject(query.toString(), parameters, Timestamp.class);
+    }
+
+    private Date getOrdersChildrenMaxStartTime(Entity position) {
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("scheduleId", position.getBelongsToField(SchedulePositionFields.SCHEDULE).getId());
+        parameters.put("orderId", position.getBelongsToField(SchedulePositionFields.ORDER).getId());
+        String query = "SELECT MAX(sp.starttime) FROM orders_scheduleposition sp "
+                + "JOIN technologies_technologyoperationcomponent toc ON sp.technologyoperationcomponent_id = toc.id "
+                + "JOIN orders_order o ON sp.order_id = o.id "
+                + "WHERE sp.schedule_id = :scheduleId AND o.parent_id = :orderId AND toc.parent_id IS NULL "
+                + "AND sp.starttime IS NOT NULL ";
+
+        return jdbcTemplate.queryForObject(query, parameters, Timestamp.class);
+    }
+
+    private Date getOrdersParentsMinEndTime(Entity position) {
+        Entity schedule = position.getBelongsToField(SchedulePositionFields.SCHEDULE);
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("scheduleId", schedule.getId());
+        parameters.put("orderId", position.getBelongsToField(SchedulePositionFields.ORDER)
+                .getBelongsToField(TechnologyOperationComponentFields.PARENT).getId());
+        StringBuilder query = new StringBuilder();
+        if (!schedule.getBooleanField(ScheduleFields.ADDITIONAL_TIME_EXTENDS_OPERATION)) {
+            query.append("SELECT MIN(sp.endtime + (interval '1 second' * sp.additionaltime)) ");
+        } else {
+            query.append("SELECT MIN(sp.endtime) ");
+        }
+        query.append("FROM orders_scheduleposition sp ");
+        query.append("WHERE sp.schedule_id = :scheduleId AND sp.order_id = :orderId ");
+        query.append("AND sp.endtime IS NOT NULL ");
+
+        return jdbcTemplate.queryForObject(query.toString(), parameters, Timestamp.class);
+    }
+
+    private Date getOrdersParentsMinStartTime(Entity position) {
+        Map<String, Object> parameters = Maps.newHashMap();
+        parameters.put("scheduleId", position.getBelongsToField(SchedulePositionFields.SCHEDULE).getId());
+        parameters.put("orderId", position.getBelongsToField(SchedulePositionFields.ORDER)
+                .getBelongsToField(TechnologyOperationComponentFields.PARENT).getId());
+        String query = "SELECT MIN(sp.starttime) " + "FROM orders_scheduleposition sp "
+                + "WHERE sp.schedule_id = :scheduleId AND sp.order_id = :orderId " + "AND sp.starttime IS NOT NULL ";
+
+        return jdbcTemplate.queryForObject(query, parameters, Timestamp.class);
     }
 }
