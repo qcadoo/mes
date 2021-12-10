@@ -46,9 +46,11 @@ import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productFlowThruDivision.OrderMaterialAvailability;
 import com.qcadoo.mes.productFlowThruDivision.constants.*;
 import com.qcadoo.mes.productFlowThruDivision.realProductionCost.RealProductionCostService;
+import com.qcadoo.mes.productFlowThruDivision.service.ProductionCountingDocumentService;
 import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.mes.productionCounting.constants.PriceBasedOn;
 import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
+import com.qcadoo.mes.productionCounting.constants.ReceiptOfProducts;
 import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.StateEnum;
 import com.qcadoo.mes.states.messages.constants.StateMessageType;
@@ -111,6 +113,9 @@ public class OrderStatesListenerServicePFTD {
     private OrderMaterialAvailability orderMaterialAvailability;
 
     @Autowired
+    private ProductionCountingDocumentService productionCountingDocumentService;
+
+    @Autowired
     private DocumentStateChangeService documentStateChangeService;
 
     public void acceptInboundDocumentsForOrder(final StateChangeContext stateChangeContext) {
@@ -124,9 +129,13 @@ public class OrderStatesListenerServicePFTD {
             fillRealProductionCost(order);
             stateChangeContext.setOwner(order);
         }
-        Either<String, Void> result = tryAcceptInboundDocumentsFor(order);
-        if (result.isLeft()) {
-            stateChangeContext.addMessage(result.getLeft(), StateMessageType.FAILURE);
+
+        String receiptOfProducts = parameterService.getParameter().getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
+        if (ReceiptOfProducts.END_OF_THE_ORDER.getStringValue().equals(receiptOfProducts)) {
+            Either<String, Void> result = tryAcceptInboundDocumentsFor(order);
+            if (result.isLeft()) {
+                stateChangeContext.addMessage(result.getLeft(), StateMessageType.FAILURE);
+            }
         }
     }
 
@@ -407,4 +416,8 @@ public class OrderStatesListenerServicePFTD {
         }
     }
 
+    public void createCumulatedInternalOutboundDocument(StateChangeContext stateChangeContext) {
+        Entity order = stateChangeContext.getOwner();
+        productionCountingDocumentService.createCumulatedInternalOutboundDocument(order);
+    }
 }

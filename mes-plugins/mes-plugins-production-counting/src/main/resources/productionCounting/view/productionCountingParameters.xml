@@ -136,6 +136,7 @@
                             <option type="labelWidth" value="80"/>
                         </component>
                     </layoutElement>
+
                     <layoutElement column="3" row="1">
                         <component type="checkbox" name="consumptionOfRawMaterialsBasedOnStandards"
                                    reference="consumptionOfRawMaterialsBasedOnStandards"
@@ -143,6 +144,7 @@
                             <option type="labelWidth" value="60"/>
                         </component>
                     </layoutElement>
+
                     <layoutElement column="3" row="2">
                         <component type="checkbox" name="calculateAmountTimeEmployeesOnAcceptanceRecord"
                                    reference="calculateAmountTimeEmployeesOnAcceptanceRecord"
@@ -150,18 +152,23 @@
                             <option type="labelWidth" value="60"/>
                         </component>
                     </layoutElement>
+
                     <layoutElement column="3" row="3">
-                        <component type="checkbox" name="createDocumentsForProductionRegistration"
-                                   reference="createDocumentsForProductionRegistration"
-                                   field="#{form}.createDocumentsForProductionRegistration"
-                                   hasDescription="true">
-                            <listener event="onChange"
-                                      class="com.qcadoo.view.api.listeners.RerenderListener"
-                                      method="onChangeRerender"/>
+                        <component type="select" name="releaseOfMaterials" reference="releaseOfMaterials"
+                                   field="#{form}.releaseOfMaterials" hasDescription="true">
                             <option type="labelWidth" value="60"/>
                         </component>
                     </layoutElement>
+
+
                     <layoutElement column="3" row="4">
+                        <component type="select" name="receiptOfProducts" reference="receiptOfProducts"
+                                   field="#{form}.receiptOfProducts" hasDescription="true">
+                            <option type="labelWidth" value="60"/>
+                        </component>
+                    </layoutElement>
+
+                    <layoutElement column="3" row="5">
                         <component type="select" name="priceBasedOn" reference="priceBasedOn"
                                    field="#{form}.priceBasedOn" hasDescription="true">
                             <option type="labelWidth" value="60"/>

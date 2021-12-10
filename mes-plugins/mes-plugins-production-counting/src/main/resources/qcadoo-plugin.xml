@@ -146,6 +146,16 @@
         </model:model-field>
 
         <model:model-field model="parameter" plugin="basic">
+            <model:enum name="receiptOfProducts" values="01onAcceptanceRegistrationRecord,02endOfTheOrder,03manuallyToOrderGroup"
+                        default="01onAcceptanceRegistrationRecord" required="true"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
+            <model:enum name="releaseOfMaterials" values="01onAcceptanceRegistrationRecord,02endOfTheOrder,03manuallyToOrderOrGroup"
+                        default="01onAcceptanceRegistrationRecord" required="true"/>
+        </model:model-field>
+
+        <model:model-field model="parameter" plugin="basic">
             <model:enum name="typeOfProductionRecording" values="01basic,02cumulated,03forEach"
                         default="02cumulated" required="true"/>
         </model:model-field>
@@ -286,10 +296,6 @@
                 <model:validatesScale max="5"/>
                 <model:validatesRange from="0"/>
             </model:decimal>
-        </model:model-field>
-
-        <model:model-field model="parameter" plugin="basic">
-            <model:boolean name="createDocumentsForProductionRegistration" default="true"/>
         </model:model-field>
 
         <model:model-field model="parameter" plugin="basic">

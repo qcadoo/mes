@@ -42,10 +42,9 @@ public class ParametersHooksPC {
     public void onBeforeRender(final ViewDefinitionState view) {
         checkIfTypeIsCumulatedAndRegisterPieceworkIsFalse(view);
         checkIfRegisterProductionTimeIsSet(view);
-        CheckBoxComponent createDocumentsForProductionRegistration = (CheckBoxComponent) view
-                .getComponentByReference(ParameterFieldsPC.CREATE_DOCUMENTS_FOR_PRODUCTION_REGISTRATION);
+
         FieldComponent priceBasedOn = (FieldComponent) view.getComponentByReference(ParameterFieldsPC.PRICE_BASED_ON);
-        priceBasedOn.setEnabled(createDocumentsForProductionRegistration.isChecked());
+        priceBasedOn.setEnabled(true);
         priceBasedOn.requestComponentUpdateState();
     }
 
