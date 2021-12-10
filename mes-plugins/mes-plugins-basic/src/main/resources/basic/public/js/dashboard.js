@@ -41,6 +41,8 @@ QCD.dashboard = (function () {
 		registerChart();
 		registerButtons();
 		registerKanban();
+
+		setKanbanHeight();
 	}
 
 	function registerChart() {
@@ -162,6 +164,33 @@ QCD.dashboard = (function () {
                 $(this).removeClass('shadow-sm');
             }
         );
+    }
+
+    function setKanbanHeight() {
+        var containerHeight = $(".container").height();
+        var dashboardButtonsHeight = $("#dashboardButtons").height();
+        var dashboardChartHeight = $("#dashboardChart").height();
+        var dashboardPadding = 20;
+        var containerPaddingHeight = 20;
+        var cardPaddingHeight = 15;
+        var cardTitleHeight = $(".card-title").height();
+
+        if (dashboardButtonsHeight == undefined) {
+            dashboardButtonsHeight = 0;
+        } else {
+            dashboardButtonsHeight = dashboardButtonsHeight + (dashboardPadding * 2);
+        }
+        if (dashboardChartHeight == undefined) {
+            dashboardChartHeight = 0;
+        } else {
+            dashboardChartHeight = dashboardChartHeight + dashboardPadding;
+        }
+
+        var headerHeight = (dashboardButtonsHeight > dashboardChartHeight) ? dashboardButtonsHeight : dashboardChartHeight;
+
+        var height = containerHeight - (containerPaddingHeight * 2) - headerHeight - (cardPaddingHeight * 2) - cardTitleHeight;
+
+        $("#dashboardKanban .items").css("height",  (height < 300) ? 300 : height + "px");
     }
 
     function appendOrder(ordersType, order) {
