@@ -58,6 +58,7 @@
 		<boolean name="replacement" default="false"/>
 		<string name="batchesId"/>
 		<string name="batches"/>
+		<string name="batchesQuantityClass"/>
 		<decimal name="batchesQuantity">
 			<validatesUnscaledValue max="14"/>
 			<validatesScale max="5"/>
