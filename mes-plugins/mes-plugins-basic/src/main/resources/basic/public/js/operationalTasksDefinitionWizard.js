@@ -2180,7 +2180,7 @@ QCD.operationalTasksDefinitionWizard = (function () {
 					$("#operationalTasksDefinitionWizard").modal('hide');
 					$.each(data.operationalTasks, function (i, operationalTask) {
 						QCD.dashboard.prependOperationalTask('operationalTasksPending', operationalTask);
-
+					    QCD.dashboard.filterKanbanReload();
 					});
 					showMessage('success',
 						QCD.translate("basic.dashboard.orderDefinitionWizard.success"),
