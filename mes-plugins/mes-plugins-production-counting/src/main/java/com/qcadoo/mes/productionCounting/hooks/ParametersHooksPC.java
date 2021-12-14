@@ -23,12 +23,11 @@
  */
 package com.qcadoo.mes.productionCounting.hooks;
 
+import com.qcadoo.mes.productionCounting.constants.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
-import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.CheckBoxComponent;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -42,9 +41,31 @@ public class ParametersHooksPC {
     public void onBeforeRender(final ViewDefinitionState view) {
         checkIfTypeIsCumulatedAndRegisterPieceworkIsFalse(view);
         checkIfRegisterProductionTimeIsSet(view);
+        setStatePriceBasedOn(view);
+        setStateConsumptionOfRawMaterialsBasedOnStandards(view);
+    }
 
+    private void setStateConsumptionOfRawMaterialsBasedOnStandards(ViewDefinitionState view) {
+        CheckBoxComponent consumptionOfRawMaterialsBasedOnStandards = (CheckBoxComponent) view
+                .getComponentByReference(ParameterFieldsPC.CONSUMPTION_OF_RAW_MATERIALS_BASED_ON_STANDARDS);
+        FieldComponent releaseOfMaterials = (FieldComponent) view.getComponentByReference(ParameterFieldsPC.RELEASE_OF_MATERIALS);
+        if (ReleaseOfMaterials.MANUALLY_TO_ORDER_OR_GROUP.getStringValue().equals(releaseOfMaterials.getFieldValue().toString())) {
+            consumptionOfRawMaterialsBasedOnStandards.setEnabled(false);
+        } else {
+            consumptionOfRawMaterialsBasedOnStandards.setEnabled(true);
+        }
+        consumptionOfRawMaterialsBasedOnStandards.requestComponentUpdateState();
+    }
+
+    private void setStatePriceBasedOn(ViewDefinitionState view) {
         FieldComponent priceBasedOn = (FieldComponent) view.getComponentByReference(ParameterFieldsPC.PRICE_BASED_ON);
-        priceBasedOn.setEnabled(true);
+        FieldComponent receiptOfProducts = (FieldComponent) view.getComponentByReference(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
+        if (ReceiptOfProducts.END_OF_THE_ORDER.getStringValue()
+                .equals(receiptOfProducts.getFieldValue().toString())) {
+            priceBasedOn.setEnabled(true);
+        } else {
+            priceBasedOn.setEnabled(false);
+        }
         priceBasedOn.requestComponentUpdateState();
     }
 
