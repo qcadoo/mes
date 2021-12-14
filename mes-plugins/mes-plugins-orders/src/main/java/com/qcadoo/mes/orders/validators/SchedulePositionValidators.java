@@ -26,6 +26,10 @@ public class SchedulePositionValidators {
 
     private static final String ORDERS_FOR_SUBPRODUCTS_GENERATION = "ordersForSubproductsGeneration";
 
+    public static final String SCHEDULE_ID = "scheduleId";
+
+    public static final String ORDER_ID = "orderId";
+
     @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -196,8 +200,8 @@ public class SchedulePositionValidators {
     public Date getChildrenMaxEndTime(Entity position) {
         Entity schedule = position.getBelongsToField(SchedulePositionFields.SCHEDULE);
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("scheduleId", schedule.getId());
-        parameters.put("orderId", position.getBelongsToField(SchedulePositionFields.ORDER).getId());
+        parameters.put(SCHEDULE_ID, schedule.getId());
+        parameters.put(ORDER_ID, position.getBelongsToField(SchedulePositionFields.ORDER).getId());
         parameters.put("tocId", position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT).getId());
         StringBuilder query = new StringBuilder();
         if (!schedule.getBooleanField(ScheduleFields.ADDITIONAL_TIME_EXTENDS_OPERATION)) {
@@ -214,8 +218,8 @@ public class SchedulePositionValidators {
 
     private Date getChildrenMaxStartTime(Entity position) {
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("scheduleId", position.getBelongsToField(SchedulePositionFields.SCHEDULE).getId());
-        parameters.put("orderId", position.getBelongsToField(SchedulePositionFields.ORDER).getId());
+        parameters.put(SCHEDULE_ID, position.getBelongsToField(SchedulePositionFields.SCHEDULE).getId());
+        parameters.put(ORDER_ID, position.getBelongsToField(SchedulePositionFields.ORDER).getId());
         parameters.put("tocId", position.getBelongsToField(SchedulePositionFields.TECHNOLOGY_OPERATION_COMPONENT).getId());
         String query = "SELECT MAX(sp.starttime) FROM orders_scheduleposition sp "
                 + "JOIN technologies_technologyoperationcomponent toc ON sp.technologyoperationcomponent_id = toc.id "
@@ -227,8 +231,8 @@ public class SchedulePositionValidators {
     public Date getOrdersChildrenMaxEndTime(Entity position) {
         Entity schedule = position.getBelongsToField(SchedulePositionFields.SCHEDULE);
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("scheduleId", schedule.getId());
-        parameters.put("orderId", position.getBelongsToField(SchedulePositionFields.ORDER).getId());
+        parameters.put(SCHEDULE_ID, schedule.getId());
+        parameters.put(ORDER_ID, position.getBelongsToField(SchedulePositionFields.ORDER).getId());
         StringBuilder query = new StringBuilder();
         if (!schedule.getBooleanField(ScheduleFields.ADDITIONAL_TIME_EXTENDS_OPERATION)) {
             query.append("SELECT MAX(sp.endtime + (interval '1 second' * sp.additionaltime)) ");
@@ -245,8 +249,8 @@ public class SchedulePositionValidators {
 
     private Date getOrdersChildrenMaxStartTime(Entity position) {
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("scheduleId", position.getBelongsToField(SchedulePositionFields.SCHEDULE).getId());
-        parameters.put("orderId", position.getBelongsToField(SchedulePositionFields.ORDER).getId());
+        parameters.put(SCHEDULE_ID, position.getBelongsToField(SchedulePositionFields.SCHEDULE).getId());
+        parameters.put(ORDER_ID, position.getBelongsToField(SchedulePositionFields.ORDER).getId());
         String query = "SELECT MAX(sp.starttime) FROM orders_scheduleposition sp "
                 + "JOIN technologies_technologyoperationcomponent toc ON sp.technologyoperationcomponent_id = toc.id "
                 + "JOIN orders_order o ON sp.order_id = o.id "
@@ -259,8 +263,8 @@ public class SchedulePositionValidators {
     private Date getOrdersParentsMinEndTime(Entity position) {
         Entity schedule = position.getBelongsToField(SchedulePositionFields.SCHEDULE);
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("scheduleId", schedule.getId());
-        parameters.put("orderId", position.getBelongsToField(SchedulePositionFields.ORDER)
+        parameters.put(SCHEDULE_ID, schedule.getId());
+        parameters.put(ORDER_ID, position.getBelongsToField(SchedulePositionFields.ORDER)
                 .getBelongsToField(TechnologyOperationComponentFields.PARENT).getId());
         StringBuilder query = new StringBuilder();
         if (!schedule.getBooleanField(ScheduleFields.ADDITIONAL_TIME_EXTENDS_OPERATION)) {
@@ -277,8 +281,8 @@ public class SchedulePositionValidators {
 
     private Date getOrdersParentsMinStartTime(Entity position) {
         Map<String, Object> parameters = Maps.newHashMap();
-        parameters.put("scheduleId", position.getBelongsToField(SchedulePositionFields.SCHEDULE).getId());
-        parameters.put("orderId", position.getBelongsToField(SchedulePositionFields.ORDER)
+        parameters.put(SCHEDULE_ID, position.getBelongsToField(SchedulePositionFields.SCHEDULE).getId());
+        parameters.put(ORDER_ID, position.getBelongsToField(SchedulePositionFields.ORDER)
                 .getBelongsToField(TechnologyOperationComponentFields.PARENT).getId());
         String query = "SELECT MIN(sp.starttime) " + "FROM orders_scheduleposition sp "
                 + "WHERE sp.schedule_id = :scheduleId AND sp.order_id = :orderId " + "AND sp.starttime IS NOT NULL ";
