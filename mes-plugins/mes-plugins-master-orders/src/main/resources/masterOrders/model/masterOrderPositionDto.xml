@@ -54,6 +54,7 @@
         <decimal name="quantityTakenFromWarehouse"/>
         <decimal name="quantityRemainingToOrder"/>
         <decimal name="quantityRemainingToOrderWithoutStock"/>
+        <decimal name="warehouseMinimumStateQuantity"/>
         <string name="unit"/>
         <string name="assortmentName"/>
         <string name="modelName"/>

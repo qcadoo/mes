@@ -23,6 +23,8 @@
  */
 package com.qcadoo.mes.orderSupplies.hooks;
 
+import com.qcadoo.mes.basic.ParameterService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.qcadoo.view.api.ViewDefinitionState;
@@ -31,6 +33,12 @@ import com.qcadoo.view.api.components.FieldComponent;
 
 @Service
 public class SupplyParametersHooksOS {
+
+    public static final String L_REALIZATION_FROM_STOCK = "realizationFromStock";
+    public static final String L_CONSIDER_MINIMUM_STOCK_LEVEL_WHEN_CREATING_PRODUCTION_ORDERS = "considerMinimumStockLevelWhenCreatingProductionOrders";
+
+    @Autowired
+    private ParameterService parameterService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
         updateOrdersIncludePeriodState(view);
@@ -45,5 +53,14 @@ public class SupplyParametersHooksOS {
             ordersIncludePeriod.setFieldValue(null);
         }
         ordersIncludePeriod.requestComponentUpdateState();
+
+        CheckBoxComponent considerMinimumStockLevelWhenCreatingProductionOrders = (CheckBoxComponent) view
+                .getComponentByReference(L_CONSIDER_MINIMUM_STOCK_LEVEL_WHEN_CREATING_PRODUCTION_ORDERS);
+        if(parameterService.getParameter().getBooleanField(L_REALIZATION_FROM_STOCK)) {
+            considerMinimumStockLevelWhenCreatingProductionOrders.setEnabled(true);
+        } else {
+            considerMinimumStockLevelWhenCreatingProductionOrders.setEnabled(false);
+        }
+
     }
 }

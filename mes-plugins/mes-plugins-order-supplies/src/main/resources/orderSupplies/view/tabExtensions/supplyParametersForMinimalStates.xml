@@ -31,33 +31,40 @@
 
     <windowTab name="minimalStatesTab" reference="minimalStatesTab">
         <component type="gridLayout" name="minimalStatesParametersGridLayout"
-                   columns="3" rows="2">
+                   columns="3" rows="3">
             <layoutElement column="1" row="1">
                 <component type="checkbox" name="includeRequirements" field="#{form}.includeRequirements"
-						   reference="includeRequirements" hasDescription="true">
-					<option type="labelWidth" value="80"/>
-					<listener event="onChange"
-							  class="com.qcadoo.mes.orderSupplies.listeners.SupplyParametersListenersOS"
-							  method="updateOrdersIncludePeriodState" defaultEnabled="false"/>
-				</component>
+                           reference="includeRequirements" hasDescription="true">
+                    <option type="labelWidth" value="80"/>
+                    <listener event="onChange"
+                              class="com.qcadoo.mes.orderSupplies.listeners.SupplyParametersListenersOS"
+                              method="updateOrdersIncludePeriodState" defaultEnabled="false"/>
+                </component>
             </layoutElement>
             <layoutElement column="1" row="2">
                 <component type="gridLayout" name="ordersIncludePeriodGridLayout"
-						   columns="5" rows="1" hasBorders="false">
-					<layoutElement column="1" row="1" width="4">
-						<component type="input" name="ordersIncludePeriod"
-								   field="#{form}.ordersIncludePeriod" reference="ordersIncludePeriod">
-							<option type="alignment" value="right"/>
-						</component>
-					</layoutElement>
-					<layoutElement column="5" row="1">
-						<component type="label" name="ordersIncludePeriodDescription">
-							<option type="labelStyle" value="label" />
-						</component>
-					</layoutElement>
-				</component>
+                           columns="5" rows="1" hasBorders="false">
+                    <layoutElement column="1" row="1" width="4">
+                        <component type="input" name="ordersIncludePeriod"
+                                   field="#{form}.ordersIncludePeriod" reference="ordersIncludePeriod">
+                            <option type="alignment" value="right"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="5" row="1">
+                        <component type="label" name="ordersIncludePeriodDescription">
+                            <option type="labelStyle" value="label"/>
+                        </component>
+                    </layoutElement>
+                </component>
             </layoutElement>
-            
+            <layoutElement column="1" row="3">
+                <component type="checkbox" name="considerMinimumStockLevelWhenCreatingProductionOrders"
+                           field="#{form}.considerMinimumStockLevelWhenCreatingProductionOrders"
+                           reference="considerMinimumStockLevelWhenCreatingProductionOrders" hasDescription="true">
+                    <option type="labelWidth" value="80"/>
+                </component>
+            </layoutElement>
+
         </component>
     </windowTab>
 

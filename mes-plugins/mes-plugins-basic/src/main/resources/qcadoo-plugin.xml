@@ -596,6 +596,10 @@
                              plugin="basic"/>
         </model:model-field>
 
+        <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="considerMinimumStockLevelWhenCreatingProductionOrders"/>
+        </model:model-field>
+
         <model:model-hook model="unitConversionItem" plugin="qcadooModel">
             <model:validatesWith
                     class="com.qcadoo.mes.basic.hooks.UnitConversionItemValidatorsB"

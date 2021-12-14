@@ -448,6 +448,7 @@
                         fields="leftToRelease" width="60"/>
 
                 <option type="column" name="quantityTakenFromWarehouse" fields="quantityTakenFromWarehouse" width="45"/>
+                <option type="column" name="warehouseMinimumStateQuantity" fields="warehouseMinimumStateQuantity" width="45"/>
                 <option type="column" name="quantityRemainingToOrder" fields="quantityRemainingToOrder" width="45"/>
                 <option type="column" name="producedOrderQuantity"
                         fields="producedOrderQuantity" width="60"
@@ -466,9 +467,9 @@
                 <option type="order" column="number" direction="asc"/>
 
                 <option type="searchable"
-                        value="productNumber,productName,technologyName,masterOrderPositionStatus,comments,quantityRemainingToOrder,quantityTakenFromWarehouse,masterOrderQuantity,cumulatedOrderQuantity,leftToRelease,producedOrderQuantity,unit,assortmentName,modelName"/>
+                        value="productNumber,productName,technologyName,masterOrderPositionStatus,comments,quantityRemainingToOrder,quantityTakenFromWarehouse,masterOrderQuantity,cumulatedOrderQuantity,leftToRelease,producedOrderQuantity,unit,assortmentName,modelName,warehouseMinimumStateQuantity"/>
                 <option type="orderable"
-                        value="productNumber,productName,technologyName,masterOrderPositionStatus,comments,quantityRemainingToOrder,quantityTakenFromWarehouse,masterOrderQuantity,cumulatedOrderQuantity,leftToRelease,producedOrderQuantity,unit,assortmentName,modelName"/>
+                        value="productNumber,productName,technologyName,masterOrderPositionStatus,comments,quantityRemainingToOrder,quantityTakenFromWarehouse,masterOrderQuantity,cumulatedOrderQuantity,leftToRelease,producedOrderQuantity,unit,assortmentName,modelName,warehouseMinimumStateQuantity"/>
 
                 <option type="correspondingView" value="masterOrders/masterOrderProductDetails"/>
                 <option type="correspondingComponent" value="form"/>
