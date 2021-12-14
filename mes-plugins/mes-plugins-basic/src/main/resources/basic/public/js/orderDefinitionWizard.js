@@ -1319,6 +1319,7 @@ QCD.orderDefinitionWizard = (function () {
 
 					$("#orderDefinitionWizard").modal('hide');
 					QCD.dashboard.prependOrder('ordersPending', data.order);
+					QCD.dashboard.filterKanbanReload();
 					showMessage('success',
 						QCD.translate("basic.dashboard.orderDefinitionWizard.success"),
 						data.message, false);

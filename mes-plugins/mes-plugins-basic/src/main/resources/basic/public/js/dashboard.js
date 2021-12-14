@@ -47,8 +47,6 @@ QCD.dashboard = (function () {
 		registerChart();
 		registerButtons();
 		registerKanban();
-
-		setKanbanHeight();
 	}
 
 	function registerChart() {
@@ -61,6 +59,7 @@ QCD.dashboard = (function () {
                         let ctx = chart.chart.ctx;
                         let width = chart.chart.width;
                         let height = chart.chart.height
+
                         chart.clear();
 
                         ctx.save();
@@ -113,6 +112,8 @@ QCD.dashboard = (function () {
                             }
                         }
                     });
+
+                    setKanbanHeight();
                 }
             );
         }
@@ -135,6 +136,10 @@ QCD.dashboard = (function () {
     }
 
     function registerKanban() {
+        if (!$("#dashboardChart").length) {
+            setKanbanHeight();
+        }
+
         if ($("#dashboardKanban #ordersPending").length) {
             $.each(QCD.dashboardContext.getOrdersPending(), function (index, order) {
                 addItem(order);
@@ -184,14 +189,20 @@ QCD.dashboard = (function () {
     }
 
     function setKanbanHeight() {
-        var containerHeight = $(".container").height();
-        var dashboardButtonsHeight = $("#dashboardButtons").height();
-        var dashboardChartHeight = $("#dashboardChart").height();
-        var dashboardSearchHeight = $("#dashboardSearch").height();
-        var dashboardPaddingHeight = 20;
-        var containerPaddingHeight = 20;
-        var cardPaddingHeight = 15;
-        var cardTitleHeight = $(".card-title").height();
+        let containerHeight = $(".container").height();
+        let dashboardButtonsHeight = $("#dashboardButtons").height();
+        let dashboardChartHeight = $("#dashboardChart").height();
+        let dashboardSearchHeight = $("#dashboardSearch").height();
+        let cardTitleHeight = $(".card-title").height();
+
+        let dashboardPaddingHeight = 20;
+        let cardTitlePaddingHeight = 8;
+        let cardTitleMarginHeight = 12;
+        let cardPaddingHeight = 16;
+
+        let headerHeight = 0;
+        let height = 0;
+        let marginTop = 0;
 
         if (dashboardButtonsHeight == undefined) {
             dashboardButtonsHeight = 0;
@@ -201,14 +212,19 @@ QCD.dashboard = (function () {
         if (dashboardChartHeight == undefined) {
             dashboardChartHeight = 0;
         } else {
+            marginTop = 40;
             dashboardChartHeight = dashboardChartHeight + dashboardPaddingHeight;
         }
 
-        var headerHeight = (dashboardButtonsHeight > dashboardChartHeight) ? dashboardButtonsHeight : dashboardChartHeight;
+        dashboardSearchHeight = dashboardSearchHeight + dashboardPaddingHeight;
+        cardTitleHeight = cardTitleHeight + (cardTitlePaddingHeight * 2) + cardTitleMarginHeight;
 
-        var height = containerHeight - (containerPaddingHeight * 2) - headerHeight - (cardPaddingHeight * 2) - dashboardSearchHeight - dashboardPaddingHeight - cardTitleHeight;
+        headerHeight = (dashboardButtonsHeight > dashboardChartHeight) ? dashboardButtonsHeight : dashboardChartHeight;
 
-        $("#dashboardKanban .items").css("height",  (height < 300) ? 300 : height + "px");
+        height = containerHeight - headerHeight - dashboardSearchHeight - (cardPaddingHeight * 2) - cardTitleHeight + marginTop;
+
+        $("#dashboardSearch").css("margin-top", -marginTop + "px");
+        $("#dashboardKanban .items").css("height",  height + "px");
     }
 
     function addItem(item) {
@@ -375,12 +391,19 @@ QCD.dashboard = (function () {
         });
     }
 
+    function filterKanbanReload() {
+        let value = $("#search").val();
+
+        filterKanban(value);
+    }
+
 	return {
 		init: init,
 		initOrders: initOrders,
 		appendOrder: appendOrder,
 		prependOrder: prependOrder,
-		prependOperationalTask: prependOperationalTask
+		prependOperationalTask: prependOperationalTask,
+		filterKanbanReload: filterKanbanReload
 	};
 
 })();
@@ -467,7 +490,7 @@ const clearDrop = (event) => {
 const updateDropzones = () => {
     $('.dropzone').remove();
 
-    $('<div class="dropzone rounded" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="clearDrop(event)"> &nbsp; </div>').insertAfter('.card.draggable');
+    $('<div class="dropzone rounded" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="clearDrop(event)"> &nbsp; </div>').insertAfter('.card .draggable');
 
     $(".items:not(:has(.card.draggable))").append($('<div class="dropzone rounded" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="clearDrop(event)"> &nbsp; </div>'));
 };
@@ -615,27 +638,38 @@ function createOperationalTaskDiv(operationalTasksType, operationalTask) {
 
     opTaskDiv = opTaskDiv + '</div>' +
     (operationalTask.type == "02executionOperationInOrder" ? '<div class="card-footer">' + '<div class="progress">' + '<div class="progress-bar progress-bar-striped bg-info" role="progressbar" style="width: ' + doneInPercent + '%;" aria-valuenow="' + doneInPercent + '" aria-valuemin="0" aria-valuemax="100">' + doneInPercent + '%</div>' + '</div>' + '</div>' : '') +
-    '</div><div> &nbsp; </div>';
+    '</div><div class="empty"> &nbsp; </div>';
 
     return opTaskDiv;
 }
 
 function filterKanban(value) {
-    var results = QCD.dashboardContext.getItems().filter(item => Object.keys(item).some(key => (item[key] != null) && item[key].toString().includes(value)));
+    let keys = [ "masterOrderNumber", "orderNumber", "number", "description", "orderCategory", "productionLineNumber", "staffName", "workstationNumber", "productNumber", "orderProductNumber", "companyName" ];
+
+    let results = QCD.dashboardContext.getItems().filter(item => Object.keys(item).some(key => keys.includes(key) && (item[key] != null) && item[key].toString().includes(value)));
 
     if (value == '') {
         $(".items .card").show();
+        $(".items .empty").show();
+
+        if ($("#dashboardKanban #ordersPending").length) {
+            updateDropzones();
+        }
     } else {
         $(".items .card").hide();
+        $(".items .empty").hide();
+
+        $(".dropzone").remove();
 
         $.each(results, function (index, item) {
             $("#order" + item.id).show();
+            $('<div class="dropzone rounded" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="clearDrop(event)"> &nbsp; </div>').insertAfter("#order" + item.id);
             $("#operationalTask" + item.id).show();
         });
-    }
 
-    if ($("#dashboardKanban #ordersPending").length) {
-        updateDropzones();
+        if ($("#dashboardKanban #ordersPending").length) {
+            $(".items:not(:has(.card.draggable))").append($('<div class="dropzone rounded" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="clearDrop(event)"> &nbsp; </div>'));
+        }
     }
 }
 
