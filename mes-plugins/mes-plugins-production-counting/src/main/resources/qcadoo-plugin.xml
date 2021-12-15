@@ -146,12 +146,12 @@
         </model:model-field>
 
         <model:model-field model="parameter" plugin="basic">
-            <model:enum name="receiptOfProducts" values="01onAcceptanceRegistrationRecord,02endOfTheOrder,03manuallyToOrderGroup"
+            <model:enum name="receiptOfProducts" values="01onAcceptanceRegistrationRecord,02endOfTheOrder,03manuallyToOrderGroup,04doNotCreateDocuments"
                         default="01onAcceptanceRegistrationRecord" required="true"/>
         </model:model-field>
 
         <model:model-field model="parameter" plugin="basic">
-            <model:enum name="releaseOfMaterials" values="01onAcceptanceRegistrationRecord,02endOfTheOrder,03manuallyToOrderOrGroup"
+            <model:enum name="releaseOfMaterials" values="01onAcceptanceRegistrationRecord,02endOfTheOrder,03manuallyToOrderOrGroup,04doNotCreateDocuments"
                         default="01onAcceptanceRegistrationRecord" required="true"/>
         </model:model-field>
 

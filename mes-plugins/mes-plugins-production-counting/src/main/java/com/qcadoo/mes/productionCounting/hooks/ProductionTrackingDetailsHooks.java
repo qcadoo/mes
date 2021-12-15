@@ -108,6 +108,7 @@ public class ProductionTrackingDetailsHooks {
             ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS, ProductionTrackingFields.SHIFT_START_DAY,
             ProductionTrackingFields.STAFF_WORK_TIMES, ProductionTrackingFields.BATCH, ProductionTrackingFields.EXPIRATION_DATE,
             ProductionTrackingFields.ADD_BATCH, ProductionTrackingFields.STOPPAGES);
+
     public static final String L_ROLE_STOPPAGES = "ROLE_STOPPAGES";
 
     @Autowired
@@ -393,6 +394,7 @@ public class ProductionTrackingDetailsHooks {
         RibbonGroup anomaliesRibbonGroup = window.getRibbon().getGroupByName(L_ANOMALIES);
 
         RibbonActionItem copyRibbonActionItem = actionsRibbonGroup.getItemByName(L_COPY);
+
         RibbonActionItem copyPlannedQuantityToUsedQuantityRibbonActionItem = productsQuantitiesRibbonGroup
                 .getItemByName(L_COPY_PLANNED_QUANTITY_TO_USED_QUANTITY);
         RibbonActionItem productionCountingQuantitiesRibbonActionItem = productionCountingQuantitiesRibbonGroup
@@ -419,8 +421,16 @@ public class ProductionTrackingDetailsHooks {
         boolean registerQuantityOutProduct = order.getBooleanField(OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT);
 
         copyRibbonActionItem.setEnabled(isInProgress);
-        copyPlannedQuantityToUsedQuantityRibbonActionItem
-                .setEnabled(isDraft && (registerQuantityInProduct || registerQuantityOutProduct));
+
+        String releaseOfMaterials = parameterService.getParameter().getStringField(ParameterFieldsPC.RELEASE_OF_MATERIALS);
+        if (ReleaseOfMaterials.MANUALLY_TO_ORDER_OR_GROUP.getStringValue().equals(releaseOfMaterials)) {
+            copyPlannedQuantityToUsedQuantityRibbonActionItem.setEnabled(false);
+        } else {
+            copyPlannedQuantityToUsedQuantityRibbonActionItem
+                    .setEnabled(isDraft && (registerQuantityInProduct || registerQuantityOutProduct));
+
+        }
+
         productionCountingQuantitiesRibbonActionItem
                 .setEnabled(isDraft && (registerQuantityInProduct || registerQuantityOutProduct));
         addToAnomaliesListRibbonActionItem.setEnabled(isDraft && (registerQuantityInProduct || registerQuantityOutProduct));

@@ -2,7 +2,9 @@ package com.qcadoo.mes.productionCounting.constants;
 
 public enum ReceiptOfProducts {
 
-    ON_ACCEPTANCE_REGISTRATION_RECORD("01onAcceptanceRegistrationRecord"), END_OF_THE_ORDER("02endOfTheOrder"), MANUALLY_TO_ORDER_GROUP("03manuallyToOrderGroup");
+    ON_ACCEPTANCE_REGISTRATION_RECORD("01onAcceptanceRegistrationRecord"), END_OF_THE_ORDER(
+            "02endOfTheOrder"), MANUALLY_TO_ORDER_GROUP(
+                    "03manuallyToOrderGroup"), DO_NOT_CREATE_DOCUMENTS("04doNotCreateDocuments");
 
     private final String type;
 
@@ -21,6 +23,8 @@ public enum ReceiptOfProducts {
             return END_OF_THE_ORDER;
         } else if ("03manuallyToOrderGroup".equals(string)) {
             return MANUALLY_TO_ORDER_GROUP;
+        } else if ("04doNotCreateDocuments".equals(string)) {
+            return DO_NOT_CREATE_DOCUMENTS;
         }
 
         throw new IllegalStateException("Unsupported receiptOfProducts: " + string);

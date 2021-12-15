@@ -119,19 +119,19 @@ public class OrderStatesListenerServicePFTD {
     private DocumentStateChangeService documentStateChangeService;
 
     public void acceptInboundDocumentsForOrder(final StateChangeContext stateChangeContext) {
-        Entity order = stateChangeContext.getOwner();
-        String priceBasedOn = parameterService.getParameter().getStringField(ParameterFieldsPC.PRICE_BASED_ON);
-        boolean isNominalProductCost = priceBasedOn != null
-                && priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue());
-        if (!isNominalProductCost) {
-            order = updateCostsInOrder(order);
-            productionTrackingListenerServicePFTD.updateCostsForOrder(order);
-            fillRealProductionCost(order);
-            stateChangeContext.setOwner(order);
-        }
-
         String receiptOfProducts = parameterService.getParameter().getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
         if (ReceiptOfProducts.END_OF_THE_ORDER.getStringValue().equals(receiptOfProducts)) {
+            Entity order = stateChangeContext.getOwner();
+            String priceBasedOn = parameterService.getParameter().getStringField(ParameterFieldsPC.PRICE_BASED_ON);
+            boolean isNominalProductCost = priceBasedOn != null
+                    && priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue());
+            if (!isNominalProductCost) {
+                order = updateCostsInOrder(order);
+                productionTrackingListenerServicePFTD.updateCostsForOrder(order);
+                fillRealProductionCost(order);
+                stateChangeContext.setOwner(order);
+            }
+
             Either<String, Void> result = tryAcceptInboundDocumentsFor(order);
             if (result.isLeft()) {
                 stateChangeContext.addMessage(result.getLeft(), StateMessageType.FAILURE);
