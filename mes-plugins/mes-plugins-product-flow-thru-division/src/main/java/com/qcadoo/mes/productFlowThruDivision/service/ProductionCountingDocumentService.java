@@ -2,20 +2,22 @@ package com.qcadoo.mes.productFlowThruDivision.service;
 
 import java.math.BigDecimal;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import com.google.common.collect.Lists;
 import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
+import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.model.api.validators.ErrorMessage;
+import com.qcadoo.security.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityFields;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityTypeOfMaterial;
@@ -31,7 +33,6 @@ import com.qcadoo.model.api.BigDecimalUtils;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
-import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.security.api.SecurityService;
 import com.qcadoo.security.constants.QcadooSecurityConstants;
 
@@ -54,6 +55,9 @@ public class ProductionCountingDocumentService {
     @Autowired
     private ProductionTrackingListenerServicePFTD productionTrackingListenerServicePFTD;
 
+    @Autowired
+    private UserService userService;
+
     public void createCumulatedInternalOutboundDocument(Entity order) {
         List<Entity> pcqs = order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES);
         pcqs = pcqs.stream()
@@ -62,57 +66,84 @@ public class ProductionCountingDocumentService {
                         && ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()
                                 .equals(p.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL)))
                 .collect(Collectors.toList());
-        createInternalOutboundDocument(order, pcqs, true);
-    }
-
-    public void createInternalOutboundDocument(Entity order, List<Entity> productionCountingQuantities, boolean useUsedQuantity) {
-        Multimap<Long, Entity> groupedPCQ = groupPCQByWarehouse(productionCountingQuantities);
-        boolean errorsDisplayed = false;
-        for (Long warehouseId : groupedPCQ.keySet()) {
-            Entity locationFrom = getLocationDD().get(warehouseId);
-            try {
-                Entity document = createInternalOutboundDocumentForComponents(locationFrom, order, groupedPCQ.get(warehouseId),
-                        useUsedQuantity);
-                if (Objects.nonNull(document) && !document.isValid()) {
-                    for (ErrorMessage error : document.getGlobalErrors()) {
-                        if (error.getMessage().equalsIgnoreCase(L_ERROR_NOT_ENOUGH_RESOURCES)) {
-                            order.addGlobalError(error.getMessage(), false, error.getVars());
-                        } else if (!errorsDisplayed) {
-                            order.addGlobalError(error.getMessage(), error.getVars());
-                        }
-                    }
-
-                    if (!errorsDisplayed) {
-                        order.addGlobalError(
-                                "productFlowThruDivision.productionTracking.productionTrackingError.createInternalOutboundDocument");
-
-                        errorsDisplayed = true;
-                    }
-                }
-                if (errorsDisplayed) {
-                    return;
-                }
-                updateProductionCountingQuantity(productionCountingQuantities);
+        try {
+            createInternalOutboundDocument(order, pcqs, true);
+            if (order.isValid()) {
+                updateProductionCountingQuantity(pcqs);
                 productionTrackingListenerServicePFTD.updateCostsForOrder(order);
-            } catch (DocumentBuildException documentBuildException) {
-                for (ErrorMessage error : documentBuildException.getEntity().getGlobalErrors()) {
-                    if (error.getMessage().equalsIgnoreCase(L_ERROR_NOT_ENOUGH_RESOURCES)) {
-                        order.addGlobalError(error.getMessage(), false, error.getVars());
-                    } else if (!errorsDisplayed) {
-                        order.addGlobalError(error.getMessage(), error.getVars());
-                    }
+            }
+        } catch (DocumentBuildException documentBuildException) {
+            boolean errorsDisplayed = true;
+            for (ErrorMessage error : documentBuildException.getEntity().getGlobalErrors()) {
+                if (error.getMessage().equalsIgnoreCase(L_ERROR_NOT_ENOUGH_RESOURCES)) {
+                    order.addGlobalError(error.getMessage(), false, error.getVars());
+                } else {
+                    errorsDisplayed = false;
+                    order.addGlobalError(error.getMessage(), error.getVars());
                 }
+            }
 
-                if (!errorsDisplayed) {
-                    order.addGlobalError(
-                            "productFlowThruDivision.productionCountingQuantity.productionCountingQuantityError.createInternalOutboundDocument");
-                }
-                return;
+            if (!errorsDisplayed) {
+                order.addGlobalError(
+                        "productFlowThruDivision.productionCountingQuantity.productionCountingQuantityError.createInternalOutboundDocument");
             }
         }
     }
 
-    private void updateProductionCountingQuantity(List<Entity> productionCountingQuantities) {
+    @Transactional
+    public void createInternalOutboundDocument(Entity order, List<Entity> productionCountingQuantities, boolean useUsedQuantity) {
+        Multimap<Long, Entity> groupedPCQ = groupPCQByWarehouse(productionCountingQuantities);
+        for (Long warehouseId : groupedPCQ.keySet()) {
+            Entity locationFrom = getLocationDD().get(warehouseId);
+            List<ProductionCountingQuantityHolder> entries = mapToHolder(groupedPCQ.get(warehouseId));
+            checkForEmptyPositions(useUsedQuantity, entries);
+            Entity document = createInternalOutboundDocumentForComponents(locationFrom, order, entries, useUsedQuantity);
+            if (Objects.nonNull(document) && !document.isValid()) {
+                throw new DocumentBuildException(document, document.getHasManyField(DocumentFields.POSITIONS));
+            }
+        }
+    }
+
+    private void checkForEmptyPositions(boolean useUsedQuantity, List<ProductionCountingQuantityHolder> entries) {
+        for (ProductionCountingQuantityHolder entry : entries) {
+            BigDecimal quantity = null;
+            if (useUsedQuantity) {
+                quantity = entry.getUsedQuantity();
+            } else {
+                quantity = entry.getPlannedQuantity().subtract(BigDecimalUtils.convertNullToZero(entry.getUsedQuantity()));
+            }
+            if (BigDecimal.ZERO.compareTo(quantity) >= 0) {
+                DocumentBuilder documentBuilder = documentManagementService.getDocumentBuilder();
+                Entity emptyDocumentForErrorHandling = documentBuilder.createDocument(userService.getCurrentUserEntity());
+                emptyDocumentForErrorHandling.setNotValid();
+                emptyDocumentForErrorHandling.addGlobalError(
+                        "productFlowThruDivision.productionCountingQuantity.productionCountingQuantityError.emptyPosition",
+                        entry.getProduct().getStringField(ProductFields.NUMBER));
+
+                throw new DocumentBuildException(emptyDocumentForErrorHandling, Lists.newArrayList());
+            }
+        }
+    }
+
+    private List<ProductionCountingQuantityHolder> mapToHolder(Collection<Entity> pcqs) {
+        List<ProductionCountingQuantityHolder> entities = Lists.newArrayList();
+        for (Entity pcq : pcqs) {
+            ProductionCountingQuantityHolder holder = new ProductionCountingQuantityHolder(pcq);
+            if (entities.contains(holder)) {
+                int index = entities.indexOf(holder);
+                ProductionCountingQuantityHolder exist = entities.get(index);
+                exist.setPlannedQuantity(
+                        exist.getPlannedQuantity().add(pcq.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY)));
+                exist.setUsedQuantity(exist.getUsedQuantity().add(
+                        BigDecimalUtils.convertNullToZero(pcq.getDecimalField(ProductionCountingQuantityFields.USED_QUANTITY))));
+            } else {
+                entities.add(holder);
+            }
+        }
+        return entities;
+    }
+
+    public void updateProductionCountingQuantity(List<Entity> productionCountingQuantities) {
         for (Entity productionCountingQuantity : productionCountingQuantities) {
             BigDecimal quantity = productionCountingQuantity.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY)
                     .subtract(BigDecimalUtils.convertNullToZero(
@@ -124,9 +155,8 @@ public class ProductionCountingDocumentService {
         }
     }
 
-    @Transactional
     public Entity createInternalOutboundDocumentForComponents(final Entity locationFrom, final Entity order,
-            final Collection<Entity> inProductsRecords, boolean useUsedQuantity) {
+            final List<ProductionCountingQuantityHolder> inProductsRecords, boolean useUsedQuantity) {
         Entity user = dataDefinitionService.get(QcadooSecurityConstants.PLUGIN_IDENTIFIER, QcadooSecurityConstants.MODEL_USER)
                 .get(securityService.getCurrentUserId());
 
@@ -134,19 +164,13 @@ public class ProductionCountingDocumentService {
 
         internalOutboundBuilder.internalOutbound(locationFrom);
 
-        HashSet<Entity> inProductsWithoutDuplicates = Sets.newHashSet();
-
         DataDefinition positionDD = getPositionDD();
 
-        for (Entity inProductRecord : inProductsRecords) {
-            Entity inProduct = inProductRecord.getBelongsToField(ProductionCountingQuantityFields.PRODUCT);
+        for (ProductionCountingQuantityHolder inProductRecord : inProductsRecords) {
 
-            if (!inProductsWithoutDuplicates.contains(inProduct)) {
-                Entity position = preparePositionForInProduct(positionDD, inProductRecord, inProduct, useUsedQuantity);
-                internalOutboundBuilder.addPosition(position);
-            }
+            Entity position = preparePositionForInProduct(positionDD, inProductRecord, useUsedQuantity);
+            internalOutboundBuilder.addPosition(position);
 
-            inProductsWithoutDuplicates.add(inProduct);
         }
 
         internalOutboundBuilder.setField(DocumentFieldsPFTD.ORDER, order);
@@ -154,18 +178,19 @@ public class ProductionCountingDocumentService {
         return internalOutboundBuilder.setAccepted().buildWithEntityRuntimeException();
     }
 
-    private Entity preparePositionForInProduct(final DataDefinition positionDD, final Entity inProductRecord,
-            final Entity inProduct, boolean useUsedQuantity) {
+    private Entity preparePositionForInProduct(final DataDefinition positionDD,
+            final ProductionCountingQuantityHolder inProductRecord, boolean useUsedQuantity) {
         Entity position = positionDD.create();
 
         BigDecimal quantity = null;
         if (useUsedQuantity) {
-            quantity = inProductRecord.getDecimalField(ProductionCountingQuantityFields.USED_QUANTITY);
+            quantity = inProductRecord.getUsedQuantity();
         } else {
-            quantity = inProductRecord.getDecimalField(ProductionCountingQuantityFields.PLANNED_QUANTITY).subtract(BigDecimalUtils
-                    .convertNullToZero(inProductRecord.getDecimalField(ProductionCountingQuantityFields.USED_QUANTITY)));
+            quantity = inProductRecord.getPlannedQuantity()
+                    .subtract(BigDecimalUtils.convertNullToZero(inProductRecord.getUsedQuantity()));
         }
 
+        Entity inProduct = inProductRecord.getProduct();
         String unit = inProduct.getStringField(ProductFields.UNIT);
 
         position.setField(PositionFields.UNIT, unit);
