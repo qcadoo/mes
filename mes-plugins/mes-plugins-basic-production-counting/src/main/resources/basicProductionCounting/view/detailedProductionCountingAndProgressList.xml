@@ -55,7 +55,7 @@
 					var listener = {
 						onChange: function(selectedEntitiesArray) {
 							 var state = #{state}.getValue().content.value;
-							 if(state == '04completed' || state == '05declined' || state == '07abandoned') {
+							 if(state == '01pending' || state == '04completed' || state == '05declined' || state == '07abandoned') {
 							 	if (resourceIssueButton) {
 									resourceIssueButton.disable("#{translate(basicProductionCounting.detailedProductionCountingAndProgressList.resourceIssue.description)}");
 								}
