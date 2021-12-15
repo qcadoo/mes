@@ -532,7 +532,10 @@ public final class ProductionTrackingListenerServicePFTD {
 
     public Entity createInternalInboundDocumentForFinalProducts(final Entity locationTo, final Entity order,
             final Collection<Entity> outProductsRecords, Entity user) {
-        return createInternalInboundDocumentForFinalProducts(locationTo, order, outProductsRecords, false, user);
+        String priceBasedOn = parameterService.getParameter().getStringField(ParameterFieldsPC.PRICE_BASED_ON);
+        boolean isNominalProductCost = priceBasedOn != null
+                && priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue());
+        return createInternalInboundDocumentForFinalProducts(locationTo, order, outProductsRecords, isNominalProductCost, user);
     }
 
     private Entity createInternalInboundDocumentForFinalProducts(final Entity locationTo, final Entity order,
