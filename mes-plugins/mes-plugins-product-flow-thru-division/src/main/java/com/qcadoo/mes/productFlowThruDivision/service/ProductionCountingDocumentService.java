@@ -14,6 +14,7 @@ import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.security.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -90,7 +91,7 @@ public class ProductionCountingDocumentService {
         }
     }
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void createInternalOutboundDocument(Entity order, List<Entity> productionCountingQuantities, boolean useUsedQuantity) {
         Multimap<Long, Entity> groupedPCQ = groupPCQByWarehouse(productionCountingQuantities);
         for (Long warehouseId : groupedPCQ.keySet()) {

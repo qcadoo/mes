@@ -62,12 +62,17 @@ public class OrderStatesListenerAspectPFTD extends AbstractStateListenerAspect {
     protected void targetServicePointcut() {
     }
 
+    @RunInPhase(OrderStateChangePhase.LAST)
+    @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = COMPLETED)
+    @Before(PHASE_EXECUTION_POINTCUT)
+    public void onCompletedLast(final StateChangeContext stateChangeContext, final int phase) {
+        listenerService.acceptInboundDocumentsForOrder(stateChangeContext);
+    }
+
     @RunInPhase(OrderStateChangePhase.EXT_SYNC)
     @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = COMPLETED)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void onCompleted(final StateChangeContext stateChangeContext, final int phase) {
-        listenerService.acceptInboundDocumentsForOrder(stateChangeContext);
-
         String releaseOfMaterials = parameterService.getParameter().getStringField(ParameterFieldsPC.RELEASE_OF_MATERIALS);
         if (ReleaseOfMaterials.END_OF_THE_ORDER.getStringValue().equals(releaseOfMaterials)) {
             listenerService.createCumulatedInternalOutboundDocument(stateChangeContext);
