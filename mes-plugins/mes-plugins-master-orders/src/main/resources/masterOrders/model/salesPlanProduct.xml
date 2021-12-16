@@ -39,6 +39,11 @@
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>
         </decimal>
+        <decimal name="orderedToWarehouse" default="0" copyable="false">
+            <validatesRange from="0"/>
+            <validatesUnscaledValue max="9"/>
+            <validatesScale max="5"/>
+        </decimal>
         <decimal name="surplusFromPlan" copyable="false">
             <validatesUnscaledValue max="9"/>
             <validatesScale max="5"/>

@@ -1,5 +1,9 @@
 package com.qcadoo.mes.masterOrders.hooks;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.Lists;
 import com.qcadoo.mes.basic.constants.ProductFields;
 import com.qcadoo.mes.masterOrders.constants.SalesPlanProductFields;
@@ -12,9 +16,6 @@ import com.qcadoo.view.api.components.FormComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.api.components.lookup.FilterValueHolder;
 import com.qcadoo.view.constants.QcadooViewConstants;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 public class SalesPlanProductDetailsHooks {
@@ -23,10 +24,12 @@ public class SalesPlanProductDetailsHooks {
 
     private static final String L_ORDERED_QUANTITY_UNIT = "orderedQuantityUnit";
 
+    private static final String ORDERED_TO_WAREHOUSE_UNIT = "orderedToWarehouseUnit";
+
     private static final String L_SURPLUS_FROM_PLAN_UNIT = "surplusFromPlanUnit";
 
     public void onBeforeRender(final ViewDefinitionState view) {
-        List<String> referenceNames = Lists.newArrayList(L_PLANNED_QUANTITY_UNIT, L_ORDERED_QUANTITY_UNIT,
+        List<String> referenceNames = Lists.newArrayList(L_PLANNED_QUANTITY_UNIT, L_ORDERED_QUANTITY_UNIT, ORDERED_TO_WAREHOUSE_UNIT,
                 L_SURPLUS_FROM_PLAN_UNIT);
 
         LookupComponent productLookup = (LookupComponent) view.getComponentByReference(SalesPlanProductFields.PRODUCT);

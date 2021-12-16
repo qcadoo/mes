@@ -83,4 +83,5 @@ public final class MasterOrderFields {
 
     public static final String COMPANY_CATEGORY = "companyCategory";
 
+    public static final String WAREHOUSE_ORDER = "warehouseOrder";
 }

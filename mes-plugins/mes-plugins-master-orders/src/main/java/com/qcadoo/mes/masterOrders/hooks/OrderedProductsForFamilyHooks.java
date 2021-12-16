@@ -60,27 +60,31 @@ public class OrderedProductsForFamilyHooks {
                 .collect(Collectors.toList())) {
             Entity salesPlanProductChild = salesPlanProductDD.create();
             salesPlanProductChild.setField(SalesPlanProductFields.PRODUCT, child);
-            BigDecimal orderedQuantity = getSalesPlanProductChildOrderedQuantity(masterOrders, child);
+            BigDecimal orderedQuantity = getSalesPlanProductChildOrderedQuantity(masterOrders, child, false);
+            BigDecimal orderedToWarehouse = getSalesPlanProductChildOrderedQuantity(masterOrders, child, true);
             salesPlanProductChild.setField(SalesPlanProductFields.ORDERED_QUANTITY, orderedQuantity);
+            salesPlanProductChild.setField(SalesPlanProductFields.ORDERED_TO_WAREHOUSE, orderedToWarehouse);
             salesPlanProducts.add(salesPlanProductChild);
         }
         GridComponent gridComponent = (GridComponent) view.getComponentByReference(SalesPlanFields.PRODUCTS);
         gridComponent.setEntities(salesPlanProducts);
     }
 
-    private BigDecimal getSalesPlanProductChildOrderedQuantity(List<Entity> masterOrders, Entity child) {
-        BigDecimal orderedQuantity = BigDecimal.ZERO;
+    private BigDecimal getSalesPlanProductChildOrderedQuantity(List<Entity> masterOrders, Entity child, boolean warehouseOrder) {
+        BigDecimal quantity = BigDecimal.ZERO;
         for (Entity masterOrder : masterOrders) {
-            List<Entity> masterOrderProducts = masterOrder.getHasManyField(MasterOrderFields.MASTER_ORDER_PRODUCTS);
-            for (Entity masterOrderProduct : masterOrderProducts) {
-                if (child.getId().equals(masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT).getId())) {
-                    orderedQuantity = orderedQuantity
-                            .add(masterOrderProduct.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY));
-                    break;
+            if (warehouseOrder == masterOrder.getBooleanField(MasterOrderFields.WAREHOUSE_ORDER)) {
+                List<Entity> masterOrderProducts = masterOrder.getHasManyField(MasterOrderFields.MASTER_ORDER_PRODUCTS);
+                for (Entity masterOrderProduct : masterOrderProducts) {
+                    if (child.getId().equals(masterOrderProduct.getBelongsToField(MasterOrderProductFields.PRODUCT).getId())) {
+                        quantity = quantity
+                                .add(masterOrderProduct.getDecimalField(MasterOrderProductFields.MASTER_ORDER_QUANTITY));
+                        break;
+                    }
                 }
             }
         }
-        return orderedQuantity;
+        return quantity;
     }
 
     private DataDefinition getSalesPlanProductDD() {
