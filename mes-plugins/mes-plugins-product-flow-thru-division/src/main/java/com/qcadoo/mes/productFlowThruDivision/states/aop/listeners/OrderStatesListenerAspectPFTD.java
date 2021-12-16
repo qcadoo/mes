@@ -35,6 +35,7 @@ import com.qcadoo.mes.states.StateChangeContext;
 import com.qcadoo.mes.states.annotation.RunForStateTransition;
 import com.qcadoo.mes.states.annotation.RunInPhase;
 import com.qcadoo.mes.states.aop.AbstractStateListenerAspect;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.plugin.api.RunIfEnabled;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -66,7 +67,10 @@ public class OrderStatesListenerAspectPFTD extends AbstractStateListenerAspect {
     @RunForStateTransition(sourceState = WILDCARD_STATE, targetState = COMPLETED)
     @Before(PHASE_EXECUTION_POINTCUT)
     public void onCompletedLast(final StateChangeContext stateChangeContext, final int phase) {
-        listenerService.acceptInboundDocumentsForOrder(stateChangeContext);
+        Entity owner = stateChangeContext.getOwner();
+        if(owner.isValid()) {
+            listenerService.acceptInboundDocumentsForOrder(stateChangeContext);
+        }
     }
 
     @RunInPhase(OrderStateChangePhase.EXT_SYNC)
