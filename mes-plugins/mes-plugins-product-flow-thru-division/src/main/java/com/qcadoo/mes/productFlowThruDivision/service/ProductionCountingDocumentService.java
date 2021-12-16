@@ -75,7 +75,6 @@ public class ProductionCountingDocumentService {
         try {
             createInternalOutboundDocument(order, pcqs, true);
             if (order.isValid()) {
-                updateProductionCountingQuantity(pcqs);
                 productionTrackingListenerServicePFTD.updateCostsForOrder(order);
             }
         } catch (DocumentBuildException documentBuildException) {
