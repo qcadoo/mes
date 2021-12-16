@@ -428,7 +428,12 @@ public final class ProductionTrackingListenerServicePFTD {
                 position.setField(PositionFields.GIVEN_UNIT, givenUnit.get());
                 position.setField(PositionFields.CONVERSION, conversion);
                 position.setField(PositionFields.PRODUCTION_DATE, new Date());
-
+                String priceBasedOn = parameterService.getParameter().getStringField(ParameterFieldsPC.PRICE_BASED_ON);
+                boolean isNominalProductCost = priceBasedOn != null
+                        && priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue());
+                if (isNominalProductCost) {
+                    position.setField(PositionFields.PRICE, getNominalCost(outProduct));
+                }
                 Entity batch = productionTracking.getBelongsToField(ProductionTrackingFields.BATCH);
 
                 if (Objects.nonNull(batch) && batch.getBelongsToField(BatchFields.PRODUCT).getId().equals(outProduct.getId())) {
