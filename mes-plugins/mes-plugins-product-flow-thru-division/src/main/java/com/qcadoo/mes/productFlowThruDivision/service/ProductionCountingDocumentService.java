@@ -7,9 +7,13 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.Lists;
+import com.qcadoo.mes.basic.constants.UnitConversionItemFieldsB;
 import com.qcadoo.mes.basicProductionCounting.constants.OrderFieldsBPC;
 import com.qcadoo.mes.basicProductionCounting.constants.ProductionCountingQuantityRole;
 import com.qcadoo.mes.materialFlowResources.constants.DocumentFields;
+import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
+import com.qcadoo.model.api.search.SearchRestrictions;
+import com.qcadoo.model.api.units.PossibleUnitConversions;
 import com.qcadoo.model.api.validators.ErrorMessage;
 import com.qcadoo.security.api.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,11 +65,12 @@ public class ProductionCountingDocumentService {
 
     public void createCumulatedInternalOutboundDocument(Entity order) {
         List<Entity> pcqs = order.getHasManyField(OrderFieldsBPC.PRODUCTION_COUNTING_QUANTITIES);
-        pcqs = pcqs.stream()
-                .filter(p -> ProductionCountingQuantityRole.USED.getStringValue()
-                        .equals(p.getStringField(ProductionCountingQuantityFields.ROLE))
-                        && ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()
-                                .equals(p.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL)))
+        pcqs = pcqs.stream().filter(p -> ProductionCountingQuantityRole.USED.getStringValue()
+                .equals(p.getStringField(ProductionCountingQuantityFields.ROLE))
+                && ProductionCountingQuantityTypeOfMaterial.COMPONENT.getStringValue()
+                        .equals(p.getStringField(ProductionCountingQuantityFields.TYPE_OF_MATERIAL))
+                && BigDecimal.ZERO.compareTo(
+                        BigDecimalUtils.convertNullToZero(p.getDecimalField(ProductionCountingQuantityFields.USED_QUANTITY))) < 0)
                 .collect(Collectors.toList());
         try {
             createInternalOutboundDocument(order, pcqs, true);
@@ -193,11 +198,15 @@ public class ProductionCountingDocumentService {
 
         Entity inProduct = inProductRecord.getProduct();
         String unit = inProduct.getStringField(ProductFields.UNIT);
+        BigDecimal conversion = BigDecimal.ONE;
+
 
         position.setField(PositionFields.UNIT, unit);
         position.setField(PositionFields.GIVEN_UNIT, inProduct.getStringField(ProductFields.ADDITIONAL_UNIT));
         position.setField(PositionFields.PRODUCT, inProduct);
         position.setField(PositionFields.QUANTITY, quantity);
+        position.setField(PositionFields.CONVERSION, conversion);
+
 
         return position;
     }
