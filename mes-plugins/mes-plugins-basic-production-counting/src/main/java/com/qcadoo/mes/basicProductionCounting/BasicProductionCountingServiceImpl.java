@@ -23,6 +23,26 @@
  */
 package com.qcadoo.mes.basicProductionCounting;
 
+import static com.qcadoo.model.api.search.SearchProjections.alias;
+import static com.qcadoo.model.api.search.SearchProjections.list;
+import static com.qcadoo.model.api.search.SearchProjections.rowCount;
+import static com.qcadoo.model.api.search.SearchProjections.sum;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -62,25 +82,6 @@ import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
 import com.qcadoo.view.api.components.LookupComponent;
 import com.qcadoo.view.constants.RowStyle;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import static com.qcadoo.model.api.search.SearchProjections.alias;
-import static com.qcadoo.model.api.search.SearchProjections.list;
-import static com.qcadoo.model.api.search.SearchProjections.rowCount;
-import static com.qcadoo.model.api.search.SearchProjections.sum;
 
 @Service
 public class BasicProductionCountingServiceImpl implements BasicProductionCountingService {
@@ -148,9 +149,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
 
         createProductionCountingOperationRuns(order, operationRuns);
 
-        List<Entity> productionCountingQuantities = new ArrayList<>();
-
-        prepareProductionCountingQuantities(order, nonComponents, productComponentQuantities, productionCountingQuantities);
+        List<Entity> productionCountingQuantities = prepareProductionCountingQuantities(order, nonComponents, productComponentQuantities);
 
         List<Entity> basicProductionCounting = Lists.newArrayList();
 
@@ -226,17 +225,21 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         basicProductionCounting.add(prepareBasicProductionCounting(order.getBelongsToField(OrderFields.PRODUCT)));
     }
 
-    private void prepareProductionCountingQuantities(final Entity order,
-            final Set<OperationProductComponentHolder> nonComponents,
-            final OperationProductComponentWithQuantityContainer productComponentQuantities,
-            final List<Entity> productionCountingQuantities) {
+    private List<Entity> prepareProductionCountingQuantities(final Entity order,
+                                                             final Set<OperationProductComponentHolder> nonComponents,
+                                                             final OperationProductComponentWithQuantityContainer productComponentQuantities
+    ) {
+        final List<Entity> productionCountingQuantities = new ArrayList<>();
         for (Entry<OperationProductComponentHolder, BigDecimal> productComponentQuantity : productComponentQuantities.asMap()
                 .entrySet()) {
             OperationProductComponentHolder operationProductComponentHolder = productComponentQuantity.getKey();
             BigDecimal plannedQuantity = productComponentQuantity.getValue();
+            Entity product = operationProductComponentHolder.getProduct();
+            if (product == null) {
+                continue;
+            }
 
             Entity technologyOperationComponent = operationProductComponentHolder.getTechnologyOperationComponent();
-            Entity product = operationProductComponentHolder.getProduct();
             Entity operationProductComponent = operationProductComponentHolder.getOperationProductComponent();
             Entity technologyInputProductType = operationProductComponentHolder.getTechnologyInputProductType();
 
@@ -252,6 +255,7 @@ public class BasicProductionCountingServiceImpl implements BasicProductionCounti
         if (PluginUtils.isEnabled("productFlowThruDivision")) {
             fillFlow(productionCountingQuantities, order);
         }
+        return productionCountingQuantities;
     }
 
     @Override
