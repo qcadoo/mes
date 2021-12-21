@@ -61,28 +61,28 @@
                         <component type="checkbox" name="operTaskFlagPercentExecutionWithColor"
                                    field="#{form}.operTaskFlagPercentExecutionWithColor"
                                    reference="operTaskFlagPercentExecutionWithColor" hasDescription="true">
-                            <option type="labelWidth" value="40"/>
+                            <option type="labelWidth" value="80"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="2">
                         <component type="checkbox" name="otCopyDescriptionFromProductionOrder"
                                    field="#{form}.otCopyDescriptionFromProductionOrder"
                                    reference="otCopyDescriptionFromProductionOrder" hasDescription="true">
-                            <option type="labelWidth" value="40"/>
+                            <option type="labelWidth" value="80"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="3">
                         <component type="checkbox" name="setOrderDatesBasedOnTaskDates"
                                    field="#{form}.setOrderDatesBasedOnTaskDates"
                                    reference="setOrderDatesBasedOnTaskDates" hasDescription="true">
-                            <option type="labelWidth" value="40"/>
+                            <option type="labelWidth" value="80"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="4">
                         <component type="checkbox" name="automaticallyGenerateTasksForOrder"
                                    field="#{form}.automaticallyGenerateTasksForOrder"
                                    reference="automaticallyGenerateTasksForOrder" hasDescription="true">
-                            <option type="labelWidth" value="40"/>
+                            <option type="labelWidth" value="80"/>
                             <listener event="onChange"
                                       class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
                                       method="onAutomaticallyGenerateTasksForOrder"/>
@@ -92,7 +92,7 @@
                         <component type="checkbox" name="completeStationAndEmployeeInGeneratedTasks"
                                    field="#{form}.completeStationAndEmployeeInGeneratedTasks"
                                    reference="completeStationAndEmployeeInGeneratedTasks" hasDescription="true">
-                            <option type="labelWidth" value="40"/>
+                            <option type="labelWidth" value="80"/>
                         </component>
                     </layoutElement>
                 </component>
