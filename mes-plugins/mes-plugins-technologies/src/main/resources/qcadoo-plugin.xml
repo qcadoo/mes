@@ -311,6 +311,7 @@
         <view:view resource="view/operationProductInComponentDetails.xml"/>
         <view:view resource="view/operationProductOutComponentDetails.xml"/>
         <view:view resource="view/technologiesWithUsingProductList.xml"/>
+        <view:view resource="view/technologiesWithUsingOperationList.xml"/>
 
         <view:view resource="view/technologyGroupsList.xml"/>
         <view:view resource="view/technologyGroupDetails.xml"/>
