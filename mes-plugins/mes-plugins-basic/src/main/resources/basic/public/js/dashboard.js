@@ -175,6 +175,8 @@ QCD.dashboard = (function () {
             });
         }
 
+        $("#dashboardSearch").fadeIn(500);
+
         $("#dashboardKanban .card.bg-light").each(function (index, element) {
             $(this).fadeIn((index + 1) * 250);
         });
@@ -646,7 +648,7 @@ function createOperationalTaskDiv(operationalTasksType, operationalTask) {
 function filterKanban(value) {
     let keys = [ "masterOrderNumber", "orderNumber", "number", "description", "orderCategory", "productionLineNumber", "staffName", "workstationNumber", "productNumber", "orderProductNumber", "companyName" ];
 
-    let results = QCD.dashboardContext.getItems().filter(item => Object.keys(item).some(key => keys.includes(key) && (item[key] != null) && item[key].toString().includes(value)));
+    let results = QCD.dashboardContext.getItems().filter(item => Object.keys(item).some(key => keys.includes(key) && (item[key] != null) && item[key].toString().toLowerCase().includes(value.toLowerCase())));
 
     if (value == '') {
         $(".items .card").show();
