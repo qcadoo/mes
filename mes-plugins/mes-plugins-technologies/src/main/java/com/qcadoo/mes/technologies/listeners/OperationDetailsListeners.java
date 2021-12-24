@@ -23,12 +23,16 @@
  */
 package com.qcadoo.mes.technologies.listeners;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.google.common.collect.Maps;
 import com.qcadoo.mes.technologies.constants.AssignedToOperation;
 import com.qcadoo.mes.technologies.constants.OperationFields;
 import com.qcadoo.mes.technologies.hooks.OperationDetailsHooks;
+import com.qcadoo.model.api.Entity;
 import com.qcadoo.view.api.ComponentState;
 import com.qcadoo.view.api.ViewDefinitionState;
 import com.qcadoo.view.api.components.FieldComponent;
@@ -37,8 +41,6 @@ import com.qcadoo.view.constants.QcadooViewConstants;
 
 @Service
 public class OperationDetailsListeners {
-
-
 
     @Autowired
     private OperationDetailsHooks operationDetailsHooks;
@@ -81,6 +83,23 @@ public class OperationDetailsListeners {
 
         quantityOfWorkstations.setFieldValue(size);
         quantityOfWorkstations.requestComponentUpdateState();
+    }
+
+    public final void showTechnologiesWithUsingOperation(final ViewDefinitionState view, final ComponentState state,
+            final String[] args) {
+        FormComponent form = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
+        Entity operation = form.getEntity();
+
+        if (operation.getId() == null) {
+            return;
+        }
+
+        Map<String, Object> parameters = Maps.newHashMap();
+
+        parameters.put("form.id", operation.getId());
+
+        String url = "../page/technologies/technologiesWithUsingOperationList.html";
+        view.redirectTo(url, false, true, parameters);
     }
 
 }

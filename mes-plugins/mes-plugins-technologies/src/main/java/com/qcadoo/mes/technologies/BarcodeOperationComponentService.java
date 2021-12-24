@@ -23,20 +23,20 @@
  */
 package com.qcadoo.mes.technologies;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import com.google.common.base.Optional;
 import com.qcadoo.mes.technologies.constants.BarcodeOperationComponentFields;
 import com.qcadoo.mes.technologies.constants.TechnologiesConstants;
 import com.qcadoo.model.api.DataDefinition;
 import com.qcadoo.model.api.DataDefinitionService;
 import com.qcadoo.model.api.Entity;
 import com.qcadoo.model.api.search.SearchRestrictions;
-
-import java.util.Collections;
-import java.util.List;
 
 @Service
 public class BarcodeOperationComponentService {
@@ -61,13 +61,10 @@ public class BarcodeOperationComponentService {
     }
 
     private boolean checkIfBarcodeExist(final Entity order, final Entity operationComponent) {
-        if (getBarcodeOperationComponentDD().find()
+        return !getBarcodeOperationComponentDD().find()
                 .add(SearchRestrictions.belongsTo(BarcodeOperationComponentFields.OPERATION_COMPONENT, operationComponent))
                 .add(SearchRestrictions.belongsTo(BarcodeOperationComponentFields.ORDER, order)).list()
-                .getEntities().isEmpty()) {
-            return false;
-        }
-        return true;
+                .getEntities().isEmpty();
     }
 
     private DataDefinition getBarcodeOperationComponentDD() {
@@ -89,7 +86,7 @@ public class BarcodeOperationComponentService {
                 .add(SearchRestrictions.belongsTo(BarcodeOperationComponentFields.ORDER, order))
                 .setMaxResults(1).uniqueResult();
         if(barcode == null) {
-            return Optional.absent();
+            return Optional.empty();
         }
         return Optional.of(barcode.getStringField(BarcodeOperationComponentFields.CODE));
     }
@@ -98,9 +95,9 @@ public class BarcodeOperationComponentService {
         Entity barcode = getBarcodeOperationComponentDD().find()
                 .add(SearchRestrictions.eq(BarcodeOperationComponentFields.CODE, code)).setMaxResults(1).uniqueResult();
         if (barcode == null) {
-            return Optional.absent();
+            return Optional.empty();
         }
-        return Optional.fromNullable(barcode.getBelongsToField(BarcodeOperationComponentFields.OPERATION_COMPONENT));
+        return Optional.ofNullable(barcode.getBelongsToField(BarcodeOperationComponentFields.OPERATION_COMPONENT));
     }
 
     public void removeBarcode(final Entity order) {

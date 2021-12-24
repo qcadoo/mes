@@ -185,6 +185,7 @@
                 <option type="column" name="technologyNumber" fields="technologyNumber" width="60"/>
                 <option type="column" name="plannedQuantity" fields="plannedQuantity" width="40"/>
                 <option type="column" name="orderedQuantity" fields="orderedQuantity" width="40"/>
+                <option type="column" name="orderedToWarehouse" fields="orderedToWarehouse" width="40"/>
                 <option type="column" name="surplusFromPlan" fields="surplusFromPlan" width="40"/>
                 <option type="column" name="ordersPlannedQuantity" fields="ordersPlannedQuantity" width="40"/>
                 <option type="column" name="productUnit" fields="productUnit" width="30"/>
@@ -192,9 +193,9 @@
                 <option type="order" column="productNumber" direction="asc"/>
 
                 <option type="searchable"
-                        value="productNumber,productName,productEntityType,productFamily,productModel,productAssortment,technologyNumber,plannedQuantity,productUnit,orderedQuantity,surplusFromPlan,ordersPlannedQuantity"/>
+                        value="productNumber,productName,productEntityType,productFamily,productModel,productAssortment,technologyNumber,plannedQuantity,productUnit,orderedQuantity,orderedToWarehouse,surplusFromPlan,ordersPlannedQuantity"/>
                 <option type="orderable"
-                        value="productNumber,productName,productEntityType,productFamily,productModel,productAssortment,technologyNumber,plannedQuantity,productUnit,orderedQuantity,surplusFromPlan,ordersPlannedQuantity"/>
+                        value="productNumber,productName,productEntityType,productFamily,productModel,productAssortment,technologyNumber,plannedQuantity,productUnit,orderedQuantity,orderedToWarehouse,surplusFromPlan,ordersPlannedQuantity"/>
 
                 <listener event="onSelect"
                           class="com.qcadoo.view.api.listeners.RerenderListener"
@@ -205,7 +206,7 @@
                 <option type="correspondingViewInModal" value="true"/>
 
                 <option type="footerRow" value="true"/>
-                <option type="columnsToSummary" value="plannedQuantity,orderedQuantity,surplusFromPlan,ordersPlannedQuantity"/>
+                <option type="columnsToSummary" value="plannedQuantity,orderedQuantity,orderedToWarehouse,surplusFromPlan,ordersPlannedQuantity"/>
 
                 <option type="fixedHeight" value="true"/>
                 <option type="multiselect" value="true"/>

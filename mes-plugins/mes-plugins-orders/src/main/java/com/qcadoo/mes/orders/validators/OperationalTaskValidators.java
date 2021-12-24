@@ -148,17 +148,19 @@ public class OperationalTaskValidators {
             Date startDate = operationalTask.getDateField(OperationalTaskFields.START_DATE);
             Date finishDate = operationalTask.getDateField(OperationalTaskFields.FINISH_DATE);
             Entity order = operationalTask.getBelongsToField(OperationalTaskFields.ORDER);
-            Entity parent = operationalTasksService.getParent(technologyOperationComponent, order);
-            if (parent != null && parent.getBelongsToField(OperationalTaskFields.WORKSTATION) != null) {
-                if (parent.getDateField(OperationalTaskFields.START_DATE).before(startDate)) {
-                    operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.START_DATE),
-                            "orders.operationalTask.error.inappropriateStartDateNext");
-                    return false;
-                }
-                if (parent.getDateField(OperationalTaskFields.FINISH_DATE).before(finishDate)) {
-                    operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.FINISH_DATE),
-                            "orders.operationalTask.error.inappropriateFinishDateNext");
-                    return false;
+            if (technologyOperationComponent.getBelongsToField(TechnologyOperationComponentFields.PARENT) != null) {
+                Entity parent = operationalTasksService.getParent(technologyOperationComponent, order);
+                if (parent != null && parent.getBelongsToField(OperationalTaskFields.WORKSTATION) != null) {
+                    if (parent.getDateField(OperationalTaskFields.START_DATE).before(startDate)) {
+                        operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.START_DATE),
+                                "orders.operationalTask.error.inappropriateStartDateNext");
+                        return false;
+                    }
+                    if (parent.getDateField(OperationalTaskFields.FINISH_DATE).before(finishDate)) {
+                        operationalTask.addError(operationalTaskDD.getField(OperationalTaskFields.FINISH_DATE),
+                                "orders.operationalTask.error.inappropriateFinishDateNext");
+                        return false;
+                    }
                 }
             }
             List<Entity> children = operationalTasksService.getChildren(technologyOperationComponent, order);

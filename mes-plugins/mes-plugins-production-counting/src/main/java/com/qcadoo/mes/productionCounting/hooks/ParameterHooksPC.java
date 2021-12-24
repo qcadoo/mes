@@ -79,6 +79,18 @@ public class ParameterHooksPC {
                     "qcadooView.validate.field.error.missing");
             return false;
         }
+
+        if (parameter.getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS) == null) {
+            parameter.addError(parameterDD.getField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS),
+                    "qcadooView.validate.field.error.missing");
+            return false;
+        }
+
+        if (parameter.getStringField(ParameterFieldsPC.RELEASE_OF_MATERIALS) == null) {
+            parameter.addError(parameterDD.getField(ParameterFieldsPC.RELEASE_OF_MATERIALS),
+                    "qcadooView.validate.field.error.missing");
+            return false;
+        }
         String priceBasedOn = parameter.getStringField(ParameterFieldsPC.PRICE_BASED_ON);
         if (priceBasedOn != null && priceBasedOn.compareTo("") != 0) {
             return true;

@@ -142,17 +142,14 @@ QCD.dashboard = (function () {
 
         if ($("#dashboardKanban #ordersPending").length) {
             $.each(QCD.dashboardContext.getOrdersPending(), function (index, order) {
-                addItem(order);
                 appendOrder('ordersPending', order);
             });
 
             $.each(QCD.dashboardContext.getOrdersInProgress(), function (index, order) {
-                addItem(order);
                 appendOrder('ordersInProgress', order);
             });
 
             $.each(QCD.dashboardContext.getOrdersCompleted(), function (index, order) {
-                addItem(order);
                 appendOrder('ordersCompleted', order);
             });
 
@@ -160,20 +157,19 @@ QCD.dashboard = (function () {
         }
         if ($("#dashboardKanban #operationalTasksPending").length) {
             $.each(QCD.dashboardContext.getOperationalTasksPending(), function (index, operationalTask) {
-                addItem(operationalTask);
                 appendOperationalTask('operationalTasksPending', operationalTask);
             });
 
             $.each(QCD.dashboardContext.getOperationalTasksInProgress(), function (index, operationalTask) {
-                addItem(operationalTask);
                 appendOperationalTask('operationalTasksInProgress', operationalTask);
             });
 
             $.each(QCD.dashboardContext.getOperationalTasksCompleted(), function (index, operationalTask) {
-                addItem(operationalTask);
                 appendOperationalTask('operationalTasksCompleted', operationalTask);
             });
         }
+
+        $("#dashboardSearch").fadeIn(500);
 
         $("#dashboardKanban .card.bg-light").each(function (index, element) {
             $(this).fadeIn((index + 1) * 250);
@@ -232,24 +228,32 @@ QCD.dashboard = (function () {
     }
 
     function appendOrder(ordersType, order) {
+        addItem(order);
+
         $('#' + ordersType).append(
             createOrderDiv(order)
         );
     }
 
     function prependOrder(ordersType, order) {
+        addItem(order);
+
         $('#' + ordersType).prepend(
             createOrderDiv(order)
         );
     }
 
     function appendOperationalTask(operationalTasksType, operationalTask) {
+        addItem(operationalTask);
+
         $('#' + operationalTasksType).append(
             createOperationalTaskDiv(operationalTasksType, operationalTask)
         );
     }
 
     function prependOperationalTask(operationalTasksType, operationalTask) {
+        addItem(operationalTask);
+
         $('#' + operationalTasksType).prepend(
             createOperationalTaskDiv(operationalTasksType, operationalTask)
         );
@@ -646,7 +650,7 @@ function createOperationalTaskDiv(operationalTasksType, operationalTask) {
 function filterKanban(value) {
     let keys = [ "masterOrderNumber", "orderNumber", "number", "description", "orderCategory", "productionLineNumber", "staffName", "workstationNumber", "productNumber", "orderProductNumber", "companyName" ];
 
-    let results = QCD.dashboardContext.getItems().filter(item => Object.keys(item).some(key => keys.includes(key) && (item[key] != null) && item[key].toString().includes(value)));
+    let results = QCD.dashboardContext.getItems().filter(item => Object.keys(item).some(key => keys.includes(key) && (item[key] != null) && item[key].toString().toLowerCase().includes(value.toLowerCase())));
 
     if (value == '') {
         $(".items .card").show();

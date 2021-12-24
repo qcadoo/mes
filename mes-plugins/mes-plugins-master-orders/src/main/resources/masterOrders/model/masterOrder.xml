@@ -103,6 +103,8 @@
         <belongsTo name="salesPlan" model="salesPlan"/>
 
         <dictionary name="companyCategory" dictionary="contractorCategory" persistent="false"/>
+
+        <boolean name="warehouseOrder" default="false"/>
     </fields>
 
     <hooks>

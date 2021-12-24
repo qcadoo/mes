@@ -56,7 +56,7 @@
         <windowTab name="mainTab" reference="mainTab">
             <component type="form" name="ordersParameters" reference="form">
                 <component type="flowGridLayout" name="mainTabGridLayout"
-                           columns="3" rows="10">
+                           columns="3" rows="9">
                     <layoutElement column="1" row="1">
                         <component type="lookup" name="defaultProductionLine"
                                    field="#{form}.defaultProductionLine" reference="defaultProductionLine">
@@ -75,82 +75,83 @@
                         <component type="checkbox" name="canChangeProdLineForAcceptedOrders"
                                    field="#{form}.canChangeProdLineForAcceptedOrders"
                                    reference="canChangeProdLineForAcceptedOrders">
-                            <option type="labelWidth" value="40"/>
+                            <option type="labelWidth" value="80"/>
                         </component>
                     </layoutElement>
-
                     <layoutElement column="1" row="3">
                         <component type="checkbox" name="allowQuantityChangeInAcceptedOrder"
                                    field="#{form}.allowQuantityChangeInAcceptedOrder"
                                    reference="allowQuantityChangeInAcceptedOrder">
-                            <option type="labelWidth" value="40"/>
+                            <option type="labelWidth" value="80"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="4">
                         <component type="checkbox" name="allowTechnologyTreeChangeInPendingOrder"
                                    field="#{form}.allowTechnologyTreeChangeInPendingOrder"
                                    reference="allowTechnologyTreeChangeInPendingOrder">
-                            <option type="labelWidth" value="40"/>
+                            <option type="labelWidth" value="80"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="5">
-
                         <component type="checkbox" name="fillOrderDescriptionBasedOnTechnologyDescription"
                                    field="#{form}.fillOrderDescriptionBasedOnTechnologyDescription"
                                    reference="fillOrderDescriptionBasedOnTechnologyDescription" hasDescription="true">
-                            <option type="labelWidth" value="40"/>
+                            <option type="labelWidth" value="80"/>
                         </component>
-
                     </layoutElement>
                     <layoutElement column="1" row="6">
-                        <component type="checkbox" name="flagPercentageOfExecutionWithColor"
-                                   field="#{form}.flagPercentageOfExecutionWithColor"
-                                   reference="flagPercentageOfExecutionWithColor" hasDescription="true">
-                            <option type="labelWidth" value="40"/>
+                        <component type="checkbox" name="fillOrderDescriptionBasedOnProductDescription"
+                                   field="#{form}.fillOrderDescriptionBasedOnProductDescription"
+                                   reference="fillOrderDescriptionBasedOnProductDescription" hasDescription="true">
+                            <option type="labelWidth" value="80"/>
                         </component>
                     </layoutElement>
                     <layoutElement column="1" row="7">
+                        <component type="checkbox" name="flagPercentageOfExecutionWithColor"
+                                   field="#{form}.flagPercentageOfExecutionWithColor"
+                                   reference="flagPercentageOfExecutionWithColor" hasDescription="true">
+                            <option type="labelWidth" value="80"/>
+                        </component>
+                    </layoutElement>
+                    <layoutElement column="2" row="1">
                         <component type="checkbox" name="setEffectiveDateFromOnInProgress"
                                    field="#{form}.setEffectiveDateFromOnInProgress"
                                    reference="setEffectiveDateFromOnInProgress" hasDescription="true">
-                            <option type="labelWidth" value="40"/>
+                            <option type="labelWidth" value="80"/>
                         </component>
-
                     </layoutElement>
-                    <layoutElement column="1" row="8">
+                    <layoutElement column="2" row="2">
                         <component type="checkbox" name="setEffectiveDateToOnCompleted"
                                    field="#{form}.setEffectiveDateToOnCompleted"
                                    reference="setEffectiveDateToOnCompleted" hasDescription="true">
-                            <option type="labelWidth" value="40"/>
+                            <option type="labelWidth" value="80"/>
                         </component>
-
                     </layoutElement>
-
-                    <layoutElement column="1" row="9">
+                    <layoutElement column="2" row="3">
                         <component type="checkbox" name="adviseStartDateOfTheOrder"
                                    field="#{form}.adviseStartDateOfTheOrder"
                                    reference="adviseStartDateOfTheOrder" hasDescription="true">
-                            <option type="labelWidth" value="40"/>
+                            <option type="labelWidth" value="80"/>
                             <listener event="onChange"
                                       class="com.qcadoo.view.api.listeners.RerenderListener"
                                       method="onChangeRerender"/>
                         </component>
                     </layoutElement>
-                    <layoutElement column="1" row="10">
+                    <layoutElement column="2" row="4">
                         <component type="select" name="orderStartDateBasedOn" field="#{form}.orderStartDateBasedOn"
                                    reference="orderStartDateBasedOn" hasDescription="true">
                         </component>
                     </layoutElement>
-                    <layoutElement column="2" row="1" height="10">
+                    <layoutElement column="3" row="1" height="9">
                         <component type="borderLayout" name="creatingOrdersForMasterOrder"
                                    reference="creatingOrdersForMasterOrder">
                             <option type="label" value="creatingOrdersForMasterOrder"/>
                             <component type="gridLayout" name="gridLayout" columns="1"
-                                       rows="10">
+                                       rows="9">
                                 <layoutElement column="1" row="1">
                                     <component type="checkbox" name="copyDescription" field="#{form}.copyDescription"
                                                reference="copyDescription" hasDescription="true">
-                                        <option type="labelWidth" value="40"/>
+                                        <option type="labelWidth" value="80"/>
                                     </component>
                                 </layoutElement>
 
@@ -158,21 +159,21 @@
                                     <component type="checkbox" name="copyNotesFromMasterOrderPosition"
                                                field="#{form}.copyNotesFromMasterOrderPosition"
                                                reference="copyNotesFromMasterOrderPosition" hasDescription="true">
-                                        <option type="labelWidth" value="40"/>
+                                        <option type="labelWidth" value="80"/>
                                     </component>
                                 </layoutElement>
                                 <layoutElement column="1" row="3">
                                     <component type="checkbox" name="createCollectiveOrders"
                                                field="#{form}.createCollectiveOrders"
                                                reference="createCollectiveOrders" hasDescription="true">
-                                        <option type="labelWidth" value="40"/>
+                                        <option type="labelWidth" value="80"/>
                                     </component>
                                 </layoutElement>
                                 <layoutElement column="1" row="4">
                                     <component type="checkbox" name="realizationFromStock"
                                                field="#{form}.realizationFromStock"
                                                reference="realizationFromStock" hasDescription="true">
-                                        <option type="labelWidth" value="40"/>
+                                        <option type="labelWidth" value="80"/>
                                         <listener event="onChange"
                                                   class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
                                                   method="onRealizationFromStock"/>
@@ -185,10 +186,10 @@
                                         <listener event="onChange"
                                                   class="com.qcadoo.mes.orders.listeners.ParametersListenersO"
                                                   method="onAlwaysOrderItemsWithPersonalization"/>
-                                        <option type="labelWidth" value="40"/>
+                                        <option type="labelWidth" value="80"/>
                                     </component>
                                 </layoutElement>
-                                <layoutElement column="1" row="6" height="5">
+                                <layoutElement column="1" row="6" height="4">
                                     <component type="lookup" name="locationsLookup" reference="locationsLookup"
                                                field="#{form}.realizationLocations" defaultVisible="false" persistent="false"
                                                hasLabel="false">
@@ -223,7 +224,6 @@
 
                                         <option type="weakRelation" value="true"/>
                                         <option type="correspondingLookup" value="locationsLookup"/>
-
                                     </component>
                                 </layoutElement>
                             </component>

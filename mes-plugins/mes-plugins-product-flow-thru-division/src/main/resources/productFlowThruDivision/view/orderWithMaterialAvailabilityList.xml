@@ -103,8 +103,8 @@
                         <option type="column" name="replacement" fields="replacement"/>
                         <option type="column" name="batches" fields="batches"/>
                         <option type="column" name="batchesQuantity" fields="batchesQuantity"
-                                classesCondition="rowObject['requiredQuantity'] > rowObject['batchesQuantity']"
-                                classesNames="red-cell" />
+                                classesNames="rowObject['batchesQuantityClass']" />
+                        <option type="column" name="batchesQuantityClass" fields="batchesQuantityClass" hidden="true"/>
 
                         <option type="order" column="productNumber" direction="asc"/>
 

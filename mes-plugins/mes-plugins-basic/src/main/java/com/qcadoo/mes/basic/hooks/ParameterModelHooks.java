@@ -38,6 +38,9 @@ import com.qcadoo.model.api.Entity;
 @Service
 public class ParameterModelHooks {
 
+    private static final String L_RELEASE_OF_MATERIALS = "releaseOfMaterials";
+    private static final String L_RECEIPT_OF_PRODUCTS = "receiptOfProducts";
+
     @Autowired
     private CurrencyService currencyService;
 
@@ -47,6 +50,8 @@ public class ParameterModelHooks {
         parameter.setField(ParameterFields.DASHBOARD_SHOW_FOR_PRODUCT, "01number");
         parameter.setField(ParameterFields.QUANTITY_MADE_ON_THE_BASIS_OF_DASHBOARD, "01approvedProduction");
         parameter.setField(ParameterFields.DASHBOARD_ORDER_SORTING, "01startDate");
+        parameter.setField(L_RELEASE_OF_MATERIALS, "01onAcceptanceRegistrationRecord");
+        parameter.setField(L_RECEIPT_OF_PRODUCTS, "01onAcceptanceRegistrationRecord");
     }
 
 }

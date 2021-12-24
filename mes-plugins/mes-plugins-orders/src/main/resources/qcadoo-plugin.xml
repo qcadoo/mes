@@ -227,6 +227,10 @@
         </model:model-field>
 
         <model:model-field plugin="basic" model="parameter">
+            <model:boolean name="fillOrderDescriptionBasedOnProductDescription" default="false"/>
+        </model:model-field>
+
+        <model:model-field plugin="basic" model="parameter">
             <model:boolean name="allowTechnologyTreeChangeInPendingOrder" default="false"/>
         </model:model-field>
         <model:model-field plugin="basic" model="parameter">

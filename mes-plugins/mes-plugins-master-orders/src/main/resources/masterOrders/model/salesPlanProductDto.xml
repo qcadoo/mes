@@ -44,6 +44,7 @@
 
         <decimal name="plannedQuantity"/>
         <decimal name="orderedQuantity"/>
+        <decimal name="orderedToWarehouse"/>
         <decimal name="surplusFromPlan"/>
         <decimal name="ordersPlannedQuantity"/>
 

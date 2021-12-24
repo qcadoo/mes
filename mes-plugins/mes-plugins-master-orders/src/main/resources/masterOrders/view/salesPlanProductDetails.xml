@@ -38,7 +38,7 @@
 
         <component type="form" name="salesPlanProduct" reference="form">
             <component type="gridLayout" name="gridLayout" columns="5"
-                       rows="5" hasBorders="false">
+                       rows="6" hasBorders="false">
                 <layoutElement column="1" row="1" width="4">
                     <component type="lookup" name="product" reference="product"
                                field="product">
@@ -101,12 +101,24 @@
                     </component>
                 </layoutElement>
                 <layoutElement column="1" row="5" width="4">
+                    <component type="input" name="orderedToWarehouse" field="orderedToWarehouse"
+                               reference="orderedToWarehouse" defaultEnabled="false">
+                        <option type="alignment" value="right"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="5" row="5">
+                    <component type="input" name="orderedToWarehouseUnit"
+                               reference="orderedToWarehouseUnit" defaultEnabled="false" hasLabel="false">
+                        <option type="textRepresentationOnDisabled" value="true"/>
+                    </component>
+                </layoutElement>
+                <layoutElement column="1" row="6" width="4">
                     <component type="input" name="surplusFromPlan" field="surplusFromPlan"
                                reference="surplusFromPlan" defaultEnabled="false">
                         <option type="alignment" value="right"/>
                     </component>
                 </layoutElement>
-                <layoutElement column="5" row="5">
+                <layoutElement column="5" row="6">
                     <component type="input" name="surplusFromPlanUnit"
                                reference="surplusFromPlanUnit" defaultEnabled="false" hasLabel="false">
                         <option type="textRepresentationOnDisabled" value="true"/>

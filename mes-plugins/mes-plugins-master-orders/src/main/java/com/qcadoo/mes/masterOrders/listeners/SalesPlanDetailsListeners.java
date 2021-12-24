@@ -250,13 +250,12 @@ public class SalesPlanDetailsListeners {
     private BigDecimal getOrderedQuantity(Entity salesPlan, Entity child) {
         BigDecimal orderedQuantity = BigDecimal.ZERO;
 
-        StringBuilder hql = new StringBuilder();
-        hql.append("SELECT o.plannedQuantity as orderedQuantity ");
-        hql.append("FROM #orders_order o ");
-        hql.append("WHERE o.salesPlan.id = :salesPlanId AND o.product.id = :productId ");
+        String hql = "SELECT o.plannedQuantity as orderedQuantity " +
+                "FROM #orders_order o " +
+                "WHERE o.salesPlan.id = :salesPlanId AND o.product.id = :productId ";
 
         List<Entity> orderedQuantityEntity = dataDefinitionService
-                .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find(hql.toString())
+                .get(OrdersConstants.PLUGIN_IDENTIFIER, OrdersConstants.MODEL_ORDER).find(hql)
                 .setLong("salesPlanId", salesPlan.getId()).setLong("productId", child.getId()).list().getEntities();
         if (!orderedQuantityEntity.isEmpty()) {
             orderedQuantity = orderedQuantityEntity.stream().map(oq -> oq.getDecimalField("orderedQuantity"))
@@ -313,11 +312,14 @@ public class SalesPlanDetailsListeners {
 
             for (Entity salesPlanProduct : salesPlan.getHasManyField(SalesPlanFields.PRODUCTS)) {
                 Entity product = salesPlanProduct.getBelongsToField(SalesPlanProductFields.PRODUCT);
-                BigDecimal orderedQuantity = getOrderedQuantity(masterOrders, product);
+                BigDecimal orderedQuantity = getOrderedQuantity(masterOrders, product, false);
+                BigDecimal orderedToWarehouse = getOrderedQuantity(masterOrders, product, true);
 
                 salesPlanProduct.setField(SalesPlanProductFields.ORDERED_QUANTITY, orderedQuantity);
+                salesPlanProduct.setField(SalesPlanProductFields.ORDERED_TO_WAREHOUSE, orderedToWarehouse);
                 salesPlanProduct.setField(SalesPlanProductFields.SURPLUS_FROM_PLAN,
-                        salesPlanProduct.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY).subtract(orderedQuantity));
+                        salesPlanProduct.getDecimalField(SalesPlanProductFields.PLANNED_QUANTITY)
+                                .subtract(orderedQuantity).subtract(orderedToWarehouse));
 
                 salesPlanProductDD.save(salesPlanProduct);
             }
@@ -326,27 +328,29 @@ public class SalesPlanDetailsListeners {
         }
     }
 
-    private BigDecimal getOrderedQuantity(final List<Entity> masterOrders, final Entity product) {
+    private BigDecimal getOrderedQuantity(final List<Entity> masterOrders, final Entity product, boolean warehouseOrder) {
         BigDecimal orderedQuantity = BigDecimal.ZERO;
 
         for (Entity masterOrder : masterOrders) {
-            List<Entity> masterOrderProducts = masterOrder.getHasManyField(MasterOrderFields.MASTER_ORDER_PRODUCTS);
+            if (warehouseOrder == masterOrder.getBooleanField(MasterOrderFields.WAREHOUSE_ORDER)) {
+                List<Entity> masterOrderProducts = masterOrder.getHasManyField(MasterOrderFields.MASTER_ORDER_PRODUCTS);
 
-            BigDecimal productQuantity = getProductQuantity(product, masterOrderProducts);
+                BigDecimal productQuantity = getProductQuantity(product, masterOrderProducts);
 
-            if (Objects.isNull(productQuantity)) {
-                continue;
+                if (Objects.isNull(productQuantity)) {
+                    continue;
+                }
+
+                orderedQuantity = orderedQuantity.add(productQuantity);
+                orderedQuantity = getQuantityForFamily(product, orderedQuantity, masterOrderProducts, productQuantity);
             }
-
-            orderedQuantity = orderedQuantity.add(productQuantity);
-            orderedQuantity = getQuantityForFamily(product, orderedQuantity, masterOrderProducts, productQuantity);
         }
 
         return orderedQuantity;
     }
 
     private BigDecimal getQuantityForFamily(final Entity product, BigDecimal orderedQuantity,
-            final List<Entity> masterOrderProducts, final BigDecimal productQuantity) {
+                                            final List<Entity> masterOrderProducts, final BigDecimal productQuantity) {
         if (ProductFamilyElementType.PRODUCTS_FAMILY.getStringValue().equals(product.getField(ProductFields.ENTITY_TYPE))
                 && productQuantity.compareTo(BigDecimal.ZERO) == 0) {
             for (Entity child : product.getHasManyField(ProductFields.CHILDREN)) {
@@ -422,7 +426,7 @@ public class SalesPlanDetailsListeners {
     }
 
     public void createSalesPlanMaterialRequirement(final ViewDefinitionState view, final ComponentState state,
-            final String[] args) {
+                                                   final String[] args) {
         FormComponent salesPlanForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
 
         Long salesPlanId = salesPlanForm.getEntityId();

@@ -25,23 +25,17 @@
 
 -->
 <plugin plugin="costNormsForProduct" group="basic" version="${qcadoo.plugin.version}"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
-	xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
-	xmlns:menu="http://schema.qcadoo.org/modules/menu" xmlns:localization="http://schema.qcadoo.org/modules/localization"
-	xmlns:report="http://schema.qcadoo.org/modules/report" xmlns:xi="http://www.w3.org/2001/XInclude"
-	xsi:schemaLocation="
-		http://schema.qcadoo.org/plugin 
-		http://schema.qcadoo.org/plugin.xsd 
-		http://schema.qcadoo.org/modules/model 
-		http://schema.qcadoo.org/modules/model.xsd 
-		http://schema.qcadoo.org/modules/view 
-		http://schema.qcadoo.org/modules/view.xsd 
-		http://schema.qcadoo.org/modules/localization 
-		http://schema.qcadoo.org/modules/localization.xsd 
-		http://schema.qcadoo.org/modules/report 
-		http://schema.qcadoo.org/modules/report.xsd 
-		http://schema.qcadoo.org/modules/menu 
-		http://schema.qcadoo.org/modules/menu.xsd">
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://schema.qcadoo.org/plugin"
+        xmlns:model="http://schema.qcadoo.org/modules/model" xmlns:view="http://schema.qcadoo.org/modules/view"
+        xmlns:localization="http://schema.qcadoo.org/modules/localization"
+        xsi:schemaLocation="http://schema.qcadoo.org/plugin
+		http://schema.qcadoo.org/plugin.xsd
+		http://schema.qcadoo.org/modules/model
+		http://schema.qcadoo.org/modules/model.xsd
+		http://schema.qcadoo.org/modules/view
+		http://schema.qcadoo.org/modules/view.xsd
+		http://schema.qcadoo.org/modules/localization
+		http://schema.qcadoo.org/modules/localization.xsd">
 
 	<information>
 		<name>MES - Cost Norms for Product</name>
@@ -77,11 +71,17 @@
 				<model:validatesScale max="5" />
 			</model:decimal>
 		</model:model-field>
+		<model:model-field plugin="basic" model="productDto">
+			<model:decimal name="nominalCost"/>
+		</model:model-field>
 		<model:model-field plugin="basic" model="product">
 			<model:decimal name="lastPurchaseCost" default="0">
 				<model:validatesUnscaledValue max="7" />
 				<model:validatesScale max="5" />
 			</model:decimal>
+		</model:model-field>
+		<model:model-field plugin="basic" model="productDto">
+			<model:decimal name="lastPurchaseCost"/>
 		</model:model-field>
 		<model:model-field plugin="basic" model="product">
 			<model:decimal name="averageCost" default="0">
@@ -129,6 +129,16 @@
 		<view:resource uri="public/**/*" />
 
 		<view:view-tab resource="view/tabExtensions/productDetails.xml" />
+
+		<view:view-grid-column view="productsList" component="grid" plugin="basic">
+			<view:column name="nominalCost" fields="nominalCost"
+			             orderable="true" searchable="true" width="40"/>
+		</view:view-grid-column>
+
+		<view:view-grid-column view="productsList" component="grid" plugin="basic">
+			<view:column name="lastPurchaseCost" fields="lastPurchaseCost"
+			             orderable="true" searchable="true" width="40"/>
+		</view:view-grid-column>
 
 		<view:view-hook plugin="basic" view="productDetails"
 			type="beforeRender" class="com.qcadoo.mes.costNormsForProduct.hooks.ProductDetailsHooksCNFP"

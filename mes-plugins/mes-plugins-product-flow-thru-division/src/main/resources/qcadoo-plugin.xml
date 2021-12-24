@@ -556,6 +556,11 @@
                         class="com.qcadoo.mes.productFlowThruDivision.hooks.TechnologiesParametersHooksPFTD"
                         method="onBeforeRender"/>
 
+        <view:view-hook view="detailedProductionCountingAndProgressList" type="beforeRender"
+                        plugin="basicProductionCounting"
+                        class="com.qcadoo.mes.productFlowThruDivision.hooks.DetailedProductionCountingAndProgressListHooksBPC"
+                        method="onBeforeRender"/>
+
         <view:view-grid-column plugin="materialFlowResources"
                                view="documentsList" component="grid">
             <view:column name="orderNumber" fields="orderNumber" orderable="true"
@@ -594,6 +599,7 @@
         <view:view-ribbon-group resource="view/ribbonExtensions/copyOfTechnologyDetails.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/productionTrackingDetails.xml"/>
         <view:view-ribbon-group resource="view/ribbonExtensions/costNormsForMaterialsInOrderList.xml"/>
+        <view:view-ribbon-group resource="view/ribbonExtensions/detailedProductionCountingAndProgressList.xml"/>
 
         <view:view resource="view/orderWithMaterialAvailabilityList.xml"/>
         <view:view resource="view/materialAvailabilityList.xml"/>
@@ -648,6 +654,12 @@
                             component="technologyOperationComponent" event="onSelectedEntityChange"
                             class="com.qcadoo.mes.productFlowThruDivision.listeners.ProductionCountingQuantityAdvancedDetailsListenersPFTD"
                             method="setFlowTabState"/>
+
+
+        <view:view-listener plugin="basicProductionCounting" view="detailedProductionCountingAndProgressList"
+                            component="form" event="resourceIssue"
+                            class="com.qcadoo.mes.productFlowThruDivision.listeners.DetailedProductionCountingAndProgressListenersBPC"
+                            method="resourceIssue"/>
 
         <view:view resource="view/operationComponentDetails.xml"/>
 

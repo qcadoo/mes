@@ -26,6 +26,8 @@ package com.qcadoo.mes.productionCounting.hooks;
 import java.util.List;
 import java.util.Objects;
 
+import com.qcadoo.mes.basic.ParameterService;
+import com.qcadoo.mes.productionCounting.constants.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -39,9 +41,6 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderStateStringValues;
 import com.qcadoo.mes.productionCounting.ProductionCountingService;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
-import com.qcadoo.mes.productionCounting.constants.OrderFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.ProductionCountingConstants;
-import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
 import com.qcadoo.mes.productionCounting.listeners.ProductionTrackingDetailsListeners;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingState;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
@@ -109,6 +108,7 @@ public class ProductionTrackingDetailsHooks {
             ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS, ProductionTrackingFields.SHIFT_START_DAY,
             ProductionTrackingFields.STAFF_WORK_TIMES, ProductionTrackingFields.BATCH, ProductionTrackingFields.EXPIRATION_DATE,
             ProductionTrackingFields.ADD_BATCH, ProductionTrackingFields.STOPPAGES);
+
     public static final String L_ROLE_STOPPAGES = "ROLE_STOPPAGES";
 
     @Autowired
@@ -131,6 +131,9 @@ public class ProductionTrackingDetailsHooks {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ParameterService parameterService;
 
     public void onBeforeRender(final ViewDefinitionState view) {
         FormComponent productionTrackingForm = (FormComponent) view.getComponentByReference(QcadooViewConstants.L_FORM);
@@ -363,12 +366,18 @@ public class ProductionTrackingDetailsHooks {
 
         GridComponent trackingOperationProductInComponentsGrid = (GridComponent) view
                 .getComponentByReference(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
+
         GridComponent trackingOperationProductOutComponentsGrid = (GridComponent) view
                 .getComponentByReference(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
 
         GridComponent stateChangesGrid = (GridComponent) view.getComponentByReference(ProductionTrackingFields.STATE_CHANGES);
 
-        trackingOperationProductInComponentsGrid.setEnabled(isEnabled);
+        String releaseOfMaterials = parameterService.getParameter().getStringField(ParameterFieldsPC.RELEASE_OF_MATERIALS);
+        if (ReleaseOfMaterials.MANUALLY_TO_ORDER_OR_GROUP.getStringValue().equals(releaseOfMaterials)) {
+            trackingOperationProductInComponentsGrid.setEnabled(false);
+        } else {
+            trackingOperationProductInComponentsGrid.setEnabled(isEnabled);
+        }
         trackingOperationProductOutComponentsGrid.setEnabled(isEnabled);
 
         stateChangesGrid.setEditable(isEnabled);
@@ -385,6 +394,7 @@ public class ProductionTrackingDetailsHooks {
         RibbonGroup anomaliesRibbonGroup = window.getRibbon().getGroupByName(L_ANOMALIES);
 
         RibbonActionItem copyRibbonActionItem = actionsRibbonGroup.getItemByName(L_COPY);
+
         RibbonActionItem copyPlannedQuantityToUsedQuantityRibbonActionItem = productsQuantitiesRibbonGroup
                 .getItemByName(L_COPY_PLANNED_QUANTITY_TO_USED_QUANTITY);
         RibbonActionItem productionCountingQuantitiesRibbonActionItem = productionCountingQuantitiesRibbonGroup
@@ -411,8 +421,16 @@ public class ProductionTrackingDetailsHooks {
         boolean registerQuantityOutProduct = order.getBooleanField(OrderFieldsPC.REGISTER_QUANTITY_OUT_PRODUCT);
 
         copyRibbonActionItem.setEnabled(isInProgress);
-        copyPlannedQuantityToUsedQuantityRibbonActionItem
-                .setEnabled(isDraft && (registerQuantityInProduct || registerQuantityOutProduct));
+
+        String releaseOfMaterials = parameterService.getParameter().getStringField(ParameterFieldsPC.RELEASE_OF_MATERIALS);
+        if (ReleaseOfMaterials.MANUALLY_TO_ORDER_OR_GROUP.getStringValue().equals(releaseOfMaterials)) {
+            copyPlannedQuantityToUsedQuantityRibbonActionItem.setEnabled(false);
+        } else {
+            copyPlannedQuantityToUsedQuantityRibbonActionItem
+                    .setEnabled(isDraft && (registerQuantityInProduct || registerQuantityOutProduct));
+
+        }
+
         productionCountingQuantitiesRibbonActionItem
                 .setEnabled(isDraft && (registerQuantityInProduct || registerQuantityOutProduct));
         addToAnomaliesListRibbonActionItem.setEnabled(isDraft && (registerQuantityInProduct || registerQuantityOutProduct));

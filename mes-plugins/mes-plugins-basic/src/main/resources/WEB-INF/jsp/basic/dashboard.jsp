@@ -115,7 +115,7 @@
         </c:if>
         <div class="clear"></div>
         <c:if test="${showKanbanOnDashboard && whatToShowOnDashboard != null}">
-            <div id="dashboardSearch">
+            <div id="dashboardSearch" style="display: none;">
                 <div class="input-group">
                    <div class="input-group-prepend">
                         <button class="btn btn-outline-secondary bg-primary text-white">

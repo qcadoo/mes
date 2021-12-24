@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.qcadoo.mes.productionCounting.constants.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,13 +62,6 @@ import com.qcadoo.mes.orders.constants.OrderFields;
 import com.qcadoo.mes.orders.states.constants.OrderState;
 import com.qcadoo.mes.productFlowThruDivision.constants.DocumentFieldsPFTD;
 import com.qcadoo.mes.productionCounting.ProductionTrackingService;
-import com.qcadoo.mes.productionCounting.constants.ParameterFieldsPC;
-import com.qcadoo.mes.productionCounting.constants.PriceBasedOn;
-import com.qcadoo.mes.productionCounting.constants.ProdOutResourceAttrValFields;
-import com.qcadoo.mes.productionCounting.constants.ProductionTrackingFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductInComponentFields;
-import com.qcadoo.mes.productionCounting.constants.TrackingOperationProductOutComponentFields;
-import com.qcadoo.mes.productionCounting.constants.UsedBatchFields;
 import com.qcadoo.mes.productionCounting.states.constants.ProductionTrackingStateStringValues;
 import com.qcadoo.mes.productionCounting.utils.OrderClosingHelper;
 import com.qcadoo.mes.productionCounting.utils.ProductionTrackingDocumentsHelper;
@@ -125,10 +119,7 @@ public final class ProductionTrackingListenerServicePFTD {
     public Entity onAccept(final Entity productionTracking, final String sourceState) {
         boolean isCorrection = productionTracking.getBooleanField(ProductionTrackingFields.IS_CORRECTION);
 
-        Entity parameter = parameterService.getParameter();
-
-        if (parameter.getBooleanField(ParameterFieldsPC.CREATE_DOCUMENTS_FOR_PRODUCTION_REGISTRATION) && !isCorrection
-                && !ProductionTrackingStateStringValues.CORRECTED.equals(sourceState)) {
+        if (!isCorrection && !ProductionTrackingStateStringValues.CORRECTED.equals(sourceState)) {
             createWarehouseDocuments(productionTracking);
         }
 
@@ -137,7 +128,8 @@ public final class ProductionTrackingListenerServicePFTD {
 
     public void createWarehouseDocuments(final Entity productionTracking) {
         Entity order = productionTracking.getBelongsToField(ProductionTrackingFields.ORDER);
-        Entity technologyOperationComponent = productionTracking.getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
+        Entity technologyOperationComponent = productionTracking
+                .getBelongsToField(ProductionTrackingFields.TECHNOLOGY_OPERATION_COMPONENT);
 
         List<Entity> trackingOperationProductOutComponents = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_OUT_COMPONENTS);
@@ -145,58 +137,65 @@ public final class ProductionTrackingListenerServicePFTD {
                 .fillFromBPCProductOut(trackingOperationProductOutComponents, order, true);
         List<Entity> trackingOperationProductInComponents = productionTracking
                 .getHasManyField(ProductionTrackingFields.TRACKING_OPERATION_PRODUCT_IN_COMPONENTS);
-        Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper.fillFromBPCProductIn(trackingOperationProductInComponents,
-                order, technologyOperationComponent, true);
+        Multimap<Long, Entity> groupedRecordInProducts = productionTrackingDocumentsHelper
+                .fillFromBPCProductIn(trackingOperationProductInComponents, order, technologyOperationComponent, true);
+        String receiptOfProducts = parameterService.getParameter().getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
 
-        for (Long warehouseId : groupedRecordOutProducts.keySet()) {
-            Entity locationTo = getLocationDD().get(warehouseId);
-            Entity inboundDocument = createOrUpdateInternalInboundDocumentForFinalProducts(locationTo, order,
-                    groupedRecordOutProducts.get(warehouseId), productionTracking.getBelongsToField(L_USER));
+        if (ReceiptOfProducts.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue().equals(receiptOfProducts)
+                || ReceiptOfProducts.END_OF_THE_ORDER.getStringValue().equals(receiptOfProducts)) {
+            for (Long warehouseId : groupedRecordOutProducts.keySet()) {
+                Entity locationTo = getLocationDD().get(warehouseId);
+                Entity inboundDocument = createOrUpdateInternalInboundDocumentForFinalProducts(locationTo, order,
+                        groupedRecordOutProducts.get(warehouseId), productionTracking.getBelongsToField(L_USER));
 
-            if (Objects.nonNull(inboundDocument) && !inboundDocument.isValid()) {
-                for (ErrorMessage error : inboundDocument.getGlobalErrors()) {
-                    productionTracking.addGlobalError(error.getMessage(), error.getVars());
-                }
-
-                productionTracking.addGlobalError(
-                        "productFlowThruDivision.productionTracking.productionTrackingError.createInternalInboundDocument");
-
-                return;
-            }
-        }
-
-        TransactionAspectSupport.currentTransactionStatus().flush();
-
-        boolean errorsDisplayed = false;
-
-        for (Long warehouseId : groupedRecordInProducts.keySet()) {
-            Entity locationFrom = getLocationDD().get(warehouseId);
-            Entity outboundDocument = createInternalOutboundDocumentForComponents(locationFrom, order,
-                    groupedRecordInProducts.get(warehouseId), productionTracking.getBelongsToField(L_USER));
-
-            if (Objects.nonNull(outboundDocument) && !outboundDocument.isValid()) {
-                for (ErrorMessage error : outboundDocument.getGlobalErrors()) {
-                    if (error.getMessage().equalsIgnoreCase(L_ERROR_NOT_ENOUGH_RESOURCES)) {
-                        productionTracking.addGlobalError(error.getMessage(), false, error.getVars());
-                    } else if (!errorsDisplayed) {
+                if (Objects.nonNull(inboundDocument) && !inboundDocument.isValid()) {
+                    for (ErrorMessage error : inboundDocument.getGlobalErrors()) {
                         productionTracking.addGlobalError(error.getMessage(), error.getVars());
                     }
-                }
 
-                if (!errorsDisplayed) {
                     productionTracking.addGlobalError(
-                            "productFlowThruDivision.productionTracking.productionTrackingError.createInternalOutboundDocument");
+                            "productFlowThruDivision.productionTracking.productionTrackingError.createInternalInboundDocument");
 
-                    errorsDisplayed = true;
+                    return;
                 }
             }
-        }
 
-        if (errorsDisplayed) {
-            return;
+            TransactionAspectSupport.currentTransactionStatus().flush();
         }
+        String releaseOfMaterials = parameterService.getParameter().getStringField(ParameterFieldsPC.RELEASE_OF_MATERIALS);
+        if (ReleaseOfMaterials.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue().equals(releaseOfMaterials)) {
 
-        updateCostsForOrder(order);
+            boolean errorsDisplayed = false;
+
+            for (Long warehouseId : groupedRecordInProducts.keySet()) {
+                Entity locationFrom = getLocationDD().get(warehouseId);
+                Entity outboundDocument = createInternalOutboundDocumentForComponents(locationFrom, order,
+                        groupedRecordInProducts.get(warehouseId), productionTracking.getBelongsToField(L_USER));
+
+                if (Objects.nonNull(outboundDocument) && !outboundDocument.isValid()) {
+                    for (ErrorMessage error : outboundDocument.getGlobalErrors()) {
+                        if (error.getMessage().equalsIgnoreCase(L_ERROR_NOT_ENOUGH_RESOURCES)) {
+                            productionTracking.addGlobalError(error.getMessage(), false, error.getVars());
+                        } else if (!errorsDisplayed) {
+                            productionTracking.addGlobalError(error.getMessage(), error.getVars());
+                        }
+                    }
+
+                    if (!errorsDisplayed) {
+                        productionTracking.addGlobalError(
+                                "productFlowThruDivision.productionTracking.productionTrackingError.createInternalOutboundDocument");
+
+                        errorsDisplayed = true;
+                    }
+                }
+            }
+
+            if (errorsDisplayed) {
+                return;
+            }
+
+            updateCostsForOrder(order);
+        }
     }
 
     public Entity createInternalOutboundDocumentForComponents(final Entity locationFrom, final Entity order,
@@ -236,8 +235,8 @@ public final class ProductionTrackingListenerServicePFTD {
         return internalOutboundBuilder.setAccepted().buildWithEntityRuntimeException();
     }
 
-    private Entity preparePositionForUsedBatch(final DataDefinition positionDD, final Entity inProductRecord, final Entity inProduct,
-            final Entity usedBatch) {
+    private Entity preparePositionForUsedBatch(final DataDefinition positionDD, final Entity inProductRecord,
+            final Entity inProduct, final Entity usedBatch) {
         Entity position = positionDD.create();
 
         BigDecimal usedQuantity = usedBatch.getDecimalField(UsedBatchFields.QUANTITY);
@@ -268,7 +267,8 @@ public final class ProductionTrackingListenerServicePFTD {
         return position;
     }
 
-    private Entity preparePositionForInProduct(final DataDefinition positionDD, final Entity inProductRecord, final Entity inProduct) {
+    private Entity preparePositionForInProduct(final DataDefinition positionDD, final Entity inProductRecord,
+            final Entity inProduct) {
         Entity position = positionDD.create();
 
         BigDecimal usedQuantity = inProductRecord.getDecimalField(TrackingOperationProductInComponentFields.USED_QUANTITY);
@@ -299,9 +299,7 @@ public final class ProductionTrackingListenerServicePFTD {
 
     private Entity createOrUpdateInternalInboundDocumentForFinalProducts(final Entity locationTo, final Entity order,
             final Collection<Entity> outProductsRecords, final Entity user) {
-        String priceBasedOn = parameterService.getParameter().getStringField(ParameterFieldsPC.PRICE_BASED_ON);
-        boolean isNominalProductCost = Objects.nonNull(priceBasedOn)
-                && priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue());
+        String receiptOfProducts = parameterService.getParameter().getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
 
         List<Entity> finalProductRecord = null;
 
@@ -316,7 +314,7 @@ public final class ProductionTrackingListenerServicePFTD {
             }
         }
 
-        if (isNominalProductCost) {
+        if (ReceiptOfProducts.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue().equals(receiptOfProducts)) {
             if (Objects.nonNull(finalProductRecord)) {
                 Entity inboundForFinalProduct = createInternalInboundDocumentForFinalProducts(locationTo, order,
                         finalProductRecord, true, user);
@@ -328,7 +326,7 @@ public final class ProductionTrackingListenerServicePFTD {
             }
 
             return createInternalInboundDocumentForFinalProducts(locationTo, order, intermediateRecords, true, user);
-        } else {
+        } else if (ReceiptOfProducts.END_OF_THE_ORDER.getStringValue().equals(receiptOfProducts)) {
             Entity existingInboundDocument = getDocumentDD().find()
                     .add(SearchRestrictions.belongsTo(DocumentFieldsPFTD.ORDER, order))
                     .add(SearchRestrictions.belongsTo(DocumentFields.LOCATION_TO, locationTo))
@@ -359,6 +357,8 @@ public final class ProductionTrackingListenerServicePFTD {
             }
 
             return createInternalInboundDocumentForFinalProducts(locationTo, order, intermediateRecords, user);
+        } else {
+            return null;
         }
     }
 
@@ -428,7 +428,12 @@ public final class ProductionTrackingListenerServicePFTD {
                 position.setField(PositionFields.GIVEN_UNIT, givenUnit.get());
                 position.setField(PositionFields.CONVERSION, conversion);
                 position.setField(PositionFields.PRODUCTION_DATE, new Date());
-
+                String priceBasedOn = parameterService.getParameter().getStringField(ParameterFieldsPC.PRICE_BASED_ON);
+                boolean isNominalProductCost = priceBasedOn != null
+                        && priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue());
+                if (isNominalProductCost) {
+                    position.setField(PositionFields.PRICE, getNominalCost(outProduct));
+                }
                 Entity batch = productionTracking.getBelongsToField(ProductionTrackingFields.BATCH);
 
                 if (Objects.nonNull(batch) && batch.getBelongsToField(BatchFields.PRODUCT).getId().equals(outProduct.getId())) {
@@ -484,8 +489,8 @@ public final class ProductionTrackingListenerServicePFTD {
         position.setField(PositionFields.POSITION_ATTRIBUTE_VALUES, attributes);
     }
 
-    private Entity filterPosition(final List<Entity> existingPositions, final Entity outProduct, final String givenUnit, final Entity outBatch,
-            final Entity storageLocation) {
+    private Entity filterPosition(final List<Entity> existingPositions, final Entity outProduct, final String givenUnit,
+            final Entity outBatch, final Entity storageLocation) {
         for (Entity position : existingPositions) {
             if (checkPositionConditions(position, outProduct, givenUnit, outBatch, storageLocation)) {
                 return position;
@@ -495,8 +500,8 @@ public final class ProductionTrackingListenerServicePFTD {
         return null;
     }
 
-    private boolean checkPositionConditions(final Entity position, final Entity outProduct, final String givenUnit, final Entity outBatch,
-            final Entity storageLocation) {
+    private boolean checkPositionConditions(final Entity position, final Entity outProduct, final String givenUnit,
+            final Entity outBatch, final Entity storageLocation) {
         boolean isPosition = true;
 
         if (!position.getBelongsToField(PositionFields.PRODUCT).getId().equals(outProduct.getId())) {
@@ -532,7 +537,10 @@ public final class ProductionTrackingListenerServicePFTD {
 
     public Entity createInternalInboundDocumentForFinalProducts(final Entity locationTo, final Entity order,
             final Collection<Entity> outProductsRecords, Entity user) {
-        return createInternalInboundDocumentForFinalProducts(locationTo, order, outProductsRecords, false, user);
+        String priceBasedOn = parameterService.getParameter().getStringField(ParameterFieldsPC.PRICE_BASED_ON);
+        boolean isNominalProductCost = priceBasedOn != null
+                && priceBasedOn.equals(PriceBasedOn.NOMINAL_PRODUCT_COST.getStringValue());
+        return createInternalInboundDocumentForFinalProducts(locationTo, order, outProductsRecords, isNominalProductCost, user);
     }
 
     private Entity createInternalInboundDocumentForFinalProducts(final Entity locationTo, final Entity order,
@@ -618,8 +626,12 @@ public final class ProductionTrackingListenerServicePFTD {
 
         internalInboundBuilder.setField(DocumentFieldsPFTD.ORDER, order);
 
-        if (OrderState.COMPLETED.equals(OrderState.of(order)) || !isFinalProduct || isBasedOnNominalCost
-                || orderClosingHelper.orderShouldBeClosed(productionTracking)) {
+        String receiptOfProducts = parameterService.getParameter().getStringField(ParameterFieldsPC.RECEIPT_OF_PRODUCTS);
+
+        if (ReceiptOfProducts.ON_ACCEPTANCE_REGISTRATION_RECORD.getStringValue().equals(receiptOfProducts)
+                && (OrderState.COMPLETED.equals(OrderState.of(order)) || !isFinalProduct || isBasedOnNominalCost
+                        || orderClosingHelper.orderShouldBeClosedWithRecalculate(productionTracking))
+                || orderClosingHelper.orderShouldBeClosedWithRecalculate(productionTracking)) {
             internalInboundBuilder.setAccepted();
         }
 

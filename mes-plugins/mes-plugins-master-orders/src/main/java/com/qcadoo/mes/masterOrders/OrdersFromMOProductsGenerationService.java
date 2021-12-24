@@ -72,6 +72,8 @@ public class OrdersFromMOProductsGenerationService {
 
     private static final String L_ORDERS_GENERATED_BY_COVERAGE = "ordersGeneratedByCoverage";
 
+    public static final String L_CONSIDER_MINIMUM_STOCK_LEVEL_WHEN_CREATING_PRODUCTION_ORDERS = "considerMinimumStockLevelWhenCreatingProductionOrders";
+
     @Autowired
     private TechnologyServiceO technologyServiceO;
 
@@ -204,6 +206,8 @@ public class OrdersFromMOProductsGenerationService {
         Entity parameter = parameterService.getParameter();
 
         boolean realizationFromStock = parameter.getBooleanField(ParameterFieldsO.REALIZATION_FROM_STOCK);
+        boolean considerMinimumStockLevelWhenCreatingProductionOrders = parameter
+                .getBooleanField(L_CONSIDER_MINIMUM_STOCK_LEVEL_WHEN_CREATING_PRODUCTION_ORDERS);
         boolean alwaysOrderItemsWithPersonalization = parameter
                 .getBooleanField(ParameterFieldsO.ALWAYS_ORDER_ITEMS_WITH_PERSONALIZATION)
                 && StringUtils.isNoneEmpty(masterOrderProduct.getComments());
@@ -212,6 +216,11 @@ public class OrdersFromMOProductsGenerationService {
         }
 
         BigDecimal stockQuantity = BigDecimal.ZERO;
+        Entity positionDto =  dataDefinitionService
+                .get(MasterOrdersConstants.PLUGIN_IDENTIFIER, MasterOrdersConstants.MODEL_MASTER_ORDER_POSITION_DTO)
+                .get(masterOrderProduct.getMasterOrderProduct().getId());
+        BigDecimal minStateQuantity = positionDto.getDecimalField(MasterOrderPositionDtoFields.WAREHOUSE_MINIMUM_STATE_QUANTITY);
+
         BigDecimal quantityRemainingToOrder = masterOrderProduct.getQuantityRemainingToOrder();
 
         if (realizationFromStock) {
@@ -228,8 +237,8 @@ public class OrdersFromMOProductsGenerationService {
             }
         }
 
-        if (realizationFromStock && stockQuantity.compareTo(quantityRemainingToOrder) >= 0
-                && quantityRemainingToOrder.compareTo(BigDecimal.ZERO) > 0) {
+        if (onlyUpdateMasterOrderPosition(realizationFromStock, considerMinimumStockLevelWhenCreatingProductionOrders,
+                stockQuantity, minStateQuantity, quantityRemainingToOrder)) {
             if (!masterOrderProduct.isCreateCollectiveOrders()) {
                 Entity masterOrderProductEntity = masterOrderProduct.getMasterOrderProduct();
 
@@ -241,8 +250,9 @@ public class OrdersFromMOProductsGenerationService {
 
             result.addRealizationFromStock(masterOrderProduct.getProduct().getStringField(ProductFields.NUMBER));
         } else {
-            Entity order = createOrder(masterOrderProduct, realizationFromStock, quantityRemainingToOrder, stockQuantity, start,
-                    finish);
+            Entity order = createOrder(masterOrderProduct, realizationFromStock,
+                    considerMinimumStockLevelWhenCreatingProductionOrders, quantityRemainingToOrder, stockQuantity,
+                    minStateQuantity, start, finish);
 
             order = getOrderDD().save(order);
 
@@ -344,6 +354,23 @@ public class OrdersFromMOProductsGenerationService {
         }
     }
 
+    private boolean onlyUpdateMasterOrderPosition(boolean realizationFromStock,
+            boolean considerMinimumStockLevelWhenCreatingProductionOrders, BigDecimal stockQuantity, BigDecimal minStock,
+            BigDecimal quantityRemainingToOrder) {
+        if (realizationFromStock) {
+            if (considerMinimumStockLevelWhenCreatingProductionOrders) {
+                BigDecimal quantityRemainingToOrderWithMinState = minStock.add(quantityRemainingToOrder);
+                return stockQuantity.compareTo(quantityRemainingToOrderWithMinState) >= 0
+                        && quantityRemainingToOrder.compareTo(BigDecimal.ZERO) > 0;
+            } else {
+                return stockQuantity.compareTo(quantityRemainingToOrder) >= 0
+                        && quantityRemainingToOrder.compareTo(BigDecimal.ZERO) > 0;
+            }
+        }
+        return false;
+
+    }
+
     public Optional<Entity> findNextOrder(final Entity order) {
         Entity productionLine = order.getBelongsToField(OrderFields.PRODUCTION_LINE);
 
@@ -366,7 +393,8 @@ public class OrdersFromMOProductsGenerationService {
     }
 
     private Entity createOrder(final MasterOrderProduct masterOrderProduct, final boolean realizationFromStock,
-            final BigDecimal quantityRemainingToOrder, final BigDecimal stockQuantity, final Date start, final Date finish) {
+            final boolean considerMinimumStockLevelWhenCreatingProductionOrders, final BigDecimal quantityRemainingToOrder,
+            final BigDecimal stockQuantity, final BigDecimal minStock, final Date start, final Date finish) {
         Entity parameter = parameterService.getParameter();
 
         Entity product = masterOrderProduct.getProduct();
@@ -401,17 +429,43 @@ public class OrdersFromMOProductsGenerationService {
         order.setField(OrderFields.EXTERNAL_SYNCHRONIZED, true);
         order.setField(L_IS_SUBCONTRACTED, false);
         order.setField(OrderFields.STATE, OrderStateStringValues.PENDING);
+
         if (realizationFromStock) {
-            if (stockQuantity.compareTo(BigDecimal.ZERO) > 0 && stockQuantity.compareTo(quantityRemainingToOrder) < 0) {
+            BigDecimal quantityRemainingToOrderWithMinState = quantityRemainingToOrder;
+            if (considerMinimumStockLevelWhenCreatingProductionOrders) {
+                quantityRemainingToOrderWithMinState = quantityRemainingToOrderWithMinState.add(minStock);
+            }
+
+            boolean useWholeMinState = false;
+
+            if (stockQuantity.compareTo(BigDecimal.ZERO) > 0
+                    && stockQuantity.compareTo(quantityRemainingToOrderWithMinState) < 0) {
                 if (!masterOrderProduct.isCreateCollectiveOrders()) {
                     Entity masterOrderProductEntity = masterOrderProduct.getMasterOrderProduct();
-
-                    masterOrderProductEntity.setField(MasterOrderProductFields.QUANTITY_TAKEN_FROM_WAREHOUSE, stockQuantity);
+                    if(stockQuantity.compareTo(quantityRemainingToOrder) > 0) {
+                        masterOrderProductEntity.setField(MasterOrderProductFields.QUANTITY_TAKEN_FROM_WAREHOUSE, quantityRemainingToOrder);
+                    } else {
+                        masterOrderProductEntity.setField(MasterOrderProductFields.QUANTITY_TAKEN_FROM_WAREHOUSE, stockQuantity);
+                        useWholeMinState = true;
+                    }
                     masterOrderProductEntity.getDataDefinition().save(masterOrderProductEntity);
                 }
 
-                order.setField(OrderFields.PLANNED_QUANTITY,
-                        quantityRemainingToOrder.subtract(stockQuantity, numberService.getMathContext()));
+                if (considerMinimumStockLevelWhenCreatingProductionOrders) {
+                    if(useWholeMinState) {
+                        BigDecimal toPlan = quantityRemainingToOrder.subtract(stockQuantity, numberService.getMathContext());
+                        toPlan = toPlan.add(minStock);
+                        order.setField(OrderFields.PLANNED_QUANTITY, toPlan);
+                    } else {
+                        BigDecimal leftToPlan = stockQuantity.subtract(quantityRemainingToOrder, numberService.getMathContext());
+                        BigDecimal leftToPlanWithMinState = minStock.subtract(leftToPlan);
+                        order.setField(OrderFields.PLANNED_QUANTITY, leftToPlanWithMinState);
+                    }
+
+                } else {
+                    order.setField(OrderFields.PLANNED_QUANTITY,
+                            quantityRemainingToOrder.subtract(stockQuantity, numberService.getMathContext()));
+                }
             } else {
                 if (!masterOrderProduct.isCreateCollectiveOrders()) {
                     Entity masterOrderProductEntity = masterOrderProduct.getMasterOrderProduct();
@@ -419,8 +473,11 @@ public class OrdersFromMOProductsGenerationService {
                     masterOrderProductEntity.setField(MasterOrderProductFields.QUANTITY_TAKEN_FROM_WAREHOUSE, BigDecimal.ZERO);
                     masterOrderProductEntity.getDataDefinition().save(masterOrderProductEntity);
                 }
-
-                order.setField(OrderFields.PLANNED_QUANTITY, quantityRemainingToOrder);
+                BigDecimal plannedQuantity = quantityRemainingToOrder;
+                if (considerMinimumStockLevelWhenCreatingProductionOrders) {
+                    plannedQuantity = plannedQuantity.add(minStock);
+                }
+                order.setField(OrderFields.PLANNED_QUANTITY, plannedQuantity);
             }
         } else {
             order.setField(OrderFields.PLANNED_QUANTITY, quantityRemainingToOrder);
@@ -552,7 +609,8 @@ public class OrdersFromMOProductsGenerationService {
     }
 
     private void setMasterOrderPositionStatus(final Entity masterOrderProduct) {
-        Entity item = dictionaryService.getItemEntityByTechnicalCode(L_MASTER_ORDER_POSITION_STATUS, MasterOrderPositionStatus.ORDERED.getStringValue());
+        Entity item = dictionaryService.getItemEntityByTechnicalCode(L_MASTER_ORDER_POSITION_STATUS,
+                MasterOrderPositionStatus.ORDERED.getStringValue());
 
         if (Objects.nonNull(item)) {
             masterOrderProduct.setField(MasterOrderProductFields.MASTER_ORDER_POSITION_STATUS,
